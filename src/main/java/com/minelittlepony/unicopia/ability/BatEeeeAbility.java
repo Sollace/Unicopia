@@ -1,10 +1,12 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.Optional;
+
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.ability.data.Numeric;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
@@ -23,7 +25,7 @@ import net.minecraft.util.math.random.Random;
  * A magic casting ability for unicorns.
  * (only shields for now)
  */
-public class BatEeeeAbility implements Ability<Hit> {
+public class BatEeeeAbility implements Ability<Numeric> {
 
     @Override
     public int getWarmupTime(Pony player) {
@@ -46,17 +48,17 @@ public class BatEeeeAbility implements Ability<Hit> {
     }
 
     @Override
-    public Hit tryActivate(Pony player) {
-        return Hit.INSTANCE;
+    public Optional<Numeric> prepare(Pony player) {
+        return Numeric.of(1);
     }
 
     @Override
-    public Hit.Serializer<Hit> getSerializer() {
-        return Hit.SERIALIZER;
+    public Numeric.Serializer<Numeric> getSerializer() {
+        return Numeric.SERIALIZER;
     }
 
     @Override
-    public void apply(Pony player, Hit data) {
+    public boolean apply(Pony player, Numeric data) {
         Random rng = player.asWorld().random;
         int count = 1 + rng.nextInt(10);
 
@@ -105,14 +107,16 @@ public class BatEeeeAbility implements Ability<Hit> {
         if (total >= 20) {
             UCriteria.SCREECH_TWENTY_MOBS.trigger(player.asEntity());
         }
+
+        return true;
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
         for (int i = 0; i < 20; i++) {
             player.addParticle(ParticleTypes.BUBBLE_POP, player.getPhysics().getHeadPosition().toCenterPos(), VecHelper.supply(() -> player.asWorld().getRandom().nextGaussian() - 0.5));
         }

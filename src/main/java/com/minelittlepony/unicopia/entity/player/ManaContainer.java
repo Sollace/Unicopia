@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.entity.player;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
 
@@ -10,7 +11,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 
-public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
+public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyable<ManaContainer> {
     private final Pony pony;
 
     private final Map<String, BarInst> bars = new HashMap<>();
@@ -27,8 +28,8 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
         this.energy = addBar("energy", new BarInst(Pony.ENERGY, 100F, 0));
         this.exhaustion = addBar("exhaustion", new BarInst(Pony.EXHAUSTION, 100F, 0));
         this.exertion = addBar("exertion", new BarInst(Pony.EXERTION, 10F, 0));
-        this.xp = addBar("xp", new BarInst(Pony.XP, 1, 0));
-        this.mana = addBar("mana", new XpCollectingBar(Pony.MANA, 100F, 100F));
+        this.xp = addBar("xp", new BarInst(Pony.XP, 1F, 0));
+        this.mana = addBar("mana", new XpCollectingBar(Pony.MANA, 100F, 1));
         this.charge = addBar("charge", new BarInst(Pony.CHARGE, 10F, 0) {
             @Override
             protected float applyLimits(float value) {
@@ -112,6 +113,18 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
         }
     }
 
+    @Override
+    public void copyFrom(ManaContainer other, boolean alive) {
+        if (alive) {
+            mana.resetTo(mana.getMax());
+            xp.resetTo(other.xp.get());
+        } else {
+            energy.resetTo(0.6F);
+            exhaustion.resetTo(0);
+            exertion.resetTo(0);
+        }
+    }
+
     class XpCollectingBar extends BarInst {
 
         XpCollectingBar(TrackedData<Float> marker, float max, float initial) {
@@ -148,7 +161,8 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
         BarInst(TrackedData<Float> marker, float max, float initial) {
             this.marker = marker;
             this.max = max;
-            pony.asEntity().getDataTracker().startTracking(marker, initial);
+            this.trailingValue = initial;
+            pony.asEntity().getDataTracker().startTracking(marker, getMax() * initial);
         }
 
         @Override
@@ -167,13 +181,20 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
         }
 
         private void load(float value) {
-            if (!pony.isClient()) {
-                pony.asEntity().getDataTracker().set(marker, value);
-            }
+            pony.asEntity().getDataTracker().set(marker, value);
+        }
+
+        protected float getInitial(float initial) {
+            return initial;
         }
 
         protected float applyLimits(float value) {
             return MathHelper.clamp(value, 0, getMax());
+        }
+
+        void resetTo(float value) {
+            trailingValue = MathHelper.clamp(value / getMax(), 0, 1);
+            load(value);
         }
 
         @Override

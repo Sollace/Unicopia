@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
@@ -51,14 +52,8 @@ public class ChangelingFeedAbility implements Ability<Hit> {
 
     @Nullable
     @Override
-    public Hit tryActivate(Pony player) {
-        if (canFeed(player)) {
-            if (!getTargets(player).isEmpty()) {
-                return Hit.INSTANCE;
-            }
-        }
-
-        return null;
+    public Optional<Hit> prepare(Pony player) {
+        return Hit.of(canFeed(player) && !getTargets(player).isEmpty());
     }
 
     private boolean canFeed(Pony player) {
@@ -97,9 +92,9 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     @Override
-    public void apply(Pony iplayer, Hit data) {
+    public boolean apply(Pony iplayer, Hit data) {
         if (!canFeed(iplayer)) {
-            return;
+            return false;
         }
 
         PlayerEntity player = iplayer.asEntity();
@@ -131,6 +126,8 @@ public class ChangelingFeedAbility implements Ability<Hit> {
         } else {
             iplayer.playSound(SoundEvents.ENTITY_GENERIC_DRINK, 0.1F, iplayer.getRandomPitch());
         }
+
+        return true;
     }
 
     public float drainFrom(Pony changeling, LivingEntity living) {
@@ -167,12 +164,12 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getExertion().add(6);
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
         if (player.asWorld().random.nextInt(10) == 0) {
             player.spawnParticles(ParticleTypes.HEART, 1);
         }

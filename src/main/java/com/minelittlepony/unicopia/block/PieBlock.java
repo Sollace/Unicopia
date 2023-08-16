@@ -66,7 +66,7 @@ public class PieBlock extends Block implements Waterloggable {
 
         if (world.isClient) {
 
-            if (itemStack.getItem() == Items.SHEARS) {
+            if (itemStack.isIn(UTags.CAN_CUT_PIE)) {
                 return ActionResult.SUCCESS;
             }
 
@@ -79,9 +79,10 @@ public class PieBlock extends Block implements Waterloggable {
             }
         }
 
-        if (itemStack.getItem() == Items.SHEARS) {
+        if (itemStack.isIn(UTags.CAN_CUT_PIE)) {
             SoundEmitter.playSoundAt(player, USounds.BLOCK_PIE_SLICE, SoundCategory.NEUTRAL, 1, 1);
             removeSlice(world, pos, state, player);
+            itemStack.damage(1, player, p -> p.sendToolBreakStatus(hand));
             SoundEmitter.playSoundAt(player, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.NEUTRAL, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
             Block.dropStack(world, pos, sliceItem.asItem().getDefaultStack());
             return ActionResult.SUCCESS;

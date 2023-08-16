@@ -26,7 +26,7 @@ public record MsgPlayerAbility<T extends Hit> (
         Ability<T> power = (Ability<T>) Abilities.REGISTRY.get(buffer.readIdentifier());
         return new MsgPlayerAbility<>(
             power,
-            buffer.readOptional(power.getSerializer()::fromBuffer),
+            buffer.readOptional(power.getSerializer().read()),
             ActivationType.of(buffer.readInt())
         );
     }
@@ -34,7 +34,7 @@ public record MsgPlayerAbility<T extends Hit> (
     @Override
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeIdentifier(Abilities.REGISTRY.getId(power));
-        buffer.writeOptional(data, (buf, t) -> t.toBuffer(buf));
+        buffer.writeOptional(data, power.getSerializer().write());
         buffer.writeInt(type.ordinal());
     }
 
@@ -48,10 +48,9 @@ public record MsgPlayerAbility<T extends Hit> (
         if (type != ActivationType.NONE) {
             power.onQuickAction(player, type, data);
         } else {
-            data.filter(data -> power.canApply(player, data)).ifPresentOrElse(
-                    data -> power.apply(player, data),
-                    () -> Channel.CANCEL_PLAYER_ABILITY.sendToPlayer(new MsgCancelPlayerAbility(), sender)
-            );
+            if (data.filter(data -> power.apply(player, data)).isEmpty()) {
+                Channel.CANCEL_PLAYER_ABILITY.sendToPlayer(new MsgCancelPlayerAbility(), sender);
+            }
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
@@ -38,13 +40,8 @@ public class PegasusCaptureStormAbility implements Ability<Hit> {
 
     @Nullable
     @Override
-    public Hit tryActivate(Pony player) {
-
-        if (!player.asEntity().isCreative() && player.getMagicalReserves().getMana().getPercentFill() < 0.2F) {
-            return null;
-        }
-
-        return Hit.INSTANCE;
+    public Optional<Hit> prepare(Pony player) {
+        return Hit.of(player.asEntity().isCreative() || player.getMagicalReserves().getMana().getPercentFill() >= 0.2F);
     }
 
     @Override
@@ -58,7 +55,7 @@ public class PegasusCaptureStormAbility implements Ability<Hit> {
     }
 
     @Override
-    public void apply(Pony player, Hit data) {
+    public boolean apply(Pony player, Hit data) {
 
         World w = player.asWorld();
         ItemStack stack = player.asEntity().getStackInHand(Hand.MAIN_HAND);
@@ -106,6 +103,7 @@ public class PegasusCaptureStormAbility implements Ability<Hit> {
             }
         }
 
+        return true;
     }
 
     private void tell(Pony player, String translation) {
@@ -113,12 +111,12 @@ public class PegasusCaptureStormAbility implements Ability<Hit> {
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getExertion().add(6);
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 }

@@ -115,9 +115,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public Pony(PlayerEntity player) {
         super(player, EFFECT);
-        this.mana = addTicker(new ManaContainer(this));
         this.levels = new PlayerLevelStore(this, LEVEL, true, SoundEvents.ENTITY_PLAYER_LEVELUP);
         this.corruption = new PlayerLevelStore(this, CORRUPTION, false, SoundEvents.PARTICLE_SOUL_ESCAPE);
+        this.mana = addTicker(new ManaContainer(this));
 
         player.getDataTracker().startTracking(RACE, Race.DEFAULT_ID);
         player.getDataTracker().startTracking(HANGING_POSITION, Optional.empty());
@@ -269,7 +269,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public boolean canUseSuperMove() {
-        return getMagicalReserves().getCharge().get() >= getMagicalReserves().getCharge().get();
+        return entity.isCreative() || getMagicalReserves().getCharge().get() >= getMagicalReserves().getCharge().getMax();
     }
 
     public boolean consumeSuperMove() {
@@ -863,13 +863,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             getCharms().equipSpell(Hand.OFF_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.OFF_HAND));
             corruption.set(oldPlayer.getCorruption().get());
             levels.set(oldPlayer.getLevel().get());
-            mana.getXp().set(oldPlayer.getMagicalReserves().getXp().get());
-        } else {
-            mana.getEnergy().set(0.6F);
-            mana.getExhaustion().set(0);
-            mana.getExertion().set(0);
         }
 
+        mana.copyFrom(oldPlayer.mana, !forcedSwap);
 
         advancementProgress.putAll(oldPlayer.getAdvancementProgress());
         setDirty();

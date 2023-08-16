@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.ability;
 
-import org.jetbrains.annotations.Nullable;
+import java.util.Optional;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.data.Hit;
@@ -42,12 +42,8 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
     }
 
     @Override
-    @Nullable
-    public Hit tryActivate(Pony player) {
-        if (!player.canCast()) {
-            return null;
-        }
-        return Hit.of(player.getMagicalReserves().getMana().get() >= getCostEstimate(player));
+    public Optional<Hit> prepare(Pony player) {
+        return Hit.of(player.canCast() && player.getMagicalReserves().getMana().get() >= getCostEstimate(player));
     }
 
     @Override
@@ -76,9 +72,9 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
     }
 
     @Override
-    public void apply(Pony player, Hit data) {
+    public boolean apply(Pony player, Hit data) {
         if (!player.canCast()) {
-            return;
+            return false;
         }
 
         TypedActionResult<ItemStack> amulet = getAmulet(player);
@@ -123,6 +119,8 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
                 }
             }
         }
+
+        return true;
     }
 
     private TypedActionResult<ItemStack> getAmulet(Pony player) {
@@ -141,7 +139,7 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getExhaustion().multiply(3.3F);
 
         if (getAmulet(player).getResult() == ActionResult.CONSUME) {

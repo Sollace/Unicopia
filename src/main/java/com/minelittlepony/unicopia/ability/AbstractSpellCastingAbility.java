@@ -45,7 +45,7 @@ abstract class AbstractSpellCastingAbility implements Ability<Hit> {
                 gemSpell.getValue().type().getName().copy().formatted(gemSpell.getValue().type().getAffinity().getColor())
             );
         }
-        return getName();
+        return Ability.super.getName(player);
     }
 
     @Override
@@ -64,7 +64,7 @@ abstract class AbstractSpellCastingAbility implements Ability<Hit> {
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 }
