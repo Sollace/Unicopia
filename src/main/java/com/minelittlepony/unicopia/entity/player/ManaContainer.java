@@ -11,7 +11,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 
-public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyable<ManaContainer> {
+class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyable<ManaContainer> {
     private final Pony pony;
 
     private final Map<String, BarInst> bars = new HashMap<>();
@@ -87,23 +87,23 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, 
     public void tick() {
         bars.values().forEach(BarInst::tick);
 
-        exertion.add(-10);
+        exertion.addPercent(-10);
 
         if (energy.get() > 5) {
             energy.multiply(0.8F);
         } else {
-            energy.add(-1);
+            energy.addPercent(-1);
         }
 
         if (pony.getSpecies().canFly() && !pony.getPhysics().isFlying()) {
             exhaustion.multiply(0.8F);
         } else {
-            exhaustion.add(-1);
+            exhaustion.addPercent(-1);
         }
 
         if (!pony.getSpecies().canFly() || !pony.getPhysics().isFlying()) {
             if (mana.getPercentFill() < 1 && mana.getShadowFill() == mana.getPercentFill()) {
-                mana.add((mana.getMax() / 10F) * Math.max(1, pony.getLevel().get() * 4));
+                mana.addPercent(MathHelper.clamp(1 + pony.getLevel().get(), 1, 50));
             }
         }
 

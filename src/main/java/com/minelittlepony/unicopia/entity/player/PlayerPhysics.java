@@ -339,7 +339,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 }
 
                 if (ticksDiving > 0 && ticksDiving % 25 == 0) {
-                    pony.getMagicalReserves().getCharge().add(25);
+                    pony.getMagicalReserves().getCharge().addPercent(12.5F);
                 }
             } else {
                 prevStrafe = 0;
@@ -474,15 +474,15 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (ticksInAir > (level * 100)) {
             Bar mana = pony.getMagicalReserves().getMana();
 
-            float cost = (float)-getHorizontalMotion() * 20F / level;
-            if (entity.isSneaking()) {
+            float cost = (float)-getHorizontalMotion() / 2F;
+            if (((LivingEntityDuck)entity).isJumping()) {
                 cost /= 10;
             }
 
-            mana.add(cost);
+            mana.add(MathHelper.clamp(cost, -100, 0));
 
             if (mana.getPercentFill() < 0.2) {
-                pony.getMagicalReserves().getExertion().add(2);
+                pony.getMagicalReserves().getExertion().addPercent(2);
                 pony.getMagicalReserves().getExhaustion().add(2 + (int)(getHorizontalMotion() * 50));
 
                 if (mana.getPercentFill() < 0.1 && ticksInAir % 10 == 0) {
@@ -499,7 +499,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
                     if (entity.getWorld().random.nextInt(110) == 1 && !pony.isClient()) {
                         pony.getLevel().add(1);
-                        pony.getMagicalReserves().getCharge().add(4);
+                        pony.getMagicalReserves().getCharge().addPercent(4);
                         pony.getMagicalReserves().getExertion().set(0);
                         pony.getMagicalReserves().getExhaustion().set(0);
                         mana.set(mana.getMax() * 100);

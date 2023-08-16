@@ -63,8 +63,15 @@ public interface MagicReserves {
         /**
          * Adds a percentage increment to this bar's current value
          */
-        default void add(float step) {
-            set(get() + (step / getMax()));
+        default void addPercent(float percentChange) {
+            set(get() + ((percentChange / 100F) * getMax()));
+        }
+
+        /**
+         * Adds a flat amount to this bar's current value
+         */
+        default void add(float flatAmount) {
+            set(get() + flatAmount);
         }
 
         /**
