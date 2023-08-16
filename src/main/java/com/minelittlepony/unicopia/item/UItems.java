@@ -202,6 +202,7 @@ public interface UItems {
         CompostingChanceRegistry.INSTANCE.add(SWEET_APPLE_SEEDS, 0.3F);
         CompostingChanceRegistry.INSTANCE.add(SOUR_APPLE_SEEDS, 0.3F);
         CompostingChanceRegistry.INSTANCE.add(APPLE_PIE, 0.5F);
+        CompostingChanceRegistry.INSTANCE.add(APPLE_PIE_HOOF, 0.5F);
         CompostingChanceRegistry.INSTANCE.add(APPLE_PIE_SLICE, 0.1F);
         CompostingChanceRegistry.INSTANCE.add(BUTTERFLY, 0.1F);
 
