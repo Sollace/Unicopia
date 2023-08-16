@@ -38,7 +38,7 @@ public class PegasusRainboomAbility implements Ability<Hit> {
     @Nullable
     @Override
     public Optional<Hit> prepare(Pony player) {
-        return Hit.of(player.canUseSuperMove() && player.getPhysics().isFlying() && !SpellType.RAINBOOM.isOn(player));
+        return Hit.of(player.canUseSuperMove() && player.getPhysics().isFlying() && !player.getMotion().isRainbooming());
     }
 
     @Override
@@ -54,7 +54,7 @@ public class PegasusRainboomAbility implements Ability<Hit> {
     @Override
     public boolean onQuickAction(Pony player, ActivationType type, Optional<Hit> data) {
 
-        if (type == ActivationType.TAP && player.getPhysics().isFlying() && player.getMagicalReserves().getMana().get() > 40) {
+        if (type == ActivationType.TAP && !player.getMotion().isRainbooming() && player.getPhysics().isFlying() && player.getMagicalReserves().getMana().get() > 40) {
             player.getPhysics().dashForward((float)player.asWorld().random.nextTriangular(2.5F, 0.3F));
             player.subtractEnergyCost(4);
             player.getMagicalReserves().getCharge().add(2);
