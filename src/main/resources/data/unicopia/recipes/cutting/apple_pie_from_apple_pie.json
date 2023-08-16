@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "farmersdelight:apple_pie" }
+  ],
+  "result": {
+    "item": "unicopia:apple_pie"
+  }
+}

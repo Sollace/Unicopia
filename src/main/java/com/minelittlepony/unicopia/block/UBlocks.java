@@ -7,9 +7,6 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.server.world.UTreeGen;
-import com.terraformersmc.terraform.boat.api.TerraformBoatType;
-import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
-
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
@@ -102,26 +99,30 @@ public interface UBlocks {
     Block SOUR_APPLE = register("sour_apple", new FruitBlock(Settings.create().mapColor(MapColor.GREEN), Direction.DOWN, SOUR_APPLE_LEAVES, FruitBlock.DEFAULT_SHAPE));
     Block SOUR_APPLE_SPROUT = register("sour_apple_sprout", new SproutBlock(0xE5FFCC88, () -> UItems.SOUR_APPLE_SEEDS, () -> UTreeGen.SOUR_APPLE_TREE.sapling().map(Block::getDefaultState).get()));
 
-    Block APPLE_PIE = register("apple_pie", new PieBlock(Settings.create().solid().mapColor(MapColor.ORANGE).strength(0.5F).sounds(BlockSoundGroup.WET_GRASS).pistonBehavior(PistonBehavior.DESTROY), () -> UItems.APPLE_PIE_SLICE));
+    Block APPLE_PIE = register("apple_pie", new PieBlock(Settings.create().solid().mapColor(MapColor.ORANGE).strength(0.5F).sounds(BlockSoundGroup.WOOL).pistonBehavior(PistonBehavior.DESTROY),
+            () -> UItems.APPLE_PIE_SLICE,
+            () -> UItems.APPLE_PIE,
+            () -> UItems.APPLE_PIE_HOOF
+    ));
 
     SegmentedCropBlock OATS = register("oats", SegmentedCropBlock.create(11, 5, AbstractBlock.Settings.copy(Blocks.WHEAT), () -> UItems.OAT_SEEDS, null, () -> UBlocks.OATS_STEM));
     SegmentedCropBlock OATS_STEM = register("oats_stem", OATS.createNext(5));
     SegmentedCropBlock OATS_CROWN = register("oats_crown", OATS_STEM.createNext(5));
 
-    static <T extends Block> T register(String name, T item) {
+    private static <T extends Block> T register(String name, T item) {
         return register(Unicopia.id(name), item);
     }
 
-    static <T extends Block> T register(String name, T block, RegistryKey<ItemGroup> group) {
+    private static <T extends Block> T register(String name, T block, RegistryKey<ItemGroup> group) {
         return register(Unicopia.id(name), block, group);
     }
 
     static <T extends Block> T register(Identifier id, T block, RegistryKey<ItemGroup> group) {
-        BlockItem.BLOCK_ITEMS.put(block, UItems.register(id, ItemGroupRegistry.register(new BlockItem(block, new Item.Settings()), group)));
+        ItemGroupRegistry.register(id, new BlockItem(block, new Item.Settings()), group);
         return register(id, block);
     }
 
-    static <T extends Block> T register(Identifier id, T block) {
+    private static <T extends Block> T register(Identifier id, T block) {
         if (block instanceof TintedBlock) {
             TintedBlock.REGISTRY.add(block);
         }
@@ -151,11 +152,5 @@ public interface UBlocks {
         FlammableBlockRegistry.getDefaultInstance().add(BANANAS, 5, 20);
 
         UBlockEntities.bootstrap();
-
-        Registry.register(TerraformBoatTypeRegistry.INSTANCE, Unicopia.id("palm"), new TerraformBoatType.Builder()
-                .planks(PALM_PLANKS.asItem())
-                .item(UItems.PALM_BOAT)
-                .build());
-
     }
 }

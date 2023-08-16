@@ -1,8 +1,5 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.UWoodTypes;
@@ -12,6 +9,8 @@ import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.item.group.UItemGroups;
 import com.minelittlepony.unicopia.item.toxin.UFoodComponents;
+import com.terraformersmc.terraform.boat.api.TerraformBoatType;
+import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
 import com.terraformersmc.terraform.boat.api.item.TerraformBoatItemHelper;
 
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -21,16 +20,12 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.Registries;
 
 public interface UItems {
-
-    List<Item> ITEMS = new ArrayList<>();
-
     Item GREEN_APPLE = register("green_apple", AppleItem.registerTickCallback(new Item(new Item.Settings().food(FoodComponents.APPLE))), ItemGroups.FOOD_AND_DRINK);
     Item SWEET_APPLE = register("sweet_apple", AppleItem.registerTickCallback(new Item(new Item.Settings().food(FoodComponents.APPLE))), ItemGroups.FOOD_AND_DRINK);
     Item SOUR_APPLE = register("sour_apple", AppleItem.registerTickCallback(new Item(new Item.Settings().food(FoodComponents.APPLE))), ItemGroups.FOOD_AND_DRINK);
@@ -96,6 +91,7 @@ public interface UItems {
     Item JUICE = register("juice", new DrinkableItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE).maxCount(1).food(UFoodComponents.JUICE)), ItemGroups.FOOD_AND_DRINK);
     Item BURNED_JUICE = register("burned_juice", new DrinkableItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE).maxCount(1).food(UFoodComponents.BURNED_JUICE)), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE = register("apple_pie", new BlockItem(UBlocks.APPLE_PIE, new Item.Settings().maxCount(1)), ItemGroups.FOOD_AND_DRINK);
+    Item APPLE_PIE_HOOF = register("apple_pie_hoof", new AliasedBlockItem(UBlocks.APPLE_PIE, new Item.Settings().maxCount(1)), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE_SLICE = register("apple_pie_slice", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.PIE)), ItemGroups.FOOD_AND_DRINK);
 
     Item LOVE_BOTTLE = register("love_bottle", new DrinkableItem(new Item.Settings().food(UFoodComponents.LOVE_BOTTLE).maxCount(1).recipeRemainder(Items.GLASS_BOTTLE)), ItemGroups.FOOD_AND_DRINK);
@@ -157,21 +153,12 @@ public interface UItems {
     Item BAT_BADGE = register(Race.BAT);
     Item CHANGELING_BADGE = register(Race.CHANGELING);
 
-    static <T extends Item> T register(String name, T item, RegistryKey<ItemGroup> group) {
-        return ItemGroupRegistry.register(register(name, item), group);
+    private static <T extends Item> T register(String name, T item, RegistryKey<ItemGroup> group) {
+        return ItemGroupRegistry.register(Unicopia.id(name), item, group);
     }
 
-    @Deprecated
-    static <T extends Item> T register(String name, T item) {
-        return register(Unicopia.id(name), item);
-    }
-
-    static <T extends Item> T register(Identifier id, T item) {
-        if (item instanceof BlockItem bi && bi.getBlock() == null) {
-            throw new NullPointerException("Registered block item did not have a block " + id);
-        }
-        ITEMS.add(item);
-        return Registry.register(Registries.ITEM, id, item);
+    private static <T extends Item> T register(String name, T item) {
+        return ItemGroupRegistry.register(Unicopia.id(name), item);
     }
 
     static MusicDiscItem register(String name, SoundEvent sound, int seconds) {
@@ -221,5 +208,10 @@ public interface UItems {
         UEnchantments.bootstrap();
         URecipes.bootstrap();
         UItemGroups.bootstrap();
+
+        Registry.register(TerraformBoatTypeRegistry.INSTANCE, Unicopia.id("palm"), new TerraformBoatType.Builder()
+                .planks(UBlocks.PALM_PLANKS.asItem())
+                .item(PALM_BOAT)
+                .build());
     }
 }

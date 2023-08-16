@@ -13,7 +13,7 @@ import net.minecraft.registry.RegistryKey;
 
 public interface UItemGroups {
     RegistryKey<ItemGroup> ALL_ITEMS = ItemGroupRegistry.createDynamic("items", UItems.EMPTY_JAR::getDefaultStack, () -> {
-        return Stream.concat(Stream.of(Items.APPLE), UItems.ITEMS.stream()
+        return Stream.concat(Stream.of(Items.APPLE), ItemGroupRegistry.ITEMS.stream()
                 .filter(item -> !(item instanceof ChameleonItem) || ((ChameleonItem)item).isFullyDisguised()));
     });
     RegistryKey<ItemGroup> HORSE_FEED = ItemGroupRegistry.createDynamic("horsefeed", UItems.ZAP_APPLE::getDefaultStack, () -> {

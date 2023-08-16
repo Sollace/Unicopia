@@ -3,8 +3,8 @@
         "particle": "#top"
     },
     "elements": [
-        {   "from": [ 1, 0, 1 ],
-            "to": [ 15, 5, 8 ],
+        {   "from": [ 2, 0, 2 ],
+            "to": [ 14, 4, 8 ],
             "faces": {
                 "up": { "uv": [ 1, 1, 15, 8 ], "texture": "#top" },
                 "down": { "uv": [ 1, 8, 15, 15 ], "texture": "#bottom" },
@@ -15,7 +15,7 @@
             }
         },
         {   "from": [ 8, 0, 8 ],
-            "to": [ 15, 5, 15 ],
+            "to": [ 14, 4, 14 ],
             "faces": {
                 "up": { "uv": [ 8, 8, 15, 15 ], "texture": "#top" },
                 "down": { "uv": [ 8, 1, 15, 8 ], "texture": "#bottom" },
