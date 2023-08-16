@@ -26,16 +26,20 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 
 class BodyPartGear<M extends ClientPonyModel<LivingEntity> & MsonModel & IModel> implements IGear {
+
+    private static final Predicate<LivingEntity> MINE_LP_HAS_NO_WINGS = e -> !MineLPDelegate.getInstance().getRace(e).canFly();
+    private static final Predicate<LivingEntity> MINE_LP_HAS_NO_HORN = e -> !MineLPDelegate.getInstance().getRace(e).canCast();
+
     private static final Identifier ICARUS_WINGS = Unicopia.id("textures/models/wings/icarus_pony.png");
     private static final Identifier ICARUS_WINGS_CORRUPTED = Unicopia.id("textures/models/wings/icarus_corrupted_pony.png");
 
-    public static final Predicate<LivingEntity> BAT_WINGS_PREDICATE = AmuletSelectors.PEGASUS_AMULET.negate().and(EquinePredicates.PLAYER_BAT);
+    public static final Predicate<LivingEntity> BAT_WINGS_PREDICATE = MINE_LP_HAS_NO_WINGS.and(AmuletSelectors.PEGASUS_AMULET.negate()).and(EquinePredicates.PLAYER_BAT);
     public static final Identifier BAT_WINGS = Unicopia.id("textures/models/wings/bat_pony.png");
 
-    public static final Predicate<LivingEntity> UNICORN_HORN_PREDICATE = AmuletSelectors.ALICORN_AMULET.or(EquinePredicates.raceMatches(Race::canCast));
+    public static final Predicate<LivingEntity> UNICORN_HORN_PREDICATE = MINE_LP_HAS_NO_HORN.and(AmuletSelectors.ALICORN_AMULET.or(EquinePredicates.raceMatches(Race::canCast)));
     public static final Identifier UNICORN_HORN = Unicopia.id("textures/models/horn/unicorn.png");
 
-    public static final Predicate<LivingEntity> PEGA_WINGS_PREDICATE = AmuletSelectors.PEGASUS_AMULET.or(EquinePredicates.raceMatches(Race::canInteractWithClouds));
+    public static final Predicate<LivingEntity> PEGA_WINGS_PREDICATE = MINE_LP_HAS_NO_WINGS.and(AmuletSelectors.PEGASUS_AMULET.or(EquinePredicates.raceMatches(Race::canInteractWithClouds)));
     public static final Identifier PEGASUS_WINGS = Unicopia.id("textures/models/wings/pegasus_pony.png");
 
     public static BodyPartGear<WingsGearModel> pegasusWings() {
@@ -84,7 +88,6 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity> & MsonModel & IModel>
     public boolean canRender(IModel model, Entity entity) {
         return entity instanceof LivingEntity l
             && MineLPDelegate.getInstance().getRace(entity).isEquine()
-            && !MineLPDelegate.getInstance().getRace(entity).canFly()
             && renderTargetPredicate.test(l);
     }
 
