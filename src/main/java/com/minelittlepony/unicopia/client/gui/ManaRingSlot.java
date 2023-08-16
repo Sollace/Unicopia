@@ -65,8 +65,8 @@ class ManaRingSlot extends Slot {
     }
 
     private double renderRing(MatrixStack matrices, double outerRadius, double innerRadius, double offsetAngle, Bar bar, int color, float tickDelta) {
-        double fill = bar.getPercentFill() * DrawableUtil.TAU;
-        double shadow = bar.getShadowFill() * DrawableUtil.TAU;
+        double fill = bar.getPercentFill(tickDelta) * DrawableUtil.TAU;
+        double shadow = bar.getShadowFill(tickDelta) * DrawableUtil.TAU;
 
         DrawableUtil.drawArc(matrices, innerRadius, outerRadius, offsetAngle, fill, color, true);
 

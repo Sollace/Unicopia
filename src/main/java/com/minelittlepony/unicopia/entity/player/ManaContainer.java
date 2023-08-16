@@ -102,8 +102,8 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
         }
 
         if (!pony.getSpecies().canFly() || !pony.getPhysics().isFlying()) {
-            if (mana.getPercentFill() < 1 && mana.getShadowFill() == mana.getPercentFill()) {
-                mana.addPercent(MathHelper.clamp(1 + pony.getLevel().get(), 1, 50));
+            if (mana.getPercentFill() < 1 && mana.getShadowFill(1) <= mana.getPercentFill(1)) {
+                mana.addPercent(MathHelper.clamp(1 + pony.getLevel().get(), 1, 50) / 4F);
             }
         }
 
@@ -157,6 +157,8 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
         private final float max;
 
         private float trailingValue;
+        private float prevTrailingValue;
+        private float prevValue;
 
         BarInst(TrackedData<Float> marker, float max, float initial) {
             this.marker = marker;
@@ -171,8 +173,13 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
         }
 
         @Override
-        public float getShadowFill() {
-            return trailingValue;
+        public float get(float tickDelta) {
+            return MathHelper.lerp(tickDelta, prevValue, get());
+        }
+
+        @Override
+        public float getShadowFill(float tickDelta) {
+            return MathHelper.lerp(tickDelta, prevTrailingValue, trailingValue);
         }
 
         @Override
@@ -203,6 +210,9 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
         }
 
         void tick() {
+            prevValue = get();
+            prevTrailingValue = trailingValue;
+
             float fill = getPercentFill();
             float trailingIncrement = 0.003F;
 

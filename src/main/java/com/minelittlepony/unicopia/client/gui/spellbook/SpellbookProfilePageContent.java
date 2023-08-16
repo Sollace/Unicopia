@@ -67,7 +67,8 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
 
         int y = SpellbookScreen.TITLE_Y;
 
-        float delta = pony.asEntity().age + client.getTickDelta();
+        float tickDelta = client.getTickDelta();
+        float delta = pony.asEntity().age + tickDelta;
         int currentLevel = pony.getLevel().get();
         float currentScaledLevel = pony.getLevel().getScaled(1);
         float currentCorruption = pony.getCorruption().getScaled(1);
@@ -100,8 +101,8 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
         double growth = MathHelper.sin(delta / 9F) * 2;
 
         double radius = 40 + growth;
-        float xpPercentage = reserves.getXp().getPercentFill();
-        float manaPercentage = reserves.getMana().getPercentFill();
+        float xpPercentage = reserves.getXp().getPercentFill(tickDelta);
+        float manaPercentage = reserves.getMana().getPercentFill(tickDelta);
 
         float alphaF = (MathHelper.sin(delta / 9F) + 1) / 2F;
         int alpha = (int)(alphaF * 0x10) & 0xFF;
