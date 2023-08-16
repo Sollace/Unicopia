@@ -94,6 +94,11 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         return dimensions;
     }
 
+    @Override
+    public Vec3d getClientVelocity() {
+        return lastVel;
+    }
+
     public final float getPersistantGravityModifier() {
         return super.getGravityModifier();
     }
@@ -133,7 +138,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
     @Override
     public boolean isRainbooming() {
-        return pony.getSpellSlot().get(SpellType.RAINBOOM, true).isPresent();
+        return SpellType.RAINBOOM.isOn(pony);
     }
 
     @Override
@@ -208,7 +213,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     public double getHorizontalMotion() {
-        return lastVel.horizontalLengthSquared();
+        return getClientVelocity().horizontalLengthSquared();
     }
 
     @Override

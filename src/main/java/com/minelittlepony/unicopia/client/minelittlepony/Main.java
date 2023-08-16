@@ -44,7 +44,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
                 if (pony.getMotion().isFlying()) {
                     model.getAttributes().wingAngle = MathHelper.clamp(pony.getMotion().getWingAngle() / 3F - (float)Math.PI * 0.4F, -2, 0);
 
-                    Vec3d motion = entity.getVelocity();
+                    Vec3d motion = pony.getMotion().getClientVelocity();
                     double zMotion = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
                     model.getAttributes().isGoingFast |= zMotion > 0.4F;
                     model.getAttributes().isGoingFast |= pony.getMotion().isDiving();
