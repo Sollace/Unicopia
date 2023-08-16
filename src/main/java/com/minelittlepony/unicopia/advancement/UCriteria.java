@@ -13,6 +13,7 @@ public interface UCriteria {
     CustomEventCriterion.Trigger FEED_TRICK_APPLE = CUSTOM_EVENT.createTrigger("feed_trick_apple");
     CustomEventCriterion.Trigger SCREECH_SELF = CUSTOM_EVENT.createTrigger("screech_self");
     CustomEventCriterion.Trigger SCREECH_TWENTY_MOBS = CUSTOM_EVENT.createTrigger("screech_twenty_mobs");
+    CustomEventCriterion.Trigger SPOOK_MOB = CUSTOM_EVENT.createTrigger("spook_mob");
     CustomEventCriterion.Trigger SHED_FEATHER = CUSTOM_EVENT.createTrigger("shed_feather");
     CustomEventCriterion.Trigger THROW_MUFFIN = CUSTOM_EVENT.createTrigger("throw_muffin");
     CustomEventCriterion.Trigger SEND_OATS = CUSTOM_EVENT.createTrigger("send_oats");
