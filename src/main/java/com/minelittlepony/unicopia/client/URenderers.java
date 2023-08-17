@@ -78,6 +78,7 @@ public interface URenderers {
         EntityRendererRegistry.register(UEntities.CAST_SPELL, CastSpellEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.TWITTERMITE, FairyEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.SPELLBOOK, SpellbookEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.SOMBRA, SombraEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.AIR_BALLOON, AirBalloonEntityRenderer::new);
 
         BlockEntityRendererFactories.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
