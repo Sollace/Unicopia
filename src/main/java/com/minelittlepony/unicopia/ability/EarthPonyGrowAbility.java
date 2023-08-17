@@ -81,7 +81,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
 
     @Override
     public void warmUp(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().getExertion().add(30);
+        player.getMagicalReserves().getExertion().addPercent(30);
 
         if (player.asWorld().isClient()) {
             player.spawnParticles(MagicParticleEffect.UNICORN, 1);

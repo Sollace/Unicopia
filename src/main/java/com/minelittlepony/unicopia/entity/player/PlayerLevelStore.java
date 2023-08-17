@@ -29,7 +29,7 @@ class PlayerLevelStore implements Levelled.LevelStore {
         Levelled.LevelStore.super.add(levels);
         if (levels > 0) {
             if (upgradeMana) {
-                pony.getMagicalReserves().getMana().add(pony.getMagicalReserves().getMana().getMax() / 2);
+                pony.getMagicalReserves().getMana().addPercent(50);
             }
             pony.asWorld().playSound(null, pony.getOrigin(), levelUpSound, SoundCategory.PLAYERS, 1, 2);
         }

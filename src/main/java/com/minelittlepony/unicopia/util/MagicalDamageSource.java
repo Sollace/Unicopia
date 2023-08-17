@@ -77,7 +77,7 @@ public class MagicalDamageSource extends DamageSource {
         return Pony.of(target).filter(e -> e.getSpecies().canFly()).map(pony -> {
 
             if (pony.getPhysics().isFlying()) {
-                return Text.translatable("death.attack.generic.whilst_flying", message);
+                return Text.translatable("death.attack.unicopia.generic.whilst_flying", message);
             }
             return message;
         }).orElse(message);

@@ -41,7 +41,14 @@ public interface MagicReserves {
         /**
          * Gets the current value of this bar
          */
-        float get();
+        default float get() {
+            return get(1);
+        }
+
+        /**
+         * Gets the (lerped) value of this bar
+         */
+        float get(float tickDelta);
 
         /**
          * Sets the absolute value
@@ -52,19 +59,33 @@ public interface MagicReserves {
          * Gets the percentage fill of this bar
          */
         default float getPercentFill() {
-            return get() / getMax();
+            return getPercentFill(1);
+        }
+
+        /**
+         * Gets the percentage fill of this bar
+         */
+        default float getPercentFill(float tickDelta) {
+            return get(tickDelta) / getMax();
         }
 
         /**
          * Gets the shadow fill used for animating on the UI
          */
-        float getShadowFill();
+        float getShadowFill(float tickDelta);
 
         /**
          * Adds a percentage increment to this bar's current value
          */
-        default void add(float step) {
-            set(get() + (step / getMax()));
+        default void addPercent(float percentChange) {
+            set(get() + ((percentChange / 100F) * getMax()));
+        }
+
+        /**
+         * Adds a flat amount to this bar's current value
+         */
+        default void add(float flatAmount) {
+            set(get() + flatAmount);
         }
 
         /**

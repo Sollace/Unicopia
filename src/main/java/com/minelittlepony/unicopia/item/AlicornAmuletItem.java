@@ -228,12 +228,12 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
             // constantly increase exertion
             if (reserves.getExertion().get() < reserves.getExertion().getMax()) {
-                reserves.getExertion().add(2);
+                reserves.getExertion().add(0.02F);
             }
 
             // gradual corruption accumulation
             if (fullSecond && world.random.nextInt(12) == 0 && !pony.asEntity().isCreative()) {
-                reserves.getEnergy().add(reserves.getEnergy().getMax() / 10F);
+                reserves.getEnergy().add(10);
                 pony.getCorruption().add((int)MathHelper.clamp(attachedTicks / ItemTracker.HOURS, 1, pony.getCorruption().getMax()));
             }
 
@@ -245,8 +245,8 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                     InteractionManager.INSTANCE.playLoopingSound(player, InteractionManager.SOUND_HEART_BEAT, 0);
                 }
 
-                reserves.getExertion().add(reserves.getExertion().getMax());
-                reserves.getEnergy().add(reserves.getEnergy().getMax() / 2F);
+                reserves.getExertion().addPercent(10);
+                reserves.getEnergy().add(10);
                 living.asEntity().removeStatusEffect(StatusEffects.WEAKNESS);
                 living.asEntity().removeStatusEffect(StatusEffects.NAUSEA);
             }

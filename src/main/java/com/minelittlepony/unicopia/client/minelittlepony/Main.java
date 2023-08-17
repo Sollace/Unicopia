@@ -27,7 +27,9 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
         IGear.register(() -> new BangleGear(TrinketsDelegate.MAINHAND));
         IGear.register(() -> new BangleGear(TrinketsDelegate.OFFHAND));
         IGear.register(HeldEntityGear::new);
-        IGear.register(WingsGear::new);
+        IGear.register(BodyPartGear::pegasusWings);
+        IGear.register(BodyPartGear::batWings);
+        IGear.register(BodyPartGear::unicornHorn);
         IGear.register(AmuletGear::new);
         IGear.register(GlassesGear::new);
     }
@@ -44,7 +46,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
                 if (pony.getMotion().isFlying()) {
                     model.getAttributes().wingAngle = MathHelper.clamp(pony.getMotion().getWingAngle() / 3F - (float)Math.PI * 0.4F, -2, 0);
 
-                    Vec3d motion = entity.getVelocity();
+                    Vec3d motion = pony.getMotion().getClientVelocity();
                     double zMotion = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
                     model.getAttributes().isGoingFast |= zMotion > 0.4F;
                     model.getAttributes().isGoingFast |= pony.getMotion().isDiving();
@@ -80,27 +82,14 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
     }
 
     private static Race toUnicopiaRace(com.minelittlepony.api.pony.meta.Race race) {
-        switch (race) {
-            case ALICORN:
-                return Race.ALICORN;
-            case CHANGELING:
-            case CHANGEDLING:
-                return Race.CHANGELING;
-            case ZEBRA:
-            case EARTH:
-                return Race.EARTH;
-            case GRYPHON:
-            case HIPPOGRIFF:
-            case PEGASUS:
-                return Race.PEGASUS;
-            case BATPONY:
-                return Race.BAT;
-            case SEAPONY:
-            case UNICORN:
-            case KIRIN:
-                return Race.UNICORN;
-            default:
-                return Race.HUMAN;
-        }
+        return switch (race) {
+            case ALICORN -> Race.ALICORN;
+            case CHANGELING, CHANGEDLING -> Race.CHANGELING;
+            case ZEBRA, EARTH -> Race.EARTH;
+            case GRYPHON, HIPPOGRIFF, PEGASUS -> Race.PEGASUS;
+            case BATPONY -> Race.BAT;
+            case SEAPONY, UNICORN, KIRIN -> Race.UNICORN;
+            default -> Race.HUMAN;
+        };
     }
 }

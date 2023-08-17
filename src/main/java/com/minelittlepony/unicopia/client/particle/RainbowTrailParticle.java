@@ -48,6 +48,7 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
     @Override
     public void attach(Link link) {
         this.link = Optional.of(link);
+        bound = true;
     }
 
     @Override
@@ -57,9 +58,7 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
 
     @Override
     public void setAttribute(int key, Number value) {
-        if (key == Attachment.ATTR_COLOR) {
-            bound = value.intValue() == 1;
-        }
+
     }
 
     @Override

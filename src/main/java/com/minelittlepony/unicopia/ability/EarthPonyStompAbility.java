@@ -204,7 +204,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
     @Override
     public void warmUp(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().getExertion().add(40);
+        player.getMagicalReserves().getExertion().addPercent(40);
     }
 
     @Override

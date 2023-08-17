@@ -27,6 +27,6 @@ public class InputSlot extends Slot implements SpellbookSlot {
 
     @Override
     public boolean isEnabled() {
-       return handler.canShowSlots.test(SlotType.CRAFTING) && !handler.outputSlot.isEnabled();
+       return handler.canShowSlots(SlotType.CRAFTING) && !handler.outputSlot.isEnabled();
     }
 }

@@ -68,16 +68,25 @@ public class UHud {
 
     public void render(InGameHud hud, DrawContext context, float tickDelta) {
 
+        // TODO: Check this when backporting!
+        // InGameHud#renderHotbar line 460
+        // context.getMatrices().translate(0.0f, 0.0f, -90.0f);
+        final int hotbarZ = -90;
+
         if (client.player == null) {
             return;
         }
 
         int scaledWidth = client.getWindow().getScaledWidth();
         int scaledHeight = client.getWindow().getScaledHeight();
+        MatrixStack matrices = context.getMatrices();
 
         Pony pony = Pony.of(client.player);
 
+        matrices.push();
+        matrices.translate(0, 0, hotbarZ);
         renderViewEffects(pony, context, scaledWidth, scaledHeight, tickDelta);
+        matrices.pop();
 
         if (client.currentScreen instanceof HidesHud || client.player.isSpectator() || client.options.hudHidden) {
             return;
@@ -86,7 +95,7 @@ public class UHud {
         font = client.textRenderer;
         xDirection = client.player.getMainArm() == Arm.LEFT ? -1 : 1;
 
-        MatrixStack matrices = context.getMatrices();
+
         matrices.push();
         matrices.translate(scaledWidth / 2, scaledHeight / 2, 0);
 
@@ -101,7 +110,7 @@ public class UHud {
 
         int hudX = ((scaledWidth - 50) / 2) + (104 * xDirection);
         int hudY = scaledHeight - 50;
-        int hudZ = 0;
+        int hudZ = hotbarZ;
 
 
         float exhaustion = pony.getMagicalReserves().getExhaustion().getPercentFill();

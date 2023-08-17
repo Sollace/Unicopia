@@ -17,12 +17,14 @@ public interface UTags {
     TagKey<Item> FRESH_APPLES = item("fresh_apples");
 
     TagKey<Item> FALLS_SLOWLY = item("falls_slowly");
+    TagKey<Item> PIES = item("pies");
     TagKey<Item> CAN_CUT_PIE = item("can_cut_pie");
 
     TagKey<Item> MAGIC_FEATHERS = item("magic_feathers");
 
     TagKey<Item> SHADES = item("shades");
     TagKey<Item> CHANGELING_EDIBLE = item("food_types/changeling_edible");
+    TagKey<Item> SPOOKED_MOB_DROPS = item("spooked_mob_drops");
 
     TagKey<Item> POLEARMS = item("polearms");
     TagKey<Item> APPLE_SEEDS = item("apple_seeds");

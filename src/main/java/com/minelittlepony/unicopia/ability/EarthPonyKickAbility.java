@@ -59,9 +59,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
     @Override
     public double getCostEstimate(Pony player) {
-        double distance = MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isHuman() ? 6 : -6;
-
-        return TraceHelper.findBlock(player.asEntity(), distance, 1)
+        return TraceHelper.findBlock(player.asEntity(), getKickDirection(player) * 6, 1)
                 .filter(pos -> TreeType.at(pos, player.asWorld()) != TreeType.NONE)
                 .isPresent() ? 3 : 1;
     }
@@ -121,7 +119,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     }
 
     private int getKickDirection(Pony player) {
-        return MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isHuman() ? 1 : -1;
+        return MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isEquine() ? -1 : 1;
     }
 
     private Pos getDefaultKickLocation(Pony player) {
@@ -183,7 +181,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
     @Override
     public void warmUp(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().getExertion().add(40);
+        player.getMagicalReserves().getExertion().addPercent(40);
     }
 
     @Override

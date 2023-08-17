@@ -76,7 +76,7 @@ public class PegasusFlightToggleAbility implements Ability<Hit> {
 
     @Override
     public void warmUp(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().getExertion().add(6);
+        player.getMagicalReserves().getExertion().addPercent(6);
     }
 
     @Override

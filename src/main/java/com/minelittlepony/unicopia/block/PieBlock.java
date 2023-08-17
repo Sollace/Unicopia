@@ -1,10 +1,12 @@
 package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.*;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.SoundEmitter;
 
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -34,11 +36,11 @@ public class PieBlock extends Block implements Waterloggable {
 
     private static final VoxelShape[] SHAPES;
     static {
-        final int PIE_HEIGHT = 5;
-        final VoxelShape WEDGE = Block.createCuboidShape(1, 0, 1, 8, PIE_HEIGHT, 8);
-        final float OFFSET_AMOUNT = 7F/16F;
+        final int PIE_HEIGHT = 4;
+        final VoxelShape WEDGE = Block.createCuboidShape(2, 0, 2, 8, PIE_HEIGHT, 8);
+        final float OFFSET_AMOUNT = 6F/16F;
         SHAPES = new VoxelShape[] {
-                Block.createCuboidShape(1, 0, 1, 15, PIE_HEIGHT, 15),
+                Block.createCuboidShape(2, 0, 2, 14, PIE_HEIGHT, 14),
                 VoxelShapes.union(WEDGE, WEDGE.offset(OFFSET_AMOUNT, 0, 0), WEDGE.offset(OFFSET_AMOUNT, 0, OFFSET_AMOUNT)),
                 VoxelShapes.union(WEDGE, WEDGE.offset(OFFSET_AMOUNT, 0, 0)),
                 WEDGE
@@ -46,11 +48,15 @@ public class PieBlock extends Block implements Waterloggable {
     }
 
     private final ItemConvertible sliceItem;
+    private final ItemConvertible normalItem;
+    private final ItemConvertible stompedItem;
 
-    public PieBlock(Settings settings, ItemConvertible sliceItem) {
+    public PieBlock(Settings settings, ItemConvertible sliceItem, ItemConvertible normalItem, ItemConvertible stompedItem) {
         super(settings);
         setDefaultState(getDefaultState().with(STOMPED, false).with(WATERLOGGED, false));
         this.sliceItem = sliceItem;
+        this.normalItem = normalItem;
+        this.stompedItem = stompedItem;
     }
 
     @Deprecated
@@ -122,6 +128,11 @@ public class PieBlock extends Block implements Waterloggable {
     }
 
     @Override
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+        return (state.get(STOMPED) ? stompedItem : normalItem).asItem().getDefaultStack();
+    }
+
+    @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (state.get(STOMPED)) {
             Vec3d center = Vec3d.ofCenter(pos);
@@ -150,7 +161,7 @@ public class PieBlock extends Block implements Waterloggable {
 
     @Override
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-        if (!state.get(STOMPED)) {
+        if (!state.get(STOMPED) && entity instanceof LivingEntity && !entity.bypassesSteppingEffects()) {
             world.setBlockState(pos, state.cycle(STOMPED));
             world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
             world.emitGameEvent(UGameEvents.PIE_STOMP, pos, GameEvent.Emitter.of(entity, state));
@@ -178,7 +189,9 @@ public class PieBlock extends Block implements Waterloggable {
     @Deprecated
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return super.getDefaultState().with(WATERLOGGED, ctx.getWorld().getFluidState(ctx.getBlockPos()).getFluid() == Fluids.WATER);
+        return super.getDefaultState()
+                .with(WATERLOGGED, ctx.getWorld().getFluidState(ctx.getBlockPos()).getFluid() == Fluids.WATER)
+                .with(STOMPED, ctx.getStack().isOf(UItems.APPLE_PIE_HOOF));
     }
 
     @Deprecated

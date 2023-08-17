@@ -88,7 +88,7 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
 
                 if (amount < 0) {
                     ChargeableItem.consumeEnergy(stack, amount);
-                    player.getMagicalReserves().getMana().add(amount * player.getMagicalReserves().getMana().getMax());
+                    player.getMagicalReserves().getMana().add(amount);
                     player.asWorld().playSoundFromEntity(null, player.asEntity(), USounds.ITEM_AMULET_RECHARGE, SoundCategory.PLAYERS, 1, 1);
                 }
             }

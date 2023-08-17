@@ -4,9 +4,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.InventoryUtil;
-
 import dev.emi.trinkets.TrinketSlot;
 import dev.emi.trinkets.api.*;
 import dev.emi.trinkets.api.TrinketEnums.DropRule;
@@ -24,6 +24,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class TrinketsDelegateImpl implements TrinketsDelegate {
     public static final TrinketsDelegateImpl INSTANCE = new TrinketsDelegateImpl();
+
     // who tf designed this api?
 
     @Override
@@ -104,9 +105,25 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
                 .flatMap(group -> group.values().stream());
     }
 
+    public Optional<SlotGroup> getGroup(LivingEntity entity, Identifier slotId) {
+        return TrinketsApi.getTrinketComponent(entity)
+                .stream()
+                .map(component -> component.getGroups().get(slotId.getNamespace()))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<Slot> createSlot(SpellbookScreenHandler handler, LivingEntity entity, Identifier slotId, int i, int x, int y) {
+        return getGroup(entity, slotId).flatMap(group -> {
+            return getInventory(entity, slotId).map(inventory -> {
+                return new SpellbookTrinketSlot(handler, inventory, i, x, y, group);
+            });
+        });
+    }
+
     @Override
     public boolean isTrinketSlot(Slot slot) {
-        return slot instanceof TrinketSlot;
+        return slot instanceof TrinketSlot || slot instanceof SpellbookTrinketSlot;
     }
 
     private static Identifier getSlotId(SlotType slotType) {

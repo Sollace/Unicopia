@@ -33,6 +33,6 @@ public class IngredientSlot extends Slot implements SpellbookSlot {
 
     @Override
     public boolean isEnabled() {
-       return handler.canShowSlots.test(SlotType.CRAFTING) && super.isEnabled();
+       return handler.canShowSlots(SlotType.CRAFTING) && super.isEnabled();
     }
 }

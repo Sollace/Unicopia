@@ -199,7 +199,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
     @Override
     public void warmUp(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().getExertion().add(30);
+        player.getMagicalReserves().getExertion().addPercent(30);
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 

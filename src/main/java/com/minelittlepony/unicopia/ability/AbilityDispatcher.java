@@ -201,6 +201,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
             if (player.isClientPlayer()) {
                 Optional<T> data = ability.prepare(player);
+                warmup = 0;
 
                 if (data.isPresent()) {
                     Channel.CLIENT_PLAYER_ABILITY.sendToServer(new MsgPlayerAbility<>(ability, data, ActivationType.NONE));

@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.container.inventory.*;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -52,7 +53,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
     private final ScreenHandlerContext context;
 
-    public Predicate<SlotType> canShowSlots;
+    private Predicate<SlotType> canShowSlots;
 
     private final SpellbookState state;
 
@@ -126,6 +127,11 @@ public class SpellbookScreenHandler extends ScreenHandler {
             });
         }
 
+        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.FACE, 0, 340 + 20, 60).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.NECKLACE, 0, 340 + 20, 60 + 20).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.MAINHAND, 0, 350 - 20, 170).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.OFFHAND, 0, 330 + 20, 170).ifPresent(this::addSlot);
+
         addSlot(new InventorySlot(this, inventory, PlayerInventory.OFF_HAND_SLOT, 340, 150) {
             @Override
             public Pair<Identifier, Identifier> getBackgroundSprite() {
@@ -144,6 +150,10 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
     public void addSlotShowingCondition(Predicate<SlotType> canShowSlots) {
         this.canShowSlots = canShowSlots;
+    }
+
+    public boolean canShowSlots(SlotType type) {
+        return canShowSlots == null || canShowSlots.test(type);
     }
 
     public int getOutputSlotId() {
