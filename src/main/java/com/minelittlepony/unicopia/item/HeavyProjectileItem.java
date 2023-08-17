@@ -25,6 +25,11 @@ public class HeavyProjectileItem extends ProjectileItem {
                 projectile.setPosition(position.getX(), position.getY(), position.getZ());
                 return projectile;
             }
+
+            @Override
+            protected float getVariation() {
+                return 0;
+            }
         });
     }
 
