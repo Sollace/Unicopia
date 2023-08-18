@@ -197,6 +197,8 @@
   "entity.unicopia.cast_spell": "Заклинание",
   "entity.unicopia.cast_spell.by": "Заклинание, наложенное %s",
   "entity.unicopia.spellbook": "Книга заклинаний",
+  "entity.unicopia.sombra": "Король Сомбра",
+  "entity.unicopia.sombra.taunt": "На меня это не подействует!",
 
   "player.reachDistance": "Расстояние до цели",
   "player.miningSpeed": "Скорость добычи",
