@@ -46,6 +46,9 @@ public interface UEntities {
     EntityType<SpellbookEntity> SPELLBOOK = register("spellbook", FabricEntityTypeBuilder.create(SpawnGroup.MISC, SpellbookEntity::new)
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(0.9F, 0.5F)));
+    EntityType<SombraEntity> SOMBRA = register("sombra", FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, SombraEntity::new)
+            .trackRangeBlocks(200)
+            .dimensions(EntityDimensions.fixed(1F, 1F)));
     EntityType<AirBalloonEntity> AIR_BALLOON = register("air_balloon", FabricEntityTypeBuilder.create(SpawnGroup.MISC, AirBalloonEntity::new)
             .trackRangeBlocks(1000)
             .dimensions(EntityDimensions.changing(2.5F, 0.1F)));
@@ -60,6 +63,7 @@ public interface UEntities {
         FabricDefaultAttributeRegistry.register(SPELLBOOK, SpellbookEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(TWITTERMITE, FairyEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(AIR_BALLOON, FlyingEntity.createMobAttributes());
+        FabricDefaultAttributeRegistry.register(SOMBRA, SombraEntity.createMobAttributes());
 
         if (!Unicopia.getConfig().disableButterflySpawning.get()) {
             final Predicate<BiomeSelectionContext> butterflySpawnable = BiomeSelectors.foundInOverworld()

@@ -12,9 +12,16 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 
 @Pseudo
-@Mixin(targets = { "me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer" }, remap = false)
+@Mixin(
+        targets = { "me.jellysquid.mods.sodium.client.render.SodiumWorldRenderer" },
+        remap = false
+)
 abstract class MixinSodiumWorldRenderer {
-    @ModifyVariable(method = "renderTileEntities", at = @At("HEAD"))
+    @ModifyVariable(
+            method = { "renderTileEntities", "renderBlockEntities" },
+            at = @At("HEAD"),
+            require = 0
+    )
     public Long2ObjectMap<SortedSet<BlockBreakingInfo>> modifyDestruction(Long2ObjectMap<SortedSet<BlockBreakingInfo>> blockBreakingProgressions) {
         ClientBlockDestructionManager destructions = ((ClientBlockDestructionManager.Source)MinecraftClient.getInstance().worldRenderer).getDestructionManager();
         return destructions.getCombinedDestructions(blockBreakingProgressions);

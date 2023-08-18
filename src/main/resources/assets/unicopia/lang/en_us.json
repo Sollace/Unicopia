@@ -197,6 +197,8 @@
   "entity.unicopia.cast_spell": "Cast Spell",
   "entity.unicopia.cast_spell.by": "a spell cast by %s",
   "entity.unicopia.spellbook": "Spellbook",
+  "entity.unicopia.sombra": "King Sombra",
+  "entity.unicopia.sombra.taunt": "That's not going to work on me!",
 
   "player.reachDistance": "Reach Distance",
   "player.miningSpeed": "Mining Speed",
