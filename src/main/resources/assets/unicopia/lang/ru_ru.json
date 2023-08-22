@@ -23,6 +23,21 @@
   "item.unicopia.friendship_bracelet.issuer": "Подписано %s",
   "item.unicopia.friendship_bracelet.glowing": "Светящийся",
 
+  "item.unicopia.oak_basket": "Дубовая корзина",
+  "item.unicopia.spruce_basket": "Еловая корзина",
+  "item.unicopia.birch_basket": "Берёзовая корзина",
+  "item.unicopia.jungle_basket": "Джунглевая корзина",
+  "item.unicopia.acacia_basket": "Акациевая корзина",
+  "item.unicopia.cherry_basket": "Вишнёвая корзина",
+  "item.unicopia.dark_oak_basket": "Корзина из тёмного дуба",
+  "item.unicopia.mangrove_basket": "Мангровая корзина",
+  "item.unicopia.bamboo_basket": "Бамбуковая корзина",
+  "item.unicopia.palm_basket": "Пальмовая корзина",
+  "item.unicopia.giant_balloon": "Гигантский воздушный шар",
+
+  "item.unicopia.palm_boat": "Пальмовая лодка",
+  "item.unicopia.palm_chest_boat": "Пальмовая лодка с сундуком",
+
   "item.unicopia.spellbook": "Книга заклинаний",
   "emi.category.unicopia.spellbook": "Книга заклинаний",
 
@@ -88,6 +103,7 @@
   "item.unicopia.green_apple_seeds": "Семена яблони Гренни Смит",
   "item.unicopia.sweet_apple_seeds": "Семена яблони Яблочной Аллеи",
   "item.unicopia.sour_apple_seeds": "Семена кислой яблони",
+  "item.unicopia.apple_pie_hoof": "Яблочный пирог с отпечатком копыта",
   "item.unicopia.apple_pie_slice": "Кусочек яблочного пирога",
 
   "item.unicopia.oats": "Овёс",
@@ -97,6 +113,7 @@
   "item.unicopia.daffodil_daisy_sandwich": "Сэндвич с нарциссом",
   "item.unicopia.hay_burger": "Сенобургер",
   "item.unicopia.hay_fries": "Картофель фри",
+  "item.unicopia.crispy_hay_fries": "Хрустящий картофель фри",
   "item.unicopia.wheat_worms": "Пшеничные черви",
   "item.unicopia.muffin": "Маффин",
 
@@ -154,6 +171,10 @@
   "block.unicopia.stripped_palm_log": "Обтёсанное пальмовое бревно",
   "block.unicopia.stripped_palm_wood": "Обтёсанная пальмовая древесина",
   "block.unicopia.palm_leaves": "Листья пальмы",
+  "block.unicopia.palm_door": "Пальмовая дверь",
+  "block.unicopia.palm_trapdoor": "Пальмовый люк",
+  "block.unicopia.palm_sign": "Пальмовая табличка",
+  "block.unicopia.palm_hanging_sign": "Пальмовая подвесная табличка",
   "block.unicopia.apple_pie": "Яблочный пирог",
   "block.unicopia.weather_vane": "Флюгер",
   
@@ -176,6 +197,8 @@
   "entity.unicopia.cast_spell": "Заклинание",
   "entity.unicopia.cast_spell.by": "Заклинание, наложенное %s",
   "entity.unicopia.spellbook": "Книга заклинаний",
+  "entity.unicopia.sombra": "Король Сомбра",
+  "entity.unicopia.sombra.taunt": "На меня это не подействует!",
 
   "player.reachDistance": "Расстояние до цели",
   "player.miningSpeed": "Скорость добычи",
@@ -450,6 +473,9 @@
   "gui.unicopia.spellbook.page.recipes": "Рецепты",
   "gui.unicopia.spellbook.page.recipes.empty": "0 рецептов разблокировано",
   "gui.unicopia.spellbook.page.mana": "Мана",
+  "gui.unicopia.spellbook.page.requirements.entry.item": "- %1$sx %2$s",
+  "gui.unicopia.spellbook.page.requirements.entry.trait": "- Не менее %1$sx черт %2$s",
+  "gui.unicopia.spellbook.page.requirements.entry.spell": "- %1$sx драгоценный камень \"%2$s\"",
 
   "gui.unicopia.action.spells_cleared": "Удалены все заклинания",
   "gui.unicopia.action.no_spells_cleared": "У вас нет активных заклинаний",
@@ -697,6 +723,38 @@
   "death.fell.accident.other_climbable.pegasus": "%1$s забыл, что умеет летать, и упал во время скалолазания",
   "death.fell.accident.generic.pegasus": "%1$s забыл, что умеет летать",
   "death.fell.accident.pegasus": "%1$s забыл, что умеет летать",
+  "death.fell.accident.water": "%1$s намочил свои крылья",
+
+  "painting.unicopia.hurricane.title": "Ураган",
+  "painting.unicopia.hurricane.author": "Племя пегасов",
+  "painting.unicopia.platinum.title": "Платина",
+  "painting.unicopia.platinum.author": "Племя единорогов",
+  "painting.unicopia.pudding.title": "Пудинг",
+  "painting.unicopia.pudding.author": "Племя земных пони",
+  "painting.unicopia.equestria.title": "Флаг Эквестрии",
+  "painting.unicopia.equestria.author": "Unicopia",
+  "painting.unicopia.terra.title": "Терра",
+  "painting.unicopia.terra.author": "Племя земных пони",
+  "painting.unicopia.blossom.title": "Цветение",
+  "painting.unicopia.blossom.author": "Канцлер Пудинг Хэд",
+  "painting.unicopia.shadow.title": "Тень",
+  "painting.unicopia.shadow.author": "Найтмер Мун",
+  "painting.unicopia.bloom.title": "Блюм",
+  "painting.unicopia.bloom.author": "Искатели Знаков Отличия",
+  "painting.unicopia.chicken.title": "Чикен",
+  "painting.unicopia.chicken.author": "Искатели Знаков Отличия",
+  "painting.unicopia.bells.title": "Бэллс",
+  "painting.unicopia.bells.author": "Искатели Знаков Отличия",
+  "painting.unicopia.crystal.title": "Кристал",
+  "painting.unicopia.crystal.author": "Король Сомбра",
+  "painting.unicopia.harmony.title": "Гармония",
+  "painting.unicopia.harmony.author": "Unicopia",
+  "painting.unicopia.lunar.title": "Луна",
+  "painting.unicopia.lunar.author": "Племя бэт-пони",
+  "painting.unicopia.solar.title": "Солнце",
+  "painting.unicopia.solar.author": "Королевская стража",
+  "painting.unicopia.equality.title": "Равенство",
+  "painting.unicopia.equality.author": "Старлайт Глиммер",
 
   "unicopia.subtitle.flap_wings": "Взмах крыла",
   "unicopia.subtitle.dash": "Пони мчится",
@@ -804,19 +862,16 @@
 
   "advancements.unicopia.sky_route.title": "Путь Пегаса",
   "advancements.unicopia.sky_route.description": "Присоединяйтесь к пегасам Клаудсдейла",
-
   "advancements.unicopia.molting_season_1.title": "Сезон линьки",
   "advancements.unicopia.molting_season_1.description": "Сбросьте перо во время полёта",
-
   "advancements.unicopia.molting_season_2.title": "Сезон линьки 2",
   "advancements.unicopia.molting_season_2.description": "Сбросьте 5 перьев во время полёта",
-
   "advancements.unicopia.molting_season_3.title": "Сезон линьки 3",
   "advancements.unicopia.molting_season_3.description": "Сбросьте 15 перьев во время полёта",
-
   "advancements.unicopia.rainbow_crash.title": "Дискорд тебя побери, Рэйнбоу",
   "advancements.unicopia.rainbow_crash.description": "Устройте войну против злой нации стеклянных окон",
-
+  "advancements.unicopia.second_wind.title": "Второе дыхание",
+  "advancements.unicopia.second_wind.description": "Летите сквозь боль",
   "advancements.unicopia.deter_phantom.title": "Что летает вокруг",
   "advancements.unicopia.deter_phantom.description": "Поднимитесь и дайте этим фантомам попробовать их собственное лекарство",
 
