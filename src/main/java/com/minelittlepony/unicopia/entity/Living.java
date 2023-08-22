@@ -49,7 +49,6 @@ import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -429,7 +428,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                     ItemStack broken = UItems.BROKEN_SUNGLASSES.getDefaultStack();
                     broken.setNbt(glasses.getNbt());
                     TrinketsDelegate.getInstance().setEquippedStack(entity, TrinketsDelegate.FACE, broken);
-                    playSound(SoundEvents.BLOCK_GLASS_BREAK, 1, 1);
+                    playSound(USounds.ITEM_SUNGLASSES_SHATTER, 1, 1);
                 }
             }
         }

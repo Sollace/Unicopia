@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity.player;
 
 import com.google.common.collect.Streams;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.EnchantableItem;
@@ -9,7 +10,6 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 
@@ -52,7 +52,7 @@ public class PlayerCharmTracker implements NbtSerialisable {
 
     public void equipSpell(Hand hand, CustomisedSpellType<?> spell) {
         handSpells[hand.ordinal()] = spell;
-        pony.asEntity().playSound(SoundEvents.UI_BUTTON_CLICK.value(), 0.25F, 1.75F);
+        pony.asEntity().playSound(USounds.GUI_SPELL_EQUIP.value(), 0.25F, 1.75F);
         pony.setDirty();
     }
 

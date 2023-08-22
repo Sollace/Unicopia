@@ -54,7 +54,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -115,8 +114,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public Pony(PlayerEntity player) {
         super(player, EFFECT);
-        this.levels = new PlayerLevelStore(this, LEVEL, true, SoundEvents.ENTITY_PLAYER_LEVELUP);
-        this.corruption = new PlayerLevelStore(this, CORRUPTION, false, SoundEvents.PARTICLE_SOUL_ESCAPE);
+        this.levels = new PlayerLevelStore(this, LEVEL, true, USounds.Vanilla.ENTITY_PLAYER_LEVELUP);
+        this.corruption = new PlayerLevelStore(this, CORRUPTION, false, USounds.ENTITY_PLAYER_CORRUPTION);
         this.mana = addTicker(new ManaContainer(this));
 
         player.getDataTracker().startTracking(RACE, Race.DEFAULT_ID);
@@ -394,7 +393,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
             if (distanceClimbed > 1.5) {
                 if (vel.length() > 0.08F && entity.age % (3 + entity.getRandom().nextInt(5)) == 0) {
-                    entity.playSound(SoundEvents.ENTITY_CHICKEN_STEP,
+                    entity.playSound(USounds.ENTITY_PLAYER_CHANGELING_CLIMB,
                             (float)entity.getRandom().nextTriangular(0.5, 0.3),
                             entity.getSoundPitch()
                     );

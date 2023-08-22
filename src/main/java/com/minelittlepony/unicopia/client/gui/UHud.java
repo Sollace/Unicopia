@@ -25,7 +25,6 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
@@ -272,7 +271,7 @@ public class UHud {
                     client.getSoundManager().play(
                             partySound = new LoopingSoundInstance<>(client.player, player -> {
                                 return UItems.SUNGLASSES.isApplicable(player) || true;
-                            }, SoundEvents.MUSIC_DISC_PIGSTEP, 1, 1, client.world.random)
+                            }, USounds.Vanilla.MUSIC_DISC_PIGSTEP, 1, 1, client.world.random)
                     );
                 } else if (partySound != null) {
                     partySound.setMuted(false);

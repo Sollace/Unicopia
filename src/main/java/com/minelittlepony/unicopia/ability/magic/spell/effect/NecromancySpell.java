@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
@@ -31,7 +32,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -185,7 +185,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
         minion.setVelocity(0, 0.3, 0);
 
         source.asWorld().syncWorldEvent(WorldEvents.DRAGON_BREATH_CLOUD_SPAWNS, minion.getBlockPos(), 0);
-        source.playSound(SoundEvents.BLOCK_BELL_USE, 1, 0.3F);
+        source.playSound(USounds.SPELL_NECROMANCY_ACTIVATE, 1, 0.3F);
         source.spawnParticles(ParticleTypes.LARGE_SMOKE, 10);
 
         int level = source.getLevel().get();

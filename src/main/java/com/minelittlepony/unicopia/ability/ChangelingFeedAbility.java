@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -28,7 +29,6 @@ import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundEvents;
 
 /**
  * Changeling ability to restore health from mobs
@@ -122,9 +122,9 @@ public class ChangelingFeedAbility implements Ability<Hit> {
 
 
         if (!canFeed(iplayer)) {
-            iplayer.playSound(SoundEvents.ENTITY_PLAYER_BURP, 1, (float)player.getWorld().random.nextTriangular(1F, 0.2F));
+            iplayer.playSound(USounds.Vanilla.ENTITY_PLAYER_BURP, 1, (float)player.getWorld().random.nextTriangular(1F, 0.2F));
         } else {
-            iplayer.playSound(SoundEvents.ENTITY_GENERIC_DRINK, 0.1F, iplayer.getRandomPitch());
+            iplayer.playSound(USounds.ENTITY_PLAYER_CHANGELING_FEED, 0.1F, iplayer.getRandomPitch());
         }
 
         return true;

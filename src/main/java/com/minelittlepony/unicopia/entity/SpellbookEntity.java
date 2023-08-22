@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.container.SpellbookState;
@@ -28,7 +29,6 @@ import net.minecraft.screen.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -204,7 +204,7 @@ public class SpellbookEntity extends MobEntity {
         if (player.isSneaking()) {
             setForcedState(TriState.of(!isOpen()));
             keepAwake();
-            player.playSound(SoundEvents.ITEM_BOOK_PAGE_TURN, 2, 1);
+            player.playSound(USounds.Vanilla.ITEM_BOOK_PAGE_TURN, 2, 1);
             return ActionResult.SUCCESS;
         }
 
@@ -226,7 +226,7 @@ public class SpellbookEntity extends MobEntity {
                     state.toPacket(buf);
                 }
             });
-            player.playSound(SoundEvents.ITEM_BOOK_PAGE_TURN, 2, 1);
+            player.playSound(USounds.Vanilla.ITEM_BOOK_PAGE_TURN, 2, 1);
             return ActionResult.SUCCESS;
         }
 

@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.server.world;
 import java.util.Locale;
 import java.util.stream.StreamSupport;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.ZapAppleLeavesBlock;
@@ -15,7 +16,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
@@ -91,7 +91,7 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
             playedMoonEffect = true;
             markDirty();
 
-            world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_WOLF_HOWL, SoundCategory.BLOCKS, 1.5F, 0.3F, world.random.nextInt(1200));
+            world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), USounds.Vanilla.ENTITY_WOLF_HOWL, SoundCategory.BLOCKS, 1.5F, 0.3F, world.random.nextInt(1200));
         }
     }
 

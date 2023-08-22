@@ -9,6 +9,7 @@ import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.Debug;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.*;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
@@ -30,7 +31,6 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -223,7 +223,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
         return tabs.getAllTabs().anyMatch(tab -> {
             if (tab.bounds().contains(mouseX, mouseY) && chapters.getCurrentChapter() != tab.chapter()) {
                 getState().setCurrentPageId(tab.chapter().id());
-                GameGui.playSound(SoundEvents.ITEM_BOOK_PAGE_TURN);
+                GameGui.playSound(USounds.Vanilla.ITEM_BOOK_PAGE_TURN);
                 clearAndInit();
                 return true;
             }

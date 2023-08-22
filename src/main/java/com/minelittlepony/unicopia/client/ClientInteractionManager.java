@@ -34,7 +34,6 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
@@ -83,7 +82,7 @@ public class ClientInteractionManager extends InteractionManager {
                     return physics.isFlying() && physics.getFlightType() == FlightType.INSECTOID;
                 }, 0.25F, 0.5F, 0.66F, Random.create(seed)));
             } else if (type == SOUND_GLIDING && source instanceof PlayerEntity player && isClientPlayer(player)) {
-                soundManager.play(new MotionBasedSoundInstance<>(SoundEvents.ITEM_ELYTRA_FLYING, player, e -> {
+                soundManager.play(new MotionBasedSoundInstance<>(USounds.Vanilla.ITEM_ELYTRA_FLYING, player, e -> {
                     Pony pony = Pony.of(e);
                     return pony.getPhysics().isFlying() && pony.getPhysics().getFlightType().isAvian();
                 }, 0, 1, 1, Random.create(seed)));

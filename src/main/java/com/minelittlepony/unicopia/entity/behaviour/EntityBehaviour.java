@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.compat.pehkui.PehkUtil;
@@ -33,7 +34,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.registry.Registry;
@@ -281,8 +281,8 @@ public class EntityBehaviour<T extends Entity> {
         register(GhastBehaviour::new, EntityType.GHAST);
         register(AxolotlBehaviour::new, EntityType.AXOLOTL);
         register(EndermanBehaviour::new, EntityType.ENDERMAN);
-        EntityBehaviour.<LlamaEntity>register(() -> new RangedAttackBehaviour<>(SoundEvents.ENTITY_LLAMA_SPIT, LlamaSpitEntity::new), EntityType.LLAMA, EntityType.TRADER_LLAMA);
-        EntityBehaviour.<SnowGolemEntity>register(() -> new RangedAttackBehaviour<>(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, SnowballEntity::new), EntityType.SNOW_GOLEM);
+        EntityBehaviour.<LlamaEntity>register(() -> new RangedAttackBehaviour<>(USounds.Vanilla.ENTITY_LLAMA_SPIT, LlamaSpitEntity::new), EntityType.LLAMA, EntityType.TRADER_LLAMA);
+        EntityBehaviour.<SnowGolemEntity>register(() -> new RangedAttackBehaviour<>(USounds.Vanilla.ENTITY_SNOW_GOLEM_SHOOT, SnowballEntity::new), EntityType.SNOW_GOLEM);
         register(SpellcastingIllagerBehaviour::new, EntityType.ILLUSIONER, EntityType.EVOKER);
         register(ShulkerBehaviour::new, EntityType.SHULKER);
         register(CreeperBehaviour::new, EntityType.CREEPER);

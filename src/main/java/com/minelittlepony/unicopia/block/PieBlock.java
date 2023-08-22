@@ -14,7 +14,6 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
@@ -89,7 +88,7 @@ public class PieBlock extends Block implements Waterloggable {
             SoundEmitter.playSoundAt(player, USounds.BLOCK_PIE_SLICE, SoundCategory.NEUTRAL, 1, 1);
             removeSlice(world, pos, state, player);
             itemStack.damage(1, player, p -> p.sendToolBreakStatus(hand));
-            SoundEmitter.playSoundAt(player, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.NEUTRAL, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
+            SoundEmitter.playSoundAt(player, USounds.BLOCK_PIE_SLICE_POP, SoundCategory.NEUTRAL, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
             Block.dropStack(world, pos, sliceItem.asItem().getDefaultStack());
             return ActionResult.SUCCESS;
         }
@@ -105,10 +104,10 @@ public class PieBlock extends Block implements Waterloggable {
         player.getHungerManager().add(state.get(STOMPED) ? 1 : 2, 0.1f);
 
         world.emitGameEvent(player, GameEvent.EAT, pos);
-        SoundEmitter.playSoundAt(player, SoundEvents.ENTITY_GENERIC_EAT, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
+        SoundEmitter.playSoundAt(player, USounds.Vanilla.ENTITY_GENERIC_EAT, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
         if (world instanceof World ww && (!player.canConsume(false) || world.getRandom().nextInt(10) == 0)) {
             AwaitTickQueue.scheduleTask(ww, w -> {
-                SoundEmitter.playSoundAt(player, SoundEvents.ENTITY_PLAYER_BURP, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
+                SoundEmitter.playSoundAt(player, USounds.Vanilla.ENTITY_PLAYER_BURP, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
             }, 5);
         }
 

@@ -1,11 +1,11 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinShulkerEntity;
 
 import net.minecraft.entity.mob.ShulkerEntity;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
@@ -56,7 +56,7 @@ public class ShulkerBehaviour extends EntityBehaviour<ShulkerEntity> {
         } else if (peekAmount > 0.2 && mx.callGetPeekAmount() == 0) {
             if (shulker.isAlive() && shulker.getWorld().random.nextInt(1000) < shulker.ambientSoundChance++) {
                 shulker.ambientSoundChance = -shulker.getMinAmbientSoundDelay();
-                shulker.playSound(SoundEvents.ENTITY_SHULKER_AMBIENT, 1, 1);
+                shulker.playSound(USounds.Vanilla.ENTITY_SHULKER_AMBIENT, 1, 1);
              }
         }
     }

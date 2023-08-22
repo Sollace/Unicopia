@@ -19,7 +19,6 @@ import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -111,7 +110,7 @@ public class BatEeeeAbility implements Ability<Numeric> {
                 if (e.getWorld().random.nextInt(MOB_SPOOK_PROBABILITY) == 0) {
                     RegistryUtils.pickRandom(e.getWorld(), UTags.SPOOKED_MOB_DROPS).ifPresent(drop -> {
                         e.dropStack(drop.getDefaultStack());
-                        e.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1, 0.1F);
+                        e.playSound(USounds.Vanilla.ENTITY_ITEM_PICKUP, 1, 0.1F);
                         UCriteria.SPOOK_MOB.trigger(player.asEntity());
                     });
                 }

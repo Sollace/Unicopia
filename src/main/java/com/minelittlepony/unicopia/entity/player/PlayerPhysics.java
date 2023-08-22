@@ -32,6 +32,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
@@ -40,7 +41,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.*;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
@@ -584,7 +584,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     velocity.fromImmutable(entity.getVelocity());
                     distance /= bouncyness;
                 } else {
-                    entity.playSound(distance > 4 ? SoundEvents.ENTITY_PLAYER_BIG_FALL : SoundEvents.ENTITY_PLAYER_SMALL_FALL, 1, entity.getSoundPitch());
+                    LivingEntity.FallSounds fallSounds = entity.getFallSounds();
+                    entity.playSound(distance > 4 ? fallSounds.big() : fallSounds.small(), 1, entity.getSoundPitch());
                 }
                 entity.damage(entity.getDamageSources().flyIntoWall(), distance);
             }
@@ -756,7 +757,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (isFlying()) {
             pony.playSound(USounds.ENTITY_PLAYER_PEGASUS_DASH, 1);
         } else {
-            pony.playSound(SoundEvents.ENTITY_RAVAGER_STEP, 2, 0.3F);
+            pony.playSound(USounds.ENTITY_PLAYER_EARTHPONY_DASH, 2, 0.3F);
         }
     }
 

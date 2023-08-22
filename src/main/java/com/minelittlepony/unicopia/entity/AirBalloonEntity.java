@@ -13,7 +13,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -36,6 +35,7 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.collision.MultiBox;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
@@ -213,11 +213,11 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         }
 
         if (boosting && !prevBoosting) {
-            playSound(SoundEvents.ENTITY_GHAST_SHOOT, 1, 1);
+            playSound(USounds.ENTITY_HOT_AIR_BALLOON_BOOST, 1, 1);
         }
 
         if (isAscending() && age % 15 + rng.nextInt(5) == 0) {
-            playSound(SoundEvents.ENTITY_GHAST_SHOOT, 0.2F, 1);
+            playSound(USounds.ENTITY_HOT_AIR_BALLOON_BURNER_FIRE, 0.2F, 1);
         }
 
         if (isLeashed()) {
@@ -294,7 +294,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         if (getWorld().isClient) {
             if (e.distanceTraveled > ((EntityDuck)e).getNextStepSoundDistance()) {
                 e.distanceTraveled--;
-                e.playSound(inBalloon ? SoundEvents.BLOCK_WOOL_STEP : SoundEvents.BLOCK_BAMBOO_STEP, 0.5F, 1);
+                e.playSound(inBalloon ? USounds.ENTITY_HOT_AIR_BALLOON_STEP : USounds.ENTITY_HOT_AIR_BALLOON_BASKET_STEP, 0.5F, 1);
                 if (!e.isSneaky()) {
                     getWorld().emitGameEvent(e, GameEvent.STEP, getBlockPos());
                 }
@@ -311,10 +311,10 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
                 if (stack.isOf(Items.FLINT_AND_STEEL)) {
                     setAscending(!isAscending());
                     if (isAscending()) {
-                        playSound(SoundEvents.ENTITY_GHAST_SHOOT, 1, 1);
+                        playSound(USounds.ENTITY_HOT_AIR_BALLOON_BOOST, 1, 1);
                     }
                     stack.damage(1, player, p -> p.sendEquipmentBreakStatus(hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND));
-                    playSound(SoundEvents.ITEM_FLINTANDSTEEL_USE, 1, 1);
+                    playSound(USounds.Vanilla.ITEM_FLINTANDSTEEL_USE, 1, 1);
                     getWorld().emitGameEvent(this, GameEvent.ENTITY_INTERACT, getBlockPos());
                     return ActionResult.SUCCESS;
                 }
@@ -343,7 +343,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             if (!player.getAbilities().creativeMode) {
                 stack.decrement(1);
             }
-            playSound(SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 1, 1);
+            playSound(USounds.ENTITY_HOT_AIR_BALLOON_EQUIP_CANOPY, 1, 1);
             getWorld().emitGameEvent(this, GameEvent.ENTITY_INTERACT, getBlockPos());
             setDesign(HotAirBalloonItem.getDesign(getWorld(), stack));
             return ActionResult.SUCCESS;
@@ -354,7 +354,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             if (!player.getAbilities().creativeMode) {
                 stack.decrement(1);
             }
-            playSound(SoundEvents.ENTITY_IRON_GOLEM_DAMAGE, 0.2F, 1);
+            playSound(USounds.ENTITY_HOT_AIR_BALLOON_EQUIP_BURNER, 0.2F, 1);
             getWorld().emitGameEvent(this, GameEvent.ENTITY_INTERACT, getBlockPos());
             return ActionResult.SUCCESS;
         }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.joml.Vector3f;
 
+import com.minelittlepony.unicopia.USounds;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
@@ -15,7 +16,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -44,7 +44,7 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
                 branches.add(generateBranch());
             }
 
-            world.playSound(x, y, z, SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000, 8, true);
+            world.playSound(x, y, z, USounds.Vanilla.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000, 8, true);
         }
 
         world.setLightningTicksLeft(2);

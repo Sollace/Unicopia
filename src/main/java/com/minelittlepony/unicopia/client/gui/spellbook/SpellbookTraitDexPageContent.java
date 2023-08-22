@@ -7,6 +7,7 @@ import com.minelittlepony.common.client.gui.*;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.*;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Chapter;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen.ImageButton;
@@ -19,7 +20,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -77,7 +77,7 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
         leftPage.verticalScrollbar.scrollBy(leftPage.verticalScrollbar.getScrubber().getPosition());
         rightPage.verticalScrollbar.scrollBy(rightPage.verticalScrollbar.getScrubber().getPosition());
 
-        GameGui.playSound(SoundEvents.ITEM_BOOK_PAGE_TURN);
+        GameGui.playSound(USounds.Vanilla.ITEM_BOOK_PAGE_TURN);
         screen.clearAndInit();
     }
 

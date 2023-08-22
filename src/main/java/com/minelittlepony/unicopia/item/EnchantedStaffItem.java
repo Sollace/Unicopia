@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
@@ -27,7 +28,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -177,7 +177,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
                         (world.random.nextGaussian() - 0.5) / 10,
                         (world.random.nextGaussian() - 0.5) / 10
                 );
-                world.playSound(null, entity.getBlockPos(), SoundEvents.ENTITY_GUARDIAN_ATTACK, SoundCategory.PLAYERS, 1, i / 20);
+                world.playSound(null, entity.getBlockPos(), USounds.ITEM_MAGIC_STAFF_CHARGE, SoundCategory.PLAYERS, 1, i / 20);
 
                 if (i > 200) {
                     living.clearActiveItem();
