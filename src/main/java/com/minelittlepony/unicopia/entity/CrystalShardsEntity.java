@@ -144,6 +144,10 @@ public class CrystalShardsEntity extends Entity {
         }
         setFireTicks(0);
 
+        if (isDecaying() && getGrowth() == 0) {
+            discard();
+        }
+
         if (ticksShaking > 0) {
             ticksShaking--;
         }
