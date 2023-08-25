@@ -21,7 +21,6 @@ public interface MeteorlogicalUtil {
             return false;
         }
 
-
         final float skyAngle = getSkyAngle(entity.getWorld());
         float playerYaw = MathHelper.wrapDegrees(entity.getHeadYaw());
         float playerAngle = (-entity.getPitch(1) / 90F) / 2F;

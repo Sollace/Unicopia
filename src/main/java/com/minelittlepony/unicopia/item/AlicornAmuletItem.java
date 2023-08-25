@@ -257,6 +257,11 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                     player.getHungerManager().addExhaustion(90F);
                     float healthDrop = MathHelper.clamp(player.getMaxHealth() - player.getHealth(), 2, 5);
                     player.damage(pony.damageOf(UDamageTypes.ALICORN_AMULET), healthDrop);
+
+                    if (player.getHealth() < 2) {
+                        stack.decrement(1);
+                        SombraEntity.startEncounter(player.getWorld(), player.getBlockPos());
+                    }
                 }
 
                 return;

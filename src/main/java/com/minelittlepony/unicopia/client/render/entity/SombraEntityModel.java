@@ -19,7 +19,6 @@ public class SombraEntityModel extends EntityModel<SombraEntity> {
 	private final ModelPart part;
 
 	private final ModelPart head;
-	private final ModelPart mane;
 	private final ModelPart upperJaw;
 	private final ModelPart lowerJaw;
 
@@ -28,7 +27,6 @@ public class SombraEntityModel extends EntityModel<SombraEntity> {
 	public SombraEntityModel(ModelPart root) {
 		this.part = root;
 		this.head = root.getChild("head");
-		this.mane = head.getChild("mane");
 		this.upperJaw = head.getChild("upper_jaw");
 		this.lowerJaw = head.getChild("lower_jaw");
 		this.body = root.getChild("body");
@@ -84,27 +82,34 @@ public class SombraEntityModel extends EntityModel<SombraEntity> {
 	}
 
 	@Override
-	public void setAngles(SombraEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void animateModel(SombraEntity entity, float limbAngle, float limbDistance, float tickDelta) {
+	    float jawsOpenAmount = entity.getBiteAmount(tickDelta); //(1 - Math.max(0, MathHelper.sin(ageInTicks * 0.1F)));
+
+	    lowerJaw.resetTransform();
+        lowerJaw.pivotY -= jawsOpenAmount * 3;
+        lowerJaw.pivotX -= jawsOpenAmount * 3;
+        lowerJaw.roll += jawsOpenAmount - 0.9F;
+
+        upperJaw.resetTransform();
+        upperJaw.roll -= jawsOpenAmount * 0.2F;
+    }
+
+	@Override
+	public void setAngles(SombraEntity entity, float limbAngle, float limbDistance, float animationProgress, float netHeadYaw, float headPitch) {
+	    float scale = 1.6F;
+
+	    part.xScale = scale;
+	    part.yScale = scale;
+	    part.zScale = scale;
 
 	    part.yaw = -MathHelper.HALF_PI;
-	    part.pivotY = MathHelper.sin(ageInTicks * 0.05F) - 3;
-	    part.pivotZ = MathHelper.cos(ageInTicks * 0.045F);
-
-	    //part.yaw = (float)entity.getVelocity().getX();
+	    part.pivotY = MathHelper.sin(animationProgress * 0.05F) - 12;
+	    part.pivotZ = MathHelper.cos(animationProgress * 0.045F);
 
 	    head.pitch = headPitch * MathHelper.RADIANS_PER_DEGREE;
 	    head.yaw = netHeadYaw * MathHelper.RADIANS_PER_DEGREE;
 
-	    lowerJaw.resetTransform();
-	    float jawsOpenAmount = (1 - Math.max(0, MathHelper.sin(ageInTicks * 0.1F)));
-	    lowerJaw.pivotY -= jawsOpenAmount * 3;
-	    lowerJaw.pivotX -= jawsOpenAmount * 3;
-	    lowerJaw.roll += jawsOpenAmount - 0.9F;
-
-	    upperJaw.resetTransform();
-	    upperJaw.roll -= jawsOpenAmount * 0.2F;
-
-	    body.roll = limbSwingAmount * 0.3F;
+	    body.roll = limbDistance * 0.3F;
 	}
 
 	@Override

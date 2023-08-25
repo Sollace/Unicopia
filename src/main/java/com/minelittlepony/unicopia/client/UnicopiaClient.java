@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.client;
 
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.event.ScreenInitCallback;
 import com.minelittlepony.common.event.ScreenInitCallback.ButtonList;
@@ -17,6 +19,7 @@ import com.minelittlepony.unicopia.container.*;
 import com.minelittlepony.unicopia.entity.player.PlayerCamera;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.handler.ClientNetworkHandlerImpl;
+import com.minelittlepony.unicopia.server.world.WeatherConditions;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -26,9 +29,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.OpenToLanScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 
 public class UnicopiaClient implements ClientModInitializer {
 
@@ -59,6 +64,9 @@ public class UnicopiaClient implements ClientModInitializer {
         return 0.6F;
     }
 
+    @Nullable
+    private Float originalRainGradient;
+
     @Override
     public void onInitializeClient() {
         InteractionManager.INSTANCE = new ClientInteractionManager();
@@ -70,6 +78,7 @@ public class UnicopiaClient implements ClientModInitializer {
         HandledScreens.register(UScreenHandlers.SPELL_BOOK, SpellbookScreen::new);
 
         ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
+        ClientTickEvents.END_WORLD_TICK.register(this::onWorldTick);
         ScreenInitCallback.EVENT.register(this::onScreenInit);
         ItemTooltipCallback.EVENT.register(new ModifierTooltipRenderer());
 
@@ -81,6 +90,25 @@ public class UnicopiaClient implements ClientModInitializer {
     private void onTick(MinecraftClient client) {
         KeyBindingsHandler.INSTANCE.tick(client);
         UHud.INSTANCE.tick();
+    }
+
+    private void onWorldTick(ClientWorld world) {
+        BlockPos pos = MinecraftClient.getInstance().getCameraEntity().getBlockPos();
+        float tickDelta = MinecraftClient.getInstance().getTickDelta();
+
+        if (WeatherConditions.get(world).isInRangeOfStorm(pos)) {
+            if (originalRainGradient == null) {
+                originalRainGradient = world.getRainGradient(tickDelta);
+            }
+            world.setRainGradient(1);
+            world.setThunderGradient(1);
+        } else {
+            if (originalRainGradient != null) {
+                world.setRainGradient(originalRainGradient);
+                world.setThunderGradient(0);
+                originalRainGradient = null;
+            }
+        }
     }
 
     private void onScreenInit(Screen screen, ButtonList buttons) {

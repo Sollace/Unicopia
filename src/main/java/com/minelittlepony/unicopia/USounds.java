@@ -53,6 +53,10 @@ public interface USounds {
     SoundEvent ENTITY_HOT_AIR_BALLOON_EQUIP_CANOPY = ITEM_ARMOR_EQUIP_LEATHER;
     SoundEvent ENTITY_HOT_AIR_BALLOON_EQUIP_BURNER = ENTITY_IRON_GOLEM_DAMAGE;
 
+    SoundEvent ENTITY_SOMBRA_AMBIENT = register("entity.sombra.ambient");
+    SoundEvent ENTITY_SOMBRA_LAUGH = register("entity.sombra.laugh");
+    SoundEvent ENTITY_SOMBRA_SNICKER = register("entity.sombra.snicker");
+
     SoundEvent ITEM_AMULET_CHARGING = register("item.amulet.charging");
     SoundEvent ITEM_AMULET_RECHARGE = register("item.amulet.recharge");
 

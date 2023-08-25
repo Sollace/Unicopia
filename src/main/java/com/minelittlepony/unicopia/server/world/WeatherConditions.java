@@ -1,6 +1,12 @@
 package com.minelittlepony.unicopia.server.world;
 
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.entity.StormCloudEntity;
 import com.minelittlepony.unicopia.entity.player.MeteorlogicalUtil;
 import com.minelittlepony.unicopia.util.Tickable;
 
@@ -55,6 +61,8 @@ public class WeatherConditions extends PersistentState implements Tickable {
 
     private boolean prevDayState;
 
+    private Map<UUID, Storm> storms = new HashMap<>();
+
     private WeatherConditions(World world, NbtCompound compound) {
         this(world);
         windYaw = compound.getFloat("windYaw");
@@ -66,6 +74,19 @@ public class WeatherConditions extends PersistentState implements Tickable {
 
     private WeatherConditions(World world) {
         this.world = world;
+    }
+
+    public void addStorm(StormCloudEntity cloud) {
+        synchronized (storms) {
+            storms.computeIfAbsent(cloud.getUuid(), id -> new Storm(cloud));
+        }
+    }
+
+    public boolean isInRangeOfStorm(BlockPos pos) {
+        synchronized (storms) {
+            storms.values().removeIf(Storm::shouldRemove);
+            return storms.values().stream().anyMatch(storm -> storm.inRange(pos));
+        }
     }
 
     @Override
@@ -105,6 +126,24 @@ public class WeatherConditions extends PersistentState implements Tickable {
         compound.putInt("interpolation", interpolation);
         compound.putInt("maxInterpolation", maxInterpolation);
         return compound;
+    }
+
+    private class Storm {
+        private final WeakReference<StormCloudEntity> cloud;
+
+        public Storm(StormCloudEntity cloud) {
+            this.cloud = new WeakReference<>(cloud);
+        }
+
+        public boolean inRange(BlockPos pos) {
+            final StormCloudEntity cloud = this.cloud.get();
+            return cloud != null && cloud.getBlockPos().isWithinDistance(pos, cloud.getSizeInBlocks());
+        }
+
+        public boolean shouldRemove() {
+            final StormCloudEntity cloud = this.cloud.get();
+            return cloud == null || cloud.isRemoved() || !cloud.isStormy();
+        }
     }
 
     public static Vec3d getAirflow(BlockPos pos, World world) {

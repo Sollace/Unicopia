@@ -1,28 +1,41 @@
 package com.minelittlepony.unicopia.entity;
 
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.entity.ai.ArenaAttackGoal;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.particle.ParticleHandle;
+import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
+import com.minelittlepony.unicopia.particle.ParticleSource;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.VecHelper;
+import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.ai.goal.AttackGoal;
+import net.minecraft.entity.ai.goal.FlyGoal;
+import net.minecraft.entity.ai.goal.LongDoorInteractGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
+import net.minecraft.entity.ai.pathing.BirdPathNodeMaker;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
+import net.minecraft.entity.ai.pathing.PathNodeNavigator;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.BossBar;
@@ -41,26 +54,47 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.*;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class SombraEntity extends HostileEntity {
+public class SombraEntity extends HostileEntity implements ArenaCombatant, ParticleSource<SombraEntity> {
+    static final byte BITE = 70;
+    static final int MAX_BITE_TIME = 20;
+    static final Predicate<Entity> EFFECT_TARGET_PREDICATE = EntityPredicates.VALID_LIVING_ENTITY.and(EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR);
 
     private static final TrackedData<Optional<BlockPos>> HOME_POS = DataTracker.registerData(SombraEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS);
 
     private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(getDisplayName(), BossBar.Color.PURPLE, BossBar.Style.PROGRESS)
             .setDarkenSky(true)
             .setThickenFog(true);
+
+    private final ParticleHandle shroud = new ParticleHandle();
+
+    final EntityReference<StormCloudEntity> stormCloud = new EntityReference<>();
+
+    private int prevBiteTime;
+    private int biteTime;
+
+    public static void startEncounter(World world, BlockPos pos) {
+        StormCloudEntity cloud = UEntities.STORM_CLOUD.create(world);
+        cloud.setPosition(pos.up(10).toCenterPos());
+        cloud.setSize(1);
+        cloud.cursed = true;
+        world.spawnEntity(cloud);
+    }
 
     public SombraEntity(EntityType<SombraEntity> type, World world) {
         super(type, world);
@@ -70,7 +104,13 @@ public class SombraEntity extends HostileEntity {
     public static DefaultAttributeContainer.Builder createMobAttributes() {
         return HostileEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 2000)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 102);
+                .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.5)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 22);
+    }
+
+    @Override
+    public SombraEntity asEntity() {
+        return this;
     }
 
     @Override
@@ -101,27 +141,37 @@ public class SombraEntity extends HostileEntity {
 
     @Override
     protected void initGoals() {
-        goalSelector.add(5, new WanderAroundGoal(this, 1));
-        goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8F));
+        goalSelector.add(2, new LongDoorInteractGoal(this, true));
+        goalSelector.add(5, new FlyGoal(this, 1));
+        goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 18F));
         goalSelector.add(7, new LookAroundGoal(this));
-        goalSelector.add(8, new PounceAtTargetGoal(this, 0.3f));
-        goalSelector.add(8, new AttackGoal(this));
+        goalSelector.add(7, new WanderAroundGoal(this, 1));
+        goalSelector.add(8, new PounceAtTargetGoal(this, 1.3F));
+        goalSelector.add(8, new ArenaAttackGoal<>(this));
         targetSelector.add(1, new RevengeGoal(this));
         targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, false));
         targetSelector.add(3, new ActiveTargetGoal<>(this, MerchantEntity.class, false));
         targetSelector.add(3, new ActiveTargetGoal<>(this, IronGolemEntity.class, true));
     }
 
-
     @Override
     protected EntityNavigation createNavigation(World world) {
-        MobNavigation nav = new MobNavigation(this, world);
+        MobNavigation nav = new MobNavigation(this, world) {
+            @Override
+            protected PathNodeNavigator createPathNodeNavigator(int range) {
+                nodeMaker = new BirdPathNodeMaker();
+                nodeMaker.setCanEnterOpenDoors(true);
+                return new PathNodeNavigator(nodeMaker, range);
+            }
+        };
         nav.setCanPathThroughDoors(true);
         nav.setCanSwim(true);
         nav.setCanEnterOpenDoors(true);
+        nav.canJumpToNext(PathNodeType.UNPASSABLE_RAIL);
         return nav;
     }
 
+    @Override
     public Optional<BlockPos> getHomePos() {
         return dataTracker.get(HOME_POS);
     }
@@ -130,9 +180,14 @@ public class SombraEntity extends HostileEntity {
         dataTracker.set(HOME_POS, Optional.of(pos));
     }
 
+    public float getBiteAmount(float tickDelta) {
+        float progress = (MathHelper.lerp(tickDelta, prevBiteTime, biteTime) / (float)MAX_BITE_TIME);
+        return 1 - Math.abs(MathHelper.sin(progress * MathHelper.PI));
+    }
+
     @Override
     public void tick() {
-
+        setPersistent();
         Optional<BlockPos> homePos = getHomePos();
 
         if (homePos.isEmpty() && !isRemoved()) {
@@ -140,59 +195,128 @@ public class SombraEntity extends HostileEntity {
             return;
         }
 
-        if (this.getBlockPos().getSquaredDistance(homePos.get()) > 16) {
+        if (getBlockPos().getSquaredDistance(homePos.get()) > MathHelper.square(getAreaRadius())) {
             teleportTo(Vec3d.ofCenter(homePos.get()));
-            setTarget(null);
+            getNavigation().stop();
+        }
+
+        prevBiteTime = biteTime;
+        if (biteTime > 0) {
+            biteTime--;
         }
 
         super.tick();
 
-        addVelocity(0, 0.002F, 0);
+        if (getTarget() == null && getVelocity().y < 0) {
+            setVelocity(getVelocity().multiply(1, 0.4, 1));
+        }
+        addVelocity(0, 0.0242F, 0);
         if (isSubmergedInWater()) {
             jump();
         }
 
-        if (age % 50 == 0) {
-            playSound(SoundEvents.ENTITY_POLAR_BEAR_AMBIENT, 3, 0.3F);
+        if (random.nextInt(1200) == 0) {
+           playSound(USounds.ENTITY_SOMBRA_LAUGH, 1, 1);
+           getWorld().sendEntityStatus(this, BITE);
         }
 
-        if (age % 125 == 0) {
+        if (random.nextInt(340) == 0) {
             playSound(SoundEvents.AMBIENT_CAVE.value(), 1, 0.3F);
+        } else if (random.nextInt(1340) == 0) {
+            playSound(USounds.ENTITY_SOMBRA_AMBIENT, 1, 1);
         }
 
         if (getWorld().isClient) {
-            float range = 9;
-            for (int i = 0; i < 3; i++) {
-                var particle = new SphereParticleEffect(UParticles.SPHERE,
-                        0x222222,
-                        0.7F,
-                        (float)getWorld().getRandom().nextTriangular(2.5F, 0.7F)
-                );
-                getWorld().addParticle(particle,
-                        getWorld().getRandom().nextTriangular(getX(), range),
-                        getWorld().getRandom().nextTriangular(getY(), range),
-                        getWorld().getRandom().nextTriangular(getZ(), range),
-                        getWorld().getRandom().nextGaussian() / 6F,
-                        getWorld().getRandom().nextGaussian() / 6F,
-                        getWorld().getRandom().nextGaussian() / 6F
-                    );
+            generateBodyParticles();
+        } else {
+            for (BlockPos p : BlockPos.iterateOutwards(getBlockPos(), 2, 1, 2)) {
+                if (getWorld().getBlockState(p).getLuminance() > 3) {
+                    destroyLightSource(p);
+                }
             }
 
-            for (int i = 0; i < 13; i++) {
-                getWorld().addParticle(ParticleTypes.LARGE_SMOKE,
-                        getWorld().getRandom().nextTriangular(getX(), 1),
-                        getWorld().getRandom().nextTriangular(getY(), 1),
-                        getWorld().getRandom().nextTriangular(getZ(), 1),
-                        0,
-                        0,
-                        0
-                    );
+            for (BlockPos p : BlockPos.iterateRandomly(random, 3, getBlockPos(), 20)) {
+                CrystalShardsEntity.infestBlock((ServerWorld)getWorld(), p);
+            }
+
+            if (getTarget() == null && getNavigation().isIdle()) {
+                getNavigation().startMovingTo(homePos.get().getX(), homePos.get().getY() + 10, homePos.get().getZ(), 2);
             }
         }
 
-        getWorld().getOtherEntities(this, this.getBoundingBox().expand(5), EntityPredicates.VALID_LIVING_ENTITY).forEach(target -> {
-            ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 100, 1));
-        });
+        getHomePos().ifPresent(this::generateArenaEffects);
+    }
+
+    protected void applyAreaEffects(Entity target) {
+        if (this.age % 150 == 0) {
+            target.playSound(
+                    random.nextInt(30) == 0 ? USounds.ENTITY_SOMBRA_AMBIENT
+                            : random.nextInt(10) == 0 ? USounds.Vanilla.ENTITY_GHAST_AMBIENT
+                            : USounds.Vanilla.AMBIENT_CAVE.value(),
+                    (float)random.nextTriangular(1, 0.2F),
+                    (float)random.nextTriangular(0.3F, 0.2F)
+            );
+        }
+
+        ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 26, 0, true, false));
+        ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 26, 0, true, false));
+
+        if (getTarget() == null && target instanceof PlayerEntity player && player.distanceTo(this) < getAreaRadius() / 2F) {
+            setTarget(player);
+            if (teleportTo(target.getPos())) {
+                setPosition(getPos().add(0, 4, 0));
+            }
+        }
+    }
+
+    protected void destroyLightSource(BlockPos pos) {
+        getWorld().breakBlock(pos, true);
+        playSound(USounds.ENTITY_SOMBRA_SNICKER, 1, 1);
+    }
+
+    protected void generateBodyParticles() {
+        for (int i = 0; i < 23; i++) {
+            getWorld().addParticle(ParticleTypes.LARGE_SMOKE,
+                    random.nextTriangular(getX(), 8),
+                    random.nextTriangular(getY(), 1),
+                    random.nextTriangular(getZ(), 8),
+                    0,
+                    0,
+                    0
+                );
+        }
+    }
+
+    private void generateArenaEffects(BlockPos home) {
+        if (getWorld().isClient()) {
+            Stream.concat(
+                    new Sphere(false, getAreaRadius()).translate(home).randomPoints(random).filter(this::isSurfaceBlock).limit(80),
+                    new Sphere(true, getAreaRadius()).translate(home).randomPoints(random).filter(this::isSurfaceBlock).limit(30))
+                .forEach(pos -> {
+                    ParticleEffect type = random.nextInt(3) < 1 ? ParticleTypes.LARGE_SMOKE : ParticleTypes.SOUL_FIRE_FLAME;
+                    ParticleUtils.spawnParticle(getWorld(), type, pos, Vec3d.ZERO);
+                    ParticleUtils.spawnParticle(getWorld(), type, pos, pos.subtract(getPos()).add(0, 0.1, 0).multiply(-0.013));
+                });
+
+            shroud.update(getUuid(), this, spawner -> {
+                var radius = getAreaRadius();
+                var center = home.toCenterPos();
+                spawner.addParticle(new SphereParticleEffect(UParticles.SPHERE, 0xFF000000, 1, radius - 0.2F), center, Vec3d.ZERO);
+            }).ifPresent(attachment -> {
+                attachment.setAttribute(Attachment.ATTR_BOUND, 1);
+                attachment.setAttribute(Attachment.ATTR_COLOR, 0xFF000000);
+                attachment.setAttribute(Attachment.ATTR_OPACITY, 2.5F);
+            });
+        } else {
+            for (Entity target : VecHelper.findInRange(this, getWorld(), home.toCenterPos(), getAreaRadius() - 0.2F, EFFECT_TARGET_PREDICATE)) {
+                applyAreaEffects(target);
+            }
+        }
+    }
+
+    private boolean isSurfaceBlock(Vec3d pos) {
+        BlockPos bPos = BlockPos.ofFloored(pos);
+        return getWorld().isAir(bPos) && !getWorld().isAir(bPos.down());
     }
 
     @Override
@@ -208,21 +332,6 @@ public class SombraEntity extends HostileEntity {
     }
 
     @Override
-    public boolean isPushable() {
-        return false;
-    }
-
-    @Override
-    protected void pushAway(Entity entity) {
-
-    }
-
-    @Override
-    protected void tickCramming() {
-
-    }
-
-    @Override
     public boolean handleFallDamage(float distance, float damageMultiplier, DamageSource cause) {
         return false;
     }
@@ -232,6 +341,7 @@ public class SombraEntity extends HostileEntity {
         if (source.getAttacker() instanceof PlayerEntity player) {
             if (AmuletSelectors.ALICORN_AMULET.test(player)) {
                 if (!getWorld().isClient) {
+                    playSound(USounds.ENTITY_SOMBRA_SNICKER, 1, 1);
                     player.sendMessage(Text.translatable("entity.unicopia.sombra.taunt"));
                 }
             }
@@ -250,7 +360,44 @@ public class SombraEntity extends HostileEntity {
     }
 
     @Override
+    public void onDeath(DamageSource damageSource) {
+        if (!dead) {
+            stormCloud.ifPresent(getWorld(), cloud -> {
+                cloud.setStormTicks(0);
+                cloud.setDissipating(true);
+            });
+            stormCloud.set(null);
+            getHomePos().ifPresent(home -> {
+                VecHelper.findInRange(this, getWorld(), home.toCenterPos(), getAreaRadius() - 0.2F, e -> e instanceof CrystalShardsEntity).forEach(e -> {
+                    ((CrystalShardsEntity)e).setDecaying(true);
+                });
+            });
+        }
+        super.onDeath(damageSource);
+    }
+
+    @Override
     protected void fall(double y, boolean onGroundIn, BlockState state, BlockPos pos) {
+    }
+
+    @Override
+    public boolean canTarget(LivingEntity target) {
+        return super.canTarget(target) && getHomePos().filter(home -> target.getPos().isInRange(home.toCenterPos(), getAreaRadius())).isPresent();
+    }
+
+    @Override
+    public boolean tryAttack(Entity target) {
+        getWorld().sendEntityStatus(this, BITE);
+        return super.tryAttack(target);
+    }
+
+    @Override
+    public void handleStatus(byte status) {
+        if (status == BITE) {
+            biteTime = MAX_BITE_TIME;
+        } else {
+            super.handleStatus(status);
+        }
     }
 
     protected boolean teleportRandomly(int maxDistance) {
@@ -260,7 +407,8 @@ public class SombraEntity extends HostileEntity {
         return teleportTo(getPos().add(VecHelper.supply(() -> random.nextTriangular(0, maxDistance))));
     }
 
-    private boolean teleportTo(Vec3d destination) {
+    @Override
+    public boolean teleportTo(Vec3d destination) {
         Vec3d oldPos = getPos();
         if (canTeleportTo(destination) && teleport(destination.x, destination.y, destination.z, true)) {
             getWorld().emitGameEvent(GameEvent.TELEPORT, oldPos, GameEvent.Emitter.of(this));
@@ -309,6 +457,7 @@ public class SombraEntity extends HostileEntity {
         getHomePos().map(NbtHelper::fromBlockPos).ifPresent(pos -> {
             nbt.put("homePos", pos);
         });
+        nbt.put("cloud", stormCloud.toNBT());
     }
 
     @Override
@@ -320,5 +469,6 @@ public class SombraEntity extends HostileEntity {
         if (hasCustomName()) {
             bossBar.setName(getDisplayName());
         }
+        stormCloud.fromNBT(nbt.getCompound("cloud"));
     }
 }

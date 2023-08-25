@@ -586,6 +586,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         sendCapabilities();
+
+        //if (!isClient()) {
+        //    CrystalShardsEntity.infestBlock((ServerWorld)asWorld(), entity.getBlockPos().down());
+        //}
     }
 
     @Override

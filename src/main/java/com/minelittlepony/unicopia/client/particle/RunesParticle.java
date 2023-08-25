@@ -6,8 +6,8 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import com.minelittlepony.common.util.Color;
+import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Link;
@@ -16,6 +16,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
@@ -62,7 +63,7 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
         velocityX = 0;
         velocityY = 0;
         velocityZ = 0;
-        Vec3d pos = link.get().map(Caster::getOriginVector).orElse(Vec3d.ZERO);
+        Vec3d pos = link.get().map(EntityConvertable::asEntity).map(Entity::getPos).orElse(Vec3d.ZERO);
         setPos(pos.x, pos.y + 0.25, pos.z);
     }
 
@@ -164,7 +165,7 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
     public void tick() {
         super.tick();
 
-        link.flatMap(Link::get).map(Caster::asEntity).ifPresentOrElse(e -> {
+        link.flatMap(Link::get).map(EntityConvertable::asEntity).ifPresentOrElse(e -> {
             if (getAlphaScale() >= 0.9F) {
                 if (stasisAge < 0) {
                     stasisAge = age;
