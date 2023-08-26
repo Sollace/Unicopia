@@ -1,0 +1,29 @@
+{
+  "parent": "unicopia:unicopia/root",
+  "display": {
+    "icon": {
+      "item": "unicopia:broken_alicorn_amulet"
+    },
+    "title": {
+      "translate": "advancements.unicopia.save_the_day.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.save_the_day.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "defeat_sombra": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "defeat_sombra"
+      }
+    },
+  },
+  "requirements": [
+    [ "defeat_sombra" ]
+  ]
+}

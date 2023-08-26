@@ -23,6 +23,7 @@ public interface UCriteria {
     CustomEventCriterion.Trigger USE_CONSUMPTION = CUSTOM_EVENT.createTrigger("use_consumption");
     CustomEventCriterion.Trigger USE_SOULMATE = CUSTOM_EVENT.createTrigger("use_soulmate");
     CustomEventCriterion.Trigger SECOND_WIND = CUSTOM_EVENT.createTrigger("second_wind");
+    CustomEventCriterion.Trigger DEFEAT_SOMBRA = CUSTOM_EVENT.createTrigger("defeat_sombra");
 
     static void bootstrap() { }
 }

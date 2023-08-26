@@ -66,6 +66,9 @@ public class UnicopiaClient implements ClientModInitializer {
 
     @Nullable
     private Float originalRainGradient;
+    private float prevRainGradient;
+    private float rainGradient;
+    private float targetRainGradient;
 
     @Override
     public void onInitializeClient() {
@@ -104,6 +107,7 @@ public class UnicopiaClient implements ClientModInitializer {
             world.setThunderGradient(1);
         } else {
             if (originalRainGradient != null) {
+                targetRainGradient = originalRainGradient;
                 world.setRainGradient(originalRainGradient);
                 world.setThunderGradient(0);
                 originalRainGradient = null;

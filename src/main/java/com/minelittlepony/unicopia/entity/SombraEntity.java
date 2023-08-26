@@ -7,7 +7,9 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.ai.ArenaAttackGoal;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.particle.ParticleSource;
@@ -19,6 +21,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -323,8 +326,10 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
             );
         }
 
-        ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 26, 0, true, false));
-        ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 26, 0, true, false));
+        if (this.age % 1000 < 50) {
+            ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 26, 0, true, false));
+            ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 26, 0, true, false));
+        }
 
         if (getTarget() == null && target instanceof PlayerEntity player && player.distanceTo(this) < getAreaRadius() / 2F) {
             setTarget(player);
@@ -433,9 +438,26 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
                 VecHelper.findInRange(this, getWorld(), home.toCenterPos(), getAreaRadius() - 0.2F, e -> e instanceof CrystalShardsEntity).forEach(e -> {
                     ((CrystalShardsEntity)e).setDecaying(true);
                 });
+
+                for (Entity e : VecHelper.findInRange(this, getWorld(), home.toCenterPos(), getAreaRadius() - 0.2F, EFFECT_TARGET_PREDICATE)) {
+                    Pony.of(e).ifPresent(pony -> {
+                        pony.getCorruption().set(0);
+                        UCriteria.DEFEAT_SOMBRA.trigger(e);
+                    });
+                }
             });
+
         }
         super.onDeath(damageSource);
+    }
+
+    @Override
+    protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
+        super.dropEquipment(source, lootingMultiplier, allowDrops);
+        ItemEntity itemEntity = dropItem(UItems.BROKEN_ALICORN_AMULET);
+        if (itemEntity != null) {
+            itemEntity.setCovetedItem();
+        }
     }
 
     @Override
