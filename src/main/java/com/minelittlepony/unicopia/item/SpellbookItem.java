@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.entity.SpellbookEntity;
 import com.minelittlepony.unicopia.entity.UEntities;
+import com.minelittlepony.unicopia.server.world.Altar;
 import com.minelittlepony.unicopia.util.Dispensable;
 
 import net.minecraft.block.DispenserBlock;
@@ -71,6 +72,11 @@ public class SpellbookItem extends BookItem implements Dispensable {
         }
 
         world.spawnEntity(book);
+
+        Altar.locateAltar(world, book.getBlockPos()).ifPresent(altar -> {
+            book.setAltar(altar);
+            altar.generateDecorations(world);
+        });
     }
 }
 

@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity;
 
+import java.util.Optional;
+
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
@@ -9,9 +11,11 @@ import com.minelittlepony.unicopia.entity.player.MeteorlogicalUtil;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;
+import com.minelittlepony.unicopia.server.world.Altar;
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -27,6 +31,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.screen.*;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
@@ -46,6 +51,8 @@ public class SpellbookEntity extends MobEntity {
     private boolean prevDaytime;
 
     private final SpellbookState state = new SpellbookState();
+
+    private Optional<Altar> altar = Optional.empty();
 
     public SpellbookEntity(EntityType<SpellbookEntity> type, World world) {
         super(type, world);
@@ -90,6 +97,10 @@ public class SpellbookEntity extends MobEntity {
     @Override
     public boolean doesRenderOnFire() {
         return false;
+    }
+
+    public void setAltar(Altar altar) {
+        this.altar = Optional.of(altar);
     }
 
     public boolean isAltered() {
@@ -177,6 +188,49 @@ public class SpellbookEntity extends MobEntity {
                 clearForcedState();
             }
         }
+
+        if (!getWorld().isClient && age % 15 == 0) {
+            altar.ifPresent(altar -> {
+
+                if (!altar.isValid(getWorld())) {
+                    altar.tearDown(null, getWorld());
+                    return;
+                }
+
+                altar.pillars().forEach(pillar -> {
+                    Vec3d center = pillar.toCenterPos().add(
+                            random.nextTriangular(0.5, 0.2),
+                            random.nextTriangular(0.5, 0.2),
+                            random.nextTriangular(0.5, 0.2)
+                    );
+
+                    ((ServerWorld)getWorld()).spawnParticles(
+                            ParticleTypes.SOUL_FIRE_FLAME,
+                            center.x - 0.5, center.y + 0.5, center.z - 0.5,
+                            0,
+                            0.5, 0.5, 0.5, 0);
+
+                    if (random.nextInt(12) != 0) {
+                        return;
+                    }
+
+                    Vec3d vel = center.subtract(this.altar.get().origin().toCenterPos()).normalize();
+
+                    ((ServerWorld)getWorld()).spawnParticles(
+                            ParticleTypes.SOUL_FIRE_FLAME,
+                            center.x - 0.5, center.y + 0.5, center.z - 0.5,
+                            0,
+                            vel.x, vel.y, vel.z, -0.2);
+
+                    if (random.nextInt(2000) == 0) {
+                        if (getWorld().getBlockState(pillar).isOf(Blocks.CRYING_OBSIDIAN)) {
+                            pillar = pillar.down();
+                        }
+                        getWorld().setBlockState(pillar, Blocks.CRYING_OBSIDIAN.getDefaultState());
+                    }
+                });
+            });
+        }
     }
 
     private boolean shouldBeSleeping() {
@@ -197,6 +251,12 @@ public class SpellbookEntity extends MobEntity {
             }
         }
         return false;
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        super.remove(reason);
+        altar.ifPresent(altar -> altar.tearDown(this, getWorld()));
     }
 
     @Override
@@ -251,6 +311,7 @@ public class SpellbookEntity extends MobEntity {
         setAltered(compound.getBoolean("altered"));
         setForcedState(compound.contains("locked") ? TriState.of(compound.getBoolean("locked")) : TriState.DEFAULT);
         state.fromNBT(compound.getCompound("spellbookState"));
+        altar = Altar.SERIALIZER.readOptional("altar", compound);
     }
 
     @Override
@@ -264,5 +325,6 @@ public class SpellbookEntity extends MobEntity {
             compound.putBoolean("locked", t);
             return null;
         });
+        Altar.SERIALIZER.writeOptional("altar", compound, altar);
     }
 }

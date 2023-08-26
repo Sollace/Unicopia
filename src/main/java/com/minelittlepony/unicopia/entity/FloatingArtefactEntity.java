@@ -1,8 +1,11 @@
 package com.minelittlepony.unicopia.entity;
 
+import java.util.Optional;
+
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.damage.UDamageSources;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.server.world.Altar;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -36,6 +39,8 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
     private float spinChange;
     private float spinChangeProgress;
 
+    private Optional<Altar> altar = Optional.empty();
+
     public FloatingArtefactEntity(EntityType<?> entityType, World world) {
         super(entityType, world);
 
@@ -47,6 +52,10 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
         dataTracker.startTracking(ITEM, ItemStack.EMPTY);
         dataTracker.startTracking(STATE, (byte)0);
         dataTracker.startTracking(SPIN, 1F);
+    }
+
+    public void setAltar(Altar altar) {
+        this.altar = Optional.of(altar);
     }
 
     public ItemStack getStack() {
@@ -144,6 +153,7 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
         setStack(ItemStack.fromNbt(compound.getCompound("Item")));
         setState(State.valueOf(compound.getInt("State")));
         setSpin(compound.getFloat("spin"));
+        altar = Altar.SERIALIZER.readOptional("altar", compound);
     }
 
     @Override
@@ -154,6 +164,7 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
         }
         compound.putInt("State", getState().ordinal());
         compound.putFloat("spin", getSpin());
+        Altar.SERIALIZER.writeOptional("altar", compound, altar);
     }
 
     @Override
@@ -170,12 +181,20 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
 
             ItemStack stack = getStack();
 
-            if (!(stack.getItem() instanceof Artifact) || ((Artifact)stack.getItem()).onArtifactDestroyed(this) != ActionResult.SUCCESS) {
-                dropStack(stack);
+            if (altar.isEmpty()) {
+                if (!(stack.getItem() instanceof Artifact) || ((Artifact)stack.getItem()).onArtifactDestroyed(this) != ActionResult.SUCCESS) {
+                    dropStack(stack);
+                }
             }
         }
 
         return false;
+    }
+
+    @Override
+    public void remove(RemovalReason reason) {
+        super.remove(reason);
+        altar.ifPresent(altar -> altar.tearDown(this, getWorld()));
     }
 
     @Override

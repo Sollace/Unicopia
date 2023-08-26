@@ -37,14 +37,18 @@ public interface PosHelper {
     }
 
     static void all(BlockPos origin, Consumer<BlockPos> consumer, Direction... directions) {
+        BlockPos.Mutable mutable = origin.mutableCopy();
         for (Direction facing : directions) {
-            consumer.accept(origin.offset(facing));
+            mutable.set(origin);
+            consumer.accept(mutable.move(facing));
         }
     }
 
     static boolean any(BlockPos origin, Predicate<BlockPos> consumer, Direction... directions) {
+        BlockPos.Mutable mutable = origin.mutableCopy();
         for (Direction facing : directions) {
-            if (consumer.test(origin.offset(facing))) {
+            mutable.set(origin);
+            if (consumer.test(mutable.move(facing))) {
                 return true;
             }
         }
