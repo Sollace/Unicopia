@@ -123,6 +123,10 @@
 
   "item.unicopia.alicorn_amulet": "Alicorn Amulet",
   "item.unicopia.alicorn_amulet.lore": "Time worn: %d",
+  
+  "item.unicopia.broken_alicorn_amulet": "Broken Alicorn Amulet",
+  "item.unicopia.unicorn_amulet": "Unicorn Amulet",
+  "item.unicopia.unicorn_amulet.lore": "Grants magical abilities to whoever wears it",
 
   "item.unicopia.grogars_bell": "Grogar's Bell",
   "item.unicopia.grogars_bell.charges": "Charges: %d / %d",
@@ -197,8 +201,12 @@
   "entity.unicopia.cast_spell": "Cast Spell",
   "entity.unicopia.cast_spell.by": "a spell cast by %s",
   "entity.unicopia.spellbook": "Spellbook",
+  "entity.unicopia.air_balloon": "Hot Air Balloon",
   "entity.unicopia.sombra": "King Sombra",
   "entity.unicopia.sombra.taunt": "That's not going to work on me!",
+  "entity.unicopia.storm_cloud": "Storm Cloud",
+  "entity.unicopia.sombra": "King Sombra",
+  "entity.unicopia.crystal_shards": "Crystal Shards",
 
   "player.reachDistance": "Reach Distance",
   "player.miningSpeed": "Mining Speed",

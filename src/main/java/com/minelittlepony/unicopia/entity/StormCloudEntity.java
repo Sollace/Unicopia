@@ -1,6 +1,10 @@
 package com.minelittlepony.unicopia.entity;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Consumer;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -9,13 +13,17 @@ import com.minelittlepony.unicopia.server.world.WeatherConditions;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -29,6 +37,10 @@ public class StormCloudEntity extends Entity {
     private static final TrackedData<Float> TARGET_SIZE = DataTracker.registerData(StormCloudEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Boolean> DISSIPATING = DataTracker.registerData(StormCloudEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
+    static final float MAX_SIZE = 30;
+    static final int CLEAR_TARGET_ALTITUDE = 90;
+    static final int STORMY_TARGET_ALTITUDE = 20;
+
     private float prevSize;
     private float currentSize;
 
@@ -36,6 +48,10 @@ public class StormCloudEntity extends Entity {
 
     private int phase;
     private int nextPhase;
+
+    @Nullable
+    private ServerBossBar bossBar;
+    private final Set<ServerPlayerEntity> trackingPlayers = new HashSet<>();
 
     public StormCloudEntity(EntityType<StormCloudEntity> type, World world) {
         super(type, world);
@@ -88,7 +104,7 @@ public class StormCloudEntity extends Entity {
     }
 
     public float getSize(float tickDelta) {
-        return MathHelper.clamp(MathHelper.lerp(tickDelta, prevSize, currentSize), 1, 30);
+        return MathHelper.clamp(MathHelper.lerp(tickDelta, prevSize, currentSize), 1, MAX_SIZE);
     }
 
     public void setSize(float size) {
@@ -103,12 +119,11 @@ public class StormCloudEntity extends Entity {
     public void tick() {
         setFireTicks(1);
 
-
         prevSize = currentSize;
         float targetSize = dataTracker.get(TARGET_SIZE);
         if (currentSize != targetSize) {
             float sizeDifference = (dataTracker.get(TARGET_SIZE) - currentSize);
-            currentSize = Math.abs(sizeDifference) < 0.01F ? targetSize : currentSize + (sizeDifference * 0.2F);
+            currentSize = Math.abs(sizeDifference) < 0.01F ? targetSize : currentSize + (sizeDifference * 0.02F);
         }
 
         if (isStormy()) {
@@ -120,7 +135,7 @@ public class StormCloudEntity extends Entity {
 
         if (isLogicalSideForUpdatingMovement()) {
             float groundY = getWorld().getTopY(Type.MOTION_BLOCKING_NO_LEAVES, (int)getX(), (int)getZ());
-            float cloudY = (float)getY() - (isStormy() ? 20 : 90);
+            float cloudY = (float)getY() - (isStormy() ? STORMY_TARGET_ALTITUDE : CLEAR_TARGET_ALTITUDE);
 
             addVelocity(0, 0.03F * (groundY - cloudY), 0);
 
@@ -169,6 +184,11 @@ public class StormCloudEntity extends Entity {
                 }
             }
 
+            if (cursed) {
+                float percent = Math.min(1, (size + 1) / MAX_SIZE);
+                getBossBar().setPercent(percent);
+            }
+
             if (currentSize == targetSize) {
                 if (isDissipating()) {
                     if (size < 2) {
@@ -181,10 +201,11 @@ public class StormCloudEntity extends Entity {
                         }
                     }
                 } else {
-                    if (size < 30) {
+                    if (size < MAX_SIZE) {
                         if (cursed) {
                             setSize(size + 1);
-                            setStormTicks(1);
+                            setStormTicks(-1);
+
                             spawnLightningStrike(getBlockPos(), false, false);
                             playSound(USounds.AMBIENT_WIND_GUST, 1, 1);
                         }
@@ -192,7 +213,7 @@ public class StormCloudEntity extends Entity {
                 }
             }
 
-            if (size >= 30) {
+            if (size >= MAX_SIZE) {
                 if (cursed) {
                     setStormTicks(-1);
 
@@ -208,9 +229,10 @@ public class StormCloudEntity extends Entity {
                             pickRandomPoints(13, pos -> spawnLightningStrike(pos, true, false));
 
                             cursed = false;
-                            SombraEntity sombra = UEntities.SOMBRA.create(getWorld());
+                            SombraEntity sombra = new SombraEntity(UEntities.SOMBRA, getWorld(), getBossBar());
                             sombra.setPosition(getPos());
                             sombra.setHomePos(getWorld().getTopPosition(Type.MOTION_BLOCKING_NO_LEAVES, getBlockPos()));
+                            sombra.setScaleFactor(8);
                             sombra.stormCloud.set(this);
                             getWorld().spawnEntity(sombra);
 
@@ -299,6 +321,15 @@ public class StormCloudEntity extends Entity {
         super.handleStatus(status);
     }
 
+    private ServerBossBar getBossBar() {
+        if (this.bossBar == null) {
+            this.bossBar = SombraEntity.createBossBar(Text.translatable("unicopia.entity.sombra").formatted(Formatting.OBFUSCATED));
+            trackingPlayers.removeIf(Entity::isRemoved);
+            trackingPlayers.forEach(this.bossBar::addPlayer);
+        }
+        return this.bossBar;
+    }
+
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         nbt.putInt("stormTicks", getStormTicks());
@@ -314,4 +345,25 @@ public class StormCloudEntity extends Entity {
         setSize(currentSize = nbt.getFloat("size"));
         cursed = nbt.getBoolean("cursed");
     }
+
+    @Override
+    public void onStartedTrackingBy(ServerPlayerEntity player) {
+        super.onStartedTrackingBy(player);
+        trackingPlayers.removeIf(Entity::isRemoved);
+        trackingPlayers.add(player);
+        if (bossBar != null) {
+            bossBar.addPlayer(player);
+        }
+    }
+
+    @Override
+    public void onStoppedTrackingBy(ServerPlayerEntity player) {
+        super.onStoppedTrackingBy(player);
+        trackingPlayers.removeIf(Entity::isRemoved);
+        trackingPlayers.remove(player);
+        if (bossBar != null) {
+            bossBar.removePlayer(player);
+        }
+    }
+
 }

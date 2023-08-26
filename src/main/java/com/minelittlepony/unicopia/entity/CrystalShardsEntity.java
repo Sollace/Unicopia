@@ -63,7 +63,7 @@ public class CrystalShardsEntity extends Entity {
     }
 
     public static Set<Direction> getOccupiedFaces(World world, BlockPos pos) {
-        return world.getEntitiesByClass(CrystalShardsEntity.class, new Box(pos).expand(1), EntityPredicates.VALID_ENTITY)
+        return world.getEntitiesByClass(CrystalShardsEntity.class, new Box(pos).expand(4), EntityPredicates.VALID_ENTITY)
                 .stream()
                 .map(e -> e.getAttachmentFace())
                 .distinct()

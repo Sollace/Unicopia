@@ -120,6 +120,11 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     }
 
     public void initAi(GoalSelector goals, GoalSelector targets) {
+
+        if (entity instanceof SombraEntity) {
+            return;
+        }
+
         this.goals = Optional.of(goals);
         this.targets = Optional.of(targets);
 

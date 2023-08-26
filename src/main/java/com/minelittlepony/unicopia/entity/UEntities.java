@@ -46,15 +46,15 @@ public interface UEntities {
     EntityType<SpellbookEntity> SPELLBOOK = register("spellbook", FabricEntityTypeBuilder.create(SpawnGroup.MISC, SpellbookEntity::new)
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(0.9F, 0.5F)));
-    EntityType<SombraEntity> SOMBRA = register("sombra", FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, SombraEntity::new)
-            .trackRangeBlocks(200)
-            .dimensions(EntityDimensions.fixed(1F, 2F)));
+    EntityType<SombraEntity> SOMBRA = register("sombra", FabricEntityTypeBuilder.<SombraEntity>create(SpawnGroup.MONSTER, SombraEntity::new)
+            .trackRangeBlocks(20)
+            .dimensions(EntityDimensions.changing(2F, 4F)));
     EntityType<CrystalShardsEntity> CRYSTAL_SHARDS = register("crystal_shards", FabricEntityTypeBuilder.create(SpawnGroup.MISC, CrystalShardsEntity::new)
             .trackRangeBlocks(100)
-            .dimensions(EntityDimensions.fixed(1F, 1F)));
+            .dimensions(EntityDimensions.changing(1F, 1F)));
     EntityType<StormCloudEntity> STORM_CLOUD = register("storm_cloud", FabricEntityTypeBuilder.create(SpawnGroup.MISC, StormCloudEntity::new)
             .trackRangeBlocks(200)
-            .dimensions(EntityDimensions.fixed(20F, 20F)));
+            .dimensions(EntityDimensions.changing(20F, 20F)));
     EntityType<AirBalloonEntity> AIR_BALLOON = register("air_balloon", FabricEntityTypeBuilder.create(SpawnGroup.MISC, AirBalloonEntity::new)
             .trackRangeBlocks(1000)
             .dimensions(EntityDimensions.changing(2.5F, 0.1F)));

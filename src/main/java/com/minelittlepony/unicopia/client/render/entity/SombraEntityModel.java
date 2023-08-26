@@ -83,7 +83,13 @@ public class SombraEntityModel extends EntityModel<SombraEntity> {
 
 	@Override
     public void animateModel(SombraEntity entity, float limbAngle, float limbDistance, float tickDelta) {
-	    float jawsOpenAmount = entity.getBiteAmount(tickDelta); //(1 - Math.max(0, MathHelper.sin(ageInTicks * 0.1F)));
+	    float jawsOpenAmount = entity.getBiteAmount(tickDelta);
+        float scale = entity.getScaleFactor(tickDelta) * 1.7F;
+
+        part.pivotY = scale * -20;
+        part.xScale = scale;
+        part.yScale = scale;
+        part.zScale = scale;
 
 	    lowerJaw.resetTransform();
         lowerJaw.pivotY -= jawsOpenAmount * 3;
@@ -96,14 +102,8 @@ public class SombraEntityModel extends EntityModel<SombraEntity> {
 
 	@Override
 	public void setAngles(SombraEntity entity, float limbAngle, float limbDistance, float animationProgress, float netHeadYaw, float headPitch) {
-	    float scale = 1.6F;
-
-	    part.xScale = scale;
-	    part.yScale = scale;
-	    part.zScale = scale;
-
 	    part.yaw = -MathHelper.HALF_PI;
-	    part.pivotY = MathHelper.sin(animationProgress * 0.05F) - 12;
+	    part.pivotY += MathHelper.sin(animationProgress * 0.05F);
 	    part.pivotZ = MathHelper.cos(animationProgress * 0.045F);
 
 	    head.pitch = headPitch * MathHelper.RADIANS_PER_DEGREE;

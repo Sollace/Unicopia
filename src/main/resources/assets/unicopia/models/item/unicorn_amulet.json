@@ -1,6 +1,6 @@
 {
     "parent": "unicopia:item/amulet",
     "textures": {
-        "layer0": "unicopia:item/alicorn_amulet"
+        "layer0": "unicopia:item/unicorn_amulet"
     }
 }
