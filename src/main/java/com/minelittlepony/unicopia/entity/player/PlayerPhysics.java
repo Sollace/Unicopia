@@ -336,7 +336,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 double horizontalSpeed = this.getHorizontalMotion();
                 double verticalSpeed = velocity.y;
 
-                if (Abilities.RAINBOOM.canUse(pony.getActualSpecies()) && horizontalSpeed != 0 && verticalSpeed < -0.3F && (verticalSpeed / horizontalSpeed) < -0.3F) {
+                if (Abilities.RAINBOOM.canUse(pony.getCompositeRace()) && horizontalSpeed != 0 && verticalSpeed < -0.3F && (verticalSpeed / horizontalSpeed) < -0.3F) {
                     ticksDiving++;
                 } else {
                     ticksDiving = 0;

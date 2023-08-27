@@ -137,7 +137,9 @@ public class UHud {
 
         slots.forEach(slot -> slot.renderBackground(context, abilities, swap, tickDelta));
 
-        if (pony.getObservedSpecies().canCast()) {
+        boolean canCast = Abilities.CAST.canUse(pony.getCompositeRace());
+
+        if (canCast) {
             Ability<?> ability = pony.getAbilities().getStat(AbilitySlot.PRIMARY)
                     .getAbility(Unicopia.getConfig().hudPage.get())
                     .orElse(null);
@@ -168,7 +170,7 @@ public class UHud {
 
         matrices.pop();
 
-        if (pony.getObservedSpecies().canCast()) {
+        if (canCast) {
             renderSpell(context, pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 10 - xDirection * 13, hudY + 2);
             renderSpell(context, pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 8 - xDirection * 2, hudY - 6);
         }

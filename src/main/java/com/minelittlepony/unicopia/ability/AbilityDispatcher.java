@@ -262,7 +262,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
         public synchronized Optional<Ability<?>> getActiveAbility() {
             return activeAbility.filter(ability -> {
-                return (!(ability == null || (triggered && warmup == 0 && cooldown == 0)) && player.getCompositeRace().any(ability::canUse));
+                return (!(ability == null || (triggered && warmup == 0 && cooldown == 0)) && ability.canUse(player.getCompositeRace()));
             });
         }
 
