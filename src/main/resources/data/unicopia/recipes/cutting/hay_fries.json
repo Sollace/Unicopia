@@ -14,5 +14,13 @@
       "count": 9,
       "item": "unicopia:hay_fries"
     }
+  ],
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "farmersdelight"
+      ]
+    }
   ]
 }

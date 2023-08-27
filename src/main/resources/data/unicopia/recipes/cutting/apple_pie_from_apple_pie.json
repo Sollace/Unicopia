@@ -5,5 +5,13 @@
   ],
   "result": {
     "item": "unicopia:apple_pie"
-  }
+  },
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "farmersdelight"
+      ]
+    }
+  ]
 }
