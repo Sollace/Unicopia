@@ -20,6 +20,7 @@ import com.minelittlepony.unicopia.entity.player.PlayerCamera;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.handler.ClientNetworkHandlerImpl;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
+import com.minelittlepony.unicopia.util.Lerp;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -36,6 +37,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 public class UnicopiaClient implements ClientModInitializer {
+
+    @Nullable
+    private Float originalRainGradient;
+    private final Lerp rainGradient = new Lerp(0);
 
     public static Optional<PlayerCamera> getCamera() {
         PlayerEntity player = MinecraftClient.getInstance().player;
@@ -63,12 +68,6 @@ public class UnicopiaClient implements ClientModInitializer {
     public static float getWorldBrightness(float initial) {
         return 0.6F;
     }
-
-    @Nullable
-    private Float originalRainGradient;
-    private float prevRainGradient;
-    private float rainGradient;
-    private float targetRainGradient;
 
     @Override
     public void onInitializeClient() {
@@ -99,20 +98,35 @@ public class UnicopiaClient implements ClientModInitializer {
         BlockPos pos = MinecraftClient.getInstance().getCameraEntity().getBlockPos();
         float tickDelta = MinecraftClient.getInstance().getTickDelta();
 
+        Float targetRainGradient = getTargetRainGradient(world, pos, tickDelta);
+
+        if (targetRainGradient != null) {
+            rainGradient.update(targetRainGradient, 2000);
+        }
+
+        float gradient = rainGradient.getValue();
+        if (!rainGradient.isFinished()) {
+            world.setRainGradient(gradient);
+            world.setThunderGradient(gradient);
+        }
+    }
+
+    private Float getTargetRainGradient(ClientWorld world, BlockPos pos, float tickDelta) {
         if (WeatherConditions.get(world).isInRangeOfStorm(pos)) {
             if (originalRainGradient == null) {
                 originalRainGradient = world.getRainGradient(tickDelta);
             }
-            world.setRainGradient(1);
-            world.setThunderGradient(1);
-        } else {
-            if (originalRainGradient != null) {
-                targetRainGradient = originalRainGradient;
-                world.setRainGradient(originalRainGradient);
-                world.setThunderGradient(0);
-                originalRainGradient = null;
-            }
+
+            return 1F;
         }
+
+        if (originalRainGradient != null) {
+            Float f = originalRainGradient;
+            originalRainGradient = null;
+            return f;
+        }
+
+        return null;
     }
 
     private void onScreenInit(Screen screen, ButtonList buttons) {

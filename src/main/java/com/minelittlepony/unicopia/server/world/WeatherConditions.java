@@ -137,7 +137,16 @@ public class WeatherConditions extends PersistentState implements Tickable {
 
         public boolean inRange(BlockPos pos) {
             final StormCloudEntity cloud = this.cloud.get();
-            return cloud != null && cloud.getBlockPos().isWithinDistance(pos, cloud.getSizeInBlocks());
+            if (cloud == null) {
+                return false;
+            }
+            BlockPos cloudPos = cloud.getBlockPos();
+            if (pos.getY() > cloudPos.getY() + cloud.getHeight()) {
+                return false;
+            }
+            float radius = cloud.getSizeInBlocks();
+            return (cloudPos.getX() - pos.getX()) <= radius
+                    && (cloudPos.getZ() - pos.getZ()) <= radius;
         }
 
         public boolean shouldRemove() {
