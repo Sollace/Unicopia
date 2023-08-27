@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
@@ -34,18 +35,19 @@ public class NetworkedReferenceSet<T> {
         this.factory = factory;
     }
 
-    public boolean containsReference(UUID id) {
+    public synchronized boolean containsReference(UUID id) {
         return ids.contains(id);
     }
 
-    public Stream<T> getReferences() {
+    public synchronized Stream<T> getReferences() {
         return ids.stream().map(id -> values.get(id))
+                .filter(Objects::nonNull)
                 .map(a -> a.getReference())
                 .filter(Optional::isPresent)
                 .map(Optional::get);
     }
 
-    public boolean clear() {
+    public synchronized boolean clear() {
         dirty |= !ids.isEmpty() || !values.isEmpty();
         ids.clear();
         try {
@@ -66,7 +68,7 @@ public class NetworkedReferenceSet<T> {
         }
     }
 
-    private NetworkedReference<T> addReference(UUID newValue) {
+    private synchronized NetworkedReference<T> addReference(UUID newValue) {
         return values.computeIfAbsent(newValue, id -> {
             dirty = true;
             ids.remove(id);
@@ -81,7 +83,7 @@ public class NetworkedReferenceSet<T> {
         }
     }
 
-    private void removeReference(UUID id) {
+    private synchronized void removeReference(UUID id) {
         dirty |= ids.remove(id);
         NetworkedReference<T> i = values.remove(id);
         if (i != null) {
@@ -123,20 +125,23 @@ public class NetworkedReferenceSet<T> {
         }
     }
 
-    public NbtCompound toNbt() {
+    public synchronized NbtCompound toNbt() {
         NbtCompound tag = new NbtCompound();
         NbtList ids = new NbtList();
         this.ids.forEach(id -> {
             String sid = id.toString();
-            ids.add(NbtString.of(sid));
-            tag.put(sid, values.get(id).toNbt());
+            NetworkedReference<?> ref = values.get(id);
+            if (ref != null) {
+                ids.add(NbtString.of(sid));
+                tag.put(sid, values.get(id).toNbt());
+            }
         });
         tag.put("keys", ids);
         dirty = false;
         return tag;
     }
 
-    public boolean isDirty() {
+    public synchronized boolean isDirty() {
         return dirty || values.values().stream().anyMatch(NetworkedReference::isDirty);
     }
 }
