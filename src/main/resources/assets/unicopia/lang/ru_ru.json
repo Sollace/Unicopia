@@ -124,6 +124,10 @@
   "item.unicopia.alicorn_amulet": "Амулет аликорна",
   "item.unicopia.alicorn_amulet.lore": "Время ношения: %d",
 
+  "item.unicopia.broken_alicorn_amulet": "Сломанный амулет аликорна",
+  "item.unicopia.unicorn_amulet": "Амулет единорога",
+    "item.unicopia.unicorn_amulet.lore": "Наделяет носящего магическими способностями",
+
   "item.unicopia.grogars_bell": "Колокольчик Грогара",
   "item.unicopia.grogars_bell.charges": "Заряды: %d / %d",
   "item.unicopia.magic_staff": "Волшебный посох",
@@ -197,8 +201,11 @@
   "entity.unicopia.cast_spell": "Заклинание",
   "entity.unicopia.cast_spell.by": "Заклинание, наложенное %s",
   "entity.unicopia.spellbook": "Книга заклинаний",
+  "entity.unicopia.air_balloon": "Воздушный шар",
   "entity.unicopia.sombra": "Король Сомбра",
   "entity.unicopia.sombra.taunt": "На меня это не подействует!",
+  "entity.unicopia.storm_cloud": "Штормовое облако",
+  "entity.unicopia.crystal_shards": "Кристальные осколки",
 
   "player.reachDistance": "Расстояние до цели",
   "player.miningSpeed": "Скорость добычи",
@@ -207,7 +214,7 @@
   "unicopia.effect.tribe.stage.initial": "Похоже, что эффекта нет",
   "unicopia.effect.tribe.stage.crawling": "Вы чувствуете, как кожа ползёт по спине",
   "unicopia.effect.tribe.stage.determination": "По мере того, как ваши кости выравниваются, вы наполняетесь решимостью",
-  "unicopia.effect.tribe.stage.resurection": "Зная то, что вы вернетесь в этот мир в качестве %s",
+  "unicopia.effect.tribe.stage.resurection": "Зная то, что вы вернетесь в этот мир как %s",
 
   "effect.unicopia.food_poisoning": "Пищевое отравление",
   "effect.unicopia.sun_blindness": "Солнечная слепота",
@@ -874,6 +881,13 @@
   "advancements.unicopia.second_wind.description": "Летите сквозь боль",
   "advancements.unicopia.deter_phantom.title": "Что летает вокруг",
   "advancements.unicopia.deter_phantom.description": "Поднимитесь и дайте этим фантомам попробовать их собственное лекарство",
+
+  "advancements.unicopia.love_is_power.title": "Любовь - это сила",
+  "advancements.unicopia.love_is_power.description": "Изгоните короля Сомбра с помощью кристального сердца",
+  "advancements.unicopia.save_the_day.title": "Спасти день",
+  "advancements.unicopia.save_the_day.description": "Победите короля Сомбра раз и навсегда",
+  "advancements.unicopia.doctor_sombrero.title": "Доктор Сомбреро",
+  "advancements.unicopia.doctor_sombrero.description": "Это не мэйр-иачи!",
 
   "unicopia.toast.discoveries.title": "Новые открытия!",
   "unicopia.toast.discoveries.description": "Проверьте свою книгу заклинаний"
