@@ -72,6 +72,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.event.GameEvent;
 
 public class SombraEntity extends HostileEntity implements ArenaCombatant, ParticleSource<SombraEntity> {
@@ -219,7 +220,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
         Optional<BlockPos> homePos = getHomePos();
 
         if (homePos.isEmpty() && !isRemoved()) {
-            setHomePos(getBlockPos());
+            setHomePos(getWorld().getTopPosition(Type.MOTION_BLOCKING_NO_LEAVES, getBlockPos()));
             homePos = getHomePos();
         }
 
@@ -242,10 +243,9 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
             setPositionTarget(homePos.get(), (int)getAreaRadius());
         }
 
-        setVelocity(Vec3d.ZERO);
         super.tick();
 
-        if (getTarget() == null && getVelocity().y < 0) {
+        if (getTarget() == null && getVelocity().y < -0.1F) {
             setVelocity(getVelocity().multiply(1, 0.4, 1));
         }
 
@@ -285,7 +285,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
             }
 
             if (getTarget() == null && getNavigation().isIdle()) {
-                getNavigation().startMovingTo(homePos.get().getX(), homePos.get().getY() + 10, homePos.get().getZ(), 2);
+                getNavigation().startMovingTo(homePos.get().getX(), homePos.get().getY() + 5, homePos.get().getZ(), 2);
             }
         }
 
