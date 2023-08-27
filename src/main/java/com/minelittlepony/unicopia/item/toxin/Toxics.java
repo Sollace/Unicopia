@@ -121,10 +121,10 @@ public interface Toxics {
 
     Toxic BAT_PONYS_DELIGHT = register("bat_ponys_delight", new Toxic.Builder(Ailment.INNERT)
             .with(Race.BAT, Ailment.of(Toxicity.SAFE,
-                    Toxin.of(StatusEffects.HEALTH_BOOST, 30, 2)
-                        .and(Toxin.of(StatusEffects.JUMP_BOOST, 30, 1))
-                        .and(Toxin.of(StatusEffects.SPEED, 30, 1))
-                        .and(Toxin.of(StatusEffects.REGENERATION, 3, 3))
+                    Toxin.of(StatusEffects.HEALTH_BOOST, 30, 60, 2, 6)
+                        .and(Toxin.of(StatusEffects.JUMP_BOOST, 30, 60, 1, 6))
+                        .and(Toxin.of(StatusEffects.SPEED, 30, 30, 1, 6))
+                        .and(Toxin.of(StatusEffects.REGENERATION, 3, 30, 3, 6))
             ))
     );
 
