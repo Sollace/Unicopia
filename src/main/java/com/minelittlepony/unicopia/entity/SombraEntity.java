@@ -273,7 +273,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
             generateBodyParticles();
         } else {
             for (BlockPos p : BlockPos.iterateOutwards(getBlockPos(), 2, 1, 2)) {
-                if (getWorld().getBlockState(p).getLuminance() > 3) {
+                if (getWorld().getBlockState(p).getLuminance() > 13) {
                     destroyLightSource(p);
                 }
             }
