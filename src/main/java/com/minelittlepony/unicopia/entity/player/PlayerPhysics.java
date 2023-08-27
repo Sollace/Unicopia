@@ -357,7 +357,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     pony.getMagicalReserves().getCharge().set(0);
                 }
 
-                if (!creative && type.isAvian()) {
+                if (!creative) {
                     checkAvianTakeoffConditions(velocity);
                 }
             }
