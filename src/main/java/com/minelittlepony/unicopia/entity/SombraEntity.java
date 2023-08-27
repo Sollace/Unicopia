@@ -12,8 +12,10 @@ import com.minelittlepony.unicopia.entity.ai.ArenaAttackGoal;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleSource;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -278,7 +280,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
                 }
             }
 
-            if (random.nextInt(200) == 0) {
+            if (random.nextInt(150) == 0) {
                 for (BlockPos p : BlockPos.iterateRandomly(random, 3, getBlockPos(), 20)) {
                     CrystalShardsEntity.infestBlock((ServerWorld)getWorld(), p);
                 }
@@ -286,6 +288,21 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
 
             if (getTarget() == null && getNavigation().isIdle()) {
                 getNavigation().startMovingTo(homePos.get().getX(), homePos.get().getY() + 5, homePos.get().getZ(), 2);
+            }
+        }
+
+        if (getHealth() < getMaxHealth()) {
+            for (Entity shard : getWorld().getEntitiesByClass(CrystalShardsEntity.class, getBoundingBox().expand(50), EntityPredicates.VALID_ENTITY)) {
+
+                if (age % 150 == 0) {
+                    heal(2);
+                }
+                ParticleUtils.spawnParticle(getWorld(),
+                        new FollowingParticleEffect(UParticles.HEALTH_DRAIN, this, 0.2F)
+                        .withChild(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE),
+                        shard.getPos(),
+                        Vec3d.ZERO
+                );
             }
         }
 
@@ -345,7 +362,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     }
 
     protected void generateBodyParticles() {
-        for (int i = 0; i < 23; i++) {
+        for (int i = 0; i < 3; i++) {
             getWorld().addParticle(ParticleTypes.LARGE_SMOKE,
                     random.nextTriangular(getX(), 8),
                     random.nextTriangular(getY(), 1),
