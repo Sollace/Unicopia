@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.StormCloudEntity;
-import com.minelittlepony.unicopia.entity.player.MeteorlogicalUtil;
+import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.block.BlockState;

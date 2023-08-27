@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.entity.player;
+package com.minelittlepony.unicopia.util;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.hit.HitResult.Type;

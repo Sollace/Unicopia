@@ -6,9 +6,9 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
-import com.minelittlepony.unicopia.entity.player.MeteorlogicalUtil;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
+import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
