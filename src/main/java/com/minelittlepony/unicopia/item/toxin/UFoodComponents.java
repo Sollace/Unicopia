@@ -24,6 +24,7 @@ public interface UFoodComponents {
     FoodComponent BURNED_JUICE = builder(3, 1).build();
 
     FoodComponent RANDOM_FOLIAGE = builder(2, 1).build();
+    FoodComponent RANDOM_FOLIAGE_FILLING = builder(18, 1).build();
     FoodComponent INSECTS = builder(1, 0).alwaysEdible().build();
 
     FoodComponent CEREAL = builder(9, 0.8F).build();

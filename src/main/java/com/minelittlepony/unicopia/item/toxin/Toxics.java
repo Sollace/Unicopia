@@ -25,6 +25,12 @@ public interface Toxics {
             .with(Race.CHANGELING, of(FAIR, LOVE_SICKNESS))
     );
 
+    Toxic FORAGE_EDIBLE_FILLING = register("forage_edible_filling", new Toxic.Builder(Ailment.INNERT)
+            .food(UFoodComponents.RANDOM_FOLIAGE_FILLING)
+            .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))
+            .with(Race.CHANGELING, of(FAIR, LOVE_SICKNESS))
+    );
+
     Toxic FORAGE_RISKY = register("forage_risky", new Toxic.Builder(of(FAIR, WEAK_NAUSEA.withChance(20)))
             .food(UFoodComponents.RANDOM_FOLIAGE)
             .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))

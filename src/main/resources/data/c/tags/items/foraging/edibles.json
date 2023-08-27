@@ -2,7 +2,6 @@
   "replace": false,
   "values": [
     { "id": "#c:mushrooms", "required": false },
-    { "id": "#c:saplings", "required": false },
-    { "id": "farmersdelight:horse_feed", "required": false }
+    { "id": "#c:saplings", "required": false }
   ]
 }
