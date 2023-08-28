@@ -100,7 +100,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
         for (int i = 0; i < 4; i++) {
             final EquipmentSlot eq = EquipmentSlot.values()[5 - i];
-            addSlot(new InventorySlot(this, inventory, PlayerInventory.OFF_HAND_SLOT - i - 1, 340, 50 + (i * 20)) {
+            addSlot(new InventorySlot(this, inventory, PlayerInventory.OFF_HAND_SLOT - i - 1, 335, 50 + (i * 20)) {
                 @Override
                 public int getMaxItemCount() {
                     return 1;
@@ -127,12 +127,12 @@ public class SpellbookScreenHandler extends ScreenHandler {
             });
         }
 
-        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.FACE, 0, 340 + 20, 60).ifPresent(this::addSlot);
-        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.NECKLACE, 0, 340 + 20, 60 + 20).ifPresent(this::addSlot);
-        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.MAINHAND, 0, 350 - 20, 170).ifPresent(this::addSlot);
-        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.OFFHAND, 0, 330 + 20, 170).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.FACE, 0, 336 + 20, 60).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.NECKLACE, 0, 336 + 20, 60 + 20).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.MAINHAND, 0, 336 - 10, 155).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.OFFHAND, 0, 336 + 20, 155).ifPresent(this::addSlot);
 
-        addSlot(new InventorySlot(this, inventory, PlayerInventory.OFF_HAND_SLOT, 340, 150) {
+        addSlot(new InventorySlot(this, inventory, PlayerInventory.OFF_HAND_SLOT, 342, 140) {
             @Override
             public Pair<Identifier, Identifier> getBackgroundSprite() {
                 return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT);
