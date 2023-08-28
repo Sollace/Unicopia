@@ -36,6 +36,7 @@ public interface UTags {
     TagKey<Block> GLASS_BLOCKS = block("glass_blocks");
     TagKey<Block> FRAGILE = block("fragile");
     TagKey<Block> INTERESTING = block("interesting");
+    TagKey<Block> CATAPULT_IMMUNE = block("catapult_immune");
 
     TagKey<Block> CRYSTAL_HEART_BASE = block("crystal_heart_base");
     TagKey<Block> CRYSTAL_HEART_ORNAMENT = block("crystal_heart_ornament");

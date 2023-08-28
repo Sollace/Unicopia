@@ -336,6 +336,8 @@ public class StormCloudEntity extends Entity {
         nbt.putInt("clearTicks", getClearTicks());
         nbt.putFloat("size", getSize(1));
         nbt.putBoolean("cursed", cursed);
+        nbt.putInt("phase", phase);
+        nbt.putInt("nextPhase", nextPhase);
     }
 
     @Override
@@ -344,6 +346,8 @@ public class StormCloudEntity extends Entity {
         setClearTicks(nbt.getInt("clearTicks"));
         setSize(currentSize = nbt.getFloat("size"));
         cursed = nbt.getBoolean("cursed");
+        phase = nbt.getInt("phase");
+        nextPhase = nbt.getInt("nextPhase");
     }
 
     @Override

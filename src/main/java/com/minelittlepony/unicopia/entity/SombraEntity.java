@@ -12,8 +12,10 @@ import com.minelittlepony.unicopia.entity.ai.ArenaAttackGoal;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleSource;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -72,6 +74,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.event.GameEvent;
 
 public class SombraEntity extends HostileEntity implements ArenaCombatant, ParticleSource<SombraEntity> {
@@ -219,7 +222,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
         Optional<BlockPos> homePos = getHomePos();
 
         if (homePos.isEmpty() && !isRemoved()) {
-            setHomePos(getBlockPos());
+            setHomePos(getWorld().getTopPosition(Type.MOTION_BLOCKING_NO_LEAVES, getBlockPos()));
             homePos = getHomePos();
         }
 
@@ -242,10 +245,9 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
             setPositionTarget(homePos.get(), (int)getAreaRadius());
         }
 
-        setVelocity(Vec3d.ZERO);
         super.tick();
 
-        if (getTarget() == null && getVelocity().y < 0) {
+        if (getTarget() == null && getVelocity().y < -0.1F) {
             setVelocity(getVelocity().multiply(1, 0.4, 1));
         }
 
@@ -273,19 +275,34 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
             generateBodyParticles();
         } else {
             for (BlockPos p : BlockPos.iterateOutwards(getBlockPos(), 2, 1, 2)) {
-                if (getWorld().getBlockState(p).getLuminance() > 3) {
+                if (getWorld().getBlockState(p).getLuminance() > 13) {
                     destroyLightSource(p);
                 }
             }
 
-            if (random.nextInt(200) == 0) {
+            if (random.nextInt(150) == 0) {
                 for (BlockPos p : BlockPos.iterateRandomly(random, 3, getBlockPos(), 20)) {
                     CrystalShardsEntity.infestBlock((ServerWorld)getWorld(), p);
                 }
             }
 
             if (getTarget() == null && getNavigation().isIdle()) {
-                getNavigation().startMovingTo(homePos.get().getX(), homePos.get().getY() + 10, homePos.get().getZ(), 2);
+                getNavigation().startMovingTo(homePos.get().getX(), homePos.get().getY() + 5, homePos.get().getZ(), 2);
+            }
+        }
+
+        if (getHealth() < getMaxHealth()) {
+            for (Entity shard : getWorld().getEntitiesByClass(CrystalShardsEntity.class, getBoundingBox().expand(50), EntityPredicates.VALID_ENTITY)) {
+
+                if (age % 150 == 0) {
+                    heal(2);
+                }
+                ParticleUtils.spawnParticle(getWorld(),
+                        new FollowingParticleEffect(UParticles.HEALTH_DRAIN, this, 0.2F)
+                        .withChild(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE),
+                        shard.getPos(),
+                        Vec3d.ZERO
+                );
             }
         }
 
@@ -345,7 +362,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     }
 
     protected void generateBodyParticles() {
-        for (int i = 0; i < 23; i++) {
+        for (int i = 0; i < 3; i++) {
             getWorld().addParticle(ParticleTypes.LARGE_SMOKE,
                     random.nextTriangular(getX(), 8),
                     random.nextTriangular(getY(), 1),

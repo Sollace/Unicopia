@@ -22,7 +22,7 @@
         "event": "defeat_sombra",
         "repeats": 2
       }
-    },
+    }
   },
   "requirements": [
     [ "defeat_sombra" ]

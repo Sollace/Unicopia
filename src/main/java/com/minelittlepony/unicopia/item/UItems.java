@@ -146,7 +146,7 @@ public interface UItems {
     AmuletItem UNICORN_AMULET = register("unicorn_amulet", new AmuletItem(new FabricItemSettings()
             .maxCount(1)
             .maxDamage(890)
-            .rarity(Rarity.UNCOMMON), 900), ItemGroups.TOOLS);
+            .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
 
     GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
     GlassesItem BROKEN_SUNGLASSES = register("broken_sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);

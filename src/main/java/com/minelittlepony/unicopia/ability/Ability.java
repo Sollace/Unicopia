@@ -58,6 +58,14 @@ public interface Ability<T extends Hit> {
 
     /**
      * Checks if the given race is permitted to use this ability
+     * @param race The player's species
+     */
+    default boolean canUse(Race.Composite race) {
+        return race.any(this::canUse);
+    }
+
+    /**
+     * Checks if the given race is permitted to use this ability
      * @param playerSpecies The player's species
      */
     boolean canUse(Race playerSpecies);

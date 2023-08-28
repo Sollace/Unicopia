@@ -101,7 +101,12 @@ public interface Toxin extends Affliction {
     }
 
     static Toxin of(StatusEffect effect, int seconds, int amplifier) {
-        int ticks = seconds * 20;
+        return of(effect, seconds, -1, amplifier, -1);
+    }
+
+    static Toxin of(StatusEffect effect, int seconds, int maxSeconds, int amplifier, int maxAmplifier) {
+        final int ticks = seconds * 20;
+        final int maxTicks = maxSeconds * 20;
 
         MutableText text = effect.getName().copy();
 
@@ -112,18 +117,20 @@ public interface Toxin extends Affliction {
         text = Text.translatable("potion.withDuration", text, StringHelper.formatTicks(ticks));
 
         return of(text, (player, stack) -> {
-            StatusEffectInstance current = player.getStatusEffect(effect);
             float health = player.getHealth();
-            if (current != null) {
-                player.addStatusEffect(new StatusEffectInstance(effect, ticks + current.getDuration(), amplifier + current.getAmplifier(), false, false, false));
-            } else {
-                player.addStatusEffect(new StatusEffectInstance(effect, ticks, amplifier, false, false, false));
-            }
+            StatusEffectInstance current = player.getStatusEffect(effect);
+            int t = applyLimit(ticks + (current == null ? 0 : current.getDuration()), maxTicks);
+            int a = applyLimit(amplifier + (current == null ? 0 : current.getAmplifier()), maxAmplifier);
+            player.addStatusEffect(new StatusEffectInstance(effect, t, a, false, false, false));
             // keep original health
             if (effect.getAttributeModifiers().containsKey(EntityAttributes.GENERIC_MAX_HEALTH)) {
                 player.setHealth(MathHelper.clamp(health, 0, player.getMaxHealth()));
             }
         });
+    }
+
+    private static int applyLimit(int value, int max) {
+        return max > 0 ? Math.min(value, max) : value;
     }
 
     interface Predicate {

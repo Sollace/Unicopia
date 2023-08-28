@@ -47,7 +47,7 @@ public interface UEntities {
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(0.9F, 0.5F)));
     EntityType<SombraEntity> SOMBRA = register("sombra", FabricEntityTypeBuilder.<SombraEntity>create(SpawnGroup.MONSTER, SombraEntity::new)
-            .trackRangeBlocks(20)
+            .trackRangeBlocks(200)
             .dimensions(EntityDimensions.changing(2F, 4F)));
     EntityType<CrystalShardsEntity> CRYSTAL_SHARDS = register("crystal_shards", FabricEntityTypeBuilder.create(SpawnGroup.MISC, CrystalShardsEntity::new)
             .trackRangeBlocks(100)

@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.entity.player;
 
 import java.util.Optional;
 
+import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
+
 import net.minecraft.entity.ai.FuzzyPositions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.SpawnLocating;
