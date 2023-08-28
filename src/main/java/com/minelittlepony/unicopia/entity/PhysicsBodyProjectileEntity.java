@@ -132,22 +132,16 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     @Override
     protected void onBlockHit(BlockHitResult hit) {
-        BlockState state = getWorld().getBlockState(hit.getBlockPos());
+        BlockPos buttonPos = hit.getBlockPos().offset(hit.getSide());
+        BlockState state = getWorld().getBlockState(buttonPos);
 
-        BlockState posState = getBlockStateAtPos();
         if (state.isIn(BlockTags.WOODEN_BUTTONS) && state.getBlock() instanceof ButtonBlock button) {
-            button.powerOn(state, getWorld(), hit.getBlockPos());
-        } else if (posState.isIn(BlockTags.WOODEN_BUTTONS) && posState.getBlock() instanceof ButtonBlock button) {
-            button.powerOn(posState, getWorld(), getBlockPos());
+            button.powerOn(state, getWorld(), buttonPos);
+        } else if (state.getBlock() instanceof LeverBlock lever) {
+            lever.togglePower(state, getWorld(), buttonPos);
         }
 
-        if (state.getBlock() instanceof LeverBlock lever) {
-            lever.togglePower(state, getWorld(), hit.getBlockPos());
-        } else if (posState.getBlock() instanceof LeverBlock lever) {
-            lever.togglePower(posState, getWorld(), getBlockPos());
-        }
-
-        BlockPos belowPos = getBlockPos().down();
+        BlockPos belowPos = buttonPos.down();
         BlockState below = getWorld().getBlockState(belowPos);
         ItemStack stack = getStack();
         if (below.getBlock() instanceof HopperBlock hopper) {
