@@ -17,7 +17,13 @@ public class MagicAuraSoundInstance extends FadeOutSoundInstance {
 
     public MagicAuraSoundInstance(SoundCategory category, Living<?> living, Random random) {
         super(USounds.ITEM_MAGIC_AURA, category, 1, random);
+        this.relative = false;
         this.living = living;
+
+        Vec3d pos = living.getOriginVector();
+        x = pos.x;
+        y = pos.y;
+        z = pos.z;
     }
 
     @Override

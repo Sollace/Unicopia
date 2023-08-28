@@ -64,7 +64,7 @@ public class ClientInteractionManager extends InteractionManager {
             SoundManager soundManager = client.getSoundManager();
 
             if (type == SOUND_EARS_RINGING && source instanceof LivingEntity living) {
-                soundManager.play(new LoopingSoundInstance<>(living,
+                soundManager.playNextTick(new LoopingSoundInstance<>(living,
                         createTicker(100).and(e -> !e.isRemoved()),
                         USounds.ENTITY_PLAYER_EARS_RINGING, 0.01F, 2, Random.create(seed)).setFadeIn()
                 );
@@ -75,26 +75,26 @@ public class ClientInteractionManager extends InteractionManager {
                             : new PassiveBeeSoundInstance(bee)
                 );
             } else if (type == SOUND_MINECART && source instanceof AbstractMinecartEntity minecart) {
-                soundManager.play(new MovingMinecartSoundInstance(minecart));
+                soundManager.playNextTick(new MovingMinecartSoundInstance(minecart));
             } else if (type == SOUND_CHANGELING_BUZZ && source instanceof PlayerEntity player) {
-                soundManager.play(new MotionBasedSoundInstance<>(USounds.ENTITY_PLAYER_CHANGELING_BUZZ, player, e -> {
+                soundManager.playNextTick(new MotionBasedSoundInstance<>(USounds.ENTITY_PLAYER_CHANGELING_BUZZ, player, e -> {
                     PlayerPhysics physics = Pony.of(e).getPhysics();
                     return physics.isFlying() && physics.getFlightType() == FlightType.INSECTOID;
                 }, 0.25F, 0.5F, 0.66F, Random.create(seed)));
             } else if (type == SOUND_GLIDING && source instanceof PlayerEntity player && isClientPlayer(player)) {
-                soundManager.play(new MotionBasedSoundInstance<>(USounds.Vanilla.ITEM_ELYTRA_FLYING, player, e -> {
+                soundManager.playNextTick(new MotionBasedSoundInstance<>(USounds.Vanilla.ITEM_ELYTRA_FLYING, player, e -> {
                     Pony pony = Pony.of(e);
                     return pony.getPhysics().isFlying() && pony.getPhysics().getFlightType().isAvian();
                 }, 0, 1, 1, Random.create(seed)));
             } else if (type == SOUND_GLIDING && source instanceof PlayerEntity player) {
-                soundManager.play(new MotionBasedSoundInstance<>(USounds.ENTITY_PLAYER_PEGASUS_FLYING, player, e -> {
+                soundManager.playNextTick(new MotionBasedSoundInstance<>(USounds.ENTITY_PLAYER_PEGASUS_FLYING, player, e -> {
                     Pony pony = Pony.of(e);
                     return pony.getPhysics().isFlying() && pony.getPhysics().getFlightType().isAvian();
                 }, 0, 1, 1, Random.create(seed)));
             } else if (type == SOUND_MAGIC_BEAM) {
-                soundManager.play(new LoopedEntityTrackingSoundInstance(USounds.SPELL_CAST_SHOOT, 0.3F, 1F, source, seed));
+                soundManager.playNextTick(new LoopedEntityTrackingSoundInstance(USounds.SPELL_CAST_SHOOT, 0.3F, 1F, source, seed));
             } else if (type == SOUND_HEART_BEAT) {
-                soundManager.play(new NonLoopingFadeOutSoundInstance(USounds.ENTITY_PLAYER_HEARTBEAT, SoundCategory.PLAYERS, 0.3F, Random.create(seed), 80L));
+                soundManager.playNextTick(new NonLoopingFadeOutSoundInstance(USounds.ENTITY_PLAYER_HEARTBEAT, SoundCategory.PLAYERS, 0.3F, Random.create(seed), 80L));
             }
         });
     }

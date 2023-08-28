@@ -35,6 +35,11 @@ public class MotionBasedSoundInstance<E extends Entity> extends FadeOutSoundInst
         this.minVolume = minVolume;
         this.maxVolume = maxVolume;
         this.playingCondition = playingCondition;
+        this.relative = false; // position is ABSOLUTE! We do this so the sound doesn't play to other players
+
+        x = (float)entity.getX();
+        y = (float)entity.getY();
+        z = (float)entity.getZ();
     }
 
     @Override
