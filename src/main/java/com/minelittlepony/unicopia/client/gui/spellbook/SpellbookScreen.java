@@ -140,6 +140,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
             clearAndInit();
         }
         super.render(context, mouseX, mouseY, partialTicks);
+        drawMouseoverTooltip(context, mouseX, mouseY);
     }
 
     @Override
