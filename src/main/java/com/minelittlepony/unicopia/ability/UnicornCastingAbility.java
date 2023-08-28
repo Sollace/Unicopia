@@ -103,7 +103,7 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
                 }, true);
                 player.subtractEnergyCost(removed ? 2 : 4);
                 if (!removed) {
-                    Spell s = spell.apply(player, CastingMethod.GEM);
+                    Spell s = spell.apply(player, CastingMethod.DIRECT);
                     if (s == null) {
                         player.spawnParticles(ParticleTypes.LARGE_SMOKE, 6);
                         player.playSound(USounds.SPELL_CAST_FAIL, 1, 0.5F);

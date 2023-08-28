@@ -5,17 +5,22 @@ import java.util.Optional;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
+import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.behaviour.EntitySwap;
 import com.minelittlepony.unicopia.entity.behaviour.Inventory;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.util.hit.EntityHitResult;
 
-public class MindSwapSpell extends MimicSpell {
+public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.EntityHitListener {
 
     private final EntityReference<LivingEntity> counterpart = new EntityReference<>();
 
@@ -28,6 +33,10 @@ public class MindSwapSpell extends MimicSpell {
         super(type);
     }
 
+    @Override
+    public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
+        return method == CastingMethod.STAFF ? toThrowable() : this;
+    }
 
     @Override
     public void onDestroyed(Caster<?> caster) {
@@ -57,6 +66,10 @@ public class MindSwapSpell extends MimicSpell {
     @Override
     public boolean tick(Caster<?> caster, Situation situation) {
 
+        if (situation != Situation.BODY) {
+            return true;
+        }
+
         if (!caster.isClient()) {
             if (!initialized) {
                 initialized = true;
@@ -66,7 +79,7 @@ public class MindSwapSpell extends MimicSpell {
 
                     setDisguise(e);
                     Caster<?> other = Caster.of(e).get();
-                    SpellType.MIMIC.withTraits().apply(other, CastingMethod.PROJECTILE).setDisguise(master);
+                    SpellType.MIMIC.withTraits().apply(other, CastingMethod.INDIRECT).setDisguise(master);
 
                     EntitySwap.ALL.accept(master, e);
                     Inventory.swapInventories(
@@ -98,6 +111,16 @@ public class MindSwapSpell extends MimicSpell {
         }
 
         return super.tick(caster, situation);
+    }
+
+
+    @Override
+    public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
+        Caster.of(projectile.getMaster()).ifPresent(master -> {
+            if (getTypeAndTraits().apply(master, CastingMethod.DIRECT) instanceof HomingSpell homing) {
+                homing.setTarget(hit.getEntity());
+            }
+        });
     }
 
     @Override

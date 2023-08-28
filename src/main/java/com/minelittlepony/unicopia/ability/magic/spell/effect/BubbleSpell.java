@@ -153,7 +153,7 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
     @Override
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
         Caster.of(hit.getEntity()).ifPresent(caster -> {
-            getTypeAndTraits().apply(caster, CastingMethod.PROJECTILE);
+            getTypeAndTraits().apply(caster, CastingMethod.INDIRECT);
         });
     }
 
