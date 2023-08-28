@@ -48,7 +48,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
             return cast.getSpellSlot().get(c -> !SpellPredicate.IS_PLACED.test(c), true).map(Spell::getType).orElse(SpellType.empty());
         }
         if (entity instanceof PlayerEntity player) {
-            return Pony.of(player).getCharms().getEquippedSpell(Hand.MAIN_HAND).type();
+            return Pony.of(player).getCharms().equipSpell(Hand.MAIN_HAND, SpellType.EMPTY_KEY.withTraits()).type();
         }
         return ENTITY_TYPE_TO_SPELL.getOrDefault(entity.getType(), SpellType.empty());
     }

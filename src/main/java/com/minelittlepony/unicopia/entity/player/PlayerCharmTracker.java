@@ -50,10 +50,12 @@ public class PlayerCharmTracker implements NbtSerialisable {
                 .orElse(getEquippedSpell(hand).toAction());
     }
 
-    public void equipSpell(Hand hand, CustomisedSpellType<?> spell) {
+    public CustomisedSpellType<?> equipSpell(Hand hand, CustomisedSpellType<?> spell) {
+        CustomisedSpellType<?> previous = handSpells[hand.ordinal()];
         handSpells[hand.ordinal()] = spell;
         pony.asEntity().playSound(USounds.GUI_SPELL_EQUIP.value(), 0.25F, 1.75F);
         pony.setDirty();
+        return previous;
     }
 
     @Override
