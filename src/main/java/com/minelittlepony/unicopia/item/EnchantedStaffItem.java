@@ -27,6 +27,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -43,12 +44,15 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
         return spellType;
     }
 
-    public static SpellType<?> getSpellType(Entity entity) {
+    public static SpellType<?> getSpellType(Entity entity, boolean remove) {
         if (entity instanceof CastSpellEntity cast) {
             return cast.getSpellSlot().get(c -> !SpellPredicate.IS_PLACED.test(c), true).map(Spell::getType).orElse(SpellType.empty());
         }
         if (entity instanceof PlayerEntity player) {
-            return Pony.of(player).getCharms().equipSpell(Hand.MAIN_HAND, SpellType.EMPTY_KEY.withTraits()).type();
+            if (remove) {
+                return Pony.of(player).getCharms().equipSpell(Hand.MAIN_HAND, SpellType.EMPTY_KEY.withTraits()).type();
+            }
+            return Pony.of(player).getCharms().getEquippedSpell(Hand.MAIN_HAND).type();
         }
         return ENTITY_TYPE_TO_SPELL.getOrDefault(entity.getType(), SpellType.empty());
     }
@@ -107,10 +111,13 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
 
         super.useOnEntity(stack, player, target, hand);
 
-        SpellType<?> type = getSpellType(target);
+        boolean remove = EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(target);
+        SpellType<?> type = getSpellType(target, remove);
         if (!type.isEmpty()) {
-            target.setHealth(1);
-            target.setFrozenTicks(9000);
+            if (remove) {
+                target.setHealth(1);
+                target.setFrozenTicks(9000);
+            }
             player.setStackInHand(hand, recharge(EnchantableItem.enchant(stack, type)));
         }
         return ActionResult.SUCCESS;
