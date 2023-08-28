@@ -41,7 +41,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class FairyEntity extends PathAwareEntity implements DynamicLightSource, WeaklyOwned.Mutable<LivingEntity> {
+public class FairyEntity extends PathAwareEntity implements DynamicLightSource, WeaklyOwned.Mutable<LivingEntity>, MagicImmune {
     private final EntityReference<LivingEntity> owner = new EntityReference<>();
 
     private final EntityReference<LivingEntity> assignment = new EntityReference<>();

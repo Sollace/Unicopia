@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability;
 
 import java.util.Optional;
 
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -67,8 +68,8 @@ public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
                 player.setAnimation(Animation.ARMS_FORWARD, Animation.Recipient.ANYONE);
                 projectile.setHydrophobic();
 
-                if (spell instanceof HomingSpell) {
-                    TraceHelper.findEntity(player.asEntity(), 600, 1).filter(((HomingSpell)spell)::setTarget).ifPresent(projectile::setHomingTarget);
+                if (spell instanceof HomingSpell homer) {
+                    TraceHelper.findEntity(player.asEntity(), homer.getRange(player), 1, EquinePredicates.EXCEPT_MAGIC_IMMUNE).filter(((HomingSpell)spell)::setTarget).ifPresent(projectile::setHomingTarget);
                 }
             });
 

@@ -19,7 +19,6 @@ import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -110,7 +109,7 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
                     } else {
                         player.setAnimation(Animation.ARMS_UP, Animation.Recipient.HUMAN);
                         if (s instanceof HomingSpell homer) {
-                            TraceHelper.findEntity(player.asEntity(), homer.getRange(player), 1, EntityPredicates.VALID_LIVING_ENTITY).ifPresent(homer::setTarget);
+                            TraceHelper.findEntity(player.asEntity(), homer.getRange(player), 1, EquinePredicates.EXCEPT_MAGIC_IMMUNE).ifPresent(homer::setTarget);
                         }
                         player.playSound(USounds.SPELL_CAST_SUCCESS, 0.05F, 2.2F);
                     }
