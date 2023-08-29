@@ -7,6 +7,7 @@ import org.joml.Vector4f;
 
 import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.client.FlowingText;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
@@ -42,7 +43,7 @@ public class DismissSpellScreen extends GameGui {
 
         List<PlaceableSpell> placeableSpells = new ArrayList<>();
 
-        for (Spell spell : pony.getSpellSlot().stream(true).toList()) {
+        for (Spell spell : pony.getSpellSlot().stream(true).filter(SpellPredicate.IS_VISIBLE).toList()) {
 
             if (spell instanceof PlaceableSpell placeable) {
                 if (placeable.getPosition().isPresent()) {

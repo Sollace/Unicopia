@@ -86,7 +86,9 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
 
                     setDisguise(e);
                     Caster<?> other = Caster.of(e).get();
-                    SpellType.MIMIC.withTraits().apply(other, CastingMethod.INDIRECT).setDisguise(master);
+                    MimicSpell mimic = SpellType.MIMIC.withTraits().apply(other, CastingMethod.INDIRECT);
+                    mimic.setHidden(true);
+                    mimic.setDisguise(master);
 
                     if (master instanceof ServerPlayerEntity sMaster && e instanceof ServerPlayerEntity sE) {
                         swapPlayerData(sMaster, sE);

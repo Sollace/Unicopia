@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.container.inventory.*;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.URecipes;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
@@ -27,6 +28,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 
 public class SpellbookScreenHandler extends ScreenHandler {
@@ -89,18 +91,32 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
         addSlot(gemSlot = new InputSlot(this, input, MAX_INGREDIENTS, gemPos.get(0)));
 
+        final int slotSpacing = 18;
+        final int halfSpacing = slotSpacing / 2;
+
         for (int i = 0; i < 9; ++i) {
-            addSlot(new Slot(inventory, i, 121 + i * 18, 195));
+            addSlot(new Slot(inventory, i, 121 + i * slotSpacing, 195));
         }
+
+        final int inventoryX = 225;
+        final int inventoryY = 45;
+
         for (int i = 0; i < PlayerInventory.MAIN_SIZE - 9; ++i) {
-            int x = i % 5;
-            int y = i / 5;
-            addSlot(new InventorySlot(this, inventory, i + 9, 225 + x * 20, 50 + y * 20));
+            int x = i % 4;
+            int y = i / 4;
+            addSlot(new InventorySlot(this, inventory, i + 9, inventoryX + x * slotSpacing, inventoryY + y * slotSpacing));
         }
+
+
+        final int armorX = 330;
+        final int armorY = inventoryY + slotSpacing;
+        final int equipmentY = armorY + halfSpacing;
+        final int leftHandX = armorX - slotSpacing;
+        final int rightHandX = armorX + slotSpacing;
 
         for (int i = 0; i < 4; i++) {
             final EquipmentSlot eq = EquipmentSlot.values()[5 - i];
-            addSlot(new InventorySlot(this, inventory, PlayerInventory.OFF_HAND_SLOT - i - 1, 335, 50 + (i * 20)) {
+            addSlot(new InventorySlot(this, inventory, PlayerInventory.OFF_HAND_SLOT - i - 1, armorX, armorY + (i * slotSpacing)) {
                 @Override
                 public int getMaxItemCount() {
                     return 1;
@@ -126,20 +142,22 @@ public class SpellbookScreenHandler extends ScreenHandler {
                 }
             });
         }
-
-        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.FACE, 0, 336 + 20, 60).ifPresent(this::addSlot);
-        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.NECKLACE, 0, 336 + 20, 60 + 20).ifPresent(this::addSlot);
-        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.MAINHAND, 0, 336 - 10, 155).ifPresent(this::addSlot);
-        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.OFFHAND, 0, 336 + 20, 155).ifPresent(this::addSlot);
-
-        addSlot(new InventorySlot(this, inventory, PlayerInventory.OFF_HAND_SLOT, 342, 140) {
+        addSlot(new InventorySlot(this, inventory, PlayerInventory.OFF_HAND_SLOT, rightHandX, equipmentY + slotSpacing) {
             @Override
             public Pair<Identifier, Identifier> getBackgroundSprite() {
                 return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT);
             }
         });
 
+        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.FACE, 0, rightHandX, inventoryY + slotSpacing * 6).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.NECKLACE, 0, leftHandX, equipmentY + slotSpacing).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.MAINHAND, 0, leftHandX, equipmentY).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.OFFHAND, 0, rightHandX, equipmentY).ifPresent(this::addSlot);
+
         addSlot(outputSlot = new OutputSlot(this, inventory.player, input, result, 0, gemPos.get(0)));
+
+        addSlot(new SpellSlot(this, Pony.of(inventory.player), Hand.MAIN_HAND, inventory, 0, leftHandX, equipmentY - slotSpacing));
+        addSlot(new SpellSlot(this, Pony.of(inventory.player), Hand.OFF_HAND, inventory, 0, rightHandX, equipmentY - slotSpacing));
 
         onContentChanged(input);
     }

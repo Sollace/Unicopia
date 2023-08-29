@@ -11,8 +11,9 @@ import net.minecraft.nbt.NbtCompound;
 
 public abstract class AbstractSpell implements Spell {
 
-    private boolean isDead;
-    private boolean isDirty;
+    private boolean dead;
+    private boolean dirty;
+    private boolean hidden;
 
     private CustomisedSpellType<?> type;
 
@@ -43,23 +44,33 @@ public abstract class AbstractSpell implements Spell {
 
     @Override
     public void setDead() {
-        isDead = true;
+        dead = true;
         setDirty();
     }
 
     @Override
     public boolean isDead() {
-        return isDead;
+        return dead;
     }
 
     @Override
     public boolean isDirty() {
-        return isDirty;
+        return dirty;
     }
 
     @Override
     public void setDirty() {
-        isDirty = true;
+        dirty = true;
+    }
+
+    @Override
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    @Override
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 
     @Override
@@ -73,18 +84,20 @@ public abstract class AbstractSpell implements Spell {
 
     @Override
     public void toNBT(NbtCompound compound) {
-        compound.putBoolean("dead", isDead);
+        compound.putBoolean("dead", dead);
+        compound.putBoolean("hidden", hidden);
         compound.putUuid("uuid", uuid);
         compound.put("traits", getTraits().toNbt());
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
-        isDirty = false;
+        dirty = false;
         if (compound.contains("uuid")) {
             uuid = compound.getUuid("uuid");
         }
-        isDead = compound.getBoolean("dead");
+        dead = compound.getBoolean("dead");
+        hidden = compound.getBoolean("hidden");
         if (compound.contains("traits")) {
             type = type.type().withTraits(SpellTraits.fromNbt(compound.getCompound("traits")).orElse(SpellTraits.EMPTY));
         }
@@ -92,6 +105,6 @@ public abstract class AbstractSpell implements Spell {
 
     @Override
     public final String toString() {
-        return "Spell[uuid=" + uuid + ", dead=" + isDead + ", type=" + getType() + "]";
+        return "Spell{" + getTypeAndTraits() + "}[uuid=" + uuid + ", dead=" + dead + ", hidden=" + hidden + "]";
     }
 }

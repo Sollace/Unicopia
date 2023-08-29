@@ -9,7 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
-class SpellbookTrinketSlot extends InventorySlot implements TrinketsDelegate.SlotWithForeground {
+class SpellbookTrinketSlot extends InventorySlot {
     private final SurvivalTrinketSlot slot;
 
     public SpellbookTrinketSlot(SpellbookScreenHandler handler, TrinketInventory inventory, int index, int x, int y, SlotGroup group) {
@@ -80,5 +80,10 @@ class SpellbookTrinketSlot extends InventorySlot implements TrinketsDelegate.Slo
     @Override
     public Identifier getForegroundIdentifier() {
         return slot.getBackgroundIdentifier();
+    }
+
+    @Override
+    public boolean isTrinket() {
+        return true;
     }
 }

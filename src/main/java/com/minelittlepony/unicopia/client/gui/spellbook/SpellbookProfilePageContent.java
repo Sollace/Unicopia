@@ -12,7 +12,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -45,16 +44,6 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
                 .getStyle()
                     .setIcon(TribeButton.createSprite(pony.getSpecies(), 0, 0, halfSize));
         }
-
-        float mainAngle = 90 * MathHelper.RADIANS_PER_DEGREE;
-        float offAngle = 60 * MathHelper.RADIANS_PER_DEGREE;
-        int radius = 75;
-
-        x += size / 4;
-        y += size / 3;
-
-        screen.addDrawable(new EquippedSpellSlot(x + (int)(Math.sin(mainAngle) * radius), y + (int)(Math.cos(mainAngle) * radius), pony.getCharms().getEquippedSpell(Hand.MAIN_HAND)));
-        screen.addDrawable(new EquippedSpellSlot(x + (int)(Math.sin(offAngle) * radius), y + (int)(Math.cos(offAngle) * radius), pony.getCharms().getEquippedSpell(Hand.OFF_HAND)));
     }
 
     @Override

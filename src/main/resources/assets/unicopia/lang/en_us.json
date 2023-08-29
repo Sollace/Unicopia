@@ -305,10 +305,6 @@
   "spell.unicopia.dispel_evil": "Dispel Evil",
   "spell.unicopia.dispel_evil.lore": "Casts away any nearby unearthly forces",
 
-  "gui.unicopia.trait.label": "Element of %s",
-  "gui.unicopia.trait.group": "\n %s",
-  "gui.unicopia.trait.corruption": "\n %s corruption",
-
   "trait.unicopia.strength.name": "Strength",
   "trait.unicopia.strength.description": "Imparts physical strength or enhances endurance.\nSpells with more of the strength trait hit harder and last longer.",
   "trait.unicopia.focus.name": "Focus",
@@ -383,6 +379,10 @@
   "ability.unicopia.capture_cloud": "Bust Cloud",
   "ability.unicopia.disguise": "Change Form",
   "ability.unicopia.rainboom": "Sonic Rainboom",
+
+  "gui.unicopia.trait.label": "Element of %s",
+  "gui.unicopia.trait.group": "\n %s",
+  "gui.unicopia.trait.corruption": "\n %s corruption",
 
   "gui.unicopia.dispell_screen.cancel": "Press ESC to cancel",
   "gui.unicopia.dispell_screen.spell_type": "Spell Type: %s",
@@ -476,6 +476,7 @@
   "gui.unicopia.tribe_selection.join": "Join Tribe",
   "gui.unicopia.tribe_selection.cancel": "Go Back",
 
+  "gui.unicopia.spellbook.empty_spell_slot": "Empty Spell Slot",
   "gui.unicopia.spellbook.page.inventory": "Inventory",
   "gui.unicopia.spellbook.page.recipes": "Recipes",
   "gui.unicopia.spellbook.page.recipes.empty": "0 Recipes Unlocked",
@@ -486,6 +487,17 @@
 
   "gui.unicopia.action.spells_cleared": "Removed all spells",
   "gui.unicopia.action.no_spells_cleared": "You have no active spells",
+
+  "chapter.unicopia.crafting": "Spell Crafting",
+  "chapter.unicopia.profile": "Profile",
+  "chapter.unicopia.traits": "Research",
+  "chapter.unicopia.introduction": "Introduction",
+  "chapter.unicopia.fire_magic": "Fire Magic",
+  "chapter.unicopia.ice_magic": "Ice Magic",
+  "chapter.unicopia.air_magic": "Air Magic",
+  "chapter.unicopia.dark_magic": "Dark Magic",
+  "chapter.unicopia.the_otherworldly": "Forbidden Magic",
+  "chapter.unicopia.crystal_heart": "Artifacts",
 
   "experience.unicopia.pure.magical_kindergartner": "New Blood",
   "experience.unicopia.impure.magical_kindergartner": "Impure",

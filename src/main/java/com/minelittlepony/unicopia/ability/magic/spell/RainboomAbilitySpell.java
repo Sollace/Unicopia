@@ -93,4 +93,13 @@ public class RainboomAbilitySpell extends AbstractSpell {
         super.fromNBT(compound);
         age = compound.getInt("age");
     }
+
+    @Override
+    public boolean isHidden() {
+        return false;
+    }
+
+    @Override
+    public void setHidden(boolean hidden) {
+    }
 }

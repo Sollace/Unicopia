@@ -92,4 +92,13 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
     public Optional<EntityAppearance> getAppearance() {
         return isSuppressed() ? Optional.empty() : super.getAppearance();
     }
+
+    @Override
+    public boolean isHidden() {
+        return true;
+    }
+
+    @Override
+    public void setHidden(boolean hidden) {
+    }
 }

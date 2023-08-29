@@ -186,13 +186,13 @@ public record Race (boolean canCast, FlightType flightType, boolean canUseEarth,
         return REGISTRY.stream().filter(r -> r.isPermitted(player)).collect(Collectors.toSet());
     }
 
-    public record Composite (Race physical, Race pseudo) {
+    public record Composite (Race physical, @Nullable Race pseudo) {
         public boolean includes(Race race) {
             return physical == race || pseudo == race;
         }
 
         public boolean any(Predicate<Race> test) {
-            return test.test(physical) || test.test(pseudo);
+            return test.test(physical) || (pseudo != null && test.test(pseudo));
         }
     }
 }

@@ -1,9 +1,12 @@
 package com.minelittlepony.unicopia.container.inventory;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.container.*;
 
 import net.minecraft.inventory.Inventory;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.Identifier;
 
 public class InputSlot extends Slot implements SpellbookSlot {
     private final SpellbookScreenHandler handler;
@@ -28,5 +31,11 @@ public class InputSlot extends Slot implements SpellbookSlot {
     @Override
     public boolean isEnabled() {
        return handler.canShowSlots(SlotType.CRAFTING) && !handler.outputSlot.isEnabled();
+    }
+
+    @Override
+    @Nullable
+    public Identifier getForegroundIdentifier() {
+        return GEM;
     }
 }
