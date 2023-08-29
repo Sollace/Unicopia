@@ -18,7 +18,7 @@ public class TimeChangeAbility implements Ability<Hit> {
 
     @Override
     public boolean canUse(Race.Composite race) {
-        return race.physical() != race.pseudo() && race.pseudo() == Race.UNICORN;
+        return race.pseudo() == Race.UNICORN;
     }
 
     @Override

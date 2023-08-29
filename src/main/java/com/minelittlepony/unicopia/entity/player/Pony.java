@@ -229,7 +229,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return new Race.Composite(observed,
               AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
             : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
-            : observed);
+            : null
+        );
     }
 
     /**
