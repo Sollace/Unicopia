@@ -862,7 +862,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             }
         }
 
-        oldPlayer.getSpellSlot().put(null);
         setSpecies(oldPlayer.respawnRace != Race.UNSET && !alive ? oldPlayer.respawnRace : oldPlayer.getActualSpecies());
         getDiscoveries().copyFrom(oldPlayer.getDiscoveries(), alive);
         getPhysics().copyFrom(oldPlayer.getPhysics(), alive);
