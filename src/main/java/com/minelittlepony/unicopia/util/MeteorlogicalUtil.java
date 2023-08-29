@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.util;
 
+import com.minelittlepony.unicopia.client.UnicopiaClient;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.BlockPos;
@@ -30,6 +32,7 @@ public interface MeteorlogicalUtil {
             playerAngle = 1 - playerAngle;
         }
 
+        playerYaw += UnicopiaClient.getInstance().tangentalSkyAngle.getValue();
         playerYaw = Math.abs(playerYaw);
 
         // check if day,

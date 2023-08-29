@@ -10,13 +10,13 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.ClientBlockDestructionManager;
 import com.minelittlepony.unicopia.client.DiscoveryToast;
+import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.minelittlepony.unicopia.client.gui.TribeSelectionScreen;
 import com.minelittlepony.unicopia.client.gui.spellbook.ClientChapters;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Chapter;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.*;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -33,6 +33,7 @@ public class ClientNetworkHandlerImpl {
         Channel.CANCEL_PLAYER_ABILITY.receiver().addPersistentListener(this::handleCancelAbility);
         Channel.UNLOCK_TRAITS.receiver().addPersistentListener(this::handleUnlockTraits);
         Channel.SERVER_RESOURCES_SEND.receiver().addPersistentListener(this::handleServerResources);
+        Channel.SERVER_SKY_ANGLE.receiver().addPersistentListener(this::handleSkyAngle);
     }
 
     private void handleTribeScreen(PlayerEntity sender, MsgTribeSelect packet) {
@@ -80,6 +81,10 @@ public class ClientNetworkHandlerImpl {
         for (Trait trait : packet.traits()) {
             DiscoveryToast.show(client.getToastManager(), trait.getSprite());
         }
+    }
+
+    private void handleSkyAngle(PlayerEntity sender, MsgSkyAngle packet) {
+        UnicopiaClient.getInstance().tangentalSkyAngle.update(packet.tangentalSkyAngle(), 200);
     }
 
     @SuppressWarnings("unchecked")

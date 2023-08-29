@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.network;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.server.world.UGameRules;
-import com.minelittlepony.unicopia.server.world.WorldTribeManager;
+import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
 import com.sollace.fabwork.api.packets.HandledPacket;
 
 import net.minecraft.network.PacketByteBuf;
@@ -36,7 +36,7 @@ public record MsgRequestSpeciesChange (
         Pony player = Pony.of(sender);
 
         if (force || player.getActualSpecies().isUnset()) {
-            player.setSpecies(newRace.isPermitted(sender) ? newRace : WorldTribeManager.forWorld((ServerWorld)player.asWorld()).getDefaultRace());
+            player.setSpecies(newRace.isPermitted(sender) ? newRace : UnicopiaWorldProperties.forWorld((ServerWorld)player.asWorld()).getDefaultRace());
 
             if (force) {
                 if (sender.getWorld().getGameRules().getBoolean(UGameRules.ANNOUNCE_TRIBE_JOINS)) {
