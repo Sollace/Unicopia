@@ -5,8 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.*;
-import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
-import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.sound.*;
@@ -171,48 +169,11 @@ public class UHud {
         matrices.pop();
 
         if (canCast) {
-            renderSpell(context, pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 10 - xDirection * 13, hudY + 2);
-            renderSpell(context, pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 8 - xDirection * 2, hudY - 6);
+            SpellIconRenderer.renderSpell(context, pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 10 - xDirection * 13, hudY + 2, EQUIPPED_GEMSTONE_SCALE);
+            SpellIconRenderer.renderSpell(context, pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 8 - xDirection * 2, hudY - 6, EQUIPPED_GEMSTONE_SCALE);
         }
 
         RenderSystem.disableBlend();
-    }
-
-    public void renderSpell(DrawContext context, CustomisedSpellType<?> spell, double x, double y) {
-        if (spell.isEmpty()) {
-            return;
-        }
-
-        Pony pony = Pony.of(client.player);
-
-        if (spell.isOn(pony)) {
-            MatrixStack modelStack = context.getMatrices();
-
-            modelStack.push();
-            modelStack.translate(x + 5.5, y + 5.5, 0);
-
-            int color = spell.type().getColor() | 0x000000FF;
-            double radius = 2 + Math.sin(client.player.age / 9D) / 4;
-
-            DrawableUtil.drawArc(modelStack, radius, radius + 3, 0, DrawableUtil.TAU, color & 0xFFFFFF2F, false);
-            DrawableUtil.drawArc(modelStack, radius + 3, radius + 4, 0, DrawableUtil.TAU, color & 0xFFFFFFAF, false);
-            pony.getSpellSlot().get(spell.and(SpellPredicate.IS_TIMED), false).map(TimedSpell::getTimer).ifPresent(timer -> {
-                DrawableUtil.drawArc(modelStack, radius, radius + 3, 0, DrawableUtil.TAU * timer.getPercentTimeRemaining(client.getTickDelta()), 0xFFFFFFFF, false);
-            });
-
-            long count = pony.getSpellSlot().stream(spell, false).count();
-            if (count > 1) {
-                modelStack.push();
-                modelStack.translate(1, 1, 900);
-                modelStack.scale(0.8F, 0.8F, 0.8F);
-                context.drawText(font, count > 64 ? "64+" : String.valueOf(count), 0, 0, 0xFFFFFFFF, true);
-                modelStack.pop();
-            }
-
-            modelStack.pop();
-        }
-
-        DrawableUtil.renderItemIcon(context, spell.getDefaultStack(), x, y, EQUIPPED_GEMSTONE_SCALE);
     }
 
     private void renderMessage(DrawContext context, float tickDelta) {

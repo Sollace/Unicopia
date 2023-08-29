@@ -90,4 +90,13 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
     public ThrowableSpell toThrowable() {
         return this;
     }
+
+    @Override
+    public boolean isHidden() {
+        return true;
+    }
+
+    @Override
+    public void setHidden(boolean hidden) {
+    }
 }

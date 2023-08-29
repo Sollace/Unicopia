@@ -94,6 +94,10 @@ public interface Spell extends NbtSerialisable, Affine {
      */
     void setDirty();
 
+    boolean isHidden();
+
+    void setHidden(boolean hidden);
+
     /**
      * Called when a gem is destroyed.
      */

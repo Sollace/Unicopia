@@ -66,4 +66,14 @@ public class TimeControlAbilitySpell extends AbstractSpell {
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
     }
+
+    @Override
+    public boolean isHidden() {
+        return true;
+    }
+
+    @Override
+    public void setHidden(boolean hidden) {
+
+    }
 }

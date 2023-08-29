@@ -17,6 +17,7 @@ public interface SpellPredicate<T extends Spell> extends Predicate<Spell> {
     SpellPredicate<TimedSpell> IS_TIMED = spell -> spell instanceof TimedSpell;
 
     SpellPredicate<?> IS_NOT_PLACED = IS_PLACED.negate();
+    SpellPredicate<?> IS_VISIBLE = spell -> spell != null && !spell.isHidden();
 
     default <Q extends Spell> SpellPredicate<Q> and(SpellPredicate<Q> predicate) {
         SpellPredicate<T> self = this;
