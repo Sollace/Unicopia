@@ -146,7 +146,7 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
         if (!isDead() && getTraits().get(Trait.CHAOS) > 0) {
             setDead();
-            Caster.of(hit.getEntity()).ifPresent(caster -> getTypeAndTraits().apply(caster, CastingMethod.PROJECTILE));
+            Caster.of(hit.getEntity()).ifPresent(caster -> getTypeAndTraits().apply(caster, CastingMethod.INDIRECT));
         }
     }
 

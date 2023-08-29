@@ -95,15 +95,14 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
     public void onArtifactTick(FloatingArtefactEntity entity) {
 
         if (entity.getState() == State.INITIALISING) {
-            if (findStructure(entity)) {
+            if (entity.age % 30 == 0 && findStructure(entity)) {
                 entity.setState(State.RUNNING);
+                entity.setRotationSpeed(4, 30);
             }
         } else {
-            if (!findStructure(entity)) {
+            if (entity.age % 30 == 0 && !findStructure(entity)) {
                 entity.setState(State.INITIALISING);
             }
-
-            entity.addSpin(2, 10);
 
             BlockPos pos = entity.getBlockPos();
             entity.getWorld().addParticle(ParticleTypes.COMPOSTER,
@@ -112,7 +111,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                     pos.getZ() + entity.getWorld().getRandom().nextFloat(),
                     0, 0, 0);
 
-            if (entity.getWorld().getTime() % 80 == 0 && !entity.getWorld().isClient) {
+            if (entity.age % 80 == 0 && !entity.getWorld().isClient) {
                 List<LivingEntity> inputs = new ArrayList<>();
                 List<LivingEntity> outputs = new ArrayList<>();
                 List<ItemEntity> containers = new ArrayList<>();
@@ -168,7 +167,9 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                     container.setStack(fill(container.getStack()));
                 });
 
-                entity.addSpin(gives > 0 ? 20 : 10, 30);
+                if (gives > 0) {
+                    entity.setRotationSpeed(37, 80);
+                }
             }
         }
 

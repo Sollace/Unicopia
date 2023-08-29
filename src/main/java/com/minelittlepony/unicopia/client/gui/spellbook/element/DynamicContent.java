@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.container.SpellbookChapterLoader.Flow;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.PacketByteBuf;
@@ -43,6 +44,12 @@ public class DynamicContent implements Content {
             page.draw(context, mouseX, mouseY, container);
         });
         context.getMatrices().pop();
+
+        TextRenderer font = MinecraftClient.getInstance().textRenderer;
+        int headerColor = mouseY % 255;
+
+        Text pageText = Text.translatable("%s/%s", (pageIndex / 2) + 1, pages.size() / 2);
+        context.drawText(font, pageText, (int)(337 - font.getWidth(pageText) / 2F), 190, headerColor, false);
     }
 
     @Override

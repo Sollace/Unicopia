@@ -26,7 +26,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class CrystalShardsEntity extends Entity {
+public class CrystalShardsEntity extends Entity implements MagicImmune {
     static final byte SHAKE = 1;
 
     static final int FULL_GROWTH_AGE = 25;

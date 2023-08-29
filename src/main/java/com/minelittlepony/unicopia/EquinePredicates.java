@@ -4,6 +4,7 @@ import java.util.function.Predicate;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 
@@ -27,6 +28,9 @@ public interface EquinePredicates {
     Predicate<Entity> PLAYER_CAN_USE_EARTH = IS_PLAYER.and(raceMatches(Race::canUseEarth));
     Predicate<Entity> IS_CASTER = e -> !e.isRemoved() && (e instanceof Caster || IS_PLAYER.test(e));
     Predicate<Entity> IS_PLACED_SPELL = e -> e instanceof Caster && !e.isRemoved();
+
+    Predicate<Entity> IS_MAGIC_IMMUNE = EntityPredicates.VALID_LIVING_ENTITY.negate().or(e -> e instanceof MagicImmune);
+    Predicate<Entity> EXCEPT_MAGIC_IMMUNE = IS_MAGIC_IMMUNE.negate();
 
     Predicate<LivingEntity> HAS_WANT_IT_NEED_IT = e -> {
         return EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, e) > 0

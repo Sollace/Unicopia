@@ -7,6 +7,7 @@ import java.util.function.Function;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.WeaklyOwned;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -18,6 +19,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.block.state.StatePredicate;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
@@ -31,7 +33,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -42,6 +43,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -53,7 +55,7 @@ import net.minecraft.world.World;
  *
  * Can also carry a spell if needed.
  */
-public class MagicProjectileEntity extends ThrownItemEntity implements Caster<MagicProjectileEntity>, WeaklyOwned.Mutable<LivingEntity> {
+public class MagicProjectileEntity extends ThrownItemEntity implements Caster<MagicProjectileEntity>, WeaklyOwned.Mutable<LivingEntity>, MagicImmune {
     private static final TrackedData<Float> DAMAGE = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Float> GRAVITY = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -299,7 +301,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     protected void onEntityHit(EntityHitResult hit) {
         Entity entity = hit.getEntity();
 
-        if (entity instanceof ProjectileEntity) {
+        if (EquinePredicates.IS_MAGIC_IMMUNE.test(entity) || !EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity)) {
             return;
         }
 

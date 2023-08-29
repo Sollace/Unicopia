@@ -352,6 +352,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 wallHitCooldown = MAX_WALL_HIT_CALLDOWN;
                 soundPlaying = false;
                 descentRate = 0;
+                ticksDiving = 0;
 
                 if (Abilities.RAINBOOM.canUse(pony.getActualSpecies()) && entity.isOnGround()) {
                     pony.getMagicalReserves().getCharge().set(0);

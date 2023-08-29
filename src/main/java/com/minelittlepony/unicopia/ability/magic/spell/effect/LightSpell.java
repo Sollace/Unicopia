@@ -86,7 +86,7 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
 
     @Override
     public void onImpact(MagicProjectileEntity projectile) {
-        Caster.of(projectile.getMaster()).ifPresent(caster -> getTypeAndTraits().apply(caster, CastingMethod.PROJECTILE));
+        Caster.of(projectile.getMaster()).ifPresent(caster -> getTypeAndTraits().apply(caster, CastingMethod.INDIRECT));
     }
 
     @Override

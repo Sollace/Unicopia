@@ -12,7 +12,6 @@ import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
-import com.minelittlepony.unicopia.entity.SpellbookEntity;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import net.minecraft.entity.Entity;
@@ -31,7 +30,7 @@ public class TargetSelecter {
         targets.values().removeIf(Target::tick);
         return source.findAllEntitiesInRange(radius)
             .filter(entity -> entity.isAlive() && !entity.isRemoved() && notOwnerOrFriend(spell, source, entity) && !SpellPredicate.IS_SHIELD_LIKE.isOn(entity))
-            .filter(entity -> !(entity instanceof SpellbookEntity))
+            .filter(EquinePredicates.EXCEPT_MAGIC_IMMUNE)
             .filter(e -> filter.test(source, e))
             .map(i -> {
                 targets.computeIfAbsent(i.getUuid(), Target::new);

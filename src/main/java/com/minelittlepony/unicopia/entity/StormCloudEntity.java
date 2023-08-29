@@ -31,7 +31,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 
-public class StormCloudEntity extends Entity {
+public class StormCloudEntity extends Entity implements MagicImmune {
     private static final TrackedData<Integer> CLEAR_TICKS = DataTracker.registerData(StormCloudEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> STORM_TICKS = DataTracker.registerData(StormCloudEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Float> TARGET_SIZE = DataTracker.registerData(StormCloudEntity.class, TrackedDataHandlerRegistry.FLOAT);

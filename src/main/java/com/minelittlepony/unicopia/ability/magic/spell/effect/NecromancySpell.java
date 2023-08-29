@@ -7,9 +7,7 @@ import java.util.function.Supplier;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -86,11 +84,6 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
 
     protected NecromancySpell(CustomisedSpellType<?> type) {
         super(type);
-    }
-
-    @Override
-    public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
-        return method == CastingMethod.GEM ? toPlaceable() : super.prepareForCast(caster, method);
     }
 
     @Override

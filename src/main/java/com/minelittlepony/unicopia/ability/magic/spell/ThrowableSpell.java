@@ -64,7 +64,7 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
             projectile.setPosition(entity.getX(), entity.getEyeY() - 0.1F, entity.getZ());
             projectile.setOwner(entity);
             projectile.setItem(UItems.GEMSTONE.getDefaultStack(spell.getType()));
-            spell.prepareForCast(caster, CastingMethod.PROJECTILE).apply(projectile);
+            spell.prepareForCast(caster, CastingMethod.STORED).apply(projectile);
             projectile.setVelocity(entity, entity.getPitch(), entity.getYaw(), 0, 1.5F, divergance);
             projectile.setNoGravity(true);
             configureProjectile(projectile, caster);

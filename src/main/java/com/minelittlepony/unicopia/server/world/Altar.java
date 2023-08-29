@@ -144,20 +144,11 @@ public record Altar(BlockPos origin, Set<BlockPos> pillars) {
     public void generateDecorations(World world) {
         world.setBlockState(origin, Blocks.SOUL_FIRE.getDefaultState(), Block.FORCE_STATE | Block.NOTIFY_ALL);
         pillars.forEach(pillar -> {
-            /*
-            if (world.random.nextInt(3) == 0) {
-                world.setBlockState(pillar, Blocks.CRYING_OBSIDIAN.getDefaultState());
-            } else if (world.random.nextInt(3) == 0) {
-                world.setBlockState(pillar.down(), Blocks.CRYING_OBSIDIAN.getDefaultState());
-            }
-            */
-
             FloatingArtefactEntity artefact = UEntities.FLOATING_ARTEFACT.create(world);
             artefact.setStack(UItems.ALICORN_BADGE.getDefaultStack());
             artefact.setPosition(pillar.up().toCenterPos());
             artefact.setInvulnerable(true);
             artefact.setAltar(this);
-            artefact.addSpin(2, 9000);
             removeExisting(null, world, pillar);
             world.spawnEntity(artefact);
         });

@@ -20,24 +20,28 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class FloatingArtefactEntity extends Entity implements UDamageSources {
-
+public class FloatingArtefactEntity extends Entity implements UDamageSources, MagicImmune {
     private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(FloatingArtefactEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<Byte> STATE = DataTracker.registerData(FloatingArtefactEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private static final TrackedData<Float> SPIN = DataTracker.registerData(FloatingArtefactEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    private static final TrackedData<Float> TARGET_ROTATION_SPEED = DataTracker.registerData(FloatingArtefactEntity.class, TrackedDataHandlerRegistry.FLOAT);
+
+    private static final int REGEN_GAP_TICKS = 5;
+    private static final int REGEN_PAUSE_TICKS = 200;
+
+    public static final int INFINITE_BOOST_DURATION = -1;
 
     private float bobAmount;
-    private float spinAmount;
 
-    private float health = 1;
+    private float prevRotationSpeed;
+    private float rotationSpeed;
+    private float prevRotation;
+    private float rotation;
+
+    private int boostDuration;
+
+    private float health;
+    private int ticksUntilRegen;
     public final float positionSeed;
-
-    private int spinupDuration;
-
-    private float sourceSpin = 1;
-    private float targetSpin = 1;
-    private float spinChange;
-    private float spinChangeProgress;
 
     private Optional<Altar> altar = Optional.empty();
 
@@ -45,13 +49,14 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
         super(entityType, world);
 
         positionSeed = (float)(Math.random() * Math.PI * 2);
+        health = getMaxHealth();
     }
 
     @Override
     protected void initDataTracker() {
         dataTracker.startTracking(ITEM, ItemStack.EMPTY);
         dataTracker.startTracking(STATE, (byte)0);
-        dataTracker.startTracking(SPIN, 1F);
+        dataTracker.startTracking(TARGET_ROTATION_SPEED, 1F);
     }
 
     public void setAltar(Altar altar) {
@@ -74,19 +79,29 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
         dataTracker.set(STATE, (byte)state.ordinal());
     }
 
-    public void addSpin(float spin, int duration) {
-        if (spin >= getSpin()) {
-            setSpin(spin);
-            spinupDuration = duration;
-        }
+    public void setRotationSpeed(float spin, int duration) {
+        dataTracker.set(TARGET_ROTATION_SPEED, Math.max(spin, 0));
+        boostDuration = duration;
     }
 
-    public void setSpin(float spin) {
-        dataTracker.set(SPIN, spin);
+    public float getRotationSpeed() {
+        return dataTracker.get(TARGET_ROTATION_SPEED);
     }
 
-    public float getSpin() {
-        return dataTracker.get(SPIN);
+    public float getRotationSpeed(float tickDelta) {
+        return MathHelper.lerp(tickDelta, prevRotationSpeed, rotationSpeed);
+    }
+
+    public int getMaxHealth() {
+        return 20;
+    }
+
+    public void setHealth(float health) {
+        this.health = MathHelper.clamp(health, 0, getMaxHealth());
+    }
+
+    public float getHealth() {
+        return health;
     }
 
     @Override
@@ -104,34 +119,31 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
         }
 
         if (getWorld().isClient) {
-            float spin = getSpin();
-            if (Math.abs(spin - targetSpin) > 1.0E-5F) {
-                spinChange = spin - targetSpin;
-                targetSpin = spin;
-                spinChangeProgress = 0;
-            }
-
-            if (spinChange != 0) {
-                if (spinChangeProgress < 1) {
-                    spinChangeProgress += 0.05F;
-                } else {
-                    sourceSpin = targetSpin;
-                    spinChange = 0;
-                    spinChangeProgress = 0;
-                }
-            }
-
-            spinAmount += sourceSpin + (spinChange * spinChangeProgress);
             bobAmount++;
+        }
+
+        float targetRotationSpeed = getRotationSpeed();
+
+        if (rotationSpeed != targetRotationSpeed) {
+            float difference = targetRotationSpeed - rotationSpeed;
+            rotationSpeed = Math.abs(difference) < 0.02F ? targetRotationSpeed : (rotationSpeed + difference * (difference > 0 ? 0.5F : 0.1F));
         } else {
-            spinupDuration = Math.max(0, spinupDuration - 1);
-            if (spinupDuration <= 0) {
-                setSpin(1);
+            if (boostDuration > 0 && --boostDuration <= 0) {
+                setRotationSpeed(1, 0);
             }
         }
 
+        rotation %= 360;
+        prevRotation = rotation;
+        rotation += rotationSpeed;
+
         if (stack.getItem() instanceof Artifact) {
             ((Artifact)stack.getItem()).onArtifactTick(this);
+        }
+
+        if (getHealth() < getMaxHealth() && --ticksUntilRegen <= 0) {
+            setHealth(getHealth() + 1);
+            ticksUntilRegen = REGEN_GAP_TICKS;
         }
 
         if (getWorld().getTime() % 80 == 0) {
@@ -145,14 +157,16 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
     }
 
     public float getRotation(float tickDelta) {
-        return (spinAmount + tickDelta) / 20 + positionSeed;
+        return MathHelper.lerp(tickDelta, prevRotation, rotation) % 360;
     }
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound compound) {
         setStack(ItemStack.fromNbt(compound.getCompound("Item")));
         setState(State.valueOf(compound.getInt("State")));
-        setSpin(compound.getFloat("spin"));
+        setRotationSpeed(compound.getFloat("spin"), compound.getInt("spinDuration"));
+        setHealth(compound.getFloat("health"));
+        ticksUntilRegen = compound.getInt("regen");
         altar = Altar.SERIALIZER.readOptional("altar", compound);
     }
 
@@ -163,7 +177,10 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
             compound.put("Item", stack.writeNbt(new NbtCompound()));
         }
         compound.putInt("State", getState().ordinal());
-        compound.putFloat("spin", getSpin());
+        compound.putFloat("spin", getRotationSpeed());
+        compound.putInt("spinDuration", boostDuration);
+        compound.putFloat("health", getHealth());
+        compound.putInt("regen", ticksUntilRegen);
         Altar.SERIALIZER.writeOptional("altar", compound, altar);
     }
 
@@ -173,9 +190,13 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
             return false;
         }
 
-        scheduleVelocityUpdate();
+        if (damageSource.isSourceCreativePlayer()) {
+            health = 0;
+        } else {
+            health -= amount;
+            ticksUntilRegen = REGEN_PAUSE_TICKS;
+        }
 
-        health -= amount;
         if (health <= 0) {
             remove(RemovalReason.KILLED);
 
@@ -183,9 +204,13 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources {
 
             if (altar.isEmpty()) {
                 if (!(stack.getItem() instanceof Artifact) || ((Artifact)stack.getItem()).onArtifactDestroyed(this) != ActionResult.SUCCESS) {
-                    dropStack(stack);
+                    if (!damageSource.isSourceCreativePlayer()) {
+                        dropStack(stack);
+                    }
                 }
             }
+        } else {
+            playSound(USounds.ITEM_ICARUS_WINGS_WARN, 1, 1);
         }
 
         return false;

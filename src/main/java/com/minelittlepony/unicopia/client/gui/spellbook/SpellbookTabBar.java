@@ -38,18 +38,20 @@ public class SpellbookTabBar {
         int backgroundHeight = screen.getBackgroundHeight();
         int backgroundWidth = screen.getBackgroundWidth();
 
-        int tabInset = 14;
+
+
+        int tabInset = 14 + Math.min((screen.width - backgroundWidth) / 2, 0);
 
         int top = (screen.height - backgroundHeight) / 2 + 20;
         int left = (screen.width - backgroundWidth) / 2;
+
+        int tabWidth = Math.min(35, left + 15);
+        int tabHeight = 23;
 
         List<Chapter> leftTabs = chapters.getTabs(side)
                 .sorted(Comparator.comparing(Chapter::tabY))
                 .toList();
 
-
-        int tabWidth = 35;
-        int tabHeight = 23;
 
         int totalTabs = leftTabs.size();
         float squashFactor = Math.min(1, (float)(backgroundHeight - 40) / ((tabHeight + 8) * leftTabs.size()));

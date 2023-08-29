@@ -140,6 +140,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
             clearAndInit();
         }
         super.render(context, mouseX, mouseY, partialTicks);
+        drawMouseoverTooltip(context, mouseX, mouseY);
     }
 
     @Override
@@ -172,7 +173,17 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
             context.drawTexture(TEXTURE, bounds.left, bounds.top, isRight ? 510 - bounds.width : 402, v, bounds.width, bounds.height, 512, 256);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            context.drawTexture(tab.icon().get(), isRight ? bounds.left + bounds.width - 16 - 10 : bounds.left + 10, bounds.top + (bounds.height - 16) / 2, 0, 0, 16, 16, 16, 16);
+            float widthScale = bounds.width / 35F;
+            int resolution = (int)(16 * widthScale);
+            int iconInset = (int)(Math.min(widthScale * 2, 1) * 10);
+
+            context.drawTexture(tab.icon().get(),
+                    isRight ? bounds.left + bounds.width - resolution - iconInset : bounds.left + iconInset,
+                    bounds.top + (bounds.height - resolution) / 2,
+                    0, 0,
+                    resolution, resolution,
+                    resolution, resolution
+            );
         });
 
         MatrixStack matrices = context.getMatrices();

@@ -4,15 +4,15 @@ public enum CastingMethod {
     /**
      * Casting from a gem or a unicorn's equipped spell.
      */
-    GEM,
+    DIRECT,
     /**
      * Casting a projectile form from a gem or unicorn's equipped spell
      */
-    GEM_PROJECTILE,
+    STORED,
     /**
      * Result of a projectile impact
      */
-    PROJECTILE,
+    INDIRECT,
     /**
      * Casting from a magic staff
      */
@@ -20,5 +20,21 @@ public enum CastingMethod {
     /**
      * Result of an entities innate ability
      */
-    INNATE
+    INNATE;
+
+    public boolean isIndirectCause() {
+        return this == STAFF || this == STORED;
+    }
+
+    public boolean isIndirectEffect() {
+        return this == INDIRECT;
+    }
+
+    public boolean isDirect() {
+        return this == DIRECT || this == INNATE;
+    }
+
+    public boolean isTool() {
+        return this == STAFF;
+    }
 }
