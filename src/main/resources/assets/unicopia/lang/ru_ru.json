@@ -304,10 +304,6 @@
   "spell.unicopia.catapult.lore": "Хватает ближайший блок или объект и подбрасывает его в воздух",
   "spell.unicopia.dispel_evil": "Изгнание зла",
   "spell.unicopia.dispel_evil.lore": "Изгоняет все находящиеся поблизости неземные силы",
-  
-  "gui.unicopia.trait.label": "Элемент %s",
-  "gui.unicopia.trait.group": "\n %s",
-  "gui.unicopia.trait.corruption": "\n %s порчи",
 
   "trait.unicopia.strength.name": "Силы",
   "trait.unicopia.strength.description": "Наделяет физической силой или повышает выносливость.\nЗаклинания с большим количеством силы бьют сильнее и действуют дольше.",
@@ -383,6 +379,10 @@
   "ability.unicopia.capture_cloud": "Захватить облако",
   "ability.unicopia.disguise": "Изменить форму",
   "ability.unicopia.rainboom": "Звуковая радуга",
+
+  "gui.unicopia.trait.label": "Элемент %s",
+  "gui.unicopia.trait.group": "\n %s",
+  "gui.unicopia.trait.corruption": "\n %s порчи",
 
   "gui.unicopia.dispell_screen.cancel": "Нажмите ESC для выхода",
   "gui.unicopia.dispell_screen.spell_type": "Тип заклинания: %s",
@@ -476,6 +476,7 @@
   "gui.unicopia.tribe_selection.join": "Присоединиться",
   "gui.unicopia.tribe_selection.cancel": "Назад",
 
+  "gui.unicopia.spellbook.empty_spell_slot": "Пустой слот для заклинаний",
   "gui.unicopia.spellbook.page.inventory": "Инвентарь",
   "gui.unicopia.spellbook.page.recipes": "Рецепты",
   "gui.unicopia.spellbook.page.recipes.empty": "0 рецептов разблокировано",
@@ -486,6 +487,17 @@
 
   "gui.unicopia.action.spells_cleared": "Удалены все заклинания",
   "gui.unicopia.action.no_spells_cleared": "У вас нет активных заклинаний",
+
+  "chapter.unicopia.crafting": "Создание заклинаний",
+  "chapter.unicopia.profile": "Профиль",
+  "chapter.unicopia.traits": "Исследование",
+  "chapter.unicopia.introduction": "Введение",
+  "chapter.unicopia.fire_magic": "Магия Огня",
+  "chapter.unicopia.ice_magic": "Магия Льда",
+  "chapter.unicopia.air_magic": "Магия Воздуха",
+  "chapter.unicopia.dark_magic": "Тёмная магия",
+  "chapter.unicopia.the_otherworldly": "Запретная магия",
+  "chapter.unicopia.crystal_heart": "Артефакты",
 
   "experience.unicopia.pure.magical_kindergartner": "Свежая кровь",
   "experience.unicopia.impure.magical_kindergartner": "Испорченный",
