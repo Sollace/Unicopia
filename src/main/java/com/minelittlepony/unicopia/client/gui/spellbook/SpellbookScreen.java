@@ -36,6 +36,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 
 public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> implements RecipeBookProvider {
@@ -187,6 +188,10 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
                     resolution, resolution,
                     resolution, resolution
             );
+
+            if (bounds.contains(mouseX, mouseY)) {
+                setTooltip(Text.translatable(Util.createTranslationKey("chapter", tab.chapter().id())));
+            }
         });
 
         MatrixStack matrices = context.getMatrices();
