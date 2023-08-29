@@ -29,6 +29,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
         IGear.register(HeldEntityGear::new);
         IGear.register(BodyPartGear::pegasusWings);
         IGear.register(BodyPartGear::batWings);
+        IGear.register(BodyPartGear::bugWings);
         IGear.register(BodyPartGear::unicornHorn);
         IGear.register(AmuletGear::new);
         IGear.register(GlassesGear::new);
@@ -51,6 +52,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
                     model.getAttributes().isGoingFast |= zMotion > 0.4F;
                     model.getAttributes().isGoingFast |= pony.getMotion().isDiving();
                 }
+
                 model.getAttributes().isGoingFast |= pony.getMotion().isRainbooming();
                 model.getAttributes().isGoingFast &= !pony.getEntityInArms().isPresent();
 

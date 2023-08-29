@@ -9,6 +9,7 @@ import com.minelittlepony.api.model.gear.IGear;
 import com.minelittlepony.client.model.ClientPonyModel;
 import com.minelittlepony.client.model.ModelType;
 import com.minelittlepony.client.model.PlayerModelKey;
+import com.minelittlepony.client.model.entity.race.ChangelingModel;
 import com.minelittlepony.client.model.entity.race.PegasusModel;
 import com.minelittlepony.client.model.entity.race.UnicornModel;
 import com.minelittlepony.client.model.part.UnicornHorn;
@@ -33,6 +34,9 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity> & MsonModel & IModel>
     private static final Identifier ICARUS_WINGS = Unicopia.id("textures/models/wings/icarus_pony.png");
     private static final Identifier ICARUS_WINGS_CORRUPTED = Unicopia.id("textures/models/wings/icarus_corrupted_pony.png");
 
+    public static final Predicate<LivingEntity> BUG_WINGS_PREDICATE = MINE_LP_HAS_NO_WINGS.and(AmuletSelectors.PEGASUS_AMULET.negate()).and(EquinePredicates.PLAYER_CHANGELING);
+    public static final Identifier BUG_WINGS = Unicopia.id("textures/models/wings/bug_pony.png");
+
     public static final Predicate<LivingEntity> BAT_WINGS_PREDICATE = MINE_LP_HAS_NO_WINGS.and(AmuletSelectors.PEGASUS_AMULET.negate()).and(EquinePredicates.PLAYER_BAT);
     public static final Identifier BAT_WINGS = Unicopia.id("textures/models/wings/bat_pony.png");
 
@@ -52,7 +56,11 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity> & MsonModel & IModel>
     }
 
     public static BodyPartGear<WingsGearModel> batWings() {
-        return new BodyPartGear<>(BodyPart.BODY, ModelType.BAT_PONY, BAT_WINGS_PREDICATE, WingsGearModel::new, WingsGearModel::getWings, e -> BAT_WINGS);
+        return new BodyPartGear<>(BodyPart.BODY, ModelType.BAT_PONY, BAT_WINGS_PREDICATE, WingsGearModel::new, IPegasus::getWings, e -> BAT_WINGS);
+    }
+
+    public static BodyPartGear<BugWingsGearModel> bugWings() {
+        return new BodyPartGear<>(BodyPart.BODY, ModelType.CHANGELING, BUG_WINGS_PREDICATE, BugWingsGearModel::new, IPegasus::getWings, e -> BUG_WINGS);
     }
 
     public static BodyPartGear<HornGearModel> unicornHorn() {
@@ -70,7 +78,7 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity> & MsonModel & IModel>
             PlayerModelKey<LivingEntity, ? super M> modelKey,
             Predicate<LivingEntity> renderTargetPredicate,
             MsonModel.Factory<M> modelFactory,
-            Function<M, IPart> partExtractor,
+            Function<? super M, IPart> partExtractor,
             Function<Entity, Identifier> textureSupplier) {
         this.gearLocation = gearLocation;
         this.model = modelKey.steveKey().createModel(modelFactory);
@@ -110,6 +118,17 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity> & MsonModel & IModel>
 
     static final class WingsGearModel extends PegasusModel<LivingEntity> {
         public WingsGearModel(ModelPart tree) {
+            super(tree, false);
+        }
+
+        @Override
+        public boolean canFly() {
+            return true;
+        }
+    }
+
+    static final class BugWingsGearModel extends ChangelingModel<LivingEntity> {
+        public BugWingsGearModel(ModelPart tree) {
             super(tree, false);
         }
 
