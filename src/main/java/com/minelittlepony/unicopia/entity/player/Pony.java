@@ -735,7 +735,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         directTakeEnergy(foodSubtract);
 
-        return entity.getHealth() > 1 && mana.getMana().getPercentFill() > 0.1F;
+        return entity.isCreative() || (entity.getHealth() > 1 && mana.getMana().getPercentFill() > 0.1F);
     }
 
     protected void directTakeEnergy(double foodSubtract) {
