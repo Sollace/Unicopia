@@ -1,0 +1,15 @@
+{
+  "type": "unicopia:spellbook/crafting",
+  "material": {
+    "item": "unicopia:broken_alicorn_amulet"
+  },
+  "traits": {},
+  "ingredients": [
+    { "item": "unicopia:crystal_shard" },
+    { "item": "unicopia:crystal_shard" },
+    { "item": "unicopia:crystal_shard" }
+  ],
+  "result": {
+    "item": "unicopia:unicorn_amulet"
+  }
+}
