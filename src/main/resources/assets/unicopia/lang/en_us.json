@@ -477,6 +477,7 @@
   "gui.unicopia.tribe_selection.join": "Join Tribe",
   "gui.unicopia.tribe_selection.cancel": "Go Back",
 
+  "gui.unicopia.spellbook.empty_spell_slot": "Empty Spell Slot",
   "gui.unicopia.spellbook.page.inventory": "Inventory",
   "gui.unicopia.spellbook.page.recipes": "Recipes",
   "gui.unicopia.spellbook.page.recipes.empty": "0 Recipes Unlocked",

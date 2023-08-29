@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client.gui.spellbook;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.IntConsumer;
 
@@ -11,6 +13,8 @@ import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
+import com.minelittlepony.unicopia.client.FlowingText;
 import com.minelittlepony.unicopia.client.gui.*;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
 import com.minelittlepony.unicopia.container.*;
@@ -18,7 +22,6 @@ import com.minelittlepony.unicopia.container.inventory.*;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;
 import com.minelittlepony.unicopia.trinkets.TrinketSlotBackSprites;
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -193,6 +196,32 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
         matrices.pop();
     }
 
+    @Override
+    protected void drawMouseoverTooltip(DrawContext context, int x, int y) {
+
+        context.getMatrices().push();
+        context.getMatrices().translate(0, 0, 200);
+
+        if (!(focusedSlot instanceof SpellSlot sp)) {
+            super.drawMouseoverTooltip(context, x, y);
+            return;
+        }
+
+        CustomisedSpellType<?> spell = sp.getSpell();
+        if (spell.isEmpty()) {
+            context.drawTooltip(textRenderer, Text.translatable("gui.unicopia.spellbook.empty_spell_slot"), x, y);
+            return;
+        }
+
+        List<Text> tooltip = new ArrayList<>();
+        tooltip.add(spell.type().getName());
+        tooltip.addAll(FlowingText.wrap(Text.translatable(spell.type().getTranslationKey() + ".lore").formatted(spell.type().getAffinity().getColor()), 180).toList());
+
+
+        context.drawTooltip(textRenderer, tooltip, x, y);
+        context.getMatrices().pop();
+    }
+
     void drawSlots(DrawContext context, int mouseX, int mouseY, float delta) {
         MatrixStack matrices = context.getMatrices();
         matrices.push();
@@ -204,20 +233,36 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
             if (slot.isEnabled() && slot instanceof SpellbookSlot p) {
                 context.drawTexture(SLOT, slot.x - 8, slot.y - 8, 0, 0, 32, 32, 32, 32);
 
-                if (slot instanceof InputSlot) {
-                    RenderSystem.setShaderColor(1, 1, 1, 0.3F);
-                    context.drawTexture(GEM, slot.x, slot.y, 0, 0, 16, 16, 16, 16);
-                    RenderSystem.setShaderColor(1, 1, 1, 1);
+                if (slot.getStack().isEmpty()) {
+                    Identifier foreground = p.getForegroundIdentifier();
+                    if (foreground != null) {
+                        if (p.isTrinket()) {
+                            foreground = TrinketSlotBackSprites.getBackSprite(foreground);
+                        }
+                        RenderSystem.setShaderColor(1, 1, 1, p.getBackSpriteOpacity());
+                        context.drawTexture(foreground, slot.x, slot.y, 0, 0, 16, 16, 16, 16);
+                        RenderSystem.setShaderColor(1, 1, 1, 1);
+                    }
                 }
 
-                if (!(p instanceof InventorySlot)) {
+                if (slot instanceof SpellSlot sp) {
+                    CustomisedSpellType<?> spell = sp.getSpell();
+
+                    if (!spell.isEmpty()) {
+                        RenderSystem.setShaderColor(1, 1, 1, 1);
+                        context.getMatrices().push();
+                        context.getMatrices().translate(0, 0, 260);
+                        SpellIconRenderer.renderSpell(context, spell, slot.x, slot.y, 0.5F);
+                        context.getMatrices().pop();
+                        RenderSystem.enableBlend();
+                    }
+                }
+
+                if (p.showTraits()) {
                     float weight = p.getWeight();
                     ItemTraitsTooltipRenderer.renderStackTraits(slot.getStack(), context, slot.x, slot.y, weight == 0 ? 1 : weight, delta, slot.id);
                     RenderSystem.enableBlend();
                 }
-            }
-            if (slot.isEnabled() && slot instanceof TrinketsDelegate.SlotWithForeground fg && slot.getStack().isEmpty()) {
-                context.drawTexture(TrinketSlotBackSprites.getBackSprite(fg.getForegroundIdentifier()), slot.x, slot.y, 0, 0, 16, 16, 16, 16);
             }
         }
         RenderSystem.disableBlend();
