@@ -41,6 +41,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.*;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
@@ -249,7 +250,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (typeChanged) {
             pony.spawnParticles(ParticleTypes.CLOUD, 10);
 
-            entity.playSound(entity.getWorld().getDimension().ultrawarm() ? USounds.ITEM_ICARUS_WINGS_CORRUPT : USounds.ITEM_ICARUS_WINGS_PURIFY, 0.1125F, 1.5F);
+            playSound(entity.getWorld().getDimension().ultrawarm() ? USounds.ITEM_ICARUS_WINGS_CORRUPT : USounds.ITEM_ICARUS_WINGS_PURIFY, 0.1125F, 1.5F);
         }
 
         entity.getAbilities().allowFlying = type.canFlyCreative(entity);
@@ -320,7 +321,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     ticksToGlide = MAX_TICKS_TO_GLIDE;
                     if (!SpellPredicate.IS_DISGUISE.isOn(pony)) {
                         if (type != FlightType.INSECTOID) {
-                            entity.playSound(type.getWingFlapSound(), 0.25F, entity.getSoundPitch() * type.getWingFlapSoundPitch());
+                            playSound(type.getWingFlapSound(), 0.25F, entity.getSoundPitch() * type.getWingFlapSoundPitch());
                         }
                         entity.getWorld().emitGameEvent(entity, GameEvent.ELYTRA_GLIDE, entity.getPos());
                     }
@@ -405,7 +406,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
             if (pony.getObservedSpecies() != Race.BAT && entity.getWorld().random.nextInt(9000) == 0) {
                 entity.dropItem(UItems.PEGASUS_FEATHER);
-                entity.playSound(USounds.ENTITY_PLAYER_PEGASUS_MOLT, 0.3F, 1);
+                playSound(USounds.ENTITY_PLAYER_PEGASUS_MOLT, 0.3F, 1);
                 UCriteria.SHED_FEATHER.trigger(entity);
             }
         } else {
@@ -442,6 +443,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private void tickArtificialFlight(MutableVector velocity) {
         if (ticksInAir % 10 == 0 && !entity.getWorld().isClient) {
             ItemStack stack = AmuletItem.getForEntity(entity);
+            if (ChargeableItem.getEnergy(stack) < 9) {
+                playSound(USounds.ITEM_ICARUS_WINGS_WARN, 0.13F, 0.5F);
+            }
 
             int damageInterval = 20;
             int minDamage = 1;
@@ -458,24 +462,19 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
             ChargeableItem.consumeEnergy(stack, energyConsumed);
 
-            if (ChargeableItem.getEnergy(stack) < 9) {
-                entity.playSound(USounds.ITEM_ICARUS_WINGS_WARN, 0.13F, 0.5F);
-            }
-
             if (entity.getWorld().random.nextInt(damageInterval) == 0) {
-                int damageLeft = stack.getMaxDamage() - stack.getDamage();
-                int damageApplied = Math.min(damageLeft - 1, minDamage + entity.getWorld().random.nextInt(50));
-
-                if (damageApplied > 0) {
-                    stack.damage(damageApplied, entity, e -> e.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
-                }
+                stack.damage(minDamage + entity.getWorld().random.nextInt(50), entity, e -> e.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
             }
 
             if (!getFlightType().canFly()) {
-                entity.playSound(USounds.ITEM_ICARUS_WINGS_EXHAUSTED, 1, 2);
+                playSound(USounds.ITEM_ICARUS_WINGS_EXHAUSTED, 1, 2);
                 cancelFlight(false);
             }
         }
+    }
+
+    private void playSound(SoundEvent sound, float volume, float pitch) {
+        entity.getWorld().playSoundFromEntity(null, entity, sound, SoundCategory.PLAYERS, volume, pitch);
     }
 
     private void tickNaturalFlight(MutableVector velocity) {
@@ -556,8 +555,6 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         thrustScale = 0;
         entity.calculateDimensions();
 
-
-
         if (entity.isOnGround() || !force) {
             Supplier<Vec3d> vec = VecHelper.sphere(pony.asWorld().getRandom(), 0.5D);
             pony.spawnParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, vec, vec, 5);
@@ -585,13 +582,13 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 wallHitCooldown = MAX_WALL_HIT_CALLDOWN;
 
                 if (bouncyness > 0) {
-                    entity.playSound(USounds.ENTITY_PLAYER_REBOUND, 1, entity.getSoundPitch());
+                    playSound(USounds.ENTITY_PLAYER_REBOUND, 1, entity.getSoundPitch());
                     ProjectileUtil.ricochet(entity, Vec3d.of(pos), 0.4F + Math.min(2, bouncyness / 18F));
                     velocity.fromImmutable(entity.getVelocity());
                     distance /= bouncyness;
                 } else {
                     LivingEntity.FallSounds fallSounds = entity.getFallSounds();
-                    entity.playSound(distance > 4 ? fallSounds.big() : fallSounds.small(), 1, entity.getSoundPitch());
+                    playSound(distance > 4 ? fallSounds.big() : fallSounds.small(), 1, entity.getSoundPitch());
                 }
                 entity.damage(entity.getDamageSources().flyIntoWall(), distance);
             }
@@ -645,7 +642,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             flapping = false;
             if (!SpellPredicate.IS_DISGUISE.isOn(pony)) {
                 if (getFlightType() != FlightType.INSECTOID) {
-                    entity.playSound(getFlightType().getWingFlapSound(), 0.25F, entity.getSoundPitch() * getFlightType().getWingFlapSoundPitch());
+                    playSound(getFlightType().getWingFlapSound(), 0.25F, entity.getSoundPitch() * getFlightType().getWingFlapSoundPitch());
                 }
                 entity.getWorld().emitGameEvent(entity, GameEvent.ELYTRA_GLIDE, entity.getPos());
             }
@@ -761,9 +758,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         pony.updateVelocity();
 
         if (isFlying()) {
-            pony.playSound(USounds.ENTITY_PLAYER_PEGASUS_DASH, 1);
+            playSound(USounds.ENTITY_PLAYER_PEGASUS_DASH, 1, 1);
         } else {
-            pony.playSound(USounds.ENTITY_PLAYER_EARTHPONY_DASH, 2, 0.3F);
+            playSound(USounds.ENTITY_PLAYER_EARTHPONY_DASH, 2, 0.3F);
         }
     }
 
