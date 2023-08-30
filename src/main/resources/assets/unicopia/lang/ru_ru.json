@@ -59,7 +59,7 @@
   "item.unicopia.zap_apple": "Зап-яблоко",
   "item.unicopia.zap_bulb": "Недозрелое зап-яблоко",
 
-  "item.unicopia.love_bottle": "Бутылка любви",
+  "item.unicopia.love_bottle": "Бутылочка любви",
   "item.unicopia.love_bucket": "Ведро любви",
   "item.unicopia.love_mug": "Кружка любви",
 
@@ -375,6 +375,7 @@
   "ability.unicopia.toggle_flight": "Взлететь/Приземлиться",
   "ability.unicopia.hang": "Зацепиться за потолок",
   "ability.unicopia.eee": "Пискнуть",
+  "ability.unicopia.time_control": "Контролировать Солнце / Луну",
   "ability.unicopia.feed": "Поглотить любовь",
   "ability.unicopia.capture_cloud": "Захватить облако",
   "ability.unicopia.disguise": "Изменить форму",
