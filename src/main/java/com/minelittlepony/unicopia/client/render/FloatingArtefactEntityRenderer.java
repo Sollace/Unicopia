@@ -2,18 +2,22 @@ package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.entity.FloatingArtefactEntity;
 import com.minelittlepony.unicopia.item.UItems;
-
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexConsumers;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
 public class FloatingArtefactEntityRenderer extends EntityRenderer<FloatingArtefactEntity> {
@@ -26,7 +30,7 @@ public class FloatingArtefactEntityRenderer extends EntityRenderer<FloatingArtef
     }
 
     @Override
-    public void render(FloatingArtefactEntity entity, float yaw, float timeDelta, MatrixStack transforms, VertexConsumerProvider renderContext, int lightUv) {
+    public void render(FloatingArtefactEntity entity, float yaw, float timeDelta, MatrixStack matrices, VertexConsumerProvider vertices, int lightUv) {
 
         ItemStack stack = entity.getStack();
 
@@ -42,16 +46,18 @@ public class FloatingArtefactEntityRenderer extends EntityRenderer<FloatingArtef
 
         float scale = 1.6F;
 
-        transforms.push();
-        transforms.scale(scale, scale, scale);
-        transforms.translate(0, verticalOffset + variance * modelScaleY, 0);
-        transforms.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getRotation(timeDelta)));
+        matrices.push();
+        matrices.scale(scale, scale, scale);
+        matrices.translate(0, verticalOffset + variance * modelScaleY, 0);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getRotation(timeDelta)));
 
-        itemRenderer.renderItem(stack, ModelTransformationMode.GROUND, false, transforms, renderContext, lightUv, OverlayTexture.DEFAULT_UV, model);
+        int destructionStage = (int)(MathHelper.clamp(1 - (entity.getHealth() / entity.getMaxHealth()), 0, 1) * (ModelLoader.field_32983 - 1));
 
-        transforms.pop();
+        itemRenderer.renderItem(stack, ModelTransformationMode.GROUND, false, matrices, getDestructionOverlayProvider(matrices, vertices, destructionStage), lightUv, OverlayTexture.DEFAULT_UV, model);
 
-        super.render(entity, yaw, timeDelta, transforms, renderContext, lightUv);
+        matrices.pop();
+
+        super.render(entity, yaw, timeDelta, matrices, vertices, lightUv);
     }
 
     @Override
@@ -59,4 +65,17 @@ public class FloatingArtefactEntityRenderer extends EntityRenderer<FloatingArtef
         return PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
     }
 
+    static VertexConsumerProvider getDestructionOverlayProvider(MatrixStack matrices, VertexConsumerProvider vertices, int stage) {
+        if (stage <= 0) {
+            return vertices;
+        }
+        final MatrixStack.Entry entry = matrices.peek();
+        final OverlayVertexConsumer destructionOverlay = new OverlayVertexConsumer(
+                MinecraftClient.getInstance().getBufferBuilders().getEffectVertexConsumers().getBuffer(RenderLayers.getCrumbling(stage)),
+                entry.getPositionMatrix(),
+                entry.getNormalMatrix(),
+                4F
+        );
+        return layer -> layer.hasCrumbling() ? VertexConsumers.union(destructionOverlay, vertices.getBuffer(layer)) : vertices.getBuffer(layer);
+    }
 }

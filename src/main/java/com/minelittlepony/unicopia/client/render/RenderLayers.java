@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client.render;
 
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -7,8 +8,10 @@ import com.minelittlepony.common.util.Color;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
@@ -16,6 +19,18 @@ public final class RenderLayers extends RenderLayer {
     private RenderLayers() {
         super(null, null, null, 0, false, false, null, null);
     }
+    private static final List<RenderLayer> BLOCK_DESTRUCTION_STAGE_LAYERS = ModelLoader.BLOCK_DESTRUCTION_STAGE_TEXTURES.stream().map(texture -> {
+        RenderPhase.Texture texture2 = new RenderPhase.Texture(texture, false, false);
+        return (RenderLayer)RenderLayer.of("alpha_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256,
+                MultiPhaseParameters.builder()
+                .program(CRUMBLING_PROGRAM)
+                .texture(texture2)
+                .writeMaskState(COLOR_MASK)
+                .cull(DISABLE_CULLING)
+                .depthTest(EQUAL_DEPTH_TEST)
+                .transparency(CRUMBLING_TRANSPARENCY)
+                .build(false));
+    }).toList();
 
     private static final RenderLayer MAGIC_NO_COLOR = of("magic_no_color", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
             VertexFormat.DrawMode.QUADS, 256, true, true, MultiPhaseParameters.builder()
@@ -51,6 +66,10 @@ public final class RenderLayers extends RenderLayer {
                 .cull(DISABLE_CULLING)
             .build(false));
     });
+
+    public static RenderLayer getCrumbling(int stage) {
+        return BLOCK_DESTRUCTION_STAGE_LAYERS.get(stage);
+    }
 
     public static RenderLayer getMagicNoColor() {
         return MAGIC_NO_COLOR;
