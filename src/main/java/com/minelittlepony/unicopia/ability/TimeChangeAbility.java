@@ -33,7 +33,7 @@ public class TimeChangeAbility implements Ability<Hit> {
 
     @Override
     public double getCostEstimate(Pony player) {
-        return 400;
+        return 2;
     }
 
     @Override
@@ -43,6 +43,10 @@ public class TimeChangeAbility implements Ability<Hit> {
 
     @Override
     public Optional<Hit> prepare(Pony player) {
+        if (!player.subtractEnergyCost(0)) {
+            return Optional.empty();
+        }
+
         return Hit.INSTANCE;
     }
 

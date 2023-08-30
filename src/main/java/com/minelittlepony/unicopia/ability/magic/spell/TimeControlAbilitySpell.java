@@ -4,11 +4,10 @@ import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 
 /**
  * Internal.
@@ -17,41 +16,52 @@ import net.minecraft.util.math.Vec3d;
  */
 public class TimeControlAbilitySpell extends AbstractSpell {
 
-    private Vec3d prevRotation = null;
+    private boolean initilized;
+
+    private long timeOffset;
+    private float angleOffset;
 
     public TimeControlAbilitySpell(CustomisedSpellType<?> type) {
         super(type);
+        setHidden(true);
     }
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
 
-        if (situation != Situation.BODY) {
-            return false;
-        }
-
-        if (!(source instanceof Pony pony) || !Abilities.TIME.canUse(pony.getCompositeRace())) {
+        if (situation != Situation.BODY || !(source instanceof Pony pony) || !Abilities.TIME.canUse(pony.getCompositeRace())) {
             return false;
         }
 
         if (source.asWorld() instanceof ServerWorld sw) {
 
-            float yaw = MathHelper.wrapDegrees(source.asEntity().getHeadYaw());
-            float pitch = MathHelper.wrapDegrees(source.asEntity().getPitch(1)) / 90F;
+            float yaw = -(source.asEntity().getHeadYaw() + 90);
+            float pitch = -(source.asEntity().getPitch(1) / 90F);
 
-            if (yaw > 0) {
-                pitch += 90;
+            long time = (long)(pitch * 6000);
+
+            // sunrise(0) - midday(1) - sunset(2) - midnight(3)
+
+            if (!initilized) {
+                initilized = true;
+                timeOffset = sw.getTimeOfDay() - time;
+                angleOffset = UnicopiaWorldProperties.forWorld(sw).getTangentalSkyAngle() - yaw;
             }
 
-            Vec3d rotation = new Vec3d(pitch, 0, 1);
-
-            if (prevRotation != null) {
-                pitch = (float)MathHelper.lerp(0.05, pitch, rotation.x);
-
-                sw.setTimeOfDay((long)(pitch * 6000));
+            if (angleOffset > 90 && angleOffset < 270) {
+                time *= -1;
             }
 
-            prevRotation = new Vec3d(pitch, 0, 1);
+            time += timeOffset;
+            if (time < 0) {
+                time += 24000;
+            }
+            time %= 24000;
+
+            sw.setTimeOfDay(time);
+            sw.getServer().sendTimeUpdatePackets();
+
+            UnicopiaWorldProperties.forWorld(sw).setTangentalSkyAngle(angleOffset + yaw);
         }
 
         return source.subtractEnergyCost(2);
@@ -60,20 +70,16 @@ public class TimeControlAbilitySpell extends AbstractSpell {
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
+        compound.putBoolean("initilized", initilized);
+        compound.putLong("timeOffset", timeOffset);
+        compound.putFloat("angleOffset", angleOffset);
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
-    }
-
-    @Override
-    public boolean isHidden() {
-        return true;
-    }
-
-    @Override
-    public void setHidden(boolean hidden) {
-
+        initilized = compound.getBoolean("initilized");
+        timeOffset = compound.getLong("timeOffset");
+        angleOffset = compound.getFloat("angleOffset");
     }
 }

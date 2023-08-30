@@ -11,9 +11,15 @@ public class Lerp {
     private float end;
 
     private boolean finished = true;
+    private final boolean angle;
 
     public Lerp(float initial) {
+        this(initial, false);
+    }
+
+    public Lerp(float initial, boolean angle) {
         end = initial;
+        this.angle = angle;
     }
 
     public boolean update(float newTarget, long changeDuration) {
@@ -34,7 +40,14 @@ public class Lerp {
         }
         float delta = getDelta();
         finished = delta >= 1F;
+        if (angle) {
+            return MathHelper.lerpAngleDegrees(delta, start, end);
+        }
         return MathHelper.lerp(delta, start, end);
+    }
+
+    public float getTarget() {
+        return end;
     }
 
     public boolean isFinished() {

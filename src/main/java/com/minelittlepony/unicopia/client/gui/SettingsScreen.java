@@ -8,7 +8,7 @@ import com.minelittlepony.common.client.gui.element.*;
 import com.minelittlepony.common.client.gui.style.Style;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
-import com.minelittlepony.unicopia.server.world.WorldTribeManager;
+import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
 import com.minelittlepony.unicopia.util.RegistryIndexer;
 
 import net.fabricmc.loader.api.FabricLoader;
@@ -81,7 +81,7 @@ public class SettingsScreen extends GameGui {
             row += 20;
             content.addButton(new Label(LEFT, row)).getStyle().setText("unicopia.options.world");
 
-            WorldTribeManager tribes = WorldTribeManager.forWorld((ServerWorld)server.getPlayerManager().getPlayer(MinecraftClient.getInstance().player.getUuid()).getWorld());
+            UnicopiaWorldProperties tribes = UnicopiaWorldProperties.forWorld((ServerWorld)server.getPlayerManager().getPlayer(MinecraftClient.getInstance().player.getUuid()).getWorld());
 
             content.addButton(new Slider(LEFT, row += 20, 0, races.size(), races.indexOf(tribes.getDefaultRace())))
                     .onChange(races.createSetter(tribes::setDefaultRace))

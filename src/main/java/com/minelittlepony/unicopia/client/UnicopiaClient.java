@@ -38,9 +38,18 @@ import net.minecraft.util.math.BlockPos;
 
 public class UnicopiaClient implements ClientModInitializer {
 
+    private static UnicopiaClient instance;
+
+    public static UnicopiaClient getInstance() {
+        return instance;
+    }
+
     @Nullable
     private Float originalRainGradient;
     private final Lerp rainGradient = new Lerp(0);
+
+    public final Lerp tangentalSkyAngle = new Lerp(0, true);
+    public final Lerp skyAngle = new Lerp(0, true);
 
     public static Optional<PlayerCamera> getCamera() {
         PlayerEntity player = MinecraftClient.getInstance().player;
@@ -67,6 +76,19 @@ public class UnicopiaClient implements ClientModInitializer {
 
     public static float getWorldBrightness(float initial) {
         return 0.6F;
+    }
+
+    public UnicopiaClient() {
+        instance = this;
+    }
+
+    public float getSkyAngleDelta(float tickDelta) {
+        if (MinecraftClient.getInstance().world == null) {
+            return 0;
+        }
+        float skyAngle = MinecraftClient.getInstance().world.getSkyAngle(tickDelta);
+        this.skyAngle.update(skyAngle, 200);
+        return this.skyAngle.getValue() - skyAngle;
     }
 
     @Override
