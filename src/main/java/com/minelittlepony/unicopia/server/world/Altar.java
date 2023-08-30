@@ -123,8 +123,10 @@ public record Altar(BlockPos origin, Set<BlockPos> pillars) {
 
         if (isObsidian(world, pos.move(pillarPos))
             && isObsidian(world, pos.move(Direction.UP))
-            && isObsidian(world, pos.move(Direction.UP))) {
-            pillarPosCollector.accept(pos.toImmutable());
+            && isObsidian(world, pos.move(Direction.UP))
+            && isObsidian(world, pos.move(Direction.UP))
+            && world.isSkyVisible(pos.move(Direction.UP))) {
+            pillarPosCollector.accept(pos.move(Direction.DOWN).toImmutable());
             pos.set(x, y, z);
             return true;
         }
@@ -155,9 +157,6 @@ public record Altar(BlockPos origin, Set<BlockPos> pillars) {
     }
 
     public void tearDown(@Nullable Entity except, World world) {
-        if (!(except instanceof SpellbookEntity)) {
-            world.getOtherEntities(except, new Box(origin).expand(3), IS_PARTICIPANT).forEach(Entity::kill);
-        }
         pillars.forEach(pillar -> removeExisting(except, world, pillar));
     }
 
@@ -169,6 +168,11 @@ public record Altar(BlockPos origin, Set<BlockPos> pillars) {
         return checkState(world, origin, Blocks.SOUL_FIRE)
                 && checkState(world, origin.down(), Blocks.SOUL_SAND)
                 && checkSlab(world, origin.down())
-                && pillars.stream().allMatch(pillar -> isObsidian(world, pillar) && isObsidian(world, pillar.down()) && isObsidian(world, pillar.down(2)));
+                && pillars.stream().allMatch(pillar ->
+                           isObsidian(world, pillar)
+                        && world.isSkyVisible(pillar.up())
+                        && isObsidian(world, pillar.down())
+                        && isObsidian(world, pillar.down(2))
+                        && isObsidian(world, pillar.down(3)));
     }
 }

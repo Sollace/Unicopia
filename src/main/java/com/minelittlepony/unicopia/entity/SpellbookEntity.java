@@ -190,11 +190,18 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
         }
 
         if (!getWorld().isClient && age % 15 == 0) {
-            altar.ifPresent(altar -> {
 
+            if (altar.isEmpty()) {
+                altar = Altar.locateAltar(getWorld(), getBlockPos()).map(altar -> {
+                    altar.generateDecorations(getWorld());
+                    return altar;
+                });
+            }
+
+            altar = altar.filter(altar -> {
                 if (!altar.isValid(getWorld())) {
                     altar.tearDown(null, getWorld());
-                    return;
+                    return false;
                 }
 
                 altar.pillars().forEach(pillar -> {
@@ -229,6 +236,8 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
                         getWorld().setBlockState(pillar, Blocks.CRYING_OBSIDIAN.getDefaultState());
                     }
                 });
+
+                return true;
             });
         }
     }
