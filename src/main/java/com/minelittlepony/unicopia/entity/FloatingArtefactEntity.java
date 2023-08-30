@@ -186,6 +186,11 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources, Ma
 
     @Override
     public boolean damage(DamageSource damageSource, float amount) {
+
+        if (getWorld().isClient || isInvulnerable()) {
+            return false;
+        }
+
         if (isInvulnerableTo(damageSource) || !getStack().getItem().damage(damageSource)) {
             return false;
         }
