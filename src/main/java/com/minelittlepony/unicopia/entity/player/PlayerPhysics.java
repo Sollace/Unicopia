@@ -463,7 +463,12 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             }
 
             if (entity.getWorld().random.nextInt(damageInterval) == 0) {
-                stack.damage(minDamage + entity.getWorld().random.nextInt(50), entity, e -> e.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+                int damageLeft = stack.getMaxDamage() - stack.getDamage();
+                int damageApplied = Math.min(damageLeft - 1, minDamage + entity.getWorld().random.nextInt(50));
+
+                if (damageApplied > 0) {
+                    stack.damage(damageApplied, entity, e -> e.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+                }
             }
 
             if (!getFlightType().canFly()) {
