@@ -49,9 +49,9 @@ import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -70,6 +70,13 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     private Runnable landEvent;
 
     private boolean invisible = false;
+
+    @Nullable
+    private Entity supportingEntity;
+
+    @Nullable
+    private Vec3d supportPositionOffset;
+    private int ticksOutsideVehicle;
 
     @Nullable
     private Caster<?> attacker;
@@ -172,6 +179,100 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return vehicle != null && getCarrierId().filter(vehicle.getUuid()::equals).isPresent();
     }
 
+    public void setSupportingEntity(Entity supportingEntity) {
+        this.supportingEntity = supportingEntity;
+        if (supportingEntity != null) {
+            ticksOutsideVehicle = 0;
+        }
+    }
+
+    public void setPositionOffset(@Nullable Vec3d positionOffset) {
+        this.supportPositionOffset = positionOffset;
+    }
+
+    public void updatePositionOffset() {
+        setPositionOffset(supportingEntity == null ? null : entity.getPos().subtract(supportingEntity.getPos()));
+    }
+
+    public void updateRelativePosition(Box box) {
+        if (supportingEntity == null || supportPositionOffset == null) {
+            return;
+        }
+
+        Vec3d newPos = supportingEntity.getPos().add(supportPositionOffset);
+        Vec3d posChange = entity.getPos().subtract(newPos);
+        entity.setPosition(newPos);
+        if (isClient()) {
+            Vec3d newServerPos = LivingEntityDuck.serverPos(entity);
+            if (newServerPos.lengthSquared() != 0) {
+                newServerPos = newServerPos.subtract(posChange);
+                entity.updateTrackedPositionAndAngles(
+                        newServerPos.x, newServerPos.y, newServerPos.z,
+                        entity.getYaw(), entity.getPitch(), 3, true);
+            }
+        } else {
+            entity.updateTrackedPosition(newPos.x, newPos.y, newPos.z);
+        }
+
+        if (!(entity instanceof PlayerEntity)) {
+            entity.lastRenderX = supportingEntity.lastRenderX + supportPositionOffset.x;
+            entity.lastRenderY = supportingEntity.lastRenderY + supportPositionOffset.y;
+            entity.lastRenderZ = supportingEntity.lastRenderZ + supportPositionOffset.z;
+
+            if (entity.getVelocity().length() < 0.1) {
+                LimbAnimationUtil.resetToZero(entity.limbAnimator);
+            }
+        }
+
+        entity.horizontalSpeed = 0;
+        entity.prevHorizontalSpeed = 0;
+        entity.speed = 0;
+        entity.setOnGround(true);
+        entity.verticalCollision = true;
+        entity.groundCollision = true;
+        entity.fallDistance = 0;
+    }
+
+    @Override
+    public boolean beforeUpdate() {
+        updateSupportingEntity();
+        return false;
+    }
+
+    public void updateSupportingEntity() {
+        if (supportingEntity != null) {
+            Box ownBox = entity.getBoundingBox()
+                    .stretch(entity.getVelocity())
+                    .expand(0.1, 0.5, 0.1)
+                    .stretch(supportingEntity.getVelocity().multiply(-2));
+
+            MultiBoundingBoxEntity.getBoundingBoxes(supportingEntity).stream()
+            .filter(box -> box.stretch(supportingEntity.getVelocity()).expand(0, 0.5, 0).intersects(ownBox))
+            .findFirst()
+            .ifPresentOrElse(box -> {
+                ticksOutsideVehicle = 0;
+                if (supportPositionOffset == null) {
+                    updatePositionOffset();
+                } else {
+                    updateRelativePosition(box);
+                }
+                entity.setOnGround(true);
+                entity.verticalCollision = true;
+                entity.groundCollision = true;
+            }, () -> {
+                // Rubberband passengers to try and prevent players falling out when the velocity changes suddenly
+                if (ticksOutsideVehicle++ > 30) {
+                    supportingEntity = null;
+                    supportPositionOffset = null;
+                    Unicopia.LOGGER.info("Entity left vehicle");
+                } else {
+                    supportPositionOffset = supportPositionOffset.multiply(0.25, 1, 0.25);
+                }
+            });
+        }
+
+    }
+
     @Override
     public void tick() {
         tickers.forEach(Tickable::tick);
@@ -211,14 +312,19 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
         if (isBeingCarried()) {
             Pony carrier = Pony.of(entity.getVehicle()).orElse(null);
-            if (!carrier.getCompositeRace().any(Abilities.CARRY::canUse)) {
+            if (!Abilities.CARRY.canUse(carrier.getCompositeRace())) {
                 entity.stopRiding();
                 entity.refreshPositionAfterTeleport(carrier.getOriginVector());
                 Living.transmitPassengers(carrier.asEntity());
             }
+            entity.setYaw(carrier.asEntity().getYaw());
         }
 
         updateDragonBreath();
+
+        if (ticksOutsideVehicle == 0) {
+            updatePositionOffset();
+        }
     }
 
     public void updateAttributeModifier(UUID id, EntityAttribute attribute, float desiredValue, Float2ObjectFunction<EntityAttributeModifier> modifierSupplier, boolean permanent) {
@@ -322,7 +428,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                     ItemStack broken = UItems.BROKEN_SUNGLASSES.getDefaultStack();
                     broken.setNbt(glasses.getNbt());
                     TrinketsDelegate.getInstance().setEquippedStack(entity, TrinketsDelegate.FACE, broken);
-                    playSound(SoundEvents.BLOCK_GLASS_BREAK, 1, 1);
+                    playSound(USounds.ITEM_SUNGLASSES_SHATTER, 1, 1);
                 }
             }
         }

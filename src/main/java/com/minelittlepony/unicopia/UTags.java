@@ -17,21 +17,26 @@ public interface UTags {
     TagKey<Item> FRESH_APPLES = item("fresh_apples");
 
     TagKey<Item> FALLS_SLOWLY = item("falls_slowly");
+    TagKey<Item> PIES = item("pies");
+    TagKey<Item> CAN_CUT_PIE = item("can_cut_pie");
 
     TagKey<Item> MAGIC_FEATHERS = item("magic_feathers");
 
     TagKey<Item> SHADES = item("shades");
     TagKey<Item> CHANGELING_EDIBLE = item("food_types/changeling_edible");
+    TagKey<Item> SPOOKED_MOB_DROPS = item("spooked_mob_drops");
 
     TagKey<Item> POLEARMS = item("polearms");
     TagKey<Item> APPLE_SEEDS = item("apple_seeds");
 
     TagKey<Item> ACORNS = item("acorns");
+    TagKey<Item> BASKETS = item("baskets");
 
     TagKey<Block> GLASS_PANES = block("glass_panes");
     TagKey<Block> GLASS_BLOCKS = block("glass_blocks");
     TagKey<Block> FRAGILE = block("fragile");
     TagKey<Block> INTERESTING = block("interesting");
+    TagKey<Block> CATAPULT_IMMUNE = block("catapult_immune");
 
     TagKey<Block> CRYSTAL_HEART_BASE = block("crystal_heart_base");
     TagKey<Block> CRYSTAL_HEART_ORNAMENT = block("crystal_heart_ornament");
@@ -43,6 +48,7 @@ public interface UTags {
     TagKey<StatusEffect> PINEAPPLE_EFFECTS = effect("pineapple_effects");
 
     TagKey<DamageType> BREAKS_SUNGLASSES = damage("breaks_sunglasses");
+    TagKey<DamageType> SPELLBOOK_IMMUNE_TO = damage("spellbook_immune_to");
 
     TagKey<DimensionType> HAS_NO_ATMOSPHERE = dimension("has_no_atmosphere");
 

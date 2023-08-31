@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
@@ -35,17 +37,8 @@ public class PegasusRainboomAbility implements Ability<Hit> {
 
     @Nullable
     @Override
-    public Hit tryActivate(Pony player) {
-
-        if (!player.asEntity().isCreative() && player.getMagicalReserves().getMana().getPercentFill() < 0.2F) {
-            return null;
-        }
-
-        if (player.getPhysics().isFlying() && !SpellType.RAINBOOM.isOn(player)) {
-            return Hit.INSTANCE;
-        }
-
-        return null;
+    public Optional<Hit> prepare(Pony player) {
+        return Hit.of(player.canUseSuperMove() && player.getPhysics().isFlying() && !player.getMotion().isRainbooming());
     }
 
     @Override
@@ -55,15 +48,16 @@ public class PegasusRainboomAbility implements Ability<Hit> {
 
     @Override
     public double getCostEstimate(Pony player) {
-        return 90F;
+        return 0;
     }
 
     @Override
-    public boolean onQuickAction(Pony player, ActivationType type) {
+    public boolean onQuickAction(Pony player, ActivationType type, Optional<Hit> data) {
 
-        if (type == ActivationType.TAP && player.getPhysics().isFlying() && player.getMagicalReserves().getMana().get() > 40) {
+        if (type == ActivationType.TAP && !player.getMotion().isRainbooming() && player.getPhysics().isFlying() && player.getMagicalReserves().getMana().get() > 40) {
             player.getPhysics().dashForward((float)player.asWorld().random.nextTriangular(2.5F, 0.3F));
             player.subtractEnergyCost(4);
+            player.getMagicalReserves().getCharge().add(2);
             return true;
         }
 
@@ -71,24 +65,26 @@ public class PegasusRainboomAbility implements Ability<Hit> {
     }
 
     @Override
-    public void apply(Pony player, Hit data) {
+    public boolean apply(Pony player, Hit data) {
 
-        if (tryActivate(player) == null) {
-            return;
+        if (prepare(player).isEmpty()) {
+            return false;
         }
 
-        player.subtractEnergyCost(9);
-        player.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, player.getPhysics().getMotionAngle()), player.getOriginVector(), Vec3d.ZERO);
-        SpellType.RAINBOOM.withTraits().apply(player, CastingMethod.INNATE);
+        if (player.consumeSuperMove()) {
+            player.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, player.getPhysics().getMotionAngle()), player.getOriginVector(), Vec3d.ZERO);
+            SpellType.RAINBOOM.withTraits().apply(player, CastingMethod.INNATE);
+        }
+        return true;
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().getExertion().add(6);
+    public void warmUp(Pony player, AbilitySlot slot) {
+        player.getMagicalReserves().getExertion().addPercent(6);
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 }

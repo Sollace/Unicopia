@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
@@ -29,8 +31,8 @@ public class PegasusFlightToggleAbility implements Ability<Hit> {
 
     @Nullable
     @Override
-    public Hit tryActivate(Pony player) {
-        return player.asEntity().isCreative() || player.getPhysics().getFlightType().isGrounded() ? null : Hit.INSTANCE;
+    public Optional<Hit> prepare(Pony player) {
+        return Hit.of(!player.asEntity().isCreative() && !player.getPhysics().getFlightType().isGrounded());
     }
 
     @Override
@@ -53,9 +55,9 @@ public class PegasusFlightToggleAbility implements Ability<Hit> {
     }
 
     @Override
-    public void apply(Pony player, Hit data) {
-        if (tryActivate(player) == null) {
-            return;
+    public boolean apply(Pony player, Hit data) {
+        if (prepare(player).isEmpty()) {
+            return false;
         }
 
         player.subtractEnergyCost(1);
@@ -69,14 +71,15 @@ public class PegasusFlightToggleAbility implements Ability<Hit> {
         }
         player.setDirty();
         player.setAnimation(Animation.SPREAD_WINGS, Animation.Recipient.ANYONE);
+        return true;
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().getExertion().add(6);
+    public void warmUp(Pony player, AbilitySlot slot) {
+        player.getMagicalReserves().getExertion().addPercent(6);
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
     }
 }

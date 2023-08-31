@@ -70,8 +70,11 @@ public class Unicopia implements ModInitializer {
             ((BlockDestructionManager.Source)w).getDestructionManager().tick();
             ZapAppleStageStore.get(w).tick();
             WeatherConditions.get(w).tick();
-            if (Debug.DEBUG_SPELLBOOK_CHAPTERS) {
+            if (Debug.SPELLBOOK_CHAPTERS) {
                 SpellbookChapterLoader.INSTANCE.sendUpdate(w.getServer());
+            }
+            if (Debug.CHECK_GAME_VALUES) {
+                Debug.runTests(w);
             }
         });
         NocturnalSleepManager.bootstrap();

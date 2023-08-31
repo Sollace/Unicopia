@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -12,6 +13,7 @@ import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.util.hit.BlockHitResult;
@@ -79,6 +81,11 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
     static void createBlockEntity(World world, BlockPos bpos, @Nullable Consumer<Entity> apply) {
 
         if (world.isAir(bpos)) {
+            return;
+        }
+
+        BlockState state = world.getBlockState(bpos);
+        if (state.isIn(UTags.CATAPULT_IMMUNE)) {
             return;
         }
 

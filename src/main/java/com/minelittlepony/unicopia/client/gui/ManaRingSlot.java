@@ -33,6 +33,7 @@ class ManaRingSlot extends Slot {
 
         if (!uHud.client.player.isCreative()) {
             renderRing(matrices, 13, 9, 0, mana.getXp(), 0x88880099, tickDelta);
+            renderRing(matrices, 9, 0, 0, mana.getCharge(), 0x0000FF99, tickDelta);
 
             double cost = abilities.getStats().stream()
                     .mapToDouble(s -> s.getCost(Unicopia.getConfig().hudPage.get()))
@@ -64,8 +65,8 @@ class ManaRingSlot extends Slot {
     }
 
     private double renderRing(MatrixStack matrices, double outerRadius, double innerRadius, double offsetAngle, Bar bar, int color, float tickDelta) {
-        double fill = bar.getPercentFill() * DrawableUtil.TAU;
-        double shadow = bar.getShadowFill() * DrawableUtil.TAU;
+        double fill = bar.getPercentFill(tickDelta) * DrawableUtil.TAU;
+        double shadow = bar.getShadowFill(tickDelta) * DrawableUtil.TAU;
 
         DrawableUtil.drawArc(matrices, innerRadius, outerRadius, offsetAngle, fill, color, true);
 

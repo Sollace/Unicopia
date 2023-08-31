@@ -77,7 +77,7 @@ public interface TreeType {
      * Recursively locates the base of the tree.
      */
     default Optional<BlockPos> findBase(World w, BlockPos pos) {
-        return findBase(new HashSet<BlockPos>(), w, new BlockPos.Mutable(pos.getX(), pos.getY(), pos.getZ()));
+        return findBase(new HashSet<>(), w, new BlockPos.Mutable(pos.getX(), pos.getY(), pos.getZ()));
     }
 
     private Optional<BlockPos> findBase(Set<BlockPos> done, World w, BlockPos.Mutable pos) {
@@ -91,7 +91,7 @@ public interface TreeType {
         }
 
         if (isWide()) {
-            PosHelper.all(pos.toImmutable(), p -> findBase(done, w, new BlockPos.Mutable(p.getX(), p.getY(), p.getZ()))
+            PosHelper.all(pos.toImmutable(), p -> findBase(done, w, p.mutableCopy())
                     .filter(a -> a.getY() < pos.getY())
                     .ifPresent(pos::set), PosHelper.HORIZONTAL);
         }

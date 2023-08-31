@@ -98,7 +98,7 @@ public class RaceChangeStatusEffect extends StatusEffect {
         if (eq instanceof Pony pony) {
             MagicReserves magic = pony.getMagicalReserves();
             pony.setRespawnRace(race);
-            magic.getExertion().add(50);
+            magic.getExertion().addPercent(5);
             magic.getEnergy().add(3);
             magic.getExhaustion().add(3);
 

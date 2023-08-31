@@ -31,7 +31,7 @@ public enum FlightType {
     }
 
     public boolean canFlyCreative(PlayerEntity player) {
-        return this == INSECTOID || player.isCreative() || player.isSpectator();
+        return player.isCreative() || player.isSpectator();
     }
 
     public SoundEvent getWingFlapSound() {

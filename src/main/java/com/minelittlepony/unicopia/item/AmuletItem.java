@@ -85,7 +85,7 @@ public class AmuletItem extends WearableItem implements ChargeableItem {
         return stack.getItem() == this && (!isChargable() || ChargeableItem.getEnergy(stack) > 0);
     }
 
-    public boolean isApplicable(LivingEntity entity) {
+    public final boolean isApplicable(LivingEntity entity) {
         return isApplicable(getForEntity(entity));
     }
 

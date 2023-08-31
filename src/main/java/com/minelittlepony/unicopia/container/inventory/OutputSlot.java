@@ -46,7 +46,7 @@ public class OutputSlot extends CraftingResultSlot implements SpellbookSlot {
 
     @Override
     public boolean isEnabled() {
-       return handler.canShowSlots.test(SlotType.CRAFTING) && hasStack();
+       return handler.canShowSlots(SlotType.CRAFTING) && hasStack();
     }
 
     @Override

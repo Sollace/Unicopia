@@ -76,7 +76,7 @@ public class WorldRenderDelegate {
                     var buffer = vertices.getBuffer(layer);
                     return RenderLayerUtil.getTexture(layer).map(texture -> {
                         return VertexConsumers.union(
-                                vertices.getBuffer(RenderLayers.getMagicColored(texture, creature.isDiscorded() ? 0xFF0000 : 0x0000FF)),
+                                vertices.getBuffer(RenderLayers.getMagicColored(texture, creature.isDiscorded() ? 0xCCFF0000 : 0xCC0000FF)),
                                 vertices.getBuffer(layer)
                         );
                     }).orElse(buffer);
@@ -108,9 +108,11 @@ public class WorldRenderDelegate {
             double x, double y, double z, float yaw,
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 
-        if (pony.isBeingCarried() && !(pony instanceof Pony && ((Pony)pony).isClientPlayer())) {
+        if (pony.isBeingCarried()) {
             return true;
         }
+
+        pony.updateSupportingEntity();
 
         matrices.push();
 
@@ -127,14 +129,18 @@ public class WorldRenderDelegate {
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(roll));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(roll));
 
-        if (pony instanceof Pony) {
-            roll = ((Pony)pony).getCamera().calculateRoll();
+        if (pony instanceof Pony p) {
+            roll = p.getCamera().calculateRoll();
             if (negative) {
                 roll -= 180;
             }
 
             matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(yaw));
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(roll));
+
+            float diveAngle = p.getInterpolator().interpolate("g_kdive", p.getMotion().isDiving() ? 80 : 0, 15);
+
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(diveAngle));
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
         }
 

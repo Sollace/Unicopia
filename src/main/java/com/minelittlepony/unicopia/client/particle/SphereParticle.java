@@ -12,7 +12,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
@@ -37,6 +37,8 @@ public class SphereParticle extends Particle implements Attachment {
     private Optional<Link> link = Optional.empty();
 
     private final SphereParticleEffect parameters;
+
+    private boolean bound;
 
     public SphereParticle(SphereParticleEffect parameters, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {
         this(parameters, w, x, y, z);
@@ -90,6 +92,9 @@ public class SphereParticle extends Particle implements Attachment {
         if (key == ATTR_OPACITY) {
             alpha = value.floatValue();
         }
+        if (key == ATTR_BOUND) {
+            bound = value.intValue() == 1;
+        }
     }
 
     @Override
@@ -102,13 +107,15 @@ public class SphereParticle extends Particle implements Attachment {
         super.tick();
 
         if (link.isPresent()) {
-            link.flatMap(Link::get).map(Caster::asEntity).ifPresentOrElse(e -> {
-                Vec3d offset = parameters.getOffset();
-                setPos(e.getX() + offset.getX(), e.getY() + offset.getY(), e.getZ() + offset.getZ());
+            link.flatMap(Link::get).map(EntityConvertable::asEntity).ifPresentOrElse(e -> {
+                if (!bound) {
+                    Vec3d offset = parameters.getOffset();
+                    setPos(e.getX() + offset.getX(), e.getY() + offset.getY(), e.getZ() + offset.getZ());
 
-                prevPosX = e.lastRenderX + offset.getX();
-                prevPosY = e.lastRenderY + offset.getY();
-                prevPosZ = e.lastRenderZ + offset.getZ();
+                    prevPosX = e.lastRenderX + offset.getX();
+                    prevPosY = e.lastRenderY + offset.getY();
+                    prevPosZ = e.lastRenderZ + offset.getZ();
+                }
             }, this::detach);
 
             if (steps-- > 0) {

@@ -5,25 +5,25 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import com.minelittlepony.client.util.render.RenderLayerUtil;
 import com.minelittlepony.common.client.gui.*;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
-import com.minelittlepony.unicopia.client.render.PassThroughVertexConsumer;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.*;
+import com.minelittlepony.unicopia.client.render.RenderLayers;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.screen.PlayerScreenHandler;
 
-class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
+public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
     private final List<IngredientTree.Entry> entries = new ArrayList<>();
     private Optional<IngredientTree.Entry> result = Optional.empty();
 
@@ -261,9 +261,6 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
     }
 
     static class HiddenStacks extends Stacks {
-        private static final PassThroughVertexConsumer.Parameters FIXTURE = new PassThroughVertexConsumer.Parameters()
-                .color((parent, r, g, b, a) -> parent.color(0, 0, 0, 0.6F));
-
         HiddenStacks(ItemStack stack) {
             super(stack);
         }
@@ -272,8 +269,6 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         protected void drawItem(DrawContext context, int x, int y) {
             var model = itemRenderer.getModel(stack, null, null, 0);
 
-            MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
-            RenderSystem.setShaderTexture(0, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
             MatrixStack matrices = context.getMatrices();
             matrices.push();
             matrices.translate(x, y, 100);
@@ -286,12 +281,12 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
                 DiffuseLighting.disableGuiDepthLighting();
             }
             RenderSystem.disableDepthTest();
-            try {
-                itemRenderer.renderItem(stack, ModelTransformationMode.GUI, false, matrices, layer -> FIXTURE.build(immediate.getBuffer(layer)), 0, OverlayTexture.DEFAULT_UV, model);
-                immediate.draw();
-            } catch (Exception e) {
-                // Sodium
-            }
+            itemRenderer.renderItem(stack, ModelTransformationMode.GUI, false, matrices, layer -> {
+                return immediate.getBuffer(RenderLayerUtil.getTexture(layer).map(texture -> {
+                    return RenderLayers.getMagicColored(texture, 0x09000000);
+                }).orElse(RenderLayers.getMagicColored(0x09000000)));
+            }, 0, OverlayTexture.DEFAULT_UV, model);
+            immediate.draw();
 
             RenderSystem.enableDepthTest();
             if (bl) {

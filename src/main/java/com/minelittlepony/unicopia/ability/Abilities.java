@@ -20,13 +20,14 @@ public interface Abilities {
     BiFunction<AbilitySlot, Race.Composite, List<Ability<?>>> BY_SLOT_AND_COMPOSITE_RACE = Util.memoize((slot, race) -> {
         return BY_SLOT.computeIfAbsent(slot, s -> new LinkedHashSet<>())
                 .stream()
-                .filter(a -> race.any(a::canUse))
+                .filter(a -> a.canUse(race))
                 .toList();
     });
 
     // unicorn / alicorn
     Ability<?> CAST = register(new UnicornCastingAbility(), "cast", AbilitySlot.PRIMARY);
     Ability<?> SHOOT = register(new UnicornProjectileAbility(), "shoot", AbilitySlot.PRIMARY);
+    Ability<?> TIME = register(new TimeChangeAbility(), "time_control", AbilitySlot.SECONDARY);
     Ability<?> TELEPORT = register(new UnicornTeleportAbility(), "teleport", AbilitySlot.SECONDARY);
     Ability<?> GROUP_TELEPORT = register(new UnicornGroupTeleportAbility(), "teleport_group", AbilitySlot.SECONDARY);
     Ability<?> DISPELL = register(new UnicornDispellAbility(), "dispell", AbilitySlot.TERTIARY);

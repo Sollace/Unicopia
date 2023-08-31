@@ -11,6 +11,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
@@ -61,6 +62,11 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
     @Override
     public boolean shouldRenderName() {
         return !InteractionManager.instance().isClientPlayer(getMaster());
+    }
+
+    @Override
+    public boolean isPartVisible(PlayerModelPart modelPart) {
+        return owner == null ? super.isPartVisible(modelPart) : owner.isPartVisible(modelPart);
     }
 
     @Override

@@ -50,7 +50,7 @@ public interface ChargeableItem {
     }
 
     static float getEnergy(ItemStack stack) {
-        return stack.hasNbt() && stack.getNbt().contains("energy") ? stack.getNbt().getFloat("energy") : getDefaultCharge(stack);
+        return stack.hasNbt() && stack.getNbt().contains("energy") ? Math.max(0, stack.getNbt().getFloat("energy")) : getDefaultCharge(stack);
     }
 
     static ItemStack setEnergy(ItemStack stack, float energy) {

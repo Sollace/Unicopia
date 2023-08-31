@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.entity;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 
@@ -25,7 +26,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -132,22 +132,16 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     @Override
     protected void onBlockHit(BlockHitResult hit) {
-        BlockState state = getWorld().getBlockState(hit.getBlockPos());
+        BlockPos buttonPos = hit.getBlockPos().offset(hit.getSide());
+        BlockState state = getWorld().getBlockState(buttonPos);
 
-        BlockState posState = getBlockStateAtPos();
         if (state.isIn(BlockTags.WOODEN_BUTTONS) && state.getBlock() instanceof ButtonBlock button) {
-            button.powerOn(state, getWorld(), hit.getBlockPos());
-        } else if (posState.isIn(BlockTags.WOODEN_BUTTONS) && posState.getBlock() instanceof ButtonBlock button) {
-            button.powerOn(posState, getWorld(), getBlockPos());
+            button.powerOn(state, getWorld(), buttonPos);
+        } else if (state.getBlock() instanceof LeverBlock lever) {
+            lever.togglePower(state, getWorld(), buttonPos);
         }
 
-        if (state.getBlock() instanceof LeverBlock lever) {
-            lever.togglePower(state, getWorld(), hit.getBlockPos());
-        } else if (posState.getBlock() instanceof LeverBlock lever) {
-            lever.togglePower(posState, getWorld(), getBlockPos());
-        }
-
-        BlockPos belowPos = getBlockPos().down();
+        BlockPos belowPos = buttonPos.down();
         BlockState below = getWorld().getBlockState(belowPos);
         ItemStack stack = getStack();
         if (below.getBlock() instanceof HopperBlock hopper) {
@@ -218,7 +212,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     @Override
     protected SoundEvent getHitSound() {
-        return isBouncy() ? SoundEvents.BLOCK_NOTE_BLOCK_BANJO.value() : SoundEvents.BLOCK_STONE_HIT;
+        return isBouncy() ? USounds.ITEM_MUFFIN_BOUNCE.value() : USounds.ITEM_ROCK_LAND;
     }
 
     @Override

@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.Optional;
+
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -25,7 +28,7 @@ public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
     }
 
     @Override
-    public Hit tryActivate(Pony player) {
+    public Optional<Hit> prepare(Pony player) {
         return Hit.of(player.getCharms().getSpellInHand(false).getResult() != ActionResult.FAIL);
     }
 
@@ -35,7 +38,7 @@ public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
     }
 
     @Override
-    public boolean onQuickAction(Pony player, ActivationType type) {
+    public boolean onQuickAction(Pony player, ActivationType type, Optional<Hit> data) {
         if (type == ActivationType.DOUBLE_TAP) {
             if (!player.isClient()) {
                 TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(true);
@@ -54,7 +57,7 @@ public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
     }
 
     @Override
-    public void apply(Pony player, Hit data) {
+    public boolean apply(Pony player, Hit data) {
         TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(true);
 
         if (thrown.getResult() != ActionResult.FAIL) {
@@ -65,15 +68,19 @@ public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
                 player.setAnimation(Animation.ARMS_FORWARD, Animation.Recipient.ANYONE);
                 projectile.setHydrophobic();
 
-                if (spell instanceof HomingSpell) {
-                    TraceHelper.findEntity(player.asEntity(), 600, 1).filter(((HomingSpell)spell)::setTarget).ifPresent(projectile::setHomingTarget);
+                if (spell instanceof HomingSpell homer) {
+                    TraceHelper.findEntity(player.asEntity(), homer.getRange(player), 1, EquinePredicates.EXCEPT_MAGIC_IMMUNE).filter(((HomingSpell)spell)::setTarget).ifPresent(projectile::setHomingTarget);
                 }
             });
+
+            return true;
         }
+
+        return false;
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getExhaustion().multiply(3.3F);
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }

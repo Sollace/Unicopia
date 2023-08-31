@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.ability;
 
-import org.jetbrains.annotations.Nullable;
+import java.util.Optional;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.data.Hit;
@@ -19,7 +19,6 @@ import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -42,12 +41,8 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
     }
 
     @Override
-    @Nullable
-    public Hit tryActivate(Pony player) {
-        if (!player.canCast()) {
-            return null;
-        }
-        return Hit.of(player.getMagicalReserves().getMana().get() >= getCostEstimate(player));
+    public Optional<Hit> prepare(Pony player) {
+        return Hit.of(player.canCast() && player.getMagicalReserves().getMana().get() >= getCostEstimate(player));
     }
 
     @Override
@@ -76,9 +71,9 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
     }
 
     @Override
-    public void apply(Pony player, Hit data) {
+    public boolean apply(Pony player, Hit data) {
         if (!player.canCast()) {
-            return;
+            return false;
         }
 
         TypedActionResult<ItemStack> amulet = getAmulet(player);
@@ -92,7 +87,7 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
 
                 if (amount < 0) {
                     ChargeableItem.consumeEnergy(stack, amount);
-                    player.getMagicalReserves().getMana().add(amount * player.getMagicalReserves().getMana().getMax());
+                    player.getMagicalReserves().getMana().add(amount);
                     player.asWorld().playSoundFromEntity(null, player.asEntity(), USounds.ITEM_AMULET_RECHARGE, SoundCategory.PLAYERS, 1, 1);
                 }
             }
@@ -107,14 +102,14 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
                 }, true);
                 player.subtractEnergyCost(removed ? 2 : 4);
                 if (!removed) {
-                    Spell s = spell.apply(player, CastingMethod.GEM);
+                    Spell s = spell.apply(player, CastingMethod.DIRECT);
                     if (s == null) {
                         player.spawnParticles(ParticleTypes.LARGE_SMOKE, 6);
                         player.playSound(USounds.SPELL_CAST_FAIL, 1, 0.5F);
                     } else {
                         player.setAnimation(Animation.ARMS_UP, Animation.Recipient.HUMAN);
                         if (s instanceof HomingSpell homer) {
-                            TraceHelper.findEntity(player.asEntity(), homer.getRange(player), 1, EntityPredicates.VALID_ENTITY).ifPresent(homer::setTarget);
+                            TraceHelper.findEntity(player.asEntity(), homer.getRange(player), 1, EquinePredicates.EXCEPT_MAGIC_IMMUNE).ifPresent(homer::setTarget);
                         }
                         player.playSound(USounds.SPELL_CAST_SUCCESS, 0.05F, 2.2F);
                     }
@@ -123,6 +118,8 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
                 }
             }
         }
+
+        return true;
     }
 
     private TypedActionResult<ItemStack> getAmulet(Pony player) {
@@ -141,7 +138,7 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getExhaustion().multiply(3.3F);
 
         if (getAmulet(player).getResult() == ActionResult.CONSUME) {

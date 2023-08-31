@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.mixin.client;
 
 import java.util.SortedSet;
 
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -12,16 +14,24 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.minelittlepony.unicopia.client.ClientBlockDestructionManager;
-
+import com.minelittlepony.unicopia.client.UnicopiaClient;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.minecraft.client.render.BlockBreakingInfo;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.resource.SynchronousResourceReloader;
+import net.minecraft.util.math.RotationAxis;
 
 @Mixin(value = WorldRenderer.class, priority = 1001)
 abstract class MixinWorldRenderer implements SynchronousResourceReloader, AutoCloseable, ClientBlockDestructionManager.Source {
 
     private final ClientBlockDestructionManager destructions = new ClientBlockDestructionManager();
+
+    @Nullable
+    @Shadow
+    private ClientWorld world;
 
     @Shadow
     private @Final Long2ObjectMap<SortedSet<BlockBreakingInfo>> blockBreakingProgressions;
@@ -52,5 +62,22 @@ abstract class MixinWorldRenderer implements SynchronousResourceReloader, AutoCl
     @Inject(method = "tick()V", at = @At("RETURN"))
     private void onTick(CallbackInfo info) {
         destructions.tick(blockBreakingProgressions);
+    }
+
+    @Inject(method = "renderSky("
+            + "Lnet/minecraft/client/util/math/MatrixStack;"
+            + "Lorg/joml/Matrix4f;"
+            + "F"
+            + "Lnet/minecraft/client/render/Camera;"
+            + "Z"
+            + "Ljava/lang/Runnable;"
+            + ")V", at = @At(
+                value = "INVOKE",
+                target = "net/minecraft/client/world/ClientWorld.getSkyAngle(F)F",
+                ordinal = 1
+            ))
+    private void onRenderSky(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback, CallbackInfo info) {
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(UnicopiaClient.getInstance().getSkyAngleDelta(tickDelta)));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(UnicopiaClient.getInstance().tangentalSkyAngle.getValue()));
     }
 }

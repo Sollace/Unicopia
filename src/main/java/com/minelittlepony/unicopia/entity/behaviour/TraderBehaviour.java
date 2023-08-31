@@ -1,9 +1,9 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.passive.MerchantEntity;
-import net.minecraft.sound.SoundEvents;
 
 public class TraderBehaviour extends EntityBehaviour<MerchantEntity> {
     @Override
@@ -12,7 +12,7 @@ public class TraderBehaviour extends EntityBehaviour<MerchantEntity> {
             entity.setHeadRollingTimeLeft(40);
 
             if (!entity.getWorld().isClient()) {
-               entity.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1, 1);
+               entity.playSound(USounds.Vanilla.ENTITY_VILLAGER_NO, 1, 1);
             }
         }
     }

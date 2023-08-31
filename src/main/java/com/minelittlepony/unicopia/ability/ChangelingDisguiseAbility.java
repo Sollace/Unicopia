@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia.ability;
 
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
@@ -25,19 +27,16 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
 
     @Nullable
     @Override
-    public Hit tryActivate(Pony player) {
-        if (player.asEntity().isCreative() || player.getMagicalReserves().getMana().getPercentFill() >= 0.9F) {
-            return Hit.INSTANCE;
-        }
-        return null;
+    public Optional<Hit> prepare(Pony player) {
+        return Hit.of(player.asEntity().isCreative() || player.getMagicalReserves().getMana().getPercentFill() >= 0.9F);
     }
 
     @Override
-    public void apply(Pony iplayer, Hit data) {
+    public boolean apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.asEntity();
 
-        if (!player.isCreative() && iplayer.getMagicalReserves().getMana().getPercentFill() < 0.9F) {
-            return;
+        if (prepare(iplayer).isEmpty()) {
+            return false;
         }
 
         Trace trace = Trace.create(player, 10, 1, EquinePredicates.VALID_FOR_DISGUISE);
@@ -61,16 +60,17 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
 
         player.calculateDimensions();
         iplayer.setDirty();
+        return true;
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getEnergy().add(20);
         player.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getEnergy().set(0);
         player.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
     }

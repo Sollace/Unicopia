@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.entity.player.*;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
+import com.minelittlepony.unicopia.server.world.Altar;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -21,6 +22,7 @@ import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -46,6 +48,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.World.ExplosionSourceType;
 
 public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackable, ItemImpl.ClingyItem, ItemImpl.GroundTickCallback {
     private static final UUID EFFECT_UUID = UUID.fromString("c0a870f5-99ef-4716-a23e-f320ee834b26");
@@ -186,6 +189,23 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
             return;
         }
 
+        if (entity instanceof PlayerEntity) {
+            if (entity.isOnFire() && world.getBlockState(entity.getBlockPos().up()).isOf(Blocks.SOUL_FIRE)) {
+                if (Altar.of(entity.getBlockPos().up()).isValid(world)) {
+                    if (living.asEntity().getHealth() < 2) {
+                        entity.setFireTicks(0);
+                        world.removeBlock(entity.getBlockPos().up(), false);
+                        stack.decrement(1);
+                        world.createExplosion(null, entity.getX(), entity.getY(), entity.getZ(), 0, ExplosionSourceType.NONE);
+                        world.playSound(null, entity.getBlockPos(), USounds.ENTITY_SOMBRA_LAUGH, SoundCategory.AMBIENT, 10, 1);
+
+                        SombraEntity.startEncounter(world, entity.getBlockPos());
+                    }
+                    return;
+                }
+            }
+        }
+
         final long attachedTicks = living.getArmour().getTicks(this);
         final long daysAttached = attachedTicks / ItemTracker.DAYS;
         final boolean fullSecond = attachedTicks % ItemTracker.SECONDS == 0;
@@ -228,12 +248,12 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
             // constantly increase exertion
             if (reserves.getExertion().get() < reserves.getExertion().getMax()) {
-                reserves.getExertion().add(2);
+                reserves.getExertion().add(0.02F);
             }
 
             // gradual corruption accumulation
             if (fullSecond && world.random.nextInt(12) == 0 && !pony.asEntity().isCreative()) {
-                reserves.getEnergy().add(reserves.getEnergy().getMax() / 10F);
+                reserves.getEnergy().add(10);
                 pony.getCorruption().add((int)MathHelper.clamp(attachedTicks / ItemTracker.HOURS, 1, pony.getCorruption().getMax()));
             }
 
@@ -245,8 +265,8 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                     InteractionManager.INSTANCE.playLoopingSound(player, InteractionManager.SOUND_HEART_BEAT, 0);
                 }
 
-                reserves.getExertion().add(reserves.getExertion().getMax());
-                reserves.getEnergy().add(reserves.getEnergy().getMax() / 2F);
+                reserves.getExertion().addPercent(10);
+                reserves.getEnergy().add(10);
                 living.asEntity().removeStatusEffect(StatusEffects.WEAKNESS);
                 living.asEntity().removeStatusEffect(StatusEffects.NAUSEA);
             }

@@ -6,6 +6,8 @@ import java.util.List;
 import org.joml.Vector4f;
 
 import com.minelittlepony.common.client.gui.GameGui;
+import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.client.FlowingText;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
@@ -19,7 +21,6 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.StringHelper;
@@ -42,7 +43,7 @@ public class DismissSpellScreen extends GameGui {
 
         List<PlaceableSpell> placeableSpells = new ArrayList<>();
 
-        for (Spell spell : pony.getSpellSlot().stream(true).toList()) {
+        for (Spell spell : pony.getSpellSlot().stream(true).filter(SpellPredicate.IS_VISIBLE).toList()) {
 
             if (spell instanceof PlaceableSpell placeable) {
                 if (placeable.getPosition().isPresent()) {
@@ -234,7 +235,7 @@ public class DismissSpellScreen extends GameGui {
     }
 
     static void playClickEffect() {
-        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK.value(), 6, 0.3F));
+        MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(USounds.Vanilla.UI_BUTTON_CLICK.value(), 6, 0.3F));
     }
 
     static double squareDistance(double x1, double y1, double x2, double y2) {

@@ -7,7 +7,6 @@ import com.minelittlepony.api.model.IModel;
 import com.minelittlepony.api.model.gear.IGear;
 import com.minelittlepony.client.model.IPonyModel;
 import com.minelittlepony.unicopia.client.render.HeldEntityFeatureRenderer;
-import com.minelittlepony.unicopia.entity.Living;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumer;
@@ -16,7 +15,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
 
 class HeldEntityGear extends HeldEntityFeatureRenderer<LivingEntity> implements IGear {
 
@@ -60,10 +58,5 @@ class HeldEntityGear extends HeldEntityFeatureRenderer<LivingEntity> implements 
             0, 0,
             MinecraftClient.getInstance().getTickDelta(), 0, 0, 0
         );
-    }
-
-    @Override
-    protected Vec3d getCarryPosition(Living<LivingEntity> entity, Living<?> passenger) {
-        return super.getCarryPosition(entity, passenger);
     }
 }

@@ -66,12 +66,18 @@ public class ParagraphWrappingVisitor implements StyledVisitor<Object> {
             }
 
             // append the segment to the line that's being built
-            if (currentLineCollectedLength > 0) {
+            if (currentLineCollectedLength > 0 && s.startsWith(" ")) {
                 currentLine.append(" ");
                 currentLineCollectedLength += handler.getWidth(" ");
             }
             currentLine.append(fragment);
             currentLineCollectedLength += grabbedWidth;
+
+            // append the segment to the line that's being built
+            if (currentLineCollectedLength > 0 && s.endsWith(" ")) {
+                currentLine.append(" ");
+                currentLineCollectedLength += handler.getWidth(" ");
+            }
 
             if (newline >= 0) {
                 advance();

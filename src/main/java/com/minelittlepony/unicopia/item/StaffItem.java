@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.UEntityAttributes;
 
 import net.minecraft.block.Blocks;
@@ -22,7 +23,6 @@ import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolMaterials;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -70,7 +70,7 @@ public class StaffItem extends SwordItem {
     }
 
     protected boolean castContainedEffect(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        target.getEntityWorld().playSound(null, target.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, attacker.getSoundCategory(), 1, 1);
+        target.getEntityWorld().playSound(null, target.getBlockPos(), USounds.ITEM_STAFF_STRIKE, attacker.getSoundCategory(), 1, 1);
 
         target.takeKnockback(attacker.getVelocity().subtract(target.getVelocity()).horizontalLength(),
                 MathHelper.sin(attacker.getYaw() * 0.017453292F),

@@ -37,7 +37,9 @@ public interface ParticleUtils {
 
     static void spawnParticle(World world, ParticleEffect effect, double x, double y, double z, double vX, double vY, double vZ) {
         if (world instanceof ServerWorld sw) {
-            sw.spawnParticles(effect, x, y, z, 1, vX, vY, vZ, 0);
+            Vec3d vel = new Vec3d(vX, vY, vZ);
+
+            sw.spawnParticles(effect, x, y, z, 1, vX, vY, vZ, vel.length());
         } else {
             world.addParticle(effect, x, y, z, vX, vY, vZ);
         }

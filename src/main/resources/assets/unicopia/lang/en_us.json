@@ -23,6 +23,21 @@
   "item.unicopia.friendship_bracelet.issuer": "Signed by %s",
   "item.unicopia.friendship_bracelet.glowing": "Glowing",
 
+  "item.unicopia.oak_basket": "Oak Basket",
+  "item.unicopia.spruce_basket": "Spruce Basket",
+  "item.unicopia.birch_basket": "Birch Basket",
+  "item.unicopia.jungle_basket": "Jungle Basket",
+  "item.unicopia.acacia_basket": "Acacia Basket",
+  "item.unicopia.cherry_basket": "Cherry Basket",
+  "item.unicopia.dark_oak_basket": "Dark Oak Basket",
+  "item.unicopia.mangrove_basket": "Mangrove Basket",
+  "item.unicopia.bamboo_basket": "Bamboo Basket",
+  "item.unicopia.palm_basket": "Palm Basket",
+  "item.unicopia.giant_balloon": "Giant Balloon",
+  
+  "item.unicopia.palm_boat": "Palm Boat",
+  "item.unicopia.palm_chest_boat": "Palm Boat with Chest",
+
   "item.unicopia.spellbook": "Spellbook",
   "emi.category.unicopia.spellbook": "Spellbook",
 
@@ -88,6 +103,7 @@
   "item.unicopia.green_apple_seeds": "Granny Smith Apple Seeds",
   "item.unicopia.sweet_apple_seeds": "Sweet Apple Seeds",
   "item.unicopia.sour_apple_seeds": "Sour Apple Seeds",
+  "item.unicopia.apple_pie_hoof": "Apple Pie with a Hoofprint",
   "item.unicopia.apple_pie_slice": "Slice Of Apple Pie",
 
   "item.unicopia.oats": "Oats",
@@ -97,6 +113,7 @@
   "item.unicopia.daffodil_daisy_sandwich": "Daffodil Daisy Sandwich",
   "item.unicopia.hay_burger": "Hay Burger",
   "item.unicopia.hay_fries": "Hay Fries",
+  "item.unicopia.crispy_hay_fries": "Crispy Hay Fries",
   "item.unicopia.wheat_worms": "Wheat Worms",
   "item.unicopia.muffin": "Muffin",
 
@@ -106,6 +123,10 @@
 
   "item.unicopia.alicorn_amulet": "Alicorn Amulet",
   "item.unicopia.alicorn_amulet.lore": "Time worn: %d",
+  
+  "item.unicopia.broken_alicorn_amulet": "Broken Alicorn Amulet",
+  "item.unicopia.unicorn_amulet": "Unicorn Amulet",
+  "item.unicopia.unicorn_amulet.lore": "Grants magical abilities to whoever wears it",
 
   "item.unicopia.grogars_bell": "Grogar's Bell",
   "item.unicopia.grogars_bell.charges": "Charges: %d / %d",
@@ -154,6 +175,10 @@
   "block.unicopia.stripped_palm_log": "Stripped Palm Log",
   "block.unicopia.stripped_palm_wood": "Stripped Palm Wood",
   "block.unicopia.palm_leaves": "Palm Leaves",
+  "block.unicopia.palm_door": "Palm Door",
+  "block.unicopia.palm_trapdoor": "Palm Trapdoor",
+  "block.unicopia.palm_sign": "Palm Sign",
+  "block.unicopia.palm_hanging_sign": "Palm Hanging Sign",
   "block.unicopia.apple_pie": "Apple Pie",
   "block.unicopia.weather_vane": "Weather Vane",
 
@@ -176,6 +201,12 @@
   "entity.unicopia.cast_spell": "Cast Spell",
   "entity.unicopia.cast_spell.by": "a spell cast by %s",
   "entity.unicopia.spellbook": "Spellbook",
+  "entity.unicopia.air_balloon": "Hot Air Balloon",
+  "entity.unicopia.sombra": "King Sombra",
+  "entity.unicopia.sombra.taunt": "That's not going to work on me!",
+  "entity.unicopia.storm_cloud": "Storm Cloud",
+  "entity.unicopia.sombra": "King Sombra",
+  "entity.unicopia.crystal_shards": "Crystal Shards",
 
   "player.reachDistance": "Reach Distance",
   "player.miningSpeed": "Mining Speed",
@@ -275,10 +306,6 @@
   "spell.unicopia.dispel_evil": "Dispel Evil",
   "spell.unicopia.dispel_evil.lore": "Casts away any nearby unearthly forces",
 
-  "gui.unicopia.trait.label": "Element of %s",
-  "gui.unicopia.trait.group": "\n %s",
-  "gui.unicopia.trait.corruption": "\n %s corruption",
-
   "trait.unicopia.strength.name": "Strength",
   "trait.unicopia.strength.description": "Imparts physical strength or enhances endurance.\nSpells with more of the strength trait hit harder and last longer.",
   "trait.unicopia.focus.name": "Focus",
@@ -349,10 +376,15 @@
   "ability.unicopia.toggle_flight": "Take-off/Land",
   "ability.unicopia.hang": "Cling to Ceiling",
   "ability.unicopia.eee": "Screech",
+  "ability.unicopia.time_control": "Control Sun / Moon",
   "ability.unicopia.feed": "Siphon Love",
   "ability.unicopia.capture_cloud": "Bust Cloud",
   "ability.unicopia.disguise": "Change Form",
   "ability.unicopia.rainboom": "Sonic Rainboom",
+
+  "gui.unicopia.trait.label": "Element of %s",
+  "gui.unicopia.trait.group": "\n %s",
+  "gui.unicopia.trait.corruption": "\n %s corruption",
 
   "gui.unicopia.dispell_screen.cancel": "Press ESC to cancel",
   "gui.unicopia.dispell_screen.spell_type": "Spell Type: %s",
@@ -446,13 +478,28 @@
   "gui.unicopia.tribe_selection.join": "Join Tribe",
   "gui.unicopia.tribe_selection.cancel": "Go Back",
 
+  "gui.unicopia.spellbook.empty_spell_slot": "Empty Spell Slot",
   "gui.unicopia.spellbook.page.inventory": "Inventory",
   "gui.unicopia.spellbook.page.recipes": "Recipes",
   "gui.unicopia.spellbook.page.recipes.empty": "0 Recipes Unlocked",
   "gui.unicopia.spellbook.page.mana": "Mana",
+  "gui.unicopia.spellbook.page.requirements.entry.item": "- %1$sx %2$s",
+  "gui.unicopia.spellbook.page.requirements.entry.trait": "- At least %1$sx %2$s trait",
+  "gui.unicopia.spellbook.page.requirements.entry.spell": "- %1$sx %2$s gem",
 
   "gui.unicopia.action.spells_cleared": "Removed all spells",
   "gui.unicopia.action.no_spells_cleared": "You have no active spells",
+
+  "chapter.unicopia.crafting": "Spell Crafting",
+  "chapter.unicopia.profile": "Profile",
+  "chapter.unicopia.traits": "Research",
+  "chapter.unicopia.introduction": "Introduction",
+  "chapter.unicopia.fire_magic": "Fire Magic",
+  "chapter.unicopia.ice_magic": "Ice Magic",
+  "chapter.unicopia.air_magic": "Air Magic",
+  "chapter.unicopia.dark_magic": "Dark Magic",
+  "chapter.unicopia.the_otherworldly": "Forbidden Magic",
+  "chapter.unicopia.crystal_heart": "Artifacts",
 
   "experience.unicopia.pure.magical_kindergartner": "New Blood",
   "experience.unicopia.impure.magical_kindergartner": "Impure",
@@ -697,6 +744,38 @@
   "death.fell.accident.other_climbable.pegasus": "%1$s forgot they could fly and fell while climbing",
   "death.fell.accident.generic.pegasus": "%1$s forgot they could fly",
   "death.fell.accident.pegasus": "%1$s forgot they could fly",
+  "death.fell.accident.water": "%1$s got their wings wet",
+
+  "painting.unicopia.hurricane.title": "Hurricane",
+  "painting.unicopia.hurricane.author": "Pegasus Tribe",
+  "painting.unicopia.platinum.title": "Platinum",
+  "painting.unicopia.platinum.author": "Unicorn Tribe",
+  "painting.unicopia.pudding.title": "Pudding",
+  "painting.unicopia.pudding.author": "Earth Pony Tribe",
+  "painting.unicopia.equestria.title": "Equestrian Flag",
+  "painting.unicopia.equestria.author": "Unicopia",
+  "painting.unicopia.terra.title": "Terra",
+  "painting.unicopia.terra.author": "Earth Pony Tribe",
+  "painting.unicopia.blossom.title": "Blossom",
+  "painting.unicopia.blossom.author": "Chancellor Pudding Head",
+  "painting.unicopia.shadow.title": "Shadow",
+  "painting.unicopia.shadow.author": "Nightmare Moon",
+  "painting.unicopia.bloom.title": "Bloom",
+  "painting.unicopia.bloom.author": "CMC",
+  "painting.unicopia.chicken.title": "Chicken",
+  "painting.unicopia.chicken.author": "CMC",
+  "painting.unicopia.bells.title": "Bells",
+  "painting.unicopia.bells.author": "CMC",
+  "painting.unicopia.crystal.title": "Chrystal",
+  "painting.unicopia.crystal.author": "King Sombra",
+  "painting.unicopia.harmony.title": "Harmony",
+  "painting.unicopia.harmony.author": "Unicopia",
+  "painting.unicopia.lunar.title": "Lunar",
+  "painting.unicopia.lunar.author": "Bat Pony Tribe",
+  "painting.unicopia.solar.title": "Solar",
+  "painting.unicopia.solar.author": "Royal Guard",
+  "painting.unicopia.equality.title": "Equality",
+  "painting.unicopia.equality.author": "Starlight Glimmer",
 
   "unicopia.subtitle.flap_wings": "Wing flaps",
   "unicopia.subtitle.dash": "Pony Dashes",
@@ -804,21 +883,25 @@
 
   "advancements.unicopia.sky_route.title": "Path of the Pegasus",
   "advancements.unicopia.sky_route.description": "Join the Clousdale Pegasi",
-
   "advancements.unicopia.molting_season_1.title": "Molting Season",
   "advancements.unicopia.molting_season_1.description": "Drop a feather whilst flying",
-
   "advancements.unicopia.molting_season_2.title": "Molting Season 2",
   "advancements.unicopia.molting_season_2.description": "Drop 5 feathers whilst flying",
-
   "advancements.unicopia.molting_season_3.title": "Molting Season 3",
   "advancements.unicopia.molting_season_3.description": "Drop 15 feathers whilst flying",
-
   "advancements.unicopia.rainbow_crash.title": "Dammit, Rainbow",
   "advancements.unicopia.rainbow_crash.description": "Wage war on the evil glass window nation",
-
+  "advancements.unicopia.second_wind.title": "Second Wind",
+  "advancements.unicopia.second_wind.description": "Fly through the pain",
   "advancements.unicopia.deter_phantom.title": "What Flies Around",
   "advancements.unicopia.deter_phantom.description": "Get up there and give those phantoms a taste of their own medicine",
+
+  "advancements.unicopia.love_is_power.title": "Love is Power",
+  "advancements.unicopia.love_is_power.description": "Banish King Sombra with a Crystal Heart",
+  "advancements.unicopia.save_the_day.title": "Save the Day",
+  "advancements.unicopia.save_the_day.description": "Defeat King Sombra once and for all",
+  "advancements.unicopia.doctor_sombrero.title": "Doctor Sombrero",
+  "advancements.unicopia.doctor_sombrero.description": "That's not mare-iachi!",
 
   "unicopia.toast.discoveries.title": "New Discoveries!",
   "unicopia.toast.discoveries.description": "Check your spellbook"

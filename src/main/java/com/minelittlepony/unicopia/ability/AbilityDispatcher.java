@@ -37,19 +37,8 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         Stat stat = getStat(slot);
 
         if (stat.canSwitchStates()) {
-            if (pressType == ActivationType.NONE || stat.getAbility(page).filter(ability -> !triggerQuickAction(ability, pressType)).isEmpty()) {
-                stat.setActiveAbility(null);
-            }
+            stat.clear(pressType, page);
         }
-    }
-
-    private <T extends Hit> boolean triggerQuickAction(Ability<T> ability, ActivationType pressType) {
-        Optional<T> data = ability.prepareQuickAction(player, pressType);
-        if (ability.onQuickAction(player, pressType, data)) {
-            Channel.CLIENT_PLAYER_ABILITY.sendToServer(new MsgPlayerAbility<>(ability, data, pressType));
-            return true;
-        }
-        return false;
     }
 
     public Optional<Ability<?>> activate(AbilitySlot slot, long page) {
@@ -182,42 +171,43 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         }
 
         public void tick() {
-            getActiveAbility().ifPresent(this::activate);
+            getActiveAbility().ifPresent(ability -> {
+                if (warmup > 0) {
+                    warmup--;
+                    ability.warmUp(player, slot);
+                    return;
+                }
+
+                if (cooldown > 0 && cooldown-- > 0) {
+                    ability.coolDown(player, slot);
+
+                    if (cooldown <= 0) {
+                        setActiveAbility(null);
+                    }
+                    return;
+                }
+
+                tryFire(ability);
+            });
         }
 
-        private <T extends Hit> void activate(Ability<T> ability) {
-            if (warmup > 0) {
-                warmup--;
-                ability.preApply(player, slot);
-                return;
-            }
-
-            if (cooldown > 0 && cooldown-- > 0) {
-                ability.postApply(player, slot);
-
-                if (cooldown <= 0) {
-                    setActiveAbility(null);
-                }
-                return;
-            }
-
+        private <T extends Hit> void tryFire(Ability<T> ability) {
             if (triggered) {
                 return;
             }
 
-            if (ability.canActivate(player.asWorld(), player)) {
-                triggered = true;
-                setCooldown(ability.getCooldownTime(player));
+            triggered = true;
+            setCooldown(ability.getCooldownTime(player));
 
-                if (player.isClientPlayer()) {
-                    Optional<T> data = ability.prepare(player);
+            if (player.isClientPlayer()) {
+                Optional<T> data = ability.prepare(player);
+                warmup = 0;
 
-                    if (data.isPresent()) {
-                        Channel.CLIENT_PLAYER_ABILITY.sendToServer(new MsgPlayerAbility<>(ability, data, ActivationType.NONE));
-                    } else {
-                        player.asEntity().playSound(USounds.GUI_ABILITY_FAIL, 1, 1);
-                        setCooldown(0);
-                    }
+                if (data.isPresent()) {
+                    Channel.CLIENT_PLAYER_ABILITY.sendToServer(new MsgPlayerAbility<>(ability, data, ActivationType.NONE));
+                } else {
+                    player.asEntity().playSound(USounds.GUI_ABILITY_FAIL, 1, 1);
+                    setCooldown(0);
                 }
             }
 
@@ -233,6 +223,26 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
             }
 
             return Optional.ofNullable(found.get((int)Math.min(found.size() - 1, page)));
+        }
+
+        public void clear(ActivationType pressType, long page) {
+            if (pressType == ActivationType.NONE
+                    || getAbility(page).filter(ability -> !triggerQuickAction(ability, pressType)).isEmpty()) {
+                if (warmup > 0) {
+                    getActiveAbility().filter(Ability::activateOnEarlyRelease).ifPresentOrElse(this::tryFire, () -> setActiveAbility(null));
+                } else {
+                    setActiveAbility(null);
+                }
+            }
+        }
+
+        private <T extends Hit> boolean triggerQuickAction(Ability<T> ability, ActivationType pressType) {
+            Optional<T> data = ability.prepareQuickAction(player, pressType);
+            if (ability.onQuickAction(player, pressType, data)) {
+                Channel.CLIENT_PLAYER_ABILITY.sendToServer(new MsgPlayerAbility<>(ability, data, pressType));
+                return true;
+            }
+            return false;
         }
 
         public long getMaxPage() {
@@ -252,7 +262,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
         public synchronized Optional<Ability<?>> getActiveAbility() {
             return activeAbility.filter(ability -> {
-                return (!(ability == null || (triggered && warmup == 0 && cooldown == 0)) && player.getCompositeRace().any(ability::canUse));
+                return (!(ability == null || (triggered && warmup == 0 && cooldown == 0)) && ability.canUse(player.getCompositeRace()));
             });
         }
 

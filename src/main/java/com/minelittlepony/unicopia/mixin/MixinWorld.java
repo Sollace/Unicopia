@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.duck.RotatedView;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
@@ -72,3 +71,4 @@ abstract class MixinWorld implements WorldAccess, BlockDestructionManager.Source
         recurseCount = Math.max(0, recurseCount - 1);
     }
 }
+

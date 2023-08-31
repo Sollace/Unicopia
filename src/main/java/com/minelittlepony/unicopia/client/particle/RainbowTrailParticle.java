@@ -6,8 +6,8 @@ import java.util.Optional;
 
 import org.joml.Vector3f;
 
+import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Link;
@@ -48,6 +48,7 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
     @Override
     public void attach(Link link) {
         this.link = Optional.of(link);
+        bound = true;
     }
 
     @Override
@@ -57,9 +58,7 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
 
     @Override
     public void setAttribute(int key, Number value) {
-        if (key == Attachment.ATTR_COLOR) {
-            bound = value.intValue() == 1;
-        }
+
     }
 
     @Override
@@ -80,8 +79,8 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
         }
     }
 
-    private void follow(Caster<?> caster) {
-        Vec3d next = caster.getOriginVector();
+    private void follow(EntityConvertable<?> caster) {
+        Vec3d next = caster.asEntity().getPos();
 
         if (segments.isEmpty()) {
             segments.add(new Segment(next));

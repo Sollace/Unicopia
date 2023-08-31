@@ -1,0 +1,29 @@
+{
+  "parent": "unicopia:unicopia/bat/night_route",
+  "display": {
+    "icon": {
+      "item": "unicopia:sunglasses"
+    },
+    "title": {
+      "translate": "advancements.unicopia.extra_spooky.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.extra_spooky.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "spook_extra_hard": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "super_scare_entity"
+      }
+    }
+  },
+  "requirements": [
+  	[ "spook_extra_hard" ]
+  ]
+}

@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.WeakHashMap;
 import java.util.function.Consumer;
 
+import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 
 import net.fabricmc.api.EnvType;
@@ -59,8 +60,8 @@ public class ParticleHandle {
             Entry p = SPAWNED_PARTICLES.computeIfAbsent(id, i -> new WeakHashMap<>()).computeIfAbsent(partName, i -> {
                 constructor.accept((effect, pos, vel) -> {
                     pp = MinecraftClient.getInstance().particleManager.addParticle(effect, pos.x, pos.y, pos.z, vel.x, vel.y, vel.z);
-                    if (pp instanceof Attachment && source instanceof Caster<?>) {
-                        ((Attachment) pp).attach(new Link(id, (Caster<?>)source));
+                    if (pp instanceof Attachment) {
+                        ((Attachment) pp).attach(new Link(id, source));
                     }
                 });
                 return new Entry(new WeakReference<>(MinecraftClient.getInstance().world), new WeakReference<>(pp));
@@ -102,16 +103,16 @@ public class ParticleHandle {
     }
 
     public static final class Link {
-        private Optional<WeakReference<Caster<?>>> caster = Optional.empty();
+        private Optional<WeakReference<EntityConvertable<?>>> caster = Optional.empty();
         private UUID effect;
 
-        private Link(UUID effect, Caster<?> caster) {
+        private Link(UUID effect, EntityConvertable<?> caster) {
             this.caster = Optional.of(new WeakReference<>(caster));
             this.effect = effect;
         }
 
-        public Optional<Caster<?>> get() {
-            caster = caster.filter(r -> r.get() != null && r.get().getSpellSlot().contains(effect) && r.get().asEntity().isAlive());
+        public Optional<EntityConvertable<?>> get() {
+            caster = caster.filter(r -> r.get() != null && (!(r.get() instanceof Caster<?> c) || c.getSpellSlot().contains(effect)) && r.get().asEntity().isAlive());
             return caster.map(WeakReference::get);
         }
     }

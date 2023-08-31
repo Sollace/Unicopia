@@ -7,6 +7,11 @@
     "minecraft:rabbit",
     "minecraft:chicken",
     { "id": "#c:raw_meat", "required": false },
-    { "id": "#c:lemon_chickens", "required": false }
+    { "id": "#c:lemon_chickens", "required": false },
+    { "id": "#c:raw_bacon", "required": false },
+    { "id": "#c:raw_beef", "required": false },
+    { "id": "#c:raw_chicken", "required": false },
+    { "id": "#c:raw_mutton", "required": false },
+    { "id": "#c:raw_pork", "required": false }
   ]
 }

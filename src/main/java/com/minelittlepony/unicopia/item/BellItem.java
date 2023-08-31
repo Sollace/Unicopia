@@ -4,6 +4,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
@@ -24,7 +25,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -58,7 +58,7 @@ public class BellItem extends Item implements ChargeableItem {
         player.setCurrentHand(hand);
         Pony pony = Pony.of(player);
         pony.getCorruption().add(1);
-        pony.playSound(SoundEvents.BLOCK_BELL_USE, 0.4F, 0.2F);
+        pony.playSound(USounds.ITEM_GROGAR_BELL_USE, 0.4F, 0.2F);
         Living<?> targetLiving = target instanceof MobEntity || target instanceof PlayerEntity ? Living.getOrEmpty(target)
                 .filter(living -> !(living instanceof Creature c && c.isDiscorded()))
                 .orElse(null) : null;
@@ -78,7 +78,7 @@ public class BellItem extends Item implements ChargeableItem {
         Pony pony = Pony.of(player);
 
         if (hasCharge(stack)) {
-            pony.playSound(SoundEvents.BLOCK_BELL_RESONATE, 0.6F, 1);
+            pony.playSound(USounds.ITEM_GROGAR_BELL_CHARGE, 0.6F, 1);
             pony.getCorruption().add(1);
             if (offhandStack.getItem() instanceof ChargeableItem chargeable) {
                 float maxChargeBy = chargeable.getMaxCharge() - ChargeableItem.getEnergy(offhandStack);
@@ -97,7 +97,7 @@ public class BellItem extends Item implements ChargeableItem {
             return TypedActionResult.consume(stack);
         }
 
-        pony.playSound(SoundEvents.BLOCK_BELL_USE, 0.01F, 0.9F);
+        pony.playSound(USounds.ITEM_GROGAR_BELL_USE, 0.01F, 0.9F);
         return TypedActionResult.consume(stack);
     }
 
@@ -121,7 +121,7 @@ public class BellItem extends Item implements ChargeableItem {
 
     private void onStoppedDraining(Living<?> user, Living<?> target, boolean completed) {
         user.setTarget(null);
-        user.playSound(SoundEvents.BLOCK_BELL_USE, 0.2F, 0.3F);
+        user.playSound(USounds.ITEM_GROGAR_BELL_STOP_USING, 0.2F, 0.3F);
         if (target instanceof Creature creature && (completed || target.asEntity().getHealth() < (target.asEntity().getMaxHealth() * 0.5F) + 1)) {
             creature.setDiscorded(true);
         }
@@ -170,7 +170,7 @@ public class BellItem extends Item implements ChargeableItem {
         }
         ChargeableItem.consumeEnergy(stack, -amountDrawn);
 
-        user.playSound(SoundEvents.ENTITY_GUARDIAN_ATTACK, 0.2F, progress);
+        user.playSound(USounds.ITEM_GROGAR_BELL_DRAIN, 0.2F, progress);
 
         for (int i = 0; i < 4; i++) {
             living.addParticle(

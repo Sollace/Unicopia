@@ -5,14 +5,10 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.*;
-import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
-import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.sound.*;
 import com.minelittlepony.unicopia.entity.ItemTracker;
-import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -24,12 +20,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.math.*;
@@ -72,16 +65,25 @@ public class UHud {
 
     public void render(InGameHud hud, DrawContext context, float tickDelta) {
 
+        // TODO: Check this when backporting!
+        // InGameHud#renderHotbar line 460
+        // context.getMatrices().translate(0.0f, 0.0f, -90.0f);
+        final int hotbarZ = -90;
+
         if (client.player == null) {
             return;
         }
 
         int scaledWidth = client.getWindow().getScaledWidth();
         int scaledHeight = client.getWindow().getScaledHeight();
+        MatrixStack matrices = context.getMatrices();
 
         Pony pony = Pony.of(client.player);
 
+        matrices.push();
+        matrices.translate(0, 0, hotbarZ);
         renderViewEffects(pony, context, scaledWidth, scaledHeight, tickDelta);
+        matrices.pop();
 
         if (client.currentScreen instanceof HidesHud || client.player.isSpectator() || client.options.hudHidden) {
             return;
@@ -90,12 +92,22 @@ public class UHud {
         font = client.textRenderer;
         xDirection = client.player.getMainArm() == Arm.LEFT ? -1 : 1;
 
-        MatrixStack matrices = context.getMatrices();
+
+        matrices.push();
+        matrices.translate(scaledWidth / 2, scaledHeight / 2, 0);
+
+        float flapCooldown = pony.getPhysics().getFlapCooldown(tickDelta);
+        if (flapCooldown > 0) {
+            float angle = MathHelper.TAU * flapCooldown;
+            DrawableUtil.drawArc(context.getMatrices(), 3, 6, -angle / 2F, angle, 0x888888AF, false);
+        }
+
+        matrices.pop();
         matrices.push();
 
         int hudX = ((scaledWidth - 50) / 2) + (104 * xDirection);
         int hudY = scaledHeight - 50;
-        int hudZ = 0;
+        int hudZ = hotbarZ;
 
 
         float exhaustion = pony.getMagicalReserves().getExhaustion().getPercentFill();
@@ -123,7 +135,9 @@ public class UHud {
 
         slots.forEach(slot -> slot.renderBackground(context, abilities, swap, tickDelta));
 
-        if (pony.getObservedSpecies().canCast()) {
+        boolean canCast = Abilities.CAST.canUse(pony.getCompositeRace());
+
+        if (canCast) {
             Ability<?> ability = pony.getAbilities().getStat(AbilitySlot.PRIMARY)
                     .getAbility(Unicopia.getConfig().hudPage.get())
                     .orElse(null);
@@ -154,72 +168,12 @@ public class UHud {
 
         matrices.pop();
 
-        if (pony.getObservedSpecies().canCast()) {
-            renderSpell(context, pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 10 - xDirection * 13, hudY + 2);
-            renderSpell(context, pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 8 - xDirection * 2, hudY - 6);
+        if (canCast) {
+            SpellIconRenderer.renderSpell(context, pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 10 - xDirection * 13, hudY + 2, EQUIPPED_GEMSTONE_SCALE);
+            SpellIconRenderer.renderSpell(context, pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 8 - xDirection * 2, hudY - 6, EQUIPPED_GEMSTONE_SCALE);
         }
 
         RenderSystem.disableBlend();
-
-        if (pony.getSpecies() == Race.CHANGELING && !client.player.isSneaking()) {
-            pony.getSpellSlot().get(SpellType.CHANGELING_DISGUISE, false).map(AbstractDisguiseSpell::getDisguise)
-                .map(EntityAppearance::getAppearance)
-                .ifPresent(appearance -> {
-
-                    float baseHeight = 20;
-
-                    EntityDimensions dims = appearance.getDimensions(appearance.getPose());
-
-                    float entityHeight = Math.max(dims.height, dims.width);
-                    int scale = (int)(baseHeight / entityHeight);
-
-                    int x = scaledWidth / 2 + xDirection * 67;
-                    int y = (int)(scaledHeight - 18 - dims.height/2F);
-
-                    matrices.push();
-                    matrices.translate(x, y, 0);
-                    matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(xDirection * 45));
-                    InventoryScreen.drawEntity(context, 0, 0, scale, 0, -20, client.player);
-                    matrices.pop();
-                });
-        }
-    }
-
-    public void renderSpell(DrawContext context, CustomisedSpellType<?> spell, double x, double y) {
-        if (spell.isEmpty()) {
-            return;
-        }
-
-        Pony pony = Pony.of(client.player);
-
-        if (spell.isOn(pony)) {
-            MatrixStack modelStack = context.getMatrices();
-
-            modelStack.push();
-            modelStack.translate(x + 5.5, y + 5.5, 0);
-
-            int color = spell.type().getColor() | 0x000000FF;
-            double radius = 2 + Math.sin(client.player.age / 9D) / 4;
-
-            DrawableUtil.drawArc(modelStack, radius, radius + 3, 0, DrawableUtil.TAU, color & 0xFFFFFF2F, false);
-            DrawableUtil.drawArc(modelStack, radius + 3, radius + 4, 0, DrawableUtil.TAU, color & 0xFFFFFFAF, false);
-            pony.getSpellSlot().get(spell.and(SpellPredicate.IS_TIMED), false).map(TimedSpell::getTimer).ifPresent(timer -> {
-                DrawableUtil.drawArc(modelStack, radius, radius + 3, 0, DrawableUtil.TAU * timer.getPercentTimeRemaining(client.getTickDelta()), 0xFFFFFFFF, false);
-            });
-
-            long count = pony.getSpellSlot().stream(spell, false).count();
-            if (count > 1) {
-                modelStack.push();
-                modelStack.translate(1, 1, 900);
-                modelStack.scale(0.8F, 0.8F, 0.8F);
-                context.drawText(font, count > 64 ? "64+" : String.valueOf(count), 0, 0, 0xFFFFFFFF, true);
-                modelStack.pop();
-            }
-
-            modelStack.pop();
-        }
-
-        DrawableUtil.renderItemIcon(context, spell.getDefaultStack(), x, y, EQUIPPED_GEMSTONE_SCALE);
     }
 
     private void renderMessage(DrawContext context, float tickDelta) {
@@ -280,7 +234,7 @@ public class UHud {
                     client.getSoundManager().play(
                             partySound = new LoopingSoundInstance<>(client.player, player -> {
                                 return UItems.SUNGLASSES.isApplicable(player) || true;
-                            }, SoundEvents.MUSIC_DISC_PIGSTEP, 1, 1, client.world.random)
+                            }, USounds.Vanilla.MUSIC_DISC_PIGSTEP, 1, 1, client.world.random)
                     );
                 } else if (partySound != null) {
                     partySound.setMuted(false);

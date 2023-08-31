@@ -23,7 +23,6 @@ import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -121,7 +120,7 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
         if (source instanceof Pony pony && pony.sneakingChanged() && pony.asEntity().isSneaking()) {
             setDirty();
             radius += 0.5F;
-            source.playSound(SoundEvents.BLOCK_HONEY_BLOCK_STEP, 1);
+            source.playSound(USounds.SPELL_BUBBLE_DISTURB, 1);
             if (struggles-- <= 0) {
                 setDead();
                 return false;
@@ -154,7 +153,7 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
     @Override
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
         Caster.of(hit.getEntity()).ifPresent(caster -> {
-            getTypeAndTraits().apply(caster, CastingMethod.PROJECTILE);
+            getTypeAndTraits().apply(caster, CastingMethod.INDIRECT);
         });
     }
 

@@ -228,6 +228,24 @@
     ],
     "subtitle": "unicopia.subtitle.entity.twittermite.hurt"
   },
+  "entity.sombra.ambient": {
+    "subtitle": "unicopia.subtitle.sombra.ambient",
+    "sounds": [
+      "unicopia:entity/sombra/sombra_idle"
+    ]
+  },
+  "entity.sombra.laugh": {
+    "subtitle": "unicopia.subtitle.sombra.laugh",
+    "sounds": [
+      "unicopia:entity/sombra/sombra_laugh"
+    ]
+  },
+  "entity.sombra.snicker": {
+    "subtitle": "unicopia.subtitle.sombra.snicker",
+    "sounds": [
+      "unicopia:entity/sombra/sombra_snicker"
+    ]
+  },
   "entity.jar.throw": {
     "sounds": [
       "random/bow"

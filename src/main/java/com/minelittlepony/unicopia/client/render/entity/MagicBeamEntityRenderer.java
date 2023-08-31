@@ -58,7 +58,7 @@ public class MagicBeamEntityRenderer extends EntityRenderer<MagicProjectileEntit
         );
 
         RenderLayer layer = entity.getSpellSlot().get(true)
-                .map(spell -> spell.getType().getColor())
+                .map(spell -> (0x99 << 24) | spell.getType().getColor())
                 .map(RenderLayers::getMagicColored)
                 .orElseGet(RenderLayers::getMagicColored);
 

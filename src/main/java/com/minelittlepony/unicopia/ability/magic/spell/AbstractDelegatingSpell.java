@@ -21,6 +21,7 @@ public abstract class AbstractDelegatingSpell implements Spell,
     ProjectileDelegate.ConfigurationListener, ProjectileDelegate.BlockHitListener, ProjectileDelegate.EntityHitListener {
 
     private boolean isDirty;
+    private boolean hidden;
 
     private UUID uuid = UUID.randomUUID();
 
@@ -83,6 +84,16 @@ public abstract class AbstractDelegatingSpell implements Spell,
     }
 
     @Override
+    public boolean isHidden() {
+        return hidden || getDelegates().stream().allMatch(Spell::isHidden);
+    }
+
+    @Override
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    @Override
     public void onDestroyed(Caster<?> caster) {
         getDelegates().forEach(a -> a.onDestroyed(caster));
     }
@@ -110,12 +121,14 @@ public abstract class AbstractDelegatingSpell implements Spell,
     @Override
     public void toNBT(NbtCompound compound) {
         compound.putUuid("uuid", uuid);
+        compound.putBoolean("hidden", hidden);
         saveDelegates(compound);
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         isDirty = false;
+        hidden = compound.getBoolean("hidden");
         if (compound.contains("uuid")) {
             uuid = compound.getUuid("uuid");
         }

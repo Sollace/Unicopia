@@ -77,6 +77,18 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
     @Accessor("lastLeaningPitch")
     public abstract void setLastLeaningPitch(float pitch);
 
+    @Override
+    @Accessor
+    public abstract double getServerX();
+
+    @Override
+    @Accessor
+    public abstract double getServerY();
+
+    @Override
+    @Accessor
+    public abstract double getServerZ();
+
     @Inject(method = "createLivingAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
     private static void onCreateAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {
         Creature.registerAttributes(info.getReturnValue());

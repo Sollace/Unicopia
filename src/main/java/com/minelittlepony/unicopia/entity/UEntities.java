@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.behaviour.EntityBehaviour;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
-
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
@@ -47,9 +46,18 @@ public interface UEntities {
     EntityType<SpellbookEntity> SPELLBOOK = register("spellbook", FabricEntityTypeBuilder.create(SpawnGroup.MISC, SpellbookEntity::new)
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(0.9F, 0.5F)));
+    EntityType<SombraEntity> SOMBRA = register("sombra", FabricEntityTypeBuilder.<SombraEntity>create(SpawnGroup.MONSTER, SombraEntity::new)
+            .trackRangeBlocks(200)
+            .dimensions(EntityDimensions.changing(2F, 4F)));
+    EntityType<CrystalShardsEntity> CRYSTAL_SHARDS = register("crystal_shards", FabricEntityTypeBuilder.create(SpawnGroup.MISC, CrystalShardsEntity::new)
+            .trackRangeBlocks(100)
+            .dimensions(EntityDimensions.changing(1F, 1F)));
+    EntityType<StormCloudEntity> STORM_CLOUD = register("storm_cloud", FabricEntityTypeBuilder.create(SpawnGroup.MISC, StormCloudEntity::new)
+            .trackRangeBlocks(200)
+            .dimensions(EntityDimensions.changing(20F, 20F)));
     EntityType<AirBalloonEntity> AIR_BALLOON = register("air_balloon", FabricEntityTypeBuilder.create(SpawnGroup.MISC, AirBalloonEntity::new)
             .trackRangeBlocks(1000)
-            .dimensions(EntityDimensions.fixed(2.5F, 0.1F)));
+            .dimensions(EntityDimensions.changing(2.5F, 0.1F)));
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         EntityType<T> type = builder.build();
@@ -61,6 +69,7 @@ public interface UEntities {
         FabricDefaultAttributeRegistry.register(SPELLBOOK, SpellbookEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(TWITTERMITE, FairyEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(AIR_BALLOON, FlyingEntity.createMobAttributes());
+        FabricDefaultAttributeRegistry.register(SOMBRA, SombraEntity.createMobAttributes());
 
         if (!Unicopia.getConfig().disableButterflySpawning.get()) {
             final Predicate<BiomeSelectionContext> butterflySpawnable = BiomeSelectors.foundInOverworld()

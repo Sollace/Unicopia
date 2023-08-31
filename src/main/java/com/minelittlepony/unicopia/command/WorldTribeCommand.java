@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.command;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.server.world.WorldTribeManager;
+import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -26,14 +26,14 @@ class WorldTribeCommand {
 
     static int get(ServerCommandSource source) throws CommandSyntaxException {
         source.sendFeedback(() -> {
-            WorldTribeManager manager = WorldTribeManager.forWorld(source.getWorld());
+            UnicopiaWorldProperties manager = UnicopiaWorldProperties.forWorld(source.getWorld());
             return Text.translatable("commands.worldtribe.success.get", manager.getDefaultRace().getDisplayName());
         }, true);
         return 0;
     }
 
     static int set(ServerCommandSource source, Race race) {
-        WorldTribeManager manager = WorldTribeManager.forWorld(source.getWorld());
+        UnicopiaWorldProperties manager = UnicopiaWorldProperties.forWorld(source.getWorld());
         manager.setDefaultRace(race);
 
         source.sendFeedback(() -> Text.translatable("commands.worldtribe.success.set", race.getDisplayName()), true);

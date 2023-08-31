@@ -15,6 +15,16 @@ public class InventorySlot extends Slot implements SpellbookSlot {
 
     @Override
     public boolean isEnabled() {
-       return handler.canShowSlots.test(SlotType.INVENTORY);
+       return handler.canShowSlots(SlotType.INVENTORY);
+    }
+
+    @Override
+    public boolean showTraits() {
+        return false;
+    }
+
+    @Override
+    public float getBackSpriteOpacity() {
+        return 1F;
     }
 }

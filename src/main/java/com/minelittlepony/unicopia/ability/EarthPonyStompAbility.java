@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
@@ -66,7 +68,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
     @Nullable
     @Override
-    public Hit tryActivate(Pony player) {
+    public Optional<Hit> prepare(Pony player) {
         if (!player.asEntity().isOnGround()
                 && player.asEntity().getVelocity().y * player.getPhysics().getGravitySignum() < 0
                 && !player.asEntity().getAbilities().flying) {
@@ -74,7 +76,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
             return Hit.INSTANCE;
         }
 
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -92,7 +94,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     }
 
     @Override
-    public void apply(Pony iplayer, Hit data) {
+    public boolean apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.asEntity();
 
         iplayer.setAnimation(Animation.STOMP, Animation.Recipient.ANYONE, 10);
@@ -152,6 +154,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
             iplayer.subtractEnergyCost(rad);
         });
+        return true;
     }
 
     public static void spawnEffectAround(Entity source, BlockPos center, double radius, double range) {
@@ -200,11 +203,11 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().getExertion().add(40);
+    public void warmUp(Pony player, AbilitySlot slot) {
+        player.getMagicalReserves().getExertion().addPercent(40);
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
     }
 }

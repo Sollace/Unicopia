@@ -15,6 +15,8 @@ public interface UFoodComponents {
     FoodComponent DAFODIL_DAISY_SANDWICH = builder(3, 2).build();
     FoodComponent HAY_BURGER = builder(7, 1.4F).build();
     FoodComponent HAY_FRIES = builder(4, 2).build();
+    FoodComponent CRISPY_HAY_FRIES = builder(6, 7).build();
+
     FoodComponent PIE = builder(3, 1.26F).build();
     FoodComponent CIDER = builder(2, 1.7F).alwaysEdible().build();
 
@@ -22,6 +24,7 @@ public interface UFoodComponents {
     FoodComponent BURNED_JUICE = builder(3, 1).build();
 
     FoodComponent RANDOM_FOLIAGE = builder(2, 1).build();
+    FoodComponent RANDOM_FOLIAGE_FILLING = builder(18, 1).build();
     FoodComponent INSECTS = builder(1, 0).alwaysEdible().build();
 
     FoodComponent CEREAL = builder(9, 0.8F).build();

@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
 
@@ -41,7 +42,7 @@ public class CarryAbility implements Ability<Hit> {
     }
 
     @Override
-    public Hit tryActivate(Pony player) {
+    public Optional<Hit> prepare(Pony player) {
         return Hit.INSTANCE;
     }
 
@@ -57,7 +58,7 @@ public class CarryAbility implements Ability<Hit> {
     }
 
     @Override
-    public boolean onQuickAction(Pony player, ActivationType type) {
+    public boolean onQuickAction(Pony player, ActivationType type, Optional<Hit> data) {
 
         if (type == ActivationType.TAP && player.getPhysics().isFlying()) {
             player.getPhysics().dashForward((float)player.asWorld().random.nextTriangular(1, 0.3F));
@@ -68,7 +69,7 @@ public class CarryAbility implements Ability<Hit> {
     }
 
     @Override
-    public void apply(Pony iplayer, Hit data) {
+    public boolean apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.asEntity();
         LivingEntity rider = findRider(player, iplayer.asWorld());
 
@@ -90,14 +91,15 @@ public class CarryAbility implements Ability<Hit> {
         }
 
         Living.transmitPassengers(player);
+        return true;
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
     }
 
     public interface IPickupImmuned {

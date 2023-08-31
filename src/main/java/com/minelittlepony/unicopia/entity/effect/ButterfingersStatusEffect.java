@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.entity.effect;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.USounds;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
@@ -10,7 +12,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
@@ -39,7 +40,7 @@ public class ButterfingersStatusEffect extends StatusEffect {
 
         if (target instanceof ServerPlayerEntity player) {
             if (player.dropSelectedItem(proximity < 1)) {
-                player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, player.getSoundCategory());
+                player.getWorld().playSound(null, player.getBlockPos(), USounds.ENTITY_GENERIC_BUTTER_FINGERS, player.getSoundCategory());
                 PlayerInventory inventory = player.getInventory();
                 player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 0, inventory.selectedSlot, inventory.getStack(inventory.selectedSlot)));
             }
@@ -48,7 +49,7 @@ public class ButterfingersStatusEffect extends StatusEffect {
             if (!stack.isEmpty()) {
                 target.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
                 target.dropStack(stack);
-                target.getWorld().playSound(null, target.getBlockPos(), SoundEvents.BLOCK_HONEY_BLOCK_SLIDE, target.getSoundCategory());
+                target.getWorld().playSound(null, target.getBlockPos(), USounds.ENTITY_GENERIC_BUTTER_FINGERS, target.getSoundCategory());
             }
         }
     }

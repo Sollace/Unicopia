@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.server.world.WorldTribeManager;
+import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
 import com.sollace.fabwork.api.packets.*;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -30,12 +30,13 @@ public interface Channel {
 
     S2CPacketType<MsgOtherPlayerCapabilities> SERVER_OTHER_PLAYER_CAPABILITIES = SimpleNetworking.serverToClient(Unicopia.id("other_player_capabilities"), MsgOtherPlayerCapabilities::new);
     S2CPacketType<MsgPlayerAnimationChange> SERVER_PLAYER_ANIMATION_CHANGE = SimpleNetworking.serverToClient(Unicopia.id("other_player_animation_change"), MsgPlayerAnimationChange::new);
+    S2CPacketType<MsgSkyAngle> SERVER_SKY_ANGLE = SimpleNetworking.serverToClient(Unicopia.id("sky_angle"), MsgSkyAngle::new);
 
     static void bootstrap() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             Pony pony = Pony.of(handler.player);
             if (pony.getActualSpecies() == Race.UNSET) {
-                Race race = WorldTribeManager.forWorld(handler.player.getServerWorld()).getDefaultRace();
+                Race race = UnicopiaWorldProperties.forWorld(handler.player.getServerWorld()).getDefaultRace();
                 if (!race.isPermitted(handler.player)) {
                     race = Race.UNSET;
                 }
@@ -47,6 +48,7 @@ public interface Channel {
                 }
             }
             sender.sendPacket(SERVER_RESOURCES_SEND.id(), new MsgServerResources().toBuffer());
+            sender.sendPacket(SERVER_SKY_ANGLE.id(), new MsgSkyAngle(UnicopiaWorldProperties.forWorld(handler.getPlayer().getServerWorld()).getTangentalSkyAngle()).toBuffer());
         });
     }
 }

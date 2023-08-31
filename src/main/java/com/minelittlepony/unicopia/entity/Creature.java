@@ -120,6 +120,11 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     }
 
     public void initAi(GoalSelector goals, GoalSelector targets) {
+
+        if (entity instanceof SombraEntity) {
+            return;
+        }
+
         this.goals = Optional.of(goals);
         this.targets = Optional.of(targets);
 
@@ -151,8 +156,6 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
             goals.add(1, new FleeEntityGoal<>(mob, LivingEntity.class, 10, 1.1, 1.7, AmuletSelectors.ALICORN_AMULET_AFTER_1_DAYS));
         }
     }
-
-
 
     private void initMinionAi(GoalSelector targets) {
         clearGoals(targets);
@@ -197,9 +200,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
             initDiscordedAi();
         }
 
-
-
-        return false;
+        return super.beforeUpdate();
     }
 
     private void clearGoals(GoalSelector t) {

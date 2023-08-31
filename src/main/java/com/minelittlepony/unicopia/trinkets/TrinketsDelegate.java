@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.EntityConvertable;
-
+import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -87,6 +87,10 @@ public interface TrinketsDelegate {
 
     default void registerTrinket(Item item) {
 
+    }
+
+    default Optional<Slot> createSlot(SpellbookScreenHandler handler, LivingEntity entity, Identifier slotId, int i, int x, int y) {
+        return Optional.empty();
     }
 
     default boolean isTrinketSlot(Slot slot) {

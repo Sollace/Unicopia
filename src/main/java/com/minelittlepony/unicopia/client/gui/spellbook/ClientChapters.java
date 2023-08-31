@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import java.util.*;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
+import com.minelittlepony.unicopia.client.gui.spellbook.element.DynamicContent;
+
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.*;
 

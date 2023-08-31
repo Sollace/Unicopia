@@ -2,6 +2,7 @@
   "required": true,
   "minVersion": "0.7",
   "package": "com.minelittlepony.unicopia.mixin",
+  "plugin" : "com.minelittlepony.unicopia.UnicopiaMixinPlugin",
   "refmap": "unicopia.mixin.refmap.json",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
@@ -9,6 +10,7 @@
     "MixinBlazeEntity",
     "MixinBlock",
     "MixinBlockEntity",
+    "MixinBlockEntityType",
     "MixinBlockItem",
     "MixinBoatEntity",
     "MixinBrain",
@@ -28,6 +30,7 @@
     "MixinPersistentProjectileEntity",
     "MixinPlayerEntity",
     "MixinPlayerInventory",
+    "MixinPlayerManager",
     "MixinPowderSnowBlock",
     "MixinProjectileEntity",
     "MixinServerPlayerEntity",

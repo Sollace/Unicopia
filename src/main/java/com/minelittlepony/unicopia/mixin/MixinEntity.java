@@ -26,6 +26,10 @@ abstract class MixinEntity implements EntityDuck {
     public abstract void setVehicle(Entity vehicle);
 
     @Override
+    @Accessor
+    public abstract float getNextStepSoundDistance();
+
+    @Override
     public boolean isLavaAffine() {
         Entity self = (Entity)(Object)this;
         return self.hasVehicle() && self.getVehicle() instanceof LavaAffine affine && affine.isLavaAffine();

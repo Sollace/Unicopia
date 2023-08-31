@@ -1,32 +1,31 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.block.UWoodTypes;
+import com.minelittlepony.unicopia.entity.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.item.group.UItemGroups;
 import com.minelittlepony.unicopia.item.toxin.UFoodComponents;
+import com.terraformersmc.terraform.boat.api.TerraformBoatType;
+import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
+import com.terraformersmc.terraform.boat.api.item.TerraformBoatItemHelper;
 
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.Registries;
 
 public interface UItems {
-
-    List<Item> ITEMS = new ArrayList<>();
-
     Item GREEN_APPLE = register("green_apple", AppleItem.registerTickCallback(new Item(new Item.Settings().food(FoodComponents.APPLE))), ItemGroups.FOOD_AND_DRINK);
     Item SWEET_APPLE = register("sweet_apple", AppleItem.registerTickCallback(new Item(new Item.Settings().food(FoodComponents.APPLE))), ItemGroups.FOOD_AND_DRINK);
     Item SOUR_APPLE = register("sour_apple", AppleItem.registerTickCallback(new Item(new Item.Settings().food(FoodComponents.APPLE))), ItemGroups.FOOD_AND_DRINK);
@@ -42,10 +41,7 @@ public interface UItems {
     Item MUSIC_DISC_POPULAR = register("music_disc_popular", USounds.RECORD_POPULAR, 112);
     Item MUSIC_DISC_FUNK = register("music_disc_funk", USounds.RECORD_FUNK, 91);
 
-    FriendshipBraceletItem FRIENDSHIP_BRACELET = register("friendship_bracelet", new FriendshipBraceletItem(
-            new FabricItemSettings()
-            .rarity(Rarity.UNCOMMON)
-    ), ItemGroups.TOOLS);
+    FriendshipBraceletItem FRIENDSHIP_BRACELET = register("friendship_bracelet", new FriendshipBraceletItem(new FabricItemSettings().rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
 
     Item EMPTY_JAR = register("empty_jar", new JarItem(new Item.Settings().maxCount(16).fireproof(), false, false, false), ItemGroups.FUNCTIONAL);
     FilledJarItem FILLED_JAR = register("filled_jar", new FilledJarItem(new Item.Settings().maxCount(1)));
@@ -71,6 +67,8 @@ public interface UItems {
     Item DAFFODIL_DAISY_SANDWICH = register("daffodil_daisy_sandwich", new Item(new Item.Settings().food(UFoodComponents.DAFODIL_DAISY_SANDWICH)), ItemGroups.FOOD_AND_DRINK);
     Item HAY_BURGER = register("hay_burger", new Item(new Item.Settings().maxCount(1).food(UFoodComponents.HAY_BURGER)), ItemGroups.FOOD_AND_DRINK);
     Item HAY_FRIES = register("hay_fries", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.HAY_FRIES)), ItemGroups.FOOD_AND_DRINK);
+    Item CRISPY_HAY_FRIES = register("crispy_hay_fries", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.CRISPY_HAY_FRIES)), ItemGroups.FOOD_AND_DRINK);
+
     Item WHEAT_WORMS = register("wheat_worms", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.INSECTS)), ItemGroups.NATURAL);
     Item MUFFIN = register("muffin", new MuffinItem(new Item.Settings().maxCount(32).food(FoodComponents.BREAD), 0), ItemGroups.FOOD_AND_DRINK);
     Item PINECONE = register("pinecone", new Item(new Item.Settings().food(UFoodComponents.PINECONE).maxCount(3)), ItemGroups.FOOD_AND_DRINK);
@@ -93,6 +91,7 @@ public interface UItems {
     Item JUICE = register("juice", new DrinkableItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE).maxCount(1).food(UFoodComponents.JUICE)), ItemGroups.FOOD_AND_DRINK);
     Item BURNED_JUICE = register("burned_juice", new DrinkableItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE).maxCount(1).food(UFoodComponents.BURNED_JUICE)), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE = register("apple_pie", new BlockItem(UBlocks.APPLE_PIE, new Item.Settings().maxCount(1)), ItemGroups.FOOD_AND_DRINK);
+    Item APPLE_PIE_HOOF = register("apple_pie_hoof", new AliasedBlockItem(UBlocks.APPLE_PIE, new Item.Settings().maxCount(1)), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE_SLICE = register("apple_pie_slice", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.PIE)), ItemGroups.FOOD_AND_DRINK);
 
     Item LOVE_BOTTLE = register("love_bottle", new DrinkableItem(new Item.Settings().food(UFoodComponents.LOVE_BOTTLE).maxCount(1).recipeRemainder(Items.GLASS_BOTTLE)), ItemGroups.FOOD_AND_DRINK);
@@ -117,7 +116,23 @@ public interface UItems {
     Item BUTTERFLY_SPAWN_EGG = register("butterfly_spawn_egg", new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xaaeeff, new Item.Settings()), ItemGroups.SPAWN_EGGS);
     Item BUTTERFLY = register("butterfly", new Item(new Item.Settings().food(UFoodComponents.INSECTS)), ItemGroups.FOOD_AND_DRINK);
 
+    Item PALM_BOAT = ItemGroupRegistry.register(TerraformBoatItemHelper.registerBoatItem(Unicopia.id("palm_boat"), UWoodTypes.PALM_BOAT_TYPE, false), ItemGroups.FUNCTIONAL);
+    Item PALM_CHEST_BOAT = ItemGroupRegistry.register(TerraformBoatItemHelper.registerBoatItem(Unicopia.id("palm_chest_boat"), UWoodTypes.PALM_BOAT_TYPE, true), ItemGroups.FUNCTIONAL);
+
     Item SPELLBOOK = register("spellbook", new SpellbookItem(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
+
+    Item OAK_BASKET = register("oak_basket", new BasketItem(AirBalloonEntity.BasketType.of(BoatEntity.Type.OAK), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
+    Item SPRUCE_BASKET = register("spruce_basket", new BasketItem(AirBalloonEntity.BasketType.of(BoatEntity.Type.SPRUCE), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
+    Item BIRCH_BASKET = register("birch_basket", new BasketItem(AirBalloonEntity.BasketType.of(BoatEntity.Type.BIRCH), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
+    Item JUNGLE_BASKET = register("jungle_basket", new BasketItem(AirBalloonEntity.BasketType.of(BoatEntity.Type.JUNGLE), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
+    Item ACACIA_BASKET = register("acacia_basket", new BasketItem(AirBalloonEntity.BasketType.of(BoatEntity.Type.ACACIA), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
+    Item CHERRY_BASKET = register("cherry_basket", new BasketItem(AirBalloonEntity.BasketType.of(BoatEntity.Type.CHERRY), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
+    Item DARK_OAK_BASKET = register("dark_oak_basket", new BasketItem(AirBalloonEntity.BasketType.of(BoatEntity.Type.DARK_OAK), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
+    Item MANGROVE_BASKET = register("mangrove_basket", new BasketItem(AirBalloonEntity.BasketType.of(BoatEntity.Type.MANGROVE), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
+    Item BAMBOO_BASKET = register("bamboo_basket", new BasketItem(AirBalloonEntity.BasketType.of(BoatEntity.Type.BAMBOO), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
+    Item PALM_BASKET = register("palm_basket", new BasketItem(AirBalloonEntity.BasketType.of(UWoodTypes.PALM_BOAT_TYPE), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
+
+    Item GIANT_BALLOON = register("giant_balloon", new HotAirBalloonItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
 
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new FabricItemSettings()
             .maxCount(1)
@@ -127,6 +142,11 @@ public interface UItems {
             .maxCount(1)
             .maxDamage(1000)
             .rarity(Rarity.RARE)), ItemGroups.TOOLS);
+    Item BROKEN_ALICORN_AMULET = register("broken_alicorn_amulet", new Item(new Item.Settings()), ItemGroups.TOOLS);
+    AmuletItem UNICORN_AMULET = register("unicorn_amulet", new AmuletItem(new FabricItemSettings()
+            .maxCount(1)
+            .maxDamage(890)
+            .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
 
     GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
     GlassesItem BROKEN_SUNGLASSES = register("broken_sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
@@ -138,18 +158,12 @@ public interface UItems {
     Item BAT_BADGE = register(Race.BAT);
     Item CHANGELING_BADGE = register(Race.CHANGELING);
 
-    static <T extends Item> T register(String name, T item, RegistryKey<ItemGroup> group) {
-        return ItemGroupRegistry.register(register(name, item), group);
+    private static <T extends Item> T register(String name, T item, RegistryKey<ItemGroup> group) {
+        return ItemGroupRegistry.register(Unicopia.id(name), item, group);
     }
 
-    @Deprecated
-    static <T extends Item> T register(String name, T item) {
-        return register(Unicopia.id(name), item);
-    }
-
-    static <T extends Item> T register(Identifier id, T item) {
-        ITEMS.add(item);
-        return Registry.register(Registries.ITEM, id, item);
+    private static <T extends Item> T register(String name, T item) {
+        return ItemGroupRegistry.register(Unicopia.id(name), item);
     }
 
     static MusicDiscItem register(String name, SoundEvent sound, int seconds) {
@@ -171,6 +185,7 @@ public interface UItems {
         FuelRegistry.INSTANCE.add(BUTTERFLY, 2);
         FuelRegistry.INSTANCE.add(SPELLBOOK, 9000);
         FuelRegistry.INSTANCE.add(MEADOWBROOKS_STAFF, 300);
+        FuelRegistry.INSTANCE.add(UTags.BASKETS, 700);
 
         CompostingChanceRegistry.INSTANCE.add(GREEN_APPLE, 0.65F);
         CompostingChanceRegistry.INSTANCE.add(SWEET_APPLE, 0.65F);
@@ -192,11 +207,17 @@ public interface UItems {
         CompostingChanceRegistry.INSTANCE.add(SWEET_APPLE_SEEDS, 0.3F);
         CompostingChanceRegistry.INSTANCE.add(SOUR_APPLE_SEEDS, 0.3F);
         CompostingChanceRegistry.INSTANCE.add(APPLE_PIE, 0.5F);
+        CompostingChanceRegistry.INSTANCE.add(APPLE_PIE_HOOF, 0.5F);
         CompostingChanceRegistry.INSTANCE.add(APPLE_PIE_SLICE, 0.1F);
         CompostingChanceRegistry.INSTANCE.add(BUTTERFLY, 0.1F);
 
         UEnchantments.bootstrap();
         URecipes.bootstrap();
         UItemGroups.bootstrap();
+
+        Registry.register(TerraformBoatTypeRegistry.INSTANCE, Unicopia.id("palm"), new TerraformBoatType.Builder()
+                .planks(UBlocks.PALM_PLANKS.asItem())
+                .item(PALM_BOAT)
+                .build());
     }
 }

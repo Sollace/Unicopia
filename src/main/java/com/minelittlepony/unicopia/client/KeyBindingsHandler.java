@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.lwjgl.glfw.GLFW;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
@@ -18,7 +19,6 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
@@ -104,7 +104,7 @@ public class KeyBindingsHandler {
         int page = Unicopia.getConfig().hudPage.get();
         page += sigma;
         Unicopia.getConfig().hudPage.set(page);
-        client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.75F + (0.25F * sigma)));
+        client.getSoundManager().play(PositionedSoundInstance.master(USounds.Vanilla.UI_BUTTON_CLICK, 1.75F + (0.25F * sigma)));
         UHud.INSTANCE.setMessage(Text.translatable("gui.unicopia.page_num", page + 1, max + 1));
     }
 

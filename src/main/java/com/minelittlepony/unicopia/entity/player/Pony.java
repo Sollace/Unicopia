@@ -21,6 +21,7 @@ import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
+import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
@@ -53,7 +54,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -71,6 +71,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     static final TrackedData<Optional<BlockPos>> HANGING_POSITION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS);
     static final TrackedData<Float> MANA = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> XP = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
+    static final TrackedData<Float> CHARGE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Integer> LEVEL = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
     static final TrackedData<Integer> CORRUPTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
@@ -113,9 +114,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public Pony(PlayerEntity player) {
         super(player, EFFECT);
+        this.levels = new PlayerLevelStore(this, LEVEL, true, USounds.Vanilla.ENTITY_PLAYER_LEVELUP);
+        this.corruption = new PlayerLevelStore(this, CORRUPTION, false, USounds.ENTITY_PLAYER_CORRUPTION);
         this.mana = addTicker(new ManaContainer(this));
-        this.levels = new PlayerLevelStore(this, LEVEL, true, SoundEvents.ENTITY_PLAYER_LEVELUP);
-        this.corruption = new PlayerLevelStore(this, CORRUPTION, false, SoundEvents.PARTICLE_SOUL_ESCAPE);
 
         player.getDataTracker().startTracking(RACE, Race.DEFAULT_ID);
         player.getDataTracker().startTracking(HANGING_POSITION, Optional.empty());
@@ -198,6 +199,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         if (AmuletSelectors.ALICORN_AMULET.test(entity)) {
             return Race.ALICORN;
         }
+        if (AmuletSelectors.UNICORN_AMULET.test(entity)) {
+            return Race.UNICORN;
+        }
 
         return getObservedSpecies();
     }
@@ -222,7 +226,11 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
      */
     public Race.Composite getCompositeRace() {
         Race observed = getObservedSpecies();
-        return new Race.Composite(observed, AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN : observed);
+        return new Race.Composite(observed,
+              AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
+            : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
+            : null
+        );
     }
 
     /**
@@ -264,6 +272,19 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public LevelStore getCorruption() {
         return corruption;
+    }
+
+    public boolean canUseSuperMove() {
+        return entity.isCreative() || getMagicalReserves().getCharge().get() >= getMagicalReserves().getCharge().getMax();
+    }
+
+    public boolean consumeSuperMove() {
+        if (canUseSuperMove()) {
+            Bar charge = getMagicalReserves().getCharge();
+            charge.set(charge.get() - charge.getMax());
+            return true;
+        }
+        return false;
     }
 
     public boolean isSunImmune() {
@@ -379,7 +400,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
             if (distanceClimbed > 1.5) {
                 if (vel.length() > 0.08F && entity.age % (3 + entity.getRandom().nextInt(5)) == 0) {
-                    entity.playSound(SoundEvents.ENTITY_CHICKEN_STEP,
+                    entity.playSound(USounds.ENTITY_PLAYER_CHANGELING_CLIMB,
                             (float)entity.getRandom().nextTriangular(0.5, 0.3),
                             entity.getSoundPitch()
                     );
@@ -420,7 +441,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             distanceClimbed = 0;
         }
 
-        return false;
+        return super.beforeUpdate();
     }
 
     private boolean isFaceClimbable(World world, BlockPos pos, Direction direction) {
@@ -572,6 +593,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         sendCapabilities();
+
+        //if (!isClient()) {
+        //    CrystalShardsEntity.infestBlock((ServerWorld)asWorld(), entity.getBlockPos().down());
+        //}
     }
 
     @Override
@@ -710,7 +735,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         directTakeEnergy(foodSubtract);
 
-        return entity.getHealth() > 1 && mana.getMana().getPercentFill() > 0.1F;
+        return entity.isCreative() || (entity.getHealth() > 1 && mana.getMana().getPercentFill() > 0.1F);
     }
 
     protected void directTakeEnergy(double foodSubtract) {
@@ -838,7 +863,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             }
         }
 
-        oldPlayer.getSpellSlot().put(null);
         setSpecies(oldPlayer.respawnRace != Race.UNSET && !alive ? oldPlayer.respawnRace : oldPlayer.getActualSpecies());
         getDiscoveries().copyFrom(oldPlayer.getDiscoveries(), alive);
         getPhysics().copyFrom(oldPlayer.getPhysics(), alive);
@@ -848,13 +872,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             getCharms().equipSpell(Hand.OFF_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.OFF_HAND));
             corruption.set(oldPlayer.getCorruption().get());
             levels.set(oldPlayer.getLevel().get());
-            mana.getXp().set(oldPlayer.getMagicalReserves().getXp().get());
-        } else {
-            mana.getEnergy().set(0.6F);
-            mana.getExhaustion().set(0);
-            mana.getExertion().set(0);
         }
 
+        mana.copyFrom(oldPlayer.mana, !forcedSwap);
 
         advancementProgress.putAll(oldPlayer.getAdvancementProgress());
         setDirty();

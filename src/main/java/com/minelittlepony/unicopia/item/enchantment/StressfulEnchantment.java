@@ -17,7 +17,7 @@ public class StressfulEnchantment extends SimpleEnchantment {
             Bar bar = ((Pony)user).getMagicalReserves().getEnergy();
             float targetPercent = (level / (float)getMaxLevel()) * 0.25F;
             if (bar.getPercentFill() < targetPercent) {
-                bar.add(10);
+                bar.add(0.1F);
             }
         }
     }

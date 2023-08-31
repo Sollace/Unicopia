@@ -12,7 +12,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -45,16 +44,6 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
                 .getStyle()
                     .setIcon(TribeButton.createSprite(pony.getSpecies(), 0, 0, halfSize));
         }
-
-        float mainAngle = 90 * MathHelper.RADIANS_PER_DEGREE;
-        float offAngle = 60 * MathHelper.RADIANS_PER_DEGREE;
-        int radius = 75;
-
-        x += size / 4;
-        y += size / 3;
-
-        screen.addDrawable(new EquippedSpellSlot(x + (int)(Math.sin(mainAngle) * radius), y + (int)(Math.cos(mainAngle) * radius), pony.getCharms().getEquippedSpell(Hand.MAIN_HAND)));
-        screen.addDrawable(new EquippedSpellSlot(x + (int)(Math.sin(offAngle) * radius), y + (int)(Math.cos(offAngle) * radius), pony.getCharms().getEquippedSpell(Hand.OFF_HAND)));
     }
 
     @Override
@@ -67,7 +56,8 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
 
         int y = SpellbookScreen.TITLE_Y;
 
-        float delta = pony.asEntity().age + client.getTickDelta();
+        float tickDelta = client.getTickDelta();
+        float delta = pony.asEntity().age + tickDelta;
         int currentLevel = pony.getLevel().get();
         float currentScaledLevel = pony.getLevel().getScaled(1);
         float currentCorruption = pony.getCorruption().getScaled(1);
@@ -100,8 +90,8 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
         double growth = MathHelper.sin(delta / 9F) * 2;
 
         double radius = 40 + growth;
-        float xpPercentage = reserves.getXp().getPercentFill();
-        float manaPercentage = reserves.getMana().getPercentFill();
+        float xpPercentage = reserves.getXp().getPercentFill(tickDelta);
+        float manaPercentage = reserves.getMana().getPercentFill(tickDelta);
 
         float alphaF = (MathHelper.sin(delta / 9F) + 1) / 2F;
         int alpha = (int)(alphaF * 0x10) & 0xFF;
@@ -140,7 +130,8 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
         String manaString = (int)reserves.getMana().get() + "/" + (int)reserves.getMana().getMax();
 
         y = 15;
-        context.drawText(font, Text.translatable("gui.unicopia.spellbook.page.mana"), -font.getWidth("Mana") / 2, y, SpellbookScreen.TITLE_COLOR, false);
+        Text manaLabel = Text.translatable("gui.unicopia.spellbook.page.mana");
+        context.drawText(font, manaLabel, -font.getWidth(manaLabel) / 2, y, SpellbookScreen.TITLE_COLOR, false);
         context.drawText(font, manaString, -font.getWidth(manaString) / 2, y += font.fontHeight, SpellbookScreen.TITLE_COLOR, false);
 
         Text levelString = Text.literal(Romanizer.romanize(currentLevel + 1));

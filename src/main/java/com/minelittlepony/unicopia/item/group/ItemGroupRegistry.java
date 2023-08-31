@@ -16,9 +16,11 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 public interface ItemGroupRegistry {
+    List<Item> ITEMS = new ArrayList<>();
     Map<RegistryKey<ItemGroup>, Set<Item>> REGISTRY = new HashMap<>();
 
     static List<ItemStack> getVariations(Item item) {
@@ -31,6 +33,18 @@ public interface ItemGroupRegistry {
     static <T extends Item> T register(T item, RegistryKey<ItemGroup> group) {
         REGISTRY.computeIfAbsent(group, g -> new LinkedHashSet<>()).add(item);
         return item;
+    }
+
+    static <T extends Item> T register(Identifier id, T item, RegistryKey<ItemGroup> group) {
+        return register(register(id, item), group);
+    }
+
+    static <T extends Item> T register(Identifier id, T item) {
+        if (item instanceof BlockItem bi && bi.getBlock() == null) {
+            throw new NullPointerException("Registered block item did not have a block " + id);
+        }
+        ITEMS.add(item);
+        return Registry.register(Registries.ITEM, id, item);
     }
 
     static RegistryKey<ItemGroup> createDynamic(String name, Supplier<ItemStack> icon, Supplier<Stream<Item>> items) {

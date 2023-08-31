@@ -1,16 +1,21 @@
 package com.minelittlepony.unicopia.entity;
 
-import org.jetbrains.annotations.Nullable;
+import java.util.Optional;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;
+import com.minelittlepony.unicopia.server.world.Altar;
+import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -26,9 +31,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.screen.*;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -36,17 +41,18 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
-public class SpellbookEntity extends MobEntity {
-    private static final TrackedData<Boolean> AWAKE = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Boolean> BORED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+public class SpellbookEntity extends MobEntity implements MagicImmune {
     private static final TrackedData<Byte> LOCKED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Boolean> ALTERED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-    private static final int TICKS_TO_SLEEP = 2000;
+    private static final int TICKS_TO_SLEEP = 600;
 
     private int activeTicks = TICKS_TO_SLEEP;
+    private boolean prevDaytime;
 
     private final SpellbookState state = new SpellbookState();
+
+    private Optional<Altar> altar = Optional.empty();
 
     public SpellbookEntity(EntityType<SpellbookEntity> type, World world) {
         super(type, world);
@@ -68,8 +74,6 @@ public class SpellbookEntity extends MobEntity {
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        dataTracker.startTracking(AWAKE, true);
-        dataTracker.startTracking(BORED, false);
         dataTracker.startTracking(LOCKED, (byte)1);
         dataTracker.startTracking(ALTERED, false);
     }
@@ -95,6 +99,10 @@ public class SpellbookEntity extends MobEntity {
         return false;
     }
 
+    public void setAltar(Altar altar) {
+        this.altar = Optional.of(altar);
+    }
+
     public boolean isAltered() {
         return dataTracker.get(ALTERED);
     }
@@ -103,47 +111,45 @@ public class SpellbookEntity extends MobEntity {
         dataTracker.set(ALTERED, altered);
     }
 
-    protected void setLocked(TriState closed) {
-        dataTracker.set(LOCKED, (byte)closed.ordinal());
+    protected void setForcedState(TriState state) {
+        dataTracker.set(LOCKED, (byte)state.ordinal());
     }
 
-    @Nullable
-    protected TriState isLocked() {
+    public void clearForcedState() {
+        setForcedState(TriState.DEFAULT);
+        activeTicks = 0;
+    }
+
+    private TriState getForcedState() {
+        if (activeTicks <= 0) {
+            setForcedState(TriState.DEFAULT);
+        }
         return TriState.values()[Math.abs(dataTracker.get(LOCKED)) % 3];
     }
 
     public boolean isOpen() {
-        return isLocked().orElse(isAwake()) && !isBored();
+        return getForcedState().orElse(!shouldBeSleeping());
     }
 
-    public boolean isAwake() {
-        return dataTracker.get(AWAKE);
-    }
-
-    public void setAwake(boolean awake) {
-        if (awake != isAwake()) {
-            dataTracker.set(AWAKE, awake);
-        }
-    }
-
-    public boolean isBored() {
-        return dataTracker.get(BORED);
-    }
-
-    public void setBored(boolean bored) {
-        activeTicks = TICKS_TO_SLEEP;
-        if (bored != isBored()) {
-            dataTracker.set(BORED, bored);
-        }
+    public void keepAwake() {
+        activeTicks = 100;
     }
 
     @Override
     public void tick() {
-        boolean awake = isAwake();
-        jumping = awake && isTouchingWater();
+        boolean open = isOpen();
         super.tick();
 
-        if (getWorld().isClient && isOpen()) {
+        if (open && isTouchingWater()) {
+            addVelocity(0, 0.01, 0);
+            keepAwake();
+        }
+
+        if (activeTicks > 0) {
+            activeTicks--;
+        }
+
+        if (getWorld().isClient && open) {
             for (int offX = -2; offX <= 1; ++offX) {
                 for (int offZ = -2; offZ <= 1; ++offZ) {
                     if (offX > -1 && offX < 1 && offZ == -1) {
@@ -164,36 +170,80 @@ public class SpellbookEntity extends MobEntity {
             }
         }
 
-        if (awake) {
-            getWorld().getOtherEntities(this, getBoundingBox().expand(2), EquinePredicates.PLAYER_UNICORN.and(e -> e instanceof PlayerEntity)).stream().findFirst().ifPresent(player -> {
-                setBored(false);
-                if (isOpen()) {
-                    Vec3d diff = player.getPos().subtract(getPos());
-                    double yaw = Math.atan2(diff.z, diff.x) * 180D / Math.PI - 90;
+        getWorld().getOtherEntities(this, getBoundingBox().expand(2), EquinePredicates.PLAYER_UNICORN.and(e -> e instanceof PlayerEntity)).stream().findFirst().ifPresent(player -> {
+            keepAwake();
+            if (open) {
+                Vec3d diff = player.getPos().subtract(getPos());
+                double yaw = Math.atan2(diff.z, diff.x) * 180D / Math.PI - 90;
 
-                    setHeadYaw((float)yaw);
-                    setBodyYaw((float)yaw);
+                setHeadYaw((float)yaw);
+                setBodyYaw((float)yaw);
+            }
+        });
+
+        boolean daytime = MeteorlogicalUtil.getSkyAngle(getWorld()) < 1;
+        if (daytime != prevDaytime) {
+            prevDaytime = daytime;
+            if (daytime != getForcedState().orElse(daytime)) {
+                clearForcedState();
+            }
+        }
+
+        if (!getWorld().isClient && age % 15 == 0) {
+
+            if (altar.isEmpty()) {
+                altar = Altar.locateAltar(getWorld(), getBlockPos()).map(altar -> {
+                    altar.generateDecorations(getWorld());
+                    return altar;
+                });
+            }
+
+            altar = altar.filter(altar -> {
+                if (!altar.isValid(getWorld())) {
+                    altar.tearDown(null, getWorld());
+                    return false;
                 }
+
+                altar.pillars().forEach(pillar -> {
+                    Vec3d center = pillar.toCenterPos().add(
+                            random.nextTriangular(0.5, 0.2),
+                            random.nextTriangular(0.5, 0.2),
+                            random.nextTriangular(0.5, 0.2)
+                    );
+
+                    ((ServerWorld)getWorld()).spawnParticles(
+                            ParticleTypes.SOUL_FIRE_FLAME,
+                            center.x - 0.5, center.y + 0.5, center.z - 0.5,
+                            0,
+                            0.5, 0.5, 0.5, 0);
+
+                    if (random.nextInt(12) != 0) {
+                        return;
+                    }
+
+                    Vec3d vel = center.subtract(this.altar.get().origin().toCenterPos()).normalize();
+
+                    ((ServerWorld)getWorld()).spawnParticles(
+                            ParticleTypes.SOUL_FIRE_FLAME,
+                            center.x - 0.5, center.y + 0.5, center.z - 0.5,
+                            0,
+                            vel.x, vel.y, vel.z, -0.2);
+
+                    if (random.nextInt(2000) == 0) {
+                        if (getWorld().getBlockState(pillar).isOf(Blocks.CRYING_OBSIDIAN)) {
+                            pillar = pillar.down();
+                        }
+                        getWorld().setBlockState(pillar, Blocks.CRYING_OBSIDIAN.getDefaultState());
+                    }
+                });
+
+                return true;
             });
-
-            if (!getWorld().isClient) {
-                if (activeTicks > 0 && --activeTicks <= 0) {
-                    setBored(true);
-                }
-            }
         }
+    }
 
-        if (!getWorld().isClient && getWorld().random.nextInt(30) == 0) {
-            float celest = getWorld().getSkyAngle(1) * 4;
-
-            boolean daytime = celest > 3 || celest < 1;
-
-            setAwake(daytime);
-
-            if (daytime != awake && daytime == isLocked().orElse(daytime)) {
-                setLocked(TriState.DEFAULT);
-            }
-        }
+    private boolean shouldBeSleeping() {
+        return MeteorlogicalUtil.getSkyAngle(getWorld()) > 1 && activeTicks <= 0;
     }
 
     @Override
@@ -213,17 +263,22 @@ public class SpellbookEntity extends MobEntity {
     }
 
     @Override
+    public void remove(RemovalReason reason) {
+        super.remove(reason);
+        altar.ifPresent(altar -> altar.tearDown(this, getWorld()));
+    }
+
+    @Override
     public ActionResult interactAt(PlayerEntity player, Vec3d vec, Hand hand) {
         if (player.isSneaking()) {
-            setBored(false);
-            setAwake(!isOpen());
-            setLocked(TriState.of(isAwake()));
-            player.playSound(SoundEvents.ITEM_BOOK_PAGE_TURN, 2, 1);
+            setForcedState(TriState.of(!isOpen()));
+            keepAwake();
+            player.playSound(USounds.Vanilla.ITEM_BOOK_PAGE_TURN, 2, 1);
             return ActionResult.SUCCESS;
         }
 
         if (isOpen()) {
-            setBored(false);
+            keepAwake();
             player.openHandledScreen(new ExtendedScreenHandlerFactory() {
                 @Override
                 public Text getDisplayName() {
@@ -240,7 +295,7 @@ public class SpellbookEntity extends MobEntity {
                     state.toPacket(buf);
                 }
             });
-            player.playSound(SoundEvents.ITEM_BOOK_PAGE_TURN, 2, 1);
+            player.playSound(USounds.Vanilla.ITEM_BOOK_PAGE_TURN, 2, 1);
             return ActionResult.SUCCESS;
         }
 
@@ -248,28 +303,37 @@ public class SpellbookEntity extends MobEntity {
     }
 
     @Override
+    public boolean isImmuneToExplosion() {
+        return true;
+    }
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource damageSource) {
+        return super.isInvulnerableTo(damageSource) || damageSource.isIn(UTags.SPELLBOOK_IMMUNE_TO);
+    }
+
+    @Override
     public void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
-        setAwake(compound.getBoolean("awake"));
-        setBored(compound.getBoolean("bored"));
+        prevDaytime = compound.getBoolean("prevDaytime");
+        activeTicks = compound.getInt("activeTicks");
         setAltered(compound.getBoolean("altered"));
-        setLocked(compound.contains("locked") ? TriState.of(compound.getBoolean("locked")) : TriState.DEFAULT);
-
+        setForcedState(compound.contains("locked") ? TriState.of(compound.getBoolean("locked")) : TriState.DEFAULT);
         state.fromNBT(compound.getCompound("spellbookState"));
+        altar = Altar.SERIALIZER.readOptional("altar", compound);
     }
 
     @Override
     public void writeCustomDataToNbt(NbtCompound compound) {
         super.writeCustomDataToNbt(compound);
-        compound.putBoolean("awake", isAwake());
-        compound.putBoolean("bored", isBored());
+        compound.putInt("activeTicks", activeTicks);
+        compound.putBoolean("prevDaytime", prevDaytime);
         compound.putBoolean("altered", isAltered());
-
-        TriState locked = isLocked();
-        if (locked != TriState.DEFAULT) {
-            compound.putBoolean("locked", locked.get());
-        }
-
         compound.put("spellbookState", state.toNBT());
+        getForcedState().map(t -> {
+            compound.putBoolean("locked", t);
+            return null;
+        });
+        Altar.SERIALIZER.writeOptional("altar", compound, altar);
     }
 }
