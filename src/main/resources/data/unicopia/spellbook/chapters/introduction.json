@@ -5,25 +5,28 @@
   "content": {
     "pages": [
       {
-        "title": "前言",
+        "title": "Preface",
         "level": 0,
         "elements": [
           {
-             "text": "无论谁持有这本书，都要小心你所寻找的东西，你可能不喜欢你找到的东西。",
+             "text": "To whomever holds this tome, beware what you seek for you might not like what you find.",
              "extra": [
                 { "text": "Hither yonder equs.", "obfuscated": true }
              ]
           },
-          "奉公主圣旨",
-          "- 白胡子星璇"
+          "At the princess' behest",
+          "- Starswirl the Bearded"
         ]
       },
       {
-        "title": "第一章 小马国的魔法",
+        "title": "Ch.1 Magic in Equestria",
         "level": 0,
         "elements": [
           {
-            "text": "小马国充满了形形色色的魔法。然而，在最近的事件之后，很明显，我们并不完全了解小马国世界的一切。这就是为什么公主让我研究各种形式的魔法，所以我们可以利用它，并且，我希望，能将我们从§kaaaaaaa§中拯救出来"
+            "text": "Equestria is filled with magic of all different shapes and forms. Following recent events, however, it's has become plainly obvious that we do not fully understand all that there is about the world of Equestria. That is why the crown has tasked me with researching Magic in all of its forms, so we might utilise it and, I hope, save ourselves from the",
+            "extra": [
+              { "text": "aaaaaaa", "obfuscated": "true" }
+            ]
           },
           { "x": 125, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/profile.png" }
         ]
@@ -32,27 +35,27 @@
         "title": "1st Mare '12",
         "level": 0,
         "elements": [
-          "宝石",
-          "当地小马所说的“宝石”，是世界各处常见的材料。农场小马一直在挖掘它们，并认为这是当地的美食，但我相信这些石头的能力比它们想象的要多得多。",
+          "Odd Rocks",
+          "These 'Gemstones' as the locals call them are a common material found around the world. Farm-Ponies dig them up all the time and consider it a local delicacy, but I believe these stones are capable of a lot more than they let on.",
           { "x": 125, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/item/gemstone.png" }
         ]
       },
       {
-        "title": "宝石",
+        "title": "Gemstones",
         "level": 0,
         "elements": [
           {
-            "text": "我的研究尚未完成，但我可能偶然发现了一些东西。这些石头具有很高的魔法潜能！比我以前见过的还要多！"
+            "text": "My research is still incomplete but I may have stumbled upon something. These stones have high magical potentia! More than I've ever seen before!"
           },
           {
             "text": "Luna-wants",
             "strikethrough": true,
             "extra": [
-              { "text": "我会继续尝试。祝我自己马到成功！如果我发现什么，我明天会通知你。", "strikethrough": false}
+              { "text": "I'm going to keep experimenting. Hooves-crossed, I'll update you tomorrow if I find anything.", "strikethrough": false}
             ]
           },
-          "奉公主圣旨",
-          "- 白胡子星璇"
+          "At the princess' behest",
+          "- Starswirl the Bearded"
         ]
       },
       {
@@ -60,54 +63,54 @@
         "level": 0,
         "elements": [
           {
-            "text": "我去，成功了！",
+            "text": "It worked! Holy",
             "extra": [
               { "text": "Celestia's ass-cheeks'", "obfuscated": true},
-              { "text": "确实奏效了。" }
+              { "text": "it actually worked." }
             ]
           },
-          "这太神奇了！这些可以做的比我想象的要多得多。想想我能给小马国带来的进步。宝石能源照明，加热，制冷，我再也不用在夏天坐着这个了——",
-          "我正在超越自己。让我解释一下......"
+          "This is amazing! These can do so much more than I could have ever imagined. Think of the advances I could bring to Equestria. Gem-powered lighting, heating, cooling, I'd no longer have to spend summer sitting on this-",
+          "I'm getting ahead of myself. Let me explain..."
         ]
       },
       {
-        "title": "咒语制作",
+        "title": "Spellcrafting",
         "level": 0,
         "elements": [
           { "x": 125, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/crafting.png" },
-          "我在本书的开头画了一个指南来帮助你学习。",
-          "将一颗原始宝石（它不能已经有法术）放在中间，并在我标记的格中放置周围的材料。",
-          "每种材料都会产生不同的效果，将材料靠得更近会增强它们对宝石的影响。"
+          "I drew a guide at the start of this book to help with the placement.",
+          "Put a raw gem-it mustn't have any spells already-in the middle and place materials around it in the slots I marked.",
+          "Each material gives different effects and putting them closer enhances their influence on the gem."
         ]
       },
       {
         "title": "3rd Mare '12",
         "level": 0,
         "elements": [
-          "我将开始记录我找到的咒语组合。其中一些非常明显，例如宝石+火=火宝石",
-          "但有些东西不太清楚。例如，鸡蛋会给魔法增加哪些特性？需要进行大量实验。哦，我兴奋得头晕目眩！",
-          "奉公主圣旨",
-          "- 白胡子星璇"
+          "I'm going to start documenting spell combinations as I find them. Some of them are pretty obvious, like gem + fire = fire gem",
+          "But some are less clear. For instance, what traits would an egg add? Much experimenting is needed. Oh, I'm giddy with excitement!",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
         ]
       },
       {
-        "title": "拙劣的宝石",
+        "title": "Botched Gems",
         "level": 1,
         "elements": [
           { "x": 127, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/item/botched_gem.png" },
-          "并非每种组合都有效。令马失望的是，现在我的房间里堆满了这些无用的石头。",
-          "我不知道该怎么处理它们。它们不可食用，但当地小马不这么认为。",
-          "它们仍然具有我赋予它们的特征，所以也许除了和小露娜一起建造岩石堡垒之外，我还能找到其他用途......"
+          "Not every combination works. What's dissapointing is now I have all these useless stones piling up in my chambers.",
+          "I don't know what to do with them. They're not edible. At least the locals don't think so.",
+          "They do still have the traits I gave them, so maybe I can find a use other than building a rock-fort with little Luna..."
         ]
       },
       {
         "title": "13th Mare '12",
         "level": 0,
         "elements": [
-          "很抱歉我拖更了。我一直在努力研究不同的法术并决定要用什么方法。",
-          "火系魔法非常有趣。火很容易获得。",
-          "奉公主圣旨",
-          "- 白胡子星璇"
+          "Sorry for the long delay in updates. I've been hard at work researching different spells and desciding my approach.",
+          "Fire is becomg a very interesting aspect, what with traits for it being readily available.",
+          "At the princess' behest",
+          "- Starswirl the Bearded"
         ]
       }
     ]
