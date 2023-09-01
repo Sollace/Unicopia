@@ -1,5 +1,5 @@
 {
-  "parent": "unicopia:unicopia/root",
+  "parent": "unicopia:unicopia/unicorn/hello_darkness_my_old_friend",
   "display": {
     "icon": {
       "item": "unicopia:broken_alicorn_amulet"

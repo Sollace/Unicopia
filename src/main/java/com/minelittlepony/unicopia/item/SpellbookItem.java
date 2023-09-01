@@ -2,12 +2,14 @@ package com.minelittlepony.unicopia.item;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.SpellbookEntity;
 import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.server.world.Altar;
 import com.minelittlepony.unicopia.util.Dispensable;
 
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BookItem;
 import net.minecraft.item.ItemStack;
@@ -32,7 +34,7 @@ public class SpellbookItem extends BookItem implements Dispensable {
         BlockPos pos = source.getPos().offset(facing);
 
         float yaw = facing.getOpposite().asRotation();
-        placeBook(stack, source.getWorld(), pos.getX(), pos.getY(), pos.getZ(), yaw);
+        placeBook(stack, source.getWorld(), pos.getX(), pos.getY(), pos.getZ(), yaw, null);
         stack.decrement(1);
 
         return new TypedActionResult<>(ActionResult.SUCCESS, stack);
@@ -47,7 +49,7 @@ public class SpellbookItem extends BookItem implements Dispensable {
         if (!context.getWorld().isClient) {
             BlockPos pos = context.getBlockPos().offset(context.getSide());
 
-            placeBook(context.getStack(), context.getWorld(), pos.getX(), pos.getY(), pos.getZ(), context.getPlayerYaw() + 180);
+            placeBook(context.getStack(), context.getWorld(), pos.getX(), pos.getY(), pos.getZ(), context.getPlayerYaw() + 180, player);
 
             if (!player.getAbilities().creativeMode) {
                 player.getStackInHand(context.getHand()).decrement(1);
@@ -58,7 +60,7 @@ public class SpellbookItem extends BookItem implements Dispensable {
         return ActionResult.PASS;
     }
 
-    private static void placeBook(ItemStack stack, World world, int x, int y, int z, float yaw) {
+    private static void placeBook(ItemStack stack, World world, int x, int y, int z, float yaw, @Nullable Entity placer) {
         SpellbookEntity book = UEntities.SPELLBOOK.create(world);
 
         book.refreshPositionAndAngles(x + 0.5, y, z + 0.5, 0, 0);
@@ -76,6 +78,7 @@ public class SpellbookItem extends BookItem implements Dispensable {
         Altar.locateAltar(world, book.getBlockPos()).ifPresent(altar -> {
             book.setAltar(altar);
             altar.generateDecorations(world);
+            UCriteria.LIGHT_ALTAR.trigger(placer);
         });
     }
 }

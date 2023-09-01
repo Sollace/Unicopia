@@ -1,5 +1,5 @@
 {
-  "parent": "unicopia:unicopia/save_the_day",
+  "parent": "unicopia:unicopia/unicorn/save_the_day",
   "display": {
     "icon": {
       "item": "unicopia:broken_alicorn_amulet"

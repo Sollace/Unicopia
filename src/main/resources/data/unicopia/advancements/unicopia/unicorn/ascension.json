@@ -1,8 +1,8 @@
 {
-  "parent": "unicopia:unicopia/save_the_day",
+  "parent": "unicopia:unicopia/unicorn/save_the_day",
   "display": {
     "icon": {
-      "item": "unicopia:alicorn_amulet"
+      "item": "unicopia:unicorn_amulet"
     },
     "title": {
       "translate": "advancements.unicopia.ascension.title"
