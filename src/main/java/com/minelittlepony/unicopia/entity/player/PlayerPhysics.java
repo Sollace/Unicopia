@@ -255,7 +255,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         entity.getAbilities().allowFlying = type.canFlyCreative(entity);
 
-        boolean creative = entity.getAbilities().creativeMode || entity.isSpectator();
+        boolean creative = entity.isCreative() || entity.isSpectator();
 
         boolean startedFlyingCreative = !creative && isFlyingEither != entity.getAbilities().flying;
 
@@ -300,10 +300,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         }
 
         lastFlightType = type;
-        if (!pony.isClient()) {
-            isFlyingSurvival = entity.getAbilities().flying && !creative;
-            isFlyingEither = isFlyingSurvival || (creative && entity.getAbilities().flying);
-        }
+        isFlyingSurvival = entity.getAbilities().flying && !creative;
+        isFlyingEither = isFlyingSurvival || (creative && entity.getAbilities().flying);
 
         if (typeChanged || startedFlyingCreative) {
             entity.calculateDimensions();
