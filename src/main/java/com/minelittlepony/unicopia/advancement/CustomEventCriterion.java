@@ -83,7 +83,7 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
 
         public boolean test(String event, int count, ServerPlayerEntity player) {
             return this.event.equalsIgnoreCase(event)
-                    && (races.isEmpty() || races.contains(Pony.of(player).getActualSpecies()))
+                    && (races.isEmpty() || races.contains(Pony.of(player).getSpecies()))
                     && (flying == null || flying == Pony.of(player).getPhysics().isFlying())
                     && (repeatCount <= 0 || (count > 0 && count % repeatCount == 0));
         }

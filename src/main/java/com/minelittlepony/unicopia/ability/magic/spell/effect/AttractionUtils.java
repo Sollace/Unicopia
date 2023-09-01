@@ -48,13 +48,13 @@ public interface AttractionUtils {
         return Pony.of(entity).map(pony -> {
             double force = 0.75;
 
-            if (pony.getSpecies().canUseEarth()) {
+            if (pony.getCompositeRace().canUseEarth()) {
                 force /= 2;
 
                 if (pony.asEntity().isSneaking()) {
                     force /= 6;
                 }
-            } else if (pony.getSpecies().canFly()) {
+            } else if (pony.getCompositeRace().canFly()) {
                 force *= 2;
             }
 

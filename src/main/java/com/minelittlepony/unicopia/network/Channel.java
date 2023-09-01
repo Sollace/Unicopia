@@ -35,7 +35,7 @@ public interface Channel {
     static void bootstrap() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             Pony pony = Pony.of(handler.player);
-            if (pony.getActualSpecies() == Race.UNSET) {
+            if (pony.getSpecies() == Race.UNSET) {
                 Race race = UnicopiaWorldProperties.forWorld(handler.player.getServerWorld()).getDefaultRace();
                 if (!race.isPermitted(handler.player)) {
                     race = Race.UNSET;

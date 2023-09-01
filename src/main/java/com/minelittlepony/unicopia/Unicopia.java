@@ -103,8 +103,8 @@ public class Unicopia implements ModInitializer {
     public interface SidedAccess {
         Optional<Pony> getPony();
 
-        default Race getPlayerSpecies() {
-            return getPony().map(Pony::getSpecies).orElse(Race.HUMAN);
+        default Race.Composite getPlayerSpecies() {
+            return getPony().map(Pony::getCompositeRace).orElse(Race.Composite.DEFAULT);
         }
     }
 }

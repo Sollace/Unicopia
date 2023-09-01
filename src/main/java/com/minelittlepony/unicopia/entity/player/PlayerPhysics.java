@@ -353,7 +353,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 descentRate = 0;
                 ticksDiving = 0;
 
-                if (Abilities.RAINBOOM.canUse(pony.getActualSpecies()) && entity.isOnGround()) {
+                if (Abilities.RAINBOOM.canUse(pony.getSpecies()) && entity.isOnGround()) {
                     pony.getMagicalReserves().getCharge().set(0);
                 }
 
@@ -683,7 +683,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             SoundEmitter.playSoundAt(entity, USounds.AMBIENT_WIND_GUST, SoundCategory.AMBIENT, 3, 1);
         }
 
-        float weight = 1 + (EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.8F) + (pony.getActualSpecies().canUseEarth() ? 1 : 0);
+        float weight = 1 + (EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.8F) + (pony.getCompositeRace().canUseEarth() ? 1 : 0);
 
         velocity.add(WeatherConditions.getAirflow(entity.getBlockPos(), entity.getWorld()), 0.04F * effectStrength);
         velocity.add(Vec3d.fromPolar(

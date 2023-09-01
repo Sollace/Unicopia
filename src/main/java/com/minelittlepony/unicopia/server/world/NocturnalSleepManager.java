@@ -33,7 +33,7 @@ public class NocturnalSleepManager extends SleepManager {
         if (world.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE) && world.getPlayers().stream()
                 .filter(LivingEntity::isSleeping)
                 .map(Pony::of)
-                .map(Pony::getActualSpecies)
+                .map(Pony::getSpecies)
                 .noneMatch(Race::isDayurnal)) {
             world.setTimeOfDay(world.getLevelProperties().getTimeOfDay() - DAY_LENGTH + 13500);
         }
@@ -50,7 +50,7 @@ public class NocturnalSleepManager extends SleepManager {
 
         return players.stream().filter(player -> {
             Pony pony = Pony.of(player);
-            return (pony.getActualSpecies().isNocturnal() == world.isDay());
+            return (pony.getSpecies().isNocturnal() == world.isDay());
         }).toList();
     }
 

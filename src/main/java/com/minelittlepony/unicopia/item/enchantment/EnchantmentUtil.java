@@ -41,7 +41,7 @@ public interface EnchantmentUtil {
     }
 
     static int getLuck(int baseline, LivingEntity entity) {
-        boolean naturallyLucky = Living.getOrEmpty(entity).filter(c -> c.getSpecies().canUseEarth()).isPresent();
+        boolean naturallyLucky = Living.getOrEmpty(entity).filter(c -> c.getCompositeRace().canUseEarth()).isPresent();
         if (naturallyLucky) {
             baseline += 15;
         }

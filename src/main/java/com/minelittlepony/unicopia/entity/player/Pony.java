@@ -190,23 +190,11 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     /**
-     * Gets this player's species as it appears when interacting physically with other players or the world.
-     * This includes temporary race swaps due to illusions/shape shifting as well as artifacts that merely
-     * grant the abilities of a race, such as the alicorn amulet.
-     *
-     * @deprecated Use {@link Pony#getCompositeRace()} or {@link Pony#getObservedSpecies()}
+     * Gets this player's inherent species.
      */
-    @Deprecated
     @Override
     public Race getSpecies() {
-        if (AmuletSelectors.ALICORN_AMULET.test(entity)) {
-            return Race.ALICORN;
-        }
-        if (AmuletSelectors.UNICORN_AMULET.test(entity)) {
-            return Race.UNICORN;
-        }
-
-        return getObservedSpecies();
+        return Race.fromName(entity.getDataTracker().get(RACE), Race.HUMAN);
     }
 
     /**
@@ -219,28 +207,21 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 .map(AbstractDisguiseSpell::getDisguise)
                 .map(EntityAppearance::getAppearance)
                 .flatMap(Pony::of)
-                .map(Pony::getActualSpecies)
-                .orElseGet(this::getActualSpecies);
+                .map(Pony::getSpecies)
+                .orElseGet(this::getSpecies);
     }
 
     /**
      * Gets the composite race that represents what this player is capable of.
      * Physical is the race they appear to have, whilst pseudo is the race who's abilities they have been granted by magical means.
      */
+    @Override
     public Race.Composite getCompositeRace() {
-        Race observed = getObservedSpecies();
-        return new Race.Composite(observed,
+        return new Race.Composite(getObservedSpecies(),
               AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
             : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
             : null
         );
-    }
-
-    /**
-     * Gets the origin species of the player. This excludes any shapeshifting, illusions, or magic.
-     */
-    public Race getActualSpecies() {
-        return Race.fromName(entity.getDataTracker().get(RACE), Race.HUMAN);
     }
 
     @Override
@@ -575,7 +556,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 }
             }
 
-            if (entity.hurtTime == 1 && getSpecies().canCast()) {
+            if (entity.hurtTime == 1 && getCompositeRace().physical().canCast()) {
                 corruption.add(1);
                 setDirty();
             }
@@ -586,7 +567,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public void tick() {
         super.tick();
 
-        Race currentRace = getActualSpecies();
+        Race currentRace = getSpecies();
         if (!currentRace.isUnset()) {
             Race newRace = currentRace.validate(entity);
 
@@ -596,16 +577,12 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         sendCapabilities();
-
-        //if (!isClient()) {
-        //    CrystalShardsEntity.infestBlock((ServerWorld)asWorld(), entity.getBlockPos().down());
-        //}
     }
 
     @Override
     public boolean canBeSeenBy(Entity entity) {
         if (entity instanceof HostileEntity hostile
-                && getActualSpecies() == Race.BAT
+                && getSpecies() == Race.BAT
                 && hostile.getTarget() != this.entity
                 && hostile.getAttacker() != this.entity
                 && entity.distanceTo(this.entity) > entity.getWidth()) {
@@ -659,7 +636,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 && !cause.isOf(DamageTypes.THORNS)
                 && !cause.isOf(DamageTypes.FREEZE)) {
 
-            if (getSpecies().canUseEarth() && entity.isSneaking()) {
+            if (getCompositeRace().canUseEarth() && entity.isSneaking()) {
                 amount /= (cause.isOf(DamageTypes.MOB_PROJECTILE) ? 3 : 2) * (entity.getHealth() < 5 ? 3 : 1);
 
                 return Optional.of(amount);
@@ -692,7 +669,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 }
             }
 
-            if (getSpecies().canFly() || (getSpecies().canUseEarth() && entity.isSneaking())) {
+            if (getCompositeRace().canFly() || (getCompositeRace().canUseEarth() && entity.isSneaking())) {
                 distance -= 5;
             }
             distance = Math.max(0, distance);
@@ -710,7 +687,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     protected void handleFall(float distance, float damageMultiplier, DamageSource cause) {
         super.handleFall(distance, damageMultiplier, cause);
 
-        if (getSpecies().canUseEarth() && entity.isSneaking()) {
+        if (getCompositeRace().canUseEarth() && entity.isSneaking()) {
             double radius = distance / 10;
             if (radius > 0) {
                 EarthPonyStompAbility.spawnEffectAround(entity, entity.getLandingPos(), radius, radius);
@@ -775,7 +752,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public ActionResult canSleepNow() {
-        if (asWorld().getGameRules().getBoolean(UGameRules.DO_NOCTURNAL_BAT_PONIES) && getActualSpecies().isNocturnal()) {
+        if (asWorld().getGameRules().getBoolean(UGameRules.DO_NOCTURNAL_BAT_PONIES) && getSpecies().isNocturnal()) {
             return asWorld().isDay() ? ActionResult.SUCCESS : ActionResult.FAIL;
         }
 
@@ -790,7 +767,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void toSyncronisedNbt(NbtCompound compound) {
         super.toSyncronisedNbt(compound);
-        compound.putString("playerSpecies", Race.REGISTRY.getId(getActualSpecies()).toString());
+        compound.putString("playerSpecies", Race.REGISTRY.getId(getSpecies()).toString());
         compound.putFloat("magicExhaustion", magicExhaustion);
         compound.putInt("ticksHanging", ticksHanging);
         BLOCK_POS.writeOptional("hangingPosition", compound, getHangingPosition());
@@ -843,7 +820,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 && entity instanceof ServerPlayerEntity
                 && entity.getWorld().getGameRules().getBoolean(UGameRules.SWAP_TRIBE_ON_DEATH)
                 && oldPlayer.respawnRace.isUnset())
-                || oldPlayer.getActualSpecies().isUnset();
+                || oldPlayer.getSpecies().isUnset();
 
         if (alive) {
             oldPlayer.getSpellSlot().stream(true).forEach(getSpellSlot()::put);
@@ -866,7 +843,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             }
         }
 
-        setSpecies(oldPlayer.respawnRace != Race.UNSET && !alive ? oldPlayer.respawnRace : oldPlayer.getActualSpecies());
+        setSpecies(oldPlayer.respawnRace != Race.UNSET && !alive ? oldPlayer.respawnRace : oldPlayer.getSpecies());
         getDiscoveries().copyFrom(oldPlayer.getDiscoveries(), alive);
         getPhysics().copyFrom(oldPlayer.getPhysics(), alive);
         if (!forcedSwap) {

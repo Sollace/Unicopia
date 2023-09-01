@@ -138,7 +138,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
                 if (e instanceof PlayerEntity) {
                     Pony player = Pony.of((PlayerEntity)e);
 
-                    Race race = player.getSpecies();
+                    Race.Composite race = player.getCompositeRace();
 
                     if (race.canCast()) {
                         dealt /= 2;
