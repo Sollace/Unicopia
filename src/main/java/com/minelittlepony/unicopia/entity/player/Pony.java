@@ -193,7 +193,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
      * Gets this player's species as it appears when interacting physically with other players or the world.
      * This includes temporary race swaps due to illusions/shape shifting as well as artifacts that merely
      * grant the abilities of a race, such as the alicorn amulet.
+     *
+     * @deprecated Use {@link Pony#getCompositeRace()} or {@link Pony#getObservedSpecies()}
      */
+    @Deprecated
     @Override
     public Race getSpecies() {
         if (AmuletSelectors.ALICORN_AMULET.test(entity)) {
@@ -217,7 +220,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 .map(EntityAppearance::getAppearance)
                 .flatMap(Pony::of)
                 .map(Pony::getActualSpecies)
-                .orElse(getActualSpecies());
+                .orElseGet(this::getActualSpecies);
     }
 
     /**
