@@ -10,7 +10,7 @@
     "description": {
       "translate": "advancements.unicopia.save_the_day.description"
     },
-    "frame": "goal",
+    "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": false

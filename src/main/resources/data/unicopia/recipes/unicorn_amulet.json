@@ -5,9 +5,10 @@
   },
   "traits": {},
   "ingredients": [
-    { "item": "unicopia:crystal_shard" },
-    { "item": "unicopia:crystal_shard" },
-    { "item": "unicopia:crystal_shard" }
+    { "item": "unicopia:pegasus_amulet" },
+    { "item": "unicopia:crystal_heart" },
+    { "item": "unicopia:grogars_bell" },
+    { "item": "minecraft:totem_of_undying" }
   ],
   "result": {
     "item": "unicopia:unicorn_amulet"
