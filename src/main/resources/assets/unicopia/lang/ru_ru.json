@@ -59,7 +59,7 @@
   "item.unicopia.zap_apple": "Зап-яблоко",
   "item.unicopia.zap_bulb": "Недозрелое зап-яблоко",
 
-  "item.unicopia.love_bottle": "Бутылка любви",
+  "item.unicopia.love_bottle": "Бутылочка любви",
   "item.unicopia.love_bucket": "Ведро любви",
   "item.unicopia.love_mug": "Кружка любви",
 
@@ -123,6 +123,10 @@
   
   "item.unicopia.alicorn_amulet": "Амулет аликорна",
   "item.unicopia.alicorn_amulet.lore": "Время ношения: %d",
+
+  "item.unicopia.broken_alicorn_amulet": "Сломанный амулет аликорна",
+  "item.unicopia.unicorn_amulet": "Амулет единорога",
+    "item.unicopia.unicorn_amulet.lore": "Наделяет носящего магическими способностями",
 
   "item.unicopia.grogars_bell": "Колокольчик Грогара",
   "item.unicopia.grogars_bell.charges": "Заряды: %d / %d",
@@ -197,8 +201,11 @@
   "entity.unicopia.cast_spell": "Заклинание",
   "entity.unicopia.cast_spell.by": "Заклинание, наложенное %s",
   "entity.unicopia.spellbook": "Книга заклинаний",
+  "entity.unicopia.air_balloon": "Воздушный шар",
   "entity.unicopia.sombra": "Король Сомбра",
   "entity.unicopia.sombra.taunt": "На меня это не подействует!",
+  "entity.unicopia.storm_cloud": "Штормовое облако",
+  "entity.unicopia.crystal_shards": "Кристальные осколки",
 
   "player.reachDistance": "Расстояние до цели",
   "player.miningSpeed": "Скорость добычи",
@@ -207,7 +214,7 @@
   "unicopia.effect.tribe.stage.initial": "Похоже, что эффекта нет",
   "unicopia.effect.tribe.stage.crawling": "Вы чувствуете, как кожа ползёт по спине",
   "unicopia.effect.tribe.stage.determination": "По мере того, как ваши кости выравниваются, вы наполняетесь решимостью",
-  "unicopia.effect.tribe.stage.resurection": "Зная то, что вы вернетесь в этот мир в качестве %s",
+  "unicopia.effect.tribe.stage.resurection": "Зная то, что вы вернетесь в этот мир как %s",
 
   "effect.unicopia.food_poisoning": "Пищевое отравление",
   "effect.unicopia.sun_blindness": "Солнечная слепота",
@@ -297,10 +304,6 @@
   "spell.unicopia.catapult.lore": "Хватает ближайший блок или объект и подбрасывает его в воздух",
   "spell.unicopia.dispel_evil": "Изгнание зла",
   "spell.unicopia.dispel_evil.lore": "Изгоняет все находящиеся поблизости неземные силы",
-  
-  "gui.unicopia.trait.label": "Элемент %s",
-  "gui.unicopia.trait.group": "\n %s",
-  "gui.unicopia.trait.corruption": "\n %s порчи",
 
   "trait.unicopia.strength.name": "Силы",
   "trait.unicopia.strength.description": "Наделяет физической силой или повышает выносливость.\nЗаклинания с большим количеством силы бьют сильнее и действуют дольше.",
@@ -372,10 +375,15 @@
   "ability.unicopia.toggle_flight": "Взлететь/Приземлиться",
   "ability.unicopia.hang": "Зацепиться за потолок",
   "ability.unicopia.eee": "Пискнуть",
+  "ability.unicopia.time_control": "Контролировать Солнце / Луну",
   "ability.unicopia.feed": "Поглотить любовь",
   "ability.unicopia.capture_cloud": "Захватить облако",
   "ability.unicopia.disguise": "Изменить форму",
   "ability.unicopia.rainboom": "Звуковая радуга",
+
+  "gui.unicopia.trait.label": "Элемент %s",
+  "gui.unicopia.trait.group": "\n %s",
+  "gui.unicopia.trait.corruption": "\n %s порчи",
 
   "gui.unicopia.dispell_screen.cancel": "Нажмите ESC для выхода",
   "gui.unicopia.dispell_screen.spell_type": "Тип заклинания: %s",
@@ -469,6 +477,7 @@
   "gui.unicopia.tribe_selection.join": "Присоединиться",
   "gui.unicopia.tribe_selection.cancel": "Назад",
 
+  "gui.unicopia.spellbook.empty_spell_slot": "Пустой слот для заклинаний",
   "gui.unicopia.spellbook.page.inventory": "Инвентарь",
   "gui.unicopia.spellbook.page.recipes": "Рецепты",
   "gui.unicopia.spellbook.page.recipes.empty": "0 рецептов разблокировано",
@@ -479,6 +488,17 @@
 
   "gui.unicopia.action.spells_cleared": "Удалены все заклинания",
   "gui.unicopia.action.no_spells_cleared": "У вас нет активных заклинаний",
+
+  "chapter.unicopia.crafting": "Создание заклинаний",
+  "chapter.unicopia.profile": "Профиль",
+  "chapter.unicopia.traits": "Исследование",
+  "chapter.unicopia.introduction": "Введение",
+  "chapter.unicopia.fire_magic": "Магия Огня",
+  "chapter.unicopia.ice_magic": "Магия Льда",
+  "chapter.unicopia.air_magic": "Магия Воздуха",
+  "chapter.unicopia.dark_magic": "Тёмная магия",
+  "chapter.unicopia.the_otherworldly": "Запретная магия",
+  "chapter.unicopia.crystal_heart": "Артефакты",
 
   "experience.unicopia.pure.magical_kindergartner": "Свежая кровь",
   "experience.unicopia.impure.magical_kindergartner": "Испорченный",
@@ -874,6 +894,13 @@
   "advancements.unicopia.second_wind.description": "Летите сквозь боль",
   "advancements.unicopia.deter_phantom.title": "Что летает вокруг",
   "advancements.unicopia.deter_phantom.description": "Поднимитесь и дайте этим фантомам попробовать их собственное лекарство",
+
+  "advancements.unicopia.love_is_power.title": "Любовь - это сила",
+  "advancements.unicopia.love_is_power.description": "Изгоните короля Сомбра с помощью кристального сердца",
+  "advancements.unicopia.save_the_day.title": "Спасти день",
+  "advancements.unicopia.save_the_day.description": "Победите короля Сомбра раз и навсегда",
+  "advancements.unicopia.doctor_sombrero.title": "Доктор Сомбреро",
+  "advancements.unicopia.doctor_sombrero.description": "Это не мэйр-иачи!",
 
   "unicopia.toast.discoveries.title": "Новые открытия!",
   "unicopia.toast.discoveries.description": "Проверьте свою книгу заклинаний"
