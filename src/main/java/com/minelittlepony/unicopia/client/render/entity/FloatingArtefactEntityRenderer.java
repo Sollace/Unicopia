@@ -1,5 +1,6 @@
-package com.minelittlepony.unicopia.client.render;
+package com.minelittlepony.unicopia.client.render.entity;
 
+import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.entity.mob.FloatingArtefactEntity;
 import com.minelittlepony.unicopia.item.UItems;
 import net.minecraft.client.MinecraftClient;
