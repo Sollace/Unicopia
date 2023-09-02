@@ -185,6 +185,9 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
         final UUID aUUid = a.getUuid();
         final UUID bUUid = b.getUuid();
 
+        final byte aModelBits = a.getDataTracker().get(PlayerAccess.getModelBitFlag());
+        final byte bModelBits = b.getDataTracker().get(PlayerAccess.getModelBitFlag());
+
         final ServerPlayerEntity aClone = clonePlayer(a);
         final ServerPlayerEntity bClone = clonePlayer(b);
 
@@ -196,6 +199,9 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
 
         a.setUuid(aUUid);
         b.setUuid(bUUid);
+
+        a.getDataTracker().set(PlayerAccess.getModelBitFlag(), aModelBits);
+        b.getDataTracker().set(PlayerAccess.getModelBitFlag(), bModelBits);
 
         a.interactionManager.changeGameMode(aMode);
         b.interactionManager.changeGameMode(bMode);
