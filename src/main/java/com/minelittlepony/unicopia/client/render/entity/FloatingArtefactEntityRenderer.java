@@ -52,7 +52,7 @@ public class FloatingArtefactEntityRenderer extends EntityRenderer<FloatingArtef
         matrices.translate(0, verticalOffset + variance * modelScaleY, 0);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getRotation(timeDelta)));
 
-        int destructionStage = (int)(MathHelper.clamp(1 - (entity.getHealth() / entity.getMaxHealth()), 0, 1) * (ModelLoader.field_32983 - 1));
+        int destructionStage = (int)(MathHelper.clamp(1F - (entity.getHealth() / entity.getMaxHealth()), 0F, 1F) * (ModelLoader.field_32983 - 1F));
 
         itemRenderer.renderItem(stack, ModelTransformationMode.GROUND, false, matrices, getDestructionOverlayProvider(matrices, vertices, destructionStage), lightUv, OverlayTexture.DEFAULT_UV, model);
 

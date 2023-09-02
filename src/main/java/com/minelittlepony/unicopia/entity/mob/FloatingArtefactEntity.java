@@ -3,12 +3,9 @@ package com.minelittlepony.unicopia.entity.mob;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.entity.MagicImmune;
-import com.minelittlepony.unicopia.entity.damage.UDamageSources;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.server.world.Altar;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -21,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class FloatingArtefactEntity extends Entity implements UDamageSources, MagicImmune {
+public class FloatingArtefactEntity extends StationaryObjectEntity {
     private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(FloatingArtefactEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<Byte> STATE = DataTracker.registerData(FloatingArtefactEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Float> TARGET_ROTATION_SPEED = DataTracker.registerData(FloatingArtefactEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -40,7 +37,6 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources, Ma
 
     private int boostDuration;
 
-    private float health;
     private int ticksUntilRegen;
     public final float positionSeed;
 
@@ -50,11 +46,11 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources, Ma
         super(entityType, world);
 
         positionSeed = (float)(Math.random() * Math.PI * 2);
-        health = getMaxHealth();
     }
 
     @Override
     protected void initDataTracker() {
+        super.initDataTracker();
         dataTracker.startTracking(ITEM, ItemStack.EMPTY);
         dataTracker.startTracking(STATE, (byte)0);
         dataTracker.startTracking(TARGET_ROTATION_SPEED, 1F);
@@ -93,16 +89,9 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources, Ma
         return MathHelper.lerp(tickDelta, prevRotationSpeed, rotationSpeed);
     }
 
-    public int getMaxHealth() {
-        return 20;
-    }
-
-    public void setHealth(float health) {
-        this.health = MathHelper.clamp(health, 0, getMaxHealth());
-    }
-
-    public float getHealth() {
-        return health;
+    @Override
+    public float getMaxHealth() {
+        return 20F;
     }
 
     @Override
@@ -163,16 +152,17 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources, Ma
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound compound) {
+        super.readCustomDataFromNbt(compound);
         setStack(ItemStack.fromNbt(compound.getCompound("Item")));
         setState(State.valueOf(compound.getInt("State")));
         setRotationSpeed(compound.getFloat("spin"), compound.getInt("spinDuration"));
-        setHealth(compound.getFloat("health"));
         ticksUntilRegen = compound.getInt("regen");
         altar = Altar.SERIALIZER.readOptional("altar", compound);
     }
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound compound) {
+        super.writeCustomDataToNbt(compound);
         ItemStack stack = getStack();
         if (!stack.isEmpty()) {
             compound.put("Item", stack.writeNbt(new NbtCompound()));
@@ -180,62 +170,52 @@ public class FloatingArtefactEntity extends Entity implements UDamageSources, Ma
         compound.putInt("State", getState().ordinal());
         compound.putFloat("spin", getRotationSpeed());
         compound.putInt("spinDuration", boostDuration);
-        compound.putFloat("health", getHealth());
         compound.putInt("regen", ticksUntilRegen);
         Altar.SERIALIZER.writeOptional("altar", compound, altar);
     }
 
     @Override
-    public boolean damage(DamageSource damageSource, float amount) {
+    public boolean damage(DamageSource source, float damage) {
 
         if (getWorld().isClient || isInvulnerable()) {
             return false;
         }
 
-        if (isInvulnerableTo(damageSource) || !getStack().getItem().damage(damageSource)) {
+        if (isInvulnerableTo(source) || !getStack().getItem().damage(source)) {
             return false;
         }
 
-        if (damageSource.isSourceCreativePlayer()) {
-            health = 0;
-        } else {
-            health -= amount;
-            ticksUntilRegen = REGEN_PAUSE_TICKS;
+        ticksUntilRegen = REGEN_PAUSE_TICKS;
+
+        if (source.isSourceCreativePlayer()) {
+            damage = getHealth();
         }
 
-        if (health <= 0) {
-            remove(RemovalReason.KILLED);
+        return super.damage(source, damage);
+    }
 
-            ItemStack stack = getStack();
+    @Override
+    protected void onKilled(DamageSource source) {
+        ItemStack stack = getStack();
 
-            if (altar.isEmpty()) {
-                if (!(stack.getItem() instanceof Artifact) || ((Artifact)stack.getItem()).onArtifactDestroyed(this) != ActionResult.SUCCESS) {
-                    if (!damageSource.isSourceCreativePlayer()) {
-                        dropStack(stack);
-                    }
+        if (altar.isEmpty()) {
+            if (!(stack.getItem() instanceof Artifact) || ((Artifact)stack.getItem()).onArtifactDestroyed(this) != ActionResult.SUCCESS) {
+                if (!source.isSourceCreativePlayer()) {
+                    dropStack(stack);
                 }
             }
-        } else {
-            playSound(USounds.ITEM_ICARUS_WINGS_WARN, 1, 1);
         }
+    }
 
-        return false;
+    @Override
+    protected void onHurt() {
+        playSound(USounds.ITEM_ICARUS_WINGS_WARN, 1, 1);
     }
 
     @Override
     public void remove(RemovalReason reason) {
         super.remove(reason);
         altar.ifPresent(altar -> altar.tearDown(this, getWorld()));
-    }
-
-    @Override
-    public boolean canHit() {
-        return true;
-    }
-
-    @Override
-    public World asWorld() {
-        return getWorld();
     }
 
     public enum State {

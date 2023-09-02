@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
+import java.util.List;
+
 import com.minelittlepony.unicopia.entity.mob.CrystalShardsEntity;
 
 import net.minecraft.client.model.Dilation;
@@ -12,12 +14,15 @@ import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.MathHelper;
 
 public class CrystalShardsEntityModel extends EntityModel<CrystalShardsEntity> {
 	private final ModelPart part;
+	private final List<ModelPart> crystals;
 
 	public CrystalShardsEntityModel(ModelPart root) {
 		this.part = root;
+		this.crystals = List.of(part.getChild("west"), part.getChild("north"), part.getChild("south"), part.getChild("east"), part.getChild("primary"));
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -33,6 +38,22 @@ public class CrystalShardsEntityModel extends EntityModel<CrystalShardsEntity> {
 
 	@Override
 	public void setAngles(CrystalShardsEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+
+	    float offset = 0;
+	    float amplitude = 0.02F;
+
+	    for (ModelPart part : crystals) {
+	        part.resetTransform();
+
+	        if (entity.isShaking()) {
+	            float animationTime = (entity.age + ++offset) * 122F;
+	            float sin = MathHelper.sin(animationTime) * amplitude;
+
+	            part.pitch += sin;
+	            part.yaw += MathHelper.cos(animationTime) * amplitude;
+	            part.roll += -sin;
+	        }
+	    }
 	}
 
 	@Override
