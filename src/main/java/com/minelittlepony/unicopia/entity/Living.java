@@ -35,6 +35,7 @@ import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.*;
 
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -43,15 +44,21 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -382,7 +389,9 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                 DragonBreathStore store = DragonBreathStore.get(entity.getWorld());
                 String name = entity.getDisplayName().getString();
                 store.popEntries(name).forEach(stack -> {
-                    Vec3d randomPos = targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
+                    boolean deliverAggressively = stack.payload().isIn(UTags.IS_DELIVERED_AGGRESSIVELY);
+
+                    Vec3d randomPos = deliverAggressively ? targetPos.add(0, 2, 0) : targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
 
                     if (!entity.getWorld().isAir(BlockPos.ofFloored(randomPos))) {
                         store.put(name, stack.payload());
@@ -394,11 +403,27 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                         ), Vec3d.ZERO);
                     }
 
-                    ItemEntity item = EntityType.ITEM.create(entity.getWorld());
-                    item.setStack(stack.payload());
-                    item.setPosition(randomPos);
-                    item.getWorld().spawnEntity(item);
-                    entity.getWorld().playSoundFromEntity(null, entity, USounds.ITEM_DRAGON_BREATH_ARRIVE, entity.getSoundCategory(), 1, 1);
+                    if (deliverAggressively && stack.payload().getItem() instanceof BlockItem blockItem) {
+                        BlockPos pos = BlockPos.ofFloored(randomPos);
+                        ItemPlacementContext context = new ItemPlacementContext(entity.getWorld(), (PlayerEntity)null, Hand.MAIN_HAND, stack.payload(),
+                                BlockHitResult.createMissed(Vec3d.ZERO, Direction.UP, pos)
+                        );
+
+                        BlockState state = blockItem.getBlock().getPlacementState(context);
+                        if (state == null) {
+                            state = blockItem.getBlock().getDefaultState();
+                        }
+
+                        entity.getWorld().setBlockState(pos, state);
+                        BlockSoundGroup sound = state.getSoundGroup();
+                        entity.getWorld().playSound(null, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1) * 0.5F, sound.getPitch() * 0.8F);
+                    } else {
+                        ItemEntity item = EntityType.ITEM.create(entity.getWorld());
+                        item.setStack(stack.payload());
+                        item.setPosition(randomPos);
+                        item.getWorld().spawnEntity(item);
+                        entity.getWorld().playSoundFromEntity(null, entity, USounds.ITEM_DRAGON_BREATH_ARRIVE, entity.getSoundCategory(), 1, 1);
+                    }
 
                     if (stack.payload().getItem() == UItems.OATS && entity instanceof PlayerEntity player) {
                         UCriteria.RECEIVE_OATS.trigger(player);
