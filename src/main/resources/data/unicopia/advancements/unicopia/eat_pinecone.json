@@ -1,5 +1,5 @@
 {
-  "parent": "unicopia:unicopia/root",
+  "parent": "unicopia:unicopia/root/earth/earth_route",
   "display": {
     "icon": {
       "item": "unicopia:pinecone"

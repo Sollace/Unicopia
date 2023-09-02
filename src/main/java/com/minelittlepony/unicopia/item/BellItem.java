@@ -138,7 +138,7 @@ public class BellItem extends Item implements ChargeableItem {
         if (living instanceof Pony pony) {
             amountDrawn = pony.getMagicalReserves().getMana().get() * 0.2F;
             pony.getMagicalReserves().getMana().multiply(0.8F);
-            if (pony.getActualSpecies() == Race.CHANGELING) {
+            if (pony.getSpecies() == Race.CHANGELING) {
                 particleType = ParticleTypes.HEART;
             }
         } else {

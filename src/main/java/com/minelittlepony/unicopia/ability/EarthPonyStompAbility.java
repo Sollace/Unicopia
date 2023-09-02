@@ -127,7 +127,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                     double amount = (1.5F * player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue() + heavyness * 0.4) / (float)(dist * 1.3F);
 
                     if (i instanceof PlayerEntity) {
-                        Race race = Pony.of((PlayerEntity)i).getSpecies();
+                        Race.Composite race = Pony.of((PlayerEntity)i).getCompositeRace();
                         if (race.canUseEarth()) {
                             amount /= 3;
                         }

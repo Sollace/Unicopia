@@ -1,7 +1,10 @@
 package com.minelittlepony.unicopia.client.gui.spellbook;
 
+import java.util.List;
+
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.client.gui.*;
 import com.minelittlepony.unicopia.entity.player.*;
 import com.minelittlepony.unicopia.util.ColorHelper;
@@ -35,14 +38,21 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
 
         screen.addDrawable(new SpellbookScreen.ImageButton(x, y, size, size))
             .getStyle()
-                .setIcon(TribeButton.createSprite(pony.getActualSpecies(), 0, 0, size))
-                .setTooltip(ProfileTooltip.get(pony));
+                .setIcon(TribeButton.createSprite(pony.getSpecies(), 0, 0, size))
+                .setTooltip(() -> List.of(
+                        Text.literal(String.format("Level %d ", pony.getLevel().get() + 1)).append(pony.getSpecies().getDisplayName()).formatted(pony.getSpecies().getAffinity().getColor()),
+                        Text.literal(String.format("Mana: %d%%", (int)(pony.getMagicalReserves().getMana().getPercentFill() * 100))),
+                        Text.literal(String.format("Corruption: %d%%", (int)(pony.getCorruption().getScaled(100)))),
+                        Text.literal(String.format("Experience: %d", (int)(pony.getMagicalReserves().getXp().getPercentFill() * 100))),
+                        Text.literal(String.format("Next level in: %dxp", 100 - (int)(pony.getMagicalReserves().getXp().getPercentFill() * 100)))
+                ));
 
-        if (pony.getSpecies() != pony.getActualSpecies()) {
+        Race inherited = pony.getCompositeRace().collapsed();
+        if (inherited != pony.getSpecies()) {
             int halfSize = size / 2;
             screen.addDrawable(new SpellbookScreen.ImageButton(x + halfSize, y + halfSize, halfSize, halfSize))
                 .getStyle()
-                    .setIcon(TribeButton.createSprite(pony.getSpecies(), 0, 0, halfSize));
+                    .setIcon(TribeButton.createSprite(inherited, 0, 0, halfSize));
         }
     }
 

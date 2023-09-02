@@ -194,7 +194,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             .filter(effect -> !effect.isDead() && effect instanceof FlightType.Provider)
             .map(effect -> ((FlightType.Provider)effect).getFlightType())
             .filter(FlightType::isPresent)
-            .orElse(pony.getSpecies().flightType());
+            .orElse(pony.getObservedSpecies().flightType());
     }
 
     public void cancelFlight(boolean force) {
@@ -255,7 +255,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         entity.getAbilities().allowFlying = type.canFlyCreative(entity);
 
-        boolean creative = entity.getAbilities().creativeMode || entity.isSpectator();
+        boolean creative = entity.isCreative() || entity.isSpectator();
 
         boolean startedFlyingCreative = !creative && isFlyingEither != entity.getAbilities().flying;
 
@@ -300,10 +300,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         }
 
         lastFlightType = type;
-        if (!pony.isClient()) {
-            isFlyingSurvival = entity.getAbilities().flying && !creative;
-            isFlyingEither = isFlyingSurvival || (creative && entity.getAbilities().flying);
-        }
+        isFlyingSurvival = entity.getAbilities().flying && !creative;
+        isFlyingEither = isFlyingSurvival || (creative && entity.getAbilities().flying);
 
         if (typeChanged || startedFlyingCreative) {
             entity.calculateDimensions();
@@ -355,7 +353,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 descentRate = 0;
                 ticksDiving = 0;
 
-                if (Abilities.RAINBOOM.canUse(pony.getActualSpecies()) && entity.isOnGround()) {
+                if (Abilities.RAINBOOM.canUse(pony.getSpecies()) && entity.isOnGround()) {
                     pony.getMagicalReserves().getCharge().set(0);
                 }
 
@@ -685,7 +683,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             SoundEmitter.playSoundAt(entity, USounds.AMBIENT_WIND_GUST, SoundCategory.AMBIENT, 3, 1);
         }
 
-        float weight = 1 + (EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.8F) + (pony.getActualSpecies().canUseEarth() ? 1 : 0);
+        float weight = 1 + (EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.8F) + (pony.getCompositeRace().canUseEarth() ? 1 : 0);
 
         velocity.add(WeatherConditions.getAirflow(entity.getBlockPos(), entity.getWorld()), 0.04F * effectStrength);
         velocity.add(Vec3d.fromPolar(

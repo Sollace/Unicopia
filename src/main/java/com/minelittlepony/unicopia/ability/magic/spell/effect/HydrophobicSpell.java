@@ -9,8 +9,10 @@ import com.minelittlepony.unicopia.ability.magic.CasterView;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.UParticles;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.shape.*;
 
@@ -83,6 +85,7 @@ public class HydrophobicSpell extends AbstractSpell {
             if (!source.subtractEnergyCost(storedFluidPositions.isEmpty() ? 0.001F : 0.02F)) {
                 setDead();
             }
+
             source.spawnParticles(new Sphere(true, getRange(source)), 10, pos -> {
                 BlockPos bp = BlockPos.ofFloored(pos);
                 if (source.asWorld().getFluidState(bp.up()).isIn(affectedFluid)) {
@@ -92,6 +95,10 @@ public class HydrophobicSpell extends AbstractSpell {
 
             if (source.asEntity().age % 200 == 0) {
                 source.playSound(USounds.SPELL_AMBIENT, 0.5F);
+            }
+
+            if (storedFluidPositions.size() >= 100) {
+                UCriteria.SPLIT_SEA.trigger(source.asEntity());
             }
         }
 
@@ -124,8 +131,8 @@ public class HydrophobicSpell extends AbstractSpell {
     public double getRange(Caster<?> source) {
         float multiplier = 1;
         float min = (source instanceof Pony ? 4 : 6) + getTraits().get(Trait.POWER);
-        double range = (min + (source.getLevel().getScaled(source instanceof Pony ? 4 : 40) * (source instanceof Pony ? 2 : 10))) / multiplier;
-
+        boolean isLimitedRange = source instanceof Pony || source instanceof MagicProjectileEntity;
+        double range = (min + (source.getLevel().getScaled(isLimitedRange ? 4 : 40) * (isLimitedRange ? 2 : 10))) / multiplier;
         return range;
     }
 

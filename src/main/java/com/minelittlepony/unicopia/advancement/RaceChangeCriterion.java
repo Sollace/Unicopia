@@ -44,7 +44,7 @@ public class RaceChangeCriterion extends AbstractCriterion<RaceChangeCriterion.C
         }
 
         public boolean test(ServerPlayerEntity player) {
-            return Pony.of(player).getActualSpecies() == race;
+            return Pony.of(player).getCompositeRace().includes(race);
         }
 
         @Override

@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
 
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.Living;
@@ -48,7 +49,7 @@ public class CarryAbility implements Ability<Hit> {
 
     protected LivingEntity findRider(PlayerEntity player, World w) {
         return TraceHelper.<LivingEntity>findEntity(player, 10, 1, hit -> {
-            return hit instanceof LivingEntity && !player.isConnectedThroughVehicle(hit) && !(hit instanceof IPickupImmuned);
+            return EquinePredicates.EXCEPT_MAGIC_IMMUNE.test(hit) && !player.isConnectedThroughVehicle(hit);
         }).orElse(null);
     }
 
@@ -100,9 +101,5 @@ public class CarryAbility implements Ability<Hit> {
 
     @Override
     public void coolDown(Pony player, AbilitySlot slot) {
-    }
-
-    public interface IPickupImmuned {
-
     }
 }

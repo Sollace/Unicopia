@@ -1,26 +1,25 @@
 {
-  "parent": "unicopia:unicopia/save_the_day",
+  "parent": "unicopia:unicopia/unicorn/hello_darkness_my_old_friend",
   "display": {
     "icon": {
       "item": "unicopia:broken_alicorn_amulet"
     },
     "title": {
-      "translate": "advancements.unicopia.doctor_sombrero.title"
+      "translate": "advancements.unicopia.save_the_day.title"
     },
     "description": {
-      "translate": "advancements.unicopia.doctor_sombrero.description"
+      "translate": "advancements.unicopia.save_the_day.description"
     },
     "frame": "challenge",
     "show_toast": true,
     "announce_to_chat": true,
-    "hidden": true
+    "hidden": false
   },
   "criteria": {
     "defeat_sombra": {
       "trigger": "unicopia:custom",
       "conditions": {
-        "event": "defeat_sombra",
-        "repeats": 2
+        "event": "defeat_sombra"
       }
     }
   },

@@ -1,0 +1,29 @@
+{
+  "parent": "unicopia:unicopia/unicorn/crystaline",
+  "display": {
+    "icon": {
+      "item": "unicopia:crystal_heart"
+    },
+    "title": {
+      "translate": "advancements.unicopia.power_up_heart.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.power_up_heart.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "power_up_heart": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "power_up_heart"
+      }
+    }
+  },
+  "requirements": [
+    [ "power_up_heart" ]
+  ]
+}

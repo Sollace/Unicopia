@@ -1,31 +1,31 @@
 {
-  "parent": "unicopia:unicopia/earth/earth_route",
+  "parent": "unicopia:unicopia/unicorn/magical_route",
   "display": {
     "icon": {
-      "item": "unicopia:green_apple"
+      "item": "unicopia:spellbook"
     },
     "title": {
-      "translate": "advancements.unicopia.apple_route.title"
+      "translate": "advancements.unicopia.books.title"
     },
     "description": {
-      "translate": "advancements.unicopia.apple_route.description"
+      "translate": "advancements.unicopia.books.description"
     },
     "frame": "task",
     "show_toast": true,
     "announce_to_chat": false,
-    "hidden": true
+    "hidden": false
   },
   "criteria": {
-    "has_apple": {
+    "has_book": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
-          { "tag": "unicopia:apples" }
+          { "items": [ "unicopia:spellbook" ] }
         ]
       }
     }
   },
   "requirements": [
-    [ "has_apple" ]
+    [ "has_book" ]
   ]
 }
