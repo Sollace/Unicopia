@@ -15,7 +15,7 @@ import com.minelittlepony.unicopia.entity.player.*;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.server.world.Altar;
+import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -41,6 +41,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
@@ -192,7 +193,8 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
         if (entity instanceof PlayerEntity) {
             if (entity.isOnFire() && world.getBlockState(entity.getBlockPos().up()).isOf(Blocks.SOUL_FIRE)) {
-                if (Altar.of(entity.getBlockPos().up()).isValid(world)) {
+                if (UnicopiaWorldProperties.forWorld((ServerWorld)world).isActiveAltar(entity.getBlockPos())
+                    || UnicopiaWorldProperties.forWorld((ServerWorld)world).isActiveAltar(entity.getBlockPos().up())) {
                     if (living.asEntity().getHealth() < 2) {
                         entity.setFireTicks(0);
                         world.removeBlock(entity.getBlockPos().up(), false);
