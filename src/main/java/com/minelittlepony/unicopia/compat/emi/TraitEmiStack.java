@@ -16,7 +16,6 @@ import dev.emi.emi.api.stack.EmiStack;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -79,7 +78,7 @@ public class TraitEmiStack extends EmiStack {
         return trait.getName();
     }
 
-    //@Override
+    @Override
     public void render(DrawContext context, int x, int y, float delta, int flags) {
         if ((flags & RENDER_ICON) != 0) {
             List<Item> knownItems = trait.getItems();
@@ -88,19 +87,14 @@ public class TraitEmiStack extends EmiStack {
             } else {
                 int tick = (MinecraftClient.getInstance().player.age / 12) % knownItems.size();
                 ItemStack stack = knownItems.get(tick).getDefaultStack();
-                EmiStack.of(stack).render(context.getMatrices(), x, y, delta, flags);
+                EmiStack.of(stack).render(context, x, y, delta, flags);
                 ItemTraitsTooltipRenderer.renderStackTraits(traits, context, x, y, 1, delta, 0, true);
             }
         }
 
         if ((flags & RENDER_REMAINDER) != 0) {
-            EmiRender.renderRemainderIcon(this, context.getMatrices(), x, y);
+            EmiRender.renderRemainderIcon(this, context, x, y);
         }
-    }
-
-    //@Override
-    public void render(MatrixStack matrices, int x, int y, float delta, int flags) {
-
     }
 
     @Override
