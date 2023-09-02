@@ -104,7 +104,7 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
     }
 
     @Override
-    public void onDestroyed(Caster<?> caster) {
+    protected void onDestroyed(Caster<?> caster) {
         caster.getOriginatingCaster().asEntity().setGlowing(false);
         target.ifPresent(caster.asWorld(), e -> e.setGlowing(false));
     }

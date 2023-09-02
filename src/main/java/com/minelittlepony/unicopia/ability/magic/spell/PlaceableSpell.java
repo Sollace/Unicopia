@@ -164,7 +164,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     }
 
     @Override
-    public void onDestroyed(Caster<?> source) {
+    protected void onDestroyed(Caster<?> source) {
         if (!source.isClient()) {
             castEntity.getTarget().ifPresent(target -> {
                 getWorld(source).map(Ether::get)

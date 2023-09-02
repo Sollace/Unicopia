@@ -54,8 +54,7 @@ public class ShieldSpell extends AbstractSpell {
     }
 
     @Override
-    public void setDead() {
-        super.setDead();
+    protected void onDestroyed(Caster<?> caster) {
         particlEffect.destroy();
     }
 

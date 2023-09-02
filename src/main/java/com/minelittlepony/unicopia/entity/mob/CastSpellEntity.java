@@ -4,7 +4,6 @@ import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
-import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
@@ -67,7 +66,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
             return;
         }
 
-        if (!getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.GROUND_ENTITY)), getWorld().isClient)) {
+        if (!effectDelegate.tick(Situation.GROUND_ENTITY)) {
             discard();
         }
     }

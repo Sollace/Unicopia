@@ -14,6 +14,7 @@ public abstract class AbstractSpell implements Spell {
     private boolean dead;
     private boolean dirty;
     private boolean hidden;
+    private boolean destroyed;
 
     private CustomisedSpellType<?> type;
 
@@ -43,33 +44,33 @@ public abstract class AbstractSpell implements Spell {
     }
 
     @Override
-    public void setDead() {
+    public final void setDead() {
         dead = true;
         setDirty();
     }
 
     @Override
-    public boolean isDead() {
+    public final boolean isDead() {
         return dead;
     }
 
     @Override
-    public boolean isDirty() {
+    public final boolean isDirty() {
         return dirty;
     }
 
     @Override
-    public void setDirty() {
+    public final void setDirty() {
         dirty = true;
     }
 
     @Override
-    public boolean isHidden() {
+    public final boolean isHidden() {
         return hidden;
     }
 
     @Override
-    public void setHidden(boolean hidden) {
+    public final void setHidden(boolean hidden) {
         this.hidden = hidden;
     }
 
@@ -78,8 +79,17 @@ public abstract class AbstractSpell implements Spell {
         return getType().getAffinity();
     }
 
+    protected void onDestroyed(Caster<?> caster) {
+    }
+
     @Override
-    public void onDestroyed(Caster<?> caster) {
+    public final void destroy(Caster<?> caster) {
+        if (destroyed) {
+            return;
+        }
+        destroyed = true;
+        setDead();
+        onDestroyed(caster);
     }
 
     @Override

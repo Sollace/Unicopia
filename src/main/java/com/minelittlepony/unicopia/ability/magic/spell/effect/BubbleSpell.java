@@ -138,7 +138,7 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
     }
 
     @Override
-    public void onDestroyed(Caster<?> source) {
+    protected void onDestroyed(Caster<?> source) {
         particlEffect.destroy();
         if (source.asEntity() instanceof LivingEntity l) {
             MODIFIERS.forEach((attribute, modifier) -> {

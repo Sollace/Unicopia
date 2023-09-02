@@ -27,7 +27,7 @@ public abstract class AbstractDisguiseSpell extends AbstractSpell implements Dis
     }
 
     @Override
-    public void onDestroyed(Caster<?> caster) {
+    protected void onDestroyed(Caster<?> caster) {
         caster.asEntity().calculateDimensions();
         caster.asEntity().setInvisible(false);
         if (caster instanceof Pony) {
@@ -49,12 +49,6 @@ public abstract class AbstractDisguiseSpell extends AbstractSpell implements Dis
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
         return situation == Situation.BODY && update(source, true);
-    }
-
-    @Override
-    public void setDead() {
-        super.setDead();
-        disguise.remove();
     }
 
     @Override

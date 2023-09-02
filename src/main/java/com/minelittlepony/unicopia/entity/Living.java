@@ -14,7 +14,6 @@ import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
-import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.advancement.UCriteria;
@@ -291,12 +290,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Override
     public void tick() {
         tickers.forEach(Tickable::tick);
-
-        try {
-            getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.BODY)), entity.getWorld().isClient);
-        } catch (Exception e) {
-            Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", entity, e);
-        }
+        effectDelegate.tick(Situation.BODY);
 
         if (!(entity instanceof PlayerEntity)) {
             if (!entity.hasVehicle() && getCarrierId().isPresent() && !asWorld().isClient && entity.age % 10 == 0) {

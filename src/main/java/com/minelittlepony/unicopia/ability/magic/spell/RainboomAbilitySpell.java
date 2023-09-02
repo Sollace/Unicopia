@@ -32,11 +32,11 @@ public class RainboomAbilitySpell extends AbstractSpell {
 
     public RainboomAbilitySpell(CustomisedSpellType<?> type) {
         super(type);
+        setHidden(true);
     }
 
     @Override
-    public void setDead() {
-        super.setDead();
+    protected void onDestroyed(Caster<?> source) {
         particlEffect.destroy();
     }
 
@@ -92,14 +92,5 @@ public class RainboomAbilitySpell extends AbstractSpell {
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         age = compound.getInt("age");
-    }
-
-    @Override
-    public boolean isHidden() {
-        return false;
-    }
-
-    @Override
-    public void setHidden(boolean hidden) {
     }
 }

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.WeaklyOwned;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -198,7 +199,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
             return;
         }
 
-        getSpellSlot().get(true).filter(spell -> spell.tick(this, Situation.PROJECTILE));
+        effectDelegate.tick(Situation.PROJECTILE);
 
         if (getHydrophobic()) {
             if (StatePredicate.isFluid(getWorld().getBlockState(getBlockPos()))) {
@@ -317,11 +318,15 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     }
 
     protected <T extends ProjectileDelegate> void forEachDelegates(Consumer<T> consumer, Function<Object, T> predicate) {
-        getSpellSlot().forEach(spell -> {
+        effectDelegate.tick(spell -> {
             Optional.ofNullable(predicate.apply(spell)).ifPresent(consumer);
             return Operation.SKIP;
-        }, getWorld().isClient);
-        Optional.ofNullable(predicate.apply(getItem().getItem())).ifPresent(consumer);
+        });
+        try {
+            Optional.ofNullable(predicate.apply(getItem().getItem())).ifPresent(consumer);
+        } catch (Throwable t) {
+            Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", owner, t);
+        }
     }
 
     @Override

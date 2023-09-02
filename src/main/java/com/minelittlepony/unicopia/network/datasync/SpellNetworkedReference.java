@@ -60,8 +60,7 @@ public class SpellNetworkedReference<T extends Spell> implements NetworkedRefere
             currentValue = Optional.ofNullable(newValue);
 
             if (oldValue != null && (newValue == null || !oldValue.getUuid().equals(newValue.getUuid()))) {
-                oldValue.setDead();
-                oldValue.onDestroyed(owner);
+                oldValue.destroy(owner);
             }
         }
     }

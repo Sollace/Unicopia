@@ -90,7 +90,7 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
     }
 
     @Override
-    public void onDestroyed(Caster<?> caster) {
+    protected void onDestroyed(Caster<?> caster) {
         if (caster.isClient()) {
             return;
         }
