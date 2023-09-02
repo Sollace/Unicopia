@@ -1,0 +1,31 @@
+{
+  "parent": "unicopia:unicopia/unicorn/books",
+  "display": {
+    "icon": {
+      "item": "unicopia:crystal_shard"
+    },
+    "title": {
+      "translate": "advancements.unicopia.crystaline.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.crystaline.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "has_shard": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": [ "unicopia:crystal_shard" ] }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [ "has_shard" ]
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "parent": "unicopia:unicopia/root",
+  "parent": "unicopia:unicopia/pegasus/sky_route",
   "display": {
     "icon": {
       "item": "unicopia:pegasus_feather"

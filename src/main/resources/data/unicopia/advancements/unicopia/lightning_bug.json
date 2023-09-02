@@ -19,6 +19,78 @@
     "experience": 90
   },
   "criteria": {
+    "lightning_struck_player_1": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"],
+        "repeats": 1
+      }
+    },
+    "lightning_struck_player_2": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"],
+        "repeats": 2
+      }
+    },
+    "lightning_struck_player_3": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"],
+        "repeats": 3
+      }
+    },
+    "lightning_struck_player_4": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"],
+        "repeats": 4
+      }
+    },
+    "lightning_struck_player_5": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"],
+        "repeats": 5
+      }
+    },
+    "lightning_struck_player_6": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"],
+        "repeats": 6
+      }
+    },
+    "lightning_struck_player_7": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"],
+        "repeats": 7
+      }
+    },
+    "lightning_struck_player_8": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"],
+        "repeats": 8
+      }
+    },
+    "lightning_struck_player_9": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "lightning_struck_player",
+        "race": ["bat"],
+        "repeats": 9
+      }
+    },
     "lightning_struck_player_10": {
       "trigger": "unicopia:custom",
       "conditions": {
@@ -29,6 +101,15 @@
     }
   },
   "requirements": [
+    [ "lightning_struck_player_1" ],
+    [ "lightning_struck_player_2" ],
+    [ "lightning_struck_player_3" ],
+    [ "lightning_struck_player_4" ],
+    [ "lightning_struck_player_5" ],
+    [ "lightning_struck_player_6" ],
+    [ "lightning_struck_player_7" ],
+    [ "lightning_struck_player_8" ],
+    [ "lightning_struck_player_9" ],
     [ "lightning_struck_player_10" ]
   ]
 }

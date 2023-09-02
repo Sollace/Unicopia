@@ -20,6 +20,10 @@ public interface Equine<T extends Entity> extends NbtSerialisable, Tickable, Pro
 
     void setSpecies(Race race);
 
+    default Race.Composite getCompositeRace() {
+        return new Race.Composite(getSpecies(), null);
+    }
+
     /**
      * Called at the beginning of an update cycle.
      */

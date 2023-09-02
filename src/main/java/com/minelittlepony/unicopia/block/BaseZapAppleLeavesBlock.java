@@ -77,7 +77,7 @@ public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock 
 
         float delta = super.calcBlockBreakingDelta(state, player, world, pos);
 
-        if (Pony.of(player).getSpecies().canUseEarth()) {
+        if (Pony.of(player).getCompositeRace().canUseEarth()) {
             delta *= 50;
         }
 

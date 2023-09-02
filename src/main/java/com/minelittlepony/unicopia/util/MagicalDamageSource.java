@@ -74,8 +74,7 @@ public class MagicalDamageSource extends DamageSource {
         }
 
         Text message = Text.translatable(basic, params.toArray());
-        return Pony.of(target).filter(e -> e.getSpecies().canFly()).map(pony -> {
-
+        return Pony.of(target).filter(e -> e.getCompositeRace().canFly()).map(pony -> {
             if (pony.getPhysics().isFlying()) {
                 return Text.translatable("death.attack.unicopia.generic.whilst_flying", message);
             }

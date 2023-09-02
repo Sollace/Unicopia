@@ -1,0 +1,31 @@
+{
+  "parent": "unicopia:unicopia/unicorn/save_the_day",
+  "display": {
+    "icon": {
+      "item": "unicopia:unicorn_amulet"
+    },
+    "title": {
+      "translate": "advancements.unicopia.ascension.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.ascension.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "obtain_the_thing": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": [ "unicopia:unicorn_amulet" ] }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [ "obtain_the_thing" ]
+  ]
+}

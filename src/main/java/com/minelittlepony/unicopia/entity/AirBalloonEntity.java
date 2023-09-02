@@ -27,15 +27,18 @@ import net.minecraft.world.event.GameEvent;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.collision.MultiBox;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
@@ -55,6 +58,8 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     private int prevInflation;
     private Vec3d oldPosition = Vec3d.ZERO;
     private Vec3d manualVelocity = Vec3d.ZERO;
+
+    private int ticksFlying;
 
     public AirBalloonEntity(EntityType<? extends AirBalloonEntity> type, World world) {
         super(type, world);
@@ -174,7 +179,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
 
         if (isAirworthy()) {
             addVelocity(0, isAscending() && inflation >= getMaxInflation() ? 0.005 : -0.013, 0);
-            addVelocity(manualVelocity.multiply(0.1));
+            addVelocity(manualVelocity.multiply(this.getVelocity().y > 0.01F ? 0.1 : 0.01));
         }
         manualVelocity = manualVelocity.multiply(0.9);
 
@@ -241,14 +246,30 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             setFireTicks(1);
         }
 
-        updatePassengers();
+        if (!isOnGround() && (isAirworthy() || isSubmergedInWater() || isLeashed())) {
+            ticksFlying++;
+        } else {
+            ticksFlying = 0;
+        }
+
+        updatePassengers(false);
         super.tick();
         setBoundingBox(MultiBox.of(getBoundingBox(), getBoundingBoxes()));
     }
 
-    private void updatePassengers() {
+    private void updatePassengers(boolean move) {
+        Set<Entity> alreadyTicked = new HashSet<>();
         for (Box box : getBoundingBoxes()) {
-            for (Entity e : getWorld().getOtherEntities(this, box.stretch(getVelocity()).expand(0, 0.5, 0))) {
+            for (Entity e : getWorld().getOtherEntities(this, box.stretch(getVelocity().multiply(-1)).expand(0, 0.5, 0))) {
+
+                if (e instanceof PlayerEntity p && p.getAbilities().flying) {
+                    continue;
+                }
+
+                if (!alreadyTicked.add(e)) {
+                    continue;
+                }
+
                 updatePassenger(e, box, e.getY() > getY() + 3);
             }
         }
@@ -260,7 +281,11 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             return;
         }
 
-        if (!isOnGround() && (isAirworthy() || isSubmergedInWater() || isLeashed())) {
+        if (ticksFlying > 0) {
+            if (Living.getOrEmpty(e).filter(living -> !living.setSupportingEntity(this)).isPresent()) {
+                return;
+            }
+
             Vec3d vel = getVelocity();
 
             double height = box.getYLength();
@@ -268,28 +293,23 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             if (height < 3 || e.getBoundingBox().minY > box.minY + height / 2D) {
                 if (vel.y > 0 && e.getBoundingBox().minY < box.maxY + 0.02) {
                     e.setPos(e.getX(), box.maxY, e.getZ());
+                    e.setOnGround(true);
                 }
                 if (vel.y < 0 && e.getBoundingBox().minY > box.maxY) {
                     e.setPos(e.getX(), box.maxY, e.getZ());
+                    e.setOnGround(true);
                 }
             }
 
-            if (manualVelocity.length() > 0.01 || vel.length() > 0.3) {
-                e.setVelocity(vel.multiply(0.1, 0.5, 0.1));
-            }
-
-            if (vel.y < 0) {
-                e.addVelocity(0, vel.y, 0);
-                Living.updateVelocity(e);
-            }
-
             Living.getOrEmpty(e).ifPresent(living -> {
-                living.setSupportingEntity(this);
                 living.setPositionOffset(e.getPos().subtract(oldPosition));
                 living.updateRelativePosition(box);
+
+                if (ticksFlying > 20 && living.getTicksInVehicle() > 20) {
+                    UCriteria.RIDE_BALLOON.trigger(e);
+                }
             });
         }
-
 
         if (getWorld().isClient) {
             if (e.distanceTraveled > ((EntityDuck)e).getNextStepSoundDistance()) {

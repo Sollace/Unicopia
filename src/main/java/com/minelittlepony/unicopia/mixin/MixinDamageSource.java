@@ -30,7 +30,7 @@ abstract class MixinDamageSource {
         });
 
 
-        Pony.of(entity).filter(e -> e.getSpecies().canFly()).ifPresent(pony -> {
+        Pony.of(entity).filter(e -> e.getCompositeRace().canFly()).ifPresent(pony -> {
             if (pony.getPhysics().isFlying()) {
                 info.setReturnValue(Text.translatable("death.attack.unicopia.generic.whilst_flying", info.getReturnValue()));
             }
@@ -47,7 +47,7 @@ abstract class MixinFallLocation {
             return;
         }
         Pony.of(entity).ifPresent(pony -> {
-            if (pony.getSpecies().canFly()) {
+            if (pony.getCompositeRace().canFly()) {
                 info.setReturnValue(new FallLocation(location.id() + ".pegasus"));
             }
         });

@@ -1,8 +1,8 @@
 {
-  "parent": "unicopia:unicopia/bat/night_route",
+  "parent": "unicopia:unicopia/bat/screech_twenty_mobs",
   "display": {
     "icon": {
-      "item": "unicopia:sunglasses"
+      "item": "minecraft:brick"
     },
     "title": {
       "translate": "advancements.unicopia.extra_spooky.title"
@@ -10,7 +10,7 @@
     "description": {
       "translate": "advancements.unicopia.extra_spooky.description"
     },
-    "frame": "challenge",
+    "frame": "task",
     "show_toast": true,
     "announce_to_chat": true,
     "hidden": true

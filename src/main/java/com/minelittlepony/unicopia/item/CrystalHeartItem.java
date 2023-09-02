@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import com.google.common.base.Suppliers;
 import com.minelittlepony.unicopia.*;
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.FloatingArtefactEntity.State;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
@@ -81,9 +82,12 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
             }
 
             entity.setStack(context.getStack().split(1));
-            serverWorld.spawnEntityAndPassengers(entity);
+            serverWorld.spawnEntity(entity);
 
-            entity.playSound(USounds.ENTITY_CRYSTAL_HEART_ACTIVATE, 0.75F, 0.8F);
+            if (findStructure(entity)) {
+                entity.playSound(USounds.ENTITY_CRYSTAL_HEART_ACTIVATE, 0.75F, 0.8F);
+                UCriteria.POWER_UP_HEART.trigger(context.getPlayer());
+            }
         } else {
             context.getStack().decrement(1);
         }
@@ -130,7 +134,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                     }
                 });
                 VecHelper.findInRange(entity, entity.getWorld(), entity.getPos(), 20, i -> {
-                    return i instanceof ItemEntity ie && isFillable(ie.getStack()) && Equine.of(i).filter(p -> p.getSpecies() == Race.CHANGELING).isPresent();
+                    return i instanceof ItemEntity ie && isFillable(ie.getStack()) && EquinePredicates.CHANGELING.test(i);
                 }).forEach(i -> containers.add((ItemEntity)i));
 
                 int demand = outputs.size() + containers.stream().mapToInt(i -> i.getStack().getCount()).sum();

@@ -77,6 +77,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Nullable
     private Vec3d supportPositionOffset;
     private int ticksOutsideVehicle;
+    private int ticksInVehicle;
 
     @Nullable
     private Caster<?> attacker;
@@ -179,11 +180,21 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return vehicle != null && getCarrierId().filter(vehicle.getUuid()::equals).isPresent();
     }
 
-    public void setSupportingEntity(Entity supportingEntity) {
+    public boolean setSupportingEntity(@Nullable Entity supportingEntity) {
         this.supportingEntity = supportingEntity;
         if (supportingEntity != null) {
             ticksOutsideVehicle = 0;
         }
+        return true;
+    }
+
+    @Nullable
+    public Entity getSupportingEntity() {
+        return supportingEntity;
+    }
+
+    public int getTicksInVehicle() {
+        return ticksInVehicle;
     }
 
     public void setPositionOffset(@Nullable Vec3d positionOffset) {
@@ -196,6 +207,9 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     public void updateRelativePosition(Box box) {
         if (supportingEntity == null || supportPositionOffset == null) {
+            return;
+        }
+        if (getPhysics().isFlying()) {
             return;
         }
 
@@ -324,6 +338,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
         if (ticksOutsideVehicle == 0) {
             updatePositionOffset();
+
+            ticksInVehicle++;
+        } else {
+            ticksInVehicle = 0;
         }
     }
 

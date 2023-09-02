@@ -1,0 +1,29 @@
+{
+  "parent": "unicopia:unicopia/unicorn/books",
+  "display": {
+    "icon": {
+      "item": "minecraft:water_bucket"
+    },
+    "title": {
+      "translate": "advancements.unicopia.split_the_sea.title"
+    },
+    "description": {
+      "translate": "advancements.unicopia.split_the_sea.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "split_sea": {
+      "trigger": "unicopia:custom",
+      "conditions": {
+        "event": "split_sea"
+      }
+    }
+  },
+  "requirements": [
+    [ "split_sea" ]
+  ]
+}

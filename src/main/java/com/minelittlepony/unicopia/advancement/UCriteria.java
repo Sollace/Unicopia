@@ -24,6 +24,10 @@ public interface UCriteria {
     CustomEventCriterion.Trigger USE_SOULMATE = CUSTOM_EVENT.createTrigger("use_soulmate");
     CustomEventCriterion.Trigger SECOND_WIND = CUSTOM_EVENT.createTrigger("second_wind");
     CustomEventCriterion.Trigger DEFEAT_SOMBRA = CUSTOM_EVENT.createTrigger("defeat_sombra");
+    CustomEventCriterion.Trigger LIGHT_ALTAR = CUSTOM_EVENT.createTrigger("light_altar");
+    CustomEventCriterion.Trigger POWER_UP_HEART = CUSTOM_EVENT.createTrigger("power_up_heart");
+    CustomEventCriterion.Trigger SPLIT_SEA = CUSTOM_EVENT.createTrigger("split_sea");
+    CustomEventCriterion.Trigger RIDE_BALLOON = CUSTOM_EVENT.createTrigger("ride_balloon");
 
     static void bootstrap() { }
 }

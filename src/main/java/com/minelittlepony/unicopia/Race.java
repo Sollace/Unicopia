@@ -187,12 +187,30 @@ public record Race (boolean canCast, FlightType flightType, boolean canUseEarth,
     }
 
     public record Composite (Race physical, @Nullable Race pseudo) {
+        public static Composite DEFAULT = new Composite(Race.HUMAN, null);
+
+        public Race collapsed() {
+            return pseudo == null ? physical : pseudo;
+        }
+
         public boolean includes(Race race) {
             return physical == race || pseudo == race;
         }
 
         public boolean any(Predicate<Race> test) {
             return test.test(physical) || (pseudo != null && test.test(pseudo));
+        }
+
+        public boolean canUseEarth() {
+            return any(Race::canUseEarth);
+        }
+
+        public boolean canFly() {
+            return any(Race::canFly);
+        }
+
+        public boolean canCast() {
+            return any(Race::canCast);
         }
     }
 }

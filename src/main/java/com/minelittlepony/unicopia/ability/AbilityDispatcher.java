@@ -66,8 +66,9 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
     }
 
     public int getMaxPage() {
-        if (maxPage < 0 || prevRace != player.getSpecies()) {
-            prevRace = player.getSpecies();
+        Race newRace = player.getCompositeRace().collapsed();
+        if (maxPage < 0 || prevRace != newRace) {
+            prevRace = newRace;
             maxPage = 0;
             for (AbilitySlot slot : AbilitySlot.values()) {
                 maxPage = Math.max(maxPage, getStat(slot).getMaxPage() - 1);
