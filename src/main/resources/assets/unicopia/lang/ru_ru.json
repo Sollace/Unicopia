@@ -765,7 +765,7 @@
   "painting.unicopia.chicken.author": "Искатели Знаков Отличия",
   "painting.unicopia.bells.title": "Бэллс",
   "painting.unicopia.bells.author": "Искатели Знаков Отличия",
-  "painting.unicopia.crystal.title": "Кристал",
+  "painting.unicopia.crystal.title": "Кристалы",
   "painting.unicopia.crystal.author": "Король Сомбра",
   "painting.unicopia.harmony.title": "Гармония",
   "painting.unicopia.harmony.author": "Unicopia",
@@ -843,7 +843,7 @@
   "advancements.unicopia.eat_pinecone.title": "Отчаяние",
   "advancements.unicopia.eat_pinecone.description": "Съешьте шишку",
   "advancements.unicopia.imported_oats.title": "Столь же вкусные, сколь и дорогие",
-  "advancements.unicopia.imported_oats.description": "Отправьте и получите шикарный импортный овёс",
+  "advancements.unicopia.imported_oats.description": "Отправьте или получите шикарный импортный овёс",
 
   "advancements.unicopia.experimental.title": "Ты не можешь взять это с собой",
   "advancements.unicopia.experimental.description": "Зачаровать инструмент на Потребление",
@@ -865,6 +865,8 @@
   "advancements.unicopia.sweet_apple_acres.description": "Получите по одному яблоку каждого сорта",
   "advancements.unicopia.brew_cider.title": "Лучшее от Эпплджек",
   "advancements.unicopia.brew_cider.description": "Сварить сидр",
+  "advancements.unicopia.travelling_in_style.title": "Путешествие со стилем",
+  "advancements.unicopia.travelling_in_style.description": "Прокатитесь на воздушном шаре",
 
   "advancements.unicopia.night_route.title": "Дети Ночи",
   "advancements.unicopia.night_route.description": "Пойдите по пути ночи",
@@ -872,6 +874,8 @@
   "advancements.unicopia.screech_twenty_mobs.description": "Обрушьте ужас по меньшей мере на 20 мобов одновременно",
   "advancements.unicopia.screech_self.title": "Божечки!",
   "advancements.unicopia.screech_self.description": "Будьте настолько страшным, что даже немного напугайте себя",
+  "advancements.unicopia.extra_spooky.title": "Экстра жуткий",
+  "advancements.unicopia.extra_spooky.description": "Напугайте моба так сильно, чтобы он выронил кирпич",
 
   "advancements.unicopia.earth_route.title": "Путь Пони",
   "advancements.unicopia.earth_route.description": "Вступить в клан Яблока",
@@ -895,12 +899,30 @@
   "advancements.unicopia.deter_phantom.title": "Что летает вокруг",
   "advancements.unicopia.deter_phantom.description": "Поднимитесь и дайте этим фантомам попробовать их собственное лекарство",
 
-  "advancements.unicopia.love_is_power.title": "Любовь - это сила",
-  "advancements.unicopia.love_is_power.description": "Изгоните короля Сомбра с помощью кристального сердца",
+  "advancements.unicopia.magical_route.title": "Рог единорога",
+  "advancements.unicopia.magical_route.description": "Окунитесь в мир блеска и радуги",
+
+  "advancements.unicopia.books.title": "Книги!",
+  "advancements.unicopia.books.description": "Это МОЯ книга заклинаний, и я собираюсь её ПРОЧИТАТЬ!",
+  "advancements.unicopia.tempted.title": "Заманчиво...",
+  "advancements.unicopia.tempted.description": "Наденьте амулет аликорна",
+  "advancements.unicopia.hello_darkness_my_old_friend.title": "Здравствуй, Тьма...",
+  "advancements.unicopia.hello_darkness_my_old_friend.description": "Углубитесь в силы тёмной стороны",
+
+  "advancements.unicopia.split_the_sea.title": "Ты кто? Моисей?",
+  "advancements.unicopia.split_the_sea.description": "Используйте магию, чтобы переместить более 100 блоков воды за один раз",
   "advancements.unicopia.save_the_day.title": "Спасти день",
   "advancements.unicopia.save_the_day.description": "Победите короля Сомбра раз и навсегда",
+  "advancements.unicopia.ascension.title": "Вознесение",
+  "advancements.unicopia.ascension.description": "Завершить работу Сомбры",
   "advancements.unicopia.doctor_sombrero.title": "Доктор Сомбреро",
   "advancements.unicopia.doctor_sombrero.description": "Это не мэйр-иачи!",
+  "advancements.unicopia.crystaline.title": "Кристаллики",
+  "advancements.unicopia.crystaline.description": "Соберите несколько осколков кристаллов",
+  "advancements.unicopia.power_up_heart.title": "Сила любви",
+  "advancements.unicopia.power_up_heart.description": "Увеличьте мощность кристального сердца",
+  "advancements.unicopia.love_is_power.title": "Любовь - это сила",
+  "advancements.unicopia.love_is_power.description": "Изгоните короля Сомбра с помощью кристального сердца",
 
   "unicopia.toast.discoveries.title": "Новые открытия!",
   "unicopia.toast.discoveries.description": "Проверьте свою книгу заклинаний"
