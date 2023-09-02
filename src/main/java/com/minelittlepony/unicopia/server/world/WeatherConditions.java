@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.entity.StormCloudEntity;
+import com.minelittlepony.unicopia.entity.mob.StormCloudEntity;
 import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
 import com.minelittlepony.unicopia.util.Tickable;
 

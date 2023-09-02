@@ -6,8 +6,8 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.entity.AirBalloonEntity;
-import com.minelittlepony.unicopia.entity.UEntities;
+import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
+import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.util.Dispensable;
 
 import net.minecraft.block.DispenserBlock;

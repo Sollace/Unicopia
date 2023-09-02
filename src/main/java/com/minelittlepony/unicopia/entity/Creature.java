@@ -17,6 +17,8 @@ import com.minelittlepony.unicopia.entity.ai.BreakHeartGoal;
 import com.minelittlepony.unicopia.entity.ai.DynamicTargetGoal;
 import com.minelittlepony.unicopia.entity.ai.EatMuffinGoal;
 import com.minelittlepony.unicopia.entity.ai.WantItTakeItGoal;
+import com.minelittlepony.unicopia.entity.mob.SombraEntity;
+import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;

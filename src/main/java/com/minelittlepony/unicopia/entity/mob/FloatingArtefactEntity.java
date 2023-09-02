@@ -1,8 +1,9 @@
-package com.minelittlepony.unicopia.entity;
+package com.minelittlepony.unicopia.entity.mob;
 
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.damage.UDamageSources;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.server.world.Altar;

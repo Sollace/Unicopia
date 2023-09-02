@@ -11,9 +11,9 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.entity.FloatingArtefactEntity;
-import com.minelittlepony.unicopia.entity.SpellbookEntity;
-import com.minelittlepony.unicopia.entity.UEntities;
+import com.minelittlepony.unicopia.entity.mob.FloatingArtefactEntity;
+import com.minelittlepony.unicopia.entity.mob.SpellbookEntity;
+import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.PosHelper;

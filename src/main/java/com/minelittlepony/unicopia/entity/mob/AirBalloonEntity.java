@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.entity;
+package com.minelittlepony.unicopia.entity.mob;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -39,7 +39,10 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
+import com.minelittlepony.unicopia.entity.collision.MultiBoundingBoxEntity;
 import com.minelittlepony.unicopia.entity.collision.MultiBox;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 import com.minelittlepony.unicopia.item.BasketItem;

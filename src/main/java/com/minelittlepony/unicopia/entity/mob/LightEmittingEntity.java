@@ -1,4 +1,6 @@
-package com.minelittlepony.unicopia.entity;
+package com.minelittlepony.unicopia.entity.mob;
+
+import com.minelittlepony.unicopia.entity.DynamicLightSource;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

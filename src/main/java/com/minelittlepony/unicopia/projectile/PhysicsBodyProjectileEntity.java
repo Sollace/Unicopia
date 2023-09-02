@@ -1,10 +1,11 @@
-package com.minelittlepony.unicopia.entity;
+package com.minelittlepony.unicopia.projectile;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.mob.UEntities;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ButtonBlock;

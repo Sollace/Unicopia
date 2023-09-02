@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.item;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.advancement.UCriteria;
-import com.minelittlepony.unicopia.entity.PhysicsBodyProjectileEntity;
+import com.minelittlepony.unicopia.projectile.PhysicsBodyProjectileEntity;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;

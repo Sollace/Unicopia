@@ -1,7 +1,8 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.entity.SombraEntity;
+import com.minelittlepony.unicopia.entity.mob.SombraEntity;
+
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.util.Identifier;

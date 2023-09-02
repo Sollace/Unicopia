@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia.item;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.advancement.UCriteria;
-import com.minelittlepony.unicopia.entity.SpellbookEntity;
-import com.minelittlepony.unicopia.entity.UEntities;
+import com.minelittlepony.unicopia.entity.mob.SpellbookEntity;
+import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.server.world.Altar;
 import com.minelittlepony.unicopia.util.Dispensable;
 

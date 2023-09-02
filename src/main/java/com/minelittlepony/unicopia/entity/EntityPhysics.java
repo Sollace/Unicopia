@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
+import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.Tickable;
 

@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.entity;
+package com.minelittlepony.unicopia.entity.mob;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 

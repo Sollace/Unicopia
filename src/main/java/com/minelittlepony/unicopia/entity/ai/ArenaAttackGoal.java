@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.entity.ai;
 
-import com.minelittlepony.unicopia.entity.ArenaCombatant;
+import com.minelittlepony.unicopia.entity.mob.ArenaCombatant;
 
 import net.minecraft.entity.ai.goal.AttackGoal;
 import net.minecraft.entity.ai.pathing.Path;

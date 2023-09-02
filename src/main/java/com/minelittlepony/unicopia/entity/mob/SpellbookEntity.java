@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.entity;
+package com.minelittlepony.unicopia.entity.mob;
 
 import java.util.Optional;
 
@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.container.SpellbookState;
+import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;

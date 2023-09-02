@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.entity;
+package com.minelittlepony.unicopia.entity.mob;
 
 import java.util.ArrayList;
 import java.util.List;

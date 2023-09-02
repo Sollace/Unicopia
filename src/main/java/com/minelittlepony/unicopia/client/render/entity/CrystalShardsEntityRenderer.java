@@ -3,7 +3,8 @@ package com.minelittlepony.unicopia.client.render.entity;
 import java.util.List;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.entity.CrystalShardsEntity;
+import com.minelittlepony.unicopia.entity.mob.CrystalShardsEntity;
+
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;

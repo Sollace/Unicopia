@@ -4,7 +4,7 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.minelittlepony.unicopia.entity.FloatingArtefactEntity;
+import com.minelittlepony.unicopia.entity.mob.FloatingArtefactEntity;
 import com.minelittlepony.unicopia.item.UItems;
 
 import net.minecraft.entity.Entity;

@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.entity;
+package com.minelittlepony.unicopia.entity.mob;
 
 import java.util.EnumSet;
 import java.util.Optional;
@@ -7,6 +7,9 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.WeaklyOwned;
+import com.minelittlepony.unicopia.entity.DynamicLightSource;
+import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;

@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.entity;
+package com.minelittlepony.unicopia.entity.mob;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -7,6 +7,10 @@ import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.entity.EntityPhysics;
+import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.entity.MagicImmune;
+import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.network.datasync.EffectSync;
 
 import net.minecraft.entity.Entity;

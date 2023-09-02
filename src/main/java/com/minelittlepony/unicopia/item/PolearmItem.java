@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.entity.Living;
-import com.minelittlepony.unicopia.entity.UEntityAttributes;
+import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 
 import net.minecraft.block.*;
 import net.minecraft.entity.EquipmentSlot;

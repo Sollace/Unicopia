@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
-import com.minelittlepony.unicopia.entity.SpellbookEntity;
+import com.minelittlepony.unicopia.entity.mob.SpellbookEntity;
 
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.TexturedModelData;

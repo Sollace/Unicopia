@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
+import com.minelittlepony.unicopia.entity.mob.SombraEntity;
 import com.minelittlepony.unicopia.entity.player.*;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;

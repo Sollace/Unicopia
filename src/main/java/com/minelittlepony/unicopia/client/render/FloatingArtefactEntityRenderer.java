@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.render;
 
-import com.minelittlepony.unicopia.entity.FloatingArtefactEntity;
+import com.minelittlepony.unicopia.entity.mob.FloatingArtefactEntity;
 import com.minelittlepony.unicopia.item.UItems;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;

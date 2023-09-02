@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.entity;
+package com.minelittlepony.unicopia.entity.mob;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.entity.AmuletSelectors;
+import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.ai.ArenaAttackGoal;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;

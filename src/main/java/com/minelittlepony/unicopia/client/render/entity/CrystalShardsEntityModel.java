@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
-import com.minelittlepony.unicopia.entity.CrystalShardsEntity;
+import com.minelittlepony.unicopia.entity.mob.CrystalShardsEntity;
 
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;

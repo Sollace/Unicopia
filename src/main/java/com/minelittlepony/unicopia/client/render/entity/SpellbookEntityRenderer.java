@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.entity.SpellbookEntity;
+import com.minelittlepony.unicopia.entity.mob.SpellbookEntity;
 
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
