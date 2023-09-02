@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -15,6 +16,7 @@ import com.minelittlepony.unicopia.entity.behaviour.Inventory;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
+import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -180,6 +182,12 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
         final GameMode aMode = a.interactionManager.getGameMode();
         final GameMode bMode = b.interactionManager.getGameMode();
 
+        final UUID aUUid = a.getUuid();
+        final UUID bUUid = b.getUuid();
+
+        final byte aModelBits = a.getDataTracker().get(PlayerAccess.getModelBitFlag());
+        final byte bModelBits = b.getDataTracker().get(PlayerAccess.getModelBitFlag());
+
         final ServerPlayerEntity aClone = clonePlayer(a);
         final ServerPlayerEntity bClone = clonePlayer(b);
 
@@ -188,6 +196,12 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
 
         a.copyFrom(bClone, true);
         b.copyFrom(aClone, true);
+
+        a.setUuid(aUUid);
+        b.setUuid(bUUid);
+
+        a.getDataTracker().set(PlayerAccess.getModelBitFlag(), aModelBits);
+        b.getDataTracker().set(PlayerAccess.getModelBitFlag(), bModelBits);
 
         a.interactionManager.changeGameMode(aMode);
         b.interactionManager.changeGameMode(bMode);
@@ -208,7 +222,17 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
     }
 
     private static ServerPlayerEntity clonePlayer(ServerPlayerEntity player) {
-        ServerPlayerEntity clone = new ServerPlayerEntity(player.getServer(), player.getServerWorld(), player.getGameProfile());
+        ServerPlayerEntity clone = new FakePlayer(player.getServerWorld(), player.getGameProfile()) {
+            @Override
+            public void tick() {
+                discard();
+            }
+
+            @Override
+            public void setUuid(UUID uuid) {
+                super.setUuid(UUID.randomUUID());
+            }
+        };
 
         NbtCompound compound = player.writeNbt(new NbtCompound());
         compound.remove("Dimension");
