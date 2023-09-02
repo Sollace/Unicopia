@@ -208,7 +208,12 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
     }
 
     private static ServerPlayerEntity clonePlayer(ServerPlayerEntity player) {
-        ServerPlayerEntity clone = new ServerPlayerEntity(player.getServer(), player.getServerWorld(), player.getGameProfile());
+        ServerPlayerEntity clone = new ServerPlayerEntity(player.getServer(), player.getServerWorld(), player.getGameProfile()) {
+            @Override
+            public void tick() {
+                discard();
+            }
+        };
 
         NbtCompound compound = player.writeNbt(new NbtCompound());
         compound.remove("Dimension");
