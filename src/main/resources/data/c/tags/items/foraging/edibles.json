@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     { "id": "#c:mushrooms", "required": false },
-    { "id": "#c:saplings", "required": false }
+    { "id": "#c:saplings", "required": false },
+    { "id": "farmersdelight:sandy_shrub", "required": false }
   ]
 }

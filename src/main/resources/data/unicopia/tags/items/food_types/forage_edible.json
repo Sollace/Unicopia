@@ -10,6 +10,8 @@
     "minecraft:dandelion",
     "minecraft:tall_grass",
     "minecraft:wheat",
+    "minecraft:dead_bush",
+    "minecraft:pink_petals",
     "#c:foraging/edibles"
   ]
 }
