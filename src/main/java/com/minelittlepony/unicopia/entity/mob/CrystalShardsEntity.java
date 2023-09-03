@@ -165,7 +165,7 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
 
         if (ticksShaking > 0 || getGrowth() < FULL_GROWTH_AGE) {
             if (age % random.nextBetween(2, 5) == 0) {
-                playSound(USounds.Vanilla.BLOCK_AMETHYST_BLOCK_HIT, 1,
+                playSound(USounds.ENTITY_CRYSTAL_SHARDS_AMBIENT, 1,
                         1 - MathHelper.clamp(getGrowth(1), 0, 1) * 0.5F);
             }
         }
@@ -184,7 +184,7 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
     @Override
     public void remove(RemovalReason reason) {
         if (reason == RemovalReason.KILLED) {
-            playSound(USounds.Vanilla.BLOCK_AMETHYST_BLOCK_BREAK, 1, 1);
+            playSound(USounds.ENTITY_CRYSTAL_SHARDS_JOSTLE, 1, 1);
             dropStack(new ItemStack(UItems.CRYSTAL_SHARD, 6));
         }
         super.remove(reason);

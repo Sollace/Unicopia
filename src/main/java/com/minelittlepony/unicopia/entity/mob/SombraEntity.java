@@ -338,7 +338,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
         if (this.age % 150 == 0) {
             target.playSound(
                     random.nextInt(30) == 0 ? USounds.ENTITY_SOMBRA_AMBIENT
-                            : random.nextInt(10) == 0 ? USounds.Vanilla.ENTITY_GHAST_AMBIENT
+                            : random.nextInt(10) == 0 ? USounds.ENTITY_SOMBRA_SCARY
                             : USounds.Vanilla.AMBIENT_CAVE.value(),
                     (float)random.nextTriangular(1, 0.2F),
                     (float)random.nextTriangular(0.3F, 0.2F)
