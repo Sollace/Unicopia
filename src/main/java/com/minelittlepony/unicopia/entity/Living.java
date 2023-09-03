@@ -46,6 +46,7 @@ import net.minecraft.entity.data.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -395,44 +396,62 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                 DragonBreathStore store = DragonBreathStore.get(entity.getWorld());
                 String name = entity.getDisplayName().getString();
                 store.popEntries(name).forEach(stack -> {
-                    boolean deliverAggressively = stack.payload().isIn(UTags.IS_DELIVERED_AGGRESSIVELY);
+                    ItemStack payload = stack.payload();
+                    Item item = payload.getItem();
+
+                    boolean deliverAggressively = payload.isIn(UTags.IS_DELIVERED_AGGRESSIVELY);
 
                     Vec3d randomPos = deliverAggressively ? targetPos.add(0, 2, 0) : targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
 
-                    if (!entity.getWorld().isAir(BlockPos.ofFloored(randomPos))) {
-                        store.put(name, stack.payload());
-                    }
+                    if (deliverAggressively && item instanceof BlockItem blockItem) {
+                        do {
+                            ItemStack instance = payload.split(1);
+                            BlockPos pos = BlockPos.ofFloored(randomPos);
+                            if (!entity.getWorld().isAir(pos)) {
+                                store.put(name, instance);
+                            } else {
 
-                    for (int i = 0; i < 10; i++) {
-                        ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(
-                                VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5))
-                        ), Vec3d.ZERO);
-                    }
+                                for (int i = 0; i < 10; i++) {
+                                    ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(
+                                            VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5))
+                                    ), Vec3d.ZERO);
+                                }
 
-                    if (deliverAggressively && stack.payload().getItem() instanceof BlockItem blockItem) {
-                        BlockPos pos = BlockPos.ofFloored(randomPos);
-                        ItemPlacementContext context = new ItemPlacementContext(entity.getWorld(), (PlayerEntity)null, Hand.MAIN_HAND, stack.payload(),
-                                BlockHitResult.createMissed(Vec3d.ZERO, Direction.UP, pos)
-                        );
+                                ItemPlacementContext context = new ItemPlacementContext(entity.getWorld(), (PlayerEntity)null, Hand.MAIN_HAND, instance,
+                                        BlockHitResult.createMissed(Vec3d.ZERO, Direction.UP, pos)
+                                );
 
-                        BlockState state = blockItem.getBlock().getPlacementState(context);
-                        if (state == null) {
-                            state = blockItem.getBlock().getDefaultState();
-                        }
+                                BlockState state = blockItem.getBlock().getPlacementState(context);
+                                if (state == null) {
+                                    state = blockItem.getBlock().getDefaultState();
+                                }
 
-                        entity.getWorld().setBlockState(pos, state);
-                        BlockSoundGroup sound = state.getSoundGroup();
-                        entity.getWorld().playSound(null, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1) * 0.5F, sound.getPitch() * 0.8F);
+                                entity.getWorld().setBlockState(pos, state);
+                                BlockSoundGroup sound = state.getSoundGroup();
+                                entity.getWorld().playSound(null, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1) * 0.5F, sound.getPitch() * 0.8F);
+                            }
+                            randomPos = targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
+                        } while (!payload.isEmpty());
                     } else {
-                        ItemEntity item = EntityType.ITEM.create(entity.getWorld());
-                        item.setStack(stack.payload());
-                        item.setPosition(randomPos);
-                        item.getWorld().spawnEntity(item);
-                        entity.getWorld().playSoundFromEntity(null, entity, USounds.ITEM_DRAGON_BREATH_ARRIVE, entity.getSoundCategory(), 1, 1);
-                    }
+                        if (!entity.getWorld().isAir(BlockPos.ofFloored(randomPos))) {
+                            store.put(name, stack.payload());
+                        } else {
+                            for (int i = 0; i < 10; i++) {
+                                ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(
+                                        VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5))
+                                ), Vec3d.ZERO);
+                            }
 
-                    if (stack.payload().getItem() == UItems.OATS && entity instanceof PlayerEntity player) {
-                        UCriteria.RECEIVE_OATS.trigger(player);
+                            ItemEntity itemEntity = EntityType.ITEM.create(entity.getWorld());
+                            itemEntity.setStack(payload);
+                            itemEntity.setPosition(randomPos);
+                            itemEntity.getWorld().spawnEntity(itemEntity);
+                            entity.getWorld().playSoundFromEntity(null, entity, USounds.ITEM_DRAGON_BREATH_ARRIVE, entity.getSoundCategory(), 1, 1);
+
+                            if (item == UItems.OATS && entity instanceof PlayerEntity player) {
+                                UCriteria.RECEIVE_OATS.trigger(player);
+                            }
+                        }
                     }
                 });
             }
