@@ -69,7 +69,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this, GRAVITY, false);
 
     private final EntityReference<Entity> homingTarget = new EntityReference<>();
-    private final EntityReference<LivingEntity> owner = new EntityReference<>();
+    private EntityReference<LivingEntity> owner;
 
     public MagicProjectileEntity(EntityType<MagicProjectileEntity> type, World world) {
         super(type, world);
@@ -115,7 +115,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     public void setOwner(@Nullable Entity entity) {
         super.setOwner(entity);
         if (entity instanceof LivingEntity l) {
-            this.owner.set(l);
+            getMasterReference().set(l);
         }
     }
 
@@ -128,6 +128,9 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
 
     @Override
     public EntityReference<LivingEntity> getMasterReference() {
+        if (owner == null) {
+            owner = new EntityReference<>();
+        }
         return owner;
     }
 
@@ -256,7 +259,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         super.readCustomDataFromNbt(compound);
         physics.fromNBT(compound);
         homingTarget.fromNBT(compound.getCompound("homingTarget"));
-        owner.fromNBT(compound.getCompound("owner"));
+        getMasterReference().fromNBT(compound.getCompound("owner"));
         if (compound.contains("effect")) {
             getSpellSlot().put(Spell.readNbt(compound.getCompound("effect")));
         }
@@ -267,7 +270,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         super.writeCustomDataToNbt(compound);
         physics.toNBT(compound);
         compound.put("homingTarget", homingTarget.toNBT());
-        compound.put("owner", owner.toNBT());
+        compound.put("owner", getMasterReference().toNBT());
         getSpellSlot().get(true).ifPresent(effect -> {
             compound.put("effect", Spell.writeNbt(effect));
         });
@@ -325,7 +328,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         try {
             Optional.ofNullable(predicate.apply(getItem().getItem())).ifPresent(consumer);
         } catch (Throwable t) {
-            Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", owner, t);
+            Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", getMasterReference(), t);
         }
     }
 
