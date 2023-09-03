@@ -4,6 +4,7 @@ accessible          class    net/minecraft/client/render/RenderPhase$TextureBase
 accessible          method   net/minecraft/client/render/RenderLayer     of                       (Ljava/lang/String;Lnet/minecraft/client/render/VertexFormat;Lnet/minecraft/client/render/VertexFormat$DrawMode;IZZLnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;)Lnet/minecraft/client/render/RenderLayer$MultiPhase;
 accessible          class    net/minecraft/client/render/item/HeldItemRenderer$HandRenderType
 accessible          class    net/minecraft/client/render/VertexConsumers$Union
+accessible          class    net/minecraft/client/gui/hud/InGameHud$HeartType
 
 accessible          method   net/minecraft/world/GameRules               register                 (Ljava/lang/String;Lnet/minecraft/world/GameRules$Category;Lnet/minecraft/world/GameRules$Type;)Lnet/minecraft/world/GameRules$Key;
 accessible          method   net/minecraft/world/GameRules$BooleanRule   create                   (Z)Lnet/minecraft/world/GameRules$Type;

@@ -16,7 +16,6 @@ public interface UDamageTypes {
 
     RegistryKey<DamageType> EXHAUSTION = register("magical_exhaustion");
     RegistryKey<DamageType> ALICORN_AMULET = register("alicorn_amulet");
-    RegistryKey<DamageType> FOOD_POISONING = register("food_poisoning");
     RegistryKey<DamageType> TRIBE_SWAP = register("tribe_swap");
     RegistryKey<DamageType> ZAP_APPLE = register("zap");
     RegistryKey<DamageType> KICK = register("kick");

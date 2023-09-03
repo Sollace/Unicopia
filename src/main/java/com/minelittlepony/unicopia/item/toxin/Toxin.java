@@ -22,33 +22,32 @@ public interface Toxin extends Affliction {
 
     Toxin INNERT = of(Text.of("No Effect"), (player, stack) -> {});
 
-    Toxin PRICKLING = of(StatusEffects.INSTANT_DAMAGE, 1, 0);
-    Toxin RADIOACTIVITY = of(StatusEffects.GLOWING, 15, 0);
+    Toxin INSTANT_DAMAGE = of(StatusEffects.INSTANT_DAMAGE, 1, 0);
+    Toxin GLOWING = of(StatusEffects.GLOWING, 15, 0);
 
     Toxin WEAKNESS = of(StatusEffects.WEAKNESS, 200, 1);
 
-    Toxin WEAK_NAUSEA = of(StatusEffects.NAUSEA, 17, 0);
-    Toxin NAUSEA = of(StatusEffects.NAUSEA, 20, 1);
-    Toxin STRONG_NAUSEA = of(StatusEffects.NAUSEA, 30, 1);
-
     Toxin STRENGTH = of(StatusEffects.STRENGTH, 30, 0);
     Toxin BLINDNESS = of(StatusEffects.BLINDNESS, 30, 0);
-    Toxin POISON = of(StatusEffects.POISON, 45, 2);
+    Toxin CHANCE_OF_POISON = of(StatusEffects.POISON, 45, 2).withChance(80);
     Toxin FOOD_POISONING = of(UEffects.FOOD_POISONING, 100, 2);
     Toxin WEAK_FOOD_POISONING = of(UEffects.FOOD_POISONING, 50, 1);
+    Toxin STRONG_FOOD_POISONING = of(UEffects.FOOD_POISONING, 400, 3);
 
     Toxin LOVE_SICKNESS = of(Text.of("Love Sickness "), (player, stack) -> {
         FoodComponent food = stack.getItem().getFoodComponent();
         player.getHungerManager().add(-food.getHunger()/2, -food.getSaturationModifier()/2);
-    }).and(STRONG_NAUSEA).and(IF_NOT_PEACEFUL.then(WEAK_FOOD_POISONING.withChance(20))).and(WEAKNESS);
+    }).and(FOOD_POISONING).and(IF_NOT_PEACEFUL.then(WEAK_FOOD_POISONING.withChance(20))).and(WEAKNESS);
 
     Toxin LOVE_CONSUMPTION = of(Text.literal("Love"), (player, stack) -> {
         player.heal(stack.isFood() ? stack.getItem().getFoodComponent().getHunger() : 1);
         player.removeStatusEffect(StatusEffects.NAUSEA);
-        if (player.getWorld().random.nextInt(10) == 0) {
-            player.removeStatusEffect(UEffects.FOOD_POISONING);
-        }
+        player.removeStatusEffect(UEffects.FOOD_POISONING);
     });
+    Toxin BAT_PONY_INTOXICATION = Toxin.of(StatusEffects.HEALTH_BOOST, 30, 60, 2, 6)
+            .and(Toxin.of(StatusEffects.JUMP_BOOST, 30, 60, 1, 6))
+            .and(Toxin.of(StatusEffects.SPEED, 30, 30, 1, 6))
+            .and(Toxin.of(StatusEffects.REGENERATION, 3, 30, 3, 6));
 
     static Toxin healing(int hearts) {
         return of(Text.literal("Healing " + hearts + " Hearts"), (player, stack) -> player.heal(hearts));
@@ -121,7 +120,7 @@ public interface Toxin extends Affliction {
             StatusEffectInstance current = player.getStatusEffect(effect);
             int t = applyLimit(ticks + (current == null ? 0 : current.getDuration()), maxTicks);
             int a = applyLimit(amplifier + (current == null ? 0 : current.getAmplifier()), maxAmplifier);
-            player.addStatusEffect(new StatusEffectInstance(effect, t, a, false, false, false));
+            player.addStatusEffect(new StatusEffectInstance(effect, t, a));
             // keep original health
             if (effect.getAttributeModifiers().containsKey(EntityAttributes.GENERIC_MAX_HEALTH)) {
                 player.setHealth(MathHelper.clamp(health, 0, player.getMaxHealth()));

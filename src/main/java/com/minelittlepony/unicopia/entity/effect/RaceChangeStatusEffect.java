@@ -9,8 +9,6 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.UItems;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.*;
@@ -39,13 +37,6 @@ public class RaceChangeStatusEffect extends StatusEffect {
                 new Identifier(id.getNamespace(), "change_race_" + id.getPath().toLowerCase()),
                 new RaceChangeStatusEffect(color, race)
         );
-    }
-
-    public static boolean hasEffect(PlayerEntity player) {
-        if (UItems.ALICORN_AMULET.isApplicable(player)) {
-            return true;
-        }
-        return player.getStatusEffects().stream().anyMatch(effect -> effect.getEffectType() instanceof RaceChangeStatusEffect);
     }
 
     public RaceChangeStatusEffect(int color, Race race) {
