@@ -31,6 +31,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -55,6 +56,14 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     @Override
     public boolean canUse(Race race) {
         return race.canUseEarth();
+    }
+
+    @Override
+    public Identifier getIcon(Pony player) {
+        Identifier id = Abilities.REGISTRY.getId(this);
+        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath()
+            + "_" + player.getObservedSpecies().getId().getPath()
+            + ".png");
     }
 
     @Override

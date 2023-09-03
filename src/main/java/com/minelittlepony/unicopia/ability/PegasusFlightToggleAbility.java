@@ -45,7 +45,7 @@ public class PegasusFlightToggleAbility implements Ability<Hit> {
         Identifier id = Abilities.REGISTRY.getId(this);
         return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath()
             + (player.getPhysics().isFlying() ? "_land" : "_takeoff")
-            + (player.getObservedSpecies() == Race.CHANGELING ? "_changeling" : "")
+            + "_" + player.getObservedSpecies().getId().getPath()
             + ".png");
     }
 
