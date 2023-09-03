@@ -49,7 +49,7 @@ public class CarryAbility implements Ability<Hit> {
 
     protected LivingEntity findRider(PlayerEntity player, World w) {
         return TraceHelper.<LivingEntity>findEntity(player, 10, 1, hit -> {
-            return EquinePredicates.EXCEPT_MAGIC_IMMUNE.test(hit) && !player.isConnectedThroughVehicle(hit);
+            return EquinePredicates.VALID_LIVING_AND_NOT_MAGIC_IMMUNE.test(hit) && !player.isConnectedThroughVehicle(hit);
         }).orElse(null);
     }
 
