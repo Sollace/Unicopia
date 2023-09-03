@@ -31,10 +31,10 @@ public class Commands {
             CastCommand.register(dispatcher, registries);
             TraitCommand.register(dispatcher);
             ManaCommand.register(dispatcher);
-        });
 
-        if (FabricLoader.getInstance().getGameInstance() instanceof MinecraftServer server) {
-            server.setFlightEnabled(true);
-        }
+            if (FabricLoader.getInstance().getGameInstance() instanceof MinecraftServer server) {
+                server.setFlightEnabled(true);
+            }
+        });
     }
 }
