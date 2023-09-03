@@ -5,6 +5,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.item.UItems;
 
@@ -16,6 +18,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -44,7 +47,6 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
             CrystalShardsEntity shards = UEntities.CRYSTAL_SHARDS.create(world);
             shards.setPosition(pos.offset(face).toCenterPos());
             shards.setAttachmentFace(face);
-            shards.setYaw(world.getRandom().nextFloat() * 360);
             shards.setCorrupt(true);
 
             world.spawnEntity(shards);
@@ -82,6 +84,7 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
 
     public CrystalShardsEntity(EntityType<CrystalShardsEntity> type, World world) {
         super(type, world);
+        setYaw(world.getRandom().nextFloat() * 360);
     }
 
     @Override
@@ -135,8 +138,8 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
         return Objects.requireNonNullElse(dataTracker.get(ATTACHMENT_FACE), Direction.UP);
     }
 
-    public void setAttachmentFace(Direction face) {
-        dataTracker.set(ATTACHMENT_FACE, face);
+    public void setAttachmentFace(@Nullable Direction face) {
+        dataTracker.set(ATTACHMENT_FACE, face == null ? Direction.UP : face);
     }
 
     @Override
@@ -211,7 +214,9 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        setYaw(nbt.getFloat("yaw"));
+        if (nbt.contains("yaw", NbtElement.FLOAT_TYPE)) {
+            setYaw(nbt.getFloat("yaw"));
+        }
         setGrowth(nbt.getInt("growth"));
         setAttachmentFace(Direction.byName(nbt.getString("face")));
         setDecaying(nbt.getBoolean("decaying"));
