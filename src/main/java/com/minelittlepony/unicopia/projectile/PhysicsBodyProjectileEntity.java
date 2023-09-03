@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 
 import net.minecraft.block.BlockState;
@@ -12,10 +13,13 @@ import net.minecraft.block.ButtonBlock;
 import net.minecraft.block.HopperBlock;
 import net.minecraft.block.LeverBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -129,6 +133,16 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
             return;
         }
         super.onEntityHit(hit);
+    }
+
+    @Override
+    public DamageSources getDamageSources() {
+        return new DamageSources(getWorld().getRegistryManager()) {
+            @Override
+            public DamageSource arrow(PersistentProjectileEntity source, @Nullable Entity attacker) {
+                return create(UDamageTypes.ROCK, source, attacker);
+            }
+        };
     }
 
     @Override
