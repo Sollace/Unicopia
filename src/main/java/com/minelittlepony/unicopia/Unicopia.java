@@ -104,7 +104,7 @@ public class Unicopia implements ModInitializer {
         Optional<Pony> getPony();
 
         default Race.Composite getPlayerSpecies() {
-            return getPony().map(Pony::getCompositeRace).orElse(Race.Composite.DEFAULT);
+            return getPony().map(Pony::getCompositeRace).orElse(Race.HUMAN.composite());
         }
     }
 }

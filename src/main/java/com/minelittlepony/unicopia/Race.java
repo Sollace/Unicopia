@@ -2,12 +2,14 @@ package com.minelittlepony.unicopia;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.include.com.google.common.base.Objects;
 
 import com.google.common.base.Strings;
+import com.google.common.base.Suppliers;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 import com.mojang.brigadier.context.CommandContext;
@@ -22,7 +24,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 
-public record Race (boolean canCast, FlightType flightType, boolean canUseEarth, boolean isNocturnal, boolean canHang) implements Affine {
+public record Race (Supplier<Composite> compositeSupplier, boolean canCast, FlightType flightType, boolean canUseEarth, boolean isNocturnal, boolean canHang) implements Affine {
     public static final String DEFAULT_ID = "unicopia:unset";
     public static final Registry<Race> REGISTRY = RegistryUtils.createDefaulted(Unicopia.id("race"), DEFAULT_ID);
     public static final RegistryKey<? extends Registry<Race>> REGISTRY_KEY = REGISTRY.getKey();
@@ -33,7 +35,7 @@ public record Race (boolean canCast, FlightType flightType, boolean canUseEarth,
     }
 
     public static Race register(Identifier id, boolean magic, FlightType flight, boolean earth, boolean nocturnal, boolean canHang) {
-        return Registry.register(REGISTRY, id, new Race(magic, flight, earth, nocturnal, canHang));
+        return Registry.register(REGISTRY, id, new Race(Suppliers.memoize(() -> new Composite(REGISTRY.get(id), null)), magic, flight, earth, nocturnal, canHang));
     }
 
     public static RegistryKeyArgumentType<Race> argument() {
@@ -54,6 +56,14 @@ public record Race (boolean canCast, FlightType flightType, boolean canUseEarth,
     public static final Race CHANGELING = register("changeling", false, FlightType.INSECTOID, false, false, true);
 
     public static void bootstrap() {}
+
+    public Composite composite() {
+        return compositeSupplier.get();
+    }
+
+    public Composite composite(@Nullable Race pseudo) {
+        return pseudo == null ? composite() : new Composite(this, pseudo);
+    }
 
     @Override
     public Affinity getAffinity() {
@@ -187,8 +197,6 @@ public record Race (boolean canCast, FlightType flightType, boolean canUseEarth,
     }
 
     public record Composite (Race physical, @Nullable Race pseudo) {
-        public static Composite DEFAULT = new Composite(Race.HUMAN, null);
-
         public Race collapsed() {
             return pseudo == null ? physical : pseudo;
         }
