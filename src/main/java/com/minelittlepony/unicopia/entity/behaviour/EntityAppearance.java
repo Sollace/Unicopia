@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.compat.pehkui.PehkUtil;
 import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
+import com.minelittlepony.unicopia.entity.mob.SombraEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.PlayerDimensions;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -233,6 +234,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                 || entity instanceof ButterflyEntity
                 || entity instanceof ShulkerBulletEntity
                 || entity instanceof Flutterer
+                || entity instanceof SombraEntity
                 || ProjectileUtil.isFlyingProjectile(entity)) {
             return FlightType.INSECTOID;
         }

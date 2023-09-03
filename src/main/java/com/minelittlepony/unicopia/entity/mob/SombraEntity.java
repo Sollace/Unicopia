@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.AmuletSelectors;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -82,7 +83,9 @@ import net.minecraft.world.event.GameEvent;
 public class SombraEntity extends HostileEntity implements ArenaCombatant, ParticleSource<SombraEntity> {
     static final byte BITE = 70;
     static final int MAX_BITE_TIME = 20;
-    static final Predicate<Entity> EFFECT_TARGET_PREDICATE = EntityPredicates.VALID_LIVING_ENTITY.and(EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR);
+    static final Predicate<Entity> EFFECT_TARGET_PREDICATE = EntityPredicates.VALID_LIVING_ENTITY
+            .and(EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)
+            .and(e -> !(AbstractDisguiseSpell.getAppearance(e) instanceof SombraEntity));
 
     private static final TrackedData<Optional<BlockPos>> HOME_POS = DataTracker.registerData(SombraEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS);
     private static final TrackedData<Float> TARGET_SIZE = DataTracker.registerData(SombraEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -282,8 +285,11 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
                 }
             }
 
-            if (random.nextInt(150) == 0) {
-                for (BlockPos p : BlockPos.iterateRandomly(random, 3, getBlockPos(), 20)) {
+            float healthPercentage = 100 * (getHealth() / getMaxHealth());
+            float difference = MathHelper.abs(healthPercentage - MathHelper.floor(healthPercentage));
+
+            if (random.nextInt(healthPercentage < 90 && difference < 0.25F ? 19 : 120) == 0) {
+                for (BlockPos p : BlockPos.iterateRandomly(random, 5, getBlockPos(), 20)) {
                     CrystalShardsEntity.infestBlock((ServerWorld)getWorld(), p);
                 }
             }
