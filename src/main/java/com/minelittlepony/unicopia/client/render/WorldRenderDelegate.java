@@ -81,10 +81,12 @@ public class WorldRenderDelegate {
                         );
                     }).orElse(buffer);
                 }, light);
+                return true;
+            } catch (Throwable t) {
+                Unicopia.LOGGER.error("Error whilst rendering minion", t);
             } finally {
                 recurseMinion = false;
             }
-            return true;
         }
 
         if (pony instanceof ItemImpl) {
