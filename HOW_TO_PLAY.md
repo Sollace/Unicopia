@@ -6,7 +6,7 @@ Depending on which race you pick, you're given different abilities, displayed on
 To activate an ability, simply press and hold the key corresponding to that ability. Some take longer than others, and certain abilities
 also respond to quick, short single-taps, or double-taps.
 
-## Abilitis By Species
+## Abilities By Species
 
 ### Unicorns
 
