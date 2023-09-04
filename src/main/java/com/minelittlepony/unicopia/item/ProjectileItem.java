@@ -45,7 +45,7 @@ abstract class ProjectileItem extends Item {
 
         player.incrementStat(Stats.USED.getOrCreateStat(this));
 
-        if (!player.getAbilities().creativeMode) {
+        if (!player.isCreative()) {
             stack.decrement(1);
         }
 
@@ -56,6 +56,7 @@ abstract class ProjectileItem extends Item {
         MagicProjectileEntity projectile = player == null ? new MagicProjectileEntity(world) : new MagicProjectileEntity(world, player);
         projectile.setItem(stack);
         projectile.setThrowDamage(getProjectileDamage(stack));
+        projectile.setMaxAge(-1);
         if (player != null) {
             projectile.setVelocity(player, player.getPitch(), player.getYaw(), 0, 1.5F, 1);
         }

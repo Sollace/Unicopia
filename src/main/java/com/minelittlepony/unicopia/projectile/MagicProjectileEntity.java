@@ -39,6 +39,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.particle.ItemStackParticleEffect;
@@ -70,6 +71,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
 
     private final EntityReference<Entity> homingTarget = new EntityReference<>();
     private EntityReference<LivingEntity> owner;
+
+    private int maxAge = 90;
 
     public MagicProjectileEntity(EntityType<MagicProjectileEntity> type, World world) {
         super(type, world);
@@ -124,7 +127,6 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     public Entity getOwner() {
         return getMaster();
     }
-
 
     @Override
     public EntityReference<LivingEntity> getMasterReference() {
@@ -188,12 +190,14 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         return getDataTracker().get(HYDROPHOBIC);
     }
 
+    public void setMaxAge(int maxAge) {
+        this.maxAge = maxAge;
+    }
+
     @Override
     public void tick() {
-        if (!getWorld().isClient() && homingTarget.getOrEmpty(asWorld()).isEmpty()) {
-            if (getVelocity().length() < 0.1 || age > 90) {
-                discard();
-            }
+        if (maxAge > 0 && !getWorld().isClient() && homingTarget.getOrEmpty(asWorld()).isEmpty() && (getVelocity().length() < 0.1 || age > maxAge)) {
+            discard();
         }
 
         super.tick();
@@ -263,6 +267,9 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         if (compound.contains("effect")) {
             getSpellSlot().put(Spell.readNbt(compound.getCompound("effect")));
         }
+        if (compound.contains("maxAge", NbtElement.INT_TYPE)) {
+            maxAge = compound.getInt("maxAge");
+        }
     }
 
     @Override
@@ -271,6 +278,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         physics.toNBT(compound);
         compound.put("homingTarget", homingTarget.toNBT());
         compound.put("owner", getMasterReference().toNBT());
+        compound.putInt("maxAge", maxAge);
         getSpellSlot().get(true).ifPresent(effect -> {
             compound.put("effect", Spell.writeNbt(effect));
         });
