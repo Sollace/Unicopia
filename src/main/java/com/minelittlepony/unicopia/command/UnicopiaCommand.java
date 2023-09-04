@@ -14,6 +14,7 @@ class UnicopiaCommand {
                 .then(SpeciesCommand.create(environment))
                 .then(RacelistCommand.create())
                 .then(WorldTribeCommand.create())
+                .then(SkyAngleCommand.create())
                 .then(GravityCommand.create())
                 .then(DisguiseCommand.create(registries))
                 .then(CastCommand.create(registries))
