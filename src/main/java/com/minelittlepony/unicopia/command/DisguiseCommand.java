@@ -9,9 +9,9 @@ import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.authlib.GameProfile;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
@@ -34,10 +34,8 @@ import net.minecraft.world.GameRules;
 public class DisguiseCommand {
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.disguise.notfound"));
 
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries) {
-        dispatcher.register(CommandManager
-            .literal("disguise")
-            .requires(s -> s.hasPermissionLevel(2))
+    public static LiteralArgumentBuilder<ServerCommandSource> create(CommandRegistryAccess registries) {
+        return CommandManager.literal("disguise").requires(s -> s.hasPermissionLevel(2))
             .executes(context -> reveal(context.getSource(), context.getSource().getPlayer()))
             .then(
                 CommandManager.argument("target", EntityArgumentType.players())
@@ -45,8 +43,7 @@ public class DisguiseCommand {
                 .then(buildPlayerDisguise(context -> EntityArgumentType.getPlayer(context, "target")))
             )
             .then(buildEntityDisguise(context -> context.getSource().getPlayer(), registries))
-            .then(buildPlayerDisguise(context -> context.getSource().getPlayer()))
-        );
+            .then(buildPlayerDisguise(context -> context.getSource().getPlayer()));
     }
 
     private static ArgumentBuilder<ServerCommandSource, ?> buildEntityDisguise(Arg<ServerPlayerEntity> targetOp, CommandRegistryAccess registries) {

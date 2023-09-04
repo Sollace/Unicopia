@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.command;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -11,17 +10,12 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
 class WorldTribeCommand {
-    static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager
-                .literal("worldtribe")
-                .requires(s -> s.hasPermissionLevel(4));
-
-        builder.then(CommandManager.literal("get").executes(context -> get(context.getSource())));
-        builder.then(CommandManager.literal("set")
+    static LiteralArgumentBuilder<ServerCommandSource> create() {
+        return CommandManager.literal("worldtribe").requires(s -> s.hasPermissionLevel(3))
+            .then(CommandManager.literal("get").executes(context -> get(context.getSource())))
+            .then(CommandManager.literal("set")
                 .then(CommandManager.argument("race", Race.argument())
                 .executes(context -> set(context.getSource(), Race.fromArgument(context, "race")))));
-
-        dispatcher.register(builder);
     }
 
     static int get(ServerCommandSource source) throws CommandSyntaxException {

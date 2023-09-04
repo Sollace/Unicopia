@@ -5,7 +5,6 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -19,24 +18,19 @@ import net.minecraft.world.GameRules;
 
 class GravityCommand {
 
-    static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager
-                .literal("gravity")
-                .requires(s -> s.hasPermissionLevel(2));
-
-        builder.then(CommandManager.literal("get")
-                        .executes(context -> get(context.getSource(), context.getSource().getPlayer(), true))
-               .then(CommandManager.argument("target", EntityArgumentType.player())
-                        .executes(context -> get(context.getSource(), EntityArgumentType.getPlayer(context, "target"), false))
-                ));
-        builder.then(CommandManager.literal("set")
-               .then(CommandManager.argument("gravity", FloatArgumentType.floatArg(-99, 99))
-                           .executes(context -> set(context.getSource(), context.getSource().getPlayer(), FloatArgumentType.getFloat(context, "gravity"), true))
-               .then(CommandManager.argument("target", EntityArgumentType.player())
-                           .executes(context -> set(context.getSource(), EntityArgumentType.getPlayer(context, "target"), FloatArgumentType.getFloat(context, "gravity"), false))
-               )));
-
-        dispatcher.register(builder);
+    static LiteralArgumentBuilder<ServerCommandSource> create() {
+        return CommandManager.literal("gravity").requires(s -> s.hasPermissionLevel(2))
+            .then(CommandManager.literal("get")
+                            .executes(context -> get(context.getSource(), context.getSource().getPlayer(), true))
+                   .then(CommandManager.argument("target", EntityArgumentType.player())
+                            .executes(context -> get(context.getSource(), EntityArgumentType.getPlayer(context, "target"), false))
+                    ))
+            .then(CommandManager.literal("set")
+                   .then(CommandManager.argument("gravity", FloatArgumentType.floatArg(-99, 99))
+                               .executes(context -> set(context.getSource(), context.getSource().getPlayer(), FloatArgumentType.getFloat(context, "gravity"), true))
+                   .then(CommandManager.argument("target", EntityArgumentType.player())
+                               .executes(context -> set(context.getSource(), EntityArgumentType.getPlayer(context, "target"), FloatArgumentType.getFloat(context, "gravity"), false))
+                   )));
     }
 
     static int get(ServerCommandSource source, PlayerEntity player, boolean isSelf) throws CommandSyntaxException {

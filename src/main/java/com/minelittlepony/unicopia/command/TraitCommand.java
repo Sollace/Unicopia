@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.command;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -16,29 +15,24 @@ import net.minecraft.text.*;
 import net.minecraft.util.Hand;
 
 class TraitCommand {
-    static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager
-                .literal("trait")
-                .requires(s -> s.hasPermissionLevel(2));
-
-        builder.then(CommandManager.literal("add")
-                .then(CommandManager.argument("trait", Trait.argument())
-                .then(CommandManager.argument("value", FloatArgumentType.floatArg()).executes(source -> add(
-                        source.getSource(),
-                        source.getSource().getPlayer(),
-                        source.getArgument("trait", Trait.class),
-                        FloatArgumentType.getFloat(source, "value")
-                )))
-        ));
-        builder.then(CommandManager.literal("remove")
-                .then(CommandManager.argument("trait", Trait.argument()).executes(source -> remove(
-                        source.getSource(),
-                        source.getSource().getPlayer(),
-                        source.getArgument("trait", Trait.class)
-                ))
-        ));
-
-        dispatcher.register(builder);
+    static LiteralArgumentBuilder<ServerCommandSource> create() {
+        return CommandManager.literal("trait").requires(s -> s.hasPermissionLevel(2))
+            .then(CommandManager.literal("add")
+                    .then(CommandManager.argument("trait", Trait.argument())
+                    .then(CommandManager.argument("value", FloatArgumentType.floatArg()).executes(source -> add(
+                            source.getSource(),
+                            source.getSource().getPlayer(),
+                            source.getArgument("trait", Trait.class),
+                            FloatArgumentType.getFloat(source, "value")
+                    )))
+            ))
+            .then(CommandManager.literal("remove")
+                    .then(CommandManager.argument("trait", Trait.argument()).executes(source -> remove(
+                            source.getSource(),
+                            source.getSource().getPlayer(),
+                            source.getArgument("trait", Trait.class)
+                    ))
+            ));
     }
 
     static int add(ServerCommandSource source, PlayerEntity player, Trait trait, float amount) throws CommandSyntaxException {
