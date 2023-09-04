@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.command;
 
 import java.util.function.Function;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.brigadier.arguments.FloatArgumentType;
@@ -10,6 +11,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.command.argument.EnumArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.StringIdentifiable;
 
@@ -30,9 +32,14 @@ public class ManaCommand {
                 var bar = type.getBar(pony.getMagicalReserves());
 
                 float value = source.getArgument("value", Float.class);
-                while (type == ManaType.XP && value > 1) {
-                    pony.getLevel().add(1);
-                    value -= 1;
+                if (type == ManaType.XP) {
+                    int currentLevel = pony.getLevel().get();
+                    while (type == ManaType.XP && value > 1) {
+                        currentLevel++;
+                        value -= 1;
+                    }
+                    pony.getLevel().set(currentLevel);
+                    pony.asWorld().playSound(null, pony.getOrigin(), USounds.Vanilla.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 1, 2);
                 }
                 bar.set(value);
                 source.getSource().getPlayer().sendMessage(Text.literal("Set " + type.name() + " to " + bar.get() + "/" + bar.getMax()));
