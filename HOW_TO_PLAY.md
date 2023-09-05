@@ -1,5 +1,8 @@
 # How To Play
 
+[![ru](https://img.shields.io/badge/lang-ru-d52b1e.svg)](README_RU.md)
+[![cn](https://img.shields.io/badge/lang-cn-de2910.svg)](README_CN.md)
+
 When starting a new world you're given the choice of which tribe to join. One of Unicorn, Pegasus, Earth, Bat, or Changeling.
 
 Depending on which race you pick, you're given different abilities, displayed on your HUD in a series of circular elements.
@@ -38,6 +41,7 @@ also respond to quick, short single-taps, or double-taps.
    so be careful!
 
  - Stomping
+   
    Stomping is the downwards version of kicking. Activate the ability whilst in the air to land a crushing blow against the ground and push
    other mobs away. Doing this will also gradually mine the affected blocks.
 
@@ -55,7 +59,7 @@ also respond to quick, short single-taps, or double-taps.
  - Avian Flight
 
    Pegasi can fly either by getting a running start and jumping into the air, or by using their tertiary ability to open or close their wings.
-   Once in the sky you have to flap your wings (Space) to propel yourself forward and upwards, and glide (by sneaking/holding shift).
+   Once in the sky you have to flap your wings (Space) to propel yourself forward and upwards, and glide (by sneaking/holding Shift).
    You can navigate and hover using the arrow keys and by slowing down and adjusting your position to stay in one spot.
    
    
@@ -85,6 +89,7 @@ also respond to quick, short single-taps, or double-taps.
    your terrifying howl. It's so scary you might just scare yourself!
 
  - Night Vision
+
    Bat Ponies have night vision. They can see in the dark, like true sisters of the night! The drawback of this is you can't look at the sun, or be
    anywhere near sunlight in general. Luckily uou can craft some really cool sunglasses to protect your precious assets!
    
@@ -132,10 +137,10 @@ Zap Apple Trees occur naturally in the world and are the only way to obtain zap 
 
 Hybernating, Flowering, Fruiting, or Withering
 
-They cycle through these states throughout the lunar cycle, so if you find one and it's not in the state you want, wait around another few days and it
+They cycle through these states throughout the lunar cycle, so if you find one, and it's not in the state you want, wait around another few days and it
 will eventually bear fruit, but don't try to harvest the apples before they're ripe, because they will zap you!
 
-If you're able to obtain the wood and leaves, it also make the perfect deterant to griefers.
+If you're able to obtain the wood and leaves, it also makes the perfect deterant to griefers.
 
 ### Muffins
 

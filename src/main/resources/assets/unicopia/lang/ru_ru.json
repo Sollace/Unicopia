@@ -431,7 +431,7 @@
   "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.unicorn": " - Имеют заостренные палки на голове",
 
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.pegasus": " - Могут летать",
-  "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.pegasus": " - Используют накопленную ману для выполния мощной звуковой радуги",
+  "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.pegasus": " - Используют накопленную ману для выполнения мощной звуковой радуги",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.pegasus": " - Двигаются быстрее и получают меньше урона от падения",
   "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.pegasus": " - Могут есть овощи и некоторые виды рыбы",
 
@@ -628,6 +628,9 @@
   "commands.race.permission": "Выбранная раса не разрешена на данном сервере.",
   "commands.race.fail": "\"%s\" не является признанной расой.",
 
+  "commands.skyangle.get": "Текущий угол наклона солнца составляет %sdeg",
+  "commands.skyangle.set": "Изменён угол наклона неба на %sdeg",
+
   "commands.race.tell.self": "Вы - ",
   "commands.race.tell.self.alt": "Вы - ",
   "commands.race.tell.other": "%s - это ",
@@ -773,7 +776,7 @@
   "painting.unicopia.harmony.title": "Гармония",
   "painting.unicopia.harmony.author": "Unicopia",
   "painting.unicopia.lunar.title": "Луна",
-  "painting.unicopia.lunar.author": "Племя бэт-пони",
+  "painting.unicopia.lunar.author": "Племя бэтпони",
   "painting.unicopia.solar.title": "Солнце",
   "painting.unicopia.solar.author": "Королевская стража",
   "painting.unicopia.equality.title": "Равенство",
