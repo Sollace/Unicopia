@@ -3,14 +3,14 @@ package com.minelittlepony.unicopia.ability;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Hit.Serializer;
+import com.minelittlepony.unicopia.ability.data.Rot;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.server.world.UGameRules;
 
-public class TimeChangeAbility implements Ability<Hit> {
+public class TimeChangeAbility implements Ability<Rot> {
 
     @Override
     public boolean canUse(Race race) {
@@ -38,12 +38,12 @@ public class TimeChangeAbility implements Ability<Hit> {
     }
 
     @Override
-    public Serializer<Hit> getSerializer() {
-        return Hit.SERIALIZER;
+    public Serializer<Rot> getSerializer() {
+        return Rot.SERIALIZER;
     }
 
     @Override
-    public Optional<Hit> prepare(Pony player) {
+    public Optional<Rot> prepare(Pony player) {
 
         if (!player.asWorld().getGameRules().getBoolean(UGameRules.DO_TIME_MAGIC)) {
             return Optional.empty();
@@ -53,11 +53,11 @@ public class TimeChangeAbility implements Ability<Hit> {
             return Optional.empty();
         }
 
-        return Hit.INSTANCE;
+        return Optional.of(Rot.of(player));
     }
 
     @Override
-    public boolean apply(Pony player, Hit data) {
+    public boolean apply(Pony player, Rot data) {
         if (!player.asWorld().getGameRules().getBoolean(UGameRules.DO_TIME_MAGIC)) {
             return false;
         }
@@ -65,7 +65,7 @@ public class TimeChangeAbility implements Ability<Hit> {
         if (player.getSpellSlot().contains(SpellType.TIME_CONTROL)) {
             player.getSpellSlot().removeWhere(SpellType.TIME_CONTROL, true);
         } else {
-            SpellType.TIME_CONTROL.withTraits().apply(player, CastingMethod.INNATE);
+            SpellType.TIME_CONTROL.withTraits().apply(player, CastingMethod.INNATE).update(player, data.applyTo(player));
         }
 
         return true;
