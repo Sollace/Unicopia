@@ -628,6 +628,9 @@
   "commands.race.permission": "本服务器不允许你加入这个种族",
   "commands.race.fail": "不存在 \"%s\" 这个种族",
   
+  "commands.skyangle.get": "太阳目前的角度为%s度",
+  "commands.skyangle.set": "已将太阳的角度更改为%s度",
+
   "commands.race.tell.self": "你是只 ",
   "commands.race.tell.self.alt": "你是只 ",
   "commands.race.tell.other": "%s 是只 ",
@@ -728,13 +731,16 @@
   "death.attack.unicopia.food_poisoning.player": "%2$s 毒死了 %1$s",
   "death.attack.unicopia.black_hole": "%1$s 被吸进了黑洞里",
   "death.attack.unicopia.black_hole.player": "%1$s 被吸进了 %2$s 制造的黑洞里",
-  "death.attack.unicopia.kick": "%1$s 用力过猛",
-  "death.attack.unicopia.kick.player": "%2$s 踢 %1$s 时用力过猛",
+  "death.attack.unicopia.kick": "%1$s 被踢得太狠",
+  "death.attack.unicopia.kick.player": "%2$s 踢 %1$s 时踢太狠了",
   "death.attack.unicopia.steamroller": "%1$s 被轧平了",
   "death.attack.unicopia.steamroller.player": "%2$s 轧平了 %1$s ",
   "death.attack.unicopia.stalagmite.pegasus": "%1$s 试图降落在石笋上",
   "death.attack.unicopia.stalagmite.pegasus.player": "%1$s 在攻击 %2$s 时落在了石笋上",
-  
+  "death.attack.unicopia.rock": "%1$s 被击中了",
+  "death.attack.unicopia.rock.item": "%1$s 被 %2$s 用 %3$s 击中了",
+  "death.attack.unicopia.rock.player": "%1$s 被 %2$s 击中了",
+
   "death.fell.accident.ladder.pegasus": "%1$s 从梯子上掉下来时忘了自己会飞",
   "death.fell.accident.vines.pegasus": "%1$s 从藤蔓上掉下来时忘了自己会飞",
   "death.fell.accident.weeping_vines.pegasus": "%1$s 从垂泪藤上掉下来时忘了自己会飞",
@@ -800,6 +806,9 @@
   "unicopia.subtitle.entity.jar.throw": "扔出罐子",
   "unicopia.subtitle.entity.crystal_heart.activate": "水晶之心激活",
   "unicopia.subtitle.entity.crystal_heart.deactivate": "水晶之心失效",
+  "unicopia.subtitle.entity.sombra.ambient": "邪恶的笑声",
+  "unicopia.subtitle.entity.sombra.laugh": "黑晶王 笑",
+  "unicopia.subtitle.entity.sombra.snicker": "黑晶王 暗笑",
   "unicopia.subtitle.item.amulet.charging": "护身符充能",
   "unicopia.subtitle.item.amulet.recharge": "护身符重充能",
   "unicopia.subtitle.item.icarus_wings.resonate": "伊卡洛斯之翼 振翅",
@@ -879,6 +888,8 @@
 
   "advancements.unicopia.earth_route.title": "陆行",
   "advancements.unicopia.earth_route.description": "入伙苹果帮",
+  "advancements.unicopia.sticks_and_stones.title": "岩与攻击",
+  "advancements.unicopia.sticks_and_stones.description": "扔出岩石砸死一位生灵",
   "advancements.unicopia.born_on_a_rock_farm.title": "种石得石",
   "advancements.unicopia.born_on_a_rock_farm.description": "播种石籽",
   "advancements.unicopia.thats_unusual.title": "不对劲",
