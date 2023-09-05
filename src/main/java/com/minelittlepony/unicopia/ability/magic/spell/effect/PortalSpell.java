@@ -75,7 +75,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
 
                 teleportationTarget.getTarget().ifPresentOrElse(target -> {
                     particleEffect.update(getUuid(), source, spawner -> {
-                        spawner.addParticle(new SphereParticleEffect(UParticles.DISK, getType().getColor(), 0.8F, 1.8F, new Vec3d(pitch, yaw, 0)), source.getOriginVector(), Vec3d.ZERO);
+                        spawner.addParticle(new SphereParticleEffect(UParticles.DISK, getType().getColor(), 0.8F, 1.8F, new Vec3d(-pitch + 90, -yaw, 0)), source.getOriginVector(), Vec3d.ZERO);
                     });
                 }, () -> {
                     particleEffect.destroy();
