@@ -30,8 +30,9 @@ public interface EquinePredicates {
     Predicate<Entity> IS_CASTER = e -> !e.isRemoved() && (e instanceof Caster || IS_PLAYER.test(e));
     Predicate<Entity> IS_PLACED_SPELL = e -> e instanceof Caster && !e.isRemoved();
 
-    Predicate<Entity> IS_MAGIC_IMMUNE = EntityPredicates.VALID_LIVING_ENTITY.negate().or(e -> e instanceof MagicImmune);
+    Predicate<Entity> IS_MAGIC_IMMUNE = e -> (e instanceof MagicImmune || !(e instanceof LivingEntity)) && !(e instanceof ItemEntity);
     Predicate<Entity> EXCEPT_MAGIC_IMMUNE = IS_MAGIC_IMMUNE.negate();
+    Predicate<Entity> VALID_LIVING_AND_NOT_MAGIC_IMMUNE = EntityPredicates.VALID_LIVING_ENTITY.and(EXCEPT_MAGIC_IMMUNE);
 
     Predicate<LivingEntity> HAS_WANT_IT_NEED_IT = e -> {
         return EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, e) > 0

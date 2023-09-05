@@ -19,6 +19,11 @@
     "unicopia:green_apple_seeds",
     "unicopia:sweet_apple_seeds",
     "unicopia:sour_apple_seeds",
+    "unicopia:green_apple_sapling",
+    "unicopia:sweet_apple_sapling",
+    "unicopia:sour_apple_sapling",
+    "unicopia:zapling",
+    "unicopia:palm_sapling",
     "unicopia:mango",
     "unicopia:empty_jar",
     "unicopia:cooked_zap_apple",
@@ -30,8 +35,11 @@
     "unicopia:daffodil_daisy_sandwich",
     "unicopia:hay_burger",
     "unicopia:hay_fries",
+    "unicopia:crispy_hay_fries",
     "unicopia:wheat_worms",
     "unicopia:muffin",
+    "unicopia:acorn",
+    "unicopia:pinecone",
     "unicopia:crystal_shard",
     "unicopia:pebbles",
     "unicopia:rock",
@@ -42,7 +50,10 @@
     "unicopia:juice",
     "unicopia:burned_juice",
     "unicopia:apple_pie",
+    "unicopia:apple_pie_hoof",
     "unicopia:apple_pie_slice",
-    "unicopia:weather_vane"
+    "unicopia:weather_vane",
+    "#unicopia:baskets",
+    "unicopia:giant_balloon"
   ]
 }

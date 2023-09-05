@@ -14,12 +14,13 @@ import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
-import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
+import com.minelittlepony.unicopia.entity.collision.MultiBoundingBoxEntity;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
+import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.input.Heuristic;
@@ -35,6 +36,7 @@ import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.*;
 
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -43,15 +45,22 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.BlockSoundGroup;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -249,6 +258,11 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public boolean beforeUpdate() {
+        if (EffectUtils.getAmplifier(entity, UEffects.PARALYSIS) > 1 && entity.getVelocity().horizontalLengthSquared() > 0) {
+            entity.setVelocity(entity.getVelocity().multiply(0, 1, 0));
+            updateVelocity();
+        }
+
         updateSupportingEntity();
         return false;
     }
@@ -290,12 +304,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Override
     public void tick() {
         tickers.forEach(Tickable::tick);
-
-        try {
-            getSpellSlot().forEach(spell -> Operation.ofBoolean(spell.tick(this, Situation.BODY)), entity.getWorld().isClient);
-        } catch (Exception e) {
-            Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", entity, e);
-        }
+        effectDelegate.tick(Situation.BODY);
 
         if (!(entity instanceof PlayerEntity)) {
             if (!entity.hasVehicle() && getCarrierId().isPresent() && !asWorld().isClient && entity.age % 10 == 0) {
@@ -387,26 +396,62 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                 DragonBreathStore store = DragonBreathStore.get(entity.getWorld());
                 String name = entity.getDisplayName().getString();
                 store.popEntries(name).forEach(stack -> {
-                    Vec3d randomPos = targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
+                    ItemStack payload = stack.payload();
+                    Item item = payload.getItem();
 
-                    if (!entity.getWorld().isAir(BlockPos.ofFloored(randomPos))) {
-                        store.put(name, stack.payload());
-                    }
+                    boolean deliverAggressively = payload.isIn(UTags.IS_DELIVERED_AGGRESSIVELY);
 
-                    for (int i = 0; i < 10; i++) {
-                        ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(
-                                VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5))
-                        ), Vec3d.ZERO);
-                    }
+                    Vec3d randomPos = deliverAggressively ? targetPos.add(0, 2, 0) : targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
 
-                    ItemEntity item = EntityType.ITEM.create(entity.getWorld());
-                    item.setStack(stack.payload());
-                    item.setPosition(randomPos);
-                    item.getWorld().spawnEntity(item);
-                    entity.getWorld().playSoundFromEntity(null, entity, USounds.ITEM_DRAGON_BREATH_ARRIVE, entity.getSoundCategory(), 1, 1);
+                    if (deliverAggressively && item instanceof BlockItem blockItem) {
+                        do {
+                            ItemStack instance = payload.split(1);
+                            BlockPos pos = BlockPos.ofFloored(randomPos);
+                            if (!entity.getWorld().isAir(pos)) {
+                                store.put(name, instance);
+                            } else {
 
-                    if (stack.payload().getItem() == UItems.OATS && entity instanceof PlayerEntity player) {
-                        UCriteria.RECEIVE_OATS.trigger(player);
+                                for (int i = 0; i < 10; i++) {
+                                    ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(
+                                            VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5))
+                                    ), Vec3d.ZERO);
+                                }
+
+                                ItemPlacementContext context = new ItemPlacementContext(entity.getWorld(), (PlayerEntity)null, Hand.MAIN_HAND, instance,
+                                        BlockHitResult.createMissed(Vec3d.ZERO, Direction.UP, pos)
+                                );
+
+                                BlockState state = blockItem.getBlock().getPlacementState(context);
+                                if (state == null) {
+                                    state = blockItem.getBlock().getDefaultState();
+                                }
+
+                                entity.getWorld().setBlockState(pos, state);
+                                BlockSoundGroup sound = state.getSoundGroup();
+                                entity.getWorld().playSound(null, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1) * 0.5F, sound.getPitch() * 0.8F);
+                            }
+                            randomPos = targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
+                        } while (!payload.isEmpty());
+                    } else {
+                        if (!entity.getWorld().isAir(BlockPos.ofFloored(randomPos))) {
+                            store.put(name, stack.payload());
+                        } else {
+                            for (int i = 0; i < 10; i++) {
+                                ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(
+                                        VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5))
+                                ), Vec3d.ZERO);
+                            }
+
+                            ItemEntity itemEntity = EntityType.ITEM.create(entity.getWorld());
+                            itemEntity.setStack(payload);
+                            itemEntity.setPosition(randomPos);
+                            itemEntity.getWorld().spawnEntity(itemEntity);
+                            entity.getWorld().playSoundFromEntity(null, entity, USounds.ITEM_DRAGON_BREATH_ARRIVE, entity.getSoundCategory(), 1, 1);
+
+                            if (item == UItems.OATS && entity instanceof PlayerEntity player) {
+                                UCriteria.RECEIVE_OATS.trigger(player);
+                            }
+                        }
                     }
                 });
             }

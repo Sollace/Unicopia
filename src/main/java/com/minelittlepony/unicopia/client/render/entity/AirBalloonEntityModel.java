@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.client.render.entity;
 
 import java.util.List;
 
-import com.minelittlepony.unicopia.entity.AirBalloonEntity;
+import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;

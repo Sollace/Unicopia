@@ -40,7 +40,7 @@ public class GemstoneItem extends Item implements MultiItem, EnchantableItem {
             ItemStack stack = user.getStackInHand(hand);
             PlayerCharmTracker charms = Pony.of(user).getCharms();
 
-            if (!Pony.of(user).getObservedSpecies().canCast()) {
+            if (!Pony.of(user).getCompositeRace().canCast()) {
                 return result;
             }
 

@@ -5,6 +5,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.minelittlepony.unicopia.entity.effect.EffectUtils;
+import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.client.MinecraftClient;
@@ -17,18 +19,26 @@ abstract class MixinKeyboardInput extends Input {
     private void onTick(boolean a, float b, CallbackInfo info) {
         Pony player = Pony.of(MinecraftClient.getInstance().player);
 
-        if (player != null && player.getPhysics().isGravityNegative()) {
-            boolean tmp = pressingLeft;
+        if (player != null) {
+            if (player.getPhysics().isGravityNegative()) {
+                boolean tmp = pressingLeft;
 
-            pressingLeft = pressingRight;
-            pressingRight = tmp;
+                pressingLeft = pressingRight;
+                pressingRight = tmp;
 
-            movementSideways = -movementSideways;
+                movementSideways = -movementSideways;
 
-            if (player.asEntity().getAbilities().flying && !player.getPhysics().isFlying()) {
-                tmp = jumping;
-                jumping = sneaking;
-                sneaking = tmp;
+                if (player.asEntity().getAbilities().flying && !player.getPhysics().isFlying()) {
+                    tmp = jumping;
+                    jumping = sneaking;
+                    sneaking = tmp;
+                }
+            }
+
+            if (EffectUtils.getAmplifier(MinecraftClient.getInstance().player, UEffects.PARALYSIS) > 1) {
+                movementSideways = 0;
+                movementForward = 0;
+                jumping = false;
             }
         }
     }

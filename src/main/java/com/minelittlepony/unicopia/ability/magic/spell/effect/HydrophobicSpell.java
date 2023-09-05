@@ -106,7 +106,7 @@ public class HydrophobicSpell extends AbstractSpell {
     }
 
     @Override
-    public void onDestroyed(Caster<?> caster) {
+    protected void onDestroyed(Caster<?> caster) {
         storedFluidPositions.removeIf(entry -> {
             entry.restore(caster.asWorld());
             return true;

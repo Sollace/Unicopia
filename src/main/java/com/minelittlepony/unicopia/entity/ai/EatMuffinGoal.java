@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.entity.ai;
 
-import com.minelittlepony.unicopia.entity.PhysicsBodyProjectileEntity;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.projectile.PhysicsBodyProjectileEntity;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;

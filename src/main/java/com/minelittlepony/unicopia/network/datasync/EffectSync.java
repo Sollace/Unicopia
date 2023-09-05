@@ -8,9 +8,11 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
@@ -41,6 +43,26 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
         this.param = param;
     }
 
+    public boolean tick(Situation situation) {
+        return tick(spell -> Operation.ofBoolean(spell.tick(owner, situation)));
+    }
+
+    public boolean tick(Function<Spell, Operation> tickAction) {
+        try {
+            return forEach(spell -> {
+                try {
+                    return tickAction.apply(spell);
+                } catch (Throwable t) {
+                    Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", owner, t);
+                }
+                return Operation.REMOVE;
+            }, owner.isClient());
+        } catch (Exception e) {
+            Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", owner.asEntity(), e);
+        }
+        return false;
+    }
+
     @Override
     public boolean contains(UUID id) {
         return spells.containsReference(id) || spells.getReferences().anyMatch(s -> s.equalsOrContains(id));
@@ -60,8 +82,8 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
     public void put(@Nullable Spell effect) {
         spells.addReference(effect);
         write();
-        if (owner instanceof UpdateCallback) {
-            ((UpdateCallback)owner).onSpellSet(effect);
+        if (owner instanceof UpdateCallback callback) {
+            callback.onSpellSet(effect);
         }
     }
 

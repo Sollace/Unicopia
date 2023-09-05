@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.item.toxin;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.registry.Registry;
 
 import static com.minelittlepony.unicopia.item.toxin.Toxicity.*;
@@ -31,54 +30,54 @@ public interface Toxics {
             .with(Race.CHANGELING, of(FAIR, LOVE_SICKNESS))
     );
 
-    Toxic FORAGE_RISKY = register("forage_risky", new Toxic.Builder(of(FAIR, WEAK_NAUSEA.withChance(20)))
+    Toxic FORAGE_RISKY = register("forage_risky", new Toxic.Builder(of(FAIR, FOOD_POISONING.withChance(20)))
             .food(UFoodComponents.RANDOM_FOLIAGE)
             .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))
     );
-    Toxic FORAGE_MODERATE = register("forage_moderate", new Toxic.Builder(of(MILD, POISON.and(WEAK_NAUSEA)))
+    Toxic FORAGE_MODERATE = register("forage_moderate", new Toxic.Builder(of(MILD, FOOD_POISONING))
             .food(UFoodComponents.RANDOM_FOLIAGE)
-            .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))
+            .with(Race.HUMAN, of(LETHAL, STRONG_FOOD_POISONING))
     );
     Toxic FORAGE_DANGEROUS = register("forage_dangerous", new Toxic.Builder(of(SEVERE, FOOD_POISONING))
             .food(UFoodComponents.RANDOM_FOLIAGE)
-            .with(Race.HUMAN, of(LETHAL, FOOD_POISONING.and(NAUSEA)))
+            .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))
     );
-    Toxic FORAGE_NAUSEATING = register("forage_nauseating", new Toxic.Builder(of(SAFE, NAUSEA.and(WEAKNESS.withChance(30))))
-            .food(UFoodComponents.RANDOM_FOLIAGE)
-            .with(Race.HUMAN, of(LETHAL, FOOD_POISONING.and(NAUSEA)))
-    );
-    Toxic FORAGE_RADIOACTIVE = register("forage_radioactive", new Toxic.Builder(of(SAFE, NAUSEA.and(RADIOACTIVITY.withChance(30))))
-            .food(UFoodComponents.RANDOM_FOLIAGE)
-            .with(Race.HUMAN, of(LETHAL, FOOD_POISONING.and(NAUSEA)))
-    );
-    Toxic FORAGE_PRICKLY = register("forage_prickly", new Toxic.Builder(of(SAFE, PRICKLING.withChance(30)))
-            .food(UFoodComponents.RANDOM_FOLIAGE)
-            .with(Race.HUMAN, of(LETHAL, FOOD_POISONING.and(NAUSEA)))
-    );
-    Toxic FORAGE_STRENGHTENING = register("forage_strengthening", new Toxic.Builder(of(SEVERE, STRENGTH.and(WEAK_NAUSEA)))
-            .food(UFoodComponents.RANDOM_FOLIAGE)
-            .with(Race.HUMAN, of(LETHAL, FOOD_POISONING.and(WEAKNESS)))
-    );
-    Toxic FORAGE_SEVERELY_NAUSEATING = register("forage_severely_nauseating", new Toxic.Builder(of(SEVERE, STRONG_NAUSEA.and(WEAKNESS)))
-            .food(UFoodComponents.RANDOM_FOLIAGE)
-            .with(Race.HUMAN, of(LETHAL, FOOD_POISONING.and(WEAKNESS)))
-    );
-    Toxic FORAGE_BLINDING = register("forage_blinding", new Toxic.Builder(of(SEVERE, BLINDNESS.and(WEAK_NAUSEA)))
+    Toxic FORAGE_NAUSEATING = register("forage_nauseating", new Toxic.Builder(of(SAFE, FOOD_POISONING.and(WEAKNESS.withChance(30))))
             .food(UFoodComponents.RANDOM_FOLIAGE)
             .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))
     );
-    Toxic FORAGE_SEVERELY_PRICKLY = register("forage_severely_prickly", new Toxic.Builder(of(SEVERE, PRICKLING.and(NAUSEA)))
+    Toxic FORAGE_RADIOACTIVE = register("forage_radioactive", new Toxic.Builder(of(SAFE, FOOD_POISONING.and(GLOWING.withChance(30))))
             .food(UFoodComponents.RANDOM_FOLIAGE)
             .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))
     );
-    Toxic RAW_MEAT = register("raw_meat", new Toxic.Builder(of(SEVERE, FOOD_POISONING.withChance(5).and(POISON.withChance(20))))
+    Toxic FORAGE_PRICKLY = register("forage_prickly", new Toxic.Builder(of(SAFE, INSTANT_DAMAGE.withChance(30)))
+            .food(UFoodComponents.RANDOM_FOLIAGE)
+            .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))
+    );
+    Toxic FORAGE_STRENGHTENING = register("forage_strengthening", new Toxic.Builder(of(SEVERE, STRENGTH.and(FOOD_POISONING)))
+            .food(UFoodComponents.RANDOM_FOLIAGE)
+            .with(Race.HUMAN, of(LETHAL, FOOD_POISONING.and(WEAKNESS)))
+    );
+    Toxic FORAGE_SEVERELY_NAUSEATING = register("forage_severely_nauseating", new Toxic.Builder(of(SEVERE, FOOD_POISONING.and(WEAKNESS)))
+            .food(UFoodComponents.RANDOM_FOLIAGE)
+            .with(Race.HUMAN, of(LETHAL, FOOD_POISONING.and(WEAKNESS)))
+    );
+    Toxic FORAGE_BLINDING = register("forage_blinding", new Toxic.Builder(of(SEVERE, BLINDNESS.and(FOOD_POISONING)))
+            .food(UFoodComponents.RANDOM_FOLIAGE)
+            .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))
+    );
+    Toxic FORAGE_SEVERELY_PRICKLY = register("forage_severely_prickly", new Toxic.Builder(of(SEVERE, FOOD_POISONING.and(INSTANT_DAMAGE)))
+            .food(UFoodComponents.RANDOM_FOLIAGE)
+            .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))
+    );
+    Toxic RAW_MEAT = register("raw_meat", new Toxic.Builder(of(SEVERE, FOOD_POISONING.withChance(5).and(CHANCE_OF_POISON)))
             .with(Race.HUMAN, Ailment.INNERT)
             .with(Race.CHANGELING, Ailment.INNERT)
-            .with(Race.BAT, of(MILD, WEAK_NAUSEA))
+            .with(Race.BAT, of(MILD, FOOD_POISONING))
     );
-    Toxic ROTTEN_MEAT = register("rotten_meat", new Toxic.Builder(of(SEVERE, FOOD_POISONING.and(POISON)))
+    Toxic ROTTEN_MEAT = register("rotten_meat", new Toxic.Builder(of(SEVERE, STRONG_FOOD_POISONING))
             .with(Race.HUMAN, Ailment.INNERT)
-            .with(Race.BAT, of(MILD, STRONG_NAUSEA))
+            .with(Race.BAT, of(MILD, FOOD_POISONING))
             .with(Race.CHANGELING, Ailment.INNERT)
     );
     Toxic COOKED_MEAT = register("cooked_meat", new Toxic.Builder(of(FAIR, FOOD_POISONING))
@@ -87,9 +86,9 @@ public interface Toxics {
             .with(Race.BAT, Ailment.INNERT)
     );
 
-    Toxic RAW_FISH = register("raw_fish", new Toxic.Builder(of(FAIR, FOOD_POISONING.and(POISON)))
+    Toxic RAW_FISH = register("raw_fish", new Toxic.Builder(of(FAIR, FOOD_POISONING.and(CHANCE_OF_POISON)))
             .with(Race.HUMAN, Ailment.INNERT)
-            .with(Race.PEGASUS, of(MILD, POISON.and(WEAK_NAUSEA)))
+            .with(Race.PEGASUS, of(MILD, FOOD_POISONING))
             .with(Race.ALICORN, Ailment.INNERT)
             .with(Race.CHANGELING, of(FAIR, LOVE_SICKNESS))
     );
@@ -101,7 +100,7 @@ public interface Toxics {
     );
 
     Toxic RAW_INSECT = register("raw_insect", new Toxic.Builder(of(LETHAL, FOOD_POISONING))
-            .with(Race.BAT, of(MILD, WEAK_NAUSEA))
+            .with(Race.BAT, of(MILD, WEAK_FOOD_POISONING))
             .with(Race.CHANGELING, Ailment.INNERT)
     );
 
@@ -120,12 +119,7 @@ public interface Toxics {
     );
 
     Toxic BAT_PONYS_DELIGHT = register("bat_ponys_delight", new Toxic.Builder(Ailment.INNERT)
-            .with(Race.BAT, Ailment.of(Toxicity.SAFE,
-                    Toxin.of(StatusEffects.HEALTH_BOOST, 30, 60, 2, 6)
-                        .and(Toxin.of(StatusEffects.JUMP_BOOST, 30, 60, 1, 6))
-                        .and(Toxin.of(StatusEffects.SPEED, 30, 30, 1, 6))
-                        .and(Toxin.of(StatusEffects.REGENERATION, 3, 30, 3, 6))
-            ))
+            .with(Race.BAT, of(Toxicity.SAFE, Toxin.BAT_PONY_INTOXICATION))
     );
 
     static void bootstrap() {}

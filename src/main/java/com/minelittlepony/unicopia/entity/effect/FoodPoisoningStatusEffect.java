@@ -2,8 +2,7 @@ package com.minelittlepony.unicopia.entity.effect;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.entity.Living;
-import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
+import com.minelittlepony.unicopia.USounds;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -11,6 +10,13 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.FoodComponent;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 
 public class FoodPoisoningStatusEffect extends StatusEffect {
 
@@ -21,21 +27,19 @@ public class FoodPoisoningStatusEffect extends StatusEffect {
     @Override
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
 
-        StatusEffectInstance nausea = entity.getStatusEffect(StatusEffects.NAUSEA);
-        if (nausea == null) {
-            StatusEffectInstance foodEffect = entity.getStatusEffect(this);
-            nausea = new StatusEffectInstance(StatusEffects.NAUSEA, foodEffect.getDuration(),
-                    foodEffect.getAmplifier(),
-                    true,
-                    foodEffect.shouldShowParticles(),
-                    false
-            );
+        boolean showParticles = entity.getStatusEffect(this).shouldShowParticles();
 
-            entity.addStatusEffect(nausea);
+        if (!entity.hasStatusEffect(StatusEffects.NAUSEA) && entity.getRandom().nextInt(12) == 0) {
+
+            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 1, true, showParticles, false));
         }
 
-        if (entity.getHealth() > amplifier) {
-            entity.damage(Living.living(entity).damageOf(UDamageTypes.FOOD_POISONING), amplifier);
+        if (entity instanceof PlayerEntity) {
+            ((PlayerEntity)entity).getHungerManager().addExhaustion(0.5F);
+        }
+
+        if (EffectUtils.isPoisoned(entity) && entity.getRandom().nextInt(12) == 0 && !entity.hasStatusEffect(StatusEffects.POISON)) {
+            StatusEffects.POISON.applyUpdateEffect(entity, 1);
         }
     }
 
@@ -48,5 +52,20 @@ public class FoodPoisoningStatusEffect extends StatusEffect {
     public boolean canApplyUpdateEffect(int duration, int amplifier) {
         int i = 40 >> amplifier;
         return i <= 0 || duration % i == 0;
+    }
+
+    public static TypedActionResult<ItemStack> apply(ItemConvertible sender, PlayerEntity user, Hand hand) {
+        @Nullable
+        FoodComponent food = sender.asItem().getFoodComponent();
+
+        if (food == null || !user.canConsume(food.isAlwaysEdible()) || !user.hasStatusEffect(UEffects.FOOD_POISONING)) {
+            return TypedActionResult.pass(user.getStackInHand(hand));
+        }
+
+        user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), USounds.Vanilla.ENTITY_PLAYER_BURP, SoundCategory.NEUTRAL,
+                1,
+                1 + (user.getWorld().random.nextFloat() - user.getWorld().random.nextFloat()) * 0.4f);
+        user.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 1, true, false, false));
+        return TypedActionResult.fail(user.getStackInHand(hand));
     }
 }

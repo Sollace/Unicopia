@@ -27,6 +27,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -59,6 +60,14 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     @Override
     public boolean canUse(Race race) {
         return race.canUseEarth();
+    }
+
+    @Override
+    public Identifier getIcon(Pony player) {
+        Identifier id = Abilities.REGISTRY.getId(this);
+        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath()
+            + "_" + player.getObservedSpecies().getId().getPath()
+            + ".png");
     }
 
     @Override

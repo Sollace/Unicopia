@@ -69,7 +69,7 @@ public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
                 projectile.setHydrophobic();
 
                 if (spell instanceof HomingSpell homer) {
-                    TraceHelper.findEntity(player.asEntity(), homer.getRange(player), 1, EquinePredicates.EXCEPT_MAGIC_IMMUNE).filter(((HomingSpell)spell)::setTarget).ifPresent(projectile::setHomingTarget);
+                    TraceHelper.findEntity(player.asEntity(), homer.getRange(player), 1, EquinePredicates.VALID_LIVING_AND_NOT_MAGIC_IMMUNE).filter(((HomingSpell)spell)::setTarget).ifPresent(projectile::setHomingTarget);
                 }
             });
 

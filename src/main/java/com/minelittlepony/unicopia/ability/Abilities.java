@@ -42,16 +42,16 @@ public interface Abilities {
     Ability<?> CAPTURE_CLOUD = register(new PegasusCaptureStormAbility(), "capture_cloud", AbilitySlot.SECONDARY);
 
     // pegasus / bat / alicorn / changeling
-    Ability<?> CARRY = register(new CarryAbility(), "carry", AbilitySlot.PASSIVE);
-    Ability<?> TOGGLE_SLIGHT = register(new PegasusFlightToggleAbility(), "toggle_flight", AbilitySlot.TERTIARY);
+    Ability<?> CARRY = register(new CarryAbility(), "carry", AbilitySlot.PRIMARY);
+    Ability<?> TOGGLE_FLIGHT = register(new PegasusFlightToggleAbility(), "toggle_flight", AbilitySlot.TERTIARY);
 
     // changeling
     Ability<?> DISGUISE = register(new ChangelingDisguiseAbility(), "disguise", AbilitySlot.SECONDARY);
     Ability<?> FEED = register(new ChangelingFeedAbility(), "feed", AbilitySlot.SECONDARY);
 
     // bat
-    Ability<?> HANG = register(new BatPonyHangAbility(), "hang", AbilitySlot.SECONDARY);
-    Ability<?> EEEE = register(new BatEeeeAbility(), "eee", AbilitySlot.TERTIARY);
+    Ability<?> HANG = register(new BatPonyHangAbility(), "hang", AbilitySlot.TERTIARY);
+    Ability<?> EEEE = register(new BatEeeeAbility(), "eee", AbilitySlot.SECONDARY);
 
     static <T extends Ability<?>> T register(T power, String name, AbilitySlot slot) {
         Identifier id = Unicopia.id(name);

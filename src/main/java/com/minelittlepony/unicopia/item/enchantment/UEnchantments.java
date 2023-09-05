@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.entity.UEntityAttributes;
+import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.item.enchantment.SimpleEnchantment.Options;
 
 import net.minecraft.enchantment.Enchantment;

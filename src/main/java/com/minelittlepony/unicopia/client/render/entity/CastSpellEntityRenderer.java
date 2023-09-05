@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
-import com.minelittlepony.unicopia.entity.CastSpellEntity;
+import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;

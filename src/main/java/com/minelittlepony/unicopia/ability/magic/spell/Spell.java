@@ -101,7 +101,7 @@ public interface Spell extends NbtSerialisable, Affine {
     /**
      * Called when a gem is destroyed.
      */
-    void onDestroyed(Caster<?> caster);
+    void destroy(Caster<?> caster);
 
     /**
      * Converts this spell into a placeable spell.

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.WeaklyOwned;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -21,7 +22,7 @@ import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.Physics;
-import com.minelittlepony.unicopia.entity.UEntities;
+import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
@@ -38,6 +39,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.particle.ItemStackParticleEffect;
@@ -68,7 +70,9 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this, GRAVITY, false);
 
     private final EntityReference<Entity> homingTarget = new EntityReference<>();
-    private final EntityReference<LivingEntity> owner = new EntityReference<>();
+    private EntityReference<LivingEntity> owner;
+
+    private int maxAge = 90;
 
     public MagicProjectileEntity(EntityType<MagicProjectileEntity> type, World world) {
         super(type, world);
@@ -114,7 +118,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     public void setOwner(@Nullable Entity entity) {
         super.setOwner(entity);
         if (entity instanceof LivingEntity l) {
-            this.owner.set(l);
+            getMasterReference().set(l);
         }
     }
 
@@ -124,9 +128,11 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         return getMaster();
     }
 
-
     @Override
     public EntityReference<LivingEntity> getMasterReference() {
+        if (owner == null) {
+            owner = new EntityReference<>();
+        }
         return owner;
     }
 
@@ -184,12 +190,14 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         return getDataTracker().get(HYDROPHOBIC);
     }
 
+    public void setMaxAge(int maxAge) {
+        this.maxAge = maxAge;
+    }
+
     @Override
     public void tick() {
-        if (!getWorld().isClient() && homingTarget.getOrEmpty(asWorld()).isEmpty()) {
-            if (getVelocity().length() < 0.1 || age > 90) {
-                discard();
-            }
+        if (maxAge > 0 && !getWorld().isClient() && homingTarget.getOrEmpty(asWorld()).isEmpty() && (getVelocity().length() < 0.1 || age > maxAge)) {
+            discard();
         }
 
         super.tick();
@@ -198,7 +206,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
             return;
         }
 
-        getSpellSlot().get(true).filter(spell -> spell.tick(this, Situation.PROJECTILE));
+        effectDelegate.tick(Situation.PROJECTILE);
 
         if (getHydrophobic()) {
             if (StatePredicate.isFluid(getWorld().getBlockState(getBlockPos()))) {
@@ -255,9 +263,12 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         super.readCustomDataFromNbt(compound);
         physics.fromNBT(compound);
         homingTarget.fromNBT(compound.getCompound("homingTarget"));
-        owner.fromNBT(compound.getCompound("owner"));
+        getMasterReference().fromNBT(compound.getCompound("owner"));
         if (compound.contains("effect")) {
             getSpellSlot().put(Spell.readNbt(compound.getCompound("effect")));
+        }
+        if (compound.contains("maxAge", NbtElement.INT_TYPE)) {
+            maxAge = compound.getInt("maxAge");
         }
     }
 
@@ -266,7 +277,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         super.writeCustomDataToNbt(compound);
         physics.toNBT(compound);
         compound.put("homingTarget", homingTarget.toNBT());
-        compound.put("owner", owner.toNBT());
+        compound.put("owner", getMasterReference().toNBT());
+        compound.putInt("maxAge", maxAge);
         getSpellSlot().get(true).ifPresent(effect -> {
             compound.put("effect", Spell.writeNbt(effect));
         });
@@ -317,11 +329,15 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     }
 
     protected <T extends ProjectileDelegate> void forEachDelegates(Consumer<T> consumer, Function<Object, T> predicate) {
-        getSpellSlot().forEach(spell -> {
+        effectDelegate.tick(spell -> {
             Optional.ofNullable(predicate.apply(spell)).ifPresent(consumer);
             return Operation.SKIP;
-        }, getWorld().isClient);
-        Optional.ofNullable(predicate.apply(getItem().getItem())).ifPresent(consumer);
+        });
+        try {
+            Optional.ofNullable(predicate.apply(getItem().getItem())).ifPresent(consumer);
+        } catch (Throwable t) {
+            Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", getMasterReference(), t);
+        }
     }
 
     @Override

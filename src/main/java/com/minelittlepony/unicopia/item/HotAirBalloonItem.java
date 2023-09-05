@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
-import com.minelittlepony.unicopia.entity.AirBalloonEntity;
+import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

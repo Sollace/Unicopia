@@ -138,7 +138,8 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
     }
 
     @Override
-    public void onDestroyed(Caster<?> caster) {
+    protected void onDestroyed(Caster<?> caster) {
+        super.onDestroyed(caster);
         target.getOrEmpty(caster.asWorld()).ifPresent(target -> target.setGlowing(false));
     }
 

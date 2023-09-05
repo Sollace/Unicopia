@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.joml.Vector3f;
 
-import com.minelittlepony.unicopia.entity.StormCloudEntity;
+import com.minelittlepony.unicopia.entity.mob.StormCloudEntity;
 
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;

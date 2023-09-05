@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.item.*;
 
-public interface ToxicHolder {
+public interface ToxicHolder extends ItemConvertible {
     @Nullable
     default FoodComponent getOriginalFoodComponent() {
         return null;

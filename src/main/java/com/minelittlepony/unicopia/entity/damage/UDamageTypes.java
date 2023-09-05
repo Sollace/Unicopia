@@ -16,7 +16,6 @@ public interface UDamageTypes {
 
     RegistryKey<DamageType> EXHAUSTION = register("magical_exhaustion");
     RegistryKey<DamageType> ALICORN_AMULET = register("alicorn_amulet");
-    RegistryKey<DamageType> FOOD_POISONING = register("food_poisoning");
     RegistryKey<DamageType> TRIBE_SWAP = register("tribe_swap");
     RegistryKey<DamageType> ZAP_APPLE = register("zap");
     RegistryKey<DamageType> KICK = register("kick");
@@ -30,6 +29,7 @@ public interface UDamageTypes {
     RegistryKey<DamageType> SUN = register("sun");
     RegistryKey<DamageType> SUNLIGHT = register("sunlight");
     RegistryKey<DamageType> PETRIFIED = register("petrified");
+    RegistryKey<DamageType> ROCK = register("rock");
 
     private static RegistryKey<DamageType> register(String name) {
         var key = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Unicopia.id(name));

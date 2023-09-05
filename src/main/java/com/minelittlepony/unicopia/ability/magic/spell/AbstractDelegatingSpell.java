@@ -20,8 +20,9 @@ import net.minecraft.util.hit.EntityHitResult;
 public abstract class AbstractDelegatingSpell implements Spell,
     ProjectileDelegate.ConfigurationListener, ProjectileDelegate.BlockHitListener, ProjectileDelegate.EntityHitListener {
 
-    private boolean isDirty;
+    private boolean dirty;
     private boolean hidden;
+    private boolean destroyed;
 
     private UUID uuid = UUID.randomUUID();
 
@@ -59,7 +60,7 @@ public abstract class AbstractDelegatingSpell implements Spell,
     }
 
     @Override
-    public UUID getUuid() {
+    public final UUID getUuid() {
         return uuid;
     }
 
@@ -75,12 +76,12 @@ public abstract class AbstractDelegatingSpell implements Spell,
 
     @Override
     public boolean isDirty() {
-        return isDirty || getDelegates().stream().anyMatch(Spell::isDirty);
+        return dirty || getDelegates().stream().anyMatch(Spell::isDirty);
     }
 
     @Override
     public void setDirty() {
-        isDirty = true;
+        dirty = true;
     }
 
     @Override
@@ -94,8 +95,17 @@ public abstract class AbstractDelegatingSpell implements Spell,
     }
 
     @Override
-    public void onDestroyed(Caster<?> caster) {
-        getDelegates().forEach(a -> a.onDestroyed(caster));
+    public final void destroy(Caster<?> caster) {
+        if (destroyed) {
+            return;
+        }
+        destroyed = true;
+        setDead();
+        onDestroyed(caster);
+    }
+
+    protected void onDestroyed(Caster<?> caster) {
+        getDelegates().forEach(a -> a.destroy(caster));
     }
 
     @Override
@@ -127,7 +137,7 @@ public abstract class AbstractDelegatingSpell implements Spell,
 
     @Override
     public void fromNBT(NbtCompound compound) {
-        isDirty = false;
+        dirty = false;
         hidden = compound.getBoolean("hidden");
         if (compound.contains("uuid")) {
             uuid = compound.getUuid("uuid");
