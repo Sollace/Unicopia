@@ -44,7 +44,7 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
     }
 
     @Override
-    public void onDestroyed(Caster<?> caster) {
+    protected void onDestroyed(Caster<?> caster) {
         super.onDestroyed(caster);
         if (initialized && !caster.isClient()) {
             counterpart.ifPresent(caster.asWorld(), e -> {

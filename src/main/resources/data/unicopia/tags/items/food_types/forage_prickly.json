@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "minecraft:rose_bush"
+    "minecraft:rose_bush",
+    "#minecraft:saplings"
   ]
 }

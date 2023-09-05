@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
 import com.minelittlepony.unicopia.client.render.RenderLayers;
-import com.minelittlepony.unicopia.entity.ButterflyEntity;
+import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
 
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;

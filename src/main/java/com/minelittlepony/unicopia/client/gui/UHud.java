@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellTyp
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.sound.*;
 import com.minelittlepony.unicopia.entity.ItemTracker;
+import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -303,5 +304,19 @@ public class UHud {
         stat.getAbility(Unicopia.getConfig().hudPage.get()).ifPresent(ability -> {
             context.drawTexture(ability.getIcon(Pony.of(client.player)), x, y, 0, 0, frameWidth, frameHeight, u, v);
         });
+    }
+
+
+    @Nullable
+    public static InGameHud.HeartType getHeartsType(PlayerEntity player) {
+        if (UItems.ALICORN_AMULET.isApplicable(player) || EffectUtils.isChangingRace(player)) {
+            return InGameHud.HeartType.WITHERED;
+        }
+
+        if (EffectUtils.isPoisoned(player)) {
+            return InGameHud.HeartType.POISONED;
+        }
+
+        return null;
     }
 }

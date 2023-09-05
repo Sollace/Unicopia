@@ -10,8 +10,9 @@ import dev.emi.emi.EmiRenderHelper;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.ListEmiIngredient;
+import dev.emi.emi.runtime.EmiDrawContext;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 
 public class SpellDuplicatingEmiRecipe extends SpellbookEmiRecipe {
@@ -42,10 +43,10 @@ public class SpellDuplicatingEmiRecipe extends SpellbookEmiRecipe {
         }
 
         @Override
-        public void render(MatrixStack matrices, int x, int y, float delta, int flags) {
+        public void render(DrawContext context, int x, int y, float delta, int flags) {
 
             if (maxCount < 2 || MinecraftClient.getInstance().player == null) {
-                super.render(matrices, x, y, delta, flags);
+                super.render(context, x, y, delta, flags);
             } else {
                 int tick = (MinecraftClient.getInstance().player.age / 12) % maxCount;
                 if ((flags & RENDER_AMOUNT) != 0) {
@@ -53,9 +54,9 @@ public class SpellDuplicatingEmiRecipe extends SpellbookEmiRecipe {
                     if (getAmount() != 1) {
                         count += getAmount();
                     }
-                    EmiRenderHelper.renderAmount(matrices, x, y, EmiPort.literal(count));
+                    EmiRenderHelper.renderAmount(EmiDrawContext.wrap(context), x, y, EmiPort.literal(count));
                 }
-                ingredients.get(tick).render(matrices, x, y, delta, flags & ~RENDER_AMOUNT);
+                ingredients.get(tick).render(context, x, y, delta, flags & ~RENDER_AMOUNT);
             }
         }
     }

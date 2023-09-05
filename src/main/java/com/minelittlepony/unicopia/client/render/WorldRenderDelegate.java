@@ -28,6 +28,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
@@ -73,18 +74,21 @@ public class WorldRenderDelegate {
             try {
                 recurseMinion = true;
                 dispatcher.render(creature.asEntity(), x, y, z, yaw, tickDelta, matrices, layer -> {
-                    var buffer = vertices.getBuffer(layer);
-                    return RenderLayerUtil.getTexture(layer).map(texture -> {
+                    return RenderLayerUtil.getTexture(layer)
+                            .filter(texture -> texture != PlayerScreenHandler.BLOCK_ATLAS_TEXTURE)
+                            .map(texture -> {
                         return VertexConsumers.union(
-                                vertices.getBuffer(RenderLayers.getMagicColored(texture, creature.isDiscorded() ? 0xCCFF0000 : 0xCC0000FF)),
-                                vertices.getBuffer(layer)
+                                vertices.getBuffer(layer),
+                                vertices.getBuffer(RenderLayers.getMagicColored(texture, creature.isDiscorded() ? 0xCCFF0000 : 0xCC0000FF))
                         );
-                    }).orElse(buffer);
+                    }).orElseGet(() -> vertices.getBuffer(layer));
                 }, light);
+                return true;
+            } catch (Throwable t) {
+                Unicopia.LOGGER.error("Error whilst rendering minion", t);
             } finally {
                 recurseMinion = false;
             }
-            return true;
         }
 
         if (pony instanceof ItemImpl) {

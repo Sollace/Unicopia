@@ -18,12 +18,12 @@ public interface DynamicLightSource {
 
         private final T entity;
 
-        LightEmitter(T entity) {
+        public LightEmitter(T entity) {
             this.entity = entity;
         }
 
         @SuppressWarnings("deprecation")
-        void tick() {
+        public void tick() {
             if (entity.isRemoved()) {
                 remove();
                 return;
@@ -50,7 +50,7 @@ public interface DynamicLightSource {
             }
         }
 
-        void remove() {
+        public void remove() {
             LightSources.get(entity.getWorld()).removeLightSource(entity);
             if (lastPos != null) {
                 try {

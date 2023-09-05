@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.ability.data.Hit.Serializer;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.server.world.UGameRules;
 
 public class TimeChangeAbility implements Ability<Hit> {
 
@@ -43,6 +44,11 @@ public class TimeChangeAbility implements Ability<Hit> {
 
     @Override
     public Optional<Hit> prepare(Pony player) {
+
+        if (!player.asWorld().getGameRules().getBoolean(UGameRules.DO_TIME_MAGIC)) {
+            return Optional.empty();
+        }
+
         if (!player.subtractEnergyCost(0)) {
             return Optional.empty();
         }
@@ -52,6 +58,9 @@ public class TimeChangeAbility implements Ability<Hit> {
 
     @Override
     public boolean apply(Pony player, Hit data) {
+        if (!player.asWorld().getGameRules().getBoolean(UGameRules.DO_TIME_MAGIC)) {
+            return false;
+        }
 
         if (player.getSpellSlot().contains(SpellType.TIME_CONTROL)) {
             player.getSpellSlot().removeWhere(SpellType.TIME_CONTROL, true);

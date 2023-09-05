@@ -151,7 +151,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
     }
 
     @Override
-    public void onDestroyed(Caster<?> caster) {
+    protected void onDestroyed(Caster<?> caster) {
         if (caster.isClient()) {
             return;
         }

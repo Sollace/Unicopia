@@ -6,7 +6,7 @@ import java.util.UUID;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.entity.UEntityAttributes;
+import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.client.item.TooltipContext;

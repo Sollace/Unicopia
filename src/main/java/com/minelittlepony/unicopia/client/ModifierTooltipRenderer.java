@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.entity.Equine;
-import com.minelittlepony.unicopia.entity.UEntityAttributes;
+import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.enchantment.AttributedEnchantment;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;

@@ -22,13 +22,15 @@ abstract class MixinDamageSource {
         Living.getOrEmpty(entity).map(Living::getAttacker).ifPresent(attacker -> {
             Entity prime = entity.getPrimeAdversary();
             if (prime != null && !attacker.isOwnedBy(prime)) {
-                info.setReturnValue(Text.translatable("death.attack.generic.and_also", info.getReturnValue(), attacker.asEntity().getDisplayName()));
+                info.setReturnValue(Text.translatable("death.attack.unicopia.generic.and_also", info.getReturnValue(), attacker.asEntity().getDisplayName()));
                 return;
             }
 
-            info.setReturnValue(Text.translatable("death.attack." + self.getName() + ".player", entity.getDisplayName(), attacker.asEntity().getDisplayName()));
+            String name = self.getName();
+            if (!name.endsWith(".player")) {
+                info.setReturnValue(Text.translatable("death.attack." + name + ".player", entity.getDisplayName(), attacker.asEntity().getDisplayName()));
+            }
         });
-
 
         Pony.of(entity).filter(e -> e.getCompositeRace().canFly()).ifPresent(pony -> {
             if (pony.getPhysics().isFlying()) {

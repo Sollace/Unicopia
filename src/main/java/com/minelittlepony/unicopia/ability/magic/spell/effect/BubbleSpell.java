@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.*;
+import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
@@ -137,7 +138,7 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
     }
 
     @Override
-    public void onDestroyed(Caster<?> source) {
+    protected void onDestroyed(Caster<?> source) {
         particlEffect.destroy();
         if (source.asEntity() instanceof LivingEntity l) {
             MODIFIERS.forEach((attribute, modifier) -> {

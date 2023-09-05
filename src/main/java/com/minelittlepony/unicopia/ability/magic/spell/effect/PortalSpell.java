@@ -8,8 +8,8 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
-import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 import com.minelittlepony.unicopia.particle.*;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.server.world.Ether;
@@ -186,7 +186,8 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
     }
 
     @Override
-    public void onDestroyed(Caster<?> caster) {
+    protected void onDestroyed(Caster<?> caster) {
+        particleEffect.destroy();
         Ether ether = Ether.get(caster.asWorld());
         ether.remove(getType(), caster.asEntity().getUuid());
         getTarget(caster).ifPresent(e -> e.setTaken(false));
@@ -212,11 +213,5 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
             pitch * MathHelper.RADIANS_PER_DEGREE,
             (180 - yaw) * MathHelper.RADIANS_PER_DEGREE
         );
-    }
-
-    @Override
-    public void setDead() {
-        super.setDead();
-        particleEffect.destroy();
     }
 }

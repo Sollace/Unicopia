@@ -21,6 +21,7 @@ import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
+import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.UItems;
@@ -93,6 +94,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     private final Interpolator interpolator = new LinearInterpolator();
 
+    @Nullable
+    private Race.Composite compositeRace;
     private Race respawnRace = Race.UNSET;
 
     private boolean dirty;
@@ -202,13 +205,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
      * This includes illusions and shape-shifting but excludes items that grant abilities without changing their race.
      */
     public Race getObservedSpecies() {
-        return getSpellSlot()
-                .get(SpellPredicate.IS_MIMIC, true)
-                .map(AbstractDisguiseSpell::getDisguise)
-                .map(EntityAppearance::getAppearance)
-                .flatMap(Pony::of)
-                .map(Pony::getSpecies)
-                .orElseGet(this::getSpecies);
+        return getCompositeRace().physical();
     }
 
     /**
@@ -217,11 +214,20 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
      */
     @Override
     public Race.Composite getCompositeRace() {
-        return new Race.Composite(getObservedSpecies(),
-              AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
-            : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
-            : null
-        );
+        if (compositeRace == null || entity.age % 2 == 0) {
+            compositeRace = getSpellSlot()
+                    .get(SpellPredicate.IS_MIMIC, true)
+                    .map(AbstractDisguiseSpell::getDisguise)
+                    .map(EntityAppearance::getAppearance)
+                    .flatMap(Pony::of)
+                    .map(Pony::getSpecies)
+                    .orElseGet(this::getSpecies).composite(
+                  AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
+                : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
+                : null
+            );
+        }
+        return compositeRace;
     }
 
     @Override

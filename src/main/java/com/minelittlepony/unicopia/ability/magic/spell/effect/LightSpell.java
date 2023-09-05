@@ -11,8 +11,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.EntityReference.EntityValues;
-import com.minelittlepony.unicopia.entity.FairyEntity;
-import com.minelittlepony.unicopia.entity.UEntities;
+import com.minelittlepony.unicopia.entity.mob.FairyEntity;
+import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -90,7 +90,7 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
     }
 
     @Override
-    public void onDestroyed(Caster<?> caster) {
+    protected void onDestroyed(Caster<?> caster) {
         if (caster.isClient()) {
             return;
         }

@@ -1,19 +1,15 @@
 package com.minelittlepony.unicopia.server.world;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
-
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.entity.FloatingArtefactEntity;
-import com.minelittlepony.unicopia.entity.SpellbookEntity;
-import com.minelittlepony.unicopia.entity.UEntities;
+import com.minelittlepony.unicopia.entity.mob.FloatingArtefactEntity;
+import com.minelittlepony.unicopia.entity.mob.SpellbookEntity;
+import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.PosHelper;
@@ -26,6 +22,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -53,10 +50,6 @@ public record Altar(BlockPos origin, Set<BlockPos> pillars) {
 
     private static final BlockPos PILLAR_A = new BlockPos(INNER_RADIUS, 0,  PILLAR_OFFSET_FROM_CENTER);
     private static final BlockPos PILLAR_B = new BlockPos(INNER_RADIUS, 0, -PILLAR_OFFSET_FROM_CENTER);
-
-    private static final List<BlockPos> PILLAR_OFFSETS = Arrays.stream(BlockRotation.values()).flatMap(rotation -> {
-        return Stream.of(PILLAR_A.rotate(rotation), PILLAR_B.rotate(rotation));
-    }).toList();
 
     public static Optional<Altar> locateAltar(World world, BlockPos startingPoint) {
 
@@ -101,10 +94,6 @@ public record Altar(BlockPos origin, Set<BlockPos> pillars) {
         }
 
         return Optional.empty();
-    }
-
-    public static Altar of(BlockPos center) {
-        return new Altar(center, new HashSet<>(PILLAR_OFFSETS.stream().map(p -> p.add(center).up()).toList()));
     }
 
     private static boolean checkSlab(World world, BlockPos pos) {
@@ -154,9 +143,15 @@ public record Altar(BlockPos origin, Set<BlockPos> pillars) {
             removeExisting(null, world, pillar);
             world.spawnEntity(artefact);
         });
+        if (!world.isClient) {
+            UnicopiaWorldProperties.forWorld((ServerWorld)world).addAltar(origin());
+        }
     }
 
     public void tearDown(@Nullable Entity except, World world) {
+        if (!world.isClient) {
+            UnicopiaWorldProperties.forWorld((ServerWorld)world).removeAltar(origin());
+        }
         pillars.forEach(pillar -> removeExisting(except, world, pillar));
     }
 

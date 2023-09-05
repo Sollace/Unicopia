@@ -16,7 +16,7 @@ import com.minelittlepony.unicopia.client.particle.RunesParticle;
 import com.minelittlepony.unicopia.client.particle.SphereParticle;
 import com.minelittlepony.unicopia.client.render.*;
 import com.minelittlepony.unicopia.client.render.entity.*;
-import com.minelittlepony.unicopia.entity.UEntities;
+import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.UItems;
@@ -86,7 +86,7 @@ public interface URenderers {
         BlockEntityRendererFactories.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
 
         ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack), UItems.FRIENDSHIP_BRACELET);
-        BuiltinItemRendererRegistry.INSTANCE.register(UItems.FILLED_JAR, (stack, mode, matrices, vertexConsumers, light, overlay) -> {
+        BuiltinItemRendererRegistry.INSTANCE.register(UItems.FILLED_JAR, (stack, mode, matrices, vertices, light, overlay) -> {
 
             ItemRenderer renderer = MinecraftClient.getInstance().getItemRenderer();
 
@@ -104,13 +104,25 @@ public interface URenderers {
 
             if (item.hasAppearance(stack)) {
                 matrices.push();
-                matrices.scale(0.5F, 0.5F, 0.5F);
-                matrices.translate(0.0125, 0.1, 0);
-                renderer.renderItem(item.getAppearanceStack(stack), mode, light, overlay, matrices, immediate, world, 0);
+                if (mode.isFirstPerson()) {
+                    matrices.translate(0.05, 0.06, 0.06);
+                } else if (mode == ModelTransformationMode.HEAD) {
+                    matrices.translate(0, 0.4, 0);
+                } else if (mode == ModelTransformationMode.GROUND
+                        || mode == ModelTransformationMode.THIRD_PERSON_LEFT_HAND || mode == ModelTransformationMode.THIRD_PERSON_RIGHT_HAND) {
+                    matrices.translate(0, 0.06, 0);
+                }
+                // GUI, FIXED, NONE - translate(0, 0, 0)
+                //matrices.scale(0.5F, 0.5F, 0.5F);
+
+                float scale = 0.5F;
+                matrices.scale(scale, scale, scale);
+
+                ItemStack appearance = item.getAppearanceStack(stack);
+                renderer.renderItem(appearance, mode, light, overlay, matrices, immediate, world, 0);
                 matrices.pop();
             }
-            renderer.renderItem(item.createAppearanceStack(stack, UItems.EMPTY_JAR), mode, light, OverlayTexture.DEFAULT_UV, matrices, immediate, world, 0);
-            immediate.draw();
+            renderer.renderItem(item.createAppearanceStack(stack, UItems.EMPTY_JAR), mode, light, OverlayTexture.DEFAULT_UV, matrices, vertices, world, 0);
 
             if (mode == ModelTransformationMode.GUI) {
                 DiffuseLighting.enableGuiDepthLighting();

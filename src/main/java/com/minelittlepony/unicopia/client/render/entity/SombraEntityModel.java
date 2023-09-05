@@ -1,12 +1,13 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
-import com.minelittlepony.unicopia.entity.SombraEntity;
-
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
+
+import com.minelittlepony.unicopia.entity.mob.SombraEntity;
+
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.VertexConsumer;

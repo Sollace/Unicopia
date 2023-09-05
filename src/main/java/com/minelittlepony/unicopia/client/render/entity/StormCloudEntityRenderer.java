@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.entity.StormCloudEntity;
+import com.minelittlepony.unicopia.entity.mob.StormCloudEntity;
 
 import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.OverlayTexture;

@@ -8,9 +8,9 @@ import com.minelittlepony.unicopia.ability.magic.spell.PlaceableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -26,9 +26,8 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
 public class CastCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registries) {
-        dispatcher.register(
-            CommandManager.literal("cast").requires(s -> s.hasPermissionLevel(2))
+    public static LiteralArgumentBuilder<ServerCommandSource> create(CommandRegistryAccess registries) {
+        return CommandManager.literal("cast").requires(s -> s.hasPermissionLevel(2))
             .then(
                 buildBranches(
                     CommandManager.argument("spell", RegistryKeyArgumentType.registryKey(SpellType.REGISTRY_KEY)),
@@ -41,8 +40,7 @@ public class CastCommand {
                         CommandManager.argument("traits", TraitsArgumentType.traits()),
                         CastCommand::getTraits
                 ))
-            )
-        );
+            );
     }
 
     private static ArgumentBuilder<ServerCommandSource, ?> buildBranches(ArgumentBuilder<ServerCommandSource, ?> builder,

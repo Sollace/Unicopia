@@ -57,7 +57,7 @@ public class TargetSelecter {
     public static <T extends Entity> boolean isOwnerOrFriend(Affine affine, Caster<?> source, Entity target) {
         Entity owner = source.getMaster();
 
-        if (affine.isEnemy(source) || !EquinePredicates.PLAYER_UNICORN.test(owner)) {
+        if (affine.isEnemy(source)) {
             return FriendshipBraceletItem.isComrade(source, target);
         }
 

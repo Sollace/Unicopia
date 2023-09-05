@@ -56,6 +56,10 @@ public interface USounds {
     SoundEvent ENTITY_SOMBRA_AMBIENT = register("entity.sombra.ambient");
     SoundEvent ENTITY_SOMBRA_LAUGH = register("entity.sombra.laugh");
     SoundEvent ENTITY_SOMBRA_SNICKER = register("entity.sombra.snicker");
+    SoundEvent ENTITY_SOMBRA_SCARY = USounds.Vanilla.ENTITY_GHAST_AMBIENT;
+
+    SoundEvent ENTITY_CRYSTAL_SHARDS_AMBIENT = BLOCK_AMETHYST_BLOCK_HIT;
+    SoundEvent ENTITY_CRYSTAL_SHARDS_JOSTLE = BLOCK_AMETHYST_BLOCK_BREAK;
 
     SoundEvent ITEM_AMULET_CHARGING = register("item.amulet.charging");
     SoundEvent ITEM_AMULET_RECHARGE = register("item.amulet.recharge");

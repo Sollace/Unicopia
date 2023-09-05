@@ -21,9 +21,9 @@ import com.minelittlepony.unicopia.block.state.StateMapLoader;
 import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.container.SpellbookChapterLoader;
 import com.minelittlepony.unicopia.container.UScreenHandlers;
-import com.minelittlepony.unicopia.entity.UEntities;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.effect.UPotions;
+import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
@@ -104,7 +104,7 @@ public class Unicopia implements ModInitializer {
         Optional<Pony> getPony();
 
         default Race.Composite getPlayerSpecies() {
-            return getPony().map(Pony::getCompositeRace).orElse(Race.Composite.DEFAULT);
+            return getPony().map(Pony::getCompositeRace).orElse(Race.HUMAN.composite());
         }
     }
 }

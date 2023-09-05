@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia;
 
-import com.minelittlepony.unicopia.entity.AirBalloonEntity;
-import com.minelittlepony.unicopia.entity.UEntities;
+import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
+import com.minelittlepony.unicopia.entity.mob.UEntities;
 
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.world.World;

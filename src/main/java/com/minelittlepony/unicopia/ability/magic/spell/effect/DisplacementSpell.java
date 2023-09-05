@@ -4,9 +4,9 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
-import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
+import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
@@ -104,7 +104,7 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
     }
 
     @Override
-    public void onDestroyed(Caster<?> caster) {
+    protected void onDestroyed(Caster<?> caster) {
         caster.getOriginatingCaster().asEntity().setGlowing(false);
         target.ifPresent(caster.asWorld(), e -> e.setGlowing(false));
     }
