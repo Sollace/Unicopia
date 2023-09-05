@@ -628,6 +628,9 @@
   "commands.race.permission": "Selected Race is not permitted by your current server",
   "commands.race.fail": "\"%s\" is not a recognised Race",
 
+  "commands.skyangle.get": "The current angle of the sun is %sdeg",
+  "commands.skyangle.set": "Changed sky angle to %sdeg",
+
   "commands.race.tell.self": "You are a ",
   "commands.race.tell.self.alt": "You are an ",
   "commands.race.tell.other": "%s is a ",

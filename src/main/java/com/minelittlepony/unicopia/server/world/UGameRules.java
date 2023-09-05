@@ -9,6 +9,7 @@ public interface UGameRules {
     GameRules.Key<BooleanRule> ANNOUNCE_TRIBE_JOINS = GameRules.register("announceTribeJoins", GameRules.Category.SPAWNING, BooleanRule.create(false));
     GameRules.Key<BooleanRule> DO_NOCTURNAL_BAT_PONIES = GameRules.register("doNocturnalBatPonies", GameRules.Category.PLAYER, BooleanRule.create(true));
     GameRules.Key<IntRule> WEATHER_EFFECTS_STRENGTH = GameRules.register("weatherEffectsStrength", GameRules.Category.MISC, IntRule.create(100));
+    GameRules.Key<BooleanRule> DO_TIME_MAGIC = GameRules.register("doTimeMagic", GameRules.Category.PLAYER, BooleanRule.create(true));
 
     static void bootstrap() { }
 }

@@ -2,46 +2,49 @@ package com.minelittlepony.unicopia.command;
 
 import java.util.function.Function;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import net.minecraft.command.argument.EnumArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.StringIdentifiable;
 
 public class ManaCommand {
-    static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register(CommandManager
-                .literal("mana").requires(s -> s.hasPermissionLevel(2))
-                .then(CommandManager.argument("type", ManaType.argument()).executes(source -> {
-                    var type = source.getArgument("type", ManaType.class);
-                    var pony = Pony.of(source.getSource().getPlayer());
-                    var bar = type.getBar(pony.getMagicalReserves());
+    static LiteralArgumentBuilder<ServerCommandSource> create() {
+        return CommandManager.literal("mana").requires(s -> s.hasPermissionLevel(2))
+            .then(CommandManager.argument("type", ManaType.argument()).executes(source -> {
+                var type = source.getArgument("type", ManaType.class);
+                var pony = Pony.of(source.getSource().getPlayer());
+                var bar = type.getBar(pony.getMagicalReserves());
 
-                    source.getSource().getPlayer().sendMessage(Text.literal(type.name() + " is " + bar.get() + "/" + bar.getMax()));
-                    return 0;
-                })
-                    .then(CommandManager.argument("value", FloatArgumentType.floatArg()).executes(source -> {
-                        var type = source.getArgument("type", ManaType.class);
-                        var pony = Pony.of(source.getSource().getPlayer());
-                        var bar = type.getBar(pony.getMagicalReserves());
+                source.getSource().getPlayer().sendMessage(Text.literal(type.name() + " is " + bar.get() + "/" + bar.getMax()));
+                return 0;
+            })
+            .then(CommandManager.argument("value", FloatArgumentType.floatArg()).executes(source -> {
+                var type = source.getArgument("type", ManaType.class);
+                var pony = Pony.of(source.getSource().getPlayer());
+                var bar = type.getBar(pony.getMagicalReserves());
 
-                        float value = source.getArgument("value", Float.class);
-                        while (type == ManaType.XP && value > 1) {
-                            pony.getLevel().add(1);
-                            value -= 1;
-                        }
-
-                        bar.set(value);
-                        source.getSource().getPlayer().sendMessage(Text.literal("Set " + type.name() + " to " + bar.get() + "/" + bar.getMax()));
-                        return 0;
-                    }))
-                )
-        );
+                float value = source.getArgument("value", Float.class);
+                if (type == ManaType.XP) {
+                    int currentLevel = pony.getLevel().get();
+                    while (type == ManaType.XP && value > 1) {
+                        currentLevel++;
+                        value -= 1;
+                    }
+                    pony.getLevel().set(currentLevel);
+                    pony.asWorld().playSound(null, pony.getOrigin(), USounds.Vanilla.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 1, 2);
+                }
+                bar.set(value);
+                source.getSource().getPlayer().sendMessage(Text.literal("Set " + type.name() + " to " + bar.get() + "/" + bar.getMax()));
+                return 0;
+            })));
     }
 
     enum ManaType implements CommandArgumentEnum<ManaType> {
