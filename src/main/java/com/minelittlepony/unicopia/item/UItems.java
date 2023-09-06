@@ -44,11 +44,11 @@ public interface UItems {
     FriendshipBraceletItem FRIENDSHIP_BRACELET = register("friendship_bracelet", new FriendshipBraceletItem(new FabricItemSettings().rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
 
     Item EMPTY_JAR = register("empty_jar", new JarItem(new Item.Settings().maxCount(16).fireproof(), false, false, false), ItemGroups.FUNCTIONAL);
-    FilledJarItem FILLED_JAR = register("filled_jar", new FilledJarItem(new Item.Settings().maxCount(1)));
-    Item RAIN_CLOUD_JAR  = register("rain_cloud_jar", new JarItem(new Item.Settings().maxCount(1).fireproof(), true, false, false), ItemGroups.FUNCTIONAL);
-    Item STORM_CLOUD_JAR  = register("storm_cloud_jar", new JarItem(new Item.Settings().maxCount(1).fireproof(), true, true, false), ItemGroups.FUNCTIONAL);
-    Item LIGHTNING_JAR  = register("lightning_jar", new JarItem(new Item.Settings().maxCount(1).fireproof(), false, false, true), ItemGroups.FUNCTIONAL);
-    Item ZAP_APPLE_JAM_JAR = register("zap_apple_jam_jar", new JarItem(new Item.Settings().maxCount(1).fireproof(), false, false, true), ItemGroups.FUNCTIONAL);
+    FilledJarItem FILLED_JAR = register("filled_jar", new FilledJarItem(new Item.Settings().maxCount(1).recipeRemainder(EMPTY_JAR)));
+    Item RAIN_CLOUD_JAR  = register("rain_cloud_jar", new JarItem(new Item.Settings().maxCount(1).fireproof().recipeRemainder(EMPTY_JAR), true, false, false), ItemGroups.FUNCTIONAL);
+    Item STORM_CLOUD_JAR  = register("storm_cloud_jar", new JarItem(new Item.Settings().maxCount(1).fireproof().recipeRemainder(EMPTY_JAR), true, true, false), ItemGroups.FUNCTIONAL);
+    Item LIGHTNING_JAR  = register("lightning_jar", new JarItem(new Item.Settings().maxCount(1).fireproof().recipeRemainder(EMPTY_JAR), false, false, true), ItemGroups.FUNCTIONAL);
+    Item ZAP_APPLE_JAM_JAR = register("zap_apple_jam_jar", new JarItem(new Item.Settings().maxCount(1).fireproof().recipeRemainder(EMPTY_JAR), false, false, true), ItemGroups.FUNCTIONAL);
 
     Item CRYSTAL_HEART = register("crystal_heart", new CrystalHeartItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
     Item CRYSTAL_SHARD = register("crystal_shard", new Item(new Item.Settings()), ItemGroups.NATURAL);
