@@ -5,6 +5,7 @@
   "name": "Unicopia",
   "description": "Magical Abilities for Mine Little Pony!",
   "authors": [ "Sollace" ],
+  "contributors": [ "LingVarr", "Cryghast", "FollowSlipstream" ],
   "contact": {
     "sources": "https://github.com/Sollace/Unicopia",
     "issues": "https://github.com/Sollace/Unicopia/issues"
@@ -34,10 +35,11 @@
     ]
   },
   "depends": {
-    "fabricloader": ">=0.12.0",
+    "minecraft": "${minecraftVersion}",
+    "fabricloader": "${loaderVersion}",
     "java": ">=17",
-    "fabric-api-base": ">=0.1.0",
-    "kirin": "*"
+    "fabric-api-base": "${fabricVersion}",
+    "kirin": "${kirinVersion}"
   },
   "suggests": {
     "minelp": "*",
@@ -49,8 +51,11 @@
     },
     "modmenu": {
       "links": {
-        "modmenu.discord": "https://discord.gg/zKSZ8Mg"
-      }
+        "modmenu.discord": "https://discord.gg/zKSZ8Mg",
+        "modmenu.github_releases": "https://github.com/Sollace/Unicopia/releases",
+        "modmenu.modrinth": "https://modrinth.com/mod/unicopia"
+      },
+      "update_checker": true
     }
   }
 }
