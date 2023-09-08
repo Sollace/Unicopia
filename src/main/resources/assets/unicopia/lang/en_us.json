@@ -91,6 +91,7 @@
   "item.unicopia.mango": "Mango",
   "item.unicopia.banana": "Banana",
   "item.unicopia.pineapple": "Pineapple",
+  "item.unicopia.pineapple_crown": "Pineapple Crown",
   "item.unicopia.sunglasses": "Sunglasses",
   "item.unicopia.broken_sunglasses": "Broken Sunglasses",
 
@@ -185,6 +186,7 @@
   "block.unicopia.mango": "Mango",
   "block.unicopia.mango_leaves": "Mango Leaves",
   "block.unicopia.mango_sapling": "Mango Sapling",
+  "block.unicopia.pineapple": "Pineapple Plant",
 
   "block.unicopia.green_apple_leaves": "Granny Smith Leaves",
   "block.unicopia.green_apple_sapling": "Granny Smith Sapling",
