@@ -70,8 +70,14 @@ public interface UBlocks {
     Block PALM_WALL_HANGING_SIGN = register("palm_wall_hanging_sign", new WallHangingSignBlock(Settings.create().mapColor(PALM_LOG.getDefaultMapColor()).solid().instrument(Instrument.BASS).noCollision().strength(1.0f).burnable().dropsLike(PALM_HANGING_SIGN), UWoodTypes.PALM));
 
     Block PALM_LEAVES = register("palm_leaves", BlockConstructionUtils.createLeavesBlock(BlockSoundGroup.GRASS), ItemGroups.BUILDING_BLOCKS);
-
     Block BANANAS = register("bananas", new FruitBlock(Settings.create().mapColor(MapColor.YELLOW).sounds(BlockSoundGroup.WOOD).hardness(3).pistonBehavior(PistonBehavior.DESTROY), Direction.DOWN, PALM_LEAVES, VoxelShapes.fullCube()));
+
+    Block MANGO_LEAVES = register("mango_leaves", new FruitBearingBlock(FabricBlockSettings.copy(Blocks.JUNGLE_LEAVES),
+            0xCCFFAA00,
+            () -> UBlocks.MANGO,
+            () -> UItems.MANGO.getDefaultStack()
+    ), ItemGroups.NATURAL);
+    Block MANGO = register("mango", new FruitBlock(Settings.create().mapColor(MapColor.ORANGE), Direction.DOWN, MANGO_LEAVES, FruitBlock.DEFAULT_SHAPE));
 
     Block WEATHER_VANE = register("weather_vane", new WeatherVaneBlock(Settings.create().mapColor(MapColor.BLACK).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.METAL).nonOpaque().pistonBehavior(PistonBehavior.BLOCK)), ItemGroups.TOOLS);
 

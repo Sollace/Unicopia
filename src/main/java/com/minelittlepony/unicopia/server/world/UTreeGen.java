@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.server.world;
 
+import com.google.common.collect.ImmutableList;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.UBlocks;
 
@@ -15,6 +16,9 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
 import net.minecraft.world.gen.foliage.JungleFoliagePlacer;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
+import net.minecraft.world.gen.treedecorator.LeavesVineTreeDecorator;
+import net.minecraft.world.gen.treedecorator.TrunkVineTreeDecorator;
+import net.minecraft.world.gen.trunk.MegaJungleTrunkPlacer;
 import net.minecraft.world.gen.trunk.StraightTrunkPlacer;
 import net.minecraft.world.gen.trunk.UpwardsBranchingTrunkPlacer;
 
@@ -60,6 +64,18 @@ public interface UTreeGen {
             .configure(builder -> builder.dirtProvider(BlockStateProvider.of(Blocks.SAND)))
             .biomes(selector -> selector.hasTag(BiomeTags.IS_BEACH) || selector.hasTag(BiomeTags.IS_JUNGLE))
             .count(2, 0.01F, 1)
+            .build();
+    Tree MANGO_TREE = Tree.Builder.create(Unicopia.id("mango_tree"),
+            new MegaJungleTrunkPlacer(8, 9, 19),
+            new JungleFoliagePlacer(ConstantIntProvider.create(4), ConstantIntProvider.create(0), 2)
+        )
+            .farmingCondition(9, 0, 4)
+            .log(Blocks.JUNGLE_LOG)
+            .leaves(UBlocks.MANGO_LEAVES)
+            .biomes(selector -> selector.hasTag(BiomeTags.IS_JUNGLE))
+            .sapling(Unicopia.id("mango_sapling"))
+            .count(1, 1, 2)
+            .configure(builder -> builder.decorators(ImmutableList.of(TrunkVineTreeDecorator.INSTANCE, new LeavesVineTreeDecorator(0.25f))))
             .build();
 
     static Tree createAppleTree(String name, Block leaves, int preferredDensity) {
