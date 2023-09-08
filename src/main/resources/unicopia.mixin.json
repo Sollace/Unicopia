@@ -48,7 +48,8 @@
     "trinkets.MixinTrinketSurvivalSlot",
     "trinkets.MixinTrinketItem",
     "trinkets.MixinTrinketInventory",
-    "trinkets.MixinScreenHandler"
+    "trinkets.MixinScreenHandler",
+    "seasons.MixinFertilizableUtil"
   ],
   "client": [
     "client.MixinAnimalModel",
