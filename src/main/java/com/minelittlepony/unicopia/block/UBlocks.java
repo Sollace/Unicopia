@@ -72,7 +72,7 @@ public interface UBlocks {
     Block PALM_LEAVES = register("palm_leaves", BlockConstructionUtils.createLeavesBlock(BlockSoundGroup.GRASS), ItemGroups.BUILDING_BLOCKS);
     Block BANANAS = register("bananas", new FruitBlock(Settings.create().mapColor(MapColor.YELLOW).sounds(BlockSoundGroup.WOOD).noCollision().ticksRandomly().breakInstantly().pistonBehavior(PistonBehavior.DESTROY), Direction.DOWN, PALM_LEAVES, VoxelShapes.fullCube()));
 
-    Block PINEAPPLE = register("pineapple", new PineappleCropBlock(Settings.create().sounds(BlockSoundGroup.GRASS).noCollision().breakInstantly().pistonBehavior(PistonBehavior.DESTROY)));
+    PineappleCropBlock PINEAPPLE = register("pineapple", new PineappleCropBlock(Settings.create().sounds(BlockSoundGroup.GRASS).noCollision().breakInstantly().pistonBehavior(PistonBehavior.DESTROY)));
 
     Block MANGO_LEAVES = register("mango_leaves", new FruitBearingBlock(FabricBlockSettings.copy(Blocks.JUNGLE_LEAVES),
             0xCCFFAA00,
@@ -151,6 +151,10 @@ public interface UBlocks {
         TRANSLUCENT_BLOCKS.add(WEATHER_VANE);
         TintedBlock.REGISTRY.add(PALM_LEAVES);
 
+        FlammableBlockRegistry.getDefaultInstance().add(GREEN_APPLE_LEAVES, 30, 60);
+        FlammableBlockRegistry.getDefaultInstance().add(SWEET_APPLE_LEAVES, 30, 60);
+        FlammableBlockRegistry.getDefaultInstance().add(SOUR_APPLE_LEAVES, 30, 60);
+        FlammableBlockRegistry.getDefaultInstance().add(MANGO_LEAVES, 30, 60);
         FlammableBlockRegistry.getDefaultInstance().add(PALM_LEAVES, 30, 60);
         FlammableBlockRegistry.getDefaultInstance().add(PALM_LOG, 5, 5);
         FlammableBlockRegistry.getDefaultInstance().add(PALM_WOOD, 5, 5);

@@ -32,7 +32,7 @@ import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 import com.minelittlepony.unicopia.server.world.NocturnalSleepManager;
 import com.minelittlepony.unicopia.server.world.UGameRules;
-import com.minelittlepony.unicopia.server.world.UTreeGen;
+import com.minelittlepony.unicopia.server.world.UWorldGen;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
@@ -95,7 +95,7 @@ public class Unicopia implements ModInitializer {
         SpellType.bootstrap();
         Abilities.bootstrap();
         UScreenHandlers.bootstrap();
-        UTreeGen.bootstrap();
+        UWorldGen.bootstrap();
         UGameRules.bootstrap();
         UDamageTypes.bootstrap();
     }

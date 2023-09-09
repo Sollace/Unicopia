@@ -1,11 +1,13 @@
 package com.minelittlepony.unicopia.block;
 
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.seasons.FertilizableUtil;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropBlock;
 import net.minecraft.block.enums.BlockHalf;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -21,12 +23,21 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class PineappleCropBlock extends CropBlock {
-    private static final EnumProperty<BlockHalf> HALF = Properties.BLOCK_HALF;
-    private static final BooleanProperty WILD = BooleanProperty.of("wild");
+    public static final EnumProperty<BlockHalf> HALF = Properties.BLOCK_HALF;
+    public static final BooleanProperty WILD = BooleanProperty.of("wild");
 
     public PineappleCropBlock(Settings settings) {
         super(settings);
         setDefaultState(getDefaultState().with(HALF, BlockHalf.BOTTOM).with(WILD, false));
+    }
+
+
+    @Override
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+        if (state.get(HALF) == BlockHalf.TOP) {
+            return UItems.PINEAPPLE.getDefaultStack();
+        }
+        return UItems.PINEAPPLE_CROWN.getDefaultStack();
     }
 
     @Override
