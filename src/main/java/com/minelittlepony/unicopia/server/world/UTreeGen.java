@@ -12,6 +12,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
 import net.minecraft.world.gen.foliage.JungleFoliagePlacer;
@@ -66,13 +67,13 @@ public interface UTreeGen {
             .count(2, 0.01F, 1)
             .build();
     Tree MANGO_TREE = Tree.Builder.create(Unicopia.id("mango_tree"),
-            new MegaJungleTrunkPlacer(8, 9, 19),
-            new JungleFoliagePlacer(ConstantIntProvider.create(4), ConstantIntProvider.create(0), 2)
+            new MegaJungleTrunkPlacer(3, 4, 6),
+            new JungleFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), 2)
         )
             .farmingCondition(9, 0, 4)
             .log(Blocks.JUNGLE_LOG)
             .leaves(UBlocks.MANGO_LEAVES)
-            .biomes(selector -> selector.hasTag(BiomeTags.IS_JUNGLE))
+            .biomes(selector -> selector.hasTag(BiomeTags.IS_JUNGLE) && selector.getBiomeKey() != BiomeKeys.JUNGLE)
             .sapling(Unicopia.id("mango_sapling"))
             .count(1, 1, 2)
             .configure(builder -> builder.decorators(ImmutableList.of(TrunkVineTreeDecorator.INSTANCE, new LeavesVineTreeDecorator(0.25f))))
