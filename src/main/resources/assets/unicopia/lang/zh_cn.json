@@ -91,6 +91,7 @@
   "item.unicopia.mango": "芒果",
   "item.unicopia.banana": "香蕉",
   "item.unicopia.pineapple": "菠萝",
+  "item.unicopia.pineapple_crown": "菠萝叶冠",
   "item.unicopia.sunglasses": "墨镜",
   "item.unicopia.broken_sunglasses": "损坏的墨镜",
   
@@ -153,6 +154,7 @@
   "item.unicopia.music_disc_funk.desc": "funk, just funk",
   
   "block.unicopia.rocks": "一些石块",
+  "block.unicopia.bananas": "香蕉",
   "block.unicopia.zapling": "魔虹苹果树苗",
   "block.unicopia.zap_log": "魔虹苹果木原木",
   "block.unicopia.zap_wood": "魔虹苹果木",
@@ -181,6 +183,10 @@
   "block.unicopia.palm_hanging_sign": "悬挂式棕榈木告示牌",
   "block.unicopia.apple_pie": "苹果派",
   "block.unicopia.weather_vane": "风向标",
+  "block.unicopia.mango": "芒果",
+  "block.unicopia.mango_leaves": "芒果树叶",
+  "block.unicopia.mango_sapling": "芒果树苗",
+  "block.unicopia.pineapple": "菠萝树苗",
   
   "block.unicopia.green_apple_leaves": "史密斯婆婆苹果树树叶",
   "block.unicopia.green_apple_sapling": "史密斯婆婆苹果树树苗",
@@ -191,7 +197,7 @@
   "block.unicopia.sour_apple_leaves": "酸苹果树树叶",
   "block.unicopia.sour_apple_sapling": "酸苹果树树苗",
   "block.unicopia.sour_apple_sprout": "酸苹果树嫩芽",
-  
+
   "block.unicopia.oats": "燕麦",
   "block.unicopia.oats_stem": "燕麦",
   "block.unicopia.oats_crown": "燕麦",
@@ -885,6 +891,11 @@
   "advancements.unicopia.screech_self.description": "我恐怖起来连自己都怕",
   "advancements.unicopia.extra_spooky.title": "超大杯恐怖",
   "advancements.unicopia.extra_spooky.description": "砖业吓手",
+
+  "advancements.unicopia.sweet_sweet_revenge.title": "甜甜的复仇",
+   "advancements.unicopia.sweet_sweet_revenge.description": "防住来自太阳公主的侵袭",
+   "advancements.unicopia.blasphemy.title": "强势嘲讽！",
+   "advancements.unicopia.blasphemy.description": "哟呵，这不太阳公主嘛！",
 
   "advancements.unicopia.earth_route.title": "陆行",
   "advancements.unicopia.earth_route.description": "入伙苹果帮",
