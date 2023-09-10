@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia.client.render;
 import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.item.*;
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.Model;

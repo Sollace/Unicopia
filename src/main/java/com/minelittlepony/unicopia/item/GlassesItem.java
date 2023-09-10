@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.entity.EquipmentSlot;

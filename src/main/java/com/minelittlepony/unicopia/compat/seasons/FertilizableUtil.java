@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.seasons;
+package com.minelittlepony.unicopia.compat.seasons;
 
 import com.minelittlepony.unicopia.mixin.seasons.MixinFertilizableUtil;
 

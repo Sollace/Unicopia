@@ -19,6 +19,7 @@ import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.state.StateMapLoader;
 import com.minelittlepony.unicopia.command.Commands;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.container.SpellbookChapterLoader;
 import com.minelittlepony.unicopia.container.UScreenHandlers;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
@@ -35,7 +36,6 @@ import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.unicopia.server.world.UWorldGen;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 
 public class Unicopia implements ModInitializer {
     public static final String DEFAULT_NAMESPACE = "unicopia";

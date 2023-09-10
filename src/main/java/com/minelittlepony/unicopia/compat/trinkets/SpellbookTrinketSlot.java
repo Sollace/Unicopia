@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.trinkets;
+package com.minelittlepony.unicopia.compat.trinkets;
 
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.container.inventory.InventorySlot;

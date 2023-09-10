@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.MinecraftClient;

@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.EarthPonyKickAbility.Buckable;
-import com.minelittlepony.unicopia.seasons.FertilizableUtil;
+import com.minelittlepony.unicopia.compat.seasons.FertilizableUtil;
 
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.block.*;

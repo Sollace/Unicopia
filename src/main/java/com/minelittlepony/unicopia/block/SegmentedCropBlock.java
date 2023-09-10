@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.seasons.FertilizableUtil;
+import com.minelittlepony.unicopia.compat.seasons.FertilizableUtil;
 
 import net.minecraft.block.*;
 import net.minecraft.item.ItemConvertible;

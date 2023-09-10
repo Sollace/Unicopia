@@ -4,8 +4,8 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.*;
 
 import net.minecraft.entity.LivingEntity;

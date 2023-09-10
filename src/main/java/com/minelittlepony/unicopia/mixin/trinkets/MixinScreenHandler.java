@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;

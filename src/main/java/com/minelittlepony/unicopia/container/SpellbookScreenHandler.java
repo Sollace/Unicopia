@@ -6,11 +6,11 @@ import java.util.function.Predicate;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.container.inventory.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.URecipes;
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.enchantment.EnchantmentHelper;

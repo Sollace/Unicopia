@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.block;
 
+import com.minelittlepony.unicopia.compat.seasons.FertilizableUtil;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.seasons.FertilizableUtil;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
