@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.command.CommandArgumentEnum;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -20,6 +21,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.*;
 
@@ -40,8 +42,33 @@ public class PlayerPoser {
         boolean liftRightArm = mainArm == Arm.RIGHT || !ponyRace.isEquine();
 
         ItemStack glasses = GlassesItem.getForEntity(player);
-
         ModelPart head = model.getHead();
+
+        if (context == Context.THIRD_PERSON && !player.isSneaking()) {
+            Hand leftHand = mainArm == Arm.LEFT ? Hand.MAIN_HAND : Hand.OFF_HAND;
+            Hand rightHand = mainArm == Arm.LEFT ? Hand.OFF_HAND : Hand.MAIN_HAND;
+
+            float pitchChange = -0.5F;
+            float yawChange = 0.8F;
+
+            if (player.getStackInHand(rightHand).isIn(UTags.POLEARMS) && (!ponyRace.isEquine() || model.rightArm.pitch != 0)) {
+                model.rightArm.pitch += pitchChange;
+                model.rightArm.yaw += yawChange;
+                if (player.handSwingTicks > 0 && rightHand == Hand.MAIN_HAND) {
+                    model.rightArm.yaw -= 0.5F;
+                    model.rightArm.pitch += 1.5F;
+                }
+            }
+
+            if (player.getStackInHand(leftHand).isIn(UTags.POLEARMS) && (!ponyRace.isEquine() || model.leftArm.pitch != 0)) {
+                model.leftArm.pitch += pitchChange;
+                model.leftArm.yaw -= yawChange;
+                if (player.handSwingTicks > 0 && leftHand == Hand.MAIN_HAND) {
+                    model.leftArm.yaw -= 0.5F;
+                    model.leftArm.pitch += 1.5F;
+                }
+            }
+        }
 
         if (glasses.hasCustomName() && "Cool Shades".equals(glasses.getName().getString())) {
             final float bop = AnimationUtil.beat(player.age, HEAD_NOD_DURATION, HEAD_NOD_GAP) * 3F;

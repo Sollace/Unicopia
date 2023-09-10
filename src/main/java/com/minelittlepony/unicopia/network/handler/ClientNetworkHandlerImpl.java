@@ -5,6 +5,7 @@ import java.util.Map;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.ability.data.Rot;
 import com.minelittlepony.unicopia.ability.data.tree.TreeTypes;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -17,6 +18,8 @@ import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Cha
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.*;
+import com.minelittlepony.unicopia.network.MsgCasterLookRequest.Reply;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -34,6 +37,8 @@ public class ClientNetworkHandlerImpl {
         Channel.UNLOCK_TRAITS.receiver().addPersistentListener(this::handleUnlockTraits);
         Channel.SERVER_RESOURCES_SEND.receiver().addPersistentListener(this::handleServerResources);
         Channel.SERVER_SKY_ANGLE.receiver().addPersistentListener(this::handleSkyAngle);
+        Channel.SERVER_PLAYER_ANIMATION_CHANGE.receiver().addPersistentListener(this::handlePlayerAnimation);
+        Channel.SERVER_REQUEST_PLAYER_LOOK.receiver().addPersistentListener(this::handleCasterLookRequest);
     }
 
     private void handleTribeScreen(PlayerEntity sender, MsgTribeSelect packet) {
@@ -92,5 +97,23 @@ public class ClientNetworkHandlerImpl {
         SpellTraits.load(packet.traits());
         ClientChapters.load((Map<Identifier, Chapter>)packet.chapters());
         TreeTypes.load(packet.treeTypes());
+    }
+
+    private void handlePlayerAnimation(PlayerEntity sender, MsgPlayerAnimationChange packet) {
+        Pony player = Pony.of(MinecraftClient.getInstance().world.getPlayerByUuid(packet.playerId()));
+        if (player == null) {
+            return;
+        }
+
+        player.setAnimation(packet.animation(), packet.duration());
+    }
+
+    private void handleCasterLookRequest(PlayerEntity sender, MsgCasterLookRequest packet) {
+        Pony player = Pony.of(MinecraftClient.getInstance().player);
+        if (player == null) {
+            return;
+        }
+
+        Channel.CLIENT_CASTER_LOOK.sendToServer(new Reply(packet.spellId(), Rot.of(player)));
     }
 }

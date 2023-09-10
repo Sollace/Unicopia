@@ -10,6 +10,9 @@ import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.EntityReference.EntityValues;
 import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
+import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.network.Channel;
+import com.minelittlepony.unicopia.network.MsgCasterLookRequest;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -19,6 +22,7 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.*;
 import net.minecraft.registry.*;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -84,6 +88,9 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
                 if (dimension == null) {
                     dimension = source.asWorld().getRegistryKey();
+                    if (source instanceof Pony) {
+                        Channel.SERVER_REQUEST_PLAYER_LOOK.sendToPlayer(new MsgCasterLookRequest(getUuid()), (ServerPlayerEntity)source.asEntity());
+                    }
                     setDirty();
                 }
 
@@ -153,13 +160,12 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     public void setPosition(Caster<?> source, Vec3d position) {
         this.position = Optional.of(position);
-        getWorld(source).ifPresent(world -> {
-            castEntity.ifPresent(world, entity -> {
-                entity.updatePositionAndAngles(position.x, position.y, position.z, entity.getYaw(), entity.getPitch());
-            });
+        this.dimension = source.asWorld().getRegistryKey();
+        castEntity.ifPresent(source.asWorld(), entity -> {
+            entity.updatePositionAndAngles(position.x, position.y, position.z, entity.getYaw(), entity.getPitch());
         });
         getDelegates(spell -> spell instanceof PlaceableSpell o ? o : null)
-            .forEach(spell -> spell.setPosition(source ,position));
+            .forEach(spell -> spell.setPosition(source, position));
         setDirty();
     }
 

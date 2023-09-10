@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.EarthPonyKickAbility.Buckable;
+import com.minelittlepony.unicopia.seasons.FertilizableUtil;
 
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.block.*;
@@ -71,40 +72,42 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
 
         if (world.isDay()) {
             BlockSoundGroup group = getSoundGroup(state);
-
-            if (state.get(STAGE) == Stage.FRUITING) {
-                state = state.cycle(AGE);
-                if (state.get(AGE) > 20) {
+            int steps = FertilizableUtil.getGrowthSteps(world, pos, state, random);
+            while (steps-- > 0) {
+                if (state.get(STAGE) == Stage.FRUITING) {
+                    state = state.cycle(AGE);
+                    if (state.get(AGE) > 20) {
+                        state = state.with(AGE, 0).cycle(STAGE);
+                    }
+                } else {
                     state = state.with(AGE, 0).cycle(STAGE);
                 }
-            } else {
-                state = state.with(AGE, 0).cycle(STAGE);
-            }
-            world.setBlockState(pos, state, Block.NOTIFY_ALL);
-            BlockPos fruitPosition = pos.down();
+                world.setBlockState(pos, state, Block.NOTIFY_ALL);
+                BlockPos fruitPosition = pos.down();
 
-            Stage stage = state.get(STAGE);
+                Stage stage = state.get(STAGE);
 
-            if (stage == Stage.FRUITING && isPositionValidForFruit(state, pos)) {
-                if (world.isAir(fruitPosition)) {
-                    world.setBlockState(fruitPosition, fruit.get().getDefaultState(), Block.NOTIFY_ALL);
-                }
-            }
-
-            BlockState fruitState = world.getBlockState(fruitPosition);
-
-            if (stage == Stage.WITHERING && fruitState.isOf(fruit.get())) {
-                if (world.random.nextInt(2) == 0) {
-                    Block.dropStack(world, fruitPosition, rottenFruitSupplier.get());
-                } else {
-                    Block.dropStacks(fruitState, world, fruitPosition, fruitState.hasBlockEntity() ? world.getBlockEntity(fruitPosition) : null, null, ItemStack.EMPTY);
+                if (stage == Stage.FRUITING && isPositionValidForFruit(state, pos)) {
+                    if (world.isAir(fruitPosition)) {
+                        world.setBlockState(fruitPosition, fruit.get().getDefaultState(), Block.NOTIFY_ALL);
+                    }
                 }
 
-                if (world.removeBlock(fruitPosition, false)) {
-                    world.emitGameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Emitter.of(fruitState));
-                }
+                BlockState fruitState = world.getBlockState(fruitPosition);
 
-                world.playSound(null, pos, USounds.ITEM_APPLE_ROT, SoundCategory.BLOCKS, group.getVolume(), group.getPitch());
+                if (stage == Stage.WITHERING && fruitState.isOf(fruit.get())) {
+                    if (world.random.nextInt(2) == 0) {
+                        Block.dropStack(world, fruitPosition, rottenFruitSupplier.get());
+                    } else {
+                        Block.dropStacks(fruitState, world, fruitPosition, fruitState.hasBlockEntity() ? world.getBlockEntity(fruitPosition) : null, null, ItemStack.EMPTY);
+                    }
+
+                    if (world.removeBlock(fruitPosition, false)) {
+                        world.emitGameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Emitter.of(fruitState));
+                    }
+
+                    world.playSound(null, pos, USounds.ITEM_APPLE_ROT, SoundCategory.BLOCKS, group.getVolume(), group.getPitch());
+                }
             }
         }
     }
