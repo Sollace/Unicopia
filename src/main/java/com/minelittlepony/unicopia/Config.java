@@ -3,7 +3,9 @@ package com.minelittlepony.unicopia;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.gson.GsonBuilder;
 import com.minelittlepony.common.util.GamePaths;
+import com.minelittlepony.common.util.registry.RegistryTypeAdapter;
 import com.minelittlepony.common.util.settings.*;
 
 public class Config extends com.minelittlepony.common.util.settings.Config {
@@ -41,6 +43,8 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
             .addComment("Turn this ON if you have another mod that adds butterflies.");
 
     public Config() {
-        super(HEIRARCHICAL_JSON_ADAPTER, GamePaths.getConfigDirectory().resolve("unicopia.json"));
+        super(new HeirarchicalJsonConfigAdapter(new GsonBuilder()
+                .registerTypeAdapter(Race.class, RegistryTypeAdapter.of(Race.REGISTRY))
+        ), GamePaths.getConfigDirectory().resolve("unicopia.json"));
     }
 }
