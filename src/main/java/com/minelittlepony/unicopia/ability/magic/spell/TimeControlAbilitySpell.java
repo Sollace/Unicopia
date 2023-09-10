@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import com.minelittlepony.unicopia.ability.Abilities;
+import com.minelittlepony.unicopia.ability.data.Rot;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -13,7 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 /**
  * Internal.
  * <p>
- * Used by the Rainboom ability.
+ * Used by the time change ability
  */
 public class TimeControlAbilitySpell extends AbstractSpell {
 
@@ -38,38 +39,44 @@ public class TimeControlAbilitySpell extends AbstractSpell {
             return false;
         }
 
-        if (source.asWorld() instanceof ServerWorld sw) {
+        update(source, Rot.of(source));
+        return source.subtractEnergyCost(2);
+    }
 
-            float yaw = -(source.asEntity().getHeadYaw() + 90);
-            float pitch = -(source.asEntity().getPitch(1) / 90F);
-
-            long time = (long)(pitch * 6000);
-
-            // sunrise(0) - midday(1) - sunset(2) - midnight(3)
-
-            if (!initilized) {
-                initilized = true;
-                timeOffset = sw.getTimeOfDay() - time;
-                angleOffset = UnicopiaWorldProperties.forWorld(sw).getTangentalSkyAngle() - yaw;
-            }
-
-            if (angleOffset > 90 && angleOffset < 270) {
-                time *= -1;
-            }
-
-            time += timeOffset;
-            if (time < 0) {
-                time += 24000;
-            }
-            time %= 24000;
-
-            sw.setTimeOfDay(time);
-            sw.getServer().sendTimeUpdatePackets();
-
-            UnicopiaWorldProperties.forWorld(sw).setTangentalSkyAngle(angleOffset + yaw);
+    public void update(Caster<?> source, Rot rotation) {
+        if (!source.asWorld().getGameRules().getBoolean(UGameRules.DO_TIME_MAGIC)) {
+            return;
+        }
+        if (!(source.asWorld() instanceof ServerWorld sw)) {
+            return;
         }
 
-        return source.subtractEnergyCost(2);
+        float yaw = -(rotation.yaw() + 90);
+        float pitch = -(rotation.pitch() / 90F);
+        long time = (long)(pitch * 6000);
+
+        // sunrise(0) - midday(1) - sunset(2) - midnight(3)
+
+        if (!initilized) {
+            initilized = true;
+            timeOffset = sw.getTimeOfDay() - time;
+            angleOffset = UnicopiaWorldProperties.forWorld(sw).getTangentalSkyAngle() - yaw;
+        }
+
+        if (angleOffset > 90 && angleOffset < 270) {
+            time *= -1;
+        }
+
+        time += timeOffset;
+        if (time < 0) {
+            time += 24000;
+        }
+        time %= 24000;
+
+        sw.setTimeOfDay(time);
+        sw.getServer().sendTimeUpdatePackets();
+
+        UnicopiaWorldProperties.forWorld(sw).setTangentalSkyAngle(angleOffset + yaw);
     }
 
     @Override

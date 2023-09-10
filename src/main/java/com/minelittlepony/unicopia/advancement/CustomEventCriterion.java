@@ -1,13 +1,8 @@
 package com.minelittlepony.unicopia.advancement;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.jetbrains.annotations.Nullable;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -32,19 +27,10 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
 
     @Override
     protected Conditions conditionsFromJson(JsonObject json, LootContextPredicate playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
-
-        Set<Race> races = new HashSet<>();
-
-        if (json.has("race")) {
-            json.get("race").getAsJsonArray().forEach(el -> {
-                races.add(Race.fromName(el.getAsString(), Race.EARTH));
-            });
-        }
-
         return new Conditions(
                 playerPredicate,
                 JsonHelper.getString(json, "event"),
-                races,
+                RacePredicate.fromJson(json.get("race")),
                 json.has("flying") ? json.get("flying").getAsBoolean() : null,
                 JsonHelper.getInt(json, "repeats", 0)
         );
@@ -67,13 +53,13 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
     public static class Conditions extends AbstractCriterionConditions {
         private final String event;
 
-        private final Set<Race> races;
+        private final RacePredicate races;
 
         private final Boolean flying;
 
         private final int repeatCount;
 
-        public Conditions(LootContextPredicate playerPredicate, String event, Set<Race> races, Boolean flying, int repeatCount) {
+        public Conditions(LootContextPredicate playerPredicate, String event, RacePredicate races, Boolean flying, int repeatCount) {
             super(ID, playerPredicate);
             this.event = event;
             this.races = races;
@@ -83,7 +69,7 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
 
         public boolean test(String event, int count, ServerPlayerEntity player) {
             return this.event.equalsIgnoreCase(event)
-                    && (races.isEmpty() || races.contains(Pony.of(player).getSpecies()))
+                    && races.test(player)
                     && (flying == null || flying == Pony.of(player).getPhysics().isFlying())
                     && (repeatCount <= 0 || (count > 0 && count % repeatCount == 0));
         }
@@ -92,11 +78,7 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
         public JsonObject toJson(AdvancementEntityPredicateSerializer serializer) {
             JsonObject json = super.toJson(serializer);
             json.addProperty("event", event);
-            if (!races.isEmpty()) {
-                JsonArray arr = new JsonArray();
-                races.forEach(r -> arr.add(Race.REGISTRY.getId(r).toString()));
-                json.add("race", arr);
-            }
+            json.add("race", races.toJson());
             if (flying != null) {
                 json.addProperty("flying", flying);
             }

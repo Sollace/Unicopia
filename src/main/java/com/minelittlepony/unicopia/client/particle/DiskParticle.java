@@ -18,7 +18,7 @@ public class DiskParticle extends SphereParticle {
         super(effect, w, x, y, z, 0, 0, 0);
 
         rotation.mul(RotationAxis.POSITIVE_Y.rotationDegrees((float)effect.getOffset().y));
-        rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(90 - (float)effect.getOffset().x));
+        rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(180 - (float)effect.getOffset().x));
 
         effect.setOffset(new Vec3d(0, 0.25, 0));
     }

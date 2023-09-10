@@ -17,15 +17,20 @@
   },
   "criteria": {
     "send_oats": {
-      "trigger": "unicopia:custom",
+      "trigger": "unicopia:send_dragon_breath",
       "conditions": {
-        "event": "send_oats"
+        "item": {
+          "items": [ "unicopia:oats", "unicopia:imported_oats" ]
+        }
       }
     },
     "receive_oats": {
-      "trigger": "unicopia:custom",
+      "trigger": "unicopia:send_dragon_breath",
       "conditions": {
-        "event": "receive_oats"
+        "item": {
+          "items": [ "unicopia:oats", "unicopia:imported_oats" ]
+        },
+        "is_receiving_end": true
       }
     }
   },

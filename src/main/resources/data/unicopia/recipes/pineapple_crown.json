@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "unicopia:pineapple" }
+  ],
+  "result": { "item": "unicopia:pineapple_crown" }
+}

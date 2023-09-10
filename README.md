@@ -3,6 +3,9 @@
 [![Downloads](https://img.shields.io/github/downloads/Sollace/Unicopia/total.svg?color=yellowgreen)](https://github.com/Sollace/Unicopia/releases/latest)
 ![](https://img.shields.io/badge/api-fabric-orange.svg)
 
+[![ru](https://img.shields.io/badge/lang-ru-d52b1e.svg)](README_RU.md)
+[![cn](https://img.shields.io/badge/lang-cn-de2910.svg)](README_CN.md)
+
 Bringing the magic of friendship to Minecraft!
 
 What started as a humble utility to make playing as a unicorn a little more emersive has grown into a full-blown pony
@@ -24,7 +27,7 @@ Unicorns, Pegasi, Earth Ponies, and even Changelings get their own special abili
  - *Play as a pegasus* and dominate the skies! Besides the ability to fly, pegasi can also perform rainbooms, control the weather by shoving them into jars,
    and have a greater reach distance and speed than other races.
  
- - *Play as a a humble background pony*! Earth Ponies are tougher and heavier than the other races. They also have the nify ability to
+ - *Play as a humble background pony*! Earth Ponies are tougher and heavier than the other races. They also have the nify ability to
    kick trees to get food and hasten the growth of crops. You'll never go hungry if you're an earth pony.
 
  Feeling like going over to the dark side?

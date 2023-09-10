@@ -4,7 +4,6 @@ import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.DynamicItemRenderer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.ClampedModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -18,9 +17,10 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.*;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.registry.Registries;
 
-public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredicateProvider {
+public class PolearmRenderer implements DynamicItemRenderer {
 
     private static final PolearmRenderer INSTANCE = new PolearmRenderer();
     private static final Identifier THROWING = new Identifier("throwing");
@@ -29,7 +29,9 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
 
     public static void register(Item item) {
         BuiltinItemRendererRegistry.INSTANCE.register(item, INSTANCE);
-        ModelPredicateProviderRegistry.register(item, THROWING, INSTANCE);
+        ModelPredicateProviderRegistry.register(item, THROWING, (ItemStack stack, ClientWorld world, LivingEntity entity, int seed) -> {
+            return entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1 : 0;
+        });
         ModelLoadingRegistry.INSTANCE.registerModelProvider((renderer, out) -> out.accept(getModelId(item)));
     }
 
@@ -65,16 +67,20 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
             matrices.push();
         } else {
             matrices.push();
-            matrices.scale(1, -1, -1);
+            if (mode == ModelTransformationMode.THIRD_PERSON_LEFT_HAND || mode == ModelTransformationMode.THIRD_PERSON_RIGHT_HAND) {
+                int swap = mode == ModelTransformationMode.THIRD_PERSON_LEFT_HAND ? -1 : 1;
+                matrices.scale(1.5F, -1.5F, -1.5F);
+                float offsetX = swap * 0.05F;
+                matrices.translate(offsetX, 0, 0.05F);
+                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-30 * swap), offsetX, 0.5F, offsetX);
+                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-30 * swap), offsetX, 0.5F, offsetX);
+            } else {
+                matrices.scale(1, -1, -1);
+            }
             Identifier id = Registries.ITEM.getId(stack.getItem());
             Identifier texture = new Identifier(id.getNamespace(), "textures/entity/polearm/" + id.getPath() + ".png");
             model.render(matrices, ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, model.getLayer(texture), false, stack.hasGlint()), light, overlay, 1, 1, 1, 1);
             matrices.pop();
         }
-    }
-
-    @Override
-    public float unclampedCall(ItemStack stack, ClientWorld world, LivingEntity entity, int seed) {
-        return entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1 : 0;
     }
 }

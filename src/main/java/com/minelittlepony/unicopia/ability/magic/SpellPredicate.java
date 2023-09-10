@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic;
 
+import java.util.UUID;
 import java.util.function.Predicate;
 
 import com.minelittlepony.unicopia.ability.magic.spell.*;
@@ -15,6 +16,7 @@ public interface SpellPredicate<T extends Spell> extends Predicate<Spell> {
     SpellPredicate<MimicSpell> IS_MIMIC = s -> s instanceof MimicSpell;
     SpellPredicate<ShieldSpell> IS_SHIELD_LIKE = spell -> spell instanceof ShieldSpell;
     SpellPredicate<TimedSpell> IS_TIMED = spell -> spell instanceof TimedSpell;
+    SpellPredicate<OrientedSpell> IS_ORIENTED = spell -> spell instanceof OrientedSpell;
 
     SpellPredicate<?> IS_NOT_PLACED = IS_PLACED.negate();
     SpellPredicate<?> IS_VISIBLE = spell -> spell != null && !spell.isHidden();
@@ -41,5 +43,9 @@ public interface SpellPredicate<T extends Spell> extends Predicate<Spell> {
 
     default boolean isOn(Entity entity) {
         return Caster.of(entity).filter(this::isOn).isPresent();
+    }
+
+    default SpellPredicate<T> withId(UUID uuid) {
+        return and(spell -> spell.getUuid().equals(uuid));
     }
 }

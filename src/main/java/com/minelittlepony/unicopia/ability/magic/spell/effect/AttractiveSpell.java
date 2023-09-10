@@ -38,10 +38,12 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
 
     @Override
     public boolean tick(Caster<?> caster, Situation situation) {
-        timer.tick();
+        if (getType() != SpellType.DARK_VORTEX) {
+            timer.tick();
 
-        if (timer.getTicksRemaining() <= 0) {
-            return false;
+            if (timer.getTicksRemaining() <= 0) {
+                return false;
+            }
         }
 
         setDirty();
