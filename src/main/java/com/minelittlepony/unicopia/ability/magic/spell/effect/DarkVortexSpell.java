@@ -118,27 +118,18 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
         float radius = (float)getEventHorizonRadius();
 
         particlEffect.update(getUuid(), source, spawner -> {
-            spawner.addParticle(new SphereParticleEffect(UParticles.SPHERE, getType().getColor(), 0.99F, radius, SPHERE_OFFSET), source.getOriginVector(), Vec3d.ZERO);
+            spawner.addParticle(new SphereParticleEffect(UParticles.SPHERE, 0x000000, 0.99F, radius, SPHERE_OFFSET), source.getOriginVector(), Vec3d.ZERO);
         }).ifPresent(p -> {
             p.setAttribute(Attachment.ATTR_RADIUS, radius);
+            p.setAttribute(Attachment.ATTR_OPACITY, 2F);
         });
         particlEffect.update(getUuid(), "_ring", source, spawner -> {
-            spawner.addParticle(new SphereParticleEffect(UParticles.DISK, 0xFFFFFFFF, 0.4F, radius + 1, SPHERE_OFFSET), getOrigin(source), Vec3d.ZERO);
+            spawner.addParticle(new SphereParticleEffect(UParticles.DISK, 0xAAAAAA, 0.4F, radius + 1, SPHERE_OFFSET), getOrigin(source), Vec3d.ZERO);
         }).ifPresent(p -> {
-            p.setAttribute(Attachment.ATTR_RADIUS, radius * 2F);
-            p.setAttribute(Attachment.ATTR_COLOR, 0xAAAAAA);
+            p.setAttribute(Attachment.ATTR_RADIUS, radius * 0F);
         });
 
-        double angle = age % 260;
-
         source.spawnParticles(ParticleTypes.SMOKE, 3);
-
-        if (radius > 2) {
-            source.addParticle(new SphereParticleEffect(UParticles.DISK, 0xFF0000, 1, radius),
-                getOrigin(source).add(0, 0.2, 0), new Vec3d(0, angle, 10));
-            source.addParticle(new SphereParticleEffect(UParticles.DISK, 0xFF0000, 1, radius),
-                getOrigin(source).add(0, -0.2, 0), new Vec3d(0, angle, 10));
-        }
     }
 
     @Override
@@ -208,7 +199,7 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
             return;
         }
 
-        if (distance <= getEventHorizonRadius()) {
+        if (distance <= getEventHorizonRadius() + 0.5) {
             target.setVelocity(target.getVelocity().multiply(distance / (2 * radius)));
 
             @Nullable
@@ -234,11 +225,10 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
             target.damage(source.damageOf(UDamageTypes.GAVITY_WELL_RECOIL, source), Integer.MAX_VALUE);
             if (!(target instanceof PlayerEntity)) {
                 target.discard();
+                source.asWorld().playSound(null, source.getOrigin(), USounds.ENCHANTMENT_CONSUMPTION_CONSUME, SoundCategory.AMBIENT, 2, 0.02F);
             }
 
-            if (!source.subtractEnergyCost(-massOfTarget * 10)) {
-                setDead();
-            }
+            source.subtractEnergyCost(-massOfTarget * 10);
             source.asWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_MOOD, SoundCategory.AMBIENT, 2, 0.02F);
         } else {
             double force = getAttractiveForce(source, target);

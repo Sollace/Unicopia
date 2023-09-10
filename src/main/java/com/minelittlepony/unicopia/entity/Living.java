@@ -447,10 +447,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                             itemEntity.setPosition(randomPos);
                             itemEntity.getWorld().spawnEntity(itemEntity);
                             entity.getWorld().playSoundFromEntity(null, entity, USounds.ITEM_DRAGON_BREATH_ARRIVE, entity.getSoundCategory(), 1, 1);
-
-                            if (item == UItems.OATS && entity instanceof PlayerEntity player) {
-                                UCriteria.RECEIVE_OATS.trigger(player);
-                            }
+                            UCriteria.SEND_DRAGON_BREATH.triggerReceived(entity, payload.copy());
                         }
                     }
                 });

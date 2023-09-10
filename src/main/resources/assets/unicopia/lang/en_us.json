@@ -91,6 +91,7 @@
   "item.unicopia.mango": "Mango",
   "item.unicopia.banana": "Banana",
   "item.unicopia.pineapple": "Pineapple",
+  "item.unicopia.pineapple_crown": "Pineapple Crown",
   "item.unicopia.sunglasses": "Sunglasses",
   "item.unicopia.broken_sunglasses": "Broken Sunglasses",
 
@@ -153,6 +154,7 @@
   "item.unicopia.music_disc_funk.desc": "funk, just funk",
 
   "block.unicopia.rocks": "Rocks",
+  "block.unicopia.bananas": "Bananas",
   "block.unicopia.zapling": "Zapling",
   "block.unicopia.zap_log": "Zap Apple Log",
   "block.unicopia.zap_wood": "Zap Apple Wood",
@@ -181,6 +183,10 @@
   "block.unicopia.palm_hanging_sign": "Palm Hanging Sign",
   "block.unicopia.apple_pie": "Apple Pie",
   "block.unicopia.weather_vane": "Weather Vane",
+  "block.unicopia.mango": "Mango",
+  "block.unicopia.mango_leaves": "Mango Leaves",
+  "block.unicopia.mango_sapling": "Mango Sapling",
+  "block.unicopia.pineapple": "Pineapple Plant",
 
   "block.unicopia.green_apple_leaves": "Granny Smith Leaves",
   "block.unicopia.green_apple_sapling": "Granny Smith Sapling",
@@ -885,6 +891,11 @@
   "advancements.unicopia.screech_self.description": "Be so terrifying that you even scared your self a little",
   "advancements.unicopia.extra_spooky.title": "Extra Spooky",
   "advancements.unicopia.extra_spooky.description": "Spook a mob so hard it drops a brick",
+
+  "advancements.unicopia.sweet_sweet_revenge.title": "Sweet Sweet Revenge",
+  "advancements.unicopia.sweet_sweet_revenge.description": "Get Celestia back for burning your eyes",
+  "advancements.unicopia.blasphemy.title": "Blasphemy!",
+  "advancements.unicopia.blasphemy.description": "Ding Celestia on the noggin. Oops!",
 
   "advancements.unicopia.earth_route.title": "Path of the Pony",
   "advancements.unicopia.earth_route.description": "Join the Apple Clan",

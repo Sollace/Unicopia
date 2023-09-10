@@ -5,6 +5,7 @@ import net.minecraft.advancement.criterion.Criteria;
 public interface UCriteria {
     CustomEventCriterion CUSTOM_EVENT = Criteria.register(new CustomEventCriterion());
     RaceChangeCriterion PLAYER_CHANGE_RACE = Criteria.register(new RaceChangeCriterion());
+    SendViaDragonBreathScrollCriterion SEND_DRAGON_BREATH = Criteria.register(new SendViaDragonBreathScrollCriterion());
 
     CustomEventCriterion.Trigger LOOK_INTO_SUN = CUSTOM_EVENT.createTrigger("look_into_sun");
     CustomEventCriterion.Trigger WEAR_SHADES = CUSTOM_EVENT.createTrigger("wear_shades");
@@ -16,8 +17,6 @@ public interface UCriteria {
     CustomEventCriterion.Trigger SPOOK_MOB = CUSTOM_EVENT.createTrigger("spook_mob");
     CustomEventCriterion.Trigger SHED_FEATHER = CUSTOM_EVENT.createTrigger("shed_feather");
     CustomEventCriterion.Trigger THROW_MUFFIN = CUSTOM_EVENT.createTrigger("throw_muffin");
-    CustomEventCriterion.Trigger SEND_OATS = CUSTOM_EVENT.createTrigger("send_oats");
-    CustomEventCriterion.Trigger RECEIVE_OATS = CUSTOM_EVENT.createTrigger("receive_oats");
     CustomEventCriterion.Trigger BREAK_WINDOW = CUSTOM_EVENT.createTrigger("break_window");
     CustomEventCriterion.Trigger KILL_PHANTOM_WHILE_FLYING = CUSTOM_EVENT.createTrigger("kill_phantom_while_flying");
     CustomEventCriterion.Trigger USE_CONSUMPTION = CUSTOM_EVENT.createTrigger("use_consumption");

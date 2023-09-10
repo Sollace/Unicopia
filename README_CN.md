@@ -3,6 +3,8 @@
 [![Downloads](https://img.shields.io/github/downloads/Sollace/Unicopia/total.svg?color=yellowgreen)](https://github.com/Sollace/Unicopia/releases/latest)
 ![](https://img.shields.io/badge/api-fabric-orange.svg)
 
+[![en](https://img.shields.io/badge/lang-en-012169.svg)](README.md)
+
 将友谊的的魔法带到Minecraft世界中！
 
 起初，本模组只是一款能让玩家体验扮演魔法独角兽的简陋程序，但现已进化到成熟阶段。现在您可以在进入Minecraft世界时从各族小马中任选其一作为您的新身份，以此体验全新魔法机制，就如同真正踏入小马国一般！
@@ -63,7 +65,7 @@
 
 # 玩法
 
-详情请见HOW_TO_PLAY.md文档。
+详情请见HOW_TO_PLAY_CN.md文档。
 
 # 依赖项与开发构建
 
