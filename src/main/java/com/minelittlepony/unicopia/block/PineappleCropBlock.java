@@ -66,7 +66,9 @@ public class PineappleCropBlock extends CropBlock {
         if (state.get(HALF) == BlockHalf.BOTTOM) {
             super.randomTick(state, world, pos, random);
 
-            if (!isMature(state) && isMature(world.getBlockState(pos)) && world.isAir(pos.up())) {
+            BlockState newState = world.getBlockState(pos);
+
+            if (newState.isOf(this) && !isMature(state) && isMature(newState) && world.isAir(pos.up())) {
                 world.setBlockState(pos.up(), getDefaultState().with(HALF, BlockHalf.TOP));
             }
         } else {
