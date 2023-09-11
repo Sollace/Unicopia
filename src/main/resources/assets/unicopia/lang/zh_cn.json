@@ -389,7 +389,7 @@
   
   "gui.unicopia.trait.label": "%s 元素",
   "gui.unicopia.trait.group": "\n %s",
-  "gui.unicopia.trait.corruption": "\n %s 已损坏",
+  "gui.unicopia.trait.corruption": "\n %s 堕落",
   
   "gui.unicopia.dispell_screen.cancel": "按ESC键取消",
   "gui.unicopia.dispell_screen.spell_type": "魔法类型： %s",
@@ -482,12 +482,12 @@
   
   "gui.unicopia.tribe_selection.join": "加入种族",
   "gui.unicopia.tribe_selection.cancel": "返回",
-  
+
+  "gui.unicopia.spellbook.empty_spell_slot": "空的魔咒槽位",
   "gui.unicopia.spellbook.page.inventory": "物品栏",
   "gui.unicopia.spellbook.page.recipes": "魔咒配方",
   "gui.unicopia.spellbook.page.recipes.empty": "已解锁 0 份魔咒配方",
   "gui.unicopia.spellbook.page.mana": "法力值",
-  
   "gui.unicopia.spellbook.page.requirements.entry.item": "- %1$sx %2$s",
   "gui.unicopia.spellbook.page.requirements.entry.trait": "- 至少 %1$sx %2$s 要素",
   "gui.unicopia.spellbook.page.requirements.entry.spell": "- %1$sx %2$s 宝石",
@@ -816,7 +816,7 @@
   "unicopia.subtitle.entity.sombra.laugh": "黑晶王 笑",
   "unicopia.subtitle.entity.sombra.snicker": "黑晶王 暗笑",
   "unicopia.subtitle.item.amulet.charging": "护身符充能",
-  "unicopia.subtitle.item.amulet.recharge": "护身符重充能",
+  "unicopia.subtitle.item.amulet.recharge": "护身符已重充能",
   "unicopia.subtitle.item.icarus_wings.resonate": "伊卡洛斯之翼 振翅",
   "unicopia.subtitle.item.icarus_wings.corrupted": "伊卡洛斯之翼 已损坏",
   "unicopia.subtitle.item.icarus_wings.warn": "伊卡洛斯之翼 正在收翅",
