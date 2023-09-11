@@ -12,7 +12,7 @@
   "ability.unicopia.clear_skies": "天空已经很干净了",
   
   "itemGroup.unicopia.items": "奇幻小马国 - 综合",
-  "itemGroup.unicopia.horsefeed": "奇幻小马国 - 小马食物",
+  "itemGroup.unicopia.foraging": "奇幻小马国 - 觅食",
   "itemGroup.unicopia.earth_pony": "奇幻小马国 - 小马镇",
   "itemGroup.unicopia.unicorn": "奇幻小马国 - 坎特洛特",
   "itemGroup.unicopia.pegasus": "奇幻小马国 - 云中城",
@@ -497,7 +497,7 @@
   
   "chapter.unicopia.crafting": "制作魔咒",
   "chapter.unicopia.profile": "简介",
-  "chapter.unicopia.traits": "研究",
+  "chapter.unicopia.traits": "发现",
   "chapter.unicopia.introduction": "导论",
   "chapter.unicopia.fire_magic": "火魔法",
   "chapter.unicopia.ice_magic": "冰魔法",
