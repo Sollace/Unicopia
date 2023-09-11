@@ -38,7 +38,7 @@ public class DragonBreathScrollItem extends Item {
                if (count == 1 && "dings_on_celestias_head".equals(counterName)) {
                    UnicopiaWorldProperties properties = UnicopiaWorldProperties.forWorld((ServerWorld)world);
                    properties.setTangentalSkyAngle(properties.getTangentalSkyAngle() + 15);
-                   world.playSound(null, player.getBlockPos(), USounds.Vanilla.BLOCK_ANVIL_HIT, SoundCategory.NEUTRAL, 0.3F, 1);
+                   world.playSound(null, player.getBlockPos(), USounds.Vanilla.BLOCK_ANVIL_LAND, SoundCategory.NEUTRAL, 0.2F, (float)world.random.nextTriangular(1, 0.2F));
                }
             });
             DragonBreathStore.get(world).put(recipient, payload.split(1));
