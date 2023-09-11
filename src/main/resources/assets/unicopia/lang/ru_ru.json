@@ -91,6 +91,7 @@
   "item.unicopia.mango": "Манго",
   "item.unicopia.banana": "Банан",
   "item.unicopia.pineapple": "Ананас",
+  "item.unicopia.pineapple_crown": "Ботва ананаса",
   "item.unicopia.sunglasses": "Солнцезащитные очки",
   "item.unicopia.broken_sunglasses": "Сломанные солнцезащитные очки",
 
@@ -182,6 +183,10 @@
   "block.unicopia.palm_hanging_sign": "Пальмовая подвесная табличка",
   "block.unicopia.apple_pie": "Яблочный пирог",
   "block.unicopia.weather_vane": "Флюгер",
+  "block.unicopia.mango": "Манго",
+  "block.unicopia.mango_leaves": "Листья мангового дерева",
+  "block.unicopia.mango_sapling": "Саженец мангового дерева",
+  "block.unicopia.pineapple": "Ананас",
   
   "block.unicopia.green_apple_leaves": "Листья яблони Гренни Смит",
   "block.unicopia.green_apple_sapling": "Саженец яблони Гренни Смит",
@@ -219,7 +224,7 @@
 
   "effect.unicopia.food_poisoning": "Пищевое отравление",
   "effect.unicopia.sun_blindness": "Солнечная слепота",
-  "effect.unicopia.corrupt_influence": "Испорченое влияние",
+  "effect.unicopia.corrupt_influence": "Испорченное влияние",
   "effect.unicopia.paralysis": "Паралич",
   "effect.unicopia.butter_fingers": "Растяпа",
 
@@ -677,6 +682,11 @@
   "unicopia.options.world.default_race": "Раса по умолчанию: %s",
   "unicopia.options.lan": "Настройки многопользовательской игры (LAN)",
 
+  "command.unicopia.config.add": "[Config] Добавлено %s в свойство %s",
+  "command.unicopia.config.remove": "[Config] Удалено %s из свойства %s",
+  "command.unicopia.config.list": "[Config] Свойство (%s) содержит (%s) записей:",
+  "command.unicopia.config.clear": "[Config] Удалены все значения из свойства %s",
+
   "unicopia.race.unset": "Не выбрано",
   "unicopia.race.unset.alt": "не выбрано",
   "unicopia.race.human": "Человек",
@@ -886,6 +896,11 @@
   "advancements.unicopia.screech_self.description": "Будьте настолько страшным, что даже немного напугайте себя",
   "advancements.unicopia.extra_spooky.title": "Экстра жуткий",
   "advancements.unicopia.extra_spooky.description": "Напугайте моба так сильно, чтобы он выронил кирпич",
+
+  "advancements.unicopia.sweet_sweet_revenge.title": "Сладкая, сладкая месть",
+  "advancements.unicopia.sweet_sweet_revenge.description": "Отомстите Селестии за то, что она выжгла вам глаза",
+  "advancements.unicopia.blasphemy.title": "Кощунство!",
+  "advancements.unicopia.blasphemy.description": "Ударьте Селестию по башке. Упс!",
 
   "advancements.unicopia.earth_route.title": "Путь Пони",
   "advancements.unicopia.earth_route.description": "Вступить в клан Яблока",
