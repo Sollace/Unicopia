@@ -3,14 +3,20 @@ package com.minelittlepony.unicopia.item.toxin;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 
+import net.minecraft.item.FoodComponent;
 import net.minecraft.registry.Registry;
 
 import static com.minelittlepony.unicopia.item.toxin.Toxicity.*;
 import static com.minelittlepony.unicopia.item.toxin.Ailment.*;
 import static com.minelittlepony.unicopia.item.toxin.Toxin.*;
 
+import java.util.Optional;
+import org.jetbrains.annotations.Nullable;
+
 public interface Toxics {
     Registry<ToxicRegistryEntry> REGISTRY = RegistryUtils.createSimple(Unicopia.id("toxic"));
+
+    Toxic EMPTY = new Toxic(Optional.empty(), Optional.empty(), Ailment.Set.EMPTY);
 
     Toxic SEVERE_INNERT = Toxic.innert(Toxicity.SEVERE);
 
@@ -126,5 +132,18 @@ public interface Toxics {
 
     static Toxic register(String name, Toxic.Builder builder) {
         return Registry.register(REGISTRY, Unicopia.id(name), new ToxicRegistryEntry(builder.build(), UTags.item("food_types/" + name))).value();
+    }
+
+    static Toxic lookup(ItemDuck item) {
+        @Nullable FoodComponent food = item.asItem().getFoodComponent();
+        return REGISTRY.stream()
+                .filter(i -> i.matches(item.asItem()))
+                .map(ToxicRegistryEntry::value)
+                .map(t -> {
+            if (food == null) {
+                t.component().ifPresent(item::setFoodComponent);
+            }
+            return t;
+        }).findFirst().orElse(food == null ? Toxics.EMPTY : Toxics.EDIBLE);
     }
 }
