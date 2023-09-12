@@ -63,6 +63,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         Identifier id = Abilities.REGISTRY.getId(this);
         return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath()
             + "_" + player.getObservedSpecies().getId().getPath()
+            + "_" + (getKickDirection(player) > 0 ? "forward" : "backward")
             + ".png");
     }
 
@@ -89,7 +90,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
                     player.asEntity().addExhaustion(3);
 
-                    for (var e : VecHelper.findInRange(player.asEntity(), w, kickLocation.vec(), 2, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
+                    for (var e : VecHelper.findInRange(player.asEntity(), w, kickLocation.vec(), 2.5, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
                         if (e instanceof LivingEntity entity) {
                             float calculatedStrength = 0.5F * (1 + player.getLevel().getScaled(9));
 
