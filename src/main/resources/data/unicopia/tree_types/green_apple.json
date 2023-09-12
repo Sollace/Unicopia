@@ -2,5 +2,6 @@
 	"logs": [ "minecraft:oak_log", "minecraft:oak_wood" ],
 	"leaves": [ "unicopia:green_apple_leaves" ],
 	"wideTrunk": false,
+	"leavesRatio": 0.5,
 	"drops": []
 }

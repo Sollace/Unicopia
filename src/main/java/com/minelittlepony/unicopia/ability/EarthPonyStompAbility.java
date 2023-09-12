@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
@@ -78,8 +79,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     @Nullable
     @Override
     public Optional<Hit> prepare(Pony player) {
-        if (!player.asEntity().isOnGround()
-                && player.asEntity().getVelocity().y * player.getPhysics().getGravitySignum() < 0
+        if (player.asEntity().getVelocity().y * player.getPhysics().getGravitySignum() < 0
                 && !player.asEntity().getAbilities().flying) {
             thrustDownwards(player);
             return Hit.INSTANCE;
@@ -106,11 +106,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     public boolean apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.asEntity();
 
-        iplayer.setAnimation(Animation.STOMP, Animation.Recipient.ANYONE, 10);
-
-        thrustDownwards(iplayer);
-
-        iplayer.waitForFall(() -> {
+        Runnable r = () -> {
             BlockPos center = PosHelper.findSolidGroundAt(player.getEntityWorld(), player.getBlockPos(), iplayer.getPhysics().getGravitySignum());
 
             float heavyness = 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, player);
@@ -162,7 +158,19 @@ public class EarthPonyStompAbility implements Ability<Hit> {
             ParticleUtils.spawnParticle(player.getWorld(), UParticles.GROUND_POUND, player.getX(), player.getY() - 1, player.getZ(), 0, 0, 0);
 
             iplayer.subtractEnergyCost(rad);
-        });
+            iplayer.asEntity().addExhaustion(3);
+        };
+
+        if (iplayer.asEntity().isOnGround()) {
+            iplayer.setAnimation(Animation.STOMP, Animation.Recipient.ANYONE, 10);
+            iplayer.asEntity().jump();
+            iplayer.updateVelocity();
+            AwaitTickQueue.scheduleTask(iplayer.asWorld(), w -> r.run(), 5);
+        } else {
+            thrustDownwards(iplayer);
+            iplayer.waitForFall(r);
+        }
+
         return true;
     }
 
