@@ -64,6 +64,7 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
         final Set<Drop> drops;
         final boolean wideTrunk;
         final int rarity;
+        final float leavesRatio;
 
         public TreeTypeDef(PacketByteBuf buffer) {
             logs = new HashSet<>(buffer.readList(PacketByteBuf::readIdentifier));
@@ -71,6 +72,7 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
             drops = new HashSet<>(buffer.readList(Drop::new));
             wideTrunk = buffer.readBoolean();
             rarity = buffer.readInt();
+            leavesRatio = buffer.readFloat();
         }
 
         public TreeType toTreeType(Identifier id) {
@@ -80,7 +82,8 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
                     Objects.requireNonNull(logs, "TreeType must have logs"),
                     Objects.requireNonNull(leaves, "TreeType must have leaves"),
                     Weighted.of(drops),
-                    rarity
+                    rarity,
+                    leavesRatio
             );
         }
 
@@ -90,6 +93,7 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
             buffer.writeCollection(drops, (a, b) -> b.write(a));
             buffer.writeBoolean(wideTrunk);
             buffer.writeInt(rarity);
+            buffer.writeFloat(leavesRatio);
         }
 
         static class Drop implements Weighted.Buildable<Supplier<ItemStack>> {

@@ -2,5 +2,6 @@
 	"logs": [ "minecraft:jungle_log", "minecraft:jungle_wood" ],
 	"leaves": [ "unicopia:mango_leaves" ],
 	"wideTrunk": false,
+	"leavesRatio": 0.5,
 	"drops": []
 }

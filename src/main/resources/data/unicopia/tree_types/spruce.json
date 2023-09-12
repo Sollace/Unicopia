@@ -3,6 +3,7 @@
 	"leaves": [ "minecraft:spruce_leaves" ],
 	"wideTrunk": true,
 	"rarity": 3,
+	"leavesRatio": 0.5,
 	"drops": [
 		{ "weight": 1, "tag": "c:pinecones" },
 		{ "weight": 4, "tag": "c:sticks" }

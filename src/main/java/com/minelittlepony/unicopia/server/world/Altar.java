@@ -97,7 +97,7 @@ public record Altar(BlockPos origin, Set<BlockPos> pillars) {
     }
 
     private static boolean checkSlab(World world, BlockPos pos) {
-        return !PosHelper.any(pos, p -> !isObsidian(world, p), HORIZONTALS);
+        return !PosHelper.fastAny(pos, p -> !isObsidian(world, p), HORIZONTALS);
     }
 
     private static boolean checkPillarPair(World world, BlockPos.Mutable center, BlockRotation rotation, Consumer<BlockPos> pillarPosCollector) {
