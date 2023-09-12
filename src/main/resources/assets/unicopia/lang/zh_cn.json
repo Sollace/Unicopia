@@ -682,6 +682,11 @@
   "unicopia.options.world.default_race": "默认种族：%s",
   "unicopia.options.lan": "多人游戏（局域网）设置",
   
+  "command.unicopia.config.add": "[配置] 将 %s 加入 %s 的属性中",
+  "command.unicopia.config.remove": "[配置] 将 %s 从 %s 的属性中移除",
+  "command.unicopia.config.list": "[配置] (%s)的属性包含 (%s) 的加入权: ",
+  "command.unicopia.config.clear": "[配置] 移除 %s 的属性中的所有数值",
+
   "unicopia.race.unset": "未设置",
   "unicopia.race.unset.alt": "未设置",
   "unicopia.race.human": "人类",
