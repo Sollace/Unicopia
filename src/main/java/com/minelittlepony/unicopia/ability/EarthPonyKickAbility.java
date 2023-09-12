@@ -87,6 +87,8 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                     Vec3d origin = player.getOriginVector();
                     World w = player.asWorld();
 
+                    player.asEntity().addExhaustion(3);
+
                     for (var e : VecHelper.findInRange(player.asEntity(), w, kickLocation.vec(), 2, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
                         if (e instanceof LivingEntity entity) {
                             float calculatedStrength = 0.5F * (1 + player.getLevel().getScaled(9));
@@ -112,6 +114,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         if (type == ActivationType.DOUBLE_TAP && player.asEntity().isOnGround() && player.getMagicalReserves().getMana().get() > 40) {
             player.getPhysics().dashForward((float)player.asWorld().random.nextTriangular(3.5F, 0.3F));
             player.subtractEnergyCost(4);
+            player.asEntity().addExhaustion(5);
             return true;
         }
 
@@ -128,7 +131,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     }
 
     private int getKickDirection(Pony player) {
-        return MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isEquine() ? -1 : 1;
+        return MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isEquine() && player.asEntity().isInSneakingPose() ? -1 : 1;
     }
 
     private Pos getDefaultKickLocation(Pony player) {
@@ -153,6 +156,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
         iplayer.setAnimation(Animation.KICK, Animation.Recipient.ANYONE);
         iplayer.subtractEnergyCost(treeType == TreeType.NONE ? 1 : 3);
+        iplayer.asEntity().addExhaustion(3);
 
         return treeType.collectBlocks(iplayer.asWorld(), pos).filter(tree -> {
             ParticleUtils.spawnParticle(iplayer.asWorld(), UParticles.GROUND_POUND, data.vec(), Vec3d.ZERO);
@@ -161,9 +165,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
             if (BlockDestructionManager.of(player.getWorld()).getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
                 if (player.getWorld().random.nextInt(30) == 0) {
-                    tree.logs().forEach(player.getWorld(), (w, state, p) -> {
-                        w.breakBlock(p, true);
-                    });
+                    tree.logs().forEach(player.getWorld(), (w, state, p) -> w.breakBlock(p, true));
                     tree.leaves().forEach(player.getWorld(), (w, state, p) -> {
                         Block.dropStacks(w.getBlockState(p), w, p);
                         w.setBlockState(p, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
@@ -172,6 +174,12 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
                 iplayer.subtractEnergyCost(3);
             } else {
+                tree.leaves().forEach(player.getWorld(), (w, state, p) -> {
+                    if (w.random.nextInt(30) == 0) {
+                        w.syncWorldEvent(WorldEvents.BLOCK_BROKEN, p, Block.getRawIdFromState(state));
+                    }
+                });
+
                 int cost = dropApples(player, pos);
 
                 if (cost > 0) {
