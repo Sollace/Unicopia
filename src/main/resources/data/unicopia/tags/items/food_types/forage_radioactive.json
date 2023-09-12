@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "minecraft:azure_bluet"
+    "minecraft:azure_bluet",
+    "minecraft:torchflower"
   ]
 }

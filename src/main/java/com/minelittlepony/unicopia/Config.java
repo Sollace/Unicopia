@@ -3,7 +3,9 @@ package com.minelittlepony.unicopia;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.gson.GsonBuilder;
 import com.minelittlepony.common.util.GamePaths;
+import com.minelittlepony.common.util.registry.RegistryTypeAdapter;
 import com.minelittlepony.common.util.settings.*;
 
 public class Config extends com.minelittlepony.common.util.settings.Config {
@@ -16,8 +18,11 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
     public final Setting<Set<String>> wantItNeedItEntityExcludelist = value("server", "wantItNeedItEntityExcludelist", (Set<String>)new HashSet<>(Set.of("minecraft:creeper")))
             .addComment("A list of entity types that are immune to the want it need it spell's effects");
 
+    public final Setting<Set<String>> dimensionsWithoutAtmosphere = value("server", "dimensionsWithoutAtmosphere", (Set<String>)new HashSet<String>())
+            .addComment("A list of dimensions ids that do not have an atmosphere, and thus shouldn't allow pegasi to fly.");
+
     public final Setting<Boolean> enableCheats = value("server", "enableCheats", false)
-            .addComment("Allows use of the /race, /disguise, and /gravity commands");
+            .addComment("Allows use of the /tribe, /unicopia disguise, and /unicopia gravity commands");
 
     public final Setting<Race> preferredRace = value("client", "preferredRace", Race.EARTH)
             .addComment("The default preferred race")
@@ -41,6 +46,8 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
             .addComment("Turn this ON if you have another mod that adds butterflies.");
 
     public Config() {
-        super(HEIRARCHICAL_JSON_ADAPTER, GamePaths.getConfigDirectory().resolve("unicopia.json"));
+        super(new HeirarchicalJsonConfigAdapter(new GsonBuilder()
+                .registerTypeAdapter(Race.class, RegistryTypeAdapter.of(Race.REGISTRY))
+        ), GamePaths.getConfigDirectory().resolve("unicopia.json"));
     }
 }

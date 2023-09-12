@@ -32,6 +32,9 @@ public class UnicopiaMixinPlugin implements IMixinConfigPlugin {
             if (mixinClassName.indexOf("seasons") != -1) {
                 return FabricLoader.getInstance().isModLoaded("seasons");
             }
+            if (mixinClassName.indexOf("ad_astra") != -1) {
+                return FabricLoader.getInstance().isModLoaded("ad_astra");
+            }
         }
         return true;
     }

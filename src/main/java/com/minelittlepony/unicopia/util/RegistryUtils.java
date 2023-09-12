@@ -53,4 +53,8 @@ public interface RegistryUtils {
     static <T> boolean isIn(World world, T obj, RegistryKey<? extends Registry<T>> registry, TagKey<T> tag) {
         return world.getRegistryManager().get(registry).getEntry(obj).isIn(tag);
     }
+    
+    static <T> Identifier getId(World world, T obj, RegistryKey<? extends Registry<T>> registry) {
+        return world.getRegistryManager().get(registry).getId(obj);
+    }
 }

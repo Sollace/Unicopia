@@ -113,7 +113,7 @@ public interface UBlocks {
             () -> UItems.APPLE_PIE_HOOF
     ));
 
-    SegmentedCropBlock OATS = register("oats", SegmentedCropBlock.create(11, 5, AbstractBlock.Settings.copy(Blocks.WHEAT), () -> UItems.OAT_SEEDS, null, () -> UBlocks.OATS_STEM));
+    SegmentedCropBlock OATS = register("oats", SegmentedCropBlock.create(11, 5, AbstractBlock.Settings.copy(Blocks.WHEAT), () -> UItems.OAT_SEEDS, null, null));
     SegmentedCropBlock OATS_STEM = register("oats_stem", OATS.createNext(5));
     SegmentedCropBlock OATS_CROWN = register("oats_crown", OATS_STEM.createNext(5));
 

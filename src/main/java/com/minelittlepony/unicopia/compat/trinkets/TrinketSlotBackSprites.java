@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.trinkets;
+package com.minelittlepony.unicopia.compat.trinkets;
 
 import java.util.HashMap;
 import java.util.Map;

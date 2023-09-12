@@ -25,6 +25,7 @@ public interface UFoodComponents {
 
     FoodComponent RANDOM_FOLIAGE = builder(2, 1).build();
     FoodComponent RANDOM_FOLIAGE_FILLING = builder(18, 1).build();
+    FoodComponent WORMS = builder(1, 1.5F).alwaysEdible().meat().build();
     FoodComponent INSECTS = builder(1, 0).alwaysEdible().build();
 
     FoodComponent CEREAL = builder(9, 0.8F).build();

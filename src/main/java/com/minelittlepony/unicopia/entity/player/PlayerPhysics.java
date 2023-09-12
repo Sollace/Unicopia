@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
+import com.minelittlepony.unicopia.compat.ad_astra.OxygenUtils;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
@@ -182,7 +183,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     public FlightType getFlightType() {
         DimensionType dimension = entity.getWorld().getDimension();
 
-        if (RegistryUtils.isIn(entity.getWorld(), dimension, RegistryKeys.DIMENSION_TYPE, UTags.HAS_NO_ATMOSPHERE)) {
+        if ((RegistryUtils.isIn(entity.getWorld(), dimension, RegistryKeys.DIMENSION_TYPE, UTags.HAS_NO_ATMOSPHERE)
+                || Unicopia.getConfig().dimensionsWithoutAtmosphere.get().contains(RegistryUtils.getId(entity.getWorld(), dimension, RegistryKeys.DIMENSION_TYPE).toString()))
+                && !OxygenUtils.entityHasOxygen(entity.getWorld(), entity)) {
             return FlightType.NONE;
         }
 

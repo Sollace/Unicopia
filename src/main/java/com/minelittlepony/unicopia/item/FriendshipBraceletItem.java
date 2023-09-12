@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

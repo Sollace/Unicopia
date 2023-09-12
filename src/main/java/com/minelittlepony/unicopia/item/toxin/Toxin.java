@@ -44,6 +44,7 @@ public interface Toxin extends Affliction {
         player.removeStatusEffect(StatusEffects.NAUSEA);
         player.removeStatusEffect(UEffects.FOOD_POISONING);
     });
+
     Toxin BAT_PONY_INTOXICATION = Toxin.of(StatusEffects.HEALTH_BOOST, 30, 60, 2, 6)
             .and(Toxin.of(StatusEffects.JUMP_BOOST, 30, 60, 1, 6))
             .and(Toxin.of(StatusEffects.SPEED, 30, 30, 1, 6))

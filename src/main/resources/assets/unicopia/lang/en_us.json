@@ -681,6 +681,11 @@
   "unicopia.options.world": "World Settings",
   "unicopia.options.world.default_race": "Default Race: %s",
   "unicopia.options.lan": "Multiplayer (LAN) Settings",
+  
+  "command.unicopia.config.add": "[Config] Added %s to property %s",
+  "command.unicopia.config.remove": "[Config] Removed %s from property %s",
+  "command.unicopia.config.list": "[Config] Property (%s) contains (%s) entries: ",
+  "command.unicopia.config.clear": "[Config] Cleared all values from property %s",
 
   "unicopia.race.unset": "Unset",
   "unicopia.race.unset.alt": "Unset",
