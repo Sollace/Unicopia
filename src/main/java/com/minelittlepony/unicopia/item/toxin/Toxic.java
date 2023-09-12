@@ -17,8 +17,6 @@ public record Toxic (
         Optional<FoodComponent> component,
         Ailment.Set ailment
     ) {
-    public static final Toxic EMPTY = new Toxic(Optional.empty(), Optional.empty(), Ailment.Set.EMPTY);
-
     public void appendTooltip(PlayerEntity player, List<Text> tooltip, TooltipContext context) {
         ailment.get(player).ifPresent(ailment -> ailment.appendTooltip(tooltip, context));
     }

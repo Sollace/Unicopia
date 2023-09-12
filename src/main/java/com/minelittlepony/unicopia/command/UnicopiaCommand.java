@@ -11,6 +11,7 @@ class UnicopiaCommand {
     public static LiteralArgumentBuilder<ServerCommandSource> create(CommandRegistryAccess registries, RegistrationEnvironment environment) {
         return CommandManager.literal("unicopia")
                 .then(EmoteCommand.create())
+                .then(ConfigCommand.create(registries))
                 .then(SpeciesCommand.create(environment))
                 .then(RacelistCommand.create())
                 .then(WorldTribeCommand.create())

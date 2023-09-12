@@ -2,7 +2,8 @@ package com.minelittlepony.unicopia.mixin.trinkets;
 
 import org.spongepowered.asm.mixin.*;
 
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegateImpl;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegateImpl;
+
 import dev.emi.trinkets.api.*;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;

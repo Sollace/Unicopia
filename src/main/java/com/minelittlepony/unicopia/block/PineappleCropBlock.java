@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.block;
 
+import com.minelittlepony.unicopia.compat.seasons.FertilizableUtil;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.seasons.FertilizableUtil;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -66,7 +66,9 @@ public class PineappleCropBlock extends CropBlock {
         if (state.get(HALF) == BlockHalf.BOTTOM) {
             super.randomTick(state, world, pos, random);
 
-            if (!isMature(state) && isMature(world.getBlockState(pos)) && world.isAir(pos.up())) {
+            BlockState newState = world.getBlockState(pos);
+
+            if (newState.isOf(this) && !isMature(state) && isMature(newState) && world.isAir(pos.up())) {
                 world.setBlockState(pos.up(), getDefaultState().with(HALF, BlockHalf.TOP));
             }
         } else {

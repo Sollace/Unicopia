@@ -6,8 +6,8 @@ import com.minelittlepony.api.model.gear.IGear;
 import com.minelittlepony.api.pony.IPony;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.AnimationUtil;
 
 import net.fabricmc.api.ClientModInitializer;

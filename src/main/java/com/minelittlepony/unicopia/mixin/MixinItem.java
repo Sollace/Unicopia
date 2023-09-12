@@ -2,17 +2,16 @@ package com.minelittlepony.unicopia.mixin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
-import org.jetbrains.annotations.Nullable;
-
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.google.common.base.Suppliers;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.ItemImpl.GroundTickCallback;
 import com.minelittlepony.unicopia.entity.effect.FoodPoisoningStatusEffect;
@@ -29,16 +28,9 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 @Mixin(Item.class)
-abstract class MixinItem implements ToxicHolder, ItemImpl.TickableItem {
-
-    private boolean foodLoaded;
-    @Nullable
-    private FoodComponent originalFoodComponent;
-
-    @Shadow @Mutable
-    private @Final FoodComponent foodComponent;
-
+abstract class MixinItem implements ItemDuck {
     private final List<ItemImpl.GroundTickCallback> tickCallbacks = new ArrayList<>();
+    private final Supplier<FoodComponent> originalFoodComponent = Suppliers.memoize(((Item)(Object)this)::getFoodComponent);
 
     @Override
     public List<GroundTickCallback> getCallbacks() {
@@ -46,24 +38,14 @@ abstract class MixinItem implements ToxicHolder, ItemImpl.TickableItem {
     }
 
     @Override
-    public void clearFoodOverride() {
-        foodComponent = getOriginalFoodComponent();
-    }
+    @Mutable
+    @Accessor("foodComponent")
+    public abstract void setFoodComponent(FoodComponent food);
 
     @Override
-    public void setFoodOverride(FoodComponent component) {
-        if (getOriginalFoodComponent() == null) {
-            foodComponent = component;
-        }
-    }
-
-    @Override
-    public FoodComponent getOriginalFoodComponent() {
-        if (!foodLoaded) {
-            foodLoaded = true;
-            originalFoodComponent = asItem().getFoodComponent();
-        }
-        return originalFoodComponent;
+    public Toxic getToxic(ItemStack stack) {
+        setFoodComponent(originalFoodComponent.get());
+        return Toxics.lookup(this);
     }
 
     @Inject(method = "finishUsing", at = @At("HEAD"), cancellable = true)

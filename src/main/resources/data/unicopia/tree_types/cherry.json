@@ -1,0 +1,8 @@
+{
+	"logs": [ "minecraft:cherry_log", "minecraft:cherry_wood" ],
+	"leaves": [ "minecraft:cherry_leaves" ],
+	"rarity": 7,
+	"drops": [
+		{ "weight": 1, "item": "minecraft:pink_petals" }
+	]
+}

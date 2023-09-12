@@ -4,12 +4,15 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.compat.seasons.FertilizableUtil;
+
 import net.minecraft.block.*;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.*;
@@ -104,6 +107,14 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
     }
 
     @Override
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+        if (direction == Direction.UP && !isNext(neighborState)) {
+            return state.with(getAgeProperty(), Math.min(state.get(getAgeProperty()), getMaxAge() - 1));
+        }
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+    }
+
+    @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         BlockPos tip = getTip(world, pos);
         BlockPos root = getRoot(world, pos);
@@ -116,9 +127,12 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
             int age = getAge(state);
             if (age < getMaxAge()) {
                 float moisture = CropBlock.getAvailableMoisture(world.getBlockState(root).getBlock(), world, root);
-                if (random.nextInt((int)(BASE_GROWTH_CHANCE / moisture) + 1) == 0) {
-                    world.setBlockState(pos, withAge(age + 1), Block.NOTIFY_LISTENERS);
-                    propagateGrowth(world, pos, state);
+                int steps = FertilizableUtil.getGrowthSteps(world, pos, state, random);
+                while (steps-- > 0) {
+                    if (random.nextInt((int)(BASE_GROWTH_CHANCE / moisture) + 1) == 0) {
+                        world.setBlockState(pos, withAge(age + 1), Block.NOTIFY_LISTENERS);
+                        propagateGrowth(world, pos, state);
+                    }
                 }
             }
         }
@@ -127,11 +141,7 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
     private void propagateGrowth(World world, BlockPos pos, BlockState state) {
         int oldAge = getAge(state);
         state = world.getBlockState(pos);
-        int ageChange = getAge(state) - oldAge;
-
-        if (ageChange <= 0) {
-            return;
-        }
+        int ageChange = Math.max(1, getAge(state) - oldAge);
 
         onGrown(world, pos, state, ageChange);
 
@@ -160,13 +170,18 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
     }
 
     @Override
-    public boolean hasRandomTicks(BlockState state) {
-        return super.hasRandomTicks(state) || nextSegmentSupplier != null;
-    }
-
-    @Override
     public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
-        return super.isFertilizable(world, pos, state, isClient) || (nextSegmentSupplier != null && isNext(world.getBlockState(pos.up())));
+        if (super.isFertilizable(world, pos, state, isClient)) {
+            return true;
+        }
+
+        if (nextSegmentSupplier == null) {
+            return false;
+        }
+
+        pos = pos.up();
+        state = world.getBlockState(pos);
+        return state.isAir() || (isNext(state) && state.getBlock() instanceof Fertilizable f && f.isFertilizable(world, pos, state, isClient));
     }
 
     @Override

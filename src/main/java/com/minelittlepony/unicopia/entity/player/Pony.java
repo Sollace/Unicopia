@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation.Recipient;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.AnimationInstance;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.*;
@@ -30,7 +31,6 @@ import com.minelittlepony.unicopia.util.*;
 import com.minelittlepony.unicopia.network.*;
 import com.minelittlepony.unicopia.network.datasync.EffectSync.UpdateCallback;
 import com.minelittlepony.unicopia.server.world.UGameRules;
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.common.util.animation.LinearInterpolator;
 import com.google.common.collect.Streams;
 import com.minelittlepony.common.util.animation.Interpolator;

@@ -9,9 +9,9 @@ import com.minelittlepony.client.model.IPonyModel;
 import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer.BraceletModel;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.GlowableItem;
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.network.ClientPlayerEntity;

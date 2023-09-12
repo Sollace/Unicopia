@@ -17,11 +17,11 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellTyp
 import com.minelittlepony.unicopia.client.FlowingText;
 import com.minelittlepony.unicopia.client.gui.*;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketSlotBackSprites;
 import com.minelittlepony.unicopia.container.*;
 import com.minelittlepony.unicopia.container.inventory.*;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;
-import com.minelittlepony.unicopia.trinkets.TrinketSlotBackSprites;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
