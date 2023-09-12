@@ -6,6 +6,7 @@ import net.minecraft.block.*;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.WorldAccess;
 
 public class ZapAppleLeavesPlaceholderBlock extends AirBlock {
 
@@ -16,6 +17,20 @@ public class ZapAppleLeavesPlaceholderBlock extends AirBlock {
     @Override
     public boolean hasRandomTicks(BlockState state) {
         return true;
+    }
+
+    @Override
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+
+        if (world instanceof ServerWorld sw) {
+            ZapAppleStageStore store = ZapAppleStageStore.get(sw);
+            ZapAppleStageStore.Stage currentStage = store.getStage();
+            if (currentStage != ZapAppleStageStore.Stage.HIBERNATING) {
+                return currentStage.getNewState(state);
+            }
+        }
+
+        return state;
     }
 
     @Deprecated
