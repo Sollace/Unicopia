@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
@@ -29,18 +30,8 @@ public class TreeTypes {
         return entries.stream()
                 .filter(type -> type.matches(state))
                 .findFirst()
-                .map(type -> TreeType.of(type, type.findLeavesType(world, pos)))
-                .orElseGet(() -> {
-                    if (any1x.matches(state)) {
-                        if (PosHelper.any(pos, p -> world.getBlockState(p).isOf(state.getBlock()), PosHelper.HORIZONTAL)) {
-                            return any2x;
-                        }
-
-                        return any1x;
-                    }
-
-                    return TreeType.NONE;
-                });
+                .map(type -> TreeType.of(type, findLeavesType(type, world, pos)))
+                .orElseGet(() -> any1x.matches(state) ? (PosHelper.fastAny(pos, p -> world.getBlockState(p).isOf(state.getBlock()), PosHelper.HORIZONTAL) ? any2x : any1x) : TreeType.NONE);
     }
 
     static TreeType get(BlockState state) {
@@ -48,6 +39,16 @@ public class TreeTypes {
                 .filter(type -> type.matches(state))
                 .findFirst()
                 .orElse(TreeType.NONE);
+    }
+
+    private static TreeType findLeavesType(TreeType baseType, World w, BlockPos pos) {
+        BlockPos.Mutable mutable = pos.mutableCopy();
+        while (baseType.isLog(w.getBlockState(mutable.move(Direction.UP)))) {
+            if (PosHelper.fastAny(mutable, p -> baseType.isLeaves(w.getBlockState(p)), PosHelper.HORIZONTAL)) {
+                return baseType;
+            }
+        }
+        return TreeType.of(w.getBlockState(mutable));
     }
 
     private static TreeType createDynamic(boolean wide) {
@@ -74,6 +75,11 @@ public class TreeTypes {
             @Override
             public boolean isWide() {
                 return wide;
+            }
+
+            @Override
+            public float leavesRatio() {
+                return 0.5F;
             }
         };
     }

@@ -3,6 +3,7 @@
 	"leaves": [ "minecraft:jungle_leaves" ],
 	"wideTrunk": true,
 	"rarity": 5,
+	"leavesRatio": 0.5,
 	"drops": [
 		{ "weight": 5, "item": "unicopia:green_apple" },
 		{ "weight": 2, "item": "unicopia:sweet_apple" },

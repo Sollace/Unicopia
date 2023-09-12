@@ -149,43 +149,38 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     public boolean apply(Pony iplayer, Pos data) {
 
         BlockPos pos = data.pos();
-        TreeType tree = TreeType.at(pos, iplayer.asWorld());
-
-        if (tree == TreeType.NONE || tree.findBase(iplayer.asWorld(), pos)
-                .map(base -> tree.countBlocks(iplayer.asWorld(), pos) > 0)
-                .orElse(false)) {
-            return false;
-        }
+        TreeType treeType = TreeType.at(pos, iplayer.asWorld());
 
         iplayer.setAnimation(Animation.KICK, Animation.Recipient.ANYONE);
-        iplayer.subtractEnergyCost(tree == TreeType.NONE ? 1 : 3);
+        iplayer.subtractEnergyCost(treeType == TreeType.NONE ? 1 : 3);
 
-        ParticleUtils.spawnParticle(iplayer.asWorld(), UParticles.GROUND_POUND, data.vec(), Vec3d.ZERO);
+        return treeType.collectBlocks(iplayer.asWorld(), pos).filter(tree -> {
+            ParticleUtils.spawnParticle(iplayer.asWorld(), UParticles.GROUND_POUND, data.vec(), Vec3d.ZERO);
 
-        PlayerEntity player = iplayer.asEntity();
+            PlayerEntity player = iplayer.asEntity();
 
-        if (BlockDestructionManager.of(player.getWorld()).getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
-            if (player.getWorld().random.nextInt(30) == 0) {
-                tree.traverse(player.getWorld(), pos, (w, state, p, recurseLevel) -> {
-                    if (recurseLevel < 5) {
+            if (BlockDestructionManager.of(player.getWorld()).getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
+                if (player.getWorld().random.nextInt(30) == 0) {
+                    tree.logs().forEach(player.getWorld(), (w, state, p) -> {
                         w.breakBlock(p, true);
-                    } else {
+                    });
+                    tree.leaves().forEach(player.getWorld(), (w, state, p) -> {
                         Block.dropStacks(w.getBlockState(p), w, p);
-                        w.setBlockState(p, Blocks.AIR.getDefaultState(), 3);
-                    }
-                });
+                        w.setBlockState(p, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+                    });
+                }
+
+                iplayer.subtractEnergyCost(3);
+            } else {
+                int cost = dropApples(player, pos);
+
+                if (cost > 0) {
+                    iplayer.subtractEnergyCost(cost / 7F);
+                }
             }
 
-            iplayer.subtractEnergyCost(3);
-        } else {
-            int cost = dropApples(player, pos);
-
-            if (cost > 0) {
-                iplayer.subtractEnergyCost(cost / 7F);
-            }
-        }
-
-        return true;
+            return true;
+        }).isPresent();
     }
 
     @Override
@@ -195,37 +190,32 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
     @Override
     public void coolDown(Pony player, AbilitySlot slot) {
+        player.asEntity().getHungerManager().addExhaustion(0.1F);
     }
 
     private int dropApples(PlayerEntity player, BlockPos pos) {
-        TreeType tree = TreeType.at(pos, player.getWorld());
-
-        if (tree.countBlocks(player.getWorld(), pos) > 0) {
-            List<ItemEntity> capturedDrops = new ArrayList<>();
-
-            tree.traverse(player.getWorld(), pos, (world, state, position, recurse) -> {
+        TreeType treeType = TreeType.at(pos, player.getWorld());
+        return treeType.collectBlocks(player.getWorld(), pos).map(tree -> {
+            tree.logs().forEach(player.getWorld(), (world, state, position) -> {
                 affectBlockChange(player, position);
-            }, (world, state, position, recurse) -> {
+            });
+
+            int[] dropCount = {0};
+            tree.leaves().forEach(player.getWorld(), (world, state, position) -> {
                 affectBlockChange(player, position);
-                List<ItemEntity> drops = buckBlock(tree, state, world, position)
+                if (!buckBlock(treeType, state, world, position)
                         .filter(i -> !i.isEmpty())
-                        .map(stack -> createDrop(stack, position, world))
-                        .toList();
-                if (!drops.isEmpty()) {
+                        .map(stack -> createDrop(stack, position, world, dropCount))
+                        .toList().isEmpty()) {
                     world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, position, Block.getRawIdFromState(state));
-                    capturedDrops.addAll(drops);
                 }
             });
 
-            capturedDrops.forEach(player.getWorld()::spawnEntity);
-
-            return capturedDrops.size() / 3;
-        }
-
-        return 0;
+            return dropCount[0] / 3;
+        }).orElse(0);
     }
 
-    private ItemEntity createDrop(ItemStack stack, BlockPos pos, World world) {
+    private ItemEntity createDrop(ItemStack stack, BlockPos pos, World world, int[] dropCount) {
         ItemEntity entity = new ItemEntity(world,
             pos.getX() + world.random.nextFloat(),
             pos.getY() - 0.5,
@@ -233,10 +223,12 @@ public class EarthPonyKickAbility implements Ability<Pos> {
             stack
         );
         entity.setToDefaultPickupDelay();
+        world.spawnEntity(entity);
+        dropCount[0]++;
         return entity;
     }
 
-    private Stream<ItemStack> buckBlock(TreeType tree, BlockState treeState, World world, BlockPos position) {
+    private Stream<ItemStack> buckBlock(TreeType treeType, BlockState treeState, World world, BlockPos position) {
 
         if (treeState.getBlock() instanceof Buckable buckable) {
             return buckable.onBucked((ServerWorld)world, treeState, position).stream();
@@ -246,7 +238,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         BlockState below = world.getBlockState(down);
 
         if (below.isAir()) {
-            return Stream.of(tree.pickRandomStack(world.random, treeState));
+            return Stream.of(treeType.pickRandomStack(world.random, treeState));
         }
 
         if (below.getBlock() instanceof Buckable buckable) {
@@ -259,7 +251,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     private void affectBlockChange(PlayerEntity player, BlockPos position) {
         BlockDestructionManager.of(player.getWorld()).damageBlock(position, 4);
 
-        PosHelper.all(position, p -> {
+        PosHelper.fastAll(position, p -> {
             BlockState s = player.getWorld().getBlockState(p);
 
             if (s.getBlock() instanceof BeehiveBlock) {

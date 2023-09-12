@@ -17,7 +17,8 @@ public record TreeTypeImpl (
         Set<Identifier> logs,
         Set<Identifier> leaves,
         Supplier<Optional<Supplier<ItemStack>>> pool,
-        int rarity
+        int rarity,
+        float leavesRatio
 ) implements TreeType {
     @Override
     public boolean isLeaves(BlockState state) {
