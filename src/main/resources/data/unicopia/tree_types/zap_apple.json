@@ -1,6 +1,6 @@
 {
 	"logs": [ "unicopia:zap_log" ],
-	"leaves": [ "unicopia:zap_leaves" ],
+	"leaves": [ "unicopia:zap_leaves_placeholder", "unicopia:zap_leaves", "unicopia:flowering_zap_leaves" ],
 	"wideTrunk": false,
 	"leavesRatio": 0.5,
 	"drops": []
