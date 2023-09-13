@@ -41,6 +41,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     public static final TrackedData<Float> GRAVITY = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<Integer> EATING = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> DISCORDED = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> SMITTEN = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     public static void boostrap() {}
 
@@ -56,6 +57,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     private EatMuffinGoal eatMuffinGoal;
 
     private boolean discordedChanged = true;
+    private int smittenTicks;
 
     private final Predicate<LivingEntity> targetPredicate = TargetSelecter.<LivingEntity>notOwnerOrFriend(() -> getOriginatingCaster().getAffinity(), this).and(e -> {
         return Equine.of(e)
@@ -70,6 +72,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         entity.getDataTracker().startTracking(MASTER, owner.toNBT());
         entity.getDataTracker().startTracking(EATING, 0);
         entity.getDataTracker().startTracking(DISCORDED, false);
+        entity.getDataTracker().startTracking(SMITTEN, false);
 
         addTicker(physics);
         addTicker(this::updateConsumption);
@@ -90,6 +93,15 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     public boolean isDiscorded() {
         return entity.getDataTracker().get(DISCORDED);
+    }
+
+    public boolean isSmitten() {
+        return entity.getDataTracker().get(SMITTEN);
+    }
+
+    public void setSmitten(boolean smitten) {
+        smittenTicks = smitten ? 20 : 0;
+        entity.getDataTracker().set(SMITTEN, smitten);
     }
 
     public void setDiscorded(boolean discorded) {
@@ -131,7 +143,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         DynamicTargetGoal targetter = new DynamicTargetGoal((MobEntity)entity);
         targets.add(1, targetter);
         if (!Unicopia.getConfig().wantItNeedItEntityExcludelist.get().contains(EntityType.getId(entity.getType()).toString())) {
-            goals.add(1, new WantItTakeItGoal((MobEntity)entity, targetter));
+            goals.add(1, new WantItTakeItGoal(this, targetter));
         }
         if (entity.getType().getSpawnGroup() == SpawnGroup.MONSTER) {
             goals.add(3, new BreakHeartGoal((MobEntity)entity, targetter));
@@ -197,6 +209,12 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         if (discordedChanged) {
             discordedChanged = false;
             initDiscordedAi();
+        }
+
+        if (!isClient() && smittenTicks > 0) {
+            if (--smittenTicks <= 0) {
+                setSmitten(false);
+            }
         }
 
         return super.beforeUpdate();

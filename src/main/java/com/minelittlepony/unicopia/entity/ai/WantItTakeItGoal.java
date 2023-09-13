@@ -2,11 +2,14 @@ package com.minelittlepony.unicopia.entity.ai;
 
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.enchantment.WantItNeedItEnchantment;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
+import com.minelittlepony.unicopia.util.VecHelper;
+
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -26,8 +29,11 @@ public class WantItTakeItGoal extends BreakHeartGoal {
 
     protected int cooldown;
 
-    public WantItTakeItGoal(MobEntity mob, DynamicTargetGoal targetter) {
-        super(mob, targetter);
+    private final Creature creature;
+
+    public WantItTakeItGoal(Creature creature, DynamicTargetGoal targetter) {
+        super((MobEntity)creature.asEntity(), targetter);
+        this.creature = creature;
     }
 
     @Override
@@ -41,7 +47,7 @@ public class WantItTakeItGoal extends BreakHeartGoal {
 
     @Override
     protected void attackTarget(Entity target, double reach, double distance) {
-        ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, mob, 0.2F), mob, 1);
+        ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, mob.getPos().add(VecHelper.sphere(mob.getWorld().random).get()), 0.2F), mob, 1);
 
         double speed = 0.8D;
 
@@ -59,6 +65,7 @@ public class WantItTakeItGoal extends BreakHeartGoal {
         mob.getNavigation().startMovingTo(target, speed);
 
         cooldown = Math.max(cooldown - 1, 0);
+        creature.setSmitten(true);
 
         if (distance <= reach) {
             if (target instanceof LivingEntity) {
