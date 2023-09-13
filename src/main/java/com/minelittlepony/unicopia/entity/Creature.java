@@ -17,7 +17,6 @@ import com.minelittlepony.unicopia.entity.ai.BreakHeartGoal;
 import com.minelittlepony.unicopia.entity.ai.DynamicTargetGoal;
 import com.minelittlepony.unicopia.entity.ai.EatMuffinGoal;
 import com.minelittlepony.unicopia.entity.ai.WantItTakeItGoal;
-import com.minelittlepony.unicopia.entity.mob.SombraEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 
 import net.minecraft.entity.EntityType;
@@ -122,13 +121,12 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     }
 
     public void initAi(GoalSelector goals, GoalSelector targets) {
-
-        if (entity instanceof SombraEntity) {
-            return;
-        }
-
         this.goals = Optional.of(goals);
         this.targets = Optional.of(targets);
+
+        if (entity instanceof MagicImmune) {
+            return;
+        }
 
         DynamicTargetGoal targetter = new DynamicTargetGoal((MobEntity)entity);
         targets.add(1, targetter);
@@ -143,13 +141,8 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
             goals.add(3, eatMuffinGoal);
         }
 
-        if (getMasterReference().isSet()) {
-            initMinionAi(targets);
-        }
-
-        if (isDiscorded()) {
-            initDiscordedAi();
-        }
+        initMinionAi(targets);
+        initDiscordedAi();
 
         if (entity instanceof CreeperEntity mob) {
             goals.add(1, new FleeEntityGoal<>(mob, LivingEntity.class, 10, 1.5, 1.9, AmuletSelectors.ALICORN_AMULET));
@@ -160,6 +153,10 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     }
 
     private void initMinionAi(GoalSelector targets) {
+        if (entity instanceof MagicImmune || !getMasterReference().isSet()) {
+            return;
+        }
+
         clearGoals(targets);
         targets.add(2, new ActiveEnemyGoal<>(PlayerEntity.class));
         targets.add(2, new ActiveEnemyGoal<>(HostileEntity.class));
@@ -167,7 +164,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     }
 
     private void initDiscordedAi() {
-        if (getMasterReference().isSet()) {
+        if (entity instanceof MagicImmune || getMasterReference().isSet() || !isDiscorded()) {
             return;
         }
         targets.ifPresent(this::clearGoals);
@@ -197,7 +194,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     @Override
     public boolean beforeUpdate() {
-        if (isDiscorded() && discordedChanged) {
+        if (discordedChanged) {
             discordedChanged = false;
             initDiscordedAi();
         }
