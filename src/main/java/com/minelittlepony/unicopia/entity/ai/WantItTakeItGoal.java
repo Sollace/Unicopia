@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.entity.ai;
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
+import com.minelittlepony.unicopia.item.enchantment.WantItNeedItEnchantment;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -14,13 +15,14 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.Hand;
 
 public class WantItTakeItGoal extends BreakHeartGoal {
 
-    private final TargetPredicate predicate = TargetPredicate.createAttackable()
+    private final TargetPredicate predicate = TargetPredicate.createNonAttackable()
             .setBaseMaxDistance(64)
-            .setPredicate(EquinePredicates.HAS_WANT_IT_NEED_IT);
+            .setPredicate(EquinePredicates.LIVING_HAS_WANT_IT_NEED_IT.and(LivingEntity::canTakeDamage).and(EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
 
     protected int cooldown;
 
@@ -30,8 +32,11 @@ public class WantItTakeItGoal extends BreakHeartGoal {
 
     @Override
     protected boolean canTarget(Entity e) {
-        return (!e.isRemoved() && e instanceof ItemEntity && EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, ((ItemEntity)e).getStack()) > 0)
-            || (e instanceof LivingEntity && predicate.test(mob, (LivingEntity)e));
+        return e != null && !e.isRemoved() && (
+                  (e instanceof LivingEntity l && predicate.test(mob, l)
+               || (e instanceof ItemEntity i && WantItNeedItEnchantment.getLevel(i) > 0)
+            )
+        );
     }
 
     @Override

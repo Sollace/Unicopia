@@ -65,7 +65,7 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
                     if (player instanceof ServerPlayerEntity recipient
                             && player.currentScreenHandler instanceof SpellbookScreenHandler book
                             && getUuid().equals(book.entityId)) {
-                        Channel.SERVER_SPELLBOOK_UPDATE.sendToPlayer(new MsgSpellbookStateChanged<>(book.syncId, state), recipient);
+                        Channel.SERVER_SPELLBOOK_UPDATE.sendToPlayer(MsgSpellbookStateChanged.create(book, state), recipient);
                     }
                 });
             });
