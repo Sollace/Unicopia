@@ -6,7 +6,6 @@ import java.util.stream.StreamSupport;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.base.Preconditions;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
@@ -113,7 +112,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     public <Q extends Tickable> Q addTicker(Q tickable) {
-        tickers.add(Preconditions.checkNotNull(tickable, "tickable"));
+        tickers.add(Objects.requireNonNull(tickable, "tickable cannot be null"));
         return tickable;
     }
 

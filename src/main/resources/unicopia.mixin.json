@@ -65,6 +65,7 @@
     "client.MixinItemModels",
     "client.MixinKeyboardInput",
     "client.MixinLivingEntityRenderer",
+    "client.MixinModelPart",
     "client.MixinMouse",
     "client.MixinPlayerEntityRenderer",
     "client.MixinTooltipComponent",

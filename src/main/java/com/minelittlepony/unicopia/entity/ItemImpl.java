@@ -4,6 +4,10 @@ import java.util.List;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
+import com.minelittlepony.unicopia.item.enchantment.WantItNeedItEnchantment;
+import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -55,6 +59,16 @@ public class ItemImpl implements Equine<ItemEntity> {
                 serverRace = race;
                 setSpecies(Race.HUMAN);
                 setSpecies(race);
+            }
+
+            if (WantItNeedItEnchantment.getLevel(entity) > 0) {
+                var random = entity.getWorld().random;
+
+                if (random.nextInt(15) == 0) {
+                    ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, entity.getPos().add(
+                            VecHelper.sphere(random).get().add(0, 1, 0)
+                    ), 0.2F), entity, 1);
+                }
             }
         }
 

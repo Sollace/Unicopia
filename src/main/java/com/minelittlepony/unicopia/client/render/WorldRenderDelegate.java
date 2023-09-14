@@ -20,6 +20,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
@@ -146,6 +147,8 @@ public class WorldRenderDelegate {
 
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(diveAngle));
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
+        } else if (pony instanceof Creature creature && SmittenEyesRenderer.INSTANCE.isSmitten(creature)) {
+            ModelPartHooks.startCollecting();
         }
 
         matrices.translate(-x, -y - owner.getHeight() / 2, -z);
@@ -178,7 +181,7 @@ public class WorldRenderDelegate {
                         PehkUtil.clearScale(ee);
                     });
 
-                    afterEntityRender(pony, matrices);
+                    afterEntityRender(pony, matrices, light);
                     PehkUtil.clearScale(e);
                     return true;
                 }
@@ -189,9 +192,14 @@ public class WorldRenderDelegate {
         return false;
     }
 
-    public void afterEntityRender(Equine<?> pony, MatrixStack matrices) {
+    public void afterEntityRender(Equine<?> pony, MatrixStack matrices, int light) {
         if (recurseFrosting) {
             return;
+        }
+
+        if (pony instanceof Creature creature && SmittenEyesRenderer.INSTANCE.isSmitten(creature)) {
+            Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+            SmittenEyesRenderer.INSTANCE.render(creature, matrices, immediate, light, 0);
         }
 
         if (pony instanceof ItemImpl || pony instanceof Living) {
