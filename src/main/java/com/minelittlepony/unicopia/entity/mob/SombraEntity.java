@@ -226,28 +226,30 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
         setPersistent();
         Optional<BlockPos> homePos = getHomePos();
 
-        if (homePos.isEmpty() && !isRemoved()) {
+        if (homePos.isEmpty()) {
             setHomePos(getWorld().getTopPosition(Type.MOTION_BLOCKING_NO_LEAVES, getBlockPos()));
             homePos = getHomePos();
         }
 
-        if (getBlockPos().getSquaredDistance(homePos.get()) > MathHelper.square(getAreaRadius())) {
-            teleportTo(Vec3d.ofCenter(homePos.get()));
-            getNavigation().stop();
-        }
+        if (!isRemoved()) {
+            if (getBlockPos().getSquaredDistance(homePos.get()) > MathHelper.square(getAreaRadius())) {
+                teleportTo(Vec3d.ofCenter(homePos.get()));
+                getNavigation().stop();
+            }
 
-        prevBiteTime = biteTime;
-        if (biteTime > 0) {
-            biteTime--;
-        }
+            prevBiteTime = biteTime;
+            if (biteTime > 0) {
+                biteTime--;
+            }
 
-        float targetSize = getScaleFactor();
-        boolean sizeChanging = prevSize != currentSize;
-        prevSize = currentSize;
-        tickGrowth(targetSize, sizeChanging);
+            float targetSize = getScaleFactor();
+            boolean sizeChanging = prevSize != currentSize;
+            prevSize = currentSize;
+            tickGrowth(targetSize, sizeChanging);
 
-        if (!hasPositionTarget() && homePos.isPresent()) {
-            setPositionTarget(homePos.get(), (int)getAreaRadius());
+            if (!hasPositionTarget() && homePos.isPresent()) {
+                setPositionTarget(homePos.get(), (int)getAreaRadius());
+            }
         }
 
         super.tick();

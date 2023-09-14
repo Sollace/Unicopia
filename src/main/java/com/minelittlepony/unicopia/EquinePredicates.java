@@ -5,9 +5,8 @@ import java.util.function.Predicate;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.MagicImmune;
-import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
+import com.minelittlepony.unicopia.item.enchantment.WantItNeedItEnchantment;
 
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -34,12 +33,7 @@ public interface EquinePredicates {
     Predicate<Entity> EXCEPT_MAGIC_IMMUNE = IS_MAGIC_IMMUNE.negate();
     Predicate<Entity> VALID_LIVING_AND_NOT_MAGIC_IMMUNE = EntityPredicates.VALID_LIVING_ENTITY.and(EXCEPT_MAGIC_IMMUNE);
 
-    Predicate<LivingEntity> HAS_WANT_IT_NEED_IT = e -> {
-        return EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, e) > 0
-            || EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, e.getOffHandStack()) > 0
-            || EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, e.getMainHandStack()) > 0;
-    };
-
+    Predicate<LivingEntity> LIVING_HAS_WANT_IT_NEED_IT = e -> WantItNeedItEnchantment.getLevel(e) > 0;
     Predicate<Entity> VALID_FOR_DISGUISE = EntityPredicates.EXCEPT_SPECTATOR.and(e -> !(e instanceof LightningEntity || e instanceof AbstractDecorationEntity));
 
     static Predicate<Entity> ofRace(Race race) {
