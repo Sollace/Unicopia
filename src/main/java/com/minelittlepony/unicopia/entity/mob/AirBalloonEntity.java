@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.entity.mob;
 
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.*;
@@ -47,6 +48,7 @@ import com.minelittlepony.unicopia.entity.collision.MultiBox;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 import com.minelittlepony.unicopia.item.BasketItem;
 import com.minelittlepony.unicopia.item.HotAirBalloonItem;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 import com.terraformersmc.terraform.boat.api.TerraformBoatType;
 
@@ -336,7 +338,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
                     if (isAscending()) {
                         playSound(USounds.ENTITY_HOT_AIR_BALLOON_BOOST, 1, 1);
                     }
-                    stack.damage(1, player, p -> p.sendEquipmentBreakStatus(hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND));
+                    stack.damage(1, player, p -> p.sendToolBreakStatus(hand));
                     playSound(USounds.Vanilla.ITEM_FLINTANDSTEEL_USE, 1, 1);
                     getWorld().emitGameEvent(this, GameEvent.ENTITY_INTERACT, getBlockPos());
                     return ActionResult.SUCCESS;
@@ -369,6 +371,17 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             playSound(USounds.ENTITY_HOT_AIR_BALLOON_EQUIP_CANOPY, 1, 1);
             getWorld().emitGameEvent(this, GameEvent.ENTITY_INTERACT, getBlockPos());
             setDesign(HotAirBalloonItem.getDesign(getWorld(), stack));
+            return ActionResult.SUCCESS;
+        }
+
+        if (stack.isIn(ConventionalItemTags.SHEARS) && hasBalloon()) {
+            if (!player.getAbilities().creativeMode) {
+                stack.damage(1, player, p -> p.sendToolBreakStatus(hand));
+            }
+            setDesign(BalloonDesign.NONE);
+            dropItem(UItems.GIANT_BALLOON);
+            playSound(USounds.ENTITY_HOT_AIR_BALLOON_EQUIP_CANOPY, 1, 1);
+            getWorld().emitGameEvent(this, GameEvent.ENTITY_INTERACT, getBlockPos());
             return ActionResult.SUCCESS;
         }
 
@@ -532,9 +545,13 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     @SuppressWarnings("deprecation")
     public enum BalloonDesign implements StringIdentifiable {
         NONE,
-        LUNA;
+        LUNA,
+        DAWN,
+        EQUALITY,
+        STORM,
+        TALE;
 
-        public static final StringIdentifiable.Codec<BalloonDesign> CODEC = StringIdentifiable.createCodec(BalloonDesign::values);
+        public static final Codec<BalloonDesign> CODEC = StringIdentifiable.createCodec(BalloonDesign::values);
         private static final IntFunction<BalloonDesign> BY_ID = ValueLists.<BalloonDesign>createIdToValueFunction(Enum::ordinal, values(), ValueLists.OutOfBoundsHandling.ZERO);
 
         private final String name = name().toLowerCase(Locale.ROOT);
