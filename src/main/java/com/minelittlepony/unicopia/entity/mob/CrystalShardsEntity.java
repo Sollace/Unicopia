@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
 
 import net.minecraft.block.SideShapeType;
 import net.minecraft.entity.EntityType;
@@ -19,6 +20,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -71,7 +73,7 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
     }
 
     static boolean isInvalid(World world, BlockPos crystalPos, Direction attachmentFace) {
-        if (!world.isAir(crystalPos)) {
+        if (!world.isAir(crystalPos) || world.isOutOfHeightLimit(crystalPos)) {
             return true;
         }
         BlockPos attachmentPos = crystalPos.offset(attachmentFace.getOpposite());
@@ -172,6 +174,7 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
 
         if (isDead() || isInvalid(getWorld(), getBlockPos(), getAttachmentFace())) {
             kill();
+            ParticleUtils.spawnParticles(ParticleTypes.CLOUD, this, 10);
         }
     }
 

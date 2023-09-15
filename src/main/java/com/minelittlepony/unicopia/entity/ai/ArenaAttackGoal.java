@@ -33,14 +33,16 @@ public class ArenaAttackGoal<E extends MobEntity & ArenaCombatant> extends Attac
     @Override
     public void stop() {
         super.stop();
-        combatant.setTarget(null);
         combatant.getHomePos().ifPresent(home -> {
-
-            Path path = combatant.getNavigation().findPathTo(home, 2, (int)combatant.getAreaRadius() * 2);
-            if (path != null) {
-                combatant.getNavigation().startMovingAlong(path, combatant.getMovementSpeed() * 2F);
-            } else {
-                combatant.teleportTo(home.toCenterPos());
+            if (!isInArena(home)) {
+                Path path = combatant.getNavigation().findPathTo(home, 2, (int)combatant.getAreaRadius() * 2);
+                if (path != null) {
+                    combatant.getNavigation().startMovingAlong(path, combatant.getMovementSpeed() * 2F);
+                } else {
+                    var destination = home.toCenterPos();
+                    combatant.teleportTo(destination);
+                    combatant.setPosition(destination);
+                }
             }
         });
     }

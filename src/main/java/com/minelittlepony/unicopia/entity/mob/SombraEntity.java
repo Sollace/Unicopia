@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.collect.ImmutableSet;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.advancement.UCriteria;
@@ -30,22 +31,25 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.ai.goal.FlyGoal;
 import net.minecraft.entity.ai.goal.LongDoorInteractGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
+import net.minecraft.entity.ai.goal.WanderNearTargetGoal;
+import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.BirdPathNodeMaker;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.MobNavigation;
+import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.BossBar.Style;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -53,6 +57,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.MerchantEntity;
@@ -83,8 +88,8 @@ import net.minecraft.world.event.GameEvent;
 public class SombraEntity extends HostileEntity implements ArenaCombatant, ParticleSource<SombraEntity> {
     static final byte BITE = 70;
     static final int MAX_BITE_TIME = 20;
-    static final Predicate<Entity> EFFECT_TARGET_PREDICATE = EntityPredicates.VALID_LIVING_ENTITY
-            .and(EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)
+    static final Predicate<Entity> EFFECT_TARGET_PREDICATE = EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR
+            .and(e -> e instanceof PlayerEntity)
             .and(e -> !(AbstractDisguiseSpell.getAppearance(e) instanceof SombraEntity));
 
     private static final TrackedData<Optional<BlockPos>> HOME_POS = DataTracker.registerData(SombraEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS);
@@ -163,17 +168,18 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
 
     @Override
     protected void initGoals() {
+        goalSelector.add(1, new ArenaAttackGoal<>(this));
+        goalSelector.add(2, new PounceAtTargetGoal(this, 1.3F));
         goalSelector.add(2, new LongDoorInteractGoal(this, true));
-        goalSelector.add(5, new FlyGoal(this, 1));
-        goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 18F));
+        goalSelector.add(2, new WanderNearTargetGoal(this, 1.5F, 32));
+        goalSelector.add(6, new LookAtEntityGoal(this, LivingEntity.class, 32F));
         goalSelector.add(7, new LookAroundGoal(this));
         goalSelector.add(7, new WanderAroundGoal(this, 1));
-        goalSelector.add(8, new PounceAtTargetGoal(this, 1.3F));
-        goalSelector.add(8, new ArenaAttackGoal<>(this));
         targetSelector.add(1, new RevengeGoal(this));
         targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, false));
         targetSelector.add(3, new ActiveTargetGoal<>(this, MerchantEntity.class, false));
         targetSelector.add(3, new ActiveTargetGoal<>(this, IronGolemEntity.class, true));
+        targetSelector.add(4, new ActiveTargetGoal<>(this, HostileEntity.class, true));
     }
 
     @Override
@@ -184,6 +190,27 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
                 nodeMaker = new BirdPathNodeMaker();
                 nodeMaker.setCanEnterOpenDoors(true);
                 return new PathNodeNavigator(nodeMaker, range);
+            }
+
+            @Override
+            protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target) {
+                return BirdNavigation.doesNotCollide(entity, origin, target, true);
+            }
+
+            @Override
+            protected boolean isAtValidPosition() {
+                return canSwim() && isInLiquid() || !entity.hasVehicle();
+            }
+
+            @Override
+            protected Vec3d getPos() {
+                return entity.getPos();
+            }
+
+            @Override
+            @Nullable
+            public Path findPathTo(BlockPos target, int distance) {
+                return findPathTo(ImmutableSet.of(target), 8, false, distance);
             }
         };
         nav.setCanPathThroughDoors(true);
@@ -232,9 +259,11 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
         }
 
         if (!isRemoved()) {
-            if (getBlockPos().getSquaredDistance(homePos.get()) > MathHelper.square(getAreaRadius())) {
-                teleportTo(Vec3d.ofCenter(homePos.get()));
-                getNavigation().stop();
+            if (getNavigation().isIdle()) {
+                if (getBlockPos().getSquaredDistance(homePos.get()) > MathHelper.square(getAreaRadius())) {
+                    teleportTo(Vec3d.ofCenter(homePos.get()));
+                    getNavigation().stop();
+                }
             }
 
             prevBiteTime = biteTime;
@@ -246,10 +275,6 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
             boolean sizeChanging = prevSize != currentSize;
             prevSize = currentSize;
             tickGrowth(targetSize, sizeChanging);
-
-            if (!hasPositionTarget() && homePos.isPresent()) {
-                setPositionTarget(homePos.get(), (int)getAreaRadius());
-            }
         }
 
         super.tick();
@@ -258,7 +283,20 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
             setVelocity(getVelocity().multiply(1, 0.4, 1));
         }
 
-        addVelocity(0, 0.0242F, 0);
+        addVelocity(0, 0.0442F, 0);
+
+        LivingEntity target = getTarget();
+
+        if (target != null && target.getY() > getY() && getVelocity().getY() < 0.5F) {
+
+            float velocityChange = (float)MathHelper.clamp((target.getY() - getY()) * 0.05F, -0.3F, 0.3F);
+
+            if (target instanceof WitherEntity || target instanceof FlyingEntity) {
+                target.addVelocity(0, -velocityChange * 20, 0);
+            } else {
+                addVelocity(0, velocityChange, 0);
+            }
+        }
 
         if (isDead()) {
             return;
@@ -303,18 +341,23 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
             }
         }
 
+        if (getTarget() != null && getTarget().isRemoved()) {
+            setTarget(null);
+        }
+
         if (getHealth() < getMaxHealth()) {
             for (Entity shard : getWorld().getEntitiesByClass(CrystalShardsEntity.class, getBoundingBox().expand(50), EntityPredicates.VALID_ENTITY)) {
 
                 if (age % 150 == 0) {
                     heal(2);
+
+                    ParticleUtils.spawnParticle(getWorld(),
+                            new FollowingParticleEffect(UParticles.HEALTH_DRAIN, this, 0.2F)
+                            .withChild(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE),
+                            shard.getPos(),
+                            Vec3d.ZERO
+                    );
                 }
-                ParticleUtils.spawnParticle(getWorld(),
-                        new FollowingParticleEffect(UParticles.HEALTH_DRAIN, this, 0.2F)
-                        .withChild(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE),
-                        shard.getPos(),
-                        Vec3d.ZERO
-                );
             }
         }
 
@@ -344,7 +387,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
         }
     }
 
-    protected void applyAreaEffects(Entity target) {
+    protected void applyAreaEffects(PlayerEntity target) {
         if (this.age % 150 == 0) {
             target.playSound(
                     random.nextInt(30) == 0 ? USounds.ENTITY_SOMBRA_AMBIENT
@@ -356,12 +399,11 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
         }
 
         if (this.age % 1000 < 50) {
-            ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 26, 0, true, false));
-            ((LivingEntity)target).addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 26, 0, true, false));
+            target.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 26, 0, true, false));
+            target.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 26, 0, true, false));
         }
 
         if (getTarget() == null && target instanceof PlayerEntity player && player.distanceTo(this) < getAreaRadius() / 2F) {
-            setTarget(player);
             if (teleportTo(target.getPos())) {
                 setPosition(getPos().add(0, 4, 0));
             }
@@ -376,9 +418,9 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     protected void generateBodyParticles() {
         for (int i = 0; i < 3; i++) {
             getWorld().addParticle(ParticleTypes.LARGE_SMOKE,
-                    random.nextTriangular(getX(), 8),
-                    random.nextTriangular(getY(), 1),
-                    random.nextTriangular(getZ(), 8),
+                    random.nextTriangular(getX(), 3),
+                    random.nextTriangular(getY(), 3),
+                    random.nextTriangular(getZ(), 3),
                     0,
                     0,
                     0
@@ -397,9 +439,9 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
                     ParticleUtils.spawnParticle(getWorld(), type, pos, pos.subtract(getPos()).add(0, 0.1, 0).multiply(-0.013));
                 });
         } else {
-            for (Entity target : VecHelper.findInRange(this, getWorld(), home.toCenterPos(), getAreaRadius() - 0.2F, EFFECT_TARGET_PREDICATE)) {
-                applyAreaEffects(target);
-            }
+            VecHelper.findInRange(this, getWorld(), home.toCenterPos(), getAreaRadius() - 0.2F, EFFECT_TARGET_PREDICATE).forEach(e -> {
+                applyAreaEffects((PlayerEntity)e);
+            });
         }
     }
 
@@ -442,8 +484,12 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
         boolean damaged = super.damage(source, amount);
 
         if (!getWorld().isClient) {
-            if (source.getAttacker() instanceof PlayerEntity player) {
-                teleportRandomly(16);
+            if (source.getAttacker() instanceof LivingEntity attacker) {
+                teleportRandomly(6);
+
+                if (!(attacker instanceof PlayerEntity player && (player.isCreative() || player.isSpectator()))) {
+                    setTarget(attacker);
+                }
             }
 
             float targetSize = getScaleFactor();
@@ -468,12 +514,10 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
                     ((CrystalShardsEntity)e).setDecaying(true);
                 });
 
-                for (Entity e : VecHelper.findInRange(this, getWorld(), home.toCenterPos(), getAreaRadius() - 0.2F, EFFECT_TARGET_PREDICATE)) {
-                    Pony.of(e).ifPresent(pony -> {
-                        pony.getCorruption().set(0);
-                        UCriteria.DEFEAT_SOMBRA.trigger(e);
-                    });
-                }
+                VecHelper.findInRange(this, getWorld(), home.toCenterPos(), getAreaRadius() - 0.2F, EFFECT_TARGET_PREDICATE).forEach(player -> {
+                    Pony.of((PlayerEntity)player).getCorruption().set(0);
+                    UCriteria.DEFEAT_SOMBRA.trigger(player);
+                });
             });
 
         }
@@ -528,6 +572,13 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
 
     @Override
     public boolean canTarget(LivingEntity target) {
+        if (target instanceof PlayerEntity player && (player.isCreative() || player.isSpectator())) {
+            return false;
+        }
+
+        if (target != null && !target.isRemoved() && target == getTarget()) {
+            return true;
+        }
         return super.canTarget(target) && getHomePos().filter(home -> target.getPos().isInRange(home.toCenterPos(), getAreaRadius())).isPresent();
     }
 
