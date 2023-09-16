@@ -403,9 +403,12 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
             target.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 26, 0, true, false));
         }
 
-        if (getTarget() == null && target instanceof PlayerEntity player && player.distanceTo(this) < getAreaRadius() / 2F) {
-            if (teleportTo(target.getPos())) {
-                setPosition(getPos().add(0, 4, 0));
+        if (getTarget() == null && target instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) target;
+            if (player.distanceTo(this) < getAreaRadius() / 2F) {
+                if (teleportTo(player.getPos())) {
+                    setPosition(getPos().add(0, 4, 0));
+                }
             }
         }
     }
