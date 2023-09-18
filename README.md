@@ -1,5 +1,6 @@
 # Unicopia
 
+[![Build Status](https://github.com/Sollace/Unicopia/actions/workflows/gradle-build.yml/badge.svg)](https://github.com/Sollace/Unicopia/actions/workflows/gradle-build.yml)
 [![Downloads](https://img.shields.io/github/downloads/Sollace/Unicopia/total.svg?color=yellowgreen)](https://github.com/Sollace/Unicopia/releases/latest)
 ![](https://img.shields.io/badge/api-fabric-orange.svg)
 
