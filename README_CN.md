@@ -72,8 +72,8 @@
 
 ### 仅1.19.3
 
-This project uses reach-entity-attributes, which may not be updated at the time of this writing.
-If you building for 1.19.3, you may follow these steps to make sure it's available to git:
+这个项目使用了 reach-entity-attributes , 在撰写本文时可能没有更新。
+ 如果您要为1.19.3构建，请遵循以下步骤，以确保其对git可用。
 
 `git clone https://github.com/Sollace/reach-entity-attributes`
 `cd reach-entity-attributes`
@@ -85,5 +85,5 @@ If you building for 1.19.3, you may follow these steps to make sure it's availab
 `cd Unicopia` 
 `gradlew build`
 
-Built jars are located in /build/bin` within the Unicopia folder after performing the above two command.
+在执行了上述命令后，构建出的jar文件将会位于Unicopia文件夹下的/build/bin中。
 
