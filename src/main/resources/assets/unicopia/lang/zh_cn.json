@@ -84,7 +84,7 @@
   "item.unicopia.golden_wing": "金色翅膀",
   
   "item.unicopia.mug": "杯子",
-  "item.unicopia.cider": "苹果汁",
+  "item.unicopia.cider": "苹果酒",
   "item.unicopia.juice": "果汁",
   "item.unicopia.burned_juice": "烧焦的果汁",
   
@@ -370,9 +370,9 @@
   "ability.unicopia.cast.with_spell.replacing": "%s 魔咒已暂存，将优先原地施放 %s 魔咒",
   "ability.unicopia.dispell": "解除魔法",
   "ability.unicopia.teleport": "瞬移",
-  "ability.unicopia.teleport.far": "瞬移（远距）",
+  "ability.unicopia.teleport.far": "瞬移（穿墙）",
   "ability.unicopia.teleport_group": "群体瞬移",
-  "ability.unicopia.teleport_group.far": "群体瞬移（远距）",
+  "ability.unicopia.teleport_group.far": "群体瞬移（穿墙）",
   "ability.unicopia.grow": "滋养土地",
   "ability.unicopia.stomp": "击打地面",
   "ability.unicopia.kick": "尥蹶子",
@@ -705,7 +705,7 @@
   "unicopia.race.bat.alt": "夜骐",
   
   "death.attack.unicopia.generic.and_also": "%1$s 和 %2$s",
-  "death.attack.unicopia.generic.whilst_flying": "%1$s 碰壁了",
+  "death.attack.unicopia.generic.whilst_flying": "%1$s而死于飞行途中",
   "death.attack.unicopia.tribe_swap": "%1$s 以另一个物种重生了",
   "death.attack.unicopia.tribe_swap.player": "%1$s 注定要被 %2$s 变成另一个物种",
   "death.attack.unicopia.sun": "%1$s 直视了太阳",
@@ -884,7 +884,7 @@
   "advancements.unicopia.sweet_apple_acres.title": "甜苹果园",
   "advancements.unicopia.sweet_apple_acres.description": "收集每一种苹果",
   "advancements.unicopia.brew_cider.title": "AJ家的特产",
-  "advancements.unicopia.brew_cider.description": "榨一些苹果汁",
+  "advancements.unicopia.brew_cider.description": "酿一些苹果酒",
   "advancements.unicopia.travelling_in_style.title": "优雅出行",
   "advancements.unicopia.travelling_in_style.description": "乘上一颗热气球",
 
@@ -921,8 +921,8 @@
   "advancements.unicopia.molting_season_3.description": "飞行时掉下十五根羽毛",
   "advancements.unicopia.rainbow_crash.title": "去你的彩虹",
   "advancements.unicopia.rainbow_crash.description": "向邪恶的玻璃国宣战", 
-  "advancements.unicopia.second_wind.title": "二进风",
-  "advancements.unicopia.second_wind.description": "飞越苦海",
+  "advancements.unicopia.second_wind.title": "来劲了",
+  "advancements.unicopia.second_wind.description": "竭力飞行",
   "advancements.unicopia.deter_phantom.title": "神仙斗法",
   "advancements.unicopia.deter_phantom.description": "马飞飞，让那些修仙的幻翼永远安眠吧",
   
