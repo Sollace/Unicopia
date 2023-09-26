@@ -705,7 +705,7 @@
   "unicopia.race.bat.alt": "夜骐",
   
   "death.attack.unicopia.generic.and_also": "%1$s 和 %2$s",
-  "death.attack.unicopia.generic.whilst_flying": "%1$s 碰壁了",
+  "death.attack.unicopia.generic.whilst_flying": "%1$s而死于飞行途中",
   "death.attack.unicopia.tribe_swap": "%1$s 以另一个物种重生了",
   "death.attack.unicopia.tribe_swap.player": "%1$s 注定要被 %2$s 变成另一个物种",
   "death.attack.unicopia.sun": "%1$s 直视了太阳",
@@ -922,7 +922,7 @@
   "advancements.unicopia.rainbow_crash.title": "去你的彩虹",
   "advancements.unicopia.rainbow_crash.description": "向邪恶的玻璃国宣战", 
   "advancements.unicopia.second_wind.title": "来劲了",
-  "advancements.unicopia.second_wind.description": "忍痛飞行",
+  "advancements.unicopia.second_wind.description": "竭力飞行",
   "advancements.unicopia.deter_phantom.title": "神仙斗法",
   "advancements.unicopia.deter_phantom.description": "马飞飞，让那些修仙的幻翼永远安眠吧",
   
