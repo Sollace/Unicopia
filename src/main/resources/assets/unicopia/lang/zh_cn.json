@@ -1,6 +1,6 @@
 {
 
-  "block.unicopia.bed.not_safe": "你现在不能休息，附近有怪物在游荡",
+  "block.unicopia.bed.not_safe": "你现在不能休息，附近有敌人在游荡",
   "block.unicopia.bed.not_tired": "你现在并不觉得累",
   "block.unicopia.bed.no_sleep.nocturnal": "你只能在白天或雷暴中入眠",
   "sleep.not_possible.nocturnal": "休息再久也不能跳过这一天了",
