@@ -76,6 +76,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -105,6 +106,12 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     private float currentSize;
 
     public static void startEncounter(World world, BlockPos pos) {
+        if (world.getEntitiesByClass(Entity.class, new Box(pos).expand(16), e -> {
+            return e instanceof SombraEntity || e instanceof StormCloudEntity cloud && cloud.cursed;
+        }).size() > 0) {
+            return;
+        }
+
         StormCloudEntity cloud = UEntities.STORM_CLOUD.create(world);
         cloud.setPosition(pos.up(10).toCenterPos());
         cloud.setSize(1);

@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableMultimap;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
@@ -12,6 +13,7 @@ import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.mob.SombraEntity;
+import com.minelittlepony.unicopia.entity.mob.SpellbookEntity;
 import com.minelittlepony.unicopia.entity.player.*;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
@@ -201,6 +203,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                         stack.decrement(1);
                         world.createExplosion(null, entity.getX(), entity.getY(), entity.getZ(), 0, ExplosionSourceType.NONE);
                         world.playSound(null, entity.getBlockPos(), USounds.ENTITY_SOMBRA_LAUGH, SoundCategory.AMBIENT, 10, 1);
+                        world.getEntitiesByClass(SpellbookEntity.class, entity.getBoundingBox().expand(6), Predicates.alwaysTrue()).forEach(Entity::kill);
 
                         SombraEntity.startEncounter(world, entity.getBlockPos());
                     }
