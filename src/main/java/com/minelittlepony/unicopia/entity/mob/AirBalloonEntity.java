@@ -228,6 +228,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
 
         if (isAscending() && age % 15 + rng.nextInt(5) == 0) {
             playSound(USounds.ENTITY_HOT_AIR_BALLOON_BURNER_FIRE, 0.2F, 1);
+            getWorld().emitGameEvent(null, GameEvent.FLAP, getBlockPos());
         }
 
         if (isLeashed()) {
@@ -340,7 +341,9 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
                     }
                     stack.damage(1, player, p -> p.sendToolBreakStatus(hand));
                     playSound(USounds.Vanilla.ITEM_FLINTANDSTEEL_USE, 1, 1);
-                    getWorld().emitGameEvent(player, GameEvent.ENTITY_INTERACT, getBlockPos());
+                    if (!player.isSneaky()) {
+                        getWorld().emitGameEvent(player, GameEvent.ENTITY_INTERACT, getBlockPos());
+                    }
                     return ActionResult.SUCCESS;
                 }
 
@@ -352,7 +355,9 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
                     }
                 } else if (stack.isEmpty() && isAscending()) {
                     setBoostTicks(50);
-                    getWorld().emitGameEvent(player, GameEvent.ENTITY_INTERACT, getBlockPos());
+                    if (!player.isSneaky()) {
+                        getWorld().emitGameEvent(player, GameEvent.ENTITY_INTERACT, getBlockPos());
+                    }
                 }
             }
         }
@@ -369,7 +374,9 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
                 stack.decrement(1);
             }
             playSound(USounds.ENTITY_HOT_AIR_BALLOON_EQUIP_CANOPY, 1, 1);
-            getWorld().emitGameEvent(player, GameEvent.ENTITY_INTERACT, getBlockPos());
+            if (!player.isSneaky()) {
+                getWorld().emitGameEvent(player, GameEvent.EQUIP, getBlockPos());
+            }
             setDesign(HotAirBalloonItem.getDesign(getWorld(), stack));
             return ActionResult.SUCCESS;
         }
@@ -381,7 +388,9 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             setDesign(BalloonDesign.NONE);
             dropItem(UItems.GIANT_BALLOON);
             playSound(USounds.ENTITY_HOT_AIR_BALLOON_EQUIP_CANOPY, 1, 1);
-            getWorld().emitGameEvent(player, GameEvent.ENTITY_INTERACT, getBlockPos());
+            if (!player.isSneaky()) {
+                getWorld().emitGameEvent(player, GameEvent.EQUIP, getBlockPos());
+            }
             return ActionResult.SUCCESS;
         }
 
@@ -391,7 +400,9 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
                 stack.decrement(1);
             }
             playSound(USounds.ENTITY_HOT_AIR_BALLOON_EQUIP_BURNER, 0.2F, 1);
-            getWorld().emitGameEvent(player, GameEvent.ENTITY_INTERACT, getBlockPos());
+            if (!player.isSneaky()) {
+                getWorld().emitGameEvent(player, GameEvent.EQUIP, getBlockPos());
+            }
             return ActionResult.SUCCESS;
         }
 
