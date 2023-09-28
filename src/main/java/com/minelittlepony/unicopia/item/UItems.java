@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
+import com.google.common.collect.ImmutableMultimap;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.UWoodTypes;
@@ -13,6 +14,8 @@ import com.terraformersmc.terraform.boat.api.TerraformBoatType;
 import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
 import com.terraformersmc.terraform.boat.api.item.TerraformBoatItemHelper;
 
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
@@ -80,7 +83,12 @@ public interface UItems {
 
     Item PEBBLES = register("pebbles", new RacePredicatedAliasedBlockItem(UBlocks.ROCKS, new Item.Settings(), Race::canUseEarth), ItemGroups.NATURAL);
     Item ROCK = register("rock", new HeavyProjectileItem(new Item.Settings(), 3), ItemGroups.NATURAL);
-    Item WEIRD_ROCK = register("weird_rock", new Item(new Item.Settings()), ItemGroups.NATURAL);
+    Item WEIRD_ROCK = register("weird_rock", new BluntWeaponItem(new Item.Settings(), ImmutableMultimap.of(
+            EntityAttributes.GENERIC_LUCK, new EntityAttributeModifier(BluntWeaponItem.LUCK_MODIFIER_ID, "Weapon modifier", 9, EntityAttributeModifier.Operation.ADDITION)
+    )), ItemGroups.NATURAL);
+    Item TOM = register("tom", new BluntWeaponItem(new Item.Settings(), ImmutableMultimap.of(
+            EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, new EntityAttributeModifier(BluntWeaponItem.KNOCKBACK_MODIFIER_ID, "Weapon modifier", 0.9, EntityAttributeModifier.Operation.ADDITION)
+    )), ItemGroups.NATURAL);
     Item ROCK_STEW = register("rock_stew", new Item(new Item.Settings().food(FoodComponents.MUSHROOM_STEW)), ItemGroups.FOOD_AND_DRINK);
 
     Item GREEN_APPLE_SEEDS = register("green_apple_seeds", new AliasedBlockItem(UBlocks.GREEN_APPLE_SPROUT, new Item.Settings()), ItemGroups.NATURAL);

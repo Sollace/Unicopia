@@ -1,0 +1,37 @@
+{
+  "type": "minecraft:archaeology",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "unicopia:weird_rock",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "unicopia:rock",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "unicopia:tom",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "unicopia:rock_stew",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "unicopia:pebbles",
+          "weight": 1
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "minecraft:archaeology/desert_well"
+}

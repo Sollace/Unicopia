@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.crafting.*;
 
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.minecraft.loot.LootTable;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
@@ -48,8 +49,17 @@ public interface URecipes {
 
             Identifier modId = new Identifier("unicopiamc", id.getPath());
             LootTable table = manager.getLootTable(modId);
+
             if (table != LootTable.EMPTY) {
-                supplier.pools(List.of(table.pools));
+                if (table.getType() == LootContextTypes.ARCHAEOLOGY) {
+                    supplier.modifyPools(poolBuilder -> {
+                        for (var pool : table.pools) {
+                            poolBuilder.with(List.of(pool.entries));
+                        }
+                    });
+                } else {
+                    supplier.pools(List.of(table.pools));
+                }
             }
         });
     }
