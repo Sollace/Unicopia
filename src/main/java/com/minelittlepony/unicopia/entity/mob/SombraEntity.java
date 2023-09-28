@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ImmutableSet;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.advancement.UCriteria;
@@ -579,7 +580,9 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
 
     @Override
     public boolean canTarget(LivingEntity target) {
-        if (target instanceof PlayerEntity player && (player.isCreative() || player.isSpectator())) {
+        if (target instanceof SombraEntity
+                || EquinePredicates.IS_MAGIC_IMMUNE.test(target)
+                || !EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(target)) {
             return false;
         }
 
