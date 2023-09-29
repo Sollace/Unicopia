@@ -37,13 +37,6 @@ abstract class MixinBoatEntity extends Entity implements LavaAffine {
         return isLavaAffine() ? FluidTags.LAVA : FluidTags.WATER;
     }
 
-    @Inject(method = "copyEntityData", at = @At("HEAD"))
-    private void onCopyEntityData(Entity entity, CallbackInfo info) {
-        if (entity instanceof LavaAffine affine) {
-            affine.setLavaAffine(isLavaAffine());
-        }
-    }
-
     @Inject(method = "writeCustomDataToNbt", at = @At("HEAD"))
     private void onWriteCustomDataToNbt(NbtCompound nbt, CallbackInfo info) {
         nbt.putBoolean("IsLavaAffine", isLavaAffine());
