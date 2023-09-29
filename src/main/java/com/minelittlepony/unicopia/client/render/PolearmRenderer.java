@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.render;
 
-import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.DynamicItemRenderer;
 import net.minecraft.client.MinecraftClient;
@@ -13,8 +13,6 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
@@ -29,10 +27,10 @@ public class PolearmRenderer implements DynamicItemRenderer {
 
     public static void register(Item item) {
         BuiltinItemRendererRegistry.INSTANCE.register(item, INSTANCE);
-        ModelPredicateProviderRegistry.register(item, THROWING, (ItemStack stack, ClientWorld world, LivingEntity entity, int seed) -> {
+        ModelPredicateProviderRegistry.register(item, THROWING, (stack, world, entity, seed) -> {
             return entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1 : 0;
         });
-        ModelLoadingRegistry.INSTANCE.registerModelProvider((renderer, out) -> out.accept(getModelId(item)));
+        ModelLoadingPlugin.register(context -> context.addModels(getModelId(item)));
     }
 
     static ModelIdentifier getModelId(ItemConvertible item) {

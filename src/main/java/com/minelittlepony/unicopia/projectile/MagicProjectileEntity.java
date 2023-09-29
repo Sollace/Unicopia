@@ -340,6 +340,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Packet<ClientPlayPacketListener> createSpawnPacket() {
         return (Packet<ClientPlayPacketListener>)(Object)Channel.SERVER_SPAWN_PROJECTILE.toPacket(new MsgSpawnProjectile(this));
