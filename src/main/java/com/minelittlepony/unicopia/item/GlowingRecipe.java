@@ -6,13 +6,12 @@ import net.minecraft.item.Items;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
 public class GlowingRecipe extends ItemCombinationRecipe {
 
-    public GlowingRecipe(Identifier id, CraftingRecipeCategory category) {
-        super(id, category);
+    public GlowingRecipe(CraftingRecipeCategory category) {
+        super(category);
     }
 
     @Override

@@ -67,7 +67,7 @@ public class TribeButton extends Button {
 
         getStyle().setIcon(ISprite.EMPTY);
 
-        renderForground(context, mc, mouseX, mouseY, foreColor | MathHelper.ceil(alpha * 255.0F) << 24);
+        renderForeground(context, mc, mouseX, mouseY, foreColor | MathHelper.ceil(alpha * 255.0F) << 24);
 
         getStyle().setIcon(icon);
     }

@@ -7,9 +7,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.sollace.fabwork.api.packets.Packet;
 
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.entity.player.PlayerEntity;
 
-public record MsgUnlockTraits (Set<Trait> traits) implements Packet<PlayerEntity> {
+public record MsgUnlockTraits (Set<Trait> traits) implements Packet {
     MsgUnlockTraits(PacketByteBuf buffer) {
         this(new HashSet<>());
         int length = buffer.readInt();

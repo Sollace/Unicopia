@@ -5,7 +5,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import com.minelittlepony.api.model.*;
-import com.minelittlepony.api.model.gear.IGear;
+import com.minelittlepony.api.model.gear.Gear;
 import com.minelittlepony.client.model.ClientPonyModel;
 import com.minelittlepony.client.model.ModelType;
 import com.minelittlepony.client.model.PlayerModelKey;
@@ -26,7 +26,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 
-class BodyPartGear<M extends ClientPonyModel<LivingEntity> & MsonModel & IModel> implements IGear {
+class BodyPartGear<M extends ClientPonyModel<LivingEntity>> implements Gear {
 
     private static final Predicate<LivingEntity> MINE_LP_HAS_NO_WINGS = e -> !MineLPDelegate.getInstance().getRace(e).canFly();
     private static final Predicate<LivingEntity> MINE_LP_HAS_NO_HORN = e -> !MineLPDelegate.getInstance().getRace(e).canCast();
@@ -56,11 +56,11 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity> & MsonModel & IModel>
     }
 
     public static BodyPartGear<WingsGearModel> batWings() {
-        return new BodyPartGear<>(BodyPart.BODY, ModelType.BAT_PONY, BAT_WINGS_PREDICATE, WingsGearModel::new, IPegasus::getWings, e -> BAT_WINGS);
+        return new BodyPartGear<>(BodyPart.BODY, ModelType.BAT_PONY, BAT_WINGS_PREDICATE, WingsGearModel::new, WingedPonyModel::getWings, e -> BAT_WINGS);
     }
 
     public static BodyPartGear<BugWingsGearModel> bugWings() {
-        return new BodyPartGear<>(BodyPart.BODY, ModelType.CHANGELING, BUG_WINGS_PREDICATE, BugWingsGearModel::new, IPegasus::getWings, e -> BUG_WINGS);
+        return new BodyPartGear<>(BodyPart.BODY, ModelType.CHANGELING, BUG_WINGS_PREDICATE, BugWingsGearModel::new, WingedPonyModel::getWings, e -> BUG_WINGS);
     }
 
     public static BodyPartGear<HornGearModel> unicornHorn() {
@@ -69,7 +69,7 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity> & MsonModel & IModel>
 
     private final M model;
     private final Predicate<LivingEntity> renderTargetPredicate;
-    private final IPart part;
+    private final SubModel part;
     private final Function<Entity, Identifier> textureSupplier;
     private final BodyPart gearLocation;
 
@@ -78,7 +78,7 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity> & MsonModel & IModel>
             PlayerModelKey<LivingEntity, ? super M> modelKey,
             Predicate<LivingEntity> renderTargetPredicate,
             MsonModel.Factory<M> modelFactory,
-            Function<? super M, IPart> partExtractor,
+            Function<? super M, SubModel> partExtractor,
             Function<Entity, Identifier> textureSupplier) {
         this.gearLocation = gearLocation;
         this.model = modelKey.steveKey().createModel(modelFactory);
@@ -93,7 +93,7 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity> & MsonModel & IModel>
     }
 
     @Override
-    public boolean canRender(IModel model, Entity entity) {
+    public boolean canRender(PonyModel<?> model, Entity entity) {
         return entity instanceof LivingEntity l
             && MineLPDelegate.getInstance().getRace(entity).isEquine()
             && renderTargetPredicate.test(l);
@@ -106,7 +106,7 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity> & MsonModel & IModel>
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public void pose(IModel model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
+    public void pose(PonyModel<?>  model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
         ((ClientPonyModel)model).copyAttributes(this.model);
         part.setPartAngles(this.model.getAttributes(), move, swing, bodySwing, ticks);
     }
@@ -120,32 +120,17 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity> & MsonModel & IModel>
         public WingsGearModel(ModelPart tree) {
             super(tree, false);
         }
-
-        @Override
-        public boolean canFly() {
-            return true;
-        }
     }
 
     static final class BugWingsGearModel extends ChangelingModel<LivingEntity> {
         public BugWingsGearModel(ModelPart tree) {
             super(tree, false);
         }
-
-        @Override
-        public boolean canFly() {
-            return true;
-        }
     }
 
     static final class HornGearModel extends UnicornModel<LivingEntity> {
         public HornGearModel(ModelPart tree) {
             super(tree, false);
-        }
-
-        @Override
-        public boolean canFly() {
-            return true;
         }
 
         public UnicornHorn getHorn() {

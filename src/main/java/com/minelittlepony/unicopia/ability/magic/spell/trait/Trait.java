@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.command.CommandArgumentEnum;
+import com.mojang.serialization.Codec;
 
 import net.minecraft.command.argument.EnumArgumentType;
 import net.minecraft.item.Item;
@@ -165,7 +166,6 @@ public enum Trait implements CommandArgumentEnum<Trait> {
     }
 
     public static final class ArgumentType extends EnumArgumentType<Trait> {
-        @SuppressWarnings("deprecation")
         static final Codec<Trait> CODEC = StringIdentifiable.createCodec(Trait::values);
 
         protected ArgumentType() {

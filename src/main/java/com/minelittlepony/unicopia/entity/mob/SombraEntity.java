@@ -207,7 +207,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
 
             @Override
             protected boolean isAtValidPosition() {
-                return canSwim() && isInLiquid() || !entity.hasVehicle();
+                return canSwim() && isInFluid() || !entity.hasVehicle();
             }
 
             @Override

@@ -17,3 +17,6 @@ accessible          field    net/minecraft/entity/mob/CreeperEntity      IGNITED
 accessible          method   net/minecraft/client/render/RenderLayer$MultiPhase    getPhases  ()Lnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;
 accessible          method   net/minecraft/client/render/RenderPhase$TextureBase   getId      ()Ljava/util/Optional;
 accessible          field    net/minecraft/client/render/RenderLayer$MultiPhaseParameters     texture     Lnet/minecraft/client/render/RenderPhase$TextureBase;
+
+accessible          field    net/minecraft/loot/LootTable                          pools          Ljava/util/List;
+accessible          method   net/minecraft/block/entity/SkullBlockEntity           fetchProfile (Ljava/lang/String;)Ljava/util/concurrent/CompletableFuture;

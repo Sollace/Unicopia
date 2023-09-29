@@ -7,7 +7,6 @@ import com.minelittlepony.unicopia.client.render.PlayerPoser.AnimationInstance;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.sollace.fabwork.api.packets.Packet;
 
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 
 /**
@@ -17,7 +16,7 @@ public record MsgPlayerAnimationChange (
         UUID playerId,
         AnimationInstance animation,
         int duration
-    ) implements Packet<PlayerEntity> {
+    ) implements Packet {
 
     MsgPlayerAnimationChange(PacketByteBuf buffer) {
         this(

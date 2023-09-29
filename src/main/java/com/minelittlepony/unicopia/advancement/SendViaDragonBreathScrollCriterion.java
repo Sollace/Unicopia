@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.fabricmc.fabric.api.util.TriState;
@@ -14,25 +13,16 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.TypeFilter;
 
 public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendViaDragonBreathScrollCriterion.Conditions> {
-    private static final Identifier ID = Unicopia.id("send_dragon_breath");
-
     @Override
-    public Identifier getId() {
-        return ID;
-    }
-
-    @Override
-    protected Conditions conditionsFromJson(JsonObject json, LootContextPredicate playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
+    protected Conditions conditionsFromJson(JsonObject json, Optional<LootContextPredicate> playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
         return new Conditions(playerPredicate,
                 ItemPredicate.fromJson(json.get("item")),
                 JsonHelper.getBoolean(json, "is_receiving_end", false),
@@ -64,15 +54,15 @@ public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendVi
     }
 
     public static class Conditions extends AbstractCriterionConditions {
-        private final ItemPredicate item;
+        private final Optional<ItemPredicate> item;
         private final boolean isReceivingEnd;
         private final Optional<String> recipientName;
         private final TriState recipientPresent;
         private final Optional<String> counter;
         private final RacePredicate races;
 
-        public Conditions(LootContextPredicate playerPredicate, ItemPredicate item, boolean isReceivingEnd, Optional<String> recipient, TriState recipientPresent, Optional<String> counter, RacePredicate races) {
-            super(ID, playerPredicate);
+        public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item, boolean isReceivingEnd, Optional<String> recipient, TriState recipientPresent, Optional<String> counter, RacePredicate races) {
+            super(playerPredicate);
             this.item = item;
             this.isReceivingEnd = isReceivingEnd;
             this.recipientName = recipient;
@@ -84,7 +74,7 @@ public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendVi
         public boolean test(ServerPlayerEntity player, ItemStack payload, String recipient, boolean receiving) {
             return isReceivingEnd == receiving
                     && races.test(player)
-                    && item.test(payload)
+                    && (item.isEmpty() || item.get().test(payload))
                     && recipientName.map(expectedRecipientname -> recipient.equalsIgnoreCase(expectedRecipientname)).orElse(true)
                     && (recipientPresent == TriState.DEFAULT || isRecipientAbsent(player.getServerWorld(), recipient) != recipientPresent.get());
         }
@@ -94,9 +84,9 @@ public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendVi
         }
 
         @Override
-        public JsonObject toJson(AdvancementEntityPredicateSerializer serializer) {
-            JsonObject json = super.toJson(serializer);
-            json.add("item", item.toJson());
+        public JsonObject toJson() {
+            JsonObject json = super.toJson();
+            item.ifPresent(item -> json.add("item", item.toJson()));
             json.add("race", races.toJson());
             recipientName.ifPresent(recipient -> json.addProperty("recipient_name", recipient));
             if (recipientPresent != TriState.DEFAULT) {

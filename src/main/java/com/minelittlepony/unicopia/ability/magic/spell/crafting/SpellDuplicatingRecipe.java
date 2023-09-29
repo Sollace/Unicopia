@@ -1,28 +1,25 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
-import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.*;
 import com.minelittlepony.unicopia.util.InventoryUtil;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 /**
  * A recipe for creating a new spell from input traits and items.
  */
 public class SpellDuplicatingRecipe implements SpellbookRecipe {
-    private final Identifier id;
+    final IngredientWithSpell material;
 
-    private final IngredientWithSpell material;
-
-    private SpellDuplicatingRecipe(Identifier id, IngredientWithSpell material) {
-        this.id = id;
+    private SpellDuplicatingRecipe(IngredientWithSpell material) {
         this.material = material;
     }
 
@@ -72,15 +69,10 @@ public class SpellDuplicatingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public ItemStack getOutput(DynamicRegistryManager registries) {
+    public ItemStack getResult(DynamicRegistryManager registries) {
         ItemStack stack = UItems.GEMSTONE.getDefaultStack();
         stack.setCount(2);
         return stack;
-    }
-
-    @Override
-    public Identifier getId() {
-        return id;
     }
 
     @Override
@@ -89,14 +81,18 @@ public class SpellDuplicatingRecipe implements SpellbookRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<SpellDuplicatingRecipe> {
+        private static final Codec<SpellDuplicatingRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                IngredientWithSpell.CODEC.fieldOf("material").forGetter(recipe -> recipe.material)
+        ).apply(instance, SpellDuplicatingRecipe::new));
+
         @Override
-        public SpellDuplicatingRecipe read(Identifier id, JsonObject json) {
-            return new SpellDuplicatingRecipe(id, IngredientWithSpell.fromJson(json.get("material")));
+        public Codec<SpellDuplicatingRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public SpellDuplicatingRecipe read(Identifier id, PacketByteBuf buf) {
-            return new SpellDuplicatingRecipe(id, IngredientWithSpell.fromPacket(buf));
+        public SpellDuplicatingRecipe read(PacketByteBuf buf) {
+            return new SpellDuplicatingRecipe(IngredientWithSpell.fromPacket(buf));
         }
 
         @Override

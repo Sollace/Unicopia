@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.minelittlepony.api.model.BodyPart;
-import com.minelittlepony.api.model.IModel;
-import com.minelittlepony.api.model.gear.IGear;
+import com.minelittlepony.api.model.PonyModel;
+import com.minelittlepony.api.model.gear.Gear;
 import com.minelittlepony.unicopia.client.render.GlassesFeatureRenderer.GlassesModel;
 import com.minelittlepony.unicopia.item.GlassesItem;
 
@@ -18,7 +18,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
 
-class GlassesGear extends GlassesModel implements IGear {
+class GlassesGear extends GlassesModel implements Gear {
 
     private final Map<Identifier, Identifier> textures = new HashMap<>();
 
@@ -27,7 +27,7 @@ class GlassesGear extends GlassesModel implements IGear {
     }
 
     @Override
-    public boolean canRender(IModel model, Entity entity) {
+    public boolean canRender(PonyModel<?> model, Entity entity) {
         return entity instanceof LivingEntity living && !GlassesItem.getForEntity(living).isEmpty();
     }
 

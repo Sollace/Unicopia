@@ -149,7 +149,6 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-        renderBackground(context);
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight, 512, 256);

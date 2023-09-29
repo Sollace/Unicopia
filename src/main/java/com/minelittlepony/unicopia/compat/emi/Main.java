@@ -41,15 +41,15 @@ public class Main implements EmiPlugin {
         registry.addWorkstation(SPELL_BOOK_CATEGORY, SPELL_BOOK_STATION);
         registry.getRecipeManager().listAllOfType(URecipes.SPELLBOOK).forEach(recipe -> {
 
-            if (recipe instanceof SpellDuplicatingRecipe) {
+            if (recipe.value() instanceof SpellDuplicatingRecipe) {
                 registry.addRecipe(new SpellDuplicatingEmiRecipe(recipe));
-            } else if (recipe instanceof SpellEnhancingRecipe enhancingRecipe) {
+            } else if (recipe.value() instanceof SpellEnhancingRecipe enhancingRecipe) {
                 Trait.all().forEach(trait -> {
                     registry.addRecipe(new SpellDuplicatingEmiRecipe(recipe) {
                         private final Identifier id;
 
                         {
-                            id = recipe.getId().withPath(p -> p + "/" + trait.getId().getPath());
+                            id = recipe.id().withPath(p -> p + "/" + trait.getId().getPath());
                             input(trait);
                             this.getOutputs().addAll(
                                 Arrays.stream(enhancingRecipe.getBaseMaterial().getMatchingStacks())
@@ -76,9 +76,9 @@ public class Main implements EmiPlugin {
 
         DynamicRegistryManager registries = DynamicRegistryManager.of(Registries.REGISTRIES);
         registry.getRecipeManager().listAllOfType(RecipeType.CRAFTING).stream()
-                .filter(recipe -> recipe instanceof SpellShapedCraftingRecipe)
-                .map(SpellShapedCraftingRecipe.class::cast).forEach(recipe -> {
-            ItemStack output = recipe.getOutput(registries);
+                .filter(recipe -> recipe.value() instanceof SpellShapedCraftingRecipe)
+                .forEach(recipe -> {
+            ItemStack output = recipe.value().getResult(registries);
             if (output.getItem() instanceof MultiItem multiItem && output.getItem() instanceof EnchantableItem enchantable) {
                 multiItem.getDefaultStacks().forEach(outputVariation -> {
                     var spellEffect = enchantable.getSpellEffect(outputVariation);

@@ -6,14 +6,13 @@ import com.minelittlepony.unicopia.Owned;
 import com.sollace.fabwork.api.packets.Packet;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 
 /**
  * Sent by the server to spawn a projectile entity on the client.
  */
-public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Packet<PlayerEntity> {
+public class MsgSpawnProjectile extends EntitySpawnS2CPacket implements Packet {
 
     MsgSpawnProjectile(PacketByteBuf buffer) {
         super(buffer);

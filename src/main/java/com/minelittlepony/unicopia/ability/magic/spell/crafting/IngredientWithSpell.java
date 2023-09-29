@@ -6,20 +6,45 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.EnchantableItem;
-
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Decoder;
+import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.Encoder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
 
 public class IngredientWithSpell implements Predicate<ItemStack> {
+    private static final IngredientWithSpell EMPTY = new IngredientWithSpell();
     private static final Predicate<Ingredient> INGREDIENT_IS_PRESENT = ((Predicate<Ingredient>)(Ingredient::isEmpty)).negate();
+    public static final Codec<IngredientWithSpell> CODEC = Codec.of(new Encoder<IngredientWithSpell>() {
+        @Override
+        public <T> DataResult<T> encode(IngredientWithSpell input, DynamicOps<T> ops, T prefix) {
+            throw new JsonParseException("cannot serialize this type");
+        }
+    }, new Decoder<IngredientWithSpell>() {
+        @Override
+        public <T> DataResult<Pair<IngredientWithSpell, T>> decode(DynamicOps<T> ops, T input) {
+            // TODO: Doing codecs properly is an exercise left to the readers
+            DataResult<Pair<Ingredient, T>> stack = Ingredient.ALLOW_EMPTY_CODEC.decode(ops, input);
+            IngredientWithSpell ingredient = new IngredientWithSpell();
+            ingredient.stack = stack.result().map(Pair::getFirst);
+            ingredient.spell = Optional.ofNullable(((com.mojang.serialization.MapLike)input).get("Spell")).flatMap(unserializedSpell -> {
+                return SpellType.REGISTRY.getCodec().parse((DynamicOps)ops, unserializedSpell).result();
+            });
+
+            return DataResult.success(new Pair<>(ingredient, null));
+        }
+    });
+    public static final Codec<DefaultedList<IngredientWithSpell>> LIST_CODEC = CODEC.listOf().xmap(list -> {
+        return DefaultedList.<IngredientWithSpell>copyOf(EMPTY, list.toArray(IngredientWithSpell[]::new));
+    }, a -> a);
 
     private Optional<Ingredient> stack = Optional.empty();
     private Optional<SpellType<?>> spell = Optional.empty();
@@ -61,25 +86,5 @@ public class IngredientWithSpell implements Predicate<ItemStack> {
         ingredient.stack = buf.readOptional(Ingredient::fromPacket);
         ingredient.spell = buf.readOptional(PacketByteBuf::readIdentifier).flatMap(SpellType.REGISTRY::getOrEmpty);
         return ingredient;
-    }
-
-    public static IngredientWithSpell fromJson(JsonElement json) {
-        IngredientWithSpell ingredient = new IngredientWithSpell();
-        ingredient.stack = Optional.ofNullable(Ingredient.fromJson(json));
-        if (json.isJsonObject() && json.getAsJsonObject().has("spell")) {
-            ingredient.spell = SpellType.REGISTRY.getOrEmpty(Identifier.tryParse(JsonHelper.getString(json.getAsJsonObject(), "spell")));
-        }
-
-        return ingredient;
-    }
-
-    public static DefaultedList<IngredientWithSpell> fromJson(JsonArray json) {
-        DefaultedList<IngredientWithSpell> ingredients = DefaultedList.of();
-        for (int i = 0; i < json.size(); i++) {
-            IngredientWithSpell ingredient = fromJson(json.get(i));
-            if (ingredient.isEmpty()) continue;
-            ingredients.add(ingredient);
-        }
-        return ingredients;
     }
 }

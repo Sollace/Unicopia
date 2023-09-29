@@ -81,8 +81,8 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        renderBackground(context);
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        super.renderBackground(context, mouseX, mouseY, delta);
 
         final int columnHeight = 180;
         final int columnWidth = 310;
@@ -110,8 +110,6 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
         context.drawTexture(TribeSelectionScreen.TEXTURE, left - 35, top, 10, 70, 69, 50);
 
         context.drawTexture(TribeSelectionScreen.TEXTURE, left + 35, top, 148, 70, 21, 50);
-
-        super.render(context, mouseX, mouseY, delta);
     }
 
     @Override

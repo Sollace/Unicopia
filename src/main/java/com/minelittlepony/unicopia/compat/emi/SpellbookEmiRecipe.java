@@ -20,18 +20,19 @@ import dev.emi.emi.api.widget.TextureWidget;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.util.Identifier;
 
 class SpellbookEmiRecipe implements EmiRecipe, SpellbookRecipe.CraftingTreeBuilder {
 
-    private final SpellbookRecipe recipe;
+    private final RecipeEntry<SpellbookRecipe> recipe;
 
     private final List<EmiIngredient> inputs = new ArrayList<>();
     private final List<EmiStack> outputs = new ArrayList<>();
 
-    public SpellbookEmiRecipe(SpellbookRecipe recipe) {
+    public SpellbookEmiRecipe(RecipeEntry<SpellbookRecipe> recipe) {
         this.recipe = recipe;
-        recipe.buildCraftingTree(this);
+        recipe.value().buildCraftingTree(this);
     }
 
     @Override
@@ -42,7 +43,7 @@ class SpellbookEmiRecipe implements EmiRecipe, SpellbookRecipe.CraftingTreeBuild
     @Nullable
     @Override
     public Identifier getId() {
-        return recipe.getId();
+        return recipe.id();
     }
 
     @Override

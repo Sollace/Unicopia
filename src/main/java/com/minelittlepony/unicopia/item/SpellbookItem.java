@@ -30,11 +30,11 @@ public class SpellbookItem extends BookItem implements Dispensable {
 
     @Override
     public TypedActionResult<ItemStack> dispenseStack(BlockPointer source, ItemStack stack) {
-        Direction facing = source.getBlockState().get(DispenserBlock.FACING);
-        BlockPos pos = source.getPos().offset(facing);
+        Direction facing = source.state().get(DispenserBlock.FACING);
+        BlockPos pos = source.pos().offset(facing);
 
         float yaw = facing.getOpposite().asRotation();
-        placeBook(stack, source.getWorld(), pos.getX(), pos.getY(), pos.getZ(), yaw, null);
+        placeBook(stack, source.world(), pos.getX(), pos.getY(), pos.getZ(), yaw, null);
         stack.decrement(1);
 
         return new TypedActionResult<>(ActionResult.SUCCESS, stack);

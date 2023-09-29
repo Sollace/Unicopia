@@ -11,6 +11,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -71,10 +72,10 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
 
         if (state.getOffset() == 1) {
             int top = 0;
-            for (SpellbookRecipe recipe : this.client.world.getRecipeManager().listAllOfType(URecipes.SPELLBOOK)) {
+            for (RecipeEntry<SpellbookRecipe> recipe : this.client.world.getRecipeManager().listAllOfType(URecipes.SPELLBOOK)) {
                 if (client.player.getRecipeBook().contains(recipe)) {
                     IngredientTree tree = new IngredientTree(0, top, width - verticalScrollbar.getBounds().width + 2);
-                    recipe.buildCraftingTree(tree);
+                    recipe.value().buildCraftingTree(tree);
                     top += tree.build(this);
                 }
             }

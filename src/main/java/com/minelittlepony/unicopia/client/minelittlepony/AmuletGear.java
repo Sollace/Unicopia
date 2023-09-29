@@ -5,9 +5,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import com.minelittlepony.api.model.BodyPart;
-import com.minelittlepony.api.model.IModel;
-import com.minelittlepony.api.model.gear.IGear;
-import com.minelittlepony.client.model.IPonyModel;
+import com.minelittlepony.api.model.PonyModel;
+import com.minelittlepony.api.model.gear.Gear;
 import com.minelittlepony.unicopia.client.render.AmuletFeatureRenderer.AmuletModel;
 import com.minelittlepony.unicopia.item.AmuletItem;
 
@@ -21,7 +20,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
 
-class AmuletGear extends AmuletModel implements IGear {
+class AmuletGear extends AmuletModel implements Gear {
 
     private final Map<Identifier, Identifier> textures = new HashMap<>();
 
@@ -30,7 +29,7 @@ class AmuletGear extends AmuletModel implements IGear {
     }
 
     @Override
-    public boolean canRender(IModel model, Entity entity) {
+    public boolean canRender(PonyModel<?> model, Entity entity) {
         return entity instanceof LivingEntity living && !AmuletItem.getForEntity(living).isEmpty();
     }
 
@@ -45,14 +44,14 @@ class AmuletGear extends AmuletModel implements IGear {
     }
 
     @Override
-    public <M extends EntityModel<?> & IPonyModel<?>> void transform(M model, MatrixStack matrices) {
+    public <M extends EntityModel<?> & PonyModel<?>> void transform(M model, MatrixStack matrices) {
         BodyPart part = getGearLocation();
         model.transform(part, matrices);
         matrices.translate(0, 0.25, 0);
     }
 
     @Override
-    public void pose(IModel model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
+    public void pose(PonyModel<?> model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
         if (model instanceof BipedEntityModel<?> biped) {
             setAngles((LivingEntity)entity, biped);
         }

@@ -3,9 +3,8 @@ package com.minelittlepony.unicopia.client.minelittlepony;
 import java.util.UUID;
 
 import com.minelittlepony.api.model.BodyPart;
-import com.minelittlepony.api.model.IModel;
-import com.minelittlepony.api.model.gear.IGear;
-import com.minelittlepony.client.model.IPonyModel;
+import com.minelittlepony.api.model.PonyModel;
+import com.minelittlepony.api.model.gear.Gear;
 import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer.BraceletModel;
@@ -18,6 +17,7 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.util.SkinTextures.Model;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -25,7 +25,7 @@ import net.minecraft.item.DyeableItem;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 
-class BangleGear implements IGear {
+class BangleGear implements Gear {
     private boolean glowing;
     private int color;
     private boolean alex;
@@ -43,7 +43,7 @@ class BangleGear implements IGear {
     }
 
     @Override
-    public boolean canRender(IModel model, Entity entity) {
+    public boolean canRender(PonyModel<?> model, Entity entity) {
         return entity instanceof LivingEntity living && FriendshipBraceletItem.getWornBangles(living, slot).findFirst().isPresent();
     }
 
@@ -58,14 +58,14 @@ class BangleGear implements IGear {
     }
 
     @Override
-    public <M extends EntityModel<?> & IPonyModel<?>> void transform(M model, MatrixStack matrices) {
+    public <M extends EntityModel<?> & PonyModel<?>> void transform(M model, MatrixStack matrices) {
         BodyPart part = getGearLocation();
         model.transform(part, matrices);
     }
 
     @Override
-    public void pose(IModel model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
-        alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getModel().startsWith("slim");
+    public void pose(PonyModel<?> model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
+        alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).method_52814().model() == Model.SLIM;
         FriendshipBraceletItem.getWornBangles((LivingEntity)entity, slot).findFirst().ifPresent(bracelet -> {
             color = ((DyeableItem)bracelet.getItem()).getColor(bracelet);
             glowing = ((GlowableItem)bracelet.getItem()).isGlowing(bracelet);

@@ -160,10 +160,9 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                                 nbt.getString("playerName")
                             ), source);
 
-                SkullBlockEntity.loadProperties(new GameProfile(
-                        nbt.containsUuid("playerId") ? nbt.getUuid("playerId") : null,
-                                nbt.getString("playerName")
-                            ), p -> createPlayer(nbt, p, source));
+                SkullBlockEntity.fetchProfile(nbt.getString("playerName")).thenAccept(profile -> {
+                    profile.ifPresent(p -> createPlayer(nbt, p, source));
+                });
             } else {
                 if (source.isClient()) {
                     entity = EntityType.fromNbt(nbt).map(type -> type.create(source.asWorld())).orElse(null);

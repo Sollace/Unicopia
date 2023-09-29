@@ -91,11 +91,11 @@ public class RockCropBlock extends CropBlock {
     }
 
     @Override
-    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
         if (world instanceof World && !canGrow((World)world, ((World)world).random, pos, state)) {
             return false;
         }
-        return super.isFertilizable(world, pos, state, isClient);
+        return super.isFertilizable(world, pos, state);
     }
 
     @Override

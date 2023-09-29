@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.entity.player.MagicReserves;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.serialization.Codec;
 
 import net.minecraft.command.argument.EnumArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -69,7 +70,6 @@ public class ManaCommand {
         }
 
         public static final class ArgumentType extends EnumArgumentType<ManaType> {
-            @SuppressWarnings("deprecation")
             static final Codec<ManaType> CODEC = StringIdentifiable.createCodec(ManaType::values);
 
             protected ArgumentType() {

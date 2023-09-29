@@ -23,6 +23,7 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -59,7 +60,7 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
     private void renderBangleThirdPerson(ItemStack item, MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch, Arm mainArm) {
         int j = ((DyeableItem)item.getItem()).getColor(item);
 
-        boolean alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getModel().startsWith("slim");
+        boolean alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).method_52814().model() == SkinTextures.Model.SLIM;
 
         BraceletModel model = alex ? alexModel : steveModel;
         boolean isLeft = mainArm == Arm.LEFT;
@@ -85,7 +86,7 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
         FriendshipBraceletItem.getWornBangles(entity, side == entity.getMainArm() ? TrinketsDelegate.MAINHAND : TrinketsDelegate.OFFHAND).findFirst().ifPresent(item -> {
             int j = ((DyeableItem)item.getItem()).getColor(item);
 
-            boolean alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getModel().startsWith("slim");
+            boolean alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).method_52814().model() == SkinTextures.Model.SLIM;
 
             BraceletModel model = alex ? alexModel : steveModel;
 

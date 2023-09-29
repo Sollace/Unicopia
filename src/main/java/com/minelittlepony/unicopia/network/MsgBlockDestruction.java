@@ -5,12 +5,11 @@ import com.sollace.fabwork.api.packets.Packet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.entity.player.PlayerEntity;
 
 /**
  * Sent by the server to update block destruction progress on the client.
  */
-public record MsgBlockDestruction (Long2ObjectMap<Float> destructions) implements Packet<PlayerEntity> {
+public record MsgBlockDestruction (Long2ObjectMap<Float> destructions) implements Packet {
     MsgBlockDestruction(PacketByteBuf buffer) {
         this(new Long2ObjectOpenHashMap<>());
         int size = buffer.readInt();

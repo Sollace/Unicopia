@@ -1,48 +1,41 @@
 package com.minelittlepony.unicopia.item;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapelessRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.registry.Registries;
 
 public class ZapAppleRecipe extends ShapelessRecipe {
-
-    public ZapAppleRecipe(Identifier id, String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
-        super(id, group, category, output, input);
+    public ZapAppleRecipe(String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
+        super(group, category, output, input);
     }
 
-    public static class Serializer extends ShapelessRecipe.Serializer {
+    public static class Serializer implements RecipeSerializer<ZapAppleRecipe> {
+        private static final Codec<ZapAppleRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.STRING.optionalFieldOf("group", "").forGetter(ZapAppleRecipe::getGroup),
+            CraftingRecipeCategory.CODEC.fieldOf("category").forGetter(ZapAppleRecipe::getCategory),
+            Registries.ITEM.getCodec().xmap(item -> {
+                return UItems.ZAP_APPLE.setAppearance(UItems.ZAP_APPLE.getDefaultStack(), item.getDefaultStack());
+            }, stack -> {
+                return UItems.ZAP_APPLE.getAppearance(stack);
+            }).fieldOf("appearance").forGetter(recipe -> recipe.getResult(null)),
+            URecipes.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(ZapAppleRecipe::getIngredients)
+        ).apply(instance, ZapAppleRecipe::new));
+
         @Override
-        public ShapelessRecipe read(Identifier identifier, JsonObject json) {
-            String group = JsonHelper.getString(json, "group", "");
-            @SuppressWarnings("deprecation")
-            CraftingRecipeCategory category = CraftingRecipeCategory.CODEC.byId(JsonHelper.getString(json, "category", null), CraftingRecipeCategory.MISC);
-            DefaultedList<Ingredient> ingredients = URecipes.getIngredients(JsonHelper.getArray(json, "ingredients"));
-
-            if (ingredients.isEmpty()) {
-                throw new JsonParseException("No ingredients for shapeless recipe");
-            } else if (ingredients.size() > 9) {
-                throw new JsonParseException("Too many ingredients for shapeless recipe");
-            }
-
-            Identifier id = new Identifier(JsonHelper.getString(json, "appearance"));
-
-            return new ZapAppleRecipe(identifier, group, category, UItems.ZAP_APPLE.setAppearance(UItems.ZAP_APPLE.getDefaultStack(), Registries.ITEM.getOrEmpty(id).orElseThrow(() -> {
-                return new JsonSyntaxException("Unknown item '" + id + "'");
-            }).getDefaultStack()), ingredients);
+        public Codec<ZapAppleRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public ShapelessRecipe read(Identifier identifier, PacketByteBuf input) {
+        public ZapAppleRecipe read(PacketByteBuf input) {
             String group = input.readString(32767);
             CraftingRecipeCategory category = input.readEnumConstant(CraftingRecipeCategory.class);
 
@@ -52,7 +45,18 @@ public class ZapAppleRecipe extends ShapelessRecipe {
                 ingredients.set(j, Ingredient.fromPacket(input));
             }
 
-            return new ZapAppleRecipe(identifier, group, category, input.readItemStack(), ingredients);
+            return new ZapAppleRecipe(group, category, input.readItemStack(), ingredients);
+        }
+
+        @Override
+        public void write(PacketByteBuf buffer, ZapAppleRecipe recipe) {
+            buffer.writeString(recipe.getGroup());
+            buffer.writeEnumConstant(recipe.getCategory());
+            buffer.writeVarInt(recipe.getIngredients().size());
+            for (Ingredient ingredient : recipe.getIngredients()) {
+                ingredient.write(buffer);
+            }
+            buffer.writeItemStack(recipe.getResult(null));
         }
     }
 }

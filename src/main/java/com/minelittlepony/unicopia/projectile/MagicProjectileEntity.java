@@ -342,6 +342,6 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
 
     @Override
     public Packet<ClientPlayPacketListener> createSpawnPacket() {
-        return Channel.SERVER_SPAWN_PROJECTILE.toPacket(new MsgSpawnProjectile(this));
+        return (Packet<ClientPlayPacketListener>)(Object)Channel.SERVER_SPAWN_PROJECTILE.toPacket(new MsgSpawnProjectile(this));
     }
 }
