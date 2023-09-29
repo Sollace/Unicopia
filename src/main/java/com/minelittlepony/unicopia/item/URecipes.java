@@ -1,8 +1,5 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.List;
-
-import com.google.gson.JsonArray;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.*;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -15,7 +12,6 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.ShapedRecipe;
-import net.minecraft.recipe.ShapelessRecipe;
 import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
