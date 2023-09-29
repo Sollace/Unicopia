@@ -7,7 +7,9 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.command.CommandArgumentEnum;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 
 import net.minecraft.command.argument.EnumArgumentType;
 import net.minecraft.item.Item;
@@ -18,6 +20,7 @@ import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.dynamic.Codecs;
 
 public enum Trait implements CommandArgumentEnum<Trait> {
     /**
@@ -60,8 +63,17 @@ public enum Trait implements CommandArgumentEnum<Trait> {
     POISON(TraitGroup.DARKNESS),
     BLOOD(TraitGroup.DARKNESS);
 
-    private static final Map<String, Trait> REGISTRY = Arrays.stream(values()).collect(Collectors.toMap(Trait::name, Function.identity()));
     private static final Map<Identifier, Trait> IDS = Arrays.stream(values()).collect(Collectors.toMap(Trait::getId, Function.identity()));
+    @Deprecated
+    private static final EnumCodec<Trait> NAME_CODEC = StringIdentifiable.createCodec(Trait::values);
+    @Deprecated
+    private static final EnumCodec<Trait> ID_CODEC = StringIdentifiable.createCodec(Trait::values, i -> "unicopia:" + i);
+
+    public static final Codec<Trait> CODEC = Codecs.xor(NAME_CODEC, ID_CODEC).flatXmap(
+            either -> either.left().or(either::right).map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Not a proper trait")),
+            trait -> DataResult.success(Either.right(trait))
+    );
+
     private final Identifier id;
     private final Identifier sprite;
     private final TraitGroup group;
@@ -149,25 +161,26 @@ public enum Trait implements CommandArgumentEnum<Trait> {
                 .flatMap(Optional::stream);
     }
 
+    @Deprecated
     public static Optional<Trait> fromId(Identifier id) {
-        return Optional.ofNullable(IDS.getOrDefault(id, null));
+        return Optional.ofNullable(ID_CODEC.byId(id.toString()));
     }
 
+    @Deprecated
     public static Optional<Trait> fromId(String name) {
         return Optional.ofNullable(Identifier.tryParse(name)).flatMap(Trait::fromId);
     }
 
+    @Deprecated
     public static Optional<Trait> fromName(String name) {
-        return Optional.ofNullable(REGISTRY.getOrDefault(name.toUpperCase(), null));
+        return Optional.ofNullable(NAME_CODEC.byId(name.toUpperCase()));
     }
 
     public static EnumArgumentType<Trait> argument() {
         return new ArgumentType();
     }
 
-    public static final class ArgumentType extends EnumArgumentType<Trait> {
-        static final Codec<Trait> CODEC = StringIdentifiable.createCodec(Trait::values);
-
+    public static class ArgumentType extends EnumArgumentType<Trait> {
         protected ArgumentType() {
             super(CODEC, Trait::values);
         }

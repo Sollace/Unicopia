@@ -13,7 +13,6 @@ import com.minelittlepony.unicopia.item.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.item.ItemStack;
@@ -144,7 +143,7 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
     public static class Serializer implements RecipeSerializer<SpellCraftingRecipe> {
         private static final Codec<SpellCraftingRecipe> CODEC = RecordCodecBuilder.<SpellCraftingRecipe>create(instance -> instance.group(
                 IngredientWithSpell.CODEC.fieldOf("material").forGetter(recipe -> recipe.material),
-                ((MapCodec<TraitIngredient>)null).forGetter(recipe -> recipe.requiredTraits),
+                TraitIngredient.CODEC.fieldOf("traits").forGetter(recipe -> recipe.requiredTraits),
                 IngredientWithSpell.CODEC.listOf().fieldOf("ingredients").forGetter(recipe -> recipe.requiredItems),
                 ItemStackWithSpell.CODEC.fieldOf("result").forGetter(recipe -> recipe.output)
         ).apply(instance, SpellCraftingRecipe::new));
