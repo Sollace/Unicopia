@@ -17,10 +17,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
 import com.minelittlepony.unicopia.util.InventoryUtil;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -30,6 +32,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -41,6 +44,10 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
 
     private static Map<Identifier, SpellTraits> REGISTRY = new HashMap<>();
     static final Map<Trait, List<Item>> ITEMS = new HashMap<>();
+
+    public static final Codec<SpellTraits> CODEC = Codec.unboundedMap(Trait.CODEC, Codec.FLOAT).flatXmap(map -> {
+        return fromEntries(map.entrySet().stream()).map(DataResult::success).orElseGet(() -> DataResult.error(() -> "No traits were supplied"));
+    }, traits -> DataResult.success(traits.traits));
 
     public static void load(Map<Identifier, SpellTraits> newRegistry) {
         REGISTRY = new HashMap<>(newRegistry);
@@ -244,11 +251,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static Optional<SpellTraits> fromNbt(NbtCompound traits) {
-        return fromEntries(streamFromNbt(traits));
-    }
-
-    public static Optional<SpellTraits> fromJson(JsonObject traits) {
-        return fromEntries(streamFromJson(traits));
+        return CODEC.decode(NbtOps.INSTANCE, traits).result().map(Pair::getFirst);
     }
 
     public static Optional<SpellTraits> fromPacketOrEmpty(PacketByteBuf buf) {
@@ -256,7 +259,6 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static SpellTraits fromPacket(PacketByteBuf buf) {
-
         Map<Trait, Float> entries = new HashMap<>();
         int count = buf.readInt();
         if (count <= 0) {
@@ -293,26 +295,6 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
             }
             return Map.entry(key, Float.parseFloat(pair[1]));
         }));
-    }
-
-    public static Stream<Map.Entry<Trait, Float>> streamFromNbt(NbtCompound traits) {
-        return traits.getKeys().stream().map(key -> {
-            Trait trait = Trait.fromId(key).orElse(null);
-            if (trait == null || !traits.contains(key, NbtElement.NUMBER_TYPE)) {
-                return null;
-            }
-            return Map.entry(trait, traits.getFloat(key));
-        });
-    }
-
-    public static Stream<Map.Entry<Trait, Float>> streamFromJson(JsonObject traits) {
-        return traits.entrySet().stream().map(entry -> {
-            Trait trait = Trait.fromName(entry.getKey()).orElse(null);
-            if (trait == null || !entry.getValue().isJsonPrimitive() && !entry.getValue().getAsJsonPrimitive().isNumber()) {
-                return null;
-            }
-            return Map.entry(trait, entry.getValue().getAsJsonPrimitive().getAsFloat());
-        });
     }
 
     public static Optional<SpellTraits> fromEntries(Stream<Map.Entry<Trait, Float>> entries) {
