@@ -296,7 +296,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
 
             Vec3d vel = getVelocity();
 
-            double height = box.getYLength();
+            double height = box.getLengthY();
 
             if (height < 3 || e.getBoundingBox().minY > box.minY + height / 2D) {
                 if (vel.y > 0 && e.getBoundingBox().minY < box.maxY + 0.02) {
@@ -580,7 +580,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         STORM,
         TALE;
 
-        public static final Codec<BalloonDesign> CODEC = StringIdentifiable.createCodec(BalloonDesign::values);
+        public static final EnumCodec<BalloonDesign> CODEC = StringIdentifiable.createCodec(BalloonDesign::values);
         private static final IntFunction<BalloonDesign> BY_ID = ValueLists.<BalloonDesign>createIdToValueFunction(Enum::ordinal, values(), ValueLists.OutOfBoundsHandling.ZERO);
 
         private final String name = name().toLowerCase(Locale.ROOT);

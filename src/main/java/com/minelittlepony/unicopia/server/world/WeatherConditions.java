@@ -18,12 +18,12 @@ import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.Heightmap.Type;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
 public class WeatherConditions extends PersistentState implements Tickable {
-    public static final Plane HEIGHT_MAP_FIELD = (world, pos) -> world.getTopY(Type.WORLD_SURFACE_WG, pos.getX(), pos.getZ());
+    public static final Plane HEIGHT_MAP_FIELD = (world, pos) -> world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, pos.getX(), pos.getZ());
     public static final Plane THERMAL_FIELD = (world, pos) -> (float)getUpdraft(pos, world);
     public static final Plane LOCAL_ALTITUDE_FIELD = (world, pos) -> {
         if (!world.isAir(pos)) {

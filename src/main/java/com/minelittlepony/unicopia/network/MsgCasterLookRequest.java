@@ -10,14 +10,13 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.sollace.fabwork.api.packets.HandledPacket;
 import com.sollace.fabwork.api.packets.Packet;
 
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
  * Sent to the client when the server needs to know precisely where the player is looking.
  */
-public record MsgCasterLookRequest (UUID spellId) implements Packet<PlayerEntity> {
+public record MsgCasterLookRequest (UUID spellId) implements Packet {
 
     public MsgCasterLookRequest(PacketByteBuf buffer) {
         this(buffer.readUuid());

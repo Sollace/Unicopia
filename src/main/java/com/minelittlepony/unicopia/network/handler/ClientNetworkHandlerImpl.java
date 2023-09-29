@@ -66,7 +66,8 @@ public class ClientNetworkHandlerImpl {
             InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_MAGIC_BEAM, entity.getId());
         }
 
-        world.addEntity(packet.getId(), entity);
+        entity.onSpawnPacket(packet);
+        world.addEntity(entity);
     }
 
     private void handleBlockDestruction(PlayerEntity sender, MsgBlockDestruction packet) {

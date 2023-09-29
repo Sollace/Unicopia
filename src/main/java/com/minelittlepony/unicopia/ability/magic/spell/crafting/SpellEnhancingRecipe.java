@@ -1,27 +1,24 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
-import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.*;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 /**
  * Recipe for adding traits to an existing spell.
  */
 public class SpellEnhancingRecipe implements SpellbookRecipe {
-    private final Identifier id;
+    final IngredientWithSpell material;
 
-    private final IngredientWithSpell material;
-
-    private SpellEnhancingRecipe(Identifier id, IngredientWithSpell material) {
-        this.id = id;
+    private SpellEnhancingRecipe(IngredientWithSpell material) {
         this.material = material;
     }
 
@@ -58,13 +55,8 @@ public class SpellEnhancingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public ItemStack getOutput(DynamicRegistryManager registries) {
+    public ItemStack getResult(DynamicRegistryManager registries) {
         return UItems.GEMSTONE.getDefaultStack();
-    }
-
-    @Override
-    public Identifier getId() {
-        return id;
     }
 
     @Override
@@ -73,14 +65,18 @@ public class SpellEnhancingRecipe implements SpellbookRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<SpellEnhancingRecipe> {
+        private static final Codec<SpellEnhancingRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            IngredientWithSpell.CODEC.fieldOf("material").forGetter(recipe -> recipe.material)
+        ).apply(instance, SpellEnhancingRecipe::new));
+
         @Override
-        public SpellEnhancingRecipe read(Identifier id, JsonObject json) {
-            return new SpellEnhancingRecipe(id, IngredientWithSpell.fromJson(json.get("material")));
+        public Codec<SpellEnhancingRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public SpellEnhancingRecipe read(Identifier id, PacketByteBuf buf) {
-            return new SpellEnhancingRecipe(id, IngredientWithSpell.fromPacket(buf));
+        public SpellEnhancingRecipe read(PacketByteBuf buf) {
+            return new SpellEnhancingRecipe(IngredientWithSpell.fromPacket(buf));
         }
 
         @Override

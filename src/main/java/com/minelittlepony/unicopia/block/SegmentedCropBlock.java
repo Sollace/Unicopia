@@ -170,8 +170,8 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
     }
 
     @Override
-    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
-        if (super.isFertilizable(world, pos, state, isClient)) {
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
+        if (super.isFertilizable(world, pos, state)) {
             return true;
         }
 
@@ -181,7 +181,7 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
 
         pos = pos.up();
         state = world.getBlockState(pos);
-        return state.isAir() || (isNext(state) && state.getBlock() instanceof Fertilizable f && f.isFertilizable(world, pos, state, isClient));
+        return state.isAir() || (isNext(state) && state.getBlock() instanceof Fertilizable f && f.isFertilizable(world, pos, state));
     }
 
     @Override

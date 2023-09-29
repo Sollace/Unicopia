@@ -3,9 +3,8 @@ package com.minelittlepony.unicopia.client.minelittlepony;
 import java.util.UUID;
 
 import com.minelittlepony.api.model.BodyPart;
-import com.minelittlepony.api.model.IModel;
-import com.minelittlepony.api.model.gear.IGear;
-import com.minelittlepony.client.model.IPonyModel;
+import com.minelittlepony.api.model.PonyModel;
+import com.minelittlepony.api.model.gear.Gear;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.spell.SpellEffectsRenderDispatcher;
@@ -17,14 +16,14 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 
-class SpellEffectGear implements IGear {
+class SpellEffectGear implements Gear {
     private Caster<?> caster;
     private float limbAngle;
     private float limbDistance;
     private float animationProgress;
 
     @Override
-    public boolean canRender(IModel model, Entity entity) {
+    public boolean canRender(PonyModel<?> model, Entity entity) {
         return Caster.of(entity).isPresent();
     }
 
@@ -39,11 +38,11 @@ class SpellEffectGear implements IGear {
     }
 
     @Override
-    public <M extends EntityModel<?> & IPonyModel<?>> void transform(M model, MatrixStack matrices) {
+    public <M extends EntityModel<?> & PonyModel<?>> void transform(M model, MatrixStack matrices) {
     }
 
     @Override
-    public void pose(IModel model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
+    public void pose(PonyModel<?> model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
         caster = Caster.of(entity).orElse(null);
         limbAngle = move;
         limbDistance = swing;

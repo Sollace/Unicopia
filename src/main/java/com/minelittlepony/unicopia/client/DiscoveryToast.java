@@ -17,6 +17,7 @@ import net.minecraft.util.Identifier;
 
 public class DiscoveryToast implements Toast {
     private static final long MAX_AGE = 5000L;
+    private static final Identifier TEXTURE = new Identifier("toast/advancement");
     private static final Text TITLE = Text.translatable("unicopia.toast.discoveries.title");
     private static final Text DESCRIPTION = Text.translatable("unicopia.toast.discoveries.description");
 
@@ -39,7 +40,7 @@ public class DiscoveryToast implements Toast {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1.0F, 1, 1, 1);
 
-        context.drawTexture(TEXTURE, 0, 0, 0, 32, getWidth(), getHeight());
+        context.drawGuiTexture(TEXTURE, 0, 0, getWidth(), getHeight());
         context.drawText(manager.getClient().textRenderer, TITLE, 30, 7, -11534256, false);
         context.drawText(manager.getClient().textRenderer, DESCRIPTION, 30, 18, -16777216, false);
 

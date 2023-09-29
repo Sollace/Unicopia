@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.util.Tickable;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -38,8 +39,11 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
     public static <T extends PersistentState> T getPersistableStorage(World world, Identifier id, BiFunction<World, NbtCompound, T> loadFunc, Function<World, T> factory) {
         if (world instanceof ServerWorld serverWorld) {
             return serverWorld.getPersistentStateManager().getOrCreate(
-                    compound -> loadFunc.apply(world, compound),
-                    () -> factory.apply(world),
+                    new Type<>(
+                            () -> factory.apply(world),
+                            compound -> loadFunc.apply(world, compound),
+                            DataFixTypes.LEVEL
+                    ),
                     id.getNamespace() + "_" + id.getPath().replace('/', '_')
             );
         }

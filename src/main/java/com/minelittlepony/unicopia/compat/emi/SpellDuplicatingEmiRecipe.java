@@ -14,10 +14,11 @@ import dev.emi.emi.runtime.EmiDrawContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.RecipeEntry;
 
 public class SpellDuplicatingEmiRecipe extends SpellbookEmiRecipe {
 
-    public SpellDuplicatingEmiRecipe(SpellbookRecipe recipe) {
+    public SpellDuplicatingEmiRecipe(RecipeEntry<SpellbookRecipe> recipe) {
         super(recipe);
     }
 

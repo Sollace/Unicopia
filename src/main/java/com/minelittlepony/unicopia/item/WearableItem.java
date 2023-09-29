@@ -59,9 +59,9 @@ public abstract class WearableItem extends Item implements Equipment {
     }
 
     public static boolean dispenseArmor(BlockPointer pointer, ItemStack armor) {
-        return pointer.getWorld().getEntitiesByClass(
+        return pointer.world().getEntitiesByClass(
                     LivingEntity.class,
-                    new Box(pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING))),
+                    new Box(pointer.pos().offset(pointer.state().get(DispenserBlock.FACING))),
                     EntityPredicates.EXCEPT_SPECTATOR
                 )
                 .stream()

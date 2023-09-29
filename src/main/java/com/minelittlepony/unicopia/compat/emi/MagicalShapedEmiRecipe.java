@@ -12,19 +12,20 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.recipe.EmiShapedRecipe;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.ShapedRecipe;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.util.Identifier;
 
 public class MagicalShapedEmiRecipe extends EmiCraftingRecipe {
-    public MagicalShapedEmiRecipe(ShapedRecipe recipe, CustomisedSpellType<?> spellEffect, ItemStack output) {
+    public MagicalShapedEmiRecipe(RecipeEntry<? extends CraftingRecipe> recipe, CustomisedSpellType<?> spellEffect, ItemStack output) {
         super(padIngredients(recipe, spellEffect), EmiStack.of(output),
-                new Identifier(recipe.getId().getNamespace(), recipe.getId().getPath() + "/" + spellEffect.type().getId().getPath()), false);
-        EmiShapedRecipe.setRemainders(input, recipe);
+                new Identifier(recipe.id().getNamespace(), recipe.id().getPath() + "/" + spellEffect.type().getId().getPath()), false);
+        EmiShapedRecipe.setRemainders(input, recipe.value());
     }
 
-    private static List<EmiIngredient> padIngredients(ShapedRecipe recipe, CustomisedSpellType<?> spellEffect) {
-        List<EmiIngredient> list = recipe.getIngredients().stream()
+    private static List<EmiIngredient> padIngredients(RecipeEntry<? extends CraftingRecipe> recipe, CustomisedSpellType<?> spellEffect) {
+        List<EmiIngredient> list = recipe.value().getIngredients().stream()
                 .map(ingredient -> remapIngredient(ingredient, spellEffect))
                 .collect(Collectors.toList());
         while (list.size() < 9) {

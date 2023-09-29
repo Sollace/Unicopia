@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSkyAngle;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
@@ -79,8 +80,7 @@ public class UnicopiaWorldProperties extends PersistentState {
 
     public static UnicopiaWorldProperties forWorld(ServerWorld world) {
         return world.getPersistentStateManager().getOrCreate(
-                nbt -> new UnicopiaWorldProperties(world, nbt),
-                () -> new UnicopiaWorldProperties(world), "unicopia_tribes"
+                new Type<>(() -> new UnicopiaWorldProperties(world), nbt -> new UnicopiaWorldProperties(world, nbt), DataFixTypes.LEVEL), "unicopia_tribes"
         );
     }
 }

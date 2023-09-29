@@ -189,12 +189,12 @@ public class UnicornTeleportAbility implements Ability<Pos> {
         return state.hasSolidTopSurface(w, pos, player)
                 || StatePredicate.isFluid(state)
                 || (shape = state.getCollisionShape(w, pos, ShapeContext.of(player))).isEmpty()
-                || shape.getBoundingBox().getYLength() > 1;
+                || shape.getBoundingBox().getLengthY() > 1;
     }
 
     private double getTargetYPosition(World world, BlockPos pos, ShapeContext context) {
         VoxelShape shape = world.getBlockState(pos).getCollisionShape(world, pos, context);
-        return pos.getY() + (shape.isEmpty() ? 0 : shape.getBoundingBox().getYLength());
+        return pos.getY() + (shape.isEmpty() ? 0 : shape.getBoundingBox().getLengthY());
     }
 
     @Override

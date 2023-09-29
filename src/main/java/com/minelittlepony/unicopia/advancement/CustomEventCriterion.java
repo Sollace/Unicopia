@@ -1,32 +1,23 @@
 package com.minelittlepony.unicopia.advancement;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.entity.Entity;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion.Conditions> {
-
-    private static final Identifier ID = Unicopia.id("custom");
-
     @Override
-    public Identifier getId() {
-        return ID;
-    }
-
-    @Override
-    protected Conditions conditionsFromJson(JsonObject json, LootContextPredicate playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
+    protected Conditions conditionsFromJson(JsonObject json, Optional<LootContextPredicate> playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
         return new Conditions(
                 playerPredicate,
                 JsonHelper.getString(json, "event"),
@@ -59,8 +50,8 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
 
         private final int repeatCount;
 
-        public Conditions(LootContextPredicate playerPredicate, String event, RacePredicate races, Boolean flying, int repeatCount) {
-            super(ID, playerPredicate);
+        public Conditions(Optional<LootContextPredicate> playerPredicate, String event, RacePredicate races, Boolean flying, int repeatCount) {
+            super(playerPredicate);
             this.event = event;
             this.races = races;
             this.flying = flying;
@@ -75,8 +66,8 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
         }
 
         @Override
-        public JsonObject toJson(AdvancementEntityPredicateSerializer serializer) {
-            JsonObject json = super.toJson(serializer);
+        public JsonObject toJson() {
+            JsonObject json = super.toJson();
             json.addProperty("event", event);
             json.add("race", races.toJson());
             if (flying != null) {

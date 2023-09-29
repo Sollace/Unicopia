@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.command.CommandArgumentEnum;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.util.AnimationUtil;
+import com.mojang.serialization.Codec;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
@@ -450,7 +451,6 @@ public class PlayerPoser {
         }
 
         public static final class ArgumentType extends EnumArgumentType<Animation> {
-            @SuppressWarnings("deprecation")
             static final Codec<Animation> CODEC = StringIdentifiable.createCodec(Animation::values);
 
             protected ArgumentType() {
@@ -468,7 +468,6 @@ public class PlayerPoser {
             }
 
             public static final class ArgumentType extends EnumArgumentType<Recipient> {
-                @SuppressWarnings("deprecation")
                 static final Codec<Recipient> CODEC = StringIdentifiable.createCodec(Recipient::values);
 
                 protected ArgumentType() {

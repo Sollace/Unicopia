@@ -1,31 +1,23 @@
 package com.minelittlepony.unicopia.advancement;
 
+import java.util.Optional;
+
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 public class RaceChangeCriterion extends AbstractCriterion<RaceChangeCriterion.Conditions> {
 
-    private static final Identifier ID = Unicopia.id("player_change_race");
-
     @Override
-    public Identifier getId() {
-        return ID;
-    }
-
-    @Override
-    protected Conditions conditionsFromJson(JsonObject json, LootContextPredicate playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
+    protected Conditions conditionsFromJson(JsonObject json, Optional<LootContextPredicate> playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
         return new Conditions(playerPredicate, Race.fromName(JsonHelper.getString(json, "race"), Race.EARTH));
     }
 
@@ -38,8 +30,8 @@ public class RaceChangeCriterion extends AbstractCriterion<RaceChangeCriterion.C
     public static class Conditions extends AbstractCriterionConditions {
         private final Race race;
 
-        public Conditions(LootContextPredicate playerPredicate, Race race) {
-            super(ID, playerPredicate);
+        public Conditions(Optional<LootContextPredicate> playerPredicate, Race race) {
+            super(playerPredicate);
             this.race = race;
         }
 
@@ -48,8 +40,8 @@ public class RaceChangeCriterion extends AbstractCriterion<RaceChangeCriterion.C
         }
 
         @Override
-        public JsonObject toJson(AdvancementEntityPredicateSerializer serializer) {
-            JsonObject json = super.toJson(serializer);
+        public JsonObject toJson() {
+            JsonObject json = super.toJson();
             json.addProperty("race", Race.REGISTRY.getId(race).toString());
 
             return json;

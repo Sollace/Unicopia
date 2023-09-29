@@ -5,14 +5,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 
 public class JarInsertRecipe extends ItemCombinationRecipe {
 
-    public JarInsertRecipe(Identifier id, CraftingRecipeCategory category) {
-        super(id, category);
+    public JarInsertRecipe(CraftingRecipeCategory category) {
+        super(category);
     }
 
     @Override

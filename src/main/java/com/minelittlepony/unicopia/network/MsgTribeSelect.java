@@ -6,10 +6,9 @@ import java.util.Set;
 import com.minelittlepony.unicopia.Race;
 import com.sollace.fabwork.api.packets.Packet;
 
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 
-public record MsgTribeSelect (Set<Race> availableRaces, String serverMessage) implements Packet<PlayerEntity> {
+public record MsgTribeSelect (Set<Race> availableRaces, String serverMessage) implements Packet {
     public MsgTribeSelect(PacketByteBuf buffer) {
         this(
             buffer.readCollection(HashSet::new, buf -> buf.readRegistryValue(Race.REGISTRY)),

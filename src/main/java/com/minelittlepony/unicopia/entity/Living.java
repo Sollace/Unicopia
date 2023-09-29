@@ -232,7 +232,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                 newServerPos = newServerPos.subtract(posChange);
                 entity.updateTrackedPositionAndAngles(
                         newServerPos.x, newServerPos.y, newServerPos.z,
-                        entity.getYaw(), entity.getPitch(), 3, true);
+                        entity.getYaw(), entity.getPitch(), 3);
             }
         } else {
             entity.updateTrackedPosition(newPos.x, newPos.y, newPos.z);
@@ -366,9 +366,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         EntityAttributeModifier modifier = instance.getModifier(id);
 
         if (!MathHelper.approximatelyEquals(desiredValue, modifier == null ? 0 : modifier.getValue())) {
-            if (modifier != null) {
-                instance.removeModifier(modifier);
-            }
+            instance.tryRemoveModifier(id);
 
             if (desiredValue != 0) {
                 if (permanent) {

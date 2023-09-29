@@ -43,7 +43,7 @@ public class WeatherVaneBlock extends BlockWithEntity {
     @Override
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return BellBlock.checkType(type, UBlockEntities.WEATHER_VANE, world.isClient ? WeatherVane::clientTick : WeatherVane::serverTick);
+        return validateTicker(type, UBlockEntities.WEATHER_VANE, world.isClient ? WeatherVane::clientTick : WeatherVane::serverTick);
     }
 
     public static class WeatherVane extends BlockEntity {

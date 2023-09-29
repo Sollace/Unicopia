@@ -1,9 +1,11 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
-import com.google.gson.JsonObject;
+import java.util.function.Function;
+
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
+import com.mojang.serialization.Codec;
 
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
@@ -11,12 +13,11 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
 
 public class SpellShapedCraftingRecipe extends ShapedRecipe {
 
     public SpellShapedCraftingRecipe(ShapedRecipe recipe) {
-        super(recipe.getId(), recipe.getGroup(), recipe.getCategory(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getOutput(null));
+        super(recipe.getGroup(), recipe.getCategory(), recipe.getWidth(), recipe.getHeight(), recipe.getIngredients(), recipe.getResult(null));
     }
 
     @Override
@@ -37,13 +38,13 @@ public class SpellShapedCraftingRecipe extends ShapedRecipe {
 
     public static class Serializer extends ShapedRecipe.Serializer {
         @Override
-        public ShapedRecipe read(Identifier id, JsonObject json) {
-            return new SpellShapedCraftingRecipe(super.read(id, json));
+        public Codec<ShapedRecipe> codec() {
+            return super.codec().xmap(SpellShapedCraftingRecipe::new, Function.identity());
         }
 
         @Override
-        public ShapedRecipe read(Identifier id, PacketByteBuf buffer) {
-            return new SpellShapedCraftingRecipe(super.read(id, buffer));
+        public ShapedRecipe read(PacketByteBuf buffer) {
+            return new SpellShapedCraftingRecipe(super.read(buffer));
         }
     }
 }

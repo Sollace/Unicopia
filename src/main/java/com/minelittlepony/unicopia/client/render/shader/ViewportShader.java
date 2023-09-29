@@ -2,8 +2,7 @@ package com.minelittlepony.unicopia.client.render.shader;
 
 import java.io.IOException;
 
-import javax.annotation.Nullable;
-
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import com.google.common.collect.*;

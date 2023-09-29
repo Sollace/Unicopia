@@ -18,6 +18,7 @@ import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgServerResources;
 import com.minelittlepony.unicopia.util.Resources;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.JsonOps;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.network.PacketByteBuf;
@@ -227,6 +228,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             element.toBuffer(buffer);
         }
 
+        @Deprecated
         static Element read(JsonElement json) {
             if (!json.isJsonPrimitive()) {
 
@@ -244,7 +246,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
                 }
 
                 if (el.has("item")) {
-                    return new Stack(IngredientWithSpell.fromJson(el.get("item")), boundsFromJson(el));
+                    return new Stack(IngredientWithSpell.CODEC.decode(JsonOps.INSTANCE, el.get("item")).result().get().getFirst(), boundsFromJson(el));
                 }
 
                 if (el.has("ingredients")) {

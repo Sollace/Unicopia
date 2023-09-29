@@ -23,6 +23,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
@@ -188,12 +189,13 @@ public class SpellbookScreenHandler extends ScreenHandler {
         super.onContentChanged(inventory);
         context.run((world, pos) -> {
             if (!world.isClient && !gemSlot.getStack().isEmpty()) {
+                Comparator<RecipeEntry<SpellbookRecipe>> comparator = Comparator.comparing(e -> e.value().getPriority());
                 ItemStack resultStack = input.hasIngredients() ? world.getServer().getRecipeManager()
                         .getAllMatches(URecipes.SPELLBOOK, input, world)
-                        .stream().sorted(Comparator.comparing(SpellbookRecipe::getPriority))
+                        .stream().sorted(comparator)
                         .findFirst()
                         .filter(recipe -> result.shouldCraftRecipe(world, (ServerPlayerEntity)this.inventory.player, recipe))
-                        .map(recipe -> recipe.craft(input, world.getRegistryManager()))
+                        .map(recipe -> recipe.value().craft(input, world.getRegistryManager()))
                         .orElseGet(this::getFallbackStack) : ItemStack.EMPTY;
                 outputSlot.setStack(resultStack);
 

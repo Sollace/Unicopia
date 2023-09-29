@@ -8,7 +8,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.container.SpellbookChapterLoader;
 import com.sollace.fabwork.api.packets.Packet;
 
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
@@ -16,7 +15,7 @@ public record MsgServerResources (
         Map<Identifier, SpellTraits> traits,
         Map<Identifier, ?> chapters,
         Map<Identifier, TreeTypeLoader.TreeTypeDef> treeTypes
-    ) implements Packet<PlayerEntity> {
+    ) implements Packet {
     public MsgServerResources() {
         this(
             SpellTraits.all(),

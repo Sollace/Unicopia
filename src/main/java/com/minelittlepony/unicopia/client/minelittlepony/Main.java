@@ -6,10 +6,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import com.minelittlepony.api.events.PonyModelPrepareCallback;
 import com.minelittlepony.api.model.*;
-import com.minelittlepony.api.model.fabric.PonyModelPrepareCallback;
-import com.minelittlepony.api.model.gear.IGear;
-import com.minelittlepony.api.pony.IPony;
+import com.minelittlepony.api.model.gear.Gear;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
@@ -41,16 +40,16 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
     public void onInitializeClient() {
         INSTANCE = this;
         PonyModelPrepareCallback.EVENT.register(this::onPonyModelPrepared);
-        IGear.register(() -> new BangleGear(TrinketsDelegate.MAINHAND));
-        IGear.register(() -> new BangleGear(TrinketsDelegate.OFFHAND));
-        IGear.register(HeldEntityGear::new);
-        IGear.register(BodyPartGear::pegasusWings);
-        IGear.register(BodyPartGear::batWings);
-        IGear.register(BodyPartGear::bugWings);
-        IGear.register(BodyPartGear::unicornHorn);
-        IGear.register(AmuletGear::new);
-        IGear.register(GlassesGear::new);
-        IGear.register(SpellEffectGear::new);
+        Gear.register(() -> new BangleGear(TrinketsDelegate.MAINHAND));
+        Gear.register(() -> new BangleGear(TrinketsDelegate.OFFHAND));
+        Gear.register(HeldEntityGear::new);
+        Gear.register(BodyPartGear::pegasusWings);
+        Gear.register(BodyPartGear::batWings);
+        Gear.register(BodyPartGear::bugWings);
+        Gear.register(BodyPartGear::unicornHorn);
+        Gear.register(AmuletGear::new);
+        Gear.register(GlassesGear::new);
+        Gear.register(SpellEffectGear::new);
 
         registerRaceMapping(com.minelittlepony.api.pony.meta.Race.CHANGEDLING, Race.CHANGELING);
         registerRaceMapping(com.minelittlepony.api.pony.meta.Race.ZEBRA, Race.EARTH);
@@ -60,7 +59,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
         registerRaceMapping(com.minelittlepony.api.pony.meta.Race.SEAPONY, Race.UNICORN);
     }
 
-    private void onPonyModelPrepared(Entity entity, IModel model, ModelAttributes.Mode mode) {
+    private void onPonyModelPrepared(Entity entity, PonyModel<?> model, ModelAttributes.Mode mode) {
         if (hookErroring) return;
         try {
             if (entity instanceof PlayerEntity) {
@@ -95,17 +94,17 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
 
     @Override
     public Race getPlayerPonyRace(PlayerEntity player) {
-        return toUnicopiaRace(IPony.getManager().getPony(player).race());
+        return toUnicopiaRace(com.minelittlepony.api.pony.Pony.getManager().getPony(player).race());
     }
 
     @Override
     public Race getRace(Entity entity) {
-        return IPony.getManager().getPony(entity).map(IPony::race).map(Main::toUnicopiaRace).orElse(Race.UNSET);
+        return com.minelittlepony.api.pony.Pony.getManager().getPony(entity).map(com.minelittlepony.api.pony.Pony::race).map(Main::toUnicopiaRace).orElse(Race.HUMAN);
     }
 
     @Override
     public float getPonyHeight(Entity entity) {
-        return super.getPonyHeight(entity) * IPony.getManager().getPony(entity).map(pony -> pony.metadata().getSize().getScaleFactor() + 0.1F).orElse(1F);
+        return super.getPonyHeight(entity) * com.minelittlepony.api.pony.Pony.getManager().getPony(entity).map(pony -> pony.metadata().size().scaleFactor() + 0.1F).orElse(1F);
     }
 
     private static Race toUnicopiaRace(com.minelittlepony.api.pony.meta.Race race) {

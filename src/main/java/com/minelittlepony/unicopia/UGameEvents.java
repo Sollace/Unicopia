@@ -11,7 +11,7 @@ public interface UGameEvents {
 
     static GameEvent register(String name, int range) {
         Identifier id = Unicopia.id(name);
-        return Registry.register(Registries.GAME_EVENT, id, new GameEvent(id.toString(), range));
+        return Registry.register(Registries.GAME_EVENT, id, new GameEvent(range));
     }
 
     static void bootstrap() {

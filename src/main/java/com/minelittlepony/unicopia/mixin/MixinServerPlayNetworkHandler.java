@@ -13,10 +13,9 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.EntityTrackingListener;
 
 @Mixin(ServerPlayNetworkHandler.class)
-abstract class MixinServerPlayNetworkHandler implements EntityTrackingListener, ServerPlayPacketListener {
+abstract class MixinServerPlayNetworkHandler implements ServerPlayPacketListener {
     @Shadow private boolean floating;
     @Shadow private int floatingTicks;
 

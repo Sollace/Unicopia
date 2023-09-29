@@ -3,9 +3,8 @@ package com.minelittlepony.unicopia.client.minelittlepony;
 import java.util.UUID;
 
 import com.minelittlepony.api.model.BodyPart;
-import com.minelittlepony.api.model.IModel;
-import com.minelittlepony.api.model.gear.IGear;
-import com.minelittlepony.client.model.IPonyModel;
+import com.minelittlepony.api.model.PonyModel;
+import com.minelittlepony.api.model.gear.Gear;
 import com.minelittlepony.unicopia.client.render.HeldEntityFeatureRenderer;
 
 import net.minecraft.client.MinecraftClient;
@@ -16,7 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 
-class HeldEntityGear extends HeldEntityFeatureRenderer<LivingEntity> implements IGear {
+class HeldEntityGear extends HeldEntityFeatureRenderer<LivingEntity> implements Gear {
 
     private LivingEntity entity;
 
@@ -25,7 +24,7 @@ class HeldEntityGear extends HeldEntityFeatureRenderer<LivingEntity> implements 
     }
 
     @Override
-    public boolean canRender(IModel model, Entity entity) {
+    public boolean canRender(PonyModel<?> model, Entity entity) {
         return entity instanceof LivingEntity;
     }
 
@@ -40,12 +39,12 @@ class HeldEntityGear extends HeldEntityFeatureRenderer<LivingEntity> implements 
     }
 
     @Override
-    public <M extends EntityModel<?> & IPonyModel<?>> void transform(M model, MatrixStack matrices) {
+    public <M extends EntityModel<?> & PonyModel<?>> void transform(M model, MatrixStack matrices) {
         // noop
     }
 
     @Override
-    public void pose(IModel model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
+    public void pose(PonyModel<?> model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
         this.entity = (LivingEntity)entity;
     }
 

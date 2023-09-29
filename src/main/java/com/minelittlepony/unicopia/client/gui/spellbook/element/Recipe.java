@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.util.Identifier;
 
 record Recipe (DynamicContent.Page page, Identifier id, Bounds bounds) implements PageElement {
@@ -17,7 +18,7 @@ record Recipe (DynamicContent.Page page, Identifier id, Bounds bounds) implement
             bounds().left = book.getX();
             bounds().top = book.getY();
         }
-        MinecraftClient.getInstance().world.getRecipeManager().get(id).ifPresent(recipe -> {
+        MinecraftClient.getInstance().world.getRecipeManager().get(id).map(RecipeEntry::value).ifPresent(recipe -> {
             if (recipe instanceof SpellbookRecipe spellRecipe) {
 
                 boolean needsMoreXp = page.getLevel() < 0 || Pony.of(MinecraftClient.getInstance().player).getLevel().get() < page.getLevel();
