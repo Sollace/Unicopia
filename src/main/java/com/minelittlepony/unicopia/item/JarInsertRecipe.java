@@ -7,6 +7,7 @@ import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import net.minecraft.util.collection.DefaultedList;
 
 public class JarInsertRecipe extends ItemCombinationRecipe {
 
@@ -39,5 +40,10 @@ public class JarInsertRecipe extends ItemCombinationRecipe {
     @Override
     public RecipeSerializer<?> getSerializer() {
         return URecipes.JAR_INSERT_SERIALIZER;
+    }
+
+    @Override
+    public DefaultedList<ItemStack> getRemainder(RecipeInputInventory inventory) {
+        return DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
     }
 }

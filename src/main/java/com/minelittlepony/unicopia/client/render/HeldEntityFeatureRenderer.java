@@ -18,6 +18,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 
 public class HeldEntityFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
@@ -67,7 +68,7 @@ public class HeldEntityFeatureRenderer<E extends LivingEntity> implements Access
             renderCarriedEntity(passenger.asEntity(), matrices, vertexConsumers, light, tickDelta);
             matrices.pop();
 
-            float equipProgress = 1 - sender.getEquipProgress(tickDelta);
+            float equipProgress = 1 - sender.getEquipProgress(Hand.MAIN_HAND, tickDelta);
 
             matrices.push();
             sender.invokeRenderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, swingProgress, Arm.LEFT);

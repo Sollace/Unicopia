@@ -146,10 +146,16 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public void setAnimation(Animation animation, Animation.Recipient recipient) {
+        if (getAnimation().isOf(animation) && animationDuration > 0) {
+            return;
+        }
         setAnimation(new AnimationInstance(animation, recipient), animation.getDuration());
     }
 
     public void setAnimation(Animation animation, Animation.Recipient recipient, int duration) {
+        if (getAnimation().isOf(animation) && animationDuration > 0) {
+            return;
+        }
         setAnimation(new AnimationInstance(animation, recipient), duration);
     }
 
@@ -420,12 +426,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 }
             }
 
-            if (getAnimation().isOf(Animation.NONE) || (getAnimation().isOf(Animation.NONE) && canhangHere)) {
-                if (canhangHere) {
-                    setAnimation(Animation.ARMS_UP, Recipient.HUMAN);
-                } else if (distanceClimbed > 1.5) {
-                    setAnimation(Animation.CLIMB, Recipient.HUMAN);
-                }
+            if (canhangHere) {
+                setAnimation(Animation.HANG, Recipient.ANYONE);
+            } else if (distanceClimbed > 1.5) {
+                setAnimation(Animation.CLIMB, Recipient.ANYONE);
             }
         } else {
             distanceClimbed = 0;
@@ -484,16 +488,21 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private void updateAnimations() {
 
         if (distanceClimbed > 0
-                && ((animation.isOf(Animation.CLIMB) && entity.isSneaky()) || (animation.isOf(Animation.ARMS_UP) && isHanging()))
+                && ((animation.isOf(Animation.CLIMB) && entity.isSneaky()) || animation.isOf(Animation.HANG))
                 && entity.getClimbingPos().isPresent()
                 && entity.getVelocity().length() < 0.08F) {
-            if (animation.isOf(Animation.ARMS_UP)) {
+            if (animation.renderBothArms()) {
                 animationDuration = 2;
             }
             return;
         }
 
         if (animationDuration > 0 && --animationDuration <= 0) {
+
+            if (animation.renderBothArms() && distanceClimbed > 0) {
+                return;
+            }
+
             setAnimation(AnimationInstance.NONE);
         }
     }

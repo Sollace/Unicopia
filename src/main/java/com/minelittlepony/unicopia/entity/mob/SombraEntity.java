@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ImmutableSet;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.advancement.UCriteria;
@@ -76,6 +77,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -105,6 +107,12 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     private float currentSize;
 
     public static void startEncounter(World world, BlockPos pos) {
+        if (world.getEntitiesByClass(Entity.class, new Box(pos).expand(16), e -> {
+            return e instanceof SombraEntity || e instanceof StormCloudEntity cloud && cloud.cursed;
+        }).size() > 0) {
+            return;
+        }
+
         StormCloudEntity cloud = UEntities.STORM_CLOUD.create(world);
         cloud.setPosition(pos.up(10).toCenterPos());
         cloud.setSize(1);
@@ -572,7 +580,9 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
 
     @Override
     public boolean canTarget(LivingEntity target) {
-        if (target instanceof PlayerEntity player && (player.isCreative() || player.isSpectator())) {
+        if (target instanceof SombraEntity
+                || EquinePredicates.IS_MAGIC_IMMUNE.test(target)
+                || !EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(target)) {
             return false;
         }
 

@@ -16,6 +16,7 @@ import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.item.HeldItemRenderer.HandRenderType;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
 @Mixin(HeldItemRenderer.class)
@@ -25,13 +26,21 @@ abstract class MixinHeldItemRenderer implements FirstPersonRendererOverrides.Arm
     @Shadow
     private float prevEquipProgressMainHand;
 
+    @Shadow
+    private float equipProgressOffHand;
+    @Shadow
+    private float prevEquipProgressOffHand;
+
     @Override
     @Invoker("renderArmHoldingItem")
     public abstract void invokeRenderArmHoldingItem(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float equipProgress, float swingProgress, Arm arm);
 
     @Override
-    public float getEquipProgress(float tickDelta) {
-        return MathHelper.lerp(tickDelta, prevEquipProgressMainHand, equipProgressMainHand);
+    public float getEquipProgress(Hand hand, float tickDelta) {
+        return MathHelper.lerp(tickDelta,
+                hand == Hand.MAIN_HAND ? prevEquipProgressMainHand : prevEquipProgressOffHand,
+                hand == Hand.MAIN_HAND ? equipProgressMainHand : equipProgressOffHand
+        );
     }
 
     @Inject(
