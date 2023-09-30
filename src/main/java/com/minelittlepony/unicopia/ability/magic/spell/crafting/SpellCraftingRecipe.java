@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.util.CodecUtils;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -45,9 +46,9 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
     /**
      * The resulting item
      */
-    final ItemStackWithSpell output;
+    final ItemStack output;
 
-    private SpellCraftingRecipe(IngredientWithSpell material, TraitIngredient requiredTraits, List<IngredientWithSpell> requiredItems, ItemStackWithSpell output) {
+    private SpellCraftingRecipe(IngredientWithSpell material, TraitIngredient requiredTraits, List<IngredientWithSpell> requiredItems, ItemStack output) {
         this.material = material;
         this.requiredTraits = requiredTraits;
         this.requiredItems = requiredItems;
@@ -63,7 +64,7 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
         requiredTraits.min().ifPresent(min -> {
             min.forEach(e -> builder.input(e.getKey(), e.getValue()));
         });
-        builder.result(output.toItemStack());
+        builder.result(output);
     }
 
     @Override
@@ -115,7 +116,7 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
 
     @Override
     public ItemStack getResult(DynamicRegistryManager registries) {
-        return output.toItemStack();
+        return output;
     }
 
     @Override
@@ -123,29 +124,17 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
         return URecipes.TRAIT_REQUIREMENT;
     }
 
-    record ItemStackWithSpell(ItemStack stack, Optional<SpellType<?>> spell) {
-        public static final Codec<ItemStackWithSpell> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                RecipeCodecs.CRAFTING_RESULT.fieldOf("stack").forGetter(ItemStackWithSpell::stack),
-                SpellType.REGISTRY.getCodec().optionalFieldOf("spell").forGetter(ItemStackWithSpell::spell)
-        ).apply(instance, ItemStackWithSpell::new));
-
-        public ItemStack toItemStack() {
-            return spell.filter(s -> s != SpellType.EMPTY_KEY).map(s -> {
-                return EnchantableItem.enchant(stack.copy(), s);
-            }).orElse(stack);
-        }
-
-        public ItemStackWithSpell(ItemStack stack) {
-            this(EnchantableItem.unenchant(stack), Optional.of(EnchantableItem.getSpellKey(stack)));
-        }
-    }
-
     public static class Serializer implements RecipeSerializer<SpellCraftingRecipe> {
+        private static final Codec<ItemStack> RESULT_CODEC = CodecUtils.extend(RecipeCodecs.CRAFTING_RESULT, SpellType.REGISTRY.getCodec().fieldOf("spell")).xmap(
+                pair -> pair.getSecond().map(spell -> EnchantableItem.enchant(pair.getFirst().orElse(ItemStack.EMPTY), spell)).orElse(pair.getFirst().orElse(ItemStack.EMPTY)),
+                stack -> Pair.of(Optional.of(stack), EnchantableItem.getSpellKeyOrEmpty(stack))
+        );
+
         private static final Codec<SpellCraftingRecipe> CODEC = RecordCodecBuilder.<SpellCraftingRecipe>create(instance -> instance.group(
                 IngredientWithSpell.CODEC.fieldOf("material").forGetter(recipe -> recipe.material),
                 TraitIngredient.CODEC.fieldOf("traits").forGetter(recipe -> recipe.requiredTraits),
                 IngredientWithSpell.CODEC.listOf().fieldOf("ingredients").forGetter(recipe -> recipe.requiredItems),
-                ItemStackWithSpell.CODEC.fieldOf("result").forGetter(recipe -> recipe.output)
+                RESULT_CODEC.fieldOf("result").forGetter(recipe -> recipe.output)
         ).apply(instance, SpellCraftingRecipe::new));
 
         @Override
@@ -159,7 +148,7 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
                     IngredientWithSpell.fromPacket(buf),
                     TraitIngredient.fromPacket(buf),
                     buf.readCollection(DefaultedList::ofSize, IngredientWithSpell::fromPacket),
-                    new ItemStackWithSpell(buf.readItemStack())
+                    buf.readItemStack()
             );
         }
 
@@ -168,7 +157,7 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
             recipe.material.write(buf);
             recipe.requiredTraits.write(buf);
             buf.writeCollection(recipe.requiredItems, (b, i) -> i.write(b));
-            buf.writeItemStack(recipe.output.toItemStack());
+            buf.writeItemStack(recipe.output);
         }
     }
 }

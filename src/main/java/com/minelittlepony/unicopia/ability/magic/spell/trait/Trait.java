@@ -163,7 +163,7 @@ public enum Trait implements CommandArgumentEnum<Trait> {
 
     @Deprecated
     public static Optional<Trait> fromId(Identifier id) {
-        return Optional.ofNullable(ID_CODEC.byId(id.toString()));
+        return Optional.ofNullable(IDS.get(id));
     }
 
     @Deprecated

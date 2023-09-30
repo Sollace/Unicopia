@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
@@ -81,6 +82,10 @@ public interface EnchantableItem extends ItemConvertible {
         stack.removeSubNbt("spell");
         stack.removeSubNbt("spell_traits");
         return stack;
+    }
+
+    static Optional<SpellType<?>> getSpellKeyOrEmpty(ItemStack stack) {
+        return isEnchanted(stack) ? SpellType.REGISTRY.getOrEmpty(new Identifier(stack.getNbt().getString("spell"))) : Optional.empty();
     }
 
     static <T extends Spell> SpellType<T> getSpellKey(ItemStack stack) {

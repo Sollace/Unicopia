@@ -7,15 +7,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.google.common.base.Suppliers;
-import com.google.gson.JsonParseException;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.EnchantableItem;
+import com.minelittlepony.unicopia.util.CodecUtils;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.Decoder;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.Encoder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
@@ -25,23 +21,11 @@ public class IngredientWithSpell implements Predicate<ItemStack> {
     private static final IngredientWithSpell EMPTY = new IngredientWithSpell(Optional.empty(), Optional.empty());
     private static final Predicate<Ingredient> INGREDIENT_IS_PRESENT = ((Predicate<Ingredient>)(Ingredient::isEmpty)).negate();
 
-    public static final Codec<IngredientWithSpell> CODEC = Codec.of(new Encoder<IngredientWithSpell>() {
-        @Override
-        public <T> DataResult<T> encode(IngredientWithSpell input, DynamicOps<T> ops, T prefix) {
-            throw new JsonParseException("cannot serialize this type");
-        }
-    }, new Decoder<IngredientWithSpell>() {
-        @Override
-        public <T> DataResult<Pair<IngredientWithSpell, T>> decode(DynamicOps<T> ops, T input) {
-            // TODO: Doing codecs properly is an exercise left to the readers
-            return DataResult.success(new Pair<>(
-                new IngredientWithSpell(
-                    Ingredient.ALLOW_EMPTY_CODEC.decode(ops, input).map(Pair::getFirst).result(),
-                    ops.getMap(input).flatMap(maplike -> SpellType.REGISTRY.getCodec().parse(ops, maplike.get("spell"))).result()
-                ), input)
-            );
-        }
-    });
+    public static final Codec<IngredientWithSpell> CODEC = CodecUtils.extend(Ingredient.ALLOW_EMPTY_CODEC, SpellType.REGISTRY.getCodec().fieldOf("spell")).xmap(
+        pair -> new IngredientWithSpell(pair.getFirst(), pair.getSecond()),
+        ingredient -> new Pair<>(ingredient.stack, ingredient.spell)
+    );
+
     public static final Codec<DefaultedList<IngredientWithSpell>> LIST_CODEC = CODEC.listOf().xmap(
             list -> DefaultedList.<IngredientWithSpell>copyOf(EMPTY, list.toArray(IngredientWithSpell[]::new)),
             Function.identity()

@@ -16,7 +16,7 @@
               "block": "unicopia:apple_pie",
               "condition": "minecraft:block_state_property",
               "properties": {
-                "stomped": true
+                "stomped": "true"
               }
             },
             {
