@@ -20,12 +20,11 @@ public class ZapAppleRecipe extends ShapelessRecipe {
     public static class Serializer implements RecipeSerializer<ZapAppleRecipe> {
         private static final Codec<ZapAppleRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(ZapAppleRecipe::getGroup),
-            CraftingRecipeCategory.CODEC.fieldOf("category").forGetter(ZapAppleRecipe::getCategory),
-            Registries.ITEM.getCodec().xmap(item -> {
-                return UItems.ZAP_APPLE.setAppearance(UItems.ZAP_APPLE.getDefaultStack(), item.getDefaultStack());
-            }, stack -> {
-                return UItems.ZAP_APPLE.getAppearance(stack);
-            }).fieldOf("appearance").forGetter(recipe -> recipe.getResult(null)),
+            CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(ZapAppleRecipe::getCategory),
+            Registries.ITEM.getCodec().xmap(
+                item -> UItems.ZAP_APPLE.setAppearance(UItems.ZAP_APPLE.getDefaultStack(), item.getDefaultStack()),
+                stack -> UItems.ZAP_APPLE.getAppearance(stack)
+            ).fieldOf("appearance").forGetter(recipe -> recipe.getResult(null)),
             URecipes.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(ZapAppleRecipe::getIngredients)
         ).apply(instance, ZapAppleRecipe::new));
 

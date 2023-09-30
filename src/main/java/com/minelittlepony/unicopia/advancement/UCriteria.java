@@ -3,9 +3,9 @@ package com.minelittlepony.unicopia.advancement;
 import net.minecraft.advancement.criterion.Criteria;
 
 public interface UCriteria {
-    CustomEventCriterion CUSTOM_EVENT = Criteria.register("unicopia:send_dragon_breath", new CustomEventCriterion());
+    CustomEventCriterion CUSTOM_EVENT = Criteria.register("unicopia:custom", new CustomEventCriterion());
     RaceChangeCriterion PLAYER_CHANGE_RACE = Criteria.register("unicopia:player_change_race", new RaceChangeCriterion());
-    SendViaDragonBreathScrollCriterion SEND_DRAGON_BREATH = Criteria.register("unicopia:custom", new SendViaDragonBreathScrollCriterion());
+    SendViaDragonBreathScrollCriterion SEND_DRAGON_BREATH = Criteria.register("unicopia:send_dragon_breath", new SendViaDragonBreathScrollCriterion());
 
     CustomEventCriterion.Trigger LOOK_INTO_SUN = CUSTOM_EVENT.createTrigger("look_into_sun");
     CustomEventCriterion.Trigger WEAR_SHADES = CUSTOM_EVENT.createTrigger("wear_shades");
