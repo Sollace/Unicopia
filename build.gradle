@@ -122,6 +122,9 @@ modrinth {
       gameVersions.add ver
     }
     dependencies {
-       required.project '9K7RJlvM'
+       required.project 'P7dR8mSH'
+       optional.project '5aaWibi9'
+       optional.project 'JBjInUXM'
+       optional.project 'fRiHVvU7'
     }
 }
