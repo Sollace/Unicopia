@@ -31,7 +31,7 @@ public class UnicopiaTrinket implements Trinket {
         }
 
         if (stack.getItem() instanceof Equipment q) {
-            entity.playSound( q.getEquipSound(), 1, 1);
+            entity.playSound(q.getEquipSound(), 1, 1);
         }
     }
 
