@@ -103,8 +103,7 @@ public record Race (Supplier<Composite> compositeSupplier, boolean canCast, Flig
     }
 
     public Identifier getId() {
-        Identifier id = REGISTRY.getId(this);
-        return id;
+        return REGISTRY.getId(this);
     }
 
     public Text getDisplayName() {
@@ -126,10 +125,6 @@ public record Race (Supplier<Composite> compositeSupplier, boolean canCast, Flig
     }
 
     public boolean isPermitted(@Nullable PlayerEntity sender) {
-        if (isOp() && (sender == null || !sender.getAbilities().creativeMode)) {
-            return false;
-        }
-
         Set<String> whitelist = Unicopia.getConfig().speciesWhiteList.get();
 
         return isUnset()
