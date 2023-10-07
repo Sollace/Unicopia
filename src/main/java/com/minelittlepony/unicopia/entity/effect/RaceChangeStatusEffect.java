@@ -28,6 +28,7 @@ public class RaceChangeStatusEffect extends StatusEffect {
     public static final StatusEffect CHANGE_RACE_PEGASUS = register(0x00FFFF, Race.PEGASUS);
     public static final StatusEffect CHANGE_RACE_BAT = register(0x0FFF00, Race.BAT);
     public static final StatusEffect CHANGE_RACE_CHANGELING = register(0xFFFF00, Race.CHANGELING);
+    public static final StatusEffect CHANGE_RACE_KIRIN = register(0xFF8800, Race.KIRIN);
 
     private final Race race;
 

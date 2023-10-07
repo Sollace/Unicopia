@@ -54,6 +54,7 @@ public record Race (Supplier<Composite> compositeSupplier, boolean canCast, Flig
     public static final Race BAT = register("bat", false, FlightType.AVIAN, false, true, true);
     public static final Race ALICORN = register("alicorn", true, FlightType.AVIAN, true, false, false);
     public static final Race CHANGELING = register("changeling", false, FlightType.INSECTOID, false, false, true);
+    public static final Race KIRIN = register("kirin", false, FlightType.NONE, false, false, false);
 
     public static void bootstrap() {}
 

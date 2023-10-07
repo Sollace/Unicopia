@@ -47,6 +47,7 @@
   "item.unicopia.earth_badge": "Earth Pony Emblem",
   "item.unicopia.changeling_badge": "Changeling Emblem",
   "item.unicopia.bat_badge": "Bat Pony Emblem",
+  "item.unicopia.kirin_badge": "Kirin Emblem",
 
   "item.unicopia.butterfly_spawn_egg": "Butterfly Spawn Egg",
   "item.unicopia.butterfly": "Butterfly",
@@ -259,6 +260,12 @@
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_bat": "Lingering Potion of Bat Pony Metamorphosis",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_bat": "Arrow of Bat Pony Metamorphosis",
 
+  "effect.unicopia.change_race_kirin": "Kirin Metamorphosis",
+  "item.minecraft.potion.effect.unicopia.tribe_swap_kirin": "Potion of Kirin Metamorphosis",
+  "item.minecraft.splash_potion.effect.unicopia.tribe_swap_kirin": "Splash Potion of Kirin Metamorphosis",
+  "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_kirin": "Lingering Potion of Kirin Metamorphosis",
+  "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_kirin": "Arrow of Kirin Metamorphosis",
+
   "potion.potency.6": "VII",
 
   "spell.unicopia.frost": "Frost",
@@ -417,6 +424,7 @@
   "gui.unicopia.tribe_selection.describe.unicopia.unicorn": "Join the Unicorn Tribe, master the arcane arts",
   "gui.unicopia.tribe_selection.describe.unicopia.pegasus": "Join the Pegasus Tribe, soar with the Wonderbolts",
   "gui.unicopia.tribe_selection.describe.unicopia.bat": "Join the Bat Tribe, become the darkest night",
+  "gui.unicopia.tribe_selection.describe.unicopia.kirin": "Join the Kirin's Village, take the vow of silence",
   "gui.unicopia.tribe_selection.describe.unicopia.changeling": "Join the Changeling Hive, your Queen demands it",
 
   "gui.unicopia.tribe_selection.confirm": "You have selected %s",
@@ -450,6 +458,12 @@
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.changeling": " - Able to fly and hover in place",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.changeling": " - Shapeshift and morph into nearly anyone or anyling",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.changeling": " - Is carnivorous. Can eat anything that doesn't make them sick",
+  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.changeling": "",
+
+  "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.kirin": " - Immune to all types of fire damage",
+  "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.kirin": " - Can unlock a rage ability by taking damage",
+  "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.kirin": " - Is silent in their default state, and can move freely around the warden",
+  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.kirin": " - Can eat vegitables and fruits",
 
   "gui.unicopia.tribe_selection.confirm.bads": "but they...",
 
@@ -480,6 +494,11 @@
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.changeling": " - Requires love, collected from ponies or other hostile mobs to subsidise their diet",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.changeling": " - Becomes sick from eating regular food and must eat love to hasten a cure",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.changeling": "",
+
+  "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.kirin": " - Are no longer quiet whilst raging",
+  "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.kirin": " - Has a tendency to burn things, especially when close to raging",
+  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.kirin": " - Lighter than other ponies, and might take increased knockback",
+  "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.kirin": " - Doesn't like water",
 
   "gui.unicopia.tribe_selection.join": "Join Tribe",
   "gui.unicopia.tribe_selection.cancel": "Go Back",
@@ -704,6 +723,8 @@
   "unicopia.race.changeling.alt": "Changelings",
   "unicopia.race.bat": "Bat Pony",
   "unicopia.race.bat.alt": "Bat Ponies",
+  "unicopia.race.kirin": "Kirin",
+  "unicopia.race.kirin.alt": "Kirins",
 
   "death.attack.unicopia.generic.and_also": "%1$s and %2$s",
   "death.attack.unicopia.generic.whilst_flying": "%1$s whilst flying",
