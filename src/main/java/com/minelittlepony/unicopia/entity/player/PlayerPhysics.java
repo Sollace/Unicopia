@@ -197,7 +197,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             .filter(effect -> !effect.isDead() && effect instanceof FlightType.Provider)
             .map(effect -> ((FlightType.Provider)effect).getFlightType())
             .filter(FlightType::isPresent)
-            .orElse(pony.getObservedSpecies().flightType());
+            .orElse(pony.getCompositeRace().flightType());
     }
 
     public void cancelFlight(boolean force) {

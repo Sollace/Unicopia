@@ -220,6 +220,10 @@ public record Race (Supplier<Composite> compositeSupplier, boolean canCast, Flig
         public boolean canCast() {
             return any(Race::canCast);
         }
+
+        public FlightType flightType() {
+            return physical().flightType().or(pseudo().flightType());
+        }
     }
 }
 

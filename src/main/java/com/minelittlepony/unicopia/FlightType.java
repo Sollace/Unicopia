@@ -42,6 +42,10 @@ public enum FlightType {
         return this == INSECTOID ? 0.66F : 1;
     }
 
+    public FlightType or(FlightType other) {
+        return ordinal() > other.ordinal() ? this : other;
+    }
+
     /**
      * Predicate for abilities to control whether a player can fly.
      *
