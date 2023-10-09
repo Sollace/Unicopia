@@ -440,18 +440,30 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         if (getObservedSpecies() == Race.KIRIN) {
             var charge = getMagicalReserves().getCharge();
 
+            if (entity.isTouchingWater()) {
+                charge.multiply(0.5F);
+            }
+
             if (charge.getPercentFill() >= 1) {
                 var energy = getMagicalReserves().getEnergy();
                 if (energy.getPercentFill() < 0.002F) {
                     energy.addPercent(1.03F);
                     if (entity.age % 25 == 0) {
                         playSound(USounds.ENTITY_PLAYER_HEARTBEAT, 0.17F + (float)entity.getWorld().random.nextGaussian() * 0.03F, 0.5F);
+                        spawnParticles(ParticleTypes.LAVA, 2);
+                        energy.addPercent(1.07F);
                     }
                 }
             }
 
-            if (entity.getAttackCooldownProgress(0) == 0) {
-                charge.addPercent(3);
+            if (entity.getAttackCooldownProgress(0) == 0 && (entity.getAttacking() != null || entity.getWorld().random.nextInt(50) == 0)) {
+                if (charge.getPercentFill() < 1) {
+                    charge.addPercent(3);
+                }
+
+                if (!EquinePredicates.RAGING.test(entity) && charge.getPercentFill() >= 1 && entity.getWorld().random.nextInt(1000) == 0) {
+                    SpellType.RAGE.withTraits().apply(this, CastingMethod.INNATE);
+                }
             }
         }
 
