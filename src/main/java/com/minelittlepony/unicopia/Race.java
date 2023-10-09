@@ -218,6 +218,9 @@ public record Race (Supplier<Composite> compositeSupplier, boolean canCast, Flig
         }
 
         public FlightType flightType() {
+            if (pseudo() == null) {
+                return physical().flightType();
+            }
             return physical().flightType().or(pseudo().flightType());
         }
     }
