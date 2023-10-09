@@ -59,10 +59,12 @@ public interface Toxics {
     Toxic FORAGE_PRICKLY = register("forage_prickly", new Toxic.Builder(of(SAFE, INSTANT_DAMAGE.withChance(30)))
             .food(UFoodComponents.RANDOM_FOLIAGE)
             .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))
+            .with(Race.KIRIN, Ailment.INNERT)
     );
     Toxic FORAGE_STRENGHTENING = register("forage_strengthening", new Toxic.Builder(of(SEVERE, STRENGTH.and(FOOD_POISONING)))
             .food(UFoodComponents.RANDOM_FOLIAGE)
             .with(Race.HUMAN, of(LETHAL, FOOD_POISONING.and(WEAKNESS)))
+            .with(Race.KIRIN, Ailment.INNERT)
     );
     Toxic FORAGE_SEVERELY_NAUSEATING = register("forage_severely_nauseating", new Toxic.Builder(of(SEVERE, FOOD_POISONING.and(WEAKNESS)))
             .food(UFoodComponents.RANDOM_FOLIAGE)
@@ -71,15 +73,18 @@ public interface Toxics {
     Toxic FORAGE_BLINDING = register("forage_blinding", new Toxic.Builder(of(SEVERE, BLINDNESS.and(FOOD_POISONING)))
             .food(UFoodComponents.RANDOM_FOLIAGE)
             .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))
+            .with(Race.KIRIN, Ailment.INNERT)
     );
     Toxic FORAGE_SEVERELY_PRICKLY = register("forage_severely_prickly", new Toxic.Builder(of(SEVERE, FOOD_POISONING.and(INSTANT_DAMAGE)))
             .food(UFoodComponents.RANDOM_FOLIAGE)
             .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))
+            .with(Race.KIRIN, Ailment.INNERT)
     );
     Toxic RAW_MEAT = register("raw_meat", new Toxic.Builder(of(SEVERE, FOOD_POISONING.withChance(5).and(CHANCE_OF_POISON)))
             .with(Race.HUMAN, Ailment.INNERT)
             .with(Race.CHANGELING, Ailment.INNERT)
             .with(Race.BAT, of(MILD, FOOD_POISONING))
+            .with(Race.KIRIN, Ailment.INNERT)
     );
     Toxic ROTTEN_MEAT = register("rotten_meat", new Toxic.Builder(of(SEVERE, STRONG_FOOD_POISONING))
             .with(Race.HUMAN, Ailment.INNERT)
@@ -90,6 +95,7 @@ public interface Toxics {
             .with(Race.HUMAN, Ailment.INNERT)
             .with(Race.CHANGELING, Ailment.INNERT)
             .with(Race.BAT, Ailment.INNERT)
+            .with(Race.KIRIN, Ailment.INNERT)
     );
 
     Toxic RAW_FISH = register("raw_fish", new Toxic.Builder(of(FAIR, FOOD_POISONING.and(CHANCE_OF_POISON)))
@@ -113,6 +119,7 @@ public interface Toxics {
     Toxic COOKED_INSECT = register("cooked_insect", new Toxic.Builder(of(LETHAL, FOOD_POISONING))
             .food(UFoodComponents.INSECTS)
             .with(Race.CHANGELING, Ailment.INNERT)
+            .with(Race.KIRIN, Ailment.INNERT)
             .with(Race.BAT, Ailment.INNERT)
     );
 
