@@ -47,7 +47,7 @@ abstract class MixinEntity implements EntityDuck {
 
     @Inject(method = "isSneaky", at = @At("HEAD"), cancellable = true)
     private void onIsSneaky(CallbackInfoReturnable<Boolean> info) {
-        if (EquinePredicates.PLAYER_KIRIN.test((Entity)(Object)this)) {
+        if (EquinePredicates.PLAYER_KIRIN.test((Entity)(Object)this) && !EquinePredicates.RAGING.test((Entity)(Object)this)) {
             info.setReturnValue(true);
         }
     }
