@@ -42,7 +42,11 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
 
     @Override
     public Optional<Hit> prepare(Pony player) {
-        return Hit.of(player.canCast() && player.getMagicalReserves().getMana().get() >= getCostEstimate(player));
+        TypedActionResult<CustomisedSpellType<?>> spell = player.getCharms().getSpellInHand(false);
+        return Hit.of(player.canCast()
+                && player.getMagicalReserves().getMana().get() >= getCostEstimate(player)
+                && (!spell.getResult().isAccepted() || canCast(spell.getValue().type()))
+        );
     }
 
     @Override
@@ -94,7 +98,7 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
         } else {
             TypedActionResult<CustomisedSpellType<?>> newSpell = player.getCharms().getSpellInHand(true);
 
-            if (newSpell.getResult() != ActionResult.FAIL) {
+            if (newSpell.getResult() != ActionResult.FAIL && canCast(newSpell.getValue().type())) {
                 CustomisedSpellType<?> spell = newSpell.getValue();
 
                 boolean removed = player.getSpellSlot().removeWhere(s -> {
@@ -119,6 +123,10 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
             }
         }
 
+        return true;
+    }
+
+    protected boolean canCast(SpellType<?> type) {
         return true;
     }
 

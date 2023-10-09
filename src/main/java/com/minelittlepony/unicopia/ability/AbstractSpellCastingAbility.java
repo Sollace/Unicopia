@@ -19,7 +19,7 @@ abstract class AbstractSpellCastingAbility implements Ability<Hit> {
 
     @Override
     public boolean canUse(Race race) {
-        return race.canCast();
+        return race.canCast() && race != Race.KIRIN;
     }
 
     @Override

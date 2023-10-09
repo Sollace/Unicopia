@@ -55,6 +55,7 @@ public interface Abilities {
 
     // kirin
     Ability<?> RAGE = register(new KirinRageAbility(), "rage", AbilitySlot.PRIMARY);
+    Ability<?> KIRIN_CAST = register(new KirinCastingAbility(), "kirin_cast", AbilitySlot.SECONDARY);
 
     static <T extends Ability<?>> T register(T power, String name, AbilitySlot slot) {
         Identifier id = Unicopia.id(name);
