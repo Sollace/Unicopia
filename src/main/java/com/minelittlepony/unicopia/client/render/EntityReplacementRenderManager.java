@@ -61,7 +61,7 @@ class EntityReplacementRenderManager implements Disguise {
     }
 
     private boolean isRageApplicable(Entity entity) {
-        return entity instanceof PassiveEntity || entity instanceof PlayerEntity || pools.containsKey(entity.getType());
+        return entity != MinecraftClient.getInstance().player && (entity instanceof PassiveEntity || entity instanceof PlayerEntity || pools.containsKey(entity.getType()));
     }
 
     @Override
