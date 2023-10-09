@@ -254,7 +254,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         boolean typeChanged = type != lastFlightType;
 
-        if (typeChanged && lastFlightType.isArtifical() || type.isArtifical()) {
+        if (typeChanged && (lastFlightType.isArtifical() || type.isArtifical())) {
             pony.spawnParticles(ParticleTypes.CLOUD, 10);
 
             playSound(entity.getWorld().getDimension().ultrawarm() ? USounds.ITEM_ICARUS_WINGS_CORRUPT : USounds.ITEM_ICARUS_WINGS_PURIFY, 0.1125F, 1.5F);
