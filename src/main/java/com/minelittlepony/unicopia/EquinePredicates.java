@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia;
 import java.util.function.Predicate;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.item.enchantment.WantItNeedItEnchantment;
@@ -18,11 +19,13 @@ public interface EquinePredicates {
     Predicate<Entity> CHANGELING = physicalRaceMatches(Race.CHANGELING::equals);
 
     Predicate<Entity> RACE_INTERACT_WITH_CLOUDS = raceMatches(Race::canInteractWithClouds);
+    Predicate<Entity> RAGING = IS_PLAYER.and(SpellType.RAGE::isOn);
 
     Predicate<Entity> PLAYER_EARTH = IS_PLAYER.and(ofRace(Race.EARTH));
     Predicate<Entity> PLAYER_BAT = IS_PLAYER.and(BAT);
     Predicate<Entity> PLAYER_UNICORN = IS_PLAYER.and(raceMatches(Race::canCast));
     Predicate<Entity> PLAYER_CHANGELING = IS_PLAYER.and(ofRace(Race.CHANGELING));
+    Predicate<Entity> PLAYER_KIRIN = IS_PLAYER.and(ofRace(Race.KIRIN));
     Predicate<Entity> PLAYER_PEGASUS = IS_PLAYER.and(e -> ((PlayerEntity)e).getAbilities().creativeMode || RACE_INTERACT_WITH_CLOUDS.test(e));
 
     Predicate<Entity> PLAYER_CAN_USE_EARTH = IS_PLAYER.and(raceMatches(Race::canUseEarth));

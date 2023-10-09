@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.DispersableDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.RainboomAbilitySpell;
 import com.minelittlepony.unicopia.ability.magic.spell.PlaceableSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.RageAbilitySpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.ThrowableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.TimeControlAbilitySpell;
@@ -49,6 +50,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     public static final SpellType<DispersableDisguiseSpell> CHANGELING_DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, SpellTraits.EMPTY, DispersableDisguiseSpell::new);
     public static final SpellType<RainboomAbilitySpell> RAINBOOM = register("rainboom", Affinity.GOOD, 0xBDBDF9, false, SpellTraits.EMPTY, RainboomAbilitySpell::new);
+    public static final SpellType<RageAbilitySpell> RAGE = register("rage", Affinity.GOOD, 0xBDBDF9, false, SpellTraits.EMPTY, RageAbilitySpell::new);
     public static final SpellType<TimeControlAbilitySpell> TIME_CONTROL = register("time_control", Affinity.GOOD, 0xBDBDF9, false, SpellTraits.EMPTY, TimeControlAbilitySpell::new);
 
     public static final SpellType<IceSpell> FROST = register("frost", Affinity.GOOD, 0xEABBFF, true, IceSpell.DEFAULT_TRAITS, IceSpell::new);

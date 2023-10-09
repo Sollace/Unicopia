@@ -65,6 +65,13 @@
       "unicopia:changeling/buzz0"
     ]
   },
+  "entity.player.kirin.rage.loop": {
+    "category": "player",
+    "sounds": [
+      { "name": "unicopia:kirin/rage/dark_matter", "stream": true },
+      { "name": "unicopia:kirin/rage/dogged", "stream": true }
+    ]
+  },
   "entity.player.ears_ring": {
     "category": "ambient",
     "subtitle": "unicopia.subtitle.ears_ringing",
@@ -72,11 +79,18 @@
       "unicopia:ears/ringing"
     ]
   },
+  "entity.player.heartbeat_loop": {
+    "category": "ambient",
+    "subtitle": "unicopia.subtitle.heartbeat",
+    "sounds": [
+      "unicopia:heartbeat/heartbeat_loop"
+    ]
+  },
   "entity.player.heartbeat": {
     "category": "ambient",
     "subtitle": "unicopia.subtitle.heartbeat",
     "sounds": [
-      "unicopia:heartbeat/heartbeat"
+      "unicopia:heartbeat/heartbeat_1"
     ]
   },
   "ambient.wind.gust": {

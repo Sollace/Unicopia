@@ -53,6 +53,9 @@ public interface Abilities {
     Ability<?> HANG = register(new BatPonyHangAbility(), "hang", AbilitySlot.TERTIARY);
     Ability<?> EEEE = register(new BatEeeeAbility(), "eee", AbilitySlot.SECONDARY);
 
+    // kirin
+    Ability<?> RAGE = register(new KirinRageAbility(), "rage", AbilitySlot.PRIMARY);
+
     static <T extends Ability<?>> T register(T power, String name, AbilitySlot slot) {
         Identifier id = Unicopia.id(name);
         BY_SLOT.computeIfAbsent(slot, s -> new LinkedHashSet<>()).add(power);

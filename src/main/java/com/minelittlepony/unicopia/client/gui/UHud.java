@@ -113,7 +113,7 @@ public class UHud {
 
         float exhaustion = pony.getMagicalReserves().getExhaustion().getPercentFill();
 
-        if (exhaustion > 0.5F) {
+        if (exhaustion > 0.5F || EquinePredicates.RAGING.test(client.player)) {
             Random rng = client.world.random;
             hudX += rng.nextFloat() - 0.5F;
             hudY += rng.nextFloat() - 0.5F;
@@ -264,7 +264,7 @@ public class UHud {
                 client.getSoundManager().play(
                         heartbeatSound = new LoopingSoundInstance<>(client.player, player -> {
                             return partySound == null && Pony.of(player).getMagicalReserves().getExhaustion().getPercentFill() > 0.5F;
-                        }, USounds.ENTITY_PLAYER_HEARTBEAT, 1, 1, client.world.random)
+                        }, USounds.ENTITY_PLAYER_HEARTBEAT_LOOP, 1, 1, client.world.random)
                 );
             }
 
@@ -272,6 +272,17 @@ public class UHud {
             float radius = (1 + (float)Math.sin(client.player.age / rate)) / 2F;
 
             renderVignette(context, 0x880000, exhaustion * radius, 0.1F + radius * 0.3F, scaledWidth, scaledHeight);
+        }
+
+        float anger = pony.getMagicalReserves().getCharge().getPercentFill();
+
+        if (pony.getObservedSpecies() == Race.KIRIN && anger >= 1F) {
+            float radius = (1 + (float)Math.sin(client.player.age / 25F)) / 5F;
+            renderVignette(context, 0x000000, anger * radius, 0.1F + radius * 0.3F, scaledWidth, scaledHeight);
+        }
+
+        if (EquinePredicates.RAGING.test(client.player)) {
+            context.fill(0, 0, scaledWidth, scaledHeight, 0x3AFF0000);
         }
     }
 

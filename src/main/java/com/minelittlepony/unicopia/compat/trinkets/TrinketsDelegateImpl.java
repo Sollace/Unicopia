@@ -89,8 +89,15 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
         TrinketsApi.registerTrinket(item, new UnicopiaTrinket(item));
     }
 
+    private Optional<TrinketComponent> getTrinketComponent(LivingEntity entity) {
+        try {
+            return TrinketsApi.getTrinketComponent(entity);
+        } catch (Throwable ingnored) {}
+        return Optional.empty();
+    }
+
     public Optional<TrinketInventory> getInventory(LivingEntity entity, Identifier slot) {
-        return TrinketsApi.getTrinketComponent(entity)
+        return getTrinketComponent(entity)
                 .map(component -> component.getInventory()
                 .getOrDefault(slot.getNamespace(), Map.of())
                 .getOrDefault(slot.getPath(), null)
@@ -98,7 +105,7 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
     }
 
     public Stream<TrinketInventory> getInventories(LivingEntity entity) {
-        return TrinketsApi.getTrinketComponent(entity)
+        return getTrinketComponent(entity)
                 .stream()
                 .map(component -> component.getInventory())
                 .flatMap(groups -> groups.values().stream())
@@ -106,7 +113,7 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
     }
 
     public Optional<SlotGroup> getGroup(LivingEntity entity, Identifier slotId) {
-        return TrinketsApi.getTrinketComponent(entity)
+        return getTrinketComponent(entity)
                 .stream()
                 .map(component -> component.getGroups().get(slotId.getNamespace()))
                 .findFirst();

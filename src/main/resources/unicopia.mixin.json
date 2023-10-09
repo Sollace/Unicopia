@@ -43,6 +43,7 @@
     "MixinStateManagerBuilder",
     "MixinBlockState",
     "MixinTargetPredicate",
+    "MixinWardenEntity",
     "MixinWorld",
     "MixinWorldChunk",
     "trinkets.MixinTrinketSurvivalSlot",

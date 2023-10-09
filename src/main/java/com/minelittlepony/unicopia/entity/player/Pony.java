@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.*;
 import com.minelittlepony.unicopia.ability.magic.*;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitDiscovery;
@@ -52,6 +53,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -386,7 +388,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         if (!getPhysics().isFlying() && !entity.getAbilities().flying && climbingPos != null && getObservedSpecies() == Race.CHANGELING) {
             Vec3d vel = entity.getVelocity();
-            if (entity.isSneaky()) {
+            if (entity.isSneaking()) {
                 entity.setVelocity(vel.x, 0, vel.z);
             }
 
@@ -433,6 +435,24 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             }
         } else {
             distanceClimbed = 0;
+        }
+
+        if (getObservedSpecies() == Race.KIRIN) {
+            var charge = getMagicalReserves().getCharge();
+
+            if (charge.getPercentFill() >= 1) {
+                var energy = getMagicalReserves().getEnergy();
+                if (energy.getPercentFill() < 0.002F) {
+                    energy.addPercent(1.03F);
+                    if (entity.age % 25 == 0) {
+                        playSound(USounds.ENTITY_PLAYER_HEARTBEAT, 0.17F + (float)entity.getWorld().random.nextGaussian() * 0.03F, 0.5F);
+                    }
+                }
+            }
+
+            if (entity.getAttackCooldownProgress(0) == 0) {
+                charge.addPercent(3);
+            }
         }
 
         return super.beforeUpdate();
@@ -488,7 +508,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private void updateAnimations() {
 
         if (distanceClimbed > 0
-                && ((animation.isOf(Animation.CLIMB) && entity.isSneaky()) || animation.isOf(Animation.HANG))
+                && ((animation.isOf(Animation.CLIMB) && entity.isSneaking()) || animation.isOf(Animation.HANG))
                 && entity.getClimbingPos().isPresent()
                 && entity.getVelocity().length() < 0.08F) {
             if (animation.renderBothArms()) {
@@ -643,6 +663,21 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public Optional<Float> modifyDamage(DamageSource cause, float amount) {
+
+        if (getObservedSpecies() == Race.KIRIN) {
+            var charge = getMagicalReserves().getCharge();
+            charge.addPercent(MathHelper.clamp(amount / 10F, 5, 15));
+            float anger = charge.getPercentFill();
+            getMagicalReserves().getEnergy().addPercent(50 * anger);
+            playSound(USounds.ENTITY_PLAYER_KIRIN_RAGE, 0.2F, 1.25F);
+            spawnParticles(ParticleTypes.LAVA, 2);
+
+            if (anger > 0 && entity.getWorld().random.nextFloat() < anger / 2F) {
+                if (consumeSuperMove()) {
+                    SpellType.RAGE.withTraits().apply(this, CastingMethod.INNATE);
+                }
+            }
+        }
 
         if (!cause.isIn(DamageTypeTags.BYPASSES_SHIELD)
                 && !cause.isOf(DamageTypes.MAGIC)

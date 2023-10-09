@@ -25,9 +25,12 @@ public interface USounds {
     SoundEvent ENTITY_PLAYER_CHANGELING_FEED = ENTITY_GENERIC_DRINK;
     SoundEvent ENTITY_PLAYER_CHANGELING_CLIMB = ENTITY_CHICKEN_STEP;
     SoundEvent ENTITY_PLAYER_UNICORN_TELEPORT = register("entity.player.unicorn.teleport");
+    SoundEvent ENTITY_PLAYER_KIRIN_RAGE = ENTITY_POLAR_BEAR_WARNING;
+    SoundEvent ENTITY_PLAYER_KIRIN_RAGE_LOOP = register("entity.player.kirin.rage.loop");
 
     SoundEvent ENTITY_PLAYER_EARS_RINGING = register("entity.player.ears_ring");
     SoundEvent ENTITY_PLAYER_HEARTBEAT = register("entity.player.heartbeat");
+    SoundEvent ENTITY_PLAYER_HEARTBEAT_LOOP = register("entity.player.heartbeat_loop");
 
     SoundEvent ENTITY_PLAYER_WOLOLO = register("entity.player.wololo");
     SoundEvent ENTITY_PLAYER_WHISTLE = register("entity.player.whistle");

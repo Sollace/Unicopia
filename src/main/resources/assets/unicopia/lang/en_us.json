@@ -10,6 +10,10 @@
   "ability.unicopia.indoors": "I can't see the sky from here",
   "ability.unicopia.too_low": "I need to get higher up",
   "ability.unicopia.clear_skies": "The skies already look pretty clear",
+  "ability.unicopia.too_calm.1": "I need to get angrier...",
+  "ability.unicopia.too_calm.2": "I don't feel angry...",
+  "ability.unicopia.too_calm.3": "Bruce made it look easier than this...",
+  "ability.unicopia.too_calm.4": "Celestia give me strength...",
 
   "itemGroup.unicopia.items": "Unicopia",
   "itemGroup.unicopia.foraging": "Unicopia - Foraging",
@@ -394,6 +398,7 @@
   "ability.unicopia.capture_cloud": "Bust Cloud",
   "ability.unicopia.disguise": "Change Form",
   "ability.unicopia.rainboom": "Sonic Rainboom",
+  "ability.unicopia.rage": "Rage",
 
   "gui.unicopia.trait.label": "Element of %s",
   "gui.unicopia.trait.group": "\n %s",

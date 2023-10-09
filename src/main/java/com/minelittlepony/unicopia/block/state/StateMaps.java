@@ -7,6 +7,7 @@ public interface StateMaps {
     BlockStateConverter ICE_AFFECTED = of("ice");
     BlockStateConverter SILVERFISH_AFFECTED = of("infestation");
     BlockStateConverter FIRE_AFFECTED = of("fire");
+    BlockStateConverter BURNABLE = of("burnable");
     ReversableBlockStateConverter HELLFIRE_AFFECTED = of("hellfire");
 
     private static ReversableBlockStateConverter of(String name) {

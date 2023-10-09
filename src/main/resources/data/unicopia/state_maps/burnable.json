@@ -1,0 +1,109 @@
+{
+  "parent": "unicopia:fire",
+  "replace": false,
+  "entries": [
+    {
+      "match": [
+        { "tag": "minecraft:logs_that_burn" }
+      ],
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:coal_block",
+        "chance": 0.15
+      }
+    },
+    
+    {
+      "match": [
+        { "state": "minecraft:snow" },
+        { "state": "minecraft:snow_block" },
+        { "builtin": "plants" }
+      ],
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:air"
+      }
+    },
+    {
+      "match": [
+        { "state": "minecraft:ice" },
+        { "state": "minecraft:frosted_ice" }
+      ],
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:water"
+      }
+    },
+    {
+      "match": { "state": "minecraft:clay" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:brown_concrete"
+      }
+    },
+    {
+      "match": [
+        { "state": "minecraft:obsidian" },
+        { "state": "unicopia:frosted_obsidian" }
+      ],
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:lava"
+      }
+    },
+    {
+      "match": { "state": "minecraft:grass_block" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:dirt"
+      }
+    },
+    {
+      "match": { "state": "minecraft:mossy_cobblestone" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:cobblestone"
+      }
+    },
+    {
+      "match": { "state": "minecraft:mossy_cobblestone_wall" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:cobblestone_wall"
+      }
+    },
+    {
+      "match": [
+        { "state": "minecraft:mossy_stone_bricks" },
+        { "state": "minecraft:infested_mossy_stone_bricks" }
+      ],
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:stone_bricks"
+      }
+    },
+    {
+      "match": { "state": "minecraft:podzol" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:coarse_dirt"
+      }
+    },
+    {
+      "match": { "state": "minecraft:farmland" },
+      "apply": {
+        "action": "unicopia:set_property",
+        "property": "moisture",
+        "value": 0
+      }
+    },
+    {
+      "match": { "state": "minecraft:dirt" },
+      "apply": {
+        "action": "unicopia:set_state",
+        "state": "minecraft:coarse_dirt",
+        "chance": 0.15
+      }
+    }
+  ]
+}
