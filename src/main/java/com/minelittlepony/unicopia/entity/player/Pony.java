@@ -638,6 +638,14 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return super.canBeSeenBy(entity);
     }
 
+    @Override
+    public Optional<Vec3d> adjustMovementSpeedInWater(Vec3d speed) {
+        if (getObservedSpecies() == Race.KIRIN) {
+            return Optional.of(speed.multiply(0.5, 1, 0.5));
+        }
+        return Optional.empty();
+    }
+
     public Optional<Living<?>> getEntityInArms() {
         return Living.getOrEmpty(entity.getFirstPassenger()).filter(Living::isBeingCarried);
     }

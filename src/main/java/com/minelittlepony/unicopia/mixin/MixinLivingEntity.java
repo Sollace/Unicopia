@@ -26,6 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 @Mixin(LivingEntity.class)
 abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equine.Container<Living<?>> {
@@ -121,6 +122,11 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
         if (!get().canBeSeenBy(other)) {
             info.setReturnValue(false);
         }
+    }
+
+    @Inject(method = "applyFluidMovingSpeed", at = @At("RETURN"), cancellable = true)
+    private void applyFluidMovingSpeed(double gravity, boolean falling, Vec3d motion, CallbackInfoReturnable<Vec3d> info) {
+        get().adjustMovementSpeedInWater(info.getReturnValue()).ifPresent(info::setReturnValue);
     }
 
     @Inject(method = "jump()V", at = @At("RETURN"))

@@ -386,6 +386,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             .isEmpty();
     }
 
+    public Optional<Vec3d> adjustMovementSpeedInWater(Vec3d speed) {
+        return Optional.empty();
+    }
+
     private void updateDragonBreath() {
         if (!entity.getWorld().isClient && (entity instanceof PlayerEntity || entity.hasCustomName())) {
 

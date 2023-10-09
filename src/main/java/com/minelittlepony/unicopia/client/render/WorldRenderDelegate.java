@@ -4,8 +4,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.client.util.render.RenderLayerUtil;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.compat.pehkui.PehkUtil;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.Equine;
@@ -157,39 +155,35 @@ public class WorldRenderDelegate {
             flipAngles(owner);
         }
 
-        if (pony instanceof Caster<?>) {
-            int fireTicks = owner.doesRenderOnFire() ? 1 : 0;
+        int fireTicks = owner.doesRenderOnFire() ? 1 : 0;
 
-            return ((Caster<?>)pony).getSpellSlot().get(SpellPredicate.IS_DISGUISE, false).map(effect -> {
-                effect.update(pony, false);
+        return EntityReplacementRenderManager.INSTANCE.getAppearanceFor(pony).map(effect -> {
+            effect.update(pony, false);
 
-                EntityAppearance ve = effect.getDisguise();
-                Entity e = ve.getAppearance();
+            EntityAppearance ve = effect.getDisguise();
+            Entity e = ve.getAppearance();
 
-                if (e != null) {
-                    PehkUtil.copyScale(pony.asEntity(), e);
+            if (e != null) {
+                PehkUtil.copyScale(pony.asEntity(), e);
 
-                    if (dispatcher.shouldRenderHitboxes()) {
-                        e.setBoundingBox(pony.asEntity().getBoundingBox());
-                    }
-
-                    renderDisguise(dispatcher, ve, e, x, y, z, fireTicks, tickDelta, matrices, vertexConsumers, light);
-                    ve.getAttachments().forEach(ee -> {
-                        PehkUtil.copyScale(pony.asEntity(), ee);
-                        Vec3d difference = ee.getPos().subtract(e.getPos());
-                        renderDisguise(dispatcher, ve, ee, x + difference.x, y + difference.y, z + difference.z, fireTicks, tickDelta, matrices, vertexConsumers, light);
-                        PehkUtil.clearScale(ee);
-                    });
-
-                    afterEntityRender(pony, matrices, light);
-                    PehkUtil.clearScale(e);
-                    return true;
+                if (dispatcher.shouldRenderHitboxes()) {
+                    e.setBoundingBox(pony.asEntity().getBoundingBox());
                 }
-                return false;
-            }).orElse(false);
-        }
 
-        return false;
+                renderDisguise(dispatcher, ve, e, x, y, z, fireTicks, tickDelta, matrices, vertexConsumers, light);
+                ve.getAttachments().forEach(ee -> {
+                    PehkUtil.copyScale(pony.asEntity(), ee);
+                    Vec3d difference = ee.getPos().subtract(e.getPos());
+                    renderDisguise(dispatcher, ve, ee, x + difference.x, y + difference.y, z + difference.z, fireTicks, tickDelta, matrices, vertexConsumers, light);
+                    PehkUtil.clearScale(ee);
+                });
+
+                afterEntityRender(pony, matrices, light);
+                PehkUtil.clearScale(e);
+                return true;
+            }
+            return false;
+        }).orElse(false);
     }
 
     public void afterEntityRender(Equine<?> pony, MatrixStack matrices, int light) {
