@@ -282,7 +282,10 @@ public class UHud {
         }
 
         if (EquinePredicates.RAGING.test(client.player)) {
-            context.fill(0, 0, scaledWidth, scaledHeight, 0x3AFF0000);
+            context.fillGradient(0, 0, scaledWidth, scaledHeight / 4, 0xAAFF0000, 0x00FF0000);
+            int alpha = 0x3A + (int)(125 * Math.abs(MathHelper.sin(client.player.age / 25F)));//3A
+            context.fill(0, 0, scaledWidth, scaledHeight, 0x00FF0000 | (alpha << 24));
+            context.fillGradient(0, (int)(scaledHeight / 1.5), scaledWidth, scaledHeight, 0x00FF0000, 0xAAFF0000);
         }
     }
 
