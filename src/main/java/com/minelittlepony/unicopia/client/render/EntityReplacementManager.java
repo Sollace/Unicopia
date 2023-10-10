@@ -18,9 +18,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
-class EntityReplacementRenderManager implements Disguise {
-    public static final EntityReplacementRenderManager INSTANCE = new EntityReplacementRenderManager();
-
+class EntityReplacementManager implements Disguise {
     @Nullable
     private EntityType<?> currentType;
     private final EntityAppearance disguise = new EntityAppearance();

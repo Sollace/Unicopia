@@ -23,8 +23,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
 public class SmittenEyesRenderer {
-    public static final SmittenEyesRenderer INSTANCE = new SmittenEyesRenderer();
-
     private static final Identifier TEXTURE = Unicopia.id("textures/entity/smitten_eyes.png");
 
     private final MinecraftClient client = MinecraftClient.getInstance();
