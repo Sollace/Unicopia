@@ -105,6 +105,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     private float magicExhaustion = 0;
 
+    private int ticksInvulnerable;
+
     private int ticksInSun;
     private boolean hasShades;
     private int ticksSunImmunity = INITIAL_SUN_IMMUNITY;
@@ -275,6 +277,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return ticksSunImmunity > 0;
     }
 
+    public void setInvulnerabilityTicks(int ticks) {
+        this.ticksInvulnerable = Math.max(0, ticks);
+    }
+
     @Override
     public Affinity getAffinity() {
         return getSpecies().getAffinity();
@@ -352,6 +358,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
                 : null
             );
+        }
+
+        if (ticksInvulnerable > 0) {
+            entity.setInvulnerable(--ticksInvulnerable > 0);
         }
 
         if (isClient()) {
@@ -850,6 +860,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         compound.put("mana", mana.toNBT());
         compound.putInt("levels", levels.get());
         compound.putInt("corruption", corruption.get());
+        compound.putInt("ticksInvulnerable", ticksInvulnerable);
 
         NbtCompound progress = new NbtCompound();
         advancementProgress.forEach((key, count) -> {
@@ -872,6 +883,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         magicExhaustion = compound.getFloat("magicExhaustion");
         ticksHanging = compound.getInt("ticksHanging");
+        ticksInvulnerable = compound.getInt("ticksInvulnerable");
         entity.getDataTracker().set(HANGING_POSITION, NbtSerialisable.BLOCK_POS.readOptional("hangingPosition", compound));
         ticksInSun = compound.getInt("ticksInSun");
         hasShades = compound.getBoolean("hasShades");

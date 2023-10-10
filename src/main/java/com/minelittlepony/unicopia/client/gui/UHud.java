@@ -136,7 +136,7 @@ public class UHud {
 
         slots.forEach(slot -> slot.renderBackground(context, abilities, swap, tickDelta));
 
-        boolean canCast = Abilities.CAST.canUse(pony.getCompositeRace());
+        boolean canCast = Abilities.CAST.canUse(pony.getCompositeRace()) || Abilities.KIRIN_CAST.canUse(pony.getCompositeRace());
 
         if (canCast) {
             Ability<?> ability = pony.getAbilities().getStat(AbilitySlot.PRIMARY)

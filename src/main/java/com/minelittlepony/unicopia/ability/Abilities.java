@@ -55,6 +55,7 @@ public interface Abilities {
 
     // kirin
     Ability<?> RAGE = register(new KirinRageAbility(), "rage", AbilitySlot.PRIMARY);
+    Ability<?> NIRIK_BLAST = register(new NirikBlastAbility(), "nirik_blast", AbilitySlot.SECONDARY);
     Ability<?> KIRIN_CAST = register(new KirinCastingAbility(), "kirin_cast", AbilitySlot.SECONDARY);
 
     static <T extends Ability<?>> T register(T power, String name, AbilitySlot slot) {

@@ -64,7 +64,7 @@ public class RageAbilitySpell extends AbstractSpell {
                     public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {
                         return false;
                     }
-                }, source.getOriginVector(), 0, true, ExplosionSourceType.MOB);
+                }, source.getOriginVector(), 3, true, ExplosionSourceType.MOB);
 
                 if (source instanceof Pony pony) {
                     pony.setAnimation(Animation.ARMS_UP, Recipient.ANYONE, 12);
@@ -87,7 +87,9 @@ public class RageAbilitySpell extends AbstractSpell {
         } else {
             if (age % 5 == 0) {
                 source.spawnParticles(ParticleTypes.LAVA, 4);
-                source.subtractEnergyCost(Math.min(12, 3 + source.asEntity().getVelocity().length() * 0.1));
+                if (source instanceof Pony pony && !pony.asEntity().handSwinging) {
+                    source.subtractEnergyCost(Math.min(12, 3 + source.asEntity().getVelocity().length() * 0.1));
+                }
             }
         }
 

@@ -404,6 +404,7 @@
   "ability.unicopia.disguise": "Change Form",
   "ability.unicopia.rainboom": "Sonic Rainboom",
   "ability.unicopia.rage": "Rage",
+  "ability.unicopia.nirik_blast": "Nirik Blast",
 
   "gui.unicopia.trait.label": "Element of %s",
   "gui.unicopia.trait.group": "\n %s",
