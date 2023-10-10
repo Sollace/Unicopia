@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation.Recipient;
+import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -14,6 +15,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World.ExplosionSourceType;
 import net.minecraft.world.explosion.Explosion;
@@ -93,7 +95,10 @@ public class RageAbilitySpell extends AbstractSpell {
             if (source.isClient() && pony.asEntity().getAttackCooldownProgress(0) == 0) {
                 InteractionManager.instance().playLoopingSound(source.asEntity(), InteractionManager.SOUND_KIRIN_RAGE, source.asWorld().random.nextLong());
             }
-            pony.getMagicalReserves().getEnergy().add(0.5F + (age / 1000F));
+            Bar energyBar = pony.getMagicalReserves().getEnergy();
+            var energy = Math.min(1.01F, 0.5F + (age / 1000F));
+            float newEnergy = energyBar.get() + energy;
+            energyBar.set(Math.min(1.9F + MathHelper.sin(age / 3F) * 1.7F, newEnergy));
             pony.getMagicalReserves().getMana().add(-1);
             if (pony.getMagicalReserves().getMana().get() <= 0) {
                 return false;
