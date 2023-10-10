@@ -25,6 +25,7 @@ import net.minecraft.util.math.*;
 
 public class WorldRenderDelegate {
     public static final WorldRenderDelegate INSTANCE = new WorldRenderDelegate();
+    private static final Optional<Vec3d> RED_SKY_COLOR = Optional.of(new Vec3d(1, 0, 0));
 
     private final EntityReplacementManager disguiseLookup = new EntityReplacementManager();
     private final EntityDisguiseRenderer disguiseRenderer = new EntityDisguiseRenderer(this);
@@ -34,6 +35,13 @@ public class WorldRenderDelegate {
     private boolean recurseFrosting;
 
     final MinecraftClient client = MinecraftClient.getInstance();
+
+    public Optional<Vec3d> getSkyColor(float tickDelta) {
+        if (EquinePredicates.RAGING.test(client.player)) {
+            return RED_SKY_COLOR;
+        }
+        return Optional.empty();
+    }
 
     public boolean beforeEntityRender(Entity entity,
             double x, double y, double z, float yaw,
