@@ -111,6 +111,9 @@ public class RageAbilitySpell extends AbstractSpell {
         }
 
         age++;
+        source.asEntity().setInvulnerable(age < 25);
+
+
         setDirty();
         return true;
     }
