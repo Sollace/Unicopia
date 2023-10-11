@@ -420,9 +420,14 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                         entity.setVelocity(entity.getVelocity().multiply(1, 0, 1));
                         entity.setSneaking(false);
                     }
-                } else if (attachDirection != null && isFaceClimbable(entity.getWorld(), entity.getBlockPos(), attachDirection)) {
-                    entity.setBodyYaw(attachDirection.asRotation());
-                    entity.prevBodyYaw = attachDirection.asRotation();
+                } else if (attachDirection != null) {
+                    if (isFaceClimbable(entity.getWorld(), entity.getBlockPos(), attachDirection)) {
+                        entity.setBodyYaw(attachDirection.asRotation());
+                        entity.prevBodyYaw = attachDirection.asRotation();
+                    } else {
+                        entity.setVelocity(vel);
+                        entity.isClimbing();
+                    }
                 }
             }
 
@@ -480,7 +485,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public Optional<BlockPos> chooseClimbingPos() {
         if (getObservedSpecies() == Race.CHANGELING && getSpellSlot().get(SpellPredicate.IS_DISGUISE, false).isEmpty()) {
-            return Optional.of(entity.getBlockPos());
+            if (isFaceClimbable(entity.getWorld(), entity.getBlockPos(), entity.getHorizontalFacing()) || canHangAt(entity.getBlockPos())) {
+                return Optional.of(entity.getBlockPos());
+            }
         }
         return super.chooseClimbingPos();
     }
