@@ -8,6 +8,7 @@ import org.joml.Vector3f;
 
 import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.client.render.bezier.BezierSegment;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Link;
@@ -66,16 +67,15 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
         float alpha = 1 - (float)age / maxAge;
 
         for (int i = 0; i < segments.size() - 1; i++) {
-            Vector3f[] corners = segments.get(i).getPlane(segments.get(i + 1));
+            BezierSegment corners = segments.get(i).getPlane(segments.get(i + 1));
             float scale = getScale(tickDelta);
 
-            for (int k = 0; k < 4; ++k) {
-               Vector3f corner = corners[k];
-               corner.mul(scale);
-               corner.add(x, y, z);
-            }
+            corners.forEachCorner(corner -> {
+                corner.mul(scale);
+                corner.add(x, y, z);
+            });
 
-            renderQuad(te, buffer, corners, segments.get(i).getAlpha() * alpha, tickDelta);
+            renderQuad(te, buffer, corners.corners(), segments.get(i).getAlpha() * alpha, tickDelta);
         }
     }
 
@@ -132,24 +132,8 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
             return segments.indexOf(this) < segments.size() - 1 && age++ >= maxAge;
         }
 
-        Vector3f[] getPlane(Segment to) {
-            float fromX = offset.x;
-            float toX = to.offset.x;
-
-            float fromZ = offset.z;
-            float toZ = to.offset.z;
-            float fromTopY = offset.y + 1;
-            float fromBottomY = offset.y;
-
-            float toTopY = to.offset.y + 1;
-            float toBottomY = to.offset.y;
-
-            return new Vector3f[]{
-                    new Vector3f(fromX, fromBottomY, fromZ), // bottom left
-                    new Vector3f(fromX, fromTopY, fromZ),    // top    left
-                    new Vector3f(toX, toTopY, toZ),          // top    right
-                    new Vector3f(toX, toBottomY, toZ)        // bottom right
-            };
+        BezierSegment getPlane(Segment to) {
+            return new BezierSegment(offset, to.offset, 1);
         }
     }
 }

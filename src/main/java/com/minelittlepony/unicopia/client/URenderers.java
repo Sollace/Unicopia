@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.client.particle.RainboomParticle;
 import com.minelittlepony.unicopia.client.particle.RainbowTrailParticle;
 import com.minelittlepony.unicopia.client.particle.RaindropsParticle;
 import com.minelittlepony.unicopia.client.particle.RunesParticle;
+import com.minelittlepony.unicopia.client.particle.ShockwaveParticle;
 import com.minelittlepony.unicopia.client.particle.SphereParticle;
 import com.minelittlepony.unicopia.client.render.*;
 import com.minelittlepony.unicopia.client.render.entity.*;
@@ -54,6 +55,7 @@ public interface URenderers {
         ParticleFactoryRegistry.getInstance().register(UParticles.HEALTH_DRAIN, createFactory(HealthDrainParticle::create));
         ParticleFactoryRegistry.getInstance().register(UParticles.RAINBOOM_RING, RainboomParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.RAINBOOM_TRAIL, RainbowTrailParticle::new);
+        ParticleFactoryRegistry.getInstance().register(UParticles.SHOCKWAVE, ShockwaveParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.MAGIC_RUNES, RunesParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.SPHERE, SphereParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.DISK, DiskParticle::new);

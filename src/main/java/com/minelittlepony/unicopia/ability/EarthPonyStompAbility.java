@@ -156,6 +156,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
             spawnEffectAround(player, center, radius, rad);
 
             ParticleUtils.spawnParticle(player.getWorld(), UParticles.GROUND_POUND, player.getX(), player.getY() - 1, player.getZ(), 0, 0, 0);
+            ParticleUtils.spawnParticle(player.getWorld(), UParticles.SHOCKWAVE, player.getX(), player.getY() - 1, player.getZ(), 0, 0, 0);
 
             iplayer.subtractEnergyCost(rad);
             iplayer.asEntity().addExhaustion(3);
