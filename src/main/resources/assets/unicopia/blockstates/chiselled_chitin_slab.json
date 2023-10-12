@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "type=double": { "model": "unicopia:block/chiselled_chitin" },
+    "type=bottom": { "model": "unicopia:block/chiselled_chitin_slab" },
+    "type=top": { "model": "unicopia:block/chiselled_chitin_slab_top" }
+  }
+}

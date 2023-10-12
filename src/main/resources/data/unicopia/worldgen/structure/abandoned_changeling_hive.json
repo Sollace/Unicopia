@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:jigsaw",
+  "biomes": "#minecraft:is_forest",
+  "max_distance_from_center": 112,
+  "project_start_to_heightmap": "WORLD_SURFACE_WG",
+  "size": 7,
+  "spawn_overrides": {},
+  "start_height": {
+    "absolute": -6
+  },
+  "start_pool": "unicopia:changeling_hive/start",
+  "step": "underground_decoration",
+  "terrain_adaptation": "beard_box",
+  "use_expansion_hack": false
+}

@@ -3,6 +3,10 @@
   "values": [
     "unicopia:rocks",
     "unicopia:frosted_obsidian",
-    "unicopia:weather_vane"
+    "unicopia:weather_vane",
+    "unicopia:chiselled_chitin",
+    "unicopia:chiselled_chitin_slab",
+    "unicopia:chiselled_chitin_stairs",
+    "unicopia:chiselled_chitin_hull"
   ]
 }

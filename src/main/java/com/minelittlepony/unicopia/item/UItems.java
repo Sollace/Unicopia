@@ -160,12 +160,16 @@ public interface UItems {
     GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
     GlassesItem BROKEN_SUNGLASSES = register("broken_sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
 
+
+    Item CARAPACE = register("carapace", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
+
     Item ALICORN_BADGE = register(Race.ALICORN);
     Item PEGASUS_BADGE = register(Race.PEGASUS);
     Item UNICORN_BADGE = register(Race.UNICORN);
     Item EARTH_BADGE = register(Race.EARTH);
     Item BAT_BADGE = register(Race.BAT);
     Item CHANGELING_BADGE = register(Race.CHANGELING);
+    Item KIRIN_BADGE = register(Race.KIRIN);
 
     private static <T extends Item> T register(String name, T item, RegistryKey<ItemGroup> group) {
         return ItemGroupRegistry.register(Unicopia.id(name), item, group);

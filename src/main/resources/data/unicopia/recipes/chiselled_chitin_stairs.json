@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": [
+      { "item": "unicopia:chiselled_chitin" }
+    ]
+  },
+  "result": { "item": "unicopia:chiselled_chitin_stairs", "count": 4 }
+}
