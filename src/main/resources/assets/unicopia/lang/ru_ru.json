@@ -474,7 +474,7 @@
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.kirin": " - Невосприимчивы ко всем видам огненного урона",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.kirin": " - Могут открыть способность ярости, получая урон",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.kirin": " - В обычном состоянии бесшумны и могут спокойно ходить рядом с Хранителем",
-  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.kirin": " - Могут есть фрукты и овощи, красное мясо и некоторые виды кормов, обычно ядовитые для других рас",
+  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.kirin": " - Могут есть фрукты и овощи, мясо и некоторые виды кормов, обычно ядовитые для других",
 
   "gui.unicopia.tribe_selection.confirm.bads": "но они...",
 
@@ -507,8 +507,8 @@
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.changeling": "",
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.kirin": " - Теряют свою бесшумность в состоянии ярости",
-  "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.kirin": " - Имеют склонность поджигать вещи, особенно когда близки к ярости",
-  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.kirin": " - Легче, чем другие пони, и сильнее оттакливаются при получении урона",
+  "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.kirin": " - Поджигают вещи, особенно когда близки к ярости",
+  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.kirin": " - Легче, чем другие пони, и сильнее оттакливаются",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.kirin": " - Не любят воду",
 
   "gui.unicopia.tribe_selection.join": "Присоединиться",
