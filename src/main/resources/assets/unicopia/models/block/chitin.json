@@ -1,0 +1,8 @@
+{
+    "parent": "minecraft:block/cube_bottom_top",
+    "textures": {
+        "bottom": "unicopia:block/chitin_bottom",
+        "top": "unicopia:block/chitin",
+        "side": "unicopia:block/chitin"
+    }
+}

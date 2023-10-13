@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 54138171,
+    "separation": 62,
+    "spacing": 84
+  },
+  "structures": [
+    {
+      "structure": "unicopia:abandoned_changeling_hive",
+      "weight": 1
+    }
+  ]
+}

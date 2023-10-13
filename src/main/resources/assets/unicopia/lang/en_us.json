@@ -99,6 +99,8 @@
   "item.unicopia.pineapple_crown": "Pineapple Crown",
   "item.unicopia.sunglasses": "Sunglasses",
   "item.unicopia.broken_sunglasses": "Broken Sunglasses",
+  
+  "item.unicopia.carapace": "Carapace",
 
   "item.unicopia.pebbles": "Pebbles",
   "item.unicopia.rock": "Rock",
@@ -203,6 +205,13 @@
   "block.unicopia.sour_apple_leaves": "Sour Apple Leaves",
   "block.unicopia.sour_apple_sapling": "Sour Apple Sapling",
   "block.unicopia.sour_apple_sprout": "Sour Apple Sprout",
+  
+  "block.unicopia.surface_chitin": "Surface Chitin",
+  "block.unicopia.chitin": "Chitin",
+  "block.unicopia.chiselled_chitin": "Chiselled Chitin",
+  "block.unicopia.chiselled_chitin_hull": "Chiselled Chitin Hull",
+  "block.unicopia.chiselled_chitin_slab": "Chiselled Chitin Slab",
+  "block.unicopia.chiselled_chitin_stairs": "Chiselled Chitin Stairs",
 
   "block.unicopia.oats": "Oats",
   "block.unicopia.oats_stem": "Oats",

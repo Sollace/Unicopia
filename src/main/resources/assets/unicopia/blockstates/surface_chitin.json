@@ -1,0 +1,6 @@
+{
+    "variants": {
+        "snowy=false": { "model": "unicopia:block/surface_chitin" },
+        "snowy=true": { "model": "unicopia:block/surface_chitin_snowy" }
+    }
+}
