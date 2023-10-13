@@ -20,10 +20,10 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class WeatherVaneBlock extends BlockWithEntity {
-    /*private static final VoxelShape SHAPE = VoxelShapes.union(
+    private static final VoxelShape SHAPE = VoxelShapes.union(
             Block.createCuboidShape(7.5F, 0, 7.5F, 8.5F, 14, 8.5F),
             Block.createCuboidShape(7, 0, 7, 9, 1, 9)
-    );*/
+    );
 
     protected WeatherVaneBlock(Settings settings) {
         super(settings);
@@ -32,10 +32,7 @@ public class WeatherVaneBlock extends BlockWithEntity {
     @Deprecated
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return VoxelShapes.union(
-                Block.createCuboidShape(7.5F, 0, 7.5F, 8.5F, 14, 8.5F),
-                Block.createCuboidShape(7, 0, 7, 9, 1, 9)
-        );
+        return SHAPE;
     }
 
     @Override
