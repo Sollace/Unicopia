@@ -100,6 +100,8 @@
   "item.unicopia.sunglasses": "Солнцезащитные очки",
   "item.unicopia.broken_sunglasses": "Сломанные солнцезащитные очки",
 
+  "item.unicopia.carapace": "Панцырь",
+
   "item.unicopia.pebbles": "Галька",
   "item.unicopia.rock": "Камень",
   "item.unicopia.weird_rock": "Странный камень",
@@ -203,6 +205,13 @@
   "block.unicopia.sour_apple_leaves": "Листья кислой яблони",
   "block.unicopia.sour_apple_sapling": "Саженец кислой яблони",
   "block.unicopia.sour_apple_sprout": "Росток кислой яблони",
+
+  "block.unicopia.surface_chitin": "Поверхностный хитин",
+  "block.unicopia.chitin": "Хитиновый блок",
+  "block.unicopia.chiselled_chitin": "Резной хитиновый блок",
+  "block.unicopia.chiselled_chitin_hull": "Резной хитиновый остов",
+  "block.unicopia.chiselled_chitin_slab": "Резная хитиновая плита",
+  "block.unicopia.chiselled_chitin_stairs": "Резные хитиновые ступеньки",
 
   "block.unicopia.oats": "Овёс",
   "block.unicopia.oats_stem": "Овёс",
