@@ -96,6 +96,8 @@ public interface USounds {
     SoundEvent ITEM_BRACELET_SIGN = register("item.bracelet.sign");
     SoundEvent ITEM_MAGIC_AURA = register("item.magic.aura");
 
+    SoundEvent BLOCK_CHITIN_AMBIENCE = register("block.chitin.ambience");
+
     SoundEvent BLOCK_WEATHER_VANE_ROTATE = BLOCK_LANTERN_STEP;
     SoundEvent BLOCK_PIE_SLICE = BLOCK_BEEHIVE_SHEAR;
     SoundEvent BLOCK_PIE_SLICE_POP = ENTITY_ITEM_PICKUP;

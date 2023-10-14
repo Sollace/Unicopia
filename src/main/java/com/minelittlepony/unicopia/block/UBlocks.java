@@ -114,10 +114,10 @@ public interface UBlocks {
             () -> UItems.APPLE_PIE_HOOF
     ));
 
-    Block CHITIN = register("chitin", new SnowyBlock(Settings.create().mapColor(MapColor.PALE_PURPLE).hardness(5).requiresTool().ticksRandomly()), ItemGroups.NATURAL);
+    Block CHITIN = register("chitin", new SnowyBlock(Settings.create().mapColor(MapColor.PALE_PURPLE).hardness(5).requiresTool().ticksRandomly().sounds(BlockSoundGroup.CORAL)), ItemGroups.NATURAL);
     Block SURFACE_CHITIN = register("surface_chitin", new GrowableBlock(Settings.copy(CHITIN), () -> CHITIN), ItemGroups.NATURAL);
-    Block CHITIN_SPIKES = register("chitin_spikes", new SpikesBlock(Settings.copy(CHITIN).noCollision().nonOpaque()), ItemGroups.NATURAL);
     Block CHISELLED_CHITIN = register("chiselled_chitin", new Block(Settings.create().mapColor(MapColor.PALE_PURPLE).hardness(5).requiresTool()), ItemGroups.BUILDING_BLOCKS);
+    Block CHITIN_SPIKES = register("chitin_spikes", new SpikesBlock(Settings.copy(CHISELLED_CHITIN).noCollision().nonOpaque()), ItemGroups.NATURAL);
     Block CHISELLED_CHITIN_SLAB = register("chiselled_chitin_slab", new SlabBlock(Settings.copy(CHISELLED_CHITIN)), ItemGroups.BUILDING_BLOCKS);
     Block CHISELLED_CHITIN_STAIRS = register("chiselled_chitin_stairs", new StairsBlock(CHISELLED_CHITIN.getDefaultState(), Settings.copy(CHISELLED_CHITIN)), ItemGroups.BUILDING_BLOCKS);
     Block CHISELLED_CHITIN_HULL = register("chiselled_chitin_hull", new OrientedBlock(Settings.copy(CHISELLED_CHITIN)), ItemGroups.BUILDING_BLOCKS);

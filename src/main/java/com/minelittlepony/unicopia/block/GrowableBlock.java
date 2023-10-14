@@ -2,16 +2,21 @@ package com.minelittlepony.unicopia.block;
 
 import java.util.function.Supplier;
 
+import com.minelittlepony.unicopia.USounds;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SnowBlock;
 import net.minecraft.block.SpreadableBlock;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
 
@@ -22,6 +27,35 @@ public class GrowableBlock extends SpreadableBlock {
     protected GrowableBlock(Settings settings, Supplier<Block> converted) {
         super(settings);
         this.dead = converted;
+    }
+
+    @Override
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        super.randomDisplayTick(state, world, pos, random);
+        if (random.nextInt(2) == 0) {
+            world.addParticle(ParticleTypes.MYCELIUM, pos.getX() + random.nextDouble(), pos.getY() + 1.1, pos.getZ() + random.nextDouble(), 0, 0, 0);
+        }
+        if (random.nextInt(1500) == 0) {
+            world.playSoundAtBlockCenter(pos, USounds.BLOCK_CHITIN_AMBIENCE, SoundCategory.BLOCKS, 0.13F, 0.2F, true);
+
+            for (int i = 0; i < 9; i++) {
+                world.addParticle(random.nextInt(2) == 0 ? ParticleTypes.SPORE_BLOSSOM_AIR : ParticleTypes.CRIMSON_SPORE,
+                        pos.getX() + random.nextDouble(),
+                        pos.getY() + 1.1, pos.getZ() + random.nextDouble(),
+                        random.nextDouble() - 0.5, 0, random.nextDouble() - 0.5
+                );
+            }
+        }
+
+        if (random.nextInt(20) == 0) {
+            for (int i = 0; i < 9; i++) {
+                world.addParticle(ParticleTypes.ASH,
+                        pos.getX() + random.nextDouble(),
+                        pos.getY() + 1.1, pos.getZ() + random.nextDouble(),
+                        random.nextDouble() - 0.5, 0, random.nextDouble() - 0.5
+                );
+            }
+        }
     }
 
     @Override
