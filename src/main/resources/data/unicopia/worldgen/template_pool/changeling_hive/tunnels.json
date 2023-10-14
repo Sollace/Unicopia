@@ -3,7 +3,7 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:abandoned_changeling_hive_tunnel_termination1",
+        "location": "unicopia:changeling_hive/termination1",
         "processors": {
           "processors": []
         },
@@ -14,7 +14,7 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:abandoned_changeling_offshoot_transition",
+        "location": "unicopia:changeling_hive/offshoot_transition",
         "processors": {
           "processors": []
         },
@@ -25,7 +25,40 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:abandoned_changeling_hive_descent1",
+        "location": "unicopia:changeling_hive/descent1",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/spiked/termination1",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/spiked/offshoot_transition",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid"
+      },
+      "weight": 2
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/spiked/descent1",
         "processors": {
           "processors": []
         },

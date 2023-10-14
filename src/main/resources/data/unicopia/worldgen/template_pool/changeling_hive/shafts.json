@@ -3,7 +3,7 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:abandoned_changeling_hive_shaft1",
+        "location": "unicopia:changeling_hive/shaft1",
         "processors": {
           "processors": []
         },
@@ -14,7 +14,7 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:abandoned_changeling_hive_shaft2",
+        "location": "unicopia:changeling_hive/shaft2",
         "processors": {
           "processors": []
         },
@@ -25,13 +25,46 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:abandoned_changeling_hive_shaft_bottom",
+        "location": "unicopia:changeling_hive/shaft_bottom",
         "processors": {
           "processors": []
         },
         "projection": "rigid"
       },
       "weight": 9
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/spiked/shaft1",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/spiked/shaft2",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/spiked/shaft_bottom",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid"
+      },
+      "weight": 3
     }
   ],
   "fallback": "minecraft:empty"

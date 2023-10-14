@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=up": { "model": "unicopia:block/chitin_spikes" },
+    "facing=down": { "model": "unicopia:block/chitin_spikes", "x": 180 },
+    "facing=north": { "model": "unicopia:block/chitin_spikes", "x": 90 },
+    "facing=south": { "model": "unicopia:block/chitin_spikes", "x": -90 },
+    "facing=east": { "model": "unicopia:block/chitin_spikes", "x": 90, "y": 90 },
+    "facing=west": { "model": "unicopia:block/chitin_spikes", "x": 90, "y": -90 }
+  }
+}

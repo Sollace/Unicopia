@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.block;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.minelittlepony.unicopia.Unicopia;
@@ -115,6 +116,7 @@ public interface UBlocks {
 
     Block CHITIN = register("chitin", new SnowyBlock(Settings.create().mapColor(MapColor.PALE_PURPLE).hardness(5).requiresTool().ticksRandomly()), ItemGroups.NATURAL);
     Block SURFACE_CHITIN = register("surface_chitin", new GrowableBlock(Settings.copy(CHITIN), () -> CHITIN), ItemGroups.NATURAL);
+    Block CHITIN_SPIKES = register("chitin_spikes", new SpikesBlock(Settings.copy(CHITIN).noCollision().nonOpaque()), ItemGroups.NATURAL);
     Block CHISELLED_CHITIN = register("chiselled_chitin", new Block(Settings.create().mapColor(MapColor.PALE_PURPLE).hardness(5).requiresTool()), ItemGroups.BUILDING_BLOCKS);
     Block CHISELLED_CHITIN_SLAB = register("chiselled_chitin_slab", new SlabBlock(Settings.copy(CHISELLED_CHITIN)), ItemGroups.BUILDING_BLOCKS);
     Block CHISELLED_CHITIN_STAIRS = register("chiselled_chitin_stairs", new StairsBlock(CHISELLED_CHITIN.getDefaultState(), Settings.copy(CHISELLED_CHITIN)), ItemGroups.BUILDING_BLOCKS);
@@ -155,7 +157,7 @@ public interface UBlocks {
         StrippableBlockRegistry.register(PALM_LOG, STRIPPED_PALM_LOG);
         StrippableBlockRegistry.register(ZAP_WOOD, STRIPPED_ZAP_WOOD);
         StrippableBlockRegistry.register(PALM_WOOD, STRIPPED_PALM_WOOD);
-        TRANSLUCENT_BLOCKS.add(WEATHER_VANE);
+        Collections.addAll(TRANSLUCENT_BLOCKS, WEATHER_VANE, CHITIN_SPIKES);
         TintedBlock.REGISTRY.add(PALM_LEAVES);
 
         FlammableBlockRegistry.getDefaultInstance().add(GREEN_APPLE_LEAVES, 30, 60);
