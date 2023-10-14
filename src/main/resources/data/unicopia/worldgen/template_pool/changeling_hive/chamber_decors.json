@@ -3,36 +3,47 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:changeling_hive/chamber1",
+        "location": "unicopia:changeling_hive/chamber_decoration/nothing",
         "processors": {
           "processors": []
         },
         "projection": "rigid"
       },
-      "weight": 1
+      "weight": 7
     },
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:changeling_hive/spiked/chamber1",
+        "location": "unicopia:changeling_hive/chamber_decoration/pillar",
         "processors": {
           "processors": []
         },
         "projection": "rigid"
       },
-      "weight": 1
+      "weight": 2
     },
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:changeling_hive/spiked/chamber2",
+        "location": "unicopia:changeling_hive/chamber_decoration/spiders",
         "processors": {
           "processors": []
         },
         "projection": "rigid"
       },
-      "weight": 1
+      "weight": 4
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/chamber_decoration/spiked",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid"
+      },
+      "weight": 2
     }
   ],
-  "fallback": "unicopia:hidden_entrance_terminations"
+  "fallback": "minecraft:empty"
 }

@@ -9,6 +9,17 @@
         },
         "projection": "rigid"
       },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/offshoot2",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid"
+      },
       "weight": 3
     },
     {
@@ -47,35 +58,35 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:changeling_hive/chamber2",
-        "processors": {
-          "processors": []
-        },
-        "projection": "rigid"
-      },
-      "weight": 1
-    },
-    {
-      "element": {
-        "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:changeling_hive/chamber3",
-        "processors": {
-          "processors": []
-        },
-        "projection": "rigid"
-      },
-      "weight": 1
-    },
-    {
-      "element": {
-        "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/spiked/offshoot1",
         "processors": {
           "processors": []
         },
         "projection": "rigid"
       },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/spiked/offshoot2",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid"
+      },
       "weight": 3
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/spiked/offshoot3",
+        "processors": {
+          "processors": []
+        },
+        "projection": "rigid"
+      },
+      "weight": 2
     },
     {
       "element": {
@@ -120,18 +131,7 @@
         "projection": "rigid"
       },
       "weight": 1
-    },
-    {
-      "element": {
-        "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:changeling_hive/spiked/chamber3",
-        "processors": {
-          "processors": []
-        },
-        "projection": "rigid"
-      },
-      "weight": 1
     }
   ],
-  "fallback": "minecraft:empty"
+  "fallback": "unicopia:changeling_hive/tunnel_terminations"
 }

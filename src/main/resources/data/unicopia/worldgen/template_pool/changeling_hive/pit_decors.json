@@ -3,7 +3,7 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:changeling_hive/termination1",
+        "location": "unicopia:changeling_hive/pit_decoration/eggs",
         "processors": {
           "processors": []
         },
@@ -14,18 +14,7 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:changeling_hive/offshoot_transition",
-        "processors": {
-          "processors": []
-        },
-        "projection": "rigid"
-      },
-      "weight": 2
-    },
-    {
-      "element": {
-        "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:changeling_hive/descent1",
+        "location": "unicopia:changeling_hive/pit_decoration/lava",
         "processors": {
           "processors": []
         },
@@ -36,7 +25,7 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:changeling_hive/spiked/termination1",
+        "location": "unicopia:changeling_hive/pit_decoration/ruins",
         "processors": {
           "processors": []
         },
@@ -47,18 +36,18 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:changeling_hive/spiked/offshoot_transition",
+        "location": "unicopia:changeling_hive/pit_decoration/spiders",
         "processors": {
           "processors": []
         },
         "projection": "rigid"
       },
-      "weight": 2
+      "weight": 1
     },
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:changeling_hive/spiked/descent1",
+        "location": "unicopia:changeling_hive/pit_decoration/spikes",
         "processors": {
           "processors": []
         },
@@ -67,5 +56,5 @@
       "weight": 1
     }
   ],
-  "fallback": "unicopia:changeling_hive/tunnel_terminations"
+  "fallback": "minecraft:empty"
 }
