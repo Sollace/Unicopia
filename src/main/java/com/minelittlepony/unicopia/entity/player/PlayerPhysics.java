@@ -45,7 +45,6 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.*;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
@@ -480,7 +479,6 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     private void playSound(SoundEvent sound, float volume, float pitch) {
-        entity.sendMessage(Text.literal((entity.getWorld().isClient ? "[Client]" : "[Server]") + "Playing " + sound));
         entity.getWorld().playSoundFromEntity(entity, entity, sound, SoundCategory.PLAYERS, volume, pitch);
     }
 
@@ -647,10 +645,6 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         thrustScale *= 0.2889F;
 
         boolean hovering = entity.getVelocity().horizontalLength() < 0.1;
-
-        if (!entity.getWorld().isClient) {
-            entity.sendMessage(Text.literal("Jumping:" + pony.getJumpingHeuristic().getState()));
-        }
 
         if (lastFlightType == FlightType.INSECTOID) {
             descentRate = pony.getJumpingHeuristic().getState() ? -0.5F : 0;
