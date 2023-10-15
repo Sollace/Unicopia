@@ -60,7 +60,7 @@ public class SpikesBlock extends OrientedBlock {
         Direction facing = state.get(FACING);
         pos = pos.offset(facing.getOpposite());
         state = world.getBlockState(pos);
-        return state.isReplaceable() || state.isSideSolid(world, pos, facing, SideShapeType.FULL);
+        return state.isReplaceable() || state.isSideSolid(world, pos, facing, SideShapeType.FULL) || state.isOf(Blocks.HONEY_BLOCK);
     }
 
     @Override
@@ -72,8 +72,7 @@ public class SpikesBlock extends OrientedBlock {
     @Deprecated
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        if (direction == state.get(FACING).getOpposite() && !neighborState.isSideSolid(world, neighborPos, direction, SideShapeType.FULL)) {
-
+        if (direction == state.get(FACING).getOpposite() && !canPlaceAt(state, world, pos)) {
             if (!(neighborState.isOf(Blocks.STICKY_PISTON)
                     || neighborState.isOf(Blocks.PISTON)
                     || neighborState.isOf(Blocks.PISTON_HEAD)
