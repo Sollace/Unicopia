@@ -208,6 +208,7 @@
   
   "block.unicopia.surface_chitin": "Surface Chitin",
   "block.unicopia.chitin": "Chitin",
+  "block.unicopia.chitin_spikes": "Chitin Spikes",
   "block.unicopia.chiselled_chitin": "Chiselled Chitin",
   "block.unicopia.chiselled_chitin_hull": "Chiselled Chitin Hull",
   "block.unicopia.chiselled_chitin_slab": "Chiselled Chitin Slab",
@@ -889,6 +890,7 @@
   "unicopia.subtitle.item.alicorn_amulet.ambient": "Alicorn Amulet ambient",
   "unicopia.subtitle.item.apple.rot": "Apple rots",
   "unicopia.subtitle.item.bracelet.sign": "Bracelet signed",
+  "unicopia.subtitle.block.chitin.ambience": "Scuttering",
   "unicopia.subtitle.spell.cast.fail": "Spellcast fails",
   "unicopia.subtitle.spell.cast.success": "Spell casts",
   "unicopia.subtitle.spell.cast.shoot": "Unicorn shoots",

@@ -1,0 +1,6 @@
+{
+    "parent": "minecraft:block/crop",
+    "textures": {
+        "crop": "unicopia:block/chitin_spikes"
+    }
+}

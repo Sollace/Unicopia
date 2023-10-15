@@ -415,6 +415,23 @@
     "subtitle": "unicopia.subtitle.item.bracelet.sign"
   },
   
+  "block.chitin.ambience": {
+    "sounds": [
+      "unicopia:insect/insect_1",
+      "unicopia:insect/insect_21",
+      "unicopia:insect/insect_22",
+      "unicopia:insect/insect_23",
+      "unicopia:insect/insect_24",
+      "unicopia:insect/insect_25",
+      "unicopia:insect/insect_31",
+      "unicopia:insect/insect_32",
+      "unicopia:insect/insect_33",
+      "unicopia:insect/insect_34",
+      "unicopia:insect/insect_35"
+    ],
+    "subtitle": "unicopia.subtitle.block.chitin.ambience"
+  },
+
   "spell.cast.fail": {
     "sounds": [
       "random/break"

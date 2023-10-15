@@ -1,0 +1,7 @@
+{
+    "parent": "block/door_top_rh",
+    "textures": {
+	    "bottom": "unicopia:blocks/door_mist_lower",
+	    "top": "unicopia:blocks/door_mist_upper"
+    }
+}
