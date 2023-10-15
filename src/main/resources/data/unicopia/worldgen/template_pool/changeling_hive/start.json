@@ -7,12 +7,21 @@
         "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
-      "weight": 1
+      "weight": 3
     },
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/spiked/entrance",
+        "processors": "unicopia:changeling_hive_decay",
+        "projection": "rigid"
+      },
+      "weight": 3
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/slimey/entrance",
         "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },

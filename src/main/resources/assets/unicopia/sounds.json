@@ -431,6 +431,12 @@
     ],
     "subtitle": "unicopia.subtitle.block.chitin.ambience"
   },
+  "block.slime_pustule.pop": {
+    "sounds": [
+      "unicopia:pustule/pop"
+    ],
+    "subtitle": "unicopia.subtitle.block.slime_pustule.pop"
+  },
 
   "spell.cast.fail": {
     "sounds": [

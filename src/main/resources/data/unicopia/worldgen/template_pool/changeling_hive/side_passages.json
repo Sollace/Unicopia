@@ -107,6 +107,60 @@
         "projection": "rigid"
       },
       "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/slimey/offshoot2",
+        "processors": "unicopia:changeling_hive_decay",
+        "projection": "rigid"
+      },
+      "weight": 3
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/slimey/offshoot3",
+        "processors": "unicopia:changeling_hive_decay",
+        "projection": "rigid"
+      },
+      "weight": 2
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/slimey/offshoot_elbow",
+        "processors": "unicopia:changeling_hive_decay",
+        "projection": "rigid"
+      },
+      "weight": 2
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/slimey/offshoot_elbow2",
+        "processors": "unicopia:changeling_hive_decay",
+        "projection": "rigid"
+      },
+      "weight": 2
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/slimey/chamber1",
+        "processors": "unicopia:changeling_hive_decay",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/slimey/chamber2",
+        "processors": "unicopia:changeling_hive_decay",
+        "projection": "rigid"
+      },
+      "weight": 1
     }
   ],
   "fallback": "unicopia:changeling_hive/tunnel_terminations"

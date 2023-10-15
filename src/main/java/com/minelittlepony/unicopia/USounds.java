@@ -97,6 +97,7 @@ public interface USounds {
     SoundEvent ITEM_MAGIC_AURA = register("item.magic.aura");
 
     SoundEvent BLOCK_CHITIN_AMBIENCE = register("block.chitin.ambience");
+    SoundEvent BLOCK_SLIME_PUSTULE_POP = register("block.slime_pustule.pop");
 
     SoundEvent BLOCK_WEATHER_VANE_ROTATE = BLOCK_LANTERN_STEP;
     SoundEvent BLOCK_PIE_SLICE = BLOCK_BEEHIVE_SHEAR;

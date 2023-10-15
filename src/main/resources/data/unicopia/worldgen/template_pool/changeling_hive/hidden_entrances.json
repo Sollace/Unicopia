@@ -26,6 +26,24 @@
         "projection": "rigid"
       },
       "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/slimey/chamber1",
+        "processors": "unicopia:changeling_hive_decay",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/slimey/chamber2",
+        "processors": "unicopia:changeling_hive_decay",
+        "projection": "rigid"
+      },
+      "weight": 1
     }
   ],
   "fallback": "unicopia:changeling_hive/hidden_entrance_terminations"
