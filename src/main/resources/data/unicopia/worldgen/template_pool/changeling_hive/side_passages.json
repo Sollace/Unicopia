@@ -4,9 +4,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/offshoot1",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 1
@@ -15,9 +13,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/offshoot2",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 3
@@ -26,9 +22,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/offshoot_elbow",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 2
@@ -37,9 +31,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/offshoot_elbow2",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 2
@@ -48,9 +40,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/chamber1",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 1
@@ -59,9 +49,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/spiked/offshoot1",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 1
@@ -70,9 +58,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/spiked/offshoot2",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 3
@@ -81,9 +67,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/spiked/offshoot3",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 2
@@ -92,9 +76,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/spiked/offshoot_elbow",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 2
@@ -103,9 +85,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/spiked/offshoot_elbow2",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 2
@@ -114,9 +94,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/spiked/chamber1",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 1
@@ -125,9 +103,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/spiked/chamber2",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 1

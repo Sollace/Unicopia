@@ -15,9 +15,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/chamber_decoration/pillar",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 2

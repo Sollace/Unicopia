@@ -26,9 +26,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/pit_decoration/ruins",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 1

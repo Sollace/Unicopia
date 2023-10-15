@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " # ",
+    "#o#",
+    " # "
+  ],
+  "key": {
+    "#": [
+      { "item": "unicopia:chitin" }
+    ],
+    "o": [
+      { "item": "unicopia:mysterious_egg" }
+    ]
+  },
+  "result": { "item": "unicopia:hive", "count": 1 }
+}

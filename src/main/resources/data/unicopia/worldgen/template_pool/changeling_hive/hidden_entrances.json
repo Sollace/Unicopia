@@ -4,9 +4,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/chamber1",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 1
@@ -15,9 +13,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/spiked/chamber1",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 1
@@ -26,13 +22,11 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/spiked/chamber2",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 1
     }
   ],
-  "fallback": "unicopia:hidden_entrance_terminations"
+  "fallback": "unicopia:changeling_hive/hidden_entrance_terminations"
 }
