@@ -334,7 +334,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
         if (isBeingCarried()) {
             Pony carrier = Pony.of(entity.getVehicle()).orElse(null);
-            if (!Abilities.CARRY.canUse(carrier.getCompositeRace())) {
+            if (!Abilities.CARRY.canUse(carrier.getCompositeRace()) && !Abilities.HUG.canUse(carrier.getCompositeRace())) {
                 entity.stopRiding();
                 entity.refreshPositionAfterTeleport(carrier.getOriginVector());
                 Living.transmitPassengers(carrier.asEntity());

@@ -16,6 +16,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.TargetSelecter;
 import com.minelittlepony.unicopia.entity.ai.BreakHeartGoal;
 import com.minelittlepony.unicopia.entity.ai.DynamicTargetGoal;
 import com.minelittlepony.unicopia.entity.ai.EatMuffinGoal;
+import com.minelittlepony.unicopia.entity.ai.FleeExplosionGoal;
 import com.minelittlepony.unicopia.entity.ai.WantItTakeItGoal;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 
@@ -151,6 +152,9 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         if (entity instanceof PigEntity pig) {
             eatMuffinGoal = new EatMuffinGoal(pig, targetter);
             goals.add(3, eatMuffinGoal);
+        }
+        if (entity instanceof TameableEntity tameable) {
+            goals.add(3, new FleeExplosionGoal(tameable, 6, 1, 1.2));
         }
 
         initMinionAi(targets);

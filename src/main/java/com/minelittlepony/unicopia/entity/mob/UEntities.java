@@ -45,6 +45,10 @@ public interface UEntities {
     EntityType<FairyEntity> TWITTERMITE = register("twittermite", FabricEntityTypeBuilder.create(SpawnGroup.MISC, FairyEntity::new)
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(0.1F, 0.1F)));
+    EntityType<FriendlyCreeperEntity> FRIENDLY_CREEPER = register("friendly_creeper", FabricEntityTypeBuilder.create(SpawnGroup.MISC, FriendlyCreeperEntity::new)
+            .trackRangeBlocks(8)
+            .dimensions(EntityDimensions.fixed(0.6f, 1.7f))
+    );
     EntityType<SpellbookEntity> SPELLBOOK = register("spellbook", FabricEntityTypeBuilder.create(SpawnGroup.MISC, SpellbookEntity::new)
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(0.9F, 0.5F)));
@@ -72,6 +76,7 @@ public interface UEntities {
         FabricDefaultAttributeRegistry.register(TWITTERMITE, FairyEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(AIR_BALLOON, FlyingEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(SOMBRA, SombraEntity.createMobAttributes());
+        FabricDefaultAttributeRegistry.register(FRIENDLY_CREEPER, FriendlyCreeperEntity.createCreeperAttributes());
 
         if (!Unicopia.getConfig().disableButterflySpawning.get()) {
             final Predicate<BiomeSelectionContext> butterflySpawnable = BiomeSelectors.foundInOverworld()
