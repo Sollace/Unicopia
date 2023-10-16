@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EntityConvertable;
+import com.minelittlepony.unicopia.EquineContext;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
@@ -13,16 +14,10 @@ import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.entity.Entity;
 
-public interface Equine<T extends Entity> extends NbtSerialisable, Tickable, ProjectileImpactListener, EntityConvertable<T> {
+public interface Equine<T extends Entity> extends NbtSerialisable, Tickable, ProjectileImpactListener, EntityConvertable<T>, EquineContext {
     Physics getPhysics();
 
-    Race getSpecies();
-
     void setSpecies(Race race);
-
-    default Race.Composite getCompositeRace() {
-        return getSpecies().composite();
-    }
 
     /**
      * Called at the beginning of an update cycle.

@@ -1,0 +1,20 @@
+{
+	"textures": {
+		"all": "unicopia:block/hive_side",
+		"particle": "unicopia:block/hive_side"
+	},
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 16, 2],
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#all"},
+				"east": {"uv": [14, 0, 16, 16], "texture": "#all"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#all"},
+				"west": {"uv": [0, 0, 2, 16], "texture": "#all"},
+				"up": {"uv": [16, 2, 0, 0], "texture": "#all"},
+				"down": {"uv": [16, 14, 0, 16], "texture": "#all"}
+			}
+		}
+	]
+}

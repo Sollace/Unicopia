@@ -4,9 +4,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/termination/shaft1",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_decay",
         "projection": "rigid"
       },
       "weight": 1

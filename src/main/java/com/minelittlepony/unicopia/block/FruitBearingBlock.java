@@ -113,13 +113,6 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        BlockState newState = super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
-
-        return newState;
-    }
-
-    @Override
     public List<ItemStack> onBucked(ServerWorld world, BlockState state, BlockPos pos) {
         world.setBlockState(pos, state.with(STAGE, Stage.IDLE).with(AGE, 0));
 

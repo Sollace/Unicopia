@@ -8,11 +8,13 @@ import net.minecraft.block.SideShapeType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
@@ -58,7 +60,7 @@ public class SpikesBlock extends OrientedBlock {
         Direction facing = state.get(FACING);
         pos = pos.offset(facing.getOpposite());
         state = world.getBlockState(pos);
-        return state.isReplaceable() || state.isSideSolid(world, pos, facing, SideShapeType.FULL);
+        return state.isReplaceable() || state.isSideSolid(world, pos, facing, SideShapeType.FULL) || state.isOf(Blocks.HONEY_BLOCK);
     }
 
     @Override
@@ -70,8 +72,7 @@ public class SpikesBlock extends OrientedBlock {
     @Deprecated
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        if (direction == state.get(FACING).getOpposite() && !neighborState.isSideSolid(world, neighborPos, direction, SideShapeType.FULL)) {
-
+        if (direction == state.get(FACING).getOpposite() && !canPlaceAt(state, world, pos)) {
             if (!(neighborState.isOf(Blocks.STICKY_PISTON)
                     || neighborState.isOf(Blocks.PISTON)
                     || neighborState.isOf(Blocks.PISTON_HEAD)
@@ -81,5 +82,10 @@ public class SpikesBlock extends OrientedBlock {
             }
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+    }
+
+    @Override
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+        return false;
     }
 }

@@ -96,5 +96,4 @@ public class PileBlock extends Block implements Waterloggable {
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
-
 }
