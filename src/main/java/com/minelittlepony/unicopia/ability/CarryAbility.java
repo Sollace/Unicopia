@@ -74,6 +74,18 @@ public class CarryAbility implements Ability<Hit> {
         PlayerEntity player = iplayer.asEntity();
         LivingEntity rider = findRider(player, iplayer.asWorld());
 
+        dropAllPassengers(player);
+
+        if (rider != null) {
+            rider.startRiding(player, true);
+            Living.getOrEmpty(rider).ifPresent(living -> living.setCarrier(player));
+        }
+
+        Living.transmitPassengers(player);
+        return true;
+    }
+
+    protected void dropAllPassengers(PlayerEntity player) {
         if (player.hasPassengers()) {
             List<Entity> passengers = StreamSupport.stream(player.getPassengersDeep().spliterator(), false).toList();
             player.removeAllPassengers();
@@ -85,14 +97,6 @@ public class CarryAbility implements Ability<Hit> {
                 }
             }
         }
-
-        if (rider != null) {
-            rider.startRiding(player, true);
-            Living.getOrEmpty(rider).ifPresent(living -> living.setCarrier(player));
-        }
-
-        Living.transmitPassengers(player);
-        return true;
     }
 
     @Override

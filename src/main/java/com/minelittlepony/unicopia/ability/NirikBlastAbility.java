@@ -10,20 +10,17 @@ import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation.Recipient;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import net.minecraft.block.BlockState;
+import com.minelittlepony.unicopia.util.ExplosionUtil;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World.ExplosionSourceType;
-import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.explosion.ExplosionBehavior;
 
 /**
  * Kirin ability to transform into a nirik
@@ -63,12 +60,7 @@ public class NirikBlastAbility implements Ability<Hit> {
     @Override
     public boolean apply(Pony player, Hit data) {
 
-        player.asWorld().createExplosion(player.asEntity(), player.damageOf(DamageTypes.FIREBALL), new ExplosionBehavior(){
-            @Override
-            public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {
-                return false;
-            }
-        }, player.getOriginVector(), 5, true, ExplosionSourceType.MOB);
+        player.asWorld().createExplosion(player.asEntity(), player.damageOf(DamageTypes.FIREBALL), ExplosionUtil.NON_DESTRUCTIVE, player.getOriginVector(), 5, true, ExplosionSourceType.MOB);
         player.setInvulnerabilityTicks(5);
 
         player.setAnimation(Animation.ARMS_UP, Recipient.ANYONE, 12);
