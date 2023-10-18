@@ -4,14 +4,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.TransparentBlock;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,7 +26,7 @@ import net.minecraft.world.World;
 
 public class CloudBlock extends TransparentBlock {
 
-    private final boolean meltable;
+    protected final boolean meltable;
 
     public CloudBlock(Settings settings, boolean meltable) {
         super((meltable ? settings.ticksRandomly() : settings).nonOpaque());
@@ -43,10 +40,6 @@ public class CloudBlock extends TransparentBlock {
         if (bounce) {
             entity.addVelocity(0, 0.2F, 0);
         }
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(),
-                UBlocks.MYSTERIOUS_EGG, UBlocks.SLIME_PUSTULE,
-                UBlocks.CLOUD, UBlocks.DENSE_CLOUD, UBlocks.CLOUD_PILLAR
-        );
     }
 
     @Override
@@ -150,9 +143,11 @@ public class CloudBlock extends TransparentBlock {
 
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (meltable && world.getLightLevel(LightType.BLOCK, pos) > 11) {
-            dropStacks(state, world, pos);
-            world.removeBlock(pos, false);
+        if (meltable) {
+            if (world.getLightLevel(LightType.BLOCK, pos) > 11) {
+                dropStacks(state, world, pos);
+                world.removeBlock(pos, false);
+            }
         }
     }
 }

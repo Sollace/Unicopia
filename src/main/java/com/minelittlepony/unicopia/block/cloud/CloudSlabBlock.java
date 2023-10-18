@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.block.cloud;
 
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
@@ -24,8 +26,8 @@ public class CloudSlabBlock extends WaterloggableCloudBlock {
     private static final VoxelShape BOTTOM_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
     private static final VoxelShape TOP_SHAPE = Block.createCuboidShape(0.0, 8.0, 0.0, 16.0, 16.0, 16.0);
 
-    public CloudSlabBlock(Settings settings, boolean meltable) {
-        super(settings, meltable);
+    public CloudSlabBlock(Settings settings, boolean meltable, @Nullable Supplier<Soakable> soggyBlock) {
+        super(settings, meltable, soggyBlock);
     }
 
     @Override

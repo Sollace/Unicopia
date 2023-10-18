@@ -5,9 +5,12 @@ import java.util.Collections;
 import java.util.List;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.block.cloud.CloudBlock;
 import com.minelittlepony.unicopia.block.cloud.CloudPillarBlock;
 import com.minelittlepony.unicopia.block.cloud.CloudSlabBlock;
+import com.minelittlepony.unicopia.block.cloud.PoreousCloudBlock;
+import com.minelittlepony.unicopia.block.cloud.CloudBlock;
+import com.minelittlepony.unicopia.block.cloud.SoggyCloudBlock;
+import com.minelittlepony.unicopia.block.cloud.SoggyCloudSlabBlock;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.server.world.UTreeGen;
@@ -128,11 +131,13 @@ public interface UBlocks {
     Block MYSTERIOUS_EGG = register("mysterious_egg", new PileBlock(Settings.copy(Blocks.SLIME_BLOCK), PileBlock.MYSTERIOUS_EGG_SHAPES), ItemGroups.NATURAL);
     Block SLIME_PUSTULE = register("slime_pustule", new SlimePustuleBlock(Settings.copy(Blocks.SLIME_BLOCK)), ItemGroups.NATURAL);
 
-    Block CLOUD = register("cloud", new CloudBlock(Settings.create().mapColor(MapColor.OFF_WHITE).replaceable().hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL), true));
-    Block CLOUD_SLAB = register("cloud_slab", new CloudSlabBlock(Settings.copy(CLOUD), true));
-    Block DENSE_CLOUD = register("dense_cloud", new CloudBlock(Settings.create().mapColor(MapColor.GRAY).replaceable().hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL), false));
-    Block DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudSlabBlock(Settings.copy(DENSE_CLOUD), false));
-    Block CLOUD_PILLAR = register("cloud_pillar", new CloudPillarBlock(Settings.create().mapColor(MapColor.GRAY).replaceable().hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL)));
+    Block CLOUD = register("cloud", new PoreousCloudBlock(Settings.create().mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL), true, () -> UBlocks.SOGGY_CLOUD));
+    Block CLOUD_SLAB = register("cloud_slab", new CloudSlabBlock(Settings.copy(CLOUD), true, () -> UBlocks.SOGGY_CLOUD_SLAB));
+    SoggyCloudBlock SOGGY_CLOUD = register("soggy_cloud", new SoggyCloudBlock(Settings.copy(CLOUD), () -> UBlocks.CLOUD));
+    SoggyCloudSlabBlock SOGGY_CLOUD_SLAB = register("soggy_cloud_slab", new SoggyCloudSlabBlock(Settings.copy(CLOUD), () -> UBlocks.CLOUD_SLAB));
+    Block DENSE_CLOUD = register("dense_cloud", new CloudBlock(Settings.create().mapColor(MapColor.GRAY).hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL), false));
+    Block DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudSlabBlock(Settings.copy(DENSE_CLOUD), false, null));
+    Block CLOUD_PILLAR = register("cloud_pillar", new CloudPillarBlock(Settings.create().mapColor(MapColor.GRAY).hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL)));
 
     SegmentedCropBlock OATS = register("oats", SegmentedCropBlock.create(11, 5, AbstractBlock.Settings.copy(Blocks.WHEAT), () -> UItems.OAT_SEEDS, null, null));
     SegmentedCropBlock OATS_STEM = register("oats_stem", OATS.createNext(5));

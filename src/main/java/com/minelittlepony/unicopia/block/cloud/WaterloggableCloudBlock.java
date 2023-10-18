@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.block.cloud;
 
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
@@ -20,11 +22,12 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
-public class WaterloggableCloudBlock extends CloudBlock implements Waterloggable {
+public class WaterloggableCloudBlock extends PoreousCloudBlock implements Waterloggable {
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 
-    public WaterloggableCloudBlock(Settings settings, boolean meltable) {
-        super(settings, meltable);
+    public WaterloggableCloudBlock(Settings settings, boolean meltable, @Nullable Supplier<Soakable> soggyBlock) {
+        super(settings, meltable, soggyBlock);
+        setDefaultState(getDefaultState().with(WATERLOGGED, false));
     }
 
     @Override

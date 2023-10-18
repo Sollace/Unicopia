@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.item.cloud;
 
-import com.minelittlepony.unicopia.block.cloud.CloudBlock;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,6 +14,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class CloudBlockItem
@@ -26,22 +25,17 @@ extends BlockItem {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        BlockState state = context.getWorld().getBlockState(context.getBlockPos());
-
-        if (state.getBlock() instanceof CloudBlock) {
-            return super.useOnBlock(context);
-        }
-
-        return ActionResult.PASS;
+        return super.useOnBlock(context);
     }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 
+        Vec3d targetPos = user.getEyePos().add(user.getRotationVec(1).multiply(1, 1.5, 1).normalize().multiply(2));
         ItemPlacementContext context = new ItemPlacementContext(user, hand, user.getStackInHand(hand), new BlockHitResult(
-            user.getEyePos(),
+            targetPos,
             Direction.UP,
-            BlockPos.ofFloored(user.getEyePos()),
+            BlockPos.ofFloored(targetPos),
             true
         ));
 
