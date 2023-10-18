@@ -15,12 +15,10 @@ public class DiskParticle extends SphereParticle {
     private final Quaternionf rotation = new Quaternionf(0, 0, 0, 1);
 
     public DiskParticle(SphereParticleEffect effect, ClientWorld w, double x, double y, double z, double rX, double rY, double rZ) {
-        super(effect, w, x, y, z, 0, 0, 0);
+        super(effect.withOffset(new Vec3d(0, 0.25, 0)), w, x, y, z, 0, 0, 0);
 
-        rotation.mul(RotationAxis.POSITIVE_Y.rotationDegrees((float)effect.getOffset().y));
-        rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(180 - (float)effect.getOffset().x));
-
-        effect.setOffset(new Vec3d(0, 0.25, 0));
+        rotation.mul(RotationAxis.POSITIVE_Y.rotationDegrees((float)effect.offset().y));
+        rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(180 - (float)effect.offset().x));
     }
 
     @Override

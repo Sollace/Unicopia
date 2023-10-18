@@ -65,7 +65,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
                 ParticleEffect effect = teleportationTarget.getTarget()
                         .map(target -> {
                             getType();
-                            return new FollowingParticleEffect(UParticles.HEALTH_DRAIN, target.pos(), 0.2F).withChild(ParticleTypes.ELECTRIC_SPARK);
+                            return (ParticleEffect)new FollowingParticleEffect(UParticles.HEALTH_DRAIN, target.pos(), 0.2F).withChild(ParticleTypes.ELECTRIC_SPARK);
                         })
                         .orElse(ParticleTypes.ELECTRIC_SPARK);
 

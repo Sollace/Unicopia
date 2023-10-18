@@ -10,8 +10,8 @@ import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.group.MultiItem;
 import com.minelittlepony.unicopia.item.toxin.*;
+import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
-import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 
@@ -67,7 +67,7 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder, Mu
         }
 
         player.emitGameEvent(GameEvent.LIGHTNING_STRIKE);
-        ParticleUtils.spawnParticle(w, UParticles.LIGHTNING_BOLT, player.getPos(), Vec3d.ZERO);
+        ParticleUtils.spawnParticle(w, LightningBoltParticleEffect.DEFAULT, player.getPos(), Vec3d.ZERO);
 
         return stack;
     }

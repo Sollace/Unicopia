@@ -7,8 +7,8 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.ZapAppleLeavesBlock;
+import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
-import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.block.BlockState;
@@ -97,7 +97,7 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
 
     public void triggerLightningStrike(BlockPos pos) {
         world.emitGameEvent(GameEvent.LIGHTNING_STRIKE, pos, GameEvent.Emitter.of(world.getBlockState(pos)));
-        ParticleUtils.spawnParticle(world, UParticles.LIGHTNING_BOLT, Vec3d.ofCenter(pos), Vec3d.ZERO);
+        ParticleUtils.spawnParticle(world, LightningBoltParticleEffect.DEFAULT, Vec3d.ofCenter(pos), Vec3d.ZERO);
 
         if (nextLightningEvent <= 0) {
             StreamSupport.stream(BlockPos.iterateRandomly(world.random, 20, pos, 10).spliterator(), false)

@@ -15,26 +15,24 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.registry.Registries;
 
-public class SphereParticleEffect implements ParticleEffect {
+public record SphereParticleEffect (
+        ParticleType<? extends SphereParticleEffect> type,
+        Vector3f color,
+        float alpha,
+        float radius,
+        Vec3d offset
+    ) implements ParticleEffect {
     @SuppressWarnings("deprecation")
     public static final Factory<SphereParticleEffect> FACTORY = ParticleFactoryHelper.of(SphereParticleEffect::new, SphereParticleEffect::new);
 
     private static final Vec3d DEFAULT_OFFSET = new Vec3d(0, 0.5, 0);
-
-    private final Vector3f color;
-    private final float alpha;
-    private final float radius;
-
-    private Vec3d offset = Vec3d.ZERO;
-
-    private final ParticleType<? extends SphereParticleEffect> type;
 
     protected SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, StringReader reader) throws CommandSyntaxException {
         this(type, AbstractDustParticleEffect.readColor(reader), ParticleFactoryHelper.readFloat(reader), ParticleFactoryHelper.readFloat(reader), ParticleFactoryHelper.readVector(reader));
     }
 
     protected SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, PacketByteBuf buf) {
-        this(type, AbstractDustParticleEffect.readColor(buf), buf.readFloat(), buf.readFloat());
+        this(type, buf.readVector3f(), buf.readFloat(), buf.readFloat(), ParticleFactoryHelper.readVector(buf));
     }
 
     public SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, int tint, float alpha, float rad) {
@@ -49,32 +47,8 @@ public class SphereParticleEffect implements ParticleEffect {
         this(type, new Vector3f(Color.r(tint) * 255, Color.g(tint) * 255, Color.b(tint) * 255), alpha, rad, offset);
     }
 
-    public SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, Vector3f color, float alpha, float rad, Vec3d offset) {
-        this.type = type;
-        this.color = color;
-        this.offset = offset;
-        this.alpha = alpha;
-        this.radius = rad;
-    }
-
-    public Vec3d getOffset() {
-        return offset;
-    }
-
-    public void setOffset(Vec3d offset) {
-        this.offset = offset;
-    }
-
-    public Vector3f getColor() {
-        return color;
-    }
-
-    public float getAlpha() {
-        return alpha;
-    }
-
-    public float getRadius() {
-        return radius;
+    public SphereParticleEffect withOffset(Vec3d offset) {
+        return new SphereParticleEffect(type, color, alpha, radius, offset);
     }
 
     @Override
@@ -84,14 +58,10 @@ public class SphereParticleEffect implements ParticleEffect {
 
     @Override
     public void write(PacketByteBuf buf) {
-        buf.writeFloat(color.x);
-        buf.writeFloat(color.y);
-        buf.writeFloat(color.z);
+        buf.writeVector3f(color);
         buf.writeFloat(alpha);
         buf.writeFloat(radius);
-        buf.writeDouble(offset.getX());
-        buf.writeDouble(offset.getY());
-        buf.writeDouble(offset.getZ());
+        ParticleFactoryHelper.writeVector(buf, offset);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemImpl;
+import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
@@ -128,7 +129,7 @@ public class JarItem extends ProjectileItem implements ItemImpl.GroundTickCallba
         }
 
         if (lightning) {
-            ParticleUtils.spawnParticle(projectile.getWorld(), UParticles.LIGHTNING_BOLT, projectile.getPos(), Vec3d.ZERO);
+            ParticleUtils.spawnParticle(projectile.getWorld(), LightningBoltParticleEffect.DEFAULT, projectile.getPos(), Vec3d.ZERO);
         }
 
         if (rain || thunder) {

@@ -6,6 +6,7 @@ import java.util.List;
 import org.joml.Vector3f;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
@@ -14,7 +15,6 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -23,8 +23,11 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
 
     private final List<List<Vector3f>> branches = new ArrayList<>();
 
-    public LightningBoltParticle(DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+    private final LightningBoltParticleEffect effect;
+
+    public LightningBoltParticle(LightningBoltParticleEffect effect, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
+        this.effect = effect;
     }
 
     @Override
@@ -34,7 +37,7 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
             return;
         }
 
-        if (age % 5 == 0) {
+        if (age % effect.changeFrequency() == 0) {
             branches.clear();
         }
         if (branches.isEmpty()) {
@@ -44,7 +47,9 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
                 branches.add(generateBranch());
             }
 
-            world.playSound(x, y, z, USounds.Vanilla.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000, 8, true);
+            if (!effect.silent()) {
+                world.playSound(x, y, z, USounds.Vanilla.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000, 8, true);
+            }
         }
 
         world.setLightningTicksLeft(2);

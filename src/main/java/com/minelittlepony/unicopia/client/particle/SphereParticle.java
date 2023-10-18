@@ -51,11 +51,11 @@ public class SphereParticle extends Particle implements Attachment {
     public SphereParticle(SphereParticleEffect parameters, ClientWorld w, double x, double y, double z) {
         super(w, x, y, z);
         this.parameters = parameters;
-        this.radius = parameters.getRadius();
-        this.red = parameters.getColor().x / 255F;
-        this.green = parameters.getColor().y / 255F;
-        this.blue = parameters.getColor().z / 255F;
-        this.alpha = parameters.getAlpha();
+        this.radius = parameters.radius();
+        this.red = parameters.color().x / 255F;
+        this.green = parameters.color().y / 255F;
+        this.blue = parameters.color().z / 255F;
+        this.alpha = parameters.alpha();
 
         setMaxAge(10);
     }
@@ -109,7 +109,7 @@ public class SphereParticle extends Particle implements Attachment {
         if (link.isPresent()) {
             link.flatMap(Link::get).map(EntityConvertable::asEntity).ifPresentOrElse(e -> {
                 if (!bound) {
-                    Vec3d offset = parameters.getOffset();
+                    Vec3d offset = parameters.offset();
                     setPos(e.getX() + offset.getX(), e.getY() + offset.getY(), e.getZ() + offset.getZ());
 
                     prevPosX = e.lastRenderX + offset.getX();

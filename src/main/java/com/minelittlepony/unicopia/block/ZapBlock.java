@@ -1,9 +1,8 @@
 package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
-import com.minelittlepony.unicopia.particle.UParticles;
-
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -79,6 +78,6 @@ public class ZapBlock extends Block {
             });
         }
         world.emitGameEvent(GameEvent.LIGHTNING_STRIKE, pos, GameEvent.Emitter.of(state));
-        ParticleUtils.spawnParticle(world, UParticles.LIGHTNING_BOLT, Vec3d.ofCenter(pos), Vec3d.ZERO);
+        ParticleUtils.spawnParticle(world, LightningBoltParticleEffect.DEFAULT, Vec3d.ofCenter(pos), Vec3d.ZERO);
     }
 }
