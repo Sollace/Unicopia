@@ -17,7 +17,14 @@ public interface EquineContext {
         return getSpecies().composite();
     }
 
+    default float getCloudWalkingStrength() {
+        return 0;
+    }
+
     static EquineContext of(ShapeContext context) {
+        if (context == ShapeContext.absent()) {
+            return Unicopia.SIDE.getPony().map(EquineContext.class::cast).orElse(ABSENT);
+        }
         return context instanceof EquineContext c ? c : ABSENT;
     }
 

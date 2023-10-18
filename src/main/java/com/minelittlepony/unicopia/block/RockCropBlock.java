@@ -1,12 +1,17 @@
 package com.minelittlepony.unicopia.block;
 
+import org.jetbrains.annotations.Nullable;
+
+import com.minelittlepony.unicopia.EquineContext;
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.item.UItems;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -101,5 +106,15 @@ public class RockCropBlock extends CropBlock {
     @Override
     protected ItemConvertible getSeedsItem() {
         return UItems.PEBBLES;
+    }
+
+    @Override
+    @Nullable
+    public final BlockState getPlacementState(ItemPlacementContext context) {
+        if (!EquineContext.of(context).getCompositeRace().any(Race::canUseEarth)) {
+            return null;
+        }
+
+        return super.getPlacementState(context);
     }
 }

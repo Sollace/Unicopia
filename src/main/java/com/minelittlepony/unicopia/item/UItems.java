@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.UWoodTypes;
 import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
+import com.minelittlepony.unicopia.item.cloud.CloudBlockItem;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.item.group.UItemGroups;
@@ -81,7 +82,7 @@ public interface UItems {
     Item PINEAPPLE = register("pineapple", new PineappleItem(new Item.Settings().food(UFoodComponents.BANANA).maxDamage(3)), ItemGroups.FOOD_AND_DRINK);
     Item PINEAPPLE_CROWN = register("pineapple_crown", new AliasedBlockItem(UBlocks.PINEAPPLE, new Item.Settings()), ItemGroups.NATURAL);
 
-    Item PEBBLES = register("pebbles", new RacePredicatedAliasedBlockItem(UBlocks.ROCKS, new Item.Settings(), Race::canUseEarth), ItemGroups.NATURAL);
+    Item PEBBLES = register("pebbles", new AliasedBlockItem(UBlocks.ROCKS, new Item.Settings()), ItemGroups.NATURAL);
     Item ROCK = register("rock", new HeavyProjectileItem(new Item.Settings(), 3), ItemGroups.NATURAL);
     Item WEIRD_ROCK = register("weird_rock", new BluntWeaponItem(new Item.Settings(), ImmutableMultimap.of(
             EntityAttributes.GENERIC_LUCK, new EntityAttributeModifier(BluntWeaponItem.LUCK_MODIFIER_ID, "Weapon modifier", 9, EntityAttributeModifier.Operation.ADDITION)
@@ -142,6 +143,10 @@ public interface UItems {
     Item PALM_BASKET = register("palm_basket", new BasketItem(AirBalloonEntity.BasketType.of(UWoodTypes.PALM_BOAT_TYPE), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
 
     Item GIANT_BALLOON = register("giant_balloon", new HotAirBalloonItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
+
+    Item CLOUD = register("cloud", new CloudBlockItem(UBlocks.CLOUD, new Item.Settings()), ItemGroups.NATURAL);
+    Item DENSE_CLOUD = register("dense_cloud", new CloudBlockItem(UBlocks.DENSE_CLOUD, new Item.Settings()), ItemGroups.NATURAL);
+    Item CLOUD_PILLAR = register("cloud_pillar", new CloudBlockItem(UBlocks.CLOUD_PILLAR, new Item.Settings()), ItemGroups.NATURAL);
 
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new FabricItemSettings()
             .maxCount(1)

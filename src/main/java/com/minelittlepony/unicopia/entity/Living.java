@@ -36,6 +36,8 @@ import com.minelittlepony.unicopia.util.*;
 
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -546,6 +548,14 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         getSpellSlot().get(SpellPredicate.IS_DISGUISE, false).ifPresent(spell -> {
             spell.getDisguise().onImpact(this, distance, damageMultiplier, cause);
         });
+    }
+
+    @Override
+    public float getCloudWalkingStrength() {
+        Enchantment featherFalling = net.minecraft.enchantment.Enchantments.FEATHER_FALLING;
+        int maxLevel = featherFalling.getMaxLevel();
+        int level = EnchantmentHelper.getEquipmentLevel(featherFalling, entity);
+        return MathHelper.clamp(level / (float)maxLevel, 0, 1);
     }
 
     @Override
