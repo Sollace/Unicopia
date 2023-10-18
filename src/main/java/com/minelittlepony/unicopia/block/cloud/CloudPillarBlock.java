@@ -41,7 +41,7 @@ public class CloudPillarBlock extends CloudBlock {
     // [1,0] [1,1]
 
     public CloudPillarBlock(Settings settings) {
-        super(settings);
+        super(settings, false);
         setDefaultState(getDefaultState().with(NORTH, true).with(SOUTH, true));
     }
 

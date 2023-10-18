@@ -218,8 +218,10 @@
   "block.unicopia.chiselled_chitin_stairs": "Chiselled Chitin Stairs",
   
   "block.unicopia.cloud": "Cloud",
+  "block.unicopia.cloud_slab": "Cloud Slab",
   "block.unicopia.cloud_pillar": "Cloud Pillar",
   "block.unicopia.dense_cloud": "Dense Cloud",
+  "block.unicopia.dense_cloud_slab": "Dense Cloud Slab",
 
   "block.unicopia.oats": "Oats",
   "block.unicopia.oats_stem": "Oats",

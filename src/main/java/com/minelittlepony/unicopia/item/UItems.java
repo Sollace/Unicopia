@@ -145,7 +145,9 @@ public interface UItems {
     Item GIANT_BALLOON = register("giant_balloon", new HotAirBalloonItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
 
     Item CLOUD = register("cloud", new CloudBlockItem(UBlocks.CLOUD, new Item.Settings()), ItemGroups.NATURAL);
+    Item CLOUD_SLAB = register("cloud_slab", new CloudBlockItem(UBlocks.CLOUD_SLAB, new Item.Settings()), ItemGroups.NATURAL);
     Item DENSE_CLOUD = register("dense_cloud", new CloudBlockItem(UBlocks.DENSE_CLOUD, new Item.Settings()), ItemGroups.NATURAL);
+    Item DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudBlockItem(UBlocks.DENSE_CLOUD_SLAB, new Item.Settings()), ItemGroups.NATURAL);
     Item CLOUD_PILLAR = register("cloud_pillar", new CloudBlockItem(UBlocks.CLOUD_PILLAR, new Item.Settings()), ItemGroups.NATURAL);
 
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new FabricItemSettings()

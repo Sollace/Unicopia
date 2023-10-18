@@ -174,7 +174,8 @@ public interface URenderers {
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), UBlocks.TRANSLUCENT_BLOCKS.stream().toArray(Block[]::new));
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(),
                 UBlocks.MYSTERIOUS_EGG, UBlocks.SLIME_PUSTULE,
-                UBlocks.CLOUD, UBlocks.DENSE_CLOUD, UBlocks.CLOUD_PILLAR
+                UBlocks.CLOUD, UBlocks.DENSE_CLOUD, UBlocks.CLOUD_PILLAR,
+                UBlocks.CLOUD_SLAB, UBlocks.DENSE_CLOUD_SLAB
         );
         // for lava boats
         BlockRenderLayerMap.INSTANCE.putFluids(RenderLayer.getTranslucent(), Fluids.LAVA, Fluids.FLOWING_LAVA);

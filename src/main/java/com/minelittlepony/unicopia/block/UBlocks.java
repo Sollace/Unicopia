@@ -7,6 +7,7 @@ import java.util.List;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.cloud.CloudBlock;
 import com.minelittlepony.unicopia.block.cloud.CloudPillarBlock;
+import com.minelittlepony.unicopia.block.cloud.CloudSlabBlock;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.server.world.UTreeGen;
@@ -127,8 +128,10 @@ public interface UBlocks {
     Block MYSTERIOUS_EGG = register("mysterious_egg", new PileBlock(Settings.copy(Blocks.SLIME_BLOCK), PileBlock.MYSTERIOUS_EGG_SHAPES), ItemGroups.NATURAL);
     Block SLIME_PUSTULE = register("slime_pustule", new SlimePustuleBlock(Settings.copy(Blocks.SLIME_BLOCK)), ItemGroups.NATURAL);
 
-    Block CLOUD = register("cloud", new CloudBlock(Settings.create().mapColor(MapColor.OFF_WHITE).replaceable().hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL)));
-    Block DENSE_CLOUD = register("dense_cloud", new CloudBlock(Settings.create().mapColor(MapColor.GRAY).replaceable().hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL)));
+    Block CLOUD = register("cloud", new CloudBlock(Settings.create().mapColor(MapColor.OFF_WHITE).replaceable().hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL), true));
+    Block CLOUD_SLAB = register("cloud_slab", new CloudSlabBlock(Settings.copy(CLOUD), true));
+    Block DENSE_CLOUD = register("dense_cloud", new CloudBlock(Settings.create().mapColor(MapColor.GRAY).replaceable().hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL), false));
+    Block DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudSlabBlock(Settings.copy(DENSE_CLOUD), false));
     Block CLOUD_PILLAR = register("cloud_pillar", new CloudPillarBlock(Settings.create().mapColor(MapColor.GRAY).replaceable().hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL)));
 
     SegmentedCropBlock OATS = register("oats", SegmentedCropBlock.create(11, 5, AbstractBlock.Settings.copy(Blocks.WHEAT), () -> UItems.OAT_SEEDS, null, null));

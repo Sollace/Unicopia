@@ -16,17 +16,24 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.EmptyBlockView;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
 public class CloudBlock extends TransparentBlock {
-    public CloudBlock(Settings settings) {
-        super(settings.nonOpaque());
+
+    private final boolean meltable;
+
+    public CloudBlock(Settings settings, boolean meltable) {
+        super((meltable ? settings.ticksRandomly() : settings).nonOpaque());
+        this.meltable = meltable;
     }
 
     @Override
@@ -101,7 +108,7 @@ public class CloudBlock extends TransparentBlock {
 
     @Deprecated
     @Override
-    public boolean canReplace(BlockState state, ItemPlacementContext context) {
+    public final boolean canReplace(BlockState state, ItemPlacementContext context) {
         EquineContext equineContext = EquineContext.of(context);
         if (canInteract(state, context.getWorld(), context.getBlockPos(), equineContext)) {
             return canReplace(state, context, equineContext);
@@ -112,9 +119,6 @@ public class CloudBlock extends TransparentBlock {
     @Deprecated
     @Override
     public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
-        if (stateFrom.isOf(this)) {
-            return true;
-        }
         VoxelShape shape = state.getCullingShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
         VoxelShape shapeFrom = stateFrom.getCullingShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
         return !shape.isEmpty() && !shapeFrom.isEmpty() && VoxelShapes.isSideCovered(shape, shapeFrom, direction);
@@ -142,5 +146,13 @@ public class CloudBlock extends TransparentBlock {
     @Nullable
     protected BlockState getPlacementState(ItemPlacementContext placementContext, EquineContext equineContext) {
         return super.getPlacementState(placementContext);
+    }
+
+    @Override
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (meltable && world.getLightLevel(LightType.BLOCK, pos) > 11) {
+            dropStacks(state, world, pos);
+            world.removeBlock(pos, false);
+        }
     }
 }

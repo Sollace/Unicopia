@@ -12,8 +12,8 @@ public class StormyCloudBlock extends CloudBlock {
     private static final int MAX_CHARGE = 6;
     private static final IntProperty CHARGE = IntProperty.of("charge", 0, MAX_CHARGE);
 
-    public StormyCloudBlock(Settings settings) {
-        super(settings);
+    public StormyCloudBlock(Settings settings, boolean meltable) {
+        super(settings, meltable);
         setDefaultState(getDefaultState().with(CHARGE, 0));
     }
 
