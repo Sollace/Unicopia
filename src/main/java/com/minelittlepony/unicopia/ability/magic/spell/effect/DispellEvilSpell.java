@@ -4,7 +4,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
-import com.minelittlepony.unicopia.particle.UParticles;
+import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
@@ -39,7 +39,7 @@ public class DispellEvilSpell extends AbstractSpell implements ProjectileDelegat
                 l.takeKnockback(1, d, e);
             }
 
-            source.addParticle(UParticles.LIGHTNING_BOLT, entity.getPos(), Vec3d.ZERO);
+            source.addParticle(LightningBoltParticleEffect.DEFAULT, entity.getPos(), Vec3d.ZERO);
         });
         source.subtractEnergyCost(1000);
 

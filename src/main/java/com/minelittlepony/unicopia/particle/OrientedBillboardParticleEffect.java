@@ -11,15 +11,14 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.registry.Registries;
 
-public class OrientedBillboardParticleEffect implements ParticleEffect {
+public record OrientedBillboardParticleEffect (
+        ParticleType<OrientedBillboardParticleEffect> type,
+        boolean fixed,
+        float yaw,
+        float pitch
+    ) implements ParticleEffect {
     @SuppressWarnings("deprecation")
     public static final ParticleEffect.Factory<OrientedBillboardParticleEffect> FACTORY = ParticleFactoryHelper.of(OrientedBillboardParticleEffect::new, OrientedBillboardParticleEffect::new);
-
-    private final boolean fixed;
-    private final float yaw;
-    private final float pitch;
-
-    private final ParticleType<OrientedBillboardParticleEffect> type;
 
     protected OrientedBillboardParticleEffect(ParticleType<OrientedBillboardParticleEffect> type, StringReader reader) throws CommandSyntaxException {
         this(type, ParticleFactoryHelper.readBoolean(reader), ParticleFactoryHelper.readFloat(reader), ParticleFactoryHelper.readFloat(reader));
@@ -35,25 +34,6 @@ public class OrientedBillboardParticleEffect implements ParticleEffect {
 
     public OrientedBillboardParticleEffect(ParticleType<OrientedBillboardParticleEffect> type, float yaw, float pitch) {
         this(type, true, yaw, pitch);
-    }
-
-    private OrientedBillboardParticleEffect(ParticleType<OrientedBillboardParticleEffect> type, boolean fixed, float yaw, float pitch) {
-        this.fixed = fixed;
-        this.yaw = yaw;
-        this.pitch = pitch;
-        this.type = type;
-    }
-
-    public boolean isAngleFixed() {
-        return fixed;
-    }
-
-    public float getYaw() {
-        return yaw;
-    }
-
-    public float getPitch() {
-        return pitch;
     }
 
     @Override

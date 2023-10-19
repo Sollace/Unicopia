@@ -34,4 +34,9 @@ abstract class MixinEntityShapeContext implements EquineContext {
     public Race.Composite getCompositeRace() {
         return equineContext.getCompositeRace();
     }
+
+    @Override
+    public float getCloudWalkingStrength() {
+        return equineContext.getCloudWalkingStrength();
+    }
 }

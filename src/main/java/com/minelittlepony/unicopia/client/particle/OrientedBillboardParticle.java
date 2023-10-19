@@ -20,11 +20,11 @@ public abstract class OrientedBillboardParticle extends AbstractBillboardParticl
     public OrientedBillboardParticle(OrientedBillboardParticleEffect effect, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
 
-        fixed = effect.isAngleFixed();
+        fixed = effect.fixed();
         if (fixed) {
             // Was hamiltonianProduct (CHECK THIS!!)
-            rotation.mul(RotationAxis.POSITIVE_Y.rotationDegrees(effect.getPitch()));
-            rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(180 - effect.getYaw()));
+            rotation.mul(RotationAxis.POSITIVE_Y.rotationDegrees(effect.pitch()));
+            rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(180 - effect.yaw()));
         }
     }
 

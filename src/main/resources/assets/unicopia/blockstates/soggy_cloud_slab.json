@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "type=double": { "model": "unicopia:block/soggy_cloud" },
+    "type=bottom": { "model": "unicopia:block/soggy_cloud_slab" },
+    "type=top": { "model": "unicopia:block/soggy_cloud_slab_top" }
+  }
+}

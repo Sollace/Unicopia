@@ -10,10 +10,9 @@ import com.minelittlepony.unicopia.WeaklyOwned;
 import com.minelittlepony.unicopia.entity.DynamicLightSource;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.MagicImmune;
+import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
-import com.minelittlepony.unicopia.particle.UParticles;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -212,7 +211,7 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
             attacker.onStruckByLightning(serverWorld, lightning);
         }
         emitGameEvent(GameEvent.LIGHTNING_STRIKE);
-        ParticleUtils.spawnParticle(getWorld(), UParticles.LIGHTNING_BOLT, getPos(), Vec3d.ZERO);
+        ParticleUtils.spawnParticle(getWorld(), LightningBoltParticleEffect.DEFAULT, getPos(), Vec3d.ZERO);
 
         return false;
     }

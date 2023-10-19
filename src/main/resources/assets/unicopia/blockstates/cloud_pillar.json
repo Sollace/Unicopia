@@ -1,0 +1,28 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "unicopia:block/cloud_pillar_middle"
+      }
+    },
+    {
+      "apply": {
+        "model": "unicopia:block/cloud_pillar_end",
+        "uvlock": true,
+        "x": 180
+      },
+      "when": {
+        "north": false
+      }
+    },
+    {
+      "apply": {
+        "model": "unicopia:block/cloud_pillar_end",
+        "uvlock": true
+      },
+      "when": {
+        "south": false
+      }
+    }
+  ]
+}

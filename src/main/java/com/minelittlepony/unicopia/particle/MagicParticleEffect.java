@@ -15,13 +15,13 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.registry.Registries;
 
-public class MagicParticleEffect implements ParticleEffect {
+public record MagicParticleEffect (
+        boolean tinted,
+        Vector3f color
+    ) implements ParticleEffect {
     public static final MagicParticleEffect UNICORN = new MagicParticleEffect(false, new Vector3f());
     @SuppressWarnings("deprecation")
     public static final ParticleEffect.Factory<MagicParticleEffect> FACTORY = ParticleFactoryHelper.of(MagicParticleEffect::new, MagicParticleEffect::new);
-
-    private final boolean tinted;
-    private final Vector3f color;
 
     protected MagicParticleEffect(ParticleType<MagicParticleEffect> particleType, StringReader reader) throws CommandSyntaxException {
         this(ParticleFactoryHelper.readBoolean(reader), AbstractDustParticleEffect.readColor(reader));
@@ -39,17 +39,8 @@ public class MagicParticleEffect implements ParticleEffect {
         this(true, color);
     }
 
-    protected MagicParticleEffect(boolean tint, Vector3f color) {
-        tinted = tint;
-        this.color = color;
-    }
-
-    public boolean hasTint() {
-        return tinted;
-    }
-
     public Vector3f getColor(Random random) {
-        if (hasTint()) {
+        if (tinted()) {
             return color;
         }
 
