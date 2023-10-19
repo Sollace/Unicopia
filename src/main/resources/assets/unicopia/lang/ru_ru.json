@@ -217,6 +217,15 @@
   "block.unicopia.chiselled_chitin_slab": "Резная хитиновая плита",
   "block.unicopia.chiselled_chitin_stairs": "Резные хитиновые ступеньки",
 
+  "block.unicopia.cloud": "Облако",
+  "block.unicopia.cloud_slab": "Плита из облака",
+  "block.unicopia.soggy_cloud": "Мокрое облако",
+  "block.unicopia.soggy_cloud_slab": "Плита из мокрого облака",
+  "block.unicopia.unstable_cloud": "Нестабильное облако",
+  "block.unicopia.cloud_pillar": "Колонна из облака",
+  "block.unicopia.dense_cloud": "Плотное облако",
+  "block.unicopia.dense_cloud_slab": "Плита из плотного облака",
+
   "block.unicopia.oats": "Овёс",
   "block.unicopia.oats_stem": "Овёс",
   "block.unicopia.oats_crown": "Овёс",
