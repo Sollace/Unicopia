@@ -7,7 +7,8 @@ import java.util.List;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.cloud.CloudPillarBlock;
 import com.minelittlepony.unicopia.block.cloud.CloudSlabBlock;
-import com.minelittlepony.unicopia.block.cloud.PoreousCloudBlock;
+import com.minelittlepony.unicopia.block.cloud.CompactedCloudBlock;
+import com.minelittlepony.unicopia.block.cloud.NaturalCloudBlock;
 import com.minelittlepony.unicopia.block.cloud.CloudBlock;
 import com.minelittlepony.unicopia.block.cloud.SoggyCloudBlock;
 import com.minelittlepony.unicopia.block.cloud.SoggyCloudSlabBlock;
@@ -132,8 +133,9 @@ public interface UBlocks {
     Block MYSTERIOUS_EGG = register("mysterious_egg", new PileBlock(Settings.copy(Blocks.SLIME_BLOCK), PileBlock.MYSTERIOUS_EGG_SHAPES), ItemGroups.NATURAL);
     Block SLIME_PUSTULE = register("slime_pustule", new SlimePustuleBlock(Settings.copy(Blocks.SLIME_BLOCK)), ItemGroups.NATURAL);
 
-    Block CLOUD = register("cloud", new PoreousCloudBlock(Settings.create().mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL), true, () -> UBlocks.SOGGY_CLOUD));
+    Block CLOUD = register("cloud", new NaturalCloudBlock(Settings.create().mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL), true, () -> UBlocks.SOGGY_CLOUD));
     Block CLOUD_SLAB = register("cloud_slab", new CloudSlabBlock(Settings.copy(CLOUD), true, () -> UBlocks.SOGGY_CLOUD_SLAB));
+    Block COMPACTED_CLOUD = register("compacted_cloud", new CompactedCloudBlock(Settings.copy(CLOUD)));
     Block UNSTABLE_CLOUD = register("unstable_cloud", new UnstableCloudBlock(Settings.copy(CLOUD)));
     SoggyCloudBlock SOGGY_CLOUD = register("soggy_cloud", new SoggyCloudBlock(Settings.copy(CLOUD), () -> UBlocks.CLOUD));
     SoggyCloudSlabBlock SOGGY_CLOUD_SLAB = register("soggy_cloud_slab", new SoggyCloudSlabBlock(Settings.copy(CLOUD), () -> UBlocks.CLOUD_SLAB));

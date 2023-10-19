@@ -176,7 +176,8 @@ public interface URenderers {
                 UBlocks.MYSTERIOUS_EGG, UBlocks.SLIME_PUSTULE,
                 UBlocks.CLOUD, UBlocks.DENSE_CLOUD, UBlocks.CLOUD_PILLAR,
                 UBlocks.CLOUD_SLAB, UBlocks.DENSE_CLOUD_SLAB,
-                UBlocks.SOGGY_CLOUD, UBlocks.SOGGY_CLOUD_SLAB
+                UBlocks.SOGGY_CLOUD, UBlocks.SOGGY_CLOUD_SLAB,
+                UBlocks.COMPACTED_CLOUD
         );
         // for lava boats
         BlockRenderLayerMap.INSTANCE.putFluids(RenderLayer.getTranslucent(), Fluids.LAVA, Fluids.FLOWING_LAVA);
