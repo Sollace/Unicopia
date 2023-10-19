@@ -1,0 +1,6 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": { "item": "unicopia:chiselled_chitin" },
+  "result": "unicopia:chiselled_chitin_hull",
+  "count": 1
+}

@@ -6,9 +6,9 @@ import com.minelittlepony.unicopia.EquineContext;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.block.TransparentBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,7 +27,7 @@ import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
-public class CloudBlock extends TransparentBlock {
+public class CloudBlock extends Block {
 
     protected final boolean meltable;
 
@@ -55,7 +55,7 @@ public class CloudBlock extends TransparentBlock {
     @Override
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
         entity.handleFallDamage(fallDistance, 0, world.getDamageSources().fall());
-        generateSurfaceParticles(world, state, pos, ShapeContext.of(entity), 9);
+        generateSurfaceParticles(world, state, pos, ShapeContext.absent(), 9);
 
         if (fallDistance > 7) {
             world.breakBlock(pos, true);
@@ -65,12 +65,12 @@ public class CloudBlock extends TransparentBlock {
     @Override
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
         if (world.random.nextInt(15) == 0) {
-            generateSurfaceParticles(world, state, pos, ShapeContext.of(entity), 1);
+            generateSurfaceParticles(world, state, pos, ShapeContext.absent(), 1);
         }
     }
 
     protected void generateSurfaceParticles(World world, BlockState state, BlockPos pos, ShapeContext context, int count) {
-        VoxelShape shape = getCollisionShape(state, world, pos, context);
+        VoxelShape shape = state.getCullingShape(world, pos);
         Random rng = world.random;
         Box box = shape.getBoundingBox();
 

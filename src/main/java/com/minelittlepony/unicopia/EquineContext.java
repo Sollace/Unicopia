@@ -33,6 +33,9 @@ public interface EquineContext {
     }
 
     static EquineContext of(Entity entity) {
+        if (entity instanceof EquineContext c) {
+            return c;
+        }
         return MoreObjects.firstNonNull(Equine.of(entity).orElse(null), ABSENT);
     }
 }
