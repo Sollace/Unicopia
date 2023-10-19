@@ -149,6 +149,7 @@ public interface UItems {
     Item DENSE_CLOUD = register("dense_cloud", new CloudBlockItem(UBlocks.DENSE_CLOUD, new Item.Settings()), ItemGroups.NATURAL);
     Item DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudBlockItem(UBlocks.DENSE_CLOUD_SLAB, new Item.Settings()), ItemGroups.NATURAL);
     Item CLOUD_PILLAR = register("cloud_pillar", new CloudBlockItem(UBlocks.CLOUD_PILLAR, new Item.Settings()), ItemGroups.NATURAL);
+    Item UNSTABLE_CLOUD = register("unstable_cloud", new CloudBlockItem(UBlocks.UNSTABLE_CLOUD, new Item.Settings()), ItemGroups.NATURAL);
 
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new FabricItemSettings()
             .maxCount(1)

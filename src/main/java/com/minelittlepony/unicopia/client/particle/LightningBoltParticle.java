@@ -21,7 +21,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class LightningBoltParticle extends AbstractGeometryBasedParticle {
 
-    private final List<List<Vector3f>> branches = new ArrayList<>();
+    private final List<Bolt> branches = new ArrayList<>();
 
     private final LightningBoltParticleEffect effect;
 
@@ -37,42 +37,73 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
             return;
         }
 
-        if (age % effect.changeFrequency() == 0) {
+        if (effect.changeFrequency() > 0 && age % effect.changeFrequency() == 0) {
             branches.clear();
         }
-        if (branches.isEmpty()) {
-            int totalBranches = 2 + world.random.nextInt(6);
 
-            while (branches.size() < totalBranches) {
-                branches.add(generateBranch());
-            }
+        if (branches.isEmpty()) {
+            effect.pathEndPoint().ifPresentOrElse(endpoint -> {
+                branches.add(generateTrunk(endpoint.subtract(x, y, z).toVector3f()));
+            }, () -> {
+                int totalBranches = 2 + world.random.nextInt(effect.maxBranches());
+
+                while (branches.size() < totalBranches) {
+                    branches.add(generateBranch());
+                }
+            });
 
             if (!effect.silent()) {
                 world.playSound(x, y, z, USounds.Vanilla.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000, 8, true);
             }
         }
 
-        world.setLightningTicksLeft(2);
+        if (effect.pathEndPoint().isEmpty() && !effect.silent()) {
+            world.setLightningTicksLeft(2);
+        }
     }
 
-    private List<Vector3f> generateBranch() {
+    private Bolt generateTrunk(Vector3f end) {
+        Vector3f start = new Vector3f(0, 0, 0);
+        int kinks = 2 + world.random.nextInt(effect.maxBranches());
+
+        Vector3f segmentLength = end.sub(start, new Vector3f()).mul(1F/kinks);
+        float deviation = effect.maxDeviation();
+
+        List<Vector3f> nodes = new ArrayList<>();
+        nodes.add(start);
+
+        for (int i = 0; i < kinks - 1; i++) {
+            start = start.add(segmentLength, new Vector3f()).add(
+                    (float)world.random.nextTriangular(0, deviation),
+                    0,
+                    (float)world.random.nextTriangular(0, deviation)
+            );
+            nodes.add(start);
+        }
+        nodes.add(end);
+
+        return new Bolt(true, nodes);
+    }
+
+    private Bolt generateBranch() {
         Vector3f startPos = new Vector3f(0, 0, 0);
 
-        int intendedLength = 2 + world.random.nextInt(6);
-
+        int intendedLength = 2 + world.random.nextInt(effect.maxBranches());
+        float deviation = effect.maxDeviation();
         List<Vector3f> nodes = new ArrayList<>();
 
         while (nodes.size() < intendedLength) {
             startPos = startPos.add(
-                    (float)world.random.nextTriangular(0.1F, 3),
-                    (float)world.random.nextTriangular(0.1F, 3),
-                    (float)world.random.nextTriangular(0.1F, 3)
+                    (float)world.random.nextTriangular(0F, deviation),
+                    (float)world.random.nextTriangular(0F, deviation),
+                    (float)world.random.nextTriangular(0F, deviation),
+                    new Vector3f()
             );
 
             nodes.add(startPos);
         }
 
-        return nodes;
+        return new Bolt(false, nodes);
     }
 
     @Override
@@ -89,10 +120,15 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
         float z = (float)(MathHelper.lerp(tickDelta, prevPosZ, this.z) - cam.getZ());
 
         Vector3f origin = new Vector3f(x, y, z);
+        Vector3f from = new Vector3f();
+        Vector3f to = new Vector3f();
 
-        for (List<Vector3f> branch : branches) {
-            for (int i = 0; i < branch.size(); i++) {
-                renderBranch(buffer, i == 0 ? origin : new Vector3f(branch.get(i - 1).add(x, y, z)), new Vector3f(branch.get(i).add(x, y, z)));
+        for (Bolt branch : branches) {
+            for (int i = 0; i < branch.nodes().size(); i++) {
+                renderBranch(buffer,
+                        branch.isTrunk() ? 0.05125F : world.random.nextFloat() / 30 + 0.01F,
+                        i == 0 ? origin : branch.nodes().get(i - 1).add(x, y, z, from), branch.nodes().get(i).add(x, y, z, to)
+                );
             }
         }
 
@@ -101,14 +137,28 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
         RenderSystem.enableCull();
     }
 
-    private void renderBranch(VertexConsumer buffer, Vector3f from, Vector3f to) {
-        float thickness = world.random.nextFloat() / 30 + 0.01F;
-
+    private void renderBranch(VertexConsumer buffer, float thickness, Vector3f from, Vector3f to) {
         renderQuad(buffer, new Vector3f[]{
-            new Vector3f(from.x - thickness, from.y, from.z),
-            new Vector3f(to.x - thickness, to.y, to.z),
-            new Vector3f(to.x + thickness, to.y, to.z),
-            new Vector3f(from.x + thickness, from.y, from.z),
+            new Vector3f(from.x - thickness, from.y, from.z + thickness),
+            new Vector3f(to.x - thickness, to.y, to.z + thickness),
+            new Vector3f(to.x + thickness, to.y, to.z + thickness),
+            new Vector3f(from.x + thickness, from.y, from.z + thickness),
+
+            new Vector3f(from.x - thickness, from.y, from.z - thickness),
+            new Vector3f(to.x - thickness, to.y, to.z - thickness),
+            new Vector3f(to.x + thickness, to.y, to.z - thickness),
+            new Vector3f(from.x + thickness, from.y, from.z - thickness),
+
+            new Vector3f(from.x - thickness, from.y, from.z - thickness),
+            new Vector3f(to.x - thickness, to.y, to.z - thickness),
+            new Vector3f(to.x - thickness, to.y, to.z + thickness),
+            new Vector3f(from.x - thickness, from.y, from.z + thickness),
+
+            new Vector3f(from.x + thickness, from.y, from.z - thickness),
+            new Vector3f(to.x + thickness, to.y, to.z - thickness),
+            new Vector3f(to.x + thickness, to.y, to.z + thickness),
+            new Vector3f(from.x + thickness, from.y, from.z + thickness)
+            /*,
 
             new Vector3f(from.x - thickness, from.y - thickness * 2, from.z),
             new Vector3f(to.x - thickness, to.y - thickness * 2, to.z),
@@ -118,12 +168,18 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
             new Vector3f(from.x, from.y - thickness, from.z + thickness),
             new Vector3f(to.x, to.y - thickness, to.z + thickness),
             new Vector3f(to.x, to.y + thickness, to.z + thickness),
-            new Vector3f(from.x, from.y + thickness, from.z + thickness),
+            new Vector3f(from.x, from.y + thickness, from.z + thickness)
+
+            ,
 
             new Vector3f(from.x - thickness * 2, from.y - thickness, from.z + thickness),
             new Vector3f(to.x - thickness * 2, to.y - thickness, to.z + thickness),
             new Vector3f(to.x - thickness * 2, to.y + thickness, to.z + thickness),
-            new Vector3f(from.x - thickness * 2, from.y + thickness, from.z + thickness)
+            new Vector3f(from.x - thickness * 2, from.y + thickness, from.z + thickness)*/
         }, 0.3F, 1);
+    }
+
+    record Bolt(boolean isTrunk, List<Vector3f> nodes) {
+
     }
 }
