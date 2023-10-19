@@ -17,3 +17,5 @@ accessible          field    net/minecraft/entity/mob/CreeperEntity      IGNITED
 accessible          method   net/minecraft/client/render/RenderLayer$MultiPhase    getPhases  ()Lnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;
 accessible          method   net/minecraft/client/render/RenderPhase$TextureBase   getId      ()Ljava/util/Optional;
 accessible          field    net/minecraft/client/render/RenderLayer$MultiPhaseParameters     texture     Lnet/minecraft/client/render/RenderPhase$TextureBase;
+
+accessible          method   net/minecraft/entity/LightningEntity                  cleanOxidation (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;)V
