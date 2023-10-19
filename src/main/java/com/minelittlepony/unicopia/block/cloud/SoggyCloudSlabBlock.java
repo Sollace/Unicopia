@@ -48,6 +48,7 @@ public class SoggyCloudSlabBlock extends CloudSlabBlock {
 
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        super.randomDisplayTick(state, world, pos, random);
         Soakable.addMoistureParticles(state, world, pos, random);
     }
 

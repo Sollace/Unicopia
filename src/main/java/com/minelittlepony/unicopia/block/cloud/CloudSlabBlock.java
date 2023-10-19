@@ -28,6 +28,7 @@ public class CloudSlabBlock extends WaterloggableCloudBlock {
 
     public CloudSlabBlock(Settings settings, boolean meltable, @Nullable Supplier<Soakable> soggyBlock) {
         super(settings, meltable, soggyBlock);
+        setDefaultState(getDefaultState().with(SlabBlock.TYPE, SlabType.BOTTOM));
     }
 
     @Override

@@ -34,6 +34,7 @@ public class UnstableCloudBlock extends CloudBlock {
 
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        super.randomDisplayTick(state, world, pos, random);
         int charge = state.get(CHARGE);
         if (charge > 0) {
             world.addParticle(new LightningBoltParticleEffect(true, 10, 1, 0.6F + (charge / (float)MAX_CHARGE) * 0.4F, Optional.empty()), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0, 0);
@@ -48,6 +49,11 @@ public class UnstableCloudBlock extends CloudBlock {
             world.addParticle(ParticleTypes.CLOUD, pos.getX() + world.random.nextFloat(), pos.getY() + world.random.nextFloat(), pos.getZ() + world.random.nextFloat(), 0, 0, 0);
         }
         world.playSound(null, pos, SoundEvents.BLOCK_WOOL_HIT, SoundCategory.BLOCKS, 1, 1);
+
+        if (fallDistance > 3) {
+            world.breakBlock(pos, true);
+            return;
+        }
 
         if (state.get(CHARGE) < MAX_CHARGE) {
             world.setBlockState(pos, state.cycle(CHARGE));

@@ -13,9 +13,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -43,8 +46,50 @@ public class CloudBlock extends TransparentBlock {
     }
 
     @Override
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        if (world.random.nextInt(150) == 0) {
+            generateSurfaceParticles(world, state, pos, ShapeContext.absent(), 1);
+        }
+    }
+
+    @Override
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
         entity.handleFallDamage(fallDistance, 0, world.getDamageSources().fall());
+        generateSurfaceParticles(world, state, pos, ShapeContext.of(entity), 9);
+
+        if (fallDistance > 7) {
+            world.breakBlock(pos, true);
+        }
+    }
+
+    @Override
+    public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
+        if (world.random.nextInt(15) == 0) {
+            generateSurfaceParticles(world, state, pos, ShapeContext.of(entity), 1);
+        }
+    }
+
+    protected void generateSurfaceParticles(World world, BlockState state, BlockPos pos, ShapeContext context, int count) {
+        VoxelShape shape = getCollisionShape(state, world, pos, context);
+        Random rng = world.random;
+        Box box = shape.getBoundingBox();
+
+        for (int i = 0; i < count; i++) {
+            world.addParticle(ParticleTypes.CLOUD,
+                    pos.getX() + MathHelper.lerp(rng.nextFloat(), box.minX, box.maxX),
+                    pos.getY() + box.maxY,
+                    pos.getZ() + MathHelper.lerp(rng.nextFloat(), box.minZ, box.maxZ), 0, 0, 0);
+
+            world.addParticle(ParticleTypes.CLOUD,
+                    pos.getX() + (rng.nextBoolean() ? box.minX : box.maxX),
+                    pos.getY() + MathHelper.lerp(rng.nextFloat(), box.minY, box.maxY),
+                    pos.getZ() + MathHelper.lerp(rng.nextFloat(), box.minZ, box.maxZ), 0, 0, 0);
+
+            world.addParticle(ParticleTypes.CLOUD,
+                    pos.getX() + MathHelper.lerp(rng.nextFloat(), box.minX, box.maxX),
+                    pos.getY() + MathHelper.lerp(rng.nextFloat(), box.minY, box.maxY),
+                    pos.getZ() + (rng.nextBoolean() ? box.minZ : box.maxZ), 0, 0, 0);
+        }
     }
 
     @Override
