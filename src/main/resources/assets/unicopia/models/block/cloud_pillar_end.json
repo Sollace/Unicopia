@@ -1,7 +1,8 @@
 {
 	"parent": "minecraft:block/cube_bottom_top",
 	"textures": {
-		"top": "unicopia:block/cloud_pillar_top",
+		"top": "unicopia:block/cloud_pillar_lip",
+		"bottom": "unicopia:block/cloud_pillar_top",
 		"side": "unicopia:block/cloud_pillar_side_end"
 	},
 	"elements": [
@@ -9,12 +10,12 @@
 			"from": [0, 0, 0],
 			"to": [16, 5, 16],
 			"faces": {
-				"north": {"uv": [0, 11, 16, 16], "texture": "#side"},
-				"east": {"uv": [0, 11, 16, 16], "texture": "#side"},
-				"south": {"uv": [0, 11, 16, 16], "texture": "#side"},
-				"west": {"uv": [0, 11, 16, 16], "texture": "#side"},
+				"north": {"uv": [0, 11, 16, 16], "texture": "#side", "cullface": "north"},
+				"east": {"uv": [0, 11, 16, 16], "texture": "#side", "cullface": "east"},
+				"south": {"uv": [0, 11, 16, 16], "texture": "#side", "cullface": "south"},
+				"west": {"uv": [0, 11, 16, 16], "texture": "#side", "cullface": "west"},
 				"up": {"uv": [0, 0, 16, 16], "texture": "#top"},
-				"down": {"uv": [0, 0, 16, 16], "texture": "#top", "cullface": "down"}
+				"down": {"uv": [0, 0, 16, 16], "texture": "#bottom", "cullface": "down"}
 			}
 		}
 	]
