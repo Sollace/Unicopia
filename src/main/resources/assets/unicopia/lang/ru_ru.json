@@ -219,8 +219,10 @@
 
   "block.unicopia.cloud": "Облако",
   "block.unicopia.cloud_slab": "Плита из облака",
+  "block.unicopia.cloud_stairs": "Ступеньки из облака",
   "block.unicopia.soggy_cloud": "Мокрое облако",
   "block.unicopia.soggy_cloud_slab": "Плита из мокрого облака",
+  "block.unicopia.soggy_cloud_stairs": "Ступеньки из мокрого блока",
   "block.unicopia.unstable_cloud": "Нестабильное облако",
   "block.unicopia.cloud_pillar": "Колонна из облака",
   "block.unicopia.dense_cloud": "Плотное облако",
