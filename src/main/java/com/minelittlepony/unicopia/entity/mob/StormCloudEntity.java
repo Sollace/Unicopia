@@ -257,19 +257,22 @@ public class StormCloudEntity extends Entity implements MagicImmune {
 
     private void pickRandomPoints(int count, Consumer<BlockPos> action) {
         BlockPos.iterateRandomly(random, 3, getBlockPos(), getSizeInBlocks()).forEach(pos -> {
-
-            BlockPos.Mutable mutable = new BlockPos.Mutable();
-            mutable.set(pos);
-            while (getWorld().isInBuildLimit(mutable) && getWorld().isAir(mutable)) {
-                mutable.move(Direction.DOWN);
-            }
-            while (getWorld().isInBuildLimit(mutable) && !getWorld().isAir(mutable)) {
-                mutable.move(Direction.UP);
-            }
-            mutable.move(Direction.DOWN);
-
-            action.accept(pos);
+            action.accept(findSurfaceBelow(getWorld(), pos));
         });
+    }
+
+    public static BlockPos findSurfaceBelow(World world, BlockPos pos) {
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        mutable.set(pos);
+        while (world.isInBuildLimit(mutable) && world.isAir(mutable)) {
+            mutable.move(Direction.DOWN);
+        }
+        while (world.isInBuildLimit(mutable) && !world.isAir(mutable)) {
+            mutable.move(Direction.UP);
+        }
+        mutable.move(Direction.DOWN);
+
+        return mutable;
     }
 
     private void spawnLightningStrike(BlockPos pos, boolean cosmetic, boolean infect) {

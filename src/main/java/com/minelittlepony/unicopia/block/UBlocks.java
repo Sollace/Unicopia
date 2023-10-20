@@ -7,12 +7,15 @@ import java.util.List;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.cloud.CloudPillarBlock;
 import com.minelittlepony.unicopia.block.cloud.CloudSlabBlock;
-import com.minelittlepony.unicopia.block.cloud.PoreousCloudBlock;
+import com.minelittlepony.unicopia.block.cloud.CloudStairsBlock;
+import com.minelittlepony.unicopia.block.cloud.CompactedCloudBlock;
+import com.minelittlepony.unicopia.block.cloud.NaturalCloudBlock;
 import com.minelittlepony.unicopia.block.cloud.CloudBlock;
 import com.minelittlepony.unicopia.block.cloud.SoggyCloudBlock;
 import com.minelittlepony.unicopia.block.cloud.SoggyCloudSlabBlock;
 import com.minelittlepony.unicopia.block.cloud.UnstableCloudBlock;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.cloud.CloudBlockItem;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.server.world.UTreeGen;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
@@ -34,6 +37,7 @@ import net.minecraft.registry.Registries;
 
 public interface UBlocks {
     List<Block> TRANSLUCENT_BLOCKS = new ArrayList<>();
+    List<Block> SEMI_TRANSPARENT_BLOCKS = new ArrayList<>();
 
     Block ROCKS = register("rocks", new RockCropBlock(Settings.create()
             .mapColor(MapColor.STONE_GRAY)
@@ -121,6 +125,10 @@ public interface UBlocks {
             () -> UItems.APPLE_PIE_HOOF
     ));
 
+    SegmentedCropBlock OATS = register("oats", SegmentedCropBlock.create(11, 5, AbstractBlock.Settings.copy(Blocks.WHEAT), () -> UItems.OAT_SEEDS, null, null));
+    SegmentedCropBlock OATS_STEM = register("oats_stem", OATS.createNext(5));
+    SegmentedCropBlock OATS_CROWN = register("oats_crown", OATS_STEM.createNext(5));
+
     Block CHITIN = register("chitin", new SnowyBlock(Settings.create().mapColor(MapColor.PALE_PURPLE).hardness(5).requiresTool().ticksRandomly().sounds(BlockSoundGroup.CORAL)), ItemGroups.NATURAL);
     Block SURFACE_CHITIN = register("surface_chitin", new GrowableBlock(Settings.copy(CHITIN), () -> CHITIN), ItemGroups.NATURAL);
     Block CHISELLED_CHITIN = register("chiselled_chitin", new Block(Settings.create().mapColor(MapColor.PALE_PURPLE).hardness(5).requiresTool()), ItemGroups.BUILDING_BLOCKS);
@@ -132,18 +140,17 @@ public interface UBlocks {
     Block MYSTERIOUS_EGG = register("mysterious_egg", new PileBlock(Settings.copy(Blocks.SLIME_BLOCK), PileBlock.MYSTERIOUS_EGG_SHAPES), ItemGroups.NATURAL);
     Block SLIME_PUSTULE = register("slime_pustule", new SlimePustuleBlock(Settings.copy(Blocks.SLIME_BLOCK)), ItemGroups.NATURAL);
 
-    Block CLOUD = register("cloud", new PoreousCloudBlock(Settings.create().mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL), true, () -> UBlocks.SOGGY_CLOUD));
-    Block CLOUD_SLAB = register("cloud_slab", new CloudSlabBlock(Settings.copy(CLOUD), true, () -> UBlocks.SOGGY_CLOUD_SLAB));
-    Block UNSTABLE_CLOUD = register("unstable_cloud", new UnstableCloudBlock(Settings.copy(CLOUD)));
+    Block CLOUD = register("cloud", new NaturalCloudBlock(Settings.create().mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL), true, () -> UBlocks.SOGGY_CLOUD), ItemGroups.NATURAL);
+    Block CLOUD_SLAB = register("cloud_slab", new CloudSlabBlock(Settings.copy(CLOUD), true, () -> UBlocks.SOGGY_CLOUD_SLAB), ItemGroups.NATURAL);
+    Block CLOUD_STAIRS = register("cloud_stairs", new CloudStairsBlock(CLOUD.getDefaultState(), Settings.copy(CLOUD), () -> UBlocks.SOGGY_CLOUD_STAIRS), ItemGroups.NATURAL);
+    Block COMPACTED_CLOUD = register("compacted_cloud", new CompactedCloudBlock(Settings.copy(CLOUD)));
+    Block UNSTABLE_CLOUD = register("unstable_cloud", new UnstableCloudBlock(Settings.copy(CLOUD)), ItemGroups.NATURAL);
     SoggyCloudBlock SOGGY_CLOUD = register("soggy_cloud", new SoggyCloudBlock(Settings.copy(CLOUD), () -> UBlocks.CLOUD));
     SoggyCloudSlabBlock SOGGY_CLOUD_SLAB = register("soggy_cloud_slab", new SoggyCloudSlabBlock(Settings.copy(CLOUD), () -> UBlocks.CLOUD_SLAB));
-    Block DENSE_CLOUD = register("dense_cloud", new CloudBlock(Settings.create().mapColor(MapColor.GRAY).hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL), false));
-    Block DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudSlabBlock(Settings.copy(DENSE_CLOUD), false, null));
-    Block CLOUD_PILLAR = register("cloud_pillar", new CloudPillarBlock(Settings.create().mapColor(MapColor.GRAY).hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL)));
-
-    SegmentedCropBlock OATS = register("oats", SegmentedCropBlock.create(11, 5, AbstractBlock.Settings.copy(Blocks.WHEAT), () -> UItems.OAT_SEEDS, null, null));
-    SegmentedCropBlock OATS_STEM = register("oats_stem", OATS.createNext(5));
-    SegmentedCropBlock OATS_CROWN = register("oats_crown", OATS_STEM.createNext(5));
+    CloudStairsBlock SOGGY_CLOUD_STAIRS = register("soggy_cloud_stairs", new CloudStairsBlock(SOGGY_CLOUD.getDefaultState(), Settings.copy(CLOUD), null));
+    Block DENSE_CLOUD = register("dense_cloud", new CloudBlock(Settings.create().mapColor(MapColor.GRAY).hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL), false), ItemGroups.NATURAL);
+    Block DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudSlabBlock(Settings.copy(DENSE_CLOUD), false, null), ItemGroups.NATURAL);
+    Block CLOUD_PILLAR = register("cloud_pillar", new CloudPillarBlock(Settings.create().mapColor(MapColor.GRAY).hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL)), ItemGroups.NATURAL);
 
     private static <T extends Block> T register(String name, T item) {
         return register(Unicopia.id(name), item);
@@ -154,7 +161,11 @@ public interface UBlocks {
     }
 
     static <T extends Block> T register(Identifier id, T block, RegistryKey<ItemGroup> group) {
-        ItemGroupRegistry.register(id, new BlockItem(block, new Item.Settings()), group);
+        ItemGroupRegistry.register(id,
+                block instanceof CloudBlock || block instanceof CloudStairsBlock
+                    ? new CloudBlockItem(block, new Item.Settings())
+                    : new BlockItem(block, new Item.Settings()
+        ), group);
         return register(id, block);
     }
 
@@ -164,6 +175,9 @@ public interface UBlocks {
         }
         if (block instanceof SaplingBlock || block instanceof SproutBlock || block instanceof FruitBlock || block instanceof CropBlock || block instanceof DoorBlock || block instanceof TrapdoorBlock) {
             TRANSLUCENT_BLOCKS.add(block);
+        }
+        if (block instanceof CloudBlock || block instanceof CloudStairsBlock || block instanceof SlimePustuleBlock || block instanceof PileBlock) {
+            SEMI_TRANSPARENT_BLOCKS.add(block);
         }
         return Registry.register(Registries.BLOCK, id, block);
     }

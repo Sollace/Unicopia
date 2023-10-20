@@ -1,6 +1,13 @@
 {
   "replace": false,
   "values": [
+    "unicopia:cloud",
+    "unicopia:cloud_slab",
+    "unicopia:cloud_stairs",
+    "unicopia:dense_cloud",
+    "unicopia:dense_cloud_slab",
+    "unicopia:unstable_cloud",
+    "unicopia:cloud_pillar",
     "#unicopia:food_types/raw_fish",
     "#unicopia:food_types/cooked_fish",
     "unicopia:rain_cloud_jar",

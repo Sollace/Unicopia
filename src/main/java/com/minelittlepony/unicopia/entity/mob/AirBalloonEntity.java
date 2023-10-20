@@ -38,6 +38,8 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.EquineContext;
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.Living;
@@ -52,7 +54,7 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 import com.terraformersmc.terraform.boat.api.TerraformBoatType;
 
-public class AirBalloonEntity extends MobEntity implements EntityCollisions.ComplexCollidable, MultiBoundingBoxEntity, MagicImmune {
+public class AirBalloonEntity extends MobEntity implements EntityCollisions.ComplexCollidable, MultiBoundingBoxEntity, MagicImmune, EquineContext {
     private static final TrackedData<Boolean> ASCENDING = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> BOOSTING = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> INFLATION = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -455,8 +457,18 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     }
 
     @Override
+    public Race getSpecies() {
+        return isAirworthy() && !isAscending() ? Race.PEGASUS : Race.UNSET;
+    }
+
+    @Override
+    public float getCloudWalkingStrength() {
+        return isAirworthy() ? 2 : 0;
+    }
+
+    @Override
     public void travel(Vec3d movementInput) {
-        if (!this.isAirworthy()) {
+        if (!isAirworthy()) {
             super.travel(movementInput);
         } else {
             final float speed = 0.02F;
