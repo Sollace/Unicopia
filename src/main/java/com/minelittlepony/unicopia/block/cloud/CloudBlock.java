@@ -28,6 +28,9 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
 public class CloudBlock extends Block {
+    public static boolean isCloudBlock(Block block) {
+        return block instanceof CloudBlock || block instanceof CloudStairsBlock || block instanceof CloudBedBlock;
+    }
 
     protected final boolean meltable;
 

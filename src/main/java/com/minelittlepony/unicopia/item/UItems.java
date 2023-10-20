@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.UWoodTypes;
 import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
+import com.minelittlepony.unicopia.item.cloud.CloudBedItem;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.item.group.UItemGroups;
@@ -162,6 +163,7 @@ public interface UItems {
 
 
     Item CARAPACE = register("carapace", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
+    Item CLOUD_BED = register("cloud_bed", new CloudBedItem(UBlocks.CLOUD_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
 
     Item ALICORN_BADGE = register(Race.ALICORN);
     Item PEGASUS_BADGE = register(Race.PEGASUS);

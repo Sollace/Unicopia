@@ -4,8 +4,7 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.block.UBlocks;
-
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -21,8 +20,13 @@ import net.minecraft.world.World;
 
 public class NaturalCloudBlock extends PoreousCloudBlock {
 
-    public NaturalCloudBlock(Settings settings, boolean meltable, @Nullable Supplier<Soakable> soggyBlock) {
+    private final Supplier<Block> compactedBlock;
+
+    public NaturalCloudBlock(Settings settings, boolean meltable,
+            @Nullable Supplier<Soakable> soggyBlock,
+            Supplier<Block> compactedBlock) {
         super(settings.nonOpaque(), meltable, soggyBlock);
+        this.compactedBlock = compactedBlock;
     }
 
     @Override
@@ -31,7 +35,7 @@ public class NaturalCloudBlock extends PoreousCloudBlock {
 
         if (stack.isIn(ItemTags.SHOVELS)) {
             BooleanProperty property = CompactedCloudBlock.FACING_PROPERTIES.get(hit.getSide());
-            world.setBlockState(pos, UBlocks.COMPACTED_CLOUD.getDefaultState().with(property, false));
+            world.setBlockState(pos, compactedBlock.get().getDefaultState().with(property, false));
             stack.damage(1, player, p -> p.sendToolBreakStatus(hand));
             world.playSound(null, pos, SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS);
             return ActionResult.SUCCESS;

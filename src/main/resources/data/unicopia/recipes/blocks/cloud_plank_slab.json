@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "###"
+  ],
+  "key": {
+    "#": [
+      { "item": "unicopia:cloud_planks" }
+    ]
+  },
+  "result": { "item": "unicopia:cloud_planks_slab", "count": 6 }
+}

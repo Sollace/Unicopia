@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#  ",
+    "## ",
+    "###"
+  ],
+  "key": {
+    "#": [
+      { "item": "unicopia:cloud_planks" }
+    ]
+  },
+  "result": { "item": "unicopia:cloud_planks_stairs", "count": 4 }
+}

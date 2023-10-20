@@ -21,6 +21,7 @@ import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.cloud.CloudBedItem;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.terraformersmc.terraform.boat.api.client.TerraformBoatClientHelper;
 
@@ -87,6 +88,7 @@ public interface URenderers {
         EntityRendererRegistry.register(UEntities.FRIENDLY_CREEPER, FriendlyCreeperEntityRenderer::new);
 
         BlockEntityRendererFactories.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(UBlockEntities.CLOUD_BED, CloudBedBlockEntityRenderer::new);
 
         ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack), UItems.FRIENDSHIP_BRACELET);
         BuiltinItemRendererRegistry.INSTANCE.register(UItems.FILLED_JAR, (stack, mode, matrices, vertices, light, overlay) -> {
@@ -132,6 +134,9 @@ public interface URenderers {
             }
             matrices.push();
 
+        });
+        BuiltinItemRendererRegistry.INSTANCE.register(UItems.CLOUD_BED, (stack, mode, matrices, vertices, light, overlay) -> {
+            MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(((CloudBedItem)stack.getItem()).getRenderEntity(), matrices, vertices, light, overlay);
         });
         PolearmRenderer.register(UItems.WOODEN_POLEARM);
         PolearmRenderer.register(UItems.STONE_POLEARM);

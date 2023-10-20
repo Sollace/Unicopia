@@ -1,0 +1,8 @@
+{
+    "parent": "minecraft:block/slab",
+    "textures": {
+        "bottom": "unicopia:block/cloud_planks",
+        "side": "unicopia:block/cloud_planks",
+        "top": "unicopia:block/cloud_planks"
+    }
+}
