@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.block.cloud;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.block.Block;
@@ -176,7 +175,7 @@ public class CloudBlock extends Block {
     }
 
     protected boolean canInteract(BlockState state, BlockView world, BlockPos pos, EquineContext context) {
-        return context.getCompositeRace().any(Race::canInteractWithClouds);
+        return context.collidesWithClouds();
     }
 
     @SuppressWarnings("deprecation")

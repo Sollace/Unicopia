@@ -458,8 +458,14 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
 
     @Override
     public Race getSpecies() {
-        return isAirworthy() && !isAscending() ? Race.PEGASUS : Race.UNSET;
+        return Race.UNSET;
     }
+
+    @Override
+    public boolean collidesWithClouds() {
+        return isAirworthy() && !isAscending();
+    }
+
 
     @Override
     public float getCloudWalkingStrength() {

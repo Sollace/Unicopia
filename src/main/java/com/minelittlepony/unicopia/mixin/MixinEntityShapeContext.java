@@ -39,4 +39,9 @@ abstract class MixinEntityShapeContext implements EquineContext {
     public float getCloudWalkingStrength() {
         return equineContext.getCloudWalkingStrength();
     }
+
+    @Override
+    public boolean collidesWithClouds() {
+        return equineContext.collidesWithClouds();
+    }
 }
