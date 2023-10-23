@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "unicopia:iron_horse_shoe",
+    "unicopia:golden_horse_shoe",
+    "unicopia:copper_horse_shoe",
+    "unicopia:netherite_horse_shoe"
+  ]
+}

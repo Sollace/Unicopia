@@ -141,6 +141,13 @@
   "item.unicopia.alicorn_amulet": "Alicorn Amulet",
   "item.unicopia.alicorn_amulet.lore": "Time worn: %d",
   
+  "item.unicopia.horse_shoe.accuracy": "Accuracy: %d%%",
+  "item.unicopia.horse_shoe.speed": "Speed: %d",
+  "item.unicopia.iron_horse_shoe": "Iron Horse Shoe",
+  "item.unicopia.golden_horse_shoe": "Golden Horse Shoe",
+  "item.unicopia.copper_horse_shoe": "Copper Horse Shoe",
+  "item.unicopia.netherite_horse_shoe": "Netherite Horse Shoe",
+  
   "item.unicopia.broken_alicorn_amulet": "Broken Alicorn Amulet",
   "item.unicopia.unicorn_amulet": "Unicorn Amulet",
   "item.unicopia.unicorn_amulet.lore": "Grants magical abilities to whoever wears it",

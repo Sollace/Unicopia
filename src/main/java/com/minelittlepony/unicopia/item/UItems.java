@@ -127,6 +127,11 @@ public interface UItems {
     Item MEADOWBROOKS_STAFF = register("meadowbrooks_staff", new StaffItem(new Settings().rarity(Rarity.UNCOMMON).maxCount(1).maxDamage(120)), ItemGroups.TOOLS);
     Item MAGIC_STAFF = register("magic_staff", new EnchantedStaffItem(new Settings().rarity(Rarity.UNCOMMON).maxCount(1).maxDamage(120)), ItemGroups.TOOLS);
 
+    Item IRON_HORSE_SHOE = register("iron_horse_shoe", new HorseShoeItem(new Item.Settings().maxDamage(200), 4, 0.6F, 1), ItemGroups.COMBAT);
+    Item GOLDEN_HORSE_SHOE = register("golden_horse_shoe", new HorseShoeItem(new Item.Settings().maxDamage(100), 5, 0.1F, 0.5F), ItemGroups.COMBAT);
+    Item COPPER_HORSE_SHOE = register("copper_horse_shoe", new HorseShoeItem(new Item.Settings().maxDamage(250), 6, 0.5F, 0.8F), ItemGroups.COMBAT);
+    Item NETHERITE_HORSE_SHOE = register("netherite_horse_shoe", new HorseShoeItem(new Item.Settings().maxDamage(800), 3, 0.7F, 1.2F), ItemGroups.COMBAT);
+
     Item WOODEN_POLEARM = register("wooden_polearm", new PolearmItem(ToolMaterials.WOOD, 2, -3.6F, 2, new Item.Settings()), ItemGroups.COMBAT);
     Item STONE_POLEARM = register("stone_polearm", new PolearmItem(ToolMaterials.STONE, 2, -3.6F, 2, new Item.Settings()), ItemGroups.COMBAT);
     Item IRON_POLEARM = register("iron_polearm", new PolearmItem(ToolMaterials.IRON, 2, -3.6F, 3, new Item.Settings()), ItemGroups.COMBAT);

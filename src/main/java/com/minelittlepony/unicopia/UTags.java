@@ -29,6 +29,7 @@ public interface UTags {
     TagKey<Item> FLOATS_ON_CLOUDS = item("floats_on_clouds");
 
     TagKey<Item> POLEARMS = item("polearms");
+    TagKey<Item> HORSE_SHOES = item("horse_shoes");
     TagKey<Item> APPLE_SEEDS = item("apple_seeds");
 
     TagKey<Item> ACORNS = item("acorns");

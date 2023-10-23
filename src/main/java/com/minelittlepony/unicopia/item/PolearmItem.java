@@ -15,7 +15,7 @@ import net.minecraft.entity.attribute.*;
 import net.minecraft.item.*;
 
 public class PolearmItem extends SwordItem {
-    protected static final UUID ATTACK_RANGE_MODIFIER_ID = UUID.fromString("A7B3659C-AA74-469C-963A-09A391DCAA0F");
+    static final UUID ATTACK_RANGE_MODIFIER_ID = UUID.fromString("A7B3659C-AA74-469C-963A-09A391DCAA0F");
 
     private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 

@@ -7,7 +7,6 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ButtonBlock;
 import net.minecraft.block.HopperBlock;
@@ -131,6 +130,16 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
             setYaw(getYaw() + 180);
             prevYaw += 180;
             return;
+        } else {
+            ItemStack stack = asItemStack();
+            if (stack.isIn(UTags.HORSE_SHOES)) {
+                if (stack.damage(1 + random.nextInt(10), random, null)) {
+                    playSound(USounds.Vanilla.ENTITY_ITEM_BREAK, 1, 1);
+                } else {
+                    dropStack(stack);
+                }
+                setStack(ItemStack.EMPTY);
+            }
         }
         super.onEntityHit(hit);
     }
@@ -221,12 +230,28 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
         }
 
         setSound(state.getSoundGroup().getStepSound());
-        getWorld().playSoundFromEntity(null, this, state.getSoundGroup().getStepSound(), SoundCategory.BLOCKS, 1, 1);
         emitGameEvent(GameEvent.STEP);
+
+        if (!isBouncy()) {
+            if (stack.isIn(UTags.HORSE_SHOES)) {
+                if (stack.damage(1 + random.nextInt(10), random, null)) {
+                    playSound(USounds.Vanilla.ENTITY_ITEM_BREAK, 1, 1);
+                    discard();
+                    return;
+                }
+            }
+
+            getWorld().playSoundFromEntity(null, this, getHitSound(), SoundCategory.BLOCKS, 0.6F, 1);
+        } else {
+            getWorld().playSoundFromEntity(null, this, state.getSoundGroup().getStepSound(), SoundCategory.BLOCKS, 1, 1);
+        }
     }
 
     @Override
     protected SoundEvent getHitSound() {
+        if (getStack().isIn(UTags.HORSE_SHOES)) {
+            return USounds.Vanilla.ITEM_TRIDENT_HIT_GROUND;
+        }
         return isBouncy() ? USounds.ITEM_MUFFIN_BOUNCE.value() : USounds.ITEM_ROCK_LAND;
     }
 
