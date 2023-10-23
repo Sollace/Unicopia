@@ -148,6 +148,9 @@ public interface URenderers {
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity, seed) -> {
             return EnchantableItem.isEnchanted(stack) ? EnchantableItem.getSpellKey(stack).getAffinity().getAlignment() : 0;
         });
+        ModelPredicateProviderRegistry.register(UItems.ROCK_CANDY, new Identifier("count"), (stack, world, entity, seed) -> {
+            return stack.getCount() / (float)stack.getMaxCount();
+        });
         ColorProviderRegistry.ITEM.register((stack, i) -> {
             return i > 0 || !EnchantableItem.isEnchanted(stack) ? -1 : EnchantableItem.getSpellKey(stack).getColor();
         }, UItems.GEMSTONE);

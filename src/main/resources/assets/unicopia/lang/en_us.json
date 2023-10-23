@@ -74,6 +74,10 @@
   "item.unicopia.storm_cloud_jar": "Storm in a Jar",
   "item.unicopia.lightning_jar": "Lightning in a Jar",
   "item.unicopia.zap_apple_jam_jar": "Zap Apple Jam",
+  
+  "item.unicopia.toast": "Toast",
+  "item.unicopia.burned_toast": "Burned Toast",
+  "item.unicopia.jam_toast": "Toast with Zap Apple Jam",
 
   "item.unicopia.crystal_heart": "Crystal Heart",
   "item.unicopia.crystal_shard": "Crystal Shard",
@@ -107,6 +111,8 @@
   "item.unicopia.weird_rock": "Weird Rock",
   "item.unicopia.tom": "Tom",
   "item.unicopia.rock_stew": "Rock Stew",
+  "item.unicopia.rock_candy": "Rock Candy",
+  "item.unicopia.salt_cube": "Salt Cube",
   "item.unicopia.pinecone": "Pinecone",
   "item.unicopia.acorn": "Acorn",
   "item.unicopia.green_apple_seeds": "Granny Smith Apple Seeds",
@@ -114,6 +120,7 @@
   "item.unicopia.sour_apple_seeds": "Sour Apple Seeds",
   "item.unicopia.apple_pie_hoof": "Apple Pie with a Hoofprint",
   "item.unicopia.apple_pie_slice": "Slice Of Apple Pie",
+  "item.unicopia.candied_apple": "Candied Apple",
 
   "item.unicopia.oats": "Oats",
   "item.unicopia.imported_oats": "Fancy Imported Oats",
@@ -123,6 +130,7 @@
   "item.unicopia.hay_burger": "Hay Burger",
   "item.unicopia.hay_fries": "Hay Fries",
   "item.unicopia.crispy_hay_fries": "Crispy Hay Fries",
+  "item.unicopia.horse_shoe_fries": "Horse Shoe Fries",
   "item.unicopia.wheat_worms": "Wheat Worms",
   "item.unicopia.muffin": "Muffin",
 

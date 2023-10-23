@@ -54,6 +54,10 @@ public interface UItems {
     Item LIGHTNING_JAR  = register("lightning_jar", new JarItem(new Item.Settings().maxCount(1).fireproof().recipeRemainder(EMPTY_JAR), false, false, true), ItemGroups.FUNCTIONAL);
     Item ZAP_APPLE_JAM_JAR = register("zap_apple_jam_jar", new JarItem(new Item.Settings().maxCount(1).fireproof().recipeRemainder(EMPTY_JAR), false, false, true), ItemGroups.FUNCTIONAL);
 
+    Item TOAST = register("toast", new Item(new Item.Settings().maxCount(1).food(UFoodComponents.TOAST)), ItemGroups.FOOD_AND_DRINK);
+    Item BURNED_TOAST = register("burned_toast", new Item(new Item.Settings().maxCount(1).food(UFoodComponents.BURNED_TOAST)), ItemGroups.FOOD_AND_DRINK);
+    Item JAM_TOAST = register("jam_toast", new Item(new Item.Settings().maxCount(1).food(UFoodComponents.JAM_TOAST)), ItemGroups.FOOD_AND_DRINK);
+
     Item CRYSTAL_HEART = register("crystal_heart", new CrystalHeartItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
     Item CRYSTAL_SHARD = register("crystal_shard", new Item(new Item.Settings()), ItemGroups.NATURAL);
 
@@ -72,6 +76,10 @@ public interface UItems {
     Item HAY_BURGER = register("hay_burger", new Item(new Item.Settings().maxCount(1).food(UFoodComponents.HAY_BURGER)), ItemGroups.FOOD_AND_DRINK);
     Item HAY_FRIES = register("hay_fries", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.HAY_FRIES)), ItemGroups.FOOD_AND_DRINK);
     Item CRISPY_HAY_FRIES = register("crispy_hay_fries", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.CRISPY_HAY_FRIES)), ItemGroups.FOOD_AND_DRINK);
+    /**
+     * https://mlp.fandom.com/wiki/Food_and_beverage
+     */
+    Item HORSE_SHOE_FRIES = register("horse_shoe_fries", new Item(new Item.Settings().maxCount(32).food(UFoodComponents.HAY_FRIES)), ItemGroups.FOOD_AND_DRINK);
 
     Item WHEAT_WORMS = register("wheat_worms", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.WORMS)), ItemGroups.NATURAL);
     Item MUFFIN = register("muffin", new MuffinItem(new Item.Settings().maxCount(32).food(FoodComponents.BREAD), 0), ItemGroups.FOOD_AND_DRINK);
@@ -91,6 +99,8 @@ public interface UItems {
             EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, new EntityAttributeModifier(BluntWeaponItem.KNOCKBACK_MODIFIER_ID, "Weapon modifier", 0.9, EntityAttributeModifier.Operation.ADDITION)
     )), ItemGroups.NATURAL);
     Item ROCK_STEW = register("rock_stew", new Item(new Item.Settings().food(FoodComponents.MUSHROOM_STEW)), ItemGroups.FOOD_AND_DRINK);
+    Item ROCK_CANDY = register("rock_candy", new Item(new Item.Settings().food(UFoodComponents.CANDY).maxCount(16)), ItemGroups.FOOD_AND_DRINK);
+    Item SALT_CUBE = register("salt_cube", new Item(new Item.Settings().food(UFoodComponents.SALT_CUBE)), ItemGroups.FOOD_AND_DRINK);
 
     Item GREEN_APPLE_SEEDS = register("green_apple_seeds", new AliasedBlockItem(UBlocks.GREEN_APPLE_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
     Item SWEET_APPLE_SEEDS = register("sweet_apple_seeds", new AliasedBlockItem(UBlocks.SWEET_APPLE_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
@@ -103,6 +113,7 @@ public interface UItems {
     Item APPLE_PIE = register("apple_pie", new BlockItem(UBlocks.APPLE_PIE, new Item.Settings().maxCount(1)), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE_HOOF = register("apple_pie_hoof", new AliasedBlockItem(UBlocks.APPLE_PIE, new Item.Settings().maxCount(1)), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE_SLICE = register("apple_pie_slice", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.PIE)), ItemGroups.FOOD_AND_DRINK);
+    Item CANDIED_APPLE = register("candied_apple", new StagedFoodItem(new Item.Settings().food(UFoodComponents.CANDY).maxDamage(3), () -> Items.STICK), ItemGroups.FOOD_AND_DRINK);
 
     Item LOVE_BOTTLE = register("love_bottle", new DrinkableItem(new Item.Settings().food(UFoodComponents.LOVE_BOTTLE).maxCount(1).recipeRemainder(Items.GLASS_BOTTLE)), ItemGroups.FOOD_AND_DRINK);
     Item LOVE_BUCKET = register("love_bucket", new DrinkableItem(new Item.Settings().food(UFoodComponents.LOVE_BUCKET).recipeRemainder(Items.BUCKET)), ItemGroups.FOOD_AND_DRINK);
