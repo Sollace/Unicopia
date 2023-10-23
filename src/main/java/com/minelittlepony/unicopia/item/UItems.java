@@ -54,9 +54,9 @@ public interface UItems {
     Item LIGHTNING_JAR  = register("lightning_jar", new JarItem(new Item.Settings().maxCount(1).fireproof().recipeRemainder(EMPTY_JAR), false, false, true), ItemGroups.FUNCTIONAL);
     Item ZAP_APPLE_JAM_JAR = register("zap_apple_jam_jar", new JarItem(new Item.Settings().maxCount(1).fireproof().recipeRemainder(EMPTY_JAR), false, false, true), ItemGroups.FUNCTIONAL);
 
-    Item TOAST = register("toast", new Item(new Item.Settings().maxCount(1).food(UFoodComponents.TOAST)), ItemGroups.FOOD_AND_DRINK);
-    Item BURNED_TOAST = register("burned_toast", new Item(new Item.Settings().maxCount(1).food(UFoodComponents.BURNED_TOAST)), ItemGroups.FOOD_AND_DRINK);
-    Item JAM_TOAST = register("jam_toast", new Item(new Item.Settings().maxCount(1).food(UFoodComponents.JAM_TOAST)), ItemGroups.FOOD_AND_DRINK);
+    Item TOAST = register("toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.TOAST)), ItemGroups.FOOD_AND_DRINK);
+    Item BURNED_TOAST = register("burned_toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.BURNED_TOAST)), ItemGroups.FOOD_AND_DRINK);
+    Item JAM_TOAST = register("jam_toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.JAM_TOAST)), ItemGroups.FOOD_AND_DRINK);
 
     Item CRYSTAL_HEART = register("crystal_heart", new CrystalHeartItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
     Item CRYSTAL_SHARD = register("crystal_shard", new Item(new Item.Settings()), ItemGroups.NATURAL);
@@ -210,8 +210,9 @@ public interface UItems {
         FuelRegistry.INSTANCE.add(DRAGON_BREATH_SCROLL, 20000);
         FuelRegistry.INSTANCE.add(BUTTERFLY, 2);
         FuelRegistry.INSTANCE.add(SPELLBOOK, 9000);
-        FuelRegistry.INSTANCE.add(MEADOWBROOKS_STAFF, 300);
-        FuelRegistry.INSTANCE.add(UTags.BASKETS, 700);
+        FuelRegistry.INSTANCE.add(MEADOWBROOKS_STAFF, 800);
+        FuelRegistry.INSTANCE.add(BURNED_TOAST, 1600);
+        FuelRegistry.INSTANCE.add(UTags.BASKETS, 1700);
 
         CompostingChanceRegistry.INSTANCE.add(GREEN_APPLE, 0.65F);
         CompostingChanceRegistry.INSTANCE.add(SWEET_APPLE, 0.65F);

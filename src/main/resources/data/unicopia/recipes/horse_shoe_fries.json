@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+  	"* *",
+  	"* *",
+  	" * "
+  ],
+  "key": {
+  	"*": {
+  		"item": "minecraft:baked_potato"
+  	}
+  },
+  "result": {
+  	"item": "unicopia:horse_shoe_fries",
+  	"count": 15
+  }
+}

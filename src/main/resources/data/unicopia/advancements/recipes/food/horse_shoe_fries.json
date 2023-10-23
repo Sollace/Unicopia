@@ -1,0 +1,30 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "unicopia:horse_shoe_fries"
+    ]
+  },
+  "criteria": {
+    "has_ingredients": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          { "items": [ "minecraft:baked_potato" ] }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "unicopia:horse_shoe_fries"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_ingredients",
+      "has_the_recipe"
+    ]
+  ]
+}
