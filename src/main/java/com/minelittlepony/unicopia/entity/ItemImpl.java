@@ -155,6 +155,11 @@ public class ItemImpl implements Equine<ItemEntity> {
     }
 
     @Override
+    public boolean collidesWithClouds() {
+        return entity.getStack().isIn(UTags.FLOATS_ON_CLOUDS) || getSpecies().canInteractWithClouds();
+    }
+
+    @Override
     public void toNBT(NbtCompound compound) {
         compound.putString("owner_race", Race.REGISTRY.getId(getSpecies()).toString());
         physics.toNBT(compound);

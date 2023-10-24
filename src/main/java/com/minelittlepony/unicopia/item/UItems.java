@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.UWoodTypes;
 import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
+import com.minelittlepony.unicopia.item.cloud.CloudBedItem;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.item.group.UItemGroups;
@@ -53,6 +54,10 @@ public interface UItems {
     Item LIGHTNING_JAR  = register("lightning_jar", new JarItem(new Item.Settings().maxCount(1).fireproof().recipeRemainder(EMPTY_JAR), false, false, true), ItemGroups.FUNCTIONAL);
     Item ZAP_APPLE_JAM_JAR = register("zap_apple_jam_jar", new JarItem(new Item.Settings().maxCount(1).fireproof().recipeRemainder(EMPTY_JAR), false, false, true), ItemGroups.FUNCTIONAL);
 
+    Item TOAST = register("toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.TOAST)), ItemGroups.FOOD_AND_DRINK);
+    Item BURNED_TOAST = register("burned_toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.BURNED_TOAST)), ItemGroups.FOOD_AND_DRINK);
+    Item JAM_TOAST = register("jam_toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.JAM_TOAST)), ItemGroups.FOOD_AND_DRINK);
+
     Item CRYSTAL_HEART = register("crystal_heart", new CrystalHeartItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
     Item CRYSTAL_SHARD = register("crystal_shard", new Item(new Item.Settings()), ItemGroups.NATURAL);
 
@@ -71,6 +76,10 @@ public interface UItems {
     Item HAY_BURGER = register("hay_burger", new Item(new Item.Settings().maxCount(1).food(UFoodComponents.HAY_BURGER)), ItemGroups.FOOD_AND_DRINK);
     Item HAY_FRIES = register("hay_fries", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.HAY_FRIES)), ItemGroups.FOOD_AND_DRINK);
     Item CRISPY_HAY_FRIES = register("crispy_hay_fries", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.CRISPY_HAY_FRIES)), ItemGroups.FOOD_AND_DRINK);
+    /**
+     * https://mlp.fandom.com/wiki/Food_and_beverage
+     */
+    Item HORSE_SHOE_FRIES = register("horse_shoe_fries", new Item(new Item.Settings().maxCount(32).food(UFoodComponents.HAY_FRIES)), ItemGroups.FOOD_AND_DRINK);
 
     Item WHEAT_WORMS = register("wheat_worms", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.WORMS)), ItemGroups.NATURAL);
     Item MUFFIN = register("muffin", new MuffinItem(new Item.Settings().maxCount(32).food(FoodComponents.BREAD), 0), ItemGroups.FOOD_AND_DRINK);
@@ -90,6 +99,8 @@ public interface UItems {
             EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, new EntityAttributeModifier(BluntWeaponItem.KNOCKBACK_MODIFIER_ID, "Weapon modifier", 0.9, EntityAttributeModifier.Operation.ADDITION)
     )), ItemGroups.NATURAL);
     Item ROCK_STEW = register("rock_stew", new Item(new Item.Settings().food(FoodComponents.MUSHROOM_STEW)), ItemGroups.FOOD_AND_DRINK);
+    Item ROCK_CANDY = register("rock_candy", new Item(new Item.Settings().food(UFoodComponents.CANDY).maxCount(16)), ItemGroups.FOOD_AND_DRINK);
+    Item SALT_CUBE = register("salt_cube", new Item(new Item.Settings().food(UFoodComponents.SALT_CUBE)), ItemGroups.FOOD_AND_DRINK);
 
     Item GREEN_APPLE_SEEDS = register("green_apple_seeds", new AliasedBlockItem(UBlocks.GREEN_APPLE_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
     Item SWEET_APPLE_SEEDS = register("sweet_apple_seeds", new AliasedBlockItem(UBlocks.SWEET_APPLE_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
@@ -102,6 +113,7 @@ public interface UItems {
     Item APPLE_PIE = register("apple_pie", new BlockItem(UBlocks.APPLE_PIE, new Item.Settings().maxCount(1)), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE_HOOF = register("apple_pie_hoof", new AliasedBlockItem(UBlocks.APPLE_PIE, new Item.Settings().maxCount(1)), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE_SLICE = register("apple_pie_slice", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.PIE)), ItemGroups.FOOD_AND_DRINK);
+    Item CANDIED_APPLE = register("candied_apple", new StagedFoodItem(new Item.Settings().food(UFoodComponents.CANDY).maxDamage(3), () -> Items.STICK), ItemGroups.FOOD_AND_DRINK);
 
     Item LOVE_BOTTLE = register("love_bottle", new DrinkableItem(new Item.Settings().food(UFoodComponents.LOVE_BOTTLE).maxCount(1).recipeRemainder(Items.GLASS_BOTTLE)), ItemGroups.FOOD_AND_DRINK);
     Item LOVE_BUCKET = register("love_bucket", new DrinkableItem(new Item.Settings().food(UFoodComponents.LOVE_BUCKET).recipeRemainder(Items.BUCKET)), ItemGroups.FOOD_AND_DRINK);
@@ -114,6 +126,11 @@ public interface UItems {
     Item GROGARS_BELL = register("grogars_bell", new BellItem(new Item.Settings().rarity(Rarity.RARE).maxCount(1)), ItemGroups.TOOLS);
     Item MEADOWBROOKS_STAFF = register("meadowbrooks_staff", new StaffItem(new Settings().rarity(Rarity.UNCOMMON).maxCount(1).maxDamage(120)), ItemGroups.TOOLS);
     Item MAGIC_STAFF = register("magic_staff", new EnchantedStaffItem(new Settings().rarity(Rarity.UNCOMMON).maxCount(1).maxDamage(120)), ItemGroups.TOOLS);
+
+    Item IRON_HORSE_SHOE = register("iron_horse_shoe", new HorseShoeItem(new Item.Settings().maxDamage(200), 4, 0.6F, 1), ItemGroups.COMBAT);
+    Item GOLDEN_HORSE_SHOE = register("golden_horse_shoe", new HorseShoeItem(new Item.Settings().maxDamage(100), 5, 0.1F, 0.5F), ItemGroups.COMBAT);
+    Item COPPER_HORSE_SHOE = register("copper_horse_shoe", new HorseShoeItem(new Item.Settings().maxDamage(250), 6, 0.5F, 0.8F), ItemGroups.COMBAT);
+    Item NETHERITE_HORSE_SHOE = register("netherite_horse_shoe", new HorseShoeItem(new Item.Settings().maxDamage(800), 3, 0.7F, 1.2F), ItemGroups.COMBAT);
 
     Item WOODEN_POLEARM = register("wooden_polearm", new PolearmItem(ToolMaterials.WOOD, 2, -3.6F, 2, new Item.Settings()), ItemGroups.COMBAT);
     Item STONE_POLEARM = register("stone_polearm", new PolearmItem(ToolMaterials.STONE, 2, -3.6F, 2, new Item.Settings()), ItemGroups.COMBAT);
@@ -162,6 +179,7 @@ public interface UItems {
 
 
     Item CARAPACE = register("carapace", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
+    Item CLOUD_BED = register("cloud_bed", new CloudBedItem(UBlocks.CLOUD_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
 
     Item ALICORN_BADGE = register(Race.ALICORN);
     Item PEGASUS_BADGE = register(Race.PEGASUS);
@@ -197,8 +215,9 @@ public interface UItems {
         FuelRegistry.INSTANCE.add(DRAGON_BREATH_SCROLL, 20000);
         FuelRegistry.INSTANCE.add(BUTTERFLY, 2);
         FuelRegistry.INSTANCE.add(SPELLBOOK, 9000);
-        FuelRegistry.INSTANCE.add(MEADOWBROOKS_STAFF, 300);
-        FuelRegistry.INSTANCE.add(UTags.BASKETS, 700);
+        FuelRegistry.INSTANCE.add(MEADOWBROOKS_STAFF, 800);
+        FuelRegistry.INSTANCE.add(BURNED_TOAST, 1600);
+        FuelRegistry.INSTANCE.add(UTags.BASKETS, 1700);
 
         CompostingChanceRegistry.INSTANCE.add(GREEN_APPLE, 0.65F);
         CompostingChanceRegistry.INSTANCE.add(SWEET_APPLE, 0.65F);

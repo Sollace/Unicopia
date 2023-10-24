@@ -1,0 +1,268 @@
+{
+  "multipart": [
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_full", "uvlock": true },
+      "when": { "down": true, "north": true, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_x", "uvlock": true },
+      "when": { "down": true, "north": true, "east": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_y", "uvlock": true },
+      "when": { "down": false, "north": true, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_z", "uvlock": true },
+      "when": { "down": true, "north": false, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xz", "uvlock": true },
+      "when": { "down": true, "north": false, "east": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xy", "uvlock": true },
+      "when": { "down": false, "north": true, "east": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_yz", "uvlock": true },
+      "when": { "down": false, "north": false, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xyz", "uvlock": true },
+      "when": { "down": false, "north": false, "east": false }
+    },
+    
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_full", "uvlock": true, "y": 90 },
+      "when": { "down": true, "south": true, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_z", "uvlock": true, "y": 90 },
+      "when": { "down": true, "south": true, "east": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_y", "uvlock": true, "y": 90 },
+      "when": { "down": false, "south": true, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_x", "uvlock": true, "y": 90 },
+      "when": { "down": true, "south": false, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xz", "uvlock": true, "y": 90 },
+      "when": { "down": true, "south": false, "east": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_yz", "uvlock": true, "y": 90 },
+      "when": { "down": false, "south": true, "east": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xy", "uvlock": true, "y": 90 },
+      "when": { "down": false, "south": false, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xyz", "uvlock": true, "y": 90 },
+      "when": { "down": false, "south": false, "east": false }
+    },
+    
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_full", "uvlock": true, "y": 180 },
+      "when": { "down": true, "south": true, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_x", "uvlock": true, "y": 180 },
+      "when": { "down": true, "south": true, "west": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_y", "uvlock": true, "y": 180 },
+      "when": { "down": false, "south": true, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_z", "uvlock": true, "y": 180 },
+      "when": { "down": true, "south": false, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xz", "uvlock": true, "y": 180 },
+      "when": { "down": true, "south": false, "west": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xy", "uvlock": true, "y": 180 },
+      "when": { "down": false, "south": true, "west": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_yz", "uvlock": true, "y": 180 },
+      "when": { "down": false, "south": false, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xyz", "uvlock": true, "y": 180 },
+      "when": { "down": false, "south": false, "west": false }
+    },
+    
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_full", "uvlock": true, "y": 270 },
+      "when": { "down": true, "north": true, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_z", "uvlock": true, "y": 270 },
+      "when": { "down": true, "north": true, "west": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_y", "uvlock": true, "y": 270 },
+      "when": { "down": false, "north": true, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_x", "uvlock": true, "y": 270 },
+      "when": { "down": true, "north": false, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xz", "uvlock": true, "y": 270 },
+      "when": { "down": true, "north": false, "west": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_yz", "uvlock": true, "y": 270 },
+      "when": { "down": false, "north": true, "west": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xy", "uvlock": true, "y": 270 },
+      "when": { "down": false, "north": false, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xyz", "uvlock": true, "y": 270 },
+      "when": { "down": false, "north": false, "west": false }
+    },
+
+
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_full", "uvlock": true, "x": 180 },
+      "when": { "up": true, "south": true, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_x", "uvlock": true, "x": 180 },
+      "when": { "up": true, "south": true, "east": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_y", "uvlock": true, "x": 180 },
+      "when": { "up": false, "south": true, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_z", "uvlock": true, "x": 180 },
+      "when": { "up": true, "south": false, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xz", "uvlock": true, "x": 180 },
+      "when": { "up": true, "south": false, "east": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xy", "uvlock": true, "x": 180 },
+      "when": { "up": false, "south": true, "east": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_yz", "uvlock": true, "x": 180 },
+      "when": { "up": false, "south": false, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xyz", "uvlock": true, "x": 180 },
+      "when": { "up": false, "south": false, "east": false }
+    },
+    
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_full", "uvlock": true, "x": 180, "y": 90 },
+      "when": { "up": true, "south": true, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_z", "uvlock": true, "x": 180, "y": 90 },
+      "when": { "up": true, "south": true, "west": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_y", "uvlock": true, "x": 180, "y": 90 },
+      "when": { "up": false, "south": true, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_x", "uvlock": true, "x": 180, "y": 90 },
+      "when": { "up": true, "south": false, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xz", "uvlock": true, "x": 180, "y": 90 },
+      "when": { "up": true, "south": false, "west": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_yz", "uvlock": true, "x": 180, "y": 90 },
+      "when": { "up": false, "south": true, "west": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xy", "uvlock": true, "x": 180, "y": 90 },
+      "when": { "up": false, "south": false, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xyz", "uvlock": true, "x": 180, "y": 90 },
+      "when": { "up": false, "south": false, "west": false }
+    },
+    
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_full", "uvlock": true, "x": 180, "y": 180 },
+      "when": { "up": true, "north": true, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_x", "uvlock": true, "x": 180, "y": 180 },
+      "when": { "up": true, "north": true, "west": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_y", "uvlock": true, "x": 180, "y": 180 },
+      "when": { "up": false, "north": true, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_z", "uvlock": true, "x": 180, "y": 180 },
+      "when": { "up": true, "north": false, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xz", "uvlock": true, "x": 180, "y": 180 },
+      "when": { "up": true, "north": false, "west": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xy", "uvlock": true, "x": 180, "y": 180 },
+      "when": { "up": false, "north": true, "west": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_yz", "uvlock": true, "x": 180, "y": 180 },
+      "when": { "up": false, "north": false, "west": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xyz", "uvlock": true, "x": 180, "y": 180 },
+      "when": { "up": false, "north": false, "west": false }
+    },
+    
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_full", "uvlock": true, "x": 180, "y": 270 },
+      "when": { "up": true, "north": true, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_z", "uvlock": true, "x": 180, "y": 270 },
+      "when": { "up": true, "north": true, "east": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_y", "uvlock": true, "x": 180, "y": 270 },
+      "when": { "up": false, "north": true, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_x", "uvlock": true, "x": 180, "y": 270 },
+      "when": { "up": true, "north": false, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xz", "uvlock": true, "x": 180, "y": 270 },
+      "when": { "up": true, "north": false, "east": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_yz", "uvlock": true, "x": 180, "y": 270 },
+      "when": { "up": false, "north": true, "east": false }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xy", "uvlock": true, "x": 180, "y": 270 },
+      "when": { "up": false, "north": false, "east": true }
+    },
+    {
+      "apply": { "model": "unicopia:block/flattened_cloud_planks_corner_xyz", "uvlock": true, "x": 180, "y": 270 },
+      "when": { "up": false, "north": false, "east": false }
+    }
+  ]
+}

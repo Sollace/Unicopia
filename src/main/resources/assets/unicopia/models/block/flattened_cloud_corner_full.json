@@ -1,7 +1,7 @@
 {
 	"textures": {
-		"0": "unicopia:block/cloud",
-		"particle": "unicopia:block/cloud"
+		"all": "unicopia:block/cloud",
+		"particle": "#all"
 	},
 	"elements": [
 		{
@@ -9,9 +9,9 @@
 			"to": [16, 8, 8],
 			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 8]},
 			"faces": {
-				"north": {"uv": [0, 0, 8, 8], "texture": "#0"},
-				"east": {"uv": [0, 0, 8, 8], "texture": "#0"},
-				"down": {"uv": [0, 0, 8, 8], "texture": "#0"}
+				"north": {"uv": [0, 0, 8, 8], "texture": "#all"},
+				"east": {"uv": [0, 0, 8, 8], "texture": "#all"},
+				"down": {"uv": [0, 0, 8, 8], "texture": "#all"}
 			}
 		}
 	]

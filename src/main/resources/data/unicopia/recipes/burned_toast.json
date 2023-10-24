@@ -1,0 +1,9 @@
+{
+  "type": "smelting",
+  "ingredient": {
+    "item": "unicopia:toast"
+  },
+  "result": "unicopia:burned_toast",
+  "experience": 0.2,
+  "cookingtime": 30
+}

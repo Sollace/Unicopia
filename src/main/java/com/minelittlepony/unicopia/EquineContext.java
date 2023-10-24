@@ -21,6 +21,10 @@ public interface EquineContext {
         return 0;
     }
 
+    default boolean collidesWithClouds() {
+        return getCompositeRace().any(Race::canInteractWithClouds);
+    }
+
     static EquineContext of(ShapeContext context) {
         if (context == ShapeContext.absent()) {
             return Unicopia.SIDE.getPony().map(EquineContext.class::cast).orElse(ABSENT);

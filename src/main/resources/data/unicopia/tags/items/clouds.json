@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "unicopia:cloud",
+    "unicopia:cloud_planks",
+    "unicopia:dense_cloud",
+    "unicopia:unstable_cloud"
+  ]
+}

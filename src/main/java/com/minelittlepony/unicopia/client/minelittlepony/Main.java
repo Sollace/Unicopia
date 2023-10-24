@@ -1,5 +1,11 @@
 package com.minelittlepony.unicopia.client.minelittlepony;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+
 import com.minelittlepony.api.model.*;
 import com.minelittlepony.api.model.fabric.PonyModelPrepareCallback;
 import com.minelittlepony.api.model.gear.IGear;
@@ -13,10 +19,21 @@ import com.minelittlepony.unicopia.util.AnimationUtil;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class Main extends MineLPDelegate implements ClientModInitializer {
+    private static final Map<com.minelittlepony.api.pony.meta.Race, Race> PONY_RACE_MAPPING = new HashMap<>();
+    private static final Function<com.minelittlepony.api.pony.meta.Race, Race> LOOKUP_CACHE = Util.memoize(race -> {
+        return Optional.ofNullable(PONY_RACE_MAPPING.get(race))
+                .or(() -> Race.REGISTRY.getOrEmpty(Unicopia.id(race.name().toLowerCase(Locale.ROOT))))
+                .orElse(Race.UNSET);
+    });
+
+    public static void registerRaceMapping(com.minelittlepony.api.pony.meta.Race minelpRace, Race unicopiaRace) {
+        PONY_RACE_MAPPING.put(minelpRace, unicopiaRace);
+    }
 
     private boolean hookErroring;
 
@@ -33,6 +50,14 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
         IGear.register(BodyPartGear::unicornHorn);
         IGear.register(AmuletGear::new);
         IGear.register(GlassesGear::new);
+        IGear.register(SpellEffectGear::new);
+
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.CHANGEDLING, Race.CHANGELING);
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.ZEBRA, Race.EARTH);
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.GRYPHON, Race.PEGASUS);
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.HIPPOGRIFF, Race.PEGASUS);
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.BATPONY, Race.BAT);
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.SEAPONY, Race.UNICORN);
     }
 
     private void onPonyModelPrepared(Entity entity, IModel model, ModelAttributes.Mode mode) {
@@ -75,7 +100,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
 
     @Override
     public Race getRace(Entity entity) {
-        return IPony.getManager().getPony(entity).map(IPony::race).map(Main::toUnicopiaRace).orElse(Race.HUMAN);
+        return IPony.getManager().getPony(entity).map(IPony::race).map(Main::toUnicopiaRace).orElse(Race.UNSET);
     }
 
     @Override
@@ -84,14 +109,6 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
     }
 
     private static Race toUnicopiaRace(com.minelittlepony.api.pony.meta.Race race) {
-        return switch (race) {
-            case ALICORN -> Race.ALICORN;
-            case CHANGELING, CHANGEDLING -> Race.CHANGELING;
-            case ZEBRA, EARTH -> Race.EARTH;
-            case GRYPHON, HIPPOGRIFF, PEGASUS -> Race.PEGASUS;
-            case BATPONY -> Race.BAT;
-            case SEAPONY, UNICORN, KIRIN -> Race.UNICORN;
-            default -> Race.HUMAN;
-        };
+        return LOOKUP_CACHE.apply(race);
     }
 }

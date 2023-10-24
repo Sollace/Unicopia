@@ -40,7 +40,7 @@ abstract class ProjectileItem extends Item {
                 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
         if (!world.isClient) {
-            world.spawnEntity(createProjectile(stack, world, player));
+            world.spawnEntity(createProjectile(stack.copyWithCount(1), world, player));
         }
 
         player.incrementStat(Stats.USED.getOrCreateStat(this));

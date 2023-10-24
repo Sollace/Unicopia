@@ -26,8 +26,10 @@ public interface UTags {
     TagKey<Item> CHANGELING_EDIBLE = item("food_types/changeling_edible");
     TagKey<Item> SPOOKED_MOB_DROPS = item("spooked_mob_drops");
     TagKey<Item> IS_DELIVERED_AGGRESSIVELY = item("is_delivered_aggressively");
+    TagKey<Item> FLOATS_ON_CLOUDS = item("floats_on_clouds");
 
     TagKey<Item> POLEARMS = item("polearms");
+    TagKey<Item> HORSE_SHOES = item("horse_shoes");
     TagKey<Item> APPLE_SEEDS = item("apple_seeds");
 
     TagKey<Item> ACORNS = item("acorns");

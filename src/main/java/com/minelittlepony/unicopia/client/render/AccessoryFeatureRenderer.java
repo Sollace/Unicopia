@@ -4,7 +4,9 @@ import java.util.*;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.client.FirstPersonRendererOverrides.ArmRenderer;
+import com.minelittlepony.unicopia.client.render.spell.SpellEffectsRenderDispatcher;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
@@ -37,6 +39,10 @@ public class AccessoryFeatureRenderer<
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         features.forEach(feature -> feature.render(matrices, vertexConsumers, light, entity, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch));
+
+        Caster.of(entity).ifPresent(caster -> {
+            SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertexConsumers, light, caster, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
+        });
     }
 
     public void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, ModelPart arm, Arm side) {

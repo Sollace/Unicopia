@@ -1,0 +1,98 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "unicopia:item/rock_candy"
+    },
+    "overrides": [
+        {
+            "predicate": {
+                "count": 0.125
+            },
+            "model": "unicopia:item/rock_candy_2"
+        },
+        {
+            "predicate": {
+                "count": 0.1875
+            },
+            "model": "unicopia:item/rock_candy_3"
+        },
+        {
+            "predicate": {
+                "count": 0.25
+            },
+            "model": "unicopia:item/rock_candy_4"
+        },
+        {
+            "predicate": {
+                "count": 0.3125
+            },
+            "model": "unicopia:item/rock_candy_5"
+        },
+        {
+            "predicate": {
+                "count": 0.375
+            },
+            "model": "unicopia:item/rock_candy_6"
+        },
+        {
+            "predicate": {
+                "count": 0.4375
+            },
+            "model": "unicopia:item/rock_candy_7"
+        },
+        {
+            "predicate": {
+                "count": 0.5
+            },
+            "model": "unicopia:item/rock_candy_8"
+        },
+        {
+            "predicate": {
+                "count": 0.5625
+            },
+            "model": "unicopia:item/rock_candy_9"
+        },
+        {
+            "predicate": {
+                "count": 0.625
+            },
+            "model": "unicopia:item/rock_candy_10"
+        },
+        {
+            "predicate": {
+                "count": 0.6875
+            },
+            "model": "unicopia:item/rock_candy_11"
+        },
+        {
+            "predicate": {
+                "count": 0.75
+            },
+            "model": "unicopia:item/rock_candy_12"
+        },
+        {
+            "predicate": {
+                "count": 0.8125
+            },
+            "model": "unicopia:item/rock_candy_13"
+        },
+        {
+            "predicate": {
+                "count": 0.875
+            },
+            "model": "unicopia:item/rock_candy_14"
+        },
+        {
+            "predicate": {
+                "count": 0.9375
+            },
+            "model": "unicopia:item/rock_candy_15"
+        },
+        {
+            "predicate": {
+                "count": 1
+            },
+            "model": "unicopia:item/rock_candy_16"
+        }
+    ]
+}

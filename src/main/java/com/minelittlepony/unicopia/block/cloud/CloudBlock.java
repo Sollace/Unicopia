@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.block.cloud;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.block.Block;
@@ -28,6 +27,9 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
 public class CloudBlock extends Block {
+    public static boolean isCloudBlock(Block block) {
+        return block instanceof CloudBlock || block instanceof CloudStairsBlock || block instanceof CloudBedBlock;
+    }
 
     protected final boolean meltable;
 
@@ -173,7 +175,7 @@ public class CloudBlock extends Block {
     }
 
     protected boolean canInteract(BlockState state, BlockView world, BlockPos pos, EquineContext context) {
-        return context.getCompositeRace().any(Race::canInteractWithClouds);
+        return context.collidesWithClouds();
     }
 
     @SuppressWarnings("deprecation")

@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "unicopia:cloud",
+    "unicopia:cloud_planks",
+    "unicopia:dense_cloud",
+    "unicopia:compacted_cloud",
+    "unicopia:compacted_cloud_planks",
+    "unicopia:unstable_cloud",
+    "unicopia:soggy_cloud"
+  ]
+}

@@ -28,9 +28,9 @@ public interface UFoodComponents {
     FoodComponent WORMS = builder(1, 1.5F).alwaysEdible().meat().build();
     FoodComponent INSECTS = builder(1, 0).alwaysEdible().build();
 
-    FoodComponent CEREAL = builder(9, 0.8F).build();
-    FoodComponent SUGAR = builder(20, -2).build();
-
+    FoodComponent TOAST = builder(1, 0.6F).alwaysEdible().snack().build();
+    FoodComponent BURNED_TOAST = builder(1, -0.8F).alwaysEdible().snack().build();
+    FoodComponent JAM_TOAST = builder(4, 0.6F).alwaysEdible().snack().build();
     FoodComponent ZAP_APPLE = builder(4, 0.3F).alwaysEdible().snack().build();
     FoodComponent ZAP_BULB = builder(-2, -0.8f)
             .alwaysEdible()
@@ -47,6 +47,9 @@ public interface UFoodComponents {
     FoodComponent ACORN = builder(1, 0.01F).snack().alwaysEdible().build();
     FoodComponent MANGO = builder(8, 0.8F).alwaysEdible().build();
     FoodComponent BANANA = builder(6, 0.9F).build();
+
+    FoodComponent CANDY = builder(7, 0.9F).alwaysEdible().build();
+    FoodComponent SALT_CUBE = builder(0, 2.9F).alwaysEdible().build();
 
     static FoodComponent.Builder builder(int hunger, float saturation) {
         return new FoodComponent.Builder()
