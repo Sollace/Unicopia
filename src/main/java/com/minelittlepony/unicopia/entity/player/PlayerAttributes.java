@@ -89,7 +89,7 @@ public class PlayerAttributes implements Tickable {
                         instance.addPersistentModifier(modifier);
                     }
                 } else {
-                    instance.tryRemoveModifier(modifier.getId());
+                    instance.removeModifier(modifier.getId());
                 }
             });
         }

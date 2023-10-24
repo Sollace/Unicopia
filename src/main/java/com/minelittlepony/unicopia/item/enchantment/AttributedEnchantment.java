@@ -44,7 +44,7 @@ public class AttributedEnchantment extends SimpleEnchantment {
         modifiers.forEach((attr, modifierSupplier) -> {
             EntityAttributeInstance instance = user.asEntity().getAttributeInstance(attr);
 
-            instance.tryRemoveModifier(modifierSupplier.get(user, 1).getId());
+            instance.removeModifier(modifierSupplier.get(user, 1).getId());
         });
         user.getEnchants().remove(this);
     }

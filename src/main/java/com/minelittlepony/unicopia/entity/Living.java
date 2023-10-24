@@ -366,7 +366,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         EntityAttributeModifier modifier = instance.getModifier(id);
 
         if (!MathHelper.approximatelyEquals(desiredValue, modifier == null ? 0 : modifier.getValue())) {
-            instance.tryRemoveModifier(id);
+            instance.removeModifier(id);
 
             if (desiredValue != 0) {
                 if (permanent) {

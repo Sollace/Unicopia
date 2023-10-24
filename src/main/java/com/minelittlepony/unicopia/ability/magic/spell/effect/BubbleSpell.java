@@ -143,7 +143,7 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
         if (source.asEntity() instanceof LivingEntity l) {
             MODIFIERS.forEach((attribute, modifier) -> {
                 if (l.getAttributes().hasAttribute(attribute)) {
-                    l.getAttributeInstance(attribute).tryRemoveModifier(modifier.getId());
+                    l.getAttributeInstance(attribute).removeModifier(modifier.getId());
                 }
             });
         }
