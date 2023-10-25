@@ -1,4 +1,4 @@
-# Unicopia
+# ![Unicopia](https://github-production-user-asset-6210df.s3.amazonaws.com/6429283/244022981-71021d60-e698-4ca0-88ae-bfa71be39cc6.png)
 
 [![Build Status](https://github.com/Sollace/Unicopia/actions/workflows/gradle-build.yml/badge.svg)](https://github.com/Sollace/Unicopia/actions/workflows/gradle-build.yml)
 [![Downloads](https://img.shields.io/github/downloads/Sollace/Unicopia/total.svg?color=yellowgreen)](https://github.com/Sollace/Unicopia/releases/latest)
