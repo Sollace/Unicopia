@@ -7,6 +7,8 @@
 [![ru](https://img.shields.io/badge/lang-ru-d52b1e.svg)](README_RU.md)
 [![cn](https://img.shields.io/badge/lang-cn-de2910.svg)](README_CN.md)
 
+[Wiki](https://github.com/Sollace/Unicopia/wiki)
+
 Bringing the magic of friendship to Minecraft!
 
 What started as a humble utility to make playing as a unicorn a little more emersive has grown into a full-blown pony
