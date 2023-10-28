@@ -65,7 +65,7 @@ public enum Trait implements CommandArgumentEnum<Trait> {
 
     private static final Map<Identifier, Trait> IDS = Arrays.stream(values()).collect(Collectors.toMap(Trait::getId, Function.identity()));
     @Deprecated
-    private static final EnumCodec<Trait> NAME_CODEC = StringIdentifiable.createCodec(Trait::values);
+    private static final EnumCodec<Trait> NAME_CODEC = StringIdentifiable.createCodec(Trait::values, String::toLowerCase);
     @Deprecated
     private static final EnumCodec<Trait> ID_CODEC = StringIdentifiable.createCodec(Trait::values, i -> "unicopia:" + i);
 
@@ -173,7 +173,7 @@ public enum Trait implements CommandArgumentEnum<Trait> {
 
     @Deprecated
     public static Optional<Trait> fromName(String name) {
-        return Optional.ofNullable(NAME_CODEC.byId(name.toUpperCase()));
+        return Optional.ofNullable(NAME_CODEC.byId(name));
     }
 
     public static EnumArgumentType<Trait> argument() {
