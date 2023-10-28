@@ -94,8 +94,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     private final Interpolator interpolator = new LinearInterpolator();
 
-    @Nullable
-    private Race.Composite compositeRace;
+    private Race.Composite compositeRace = Race.UNSET.composite();
     private Race respawnRace = Race.UNSET;
 
     private boolean dirty;
@@ -220,19 +219,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
      */
     @Override
     public Race.Composite getCompositeRace() {
-        if (compositeRace == null || entity.age % 2 == 0) {
-            compositeRace = getSpellSlot()
-                    .get(SpellPredicate.IS_MIMIC, true)
-                    .map(AbstractDisguiseSpell::getDisguise)
-                    .map(EntityAppearance::getAppearance)
-                    .flatMap(Pony::of)
-                    .map(Pony::getSpecies)
-                    .orElseGet(this::getSpecies).composite(
-                  AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
-                : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
-                : null
-            );
-        }
         return compositeRace;
     }
 
@@ -352,6 +338,20 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public boolean beforeUpdate() {
+        if (compositeRace.includes(Race.UNSET) || entity.age % 2 == 0) {
+            compositeRace = getSpellSlot()
+                    .get(SpellPredicate.IS_MIMIC, true)
+                    .map(AbstractDisguiseSpell::getDisguise)
+                    .map(EntityAppearance::getAppearance)
+                    .flatMap(Pony::of)
+                    .map(Pony::getSpecies)
+                    .orElseGet(this::getSpecies).composite(
+                  AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
+                : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
+                : null
+            );
+        }
+
         if (isClient()) {
             if (entity.hasVehicle() && entity.isSneaking()) {
 
@@ -420,9 +420,14 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                         entity.setVelocity(entity.getVelocity().multiply(1, 0, 1));
                         entity.setSneaking(false);
                     }
-                } else if (attachDirection != null && isFaceClimbable(entity.getWorld(), entity.getBlockPos(), attachDirection)) {
-                    entity.setBodyYaw(attachDirection.asRotation());
-                    entity.prevBodyYaw = attachDirection.asRotation();
+                } else if (attachDirection != null) {
+                    if (isFaceClimbable(entity.getWorld(), entity.getBlockPos(), attachDirection)) {
+                        entity.setBodyYaw(attachDirection.asRotation());
+                        entity.prevBodyYaw = attachDirection.asRotation();
+                    } else {
+                        entity.setVelocity(vel);
+                        entity.isClimbing();
+                    }
                 }
             }
 
@@ -480,7 +485,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public Optional<BlockPos> chooseClimbingPos() {
         if (getObservedSpecies() == Race.CHANGELING && getSpellSlot().get(SpellPredicate.IS_DISGUISE, false).isEmpty()) {
-            return Optional.of(entity.getBlockPos());
+            if (isFaceClimbable(entity.getWorld(), entity.getBlockPos(), entity.getHorizontalFacing()) || canHangAt(entity.getBlockPos())) {
+                return Optional.of(entity.getBlockPos());
+            }
         }
         return super.chooseClimbingPos();
     }
