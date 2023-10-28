@@ -23,11 +23,19 @@ public record TraitIngredient (
             RecordCodecBuilder.<TraitIngredient>create(instance -> instance.group(
                     SpellTraits.CODEC.optionalFieldOf("min").forGetter(TraitIngredient::min),
                     SpellTraits.CODEC.optionalFieldOf("max").forGetter(TraitIngredient::max)
-            ).apply(instance, TraitIngredient::new))
+            ).apply(instance, TraitIngredient::new)).flatXmap(
+                    ingredient -> !ingredient.isEmpty() ? DataResult.success(ingredient) : DataResult.error(() -> "No min or max supplied for ingredient"),
+                    ingredient -> DataResult.success(ingredient)
+            )
     ).flatXmap(
             either -> either.left().or(either::right).map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Invalid traits")),
-            ingredient -> DataResult.success(ingredient.max.isPresent() ? Either.left(ingredient) : Either.right(ingredient))
+            ingredient -> DataResult.success(ingredient.max.isEmpty() ? Either.left(ingredient) : Either.right(ingredient))
     );
+
+    public boolean isEmpty() {
+        return min.filter(SpellTraits::isPresent).isEmpty()
+            && max.filter(SpellTraits::isPresent).isEmpty();
+    }
 
     @Override
     public boolean test(SpellTraits t) {

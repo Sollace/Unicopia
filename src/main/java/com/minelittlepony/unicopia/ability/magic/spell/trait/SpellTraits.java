@@ -45,9 +45,10 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     private static Map<Identifier, SpellTraits> REGISTRY = new HashMap<>();
     static final Map<Trait, List<Item>> ITEMS = new HashMap<>();
 
-    public static final Codec<SpellTraits> CODEC = Codec.unboundedMap(Trait.CODEC, Codec.FLOAT).flatXmap(map -> {
-        return fromEntries(map.entrySet().stream()).map(DataResult::success).orElseGet(() -> DataResult.error(() -> "No traits were supplied"));
-    }, traits -> DataResult.success(traits.traits));
+    public static final Codec<SpellTraits> CODEC = Codec.unboundedMap(Trait.CODEC, Codec.FLOAT).flatXmap(
+            map -> DataResult.success(fromEntries(map.entrySet().stream()).orElse(EMPTY)),
+            traits -> DataResult.success(traits.traits)
+    );
 
     public static void load(Map<Identifier, SpellTraits> newRegistry) {
         REGISTRY = new HashMap<>(newRegistry);
