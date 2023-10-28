@@ -54,13 +54,19 @@ public class SproutBlock extends CropBlock implements TintedBlock {
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.randomTick(state, world, pos, random);
-        onGrow(world, world.getBlockState(pos), pos);
+        state = world.getBlockState(pos);
+        if (state.isOf(this)) {
+            onGrow(world, state, pos);
+        }
     }
 
     @Override
     public void applyGrowth(World world, BlockPos pos, BlockState state) {
         super.applyGrowth(world, pos, state);
-        onGrow(world, world.getBlockState(pos), pos);
+        state = world.getBlockState(pos);
+        if (state.isOf(this)) {
+            onGrow(world, world.getBlockState(pos), pos);
+        }
     }
 
     @Override
@@ -81,7 +87,7 @@ public class SproutBlock extends CropBlock implements TintedBlock {
 
     protected void mature(World world, BlockState state, BlockPos pos) {
         state = matureState.get();
-        world.setBlockState(pos, matureState.get());
+        world.setBlockState(pos, state);
         BlockSoundGroup group = state.getSoundGroup();
         world.playSound(null, pos, group.getPlaceSound(), SoundCategory.BLOCKS, group.getVolume(), group.getPitch());
     }
