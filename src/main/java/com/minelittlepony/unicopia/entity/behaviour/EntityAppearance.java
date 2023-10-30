@@ -127,7 +127,9 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
             entity = null;
         }
         if (blockEntity != null) {
-            blockEntity.markRemoved();
+            try {
+                blockEntity.markRemoved();
+            } catch (Throwable ignored) {}
             blockEntity = null;
         }
     }
