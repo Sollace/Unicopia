@@ -7,8 +7,8 @@
   ],
   "key": {
     "#": [
-      { "item": "unicopia:cloud_planks" }
+      { "item": "unicopia:cloud_bricks" }
     ]
   },
-  "result": { "item": "unicopia:cloud_plank_stairs", "count": 4 }
+  "result": { "item": "unicopia:cloud_brick_stairs", "count": 4 }
 }

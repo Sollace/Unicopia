@@ -30,8 +30,6 @@ import net.minecraft.util.math.RotationAxis;
 import net.minecraft.world.World;
 
 public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBedBlock.Tile> {
-    private static final Identifier TEXTURE = Unicopia.id("textures/entity/cloud_bed/white.png");
-
     private final ModelPart bedHead;
     private final ModelPart bedFoot;
 
@@ -66,9 +64,10 @@ public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBed
     public void render(CloudBedBlock.Tile entity, float f, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         @Nullable
         World world = entity.getWorld();
+        Identifier texture = Unicopia.id("textures/entity/cloud_bed/" + entity.getColor().asString() + ".png");
         if (world == null) {
-            renderModel(matrices, vertices, bedHead, Direction.SOUTH, TEXTURE, light, overlay, false);
-            renderModel(matrices, vertices, bedFoot, Direction.SOUTH, TEXTURE, light, overlay, true);
+            renderModel(matrices, vertices, bedHead, Direction.SOUTH, texture, light, overlay, false);
+            renderModel(matrices, vertices, bedFoot, Direction.SOUTH, texture, light, overlay, true);
             return;
         }
 
@@ -77,7 +76,7 @@ public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBed
         renderModel(matrices, vertices,
                 state.get(BedBlock.PART) == BedPart.HEAD ? bedHead : bedFoot,
                 state.get(BedBlock.FACING),
-                TEXTURE,
+                texture,
                 getModelLight(entity, light),
                 overlay,
                 false

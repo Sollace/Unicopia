@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "unicopia:cloud_planks_stairs"
+          "name": "unicopia:cloud_plank_stairs"
         }
       ],
       "conditions": [

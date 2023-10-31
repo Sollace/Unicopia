@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "unicopia:cloud_planks_slab",
+          "name": "unicopia:cloud_plank_slab",
           "functions": [
             {
               "add": false,
@@ -15,7 +15,7 @@
               "function": "minecraft:set_count",
               "conditions": [
                 {
-                  "block": "unicopia:cloud_planks_slab",
+                  "block": "unicopia:cloud_plank_slab",
                   "condition": "minecraft:block_state_property",
                   "properties": {
                     "type": "double"

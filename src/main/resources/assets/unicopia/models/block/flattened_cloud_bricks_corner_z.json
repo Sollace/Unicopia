@@ -1,0 +1,6 @@
+{
+  "parent": "unicopia:block/flattened_cloud_corner_z",
+  "textures": {
+    "all": "unicopia:block/cloud_bricks"
+  }
+}

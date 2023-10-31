@@ -29,8 +29,8 @@ public class CloudBedBlock extends BedBlock {
     private final BlockState baseState;
     private final CloudBlock baseBlock;
 
-    public CloudBedBlock(BlockState baseState, Settings settings) {
-        super(DyeColor.WHITE, settings);
+    public CloudBedBlock(DyeColor color, BlockState baseState, Settings settings) {
+        super(color, settings);
         this.baseState = baseState;
         this.baseBlock = (CloudBlock)baseState.getBlock();
     }
