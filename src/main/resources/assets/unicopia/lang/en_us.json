@@ -175,6 +175,14 @@
   "item.unicopia.music_disc_crusade.desc": "Danial Ingram - crusade",
   "item.unicopia.music_disc_funk": "Music Disc",
   "item.unicopia.music_disc_funk.desc": "funk, just funk",
+  
+  "item.unicopia.apple_bed_sheets": "Apple Patterned Bed Sheets",
+  "item.unicopia.barred_bed_sheets": "Bar Patterned Bed Sheets",
+  "item.unicopia.blue_bed_sheets": "Blue Bed Sheets",
+  "item.unicopia.checkered_bed_sheets": "Checker Patterned Bed Sheets",
+  "item.unicopia.orange_bed_sheets": "Orange Bed Sheets",
+  "item.unicopia.pink_bed_sheets": "Pink Bed Sheets",
+  "item.unicopia.rainbow_bed_sheets": "Rainbow Patterned Bed Sheets",
 
   "block.unicopia.rocks": "Rocks",
   "block.unicopia.bananas": "Bananas",
@@ -253,6 +261,7 @@
   "block.unicopia.dense_cloud_slab": "Dense Cloud Slab",
   "block.unicopia.dense_cloud_stairs": "Dense Cloud Stairs",
   "block.unicopia.cloud_pillar": "Cloud Pillar",
+  "block.unicopia.cloth_bed": "Fancy Cloth Bed",
   "block.unicopia.cloud_bed": "Cloud Bed",
 
   "block.unicopia.oats": "Oats",

@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client;
 
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Unicopia;
@@ -24,7 +26,6 @@ import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.item.cloud.CloudBedItem;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.terraformersmc.terraform.boat.api.client.TerraformBoatClientHelper;
 
@@ -35,6 +36,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.*;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.DynamicItemRenderer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.color.world.FoliageColors;
@@ -92,10 +94,10 @@ public interface URenderers {
         EntityRendererRegistry.register(UEntities.FRIENDLY_CREEPER, FriendlyCreeperEntityRenderer::new);
 
         BlockEntityRendererFactories.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
-        BlockEntityRendererFactories.register(UBlockEntities.CLOUD_BED, CloudBedBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(UBlockEntities.FANCY_BED, CloudBedBlockEntityRenderer::new);
 
         register(URenderers::renderJarItem, UItems.FILLED_JAR);
-        register(URenderers::renderBedItem, UItems.WHITE_CLOUD_BED, UItems.ORANGE_CLOUD_BED);
+        register(URenderers::renderBedItem, UItems.CLOTH_BED, UItems.CLOUD_BED);
         PolearmRenderer.register(UItems.WOODEN_POLEARM, UItems.STONE_POLEARM, UItems.IRON_POLEARM, UItems.GOLDEN_POLEARM, UItems.DIAMOND_POLEARM, UItems.NETHERITE_POLEARM);
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity, seed) -> EnchantableItem.isEnchanted(stack) ? EnchantableItem.getSpellKey(stack).getAffinity().getAlignment() : 0);
         ModelPredicateProviderRegistry.register(UItems.ROCK_CANDY, new Identifier("count"), (stack, world, entity, seed) -> stack.getCount() / (float)stack.getMaxCount());
@@ -122,8 +124,9 @@ public interface URenderers {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static void renderBedItem(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(((CloudBedItem)stack.getItem()).getRenderEntity(), matrices, vertices, light, overlay);
+        MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(((Supplier<BlockEntity>)stack.getItem()).get(), matrices, vertices, light, overlay);
     }
 
     private static void renderJarItem(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {

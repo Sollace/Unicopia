@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMultimap;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.UWoodTypes;
+import com.minelittlepony.unicopia.block.cloud.CloudBedBlock;
 import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.cloud.CloudBedItem;
@@ -160,6 +161,14 @@ public interface UItems {
 
     Item GIANT_BALLOON = register("giant_balloon", new HotAirBalloonItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
 
+    Item APPLE_BED_SHEETS = register("apple_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.APPLE, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item BARRED_BED_SHEETS = register("barred_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.BARS, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item BLUE_BED_SHEETS = register("blue_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.BLUE, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item CHECKERED_BED_SHEETS = register("checkered_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.CHECKER, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item ORANGE_BED_SHEETS = register("orange_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.ORANGE, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item PINK_BED_SHEETS = register("pink_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.PINK, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item RAINBOW_BED_SHEETS = register("rainbow_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.RAINBOW, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new FabricItemSettings()
             .maxCount(1)
             .maxDamage(890)
@@ -177,10 +186,9 @@ public interface UItems {
     GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
     GlassesItem BROKEN_SUNGLASSES = register("broken_sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
 
-
     Item CARAPACE = register("carapace", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
-    Item WHITE_CLOUD_BED = register("white_cloud_bed", new CloudBedItem(UBlocks.WHITE_CLOUD_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
-    Item ORANGE_CLOUD_BED = register("orange_cloud_bed", new CloudBedItem(UBlocks.ORANGE_CLOUD_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item CLOTH_BED = register("cloth_bed", new FancyBedItem(UBlocks.CLOTH_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item CLOUD_BED = register("cloud_bed", new CloudBedItem(UBlocks.CLOUD_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
 
     Item ALICORN_BADGE = register(Race.ALICORN);
     Item PEGASUS_BADGE = register(Race.PEGASUS);

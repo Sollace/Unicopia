@@ -30,7 +30,6 @@ import net.minecraft.block.enums.Instrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.*;
 import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShapes;
@@ -175,8 +174,8 @@ public interface UBlocks {
     Block CARVED_CLOUD = register("carved_cloud", new OrientedCloudBlock(Settings.copy(CLOUD).hardness(0.4F).requiresTool(), false), ItemGroups.BUILDING_BLOCKS);
     Block UNSTABLE_CLOUD = register("unstable_cloud", new UnstableCloudBlock(Settings.copy(CLOUD)), ItemGroups.NATURAL);
     Block CLOUD_PILLAR = register("cloud_pillar", new CloudPillarBlock(Settings.create().mapColor(MapColor.GRAY).hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL)), ItemGroups.NATURAL);
-    Block WHITE_CLOUD_BED = register("white_cloud_bed", new CloudBedBlock(DyeColor.WHITE, CLOUD.getDefaultState(), Settings.copy(Blocks.WHITE_BED).sounds(BlockSoundGroup.WOOL)));
-    Block ORANGE_CLOUD_BED = register("orange_cloud_bed", new CloudBedBlock(DyeColor.ORANGE, CLOUD.getDefaultState(), Settings.copy(Blocks.ORANGE_BED).sounds(BlockSoundGroup.WOOL)));
+    Block CLOTH_BED = register("cloth_bed", new FancyBedBlock("cloth", Settings.copy(Blocks.WHITE_BED).sounds(BlockSoundGroup.WOOL)));
+    Block CLOUD_BED = register("cloud_bed", new CloudBedBlock("cloud", CLOUD.getDefaultState(), Settings.copy(Blocks.WHITE_BED).sounds(BlockSoundGroup.WOOL)));
 
     private static <T extends Block> T register(String name, T item) {
         return register(Unicopia.id(name), item);
