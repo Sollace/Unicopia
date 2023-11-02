@@ -43,7 +43,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     static final Map<Trait, List<Item>> ITEMS = new HashMap<>();
 
     public static void load(Map<Identifier, SpellTraits> newRegistry) {
-        REGISTRY = new HashMap<>(newRegistry);
+        REGISTRY = newRegistry;
         ITEMS.clear();
         REGISTRY.forEach((itemId, traits) -> {
             Registries.ITEM.getOrEmpty(itemId).ifPresent(item -> {
@@ -220,10 +220,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static Stream<Item> getItems(Trait trait) {
-        return REGISTRY.entrySet().stream()
-            .filter(e -> e.getValue().get(trait) > 0)
-            .map(Map.Entry::getKey)
-            .flatMap(id -> Registries.ITEM.getOrEmpty(id).stream());
+        return ITEMS.getOrDefault(trait, List.of()).stream();
     }
 
     public static Optional<SpellTraits> getEmbeddedTraits(ItemStack stack) {

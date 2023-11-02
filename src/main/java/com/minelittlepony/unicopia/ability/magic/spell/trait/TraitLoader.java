@@ -5,7 +5,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -26,7 +28,11 @@ import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 
 public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Identifier, TraitLoader.TraitStream>> implements IdentifiableResourceReloadListener {
     private static final Identifier ID = Unicopia.id("data/traits");
@@ -77,9 +83,24 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
     @Override
     protected void apply(Multimap<Identifier, TraitStream> prepared, ResourceManager manager, Profiler profiler) {
         profiler.startTick();
-        SpellTraits.load(prepared.values().stream()
+
+        Set<Map.Entry<TraitStream.Key, SpellTraits>> newRegistry = prepared.values().stream()
                 .flatMap(TraitStream::entries)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, SpellTraits::union)));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, SpellTraits::union))
+                .entrySet();
+
+        SpellTraits.load(Registries.ITEM.getEntrySet().stream()
+                .map(entry -> Map.entry(
+                        entry.getKey().getValue(),
+                        newRegistry.stream()
+                            .filter(p -> p.getKey().test(entry.getValue()))
+                            .map(Map.Entry::getValue)
+                            .reduce(SpellTraits::union)
+                            .orElse(SpellTraits.EMPTY)
+                ))
+                .filter(entry -> !entry.getValue().isEmpty())
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+
         profiler.endTick();
     }
 
@@ -88,14 +109,14 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
 
         boolean replace();
 
-        Stream<Map.Entry<Identifier, SpellTraits>> entries();
+        Stream<Map.Entry<Key, SpellTraits>> entries();
 
         static TraitStream of(Identifier id, String pack, JsonObject json) {
 
             if (json.has("items") && json.get("items").isJsonObject()) {
                 return new TraitMap(JsonHelper.getBoolean(json, "replace", false),
                         Resources.GSON.getAdapter(TYPE).fromJsonTree(json.get("items")).entrySet().stream().collect(Collectors.toMap(
-                                a -> Identifier.tryParse(a.getKey()),
+                                a -> Key.of(a.getKey()),
                                 a -> SpellTraits.fromString(a.getValue()).orElse(SpellTraits.EMPTY)
                         ))
                 );
@@ -106,23 +127,16 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
                     SpellTraits.fromString(JsonHelper.getString(json, "traits")).orElse(SpellTraits.EMPTY),
                     StreamSupport.stream(JsonHelper.getArray(json, "items").spliterator(), false)
                         .map(JsonElement::getAsString)
-                        .map(Identifier::tryParse)
-                        .filter(item -> {
-                            if (item == null || !Registries.ITEM.containsId(item)) {
-                                Unicopia.LOGGER.warn("Skipping unknown item {} in {}:{}", item, pack, id);
-                                return false;
-                            }
-                            return true;
-                        })
+                        .map(Key::of)
                         .collect(Collectors.toSet())
             );
         }
 
         record TraitMap (
                 boolean replace,
-                Map<Identifier, SpellTraits> items) implements TraitStream {
+                Map<Key, SpellTraits> items) implements TraitStream {
             @Override
-            public Stream<Entry<Identifier, SpellTraits>> entries() {
+            public Stream<Entry<Key, SpellTraits>> entries() {
                 return items.entrySet().stream();
             }
         }
@@ -130,12 +144,32 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
         record TraitSet (
                 boolean replace,
                 SpellTraits traits,
-                Set<Identifier> items) implements TraitStream {
+                Set<Key> items) implements TraitStream {
             @Override
-            public Stream<Entry<Identifier, SpellTraits>> entries() {
+            public Stream<Entry<Key, SpellTraits>> entries() {
                 return items().stream().map(item -> Map.entry(item, traits()));
             }
         }
-    }
 
+        interface Key extends Predicate<ItemConvertible> {
+            static Key of(String s) {
+                return s.startsWith("#") ? new Tag(TagKey.of(RegistryKeys.ITEM, Identifier.tryParse(s.substring(1)))) : new Id(Identifier.tryParse(s));
+            }
+            record Tag(TagKey<Item> tag) implements Key {
+
+                @SuppressWarnings("deprecation")
+                @Override
+                public boolean test(ItemConvertible item) {
+                    return item.asItem().getRegistryEntry().isIn(tag);
+                }
+            }
+
+            record Id(Identifier id) implements Key {
+                @Override
+                public boolean test(ItemConvertible item) {
+                    return Objects.equals(id, Registries.ITEM.getId(item.asItem()));
+                }
+            }
+        }
+    }
 }

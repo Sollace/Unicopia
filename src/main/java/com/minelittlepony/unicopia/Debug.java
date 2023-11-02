@@ -1,9 +1,11 @@
 package com.minelittlepony.unicopia;
 
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.world.World;
 
 public interface Debug {
@@ -17,6 +19,16 @@ public interface Debug {
             return;
         }
         TESTS_COMPLETE[0] = true;
+
+        try {
+            Registries.ITEM.getEntrySet().forEach(entry -> {
+                if (SpellTraits.of(entry.getValue()).isEmpty()) {
+                   // Unicopia.LOGGER.warn("No traits registered for item {}", entry.getKey());
+                }
+            });
+        } catch (Throwable t) {
+            throw new IllegalStateException("Tests failed", t);
+        }
 
         try {
             for (var type : BoatEntity.Type.values()) {
