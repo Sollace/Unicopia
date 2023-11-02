@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "unicopia:item/black_bed_sheets"
+        "layer0": "unicopia:item/cloud_lump"
     }
 }

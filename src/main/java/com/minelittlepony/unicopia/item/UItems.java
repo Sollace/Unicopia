@@ -203,6 +203,7 @@ public interface UItems {
     Item CARAPACE = register("carapace", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
     Item CLOTH_BED = register("cloth_bed", new FancyBedItem(UBlocks.CLOTH_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
     Item CLOUD_BED = register("cloud_bed", new CloudBedItem(UBlocks.CLOUD_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item CLOUD_LUMP = register("cloud_lump", new Item(new Item.Settings()), ItemGroups.NATURAL);
 
     Item ALICORN_BADGE = register(Race.ALICORN);
     Item PEGASUS_BADGE = register(Race.PEGASUS);

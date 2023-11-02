@@ -7,11 +7,11 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "unicopia:dense_cloud",
+          "name": "unicopia:cloud_lump",
           "functions": [
             {
               "add": false,
-              "count": 6,
+              "count": 13,
               "function": "minecraft:set_count"
             }
           ]

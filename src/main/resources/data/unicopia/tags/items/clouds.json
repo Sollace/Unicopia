@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "unicopia:cloud_lump",
     "unicopia:cloud",
     "unicopia:cloud_planks",
     "unicopia:cloud_bricks",
