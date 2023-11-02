@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.block;
 
 import java.util.Locale;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.item.BedsheetsItem;
 
 import net.minecraft.block.BedBlock;
@@ -94,19 +96,43 @@ public class FancyBedBlock extends BedBlock {
     }
 
     public enum SheetPattern implements StringIdentifiable {
-        NONE,
-        APPLE,
-        BARS,
-        BLUE,
-        CHECKER,
-        ORANGE,
-        PINK,
-        RAINBOW;
+        NONE(DyeColor.WHITE),
+        LIGHT_GRAY(DyeColor.LIGHT_GRAY),
+        GRAY(DyeColor.GRAY),
+        BLACK(DyeColor.BLACK),
+        BROWN(DyeColor.BROWN),
+        RED(DyeColor.RED),
+        ORANGE(DyeColor.ORANGE),//
+        YELLOW(DyeColor.YELLOW),
+        LIME(DyeColor.LIME),
+        GREEN(DyeColor.GREEN),
+        CYAN(DyeColor.CYAN),
+        LIGHT_BLUE(DyeColor.LIGHT_BLUE),
+        BLUE(DyeColor.BLUE),//
+        PURPLE(DyeColor.PURPLE),
+        MAGENTA(DyeColor.MAGENTA),
+        PINK(DyeColor.PINK), //
+
+        APPLE(null),
+        BARS(null),
+        CHECKER(null),
+        RAINBOW(null);
 
         @SuppressWarnings("deprecation")
         public static final Codec<SheetPattern> CODEC = StringIdentifiable.createCodec(SheetPattern::values);
 
         private final String name = name().toLowerCase(Locale.ROOT);
+        @Nullable
+        private final DyeColor color;
+
+        SheetPattern(@Nullable DyeColor color) {
+            this.color = color;
+        }
+
+        @Nullable
+        public DyeColor getColor() {
+            return color;
+        }
 
         @Override
         public String asString() {

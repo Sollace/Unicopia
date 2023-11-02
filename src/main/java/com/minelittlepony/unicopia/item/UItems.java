@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.minelittlepony.unicopia.*;
+import com.minelittlepony.unicopia.block.FancyBedBlock.SheetPattern;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.UWoodTypes;
 import com.minelittlepony.unicopia.block.cloud.CloudBedBlock;
@@ -161,13 +162,26 @@ public interface UItems {
 
     Item GIANT_BALLOON = register("giant_balloon", new HotAirBalloonItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
 
-    Item APPLE_BED_SHEETS = register("apple_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.APPLE, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item LIGHT_GRAY_BED_SHEETS = register(CloudBedBlock.SheetPattern.LIGHT_GRAY);
+    Item GRAY_BED_SHEETS = register(CloudBedBlock.SheetPattern.GRAY);
+    Item BLACK_BED_SHEETS = register(CloudBedBlock.SheetPattern.BLACK);
+    Item BROWN_BED_SHEETS = register(CloudBedBlock.SheetPattern.BROWN);
+    Item RED_BED_SHEETS = register(CloudBedBlock.SheetPattern.RED);
+    Item ORANGE_BED_SHEETS = register(CloudBedBlock.SheetPattern.ORANGE);
+    Item YELLOW_BED_SHEETS = register(CloudBedBlock.SheetPattern.YELLOW);
+    Item LIME_BED_SHEETS = register(CloudBedBlock.SheetPattern.LIME);
+    Item GREEN_BED_SHEETS = register(CloudBedBlock.SheetPattern.GREEN);
+    Item CYAN_BED_SHEETS = register(CloudBedBlock.SheetPattern.CYAN);
+    Item LIGHT_BLUE_BED_SHEETS = register(CloudBedBlock.SheetPattern.LIGHT_BLUE);
+    Item BLUE_SHEETS = register(CloudBedBlock.SheetPattern.BLUE);
+    Item PURPLE_BED_SHEETS = register(CloudBedBlock.SheetPattern.PURPLE);
+    Item MAGENTA_BED_SHEETS = register(CloudBedBlock.SheetPattern.MAGENTA);
+    Item PINK_BED_SHEETS = register(CloudBedBlock.SheetPattern.PINK);
+
+    Item APPLE_BED_SHEETS = register(CloudBedBlock.SheetPattern.APPLE);
     Item BARRED_BED_SHEETS = register("barred_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.BARS, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
-    Item BLUE_BED_SHEETS = register("blue_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.BLUE, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
     Item CHECKERED_BED_SHEETS = register("checkered_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.CHECKER, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
-    Item ORANGE_BED_SHEETS = register("orange_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.ORANGE, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
-    Item PINK_BED_SHEETS = register("pink_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.PINK, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
-    Item RAINBOW_BED_SHEETS = register("rainbow_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.RAINBOW, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item RAINBOW_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW);
 
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new FabricItemSettings()
             .maxCount(1)
@@ -215,6 +229,10 @@ public interface UItems {
 
     static Item register(Race race) {
         return Registry.register(Registries.ITEM, race.getId().withPath(p -> p + "_badge"), new Item(new Settings()));
+    }
+
+    static Item register(SheetPattern pattern) {
+        return register(pattern.asString() + "_bed_sheets", new BedsheetsItem(pattern, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
     }
 
     static void bootstrap() {

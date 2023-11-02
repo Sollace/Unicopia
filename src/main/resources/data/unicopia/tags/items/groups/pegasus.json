@@ -12,6 +12,8 @@
     "unicopia:dense_cloud_stairs",
     "unicopia:unstable_cloud",
     "unicopia:cloud_pillar",
+    "unicopia:cloud_bed",
+    "#unicopia:bed_sheets",
     "#unicopia:food_types/raw_fish",
     "#unicopia:food_types/cooked_fish",
     "unicopia:rain_cloud_jar",
