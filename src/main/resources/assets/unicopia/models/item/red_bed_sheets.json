@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "unicopia:item/apple_bed_sheets"
+        "layer0": "unicopia:item/red_bed_sheets"
     }
 }
