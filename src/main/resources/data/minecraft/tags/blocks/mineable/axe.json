@@ -2,7 +2,8 @@
   "replace": false,
   "values": [
     "unicopia:cloud_planks",
-    "unicopia:cloud_planks_slab",
-    "unicopia:cloud_planks_stairs"
+    "unicopia:cloud_plank_slab",
+    "unicopia:cloud_plank_stairs",
+    "unicopia:compacted_cloud_planks"
   ]
 }
