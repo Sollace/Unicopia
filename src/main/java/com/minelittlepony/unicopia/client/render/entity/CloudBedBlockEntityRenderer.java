@@ -18,6 +18,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -30,8 +31,6 @@ import net.minecraft.util.math.RotationAxis;
 import net.minecraft.world.World;
 
 public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBedBlock.Tile> {
-    private static final Identifier TEXTURE = Unicopia.id("textures/entity/cloud_bed/white.png");
-
     private final ModelPart bedHead;
     private final ModelPart bedFoot;
 
@@ -66,9 +65,18 @@ public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBed
     public void render(CloudBedBlock.Tile entity, float f, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         @Nullable
         World world = entity.getWorld();
+        Identifier texture = Unicopia.id("textures/entity/bed/" + entity.getBase() + ".png");
+        CloudBedBlock.SheetPattern pattern = entity.getPattern();
+        Identifier sheetsTexture = Unicopia.id("textures/entity/bed/sheets/" + entity.getPattern().asString() + ".png");
         if (world == null) {
-            renderModel(matrices, vertices, bedHead, Direction.SOUTH, TEXTURE, light, overlay, false);
-            renderModel(matrices, vertices, bedFoot, Direction.SOUTH, TEXTURE, light, overlay, true);
+
+            renderModel(matrices, vertices, bedHead, Direction.SOUTH, texture, light, overlay, false);
+            renderModel(matrices, vertices, bedFoot, Direction.SOUTH, texture, light, overlay, true);
+            if (pattern != CloudBedBlock.SheetPattern.NONE) {
+                renderModel(matrices, vertices, bedHead, Direction.SOUTH, sheetsTexture, light, overlay, false);
+                renderModel(matrices, vertices, bedFoot, Direction.SOUTH, sheetsTexture, light, overlay, true);
+            }
+
             return;
         }
 
@@ -77,11 +85,22 @@ public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBed
         renderModel(matrices, vertices,
                 state.get(BedBlock.PART) == BedPart.HEAD ? bedHead : bedFoot,
                 state.get(BedBlock.FACING),
-                TEXTURE,
+                texture,
                 getModelLight(entity, light),
                 overlay,
                 false
         );
+        if (pattern != CloudBedBlock.SheetPattern.NONE) {
+            //MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers().draw();
+            renderModel(matrices, vertices,
+                    state.get(BedBlock.PART) == BedPart.HEAD ? bedHead : bedFoot,
+                    state.get(BedBlock.FACING),
+                    sheetsTexture,
+                    getModelLight(entity, light),
+                    overlay,
+                    false
+            );
+        }
     }
 
     private int getModelLight(CloudBedBlock.Tile entity, int worldLight) {
@@ -100,9 +119,14 @@ public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBed
         matrices.translate(0, 0.5625f, translate ? -1 : 0);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
         matrices.translate(0.5f, 0.5f, 0.5f);
+        if (texture.getPath().indexOf("sheet") != -1) {
+            float beddingScale = 1.0001F;
+            matrices.scale(beddingScale, beddingScale, beddingScale);
+        }
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180 + direction.asRotation()));
         matrices.translate(-0.5f, -0.5f, -0.5f);
-        part.render(matrices, vertices.getBuffer(RenderLayers.getEntityTranslucent(texture)), light, overlay);
+        RenderLayer layer = RenderLayers.getEntityTranslucent(texture);
+        part.render(matrices, vertices.getBuffer(layer), light, overlay);
         matrices.pop();
     }
 }

@@ -13,14 +13,14 @@
           "type": "minecraft:item",
           "conditions": [
             {
-              "block": "unicopia:cloud_bed",
+              "block": "unicopia:white_cloud_bed",
               "condition": "minecraft:block_state_property",
               "properties": {
                 "part": "head"
               }
             }
           ],
-          "name": "unicopia:cloud_bed"
+          "name": "unicopia:white_cloud_bed"
         }
       ],
       "rolls": 1.0

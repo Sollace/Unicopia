@@ -1,0 +1,8 @@
+{
+    "parent": "minecraft:block/cube_bottom_top",
+    "textures": {
+        "bottom": "unicopia:block/carved_cloud_top",
+        "top": "unicopia:block/carved_cloud_top",
+        "side": "unicopia:block/carved_cloud"
+    }
+}

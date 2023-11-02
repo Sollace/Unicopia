@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.DynamicItemRenderer;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.item.ClampedModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -20,19 +21,23 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.registry.Registries;
 
-public class PolearmRenderer implements DynamicItemRenderer {
+public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredicateProvider {
 
     private static final PolearmRenderer INSTANCE = new PolearmRenderer();
     private static final Identifier THROWING = new Identifier("throwing");
 
     private final TridentEntityModel model = new TridentEntityModel(getTexturedModelData().createModel());
 
-    public static void register(Item item) {
-        BuiltinItemRendererRegistry.INSTANCE.register(item, INSTANCE);
-        ModelPredicateProviderRegistry.register(item, THROWING, (ItemStack stack, ClientWorld world, LivingEntity entity, int seed) -> {
-            return entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1 : 0;
+    public static void register(Item...items) {
+        for (Item item : items) {
+            BuiltinItemRendererRegistry.INSTANCE.register(item, INSTANCE);
+            ModelPredicateProviderRegistry.register(item, THROWING, INSTANCE);
+        }
+        ModelLoadingRegistry.INSTANCE.registerModelProvider((renderer, out) -> {
+            for (Item item : items) {
+                out.accept(getModelId(item));
+            }
         });
-        ModelLoadingRegistry.INSTANCE.registerModelProvider((renderer, out) -> out.accept(getModelId(item)));
     }
 
     static ModelIdentifier getModelId(ItemConvertible item) {
@@ -50,6 +55,11 @@ public class PolearmRenderer implements DynamicItemRenderer {
         pole.addChild("base", ModelPartBuilder.create().uv(4, 0).cuboid(-1.5f, y - 2, -0.5f, 3, 2, 1), ModelTransform.NONE);
         pole.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-0.5f, y - 6, -0.5f, 1, 4, 1), ModelTransform.NONE);
         return TexturedModelData.of(data, 32, 32);
+    }
+
+    @Override
+    public float unclampedCall(ItemStack stack, ClientWorld world, LivingEntity entity, int seed) {
+        return entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1 : 0;
     }
 
     @Override
