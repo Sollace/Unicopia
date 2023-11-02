@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.block.cloud;
 
-import java.util.function.Supplier;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
@@ -18,15 +16,13 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class CloudStairsBlock extends StairsBlock implements Soakable {
+public class CloudStairsBlock extends StairsBlock {
 
     private final CloudBlock baseBlock;
-    private final @Nullable Supplier<Soakable> soggyBlock;
 
-    public CloudStairsBlock(BlockState baseState, Settings settings, @Nullable Supplier<Soakable> soggyBlock) {
+    public CloudStairsBlock(BlockState baseState, Settings settings) {
         super(baseState, settings);
         this.baseBlock = (CloudBlock)baseState.getBlock();
-        this.soggyBlock = soggyBlock;
     }
 
     @Override
@@ -91,16 +87,5 @@ public class CloudStairsBlock extends StairsBlock implements Soakable {
     @Deprecated
     public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
         return true;
-    }
-
-    @Nullable
-    @Override
-    public BlockState getSoggyState(int moisture) {
-        return soggyBlock == null ? (baseBlock instanceof Soakable s ? s.getSoggyState(moisture) : null) : soggyBlock.get().getSoggyState(moisture);
-    }
-
-    @Override
-    public int getMoisture(BlockState state) {
-        return baseBlock instanceof Soakable s ? s.getMoisture(state) : 0;
     }
 }
