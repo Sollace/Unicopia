@@ -169,9 +169,12 @@ public interface UBlocks {
     SoggyCloudSlabBlock SOGGY_CLOUD_SLAB = register("soggy_cloud_slab", new SoggyCloudSlabBlock(Settings.copy(SOGGY_CLOUD), () -> UBlocks.CLOUD_SLAB));
     SoggyCloudStairsBlock SOGGY_CLOUD_STAIRS = register("soggy_cloud_stairs", new SoggyCloudStairsBlock(SOGGY_CLOUD.getDefaultState(), Settings.copy(CLOUD), () -> UBlocks.CLOUD_STAIRS));
 
-    Block DENSE_CLOUD = register("dense_cloud", new CloudBlock(Settings.create().mapColor(MapColor.GRAY).hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL).solid(), false), ItemGroups.NATURAL);
-    Block DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudSlabBlock(Settings.copy(DENSE_CLOUD), false, null), ItemGroups.NATURAL);
-    Block DENSE_CLOUD_STAIRS = register("dense_cloud_stairs", new CloudStairsBlock(DENSE_CLOUD.getDefaultState(), Settings.copy(DENSE_CLOUD)), ItemGroups.NATURAL);
+    Block DENSE_CLOUD = register("dense_cloud", new NaturalCloudBlock(Settings.create().mapColor(MapColor.GRAY).hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL).solid(), false,
+            null,
+            () -> UBlocks.COMPACTED_DENSE_CLOUD), ItemGroups.BUILDING_BLOCKS);
+    Block COMPACTED_DENSE_CLOUD = register("compacted_dense_cloud", new CompactedCloudBlock(Settings.copy(DENSE_CLOUD)));
+    Block DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudSlabBlock(Settings.copy(DENSE_CLOUD), false, null), ItemGroups.BUILDING_BLOCKS);
+    Block DENSE_CLOUD_STAIRS = register("dense_cloud_stairs", new CloudStairsBlock(DENSE_CLOUD.getDefaultState(), Settings.copy(DENSE_CLOUD)), ItemGroups.BUILDING_BLOCKS);
 
     Block CARVED_CLOUD = register("carved_cloud", new OrientedCloudBlock(Settings.copy(CLOUD).hardness(0.4F).requiresTool().solid(), false), ItemGroups.BUILDING_BLOCKS);
     Block UNSTABLE_CLOUD = register("unstable_cloud", new UnstableCloudBlock(Settings.copy(CLOUD)), ItemGroups.NATURAL);

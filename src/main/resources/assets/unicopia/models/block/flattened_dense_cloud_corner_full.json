@@ -1,0 +1,6 @@
+{
+  "parent": "unicopia:block/flattened_cloud_corner_full",
+	"textures": {
+		"all": "unicopia:block/dense_cloud"
+	}
+}
