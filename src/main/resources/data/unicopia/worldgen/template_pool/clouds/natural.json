@@ -84,6 +84,42 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:clouds/junction_2",
+        "processors": "unicopia:cloud_decay",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:clouds/junction_3",
+        "processors": "unicopia:cloud_decay",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:clouds/junction_4",
+        "processors": "unicopia:cloud_decay",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:clouds/junction_5",
+        "processors": "unicopia:cloud_decay",
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
         "location": "unicopia:clouds/pillar_boat",
         "processors": "unicopia:cloud_decay",
         "projection": "rigid"

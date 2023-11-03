@@ -89,24 +89,21 @@ public class CompactedCloudBlock extends CloudBlock {
 
     @Override
     public BlockState rotate(BlockState state, BlockRotation rotation) {
-        BlockState result = state;
-        for (var property : FACING_PROPERTIES.entrySet()) {
-            if (property.getKey().getAxis() != Direction.Axis.Y) {
-                result = result.with(FACING_PROPERTIES.get(rotation.rotate(property.getKey())), state.get(property.getValue()));
-            }
-        }
-        return result;
+        return transform(state, rotation::rotate);
     }
 
     @Override
     public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return transform(state, mirror::apply);
+    }
+
+    private BlockState transform(BlockState state, Function<Direction, Direction> transformation) {
         BlockState result = state;
         for (var property : FACING_PROPERTIES.entrySet()) {
             if (property.getKey().getAxis() != Direction.Axis.Y) {
-                result = result.with(FACING_PROPERTIES.get(mirror.apply(property.getKey())), state.get(property.getValue()));
+                result = result.with(FACING_PROPERTIES.get(transformation.apply(property.getKey())), state.get(property.getValue()));
             }
         }
         return result;
     }
-
 }
