@@ -43,11 +43,19 @@ public class CompactedCloudBlock extends CloudBlock {
         );
     });
 
-    public CompactedCloudBlock(Settings settings) {
-        super(settings, true);
+    private final BlockState baseState;
+
+    public CompactedCloudBlock(BlockState baseState) {
+        super(Settings.copy(baseState.getBlock()), true);
+        this.baseState = baseState;
         PROPERTIES.forEach(property -> {
             setDefaultState(getDefaultState().with(property, true));
         });
+    }
+
+    @Override
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+        return baseState.getBlock().getPickStack(world, pos, baseState);
     }
 
     @Override

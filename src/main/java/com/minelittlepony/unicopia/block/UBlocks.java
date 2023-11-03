@@ -147,21 +147,21 @@ public interface UBlocks {
     Block CLOUD = register("cloud", new NaturalCloudBlock(Settings.create().mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL), true,
             () -> UBlocks.SOGGY_CLOUD,
             () -> UBlocks.COMPACTED_CLOUD), ItemGroups.NATURAL);
-    Block COMPACTED_CLOUD = register("compacted_cloud", new CompactedCloudBlock(Settings.copy(CLOUD)));
+    Block COMPACTED_CLOUD = register("compacted_cloud", new CompactedCloudBlock(CLOUD.getDefaultState()));
     Block CLOUD_SLAB = register("cloud_slab", new CloudSlabBlock(Settings.copy(CLOUD), true, () -> UBlocks.SOGGY_CLOUD_SLAB), ItemGroups.NATURAL);
     PoreousCloudStairsBlock CLOUD_STAIRS = register("cloud_stairs", new PoreousCloudStairsBlock(CLOUD.getDefaultState(), Settings.copy(CLOUD), () -> UBlocks.SOGGY_CLOUD_STAIRS), ItemGroups.NATURAL);
 
     Block CLOUD_PLANKS = register("cloud_planks", new NaturalCloudBlock(Settings.copy(CLOUD).hardness(0.4F).requiresTool().solid(), false,
             null,
             () -> UBlocks.COMPACTED_CLOUD_PLANKS), ItemGroups.BUILDING_BLOCKS);
-    Block COMPACTED_CLOUD_PLANKS = register("compacted_cloud_planks", new CompactedCloudBlock(Settings.copy(CLOUD_PLANKS)));
+    Block COMPACTED_CLOUD_PLANKS = register("compacted_cloud_planks", new CompactedCloudBlock(CLOUD_PLANKS.getDefaultState()));
     Block CLOUD_PLANK_SLAB = register("cloud_plank_slab", new CloudSlabBlock(Settings.copy(CLOUD_PLANKS), false, null), ItemGroups.BUILDING_BLOCKS);
     Block CLOUD_PLANK_STAIRS = register("cloud_plank_stairs", new CloudStairsBlock(CLOUD_PLANKS.getDefaultState(), Settings.copy(CLOUD_PLANKS)), ItemGroups.BUILDING_BLOCKS);
 
     Block CLOUD_BRICKS = register("cloud_bricks", new NaturalCloudBlock(Settings.copy(CLOUD).hardness(0.6F).requiresTool().solid(), false,
             null,
             () -> UBlocks.COMPACTED_CLOUD_BRICKS), ItemGroups.BUILDING_BLOCKS);
-    Block COMPACTED_CLOUD_BRICKS = register("compacted_cloud_bricks", new CompactedCloudBlock(Settings.copy(CLOUD_BRICKS)));
+    Block COMPACTED_CLOUD_BRICKS = register("compacted_cloud_bricks", new CompactedCloudBlock(CLOUD_BRICKS.getDefaultState()));
     Block CLOUD_BRICK_SLAB = register("cloud_brick_slab", new CloudSlabBlock(Settings.copy(CLOUD_BRICKS), false, null), ItemGroups.BUILDING_BLOCKS);
     Block CLOUD_BRICK_STAIRS = register("cloud_brick_stairs", new CloudStairsBlock(CLOUD_BRICKS.getDefaultState(), Settings.copy(CLOUD_PLANKS)), ItemGroups.BUILDING_BLOCKS);
 
@@ -172,7 +172,7 @@ public interface UBlocks {
     Block DENSE_CLOUD = register("dense_cloud", new NaturalCloudBlock(Settings.create().mapColor(MapColor.GRAY).hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL).solid(), false,
             null,
             () -> UBlocks.COMPACTED_DENSE_CLOUD), ItemGroups.BUILDING_BLOCKS);
-    Block COMPACTED_DENSE_CLOUD = register("compacted_dense_cloud", new CompactedCloudBlock(Settings.copy(DENSE_CLOUD)));
+    Block COMPACTED_DENSE_CLOUD = register("compacted_dense_cloud", new CompactedCloudBlock(DENSE_CLOUD.getDefaultState()));
     Block DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudSlabBlock(Settings.copy(DENSE_CLOUD), false, null), ItemGroups.BUILDING_BLOCKS);
     Block DENSE_CLOUD_STAIRS = register("dense_cloud_stairs", new CloudStairsBlock(DENSE_CLOUD.getDefaultState(), Settings.copy(DENSE_CLOUD)), ItemGroups.BUILDING_BLOCKS);
 
