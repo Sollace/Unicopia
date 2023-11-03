@@ -19,6 +19,8 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
@@ -84,4 +86,27 @@ public class CompactedCloudBlock extends CloudBlock {
 
         return ActionResult.PASS;
     }
+
+    @Override
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        BlockState result = state;
+        for (var property : FACING_PROPERTIES.entrySet()) {
+            if (property.getKey().getAxis() != Direction.Axis.Y) {
+                result = result.with(FACING_PROPERTIES.get(rotation.rotate(property.getKey())), state.get(property.getValue()));
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        BlockState result = state;
+        for (var property : FACING_PROPERTIES.entrySet()) {
+            if (property.getKey().getAxis() != Direction.Axis.Y) {
+                result = result.with(FACING_PROPERTIES.get(mirror.apply(property.getKey())), state.get(property.getValue()));
+            }
+        }
+        return result;
+    }
+
 }
