@@ -20,6 +20,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -135,10 +136,13 @@ public class StormCloudEntity extends Entity implements MagicImmune {
         }
 
         if (isLogicalSideForUpdatingMovement()) {
-            float groundY = getWorld().getTopY(Type.MOTION_BLOCKING_NO_LEAVES, (int)getX(), (int)getZ());
-            float cloudY = (float)getY() - (isStormy() ? STORMY_TARGET_ALTITUDE : CLEAR_TARGET_ALTITUDE);
+            float groundY = findSurfaceBelow(getWorld(), getBlockPos()).getY();
+            float targetY = isStormy() ? STORMY_TARGET_ALTITUDE : CLEAR_TARGET_ALTITUDE;
+            float cloudY = (float)getY() - targetY;
 
-            addVelocity(0, 0.03F * (groundY - cloudY), 0);
+            System.out.println("Ground Y: " + groundY + ", TargetY: " + targetY + ", Stormy: " + isStormy());
+
+            addVelocity(0, 0.0003F * (groundY - cloudY), 0);
 
             if (!cursed && !isStormy()) {
                 Vec3d wind = WeatherConditions.get(getWorld()).getWindDirection();
@@ -264,7 +268,7 @@ public class StormCloudEntity extends Entity implements MagicImmune {
     public static BlockPos findSurfaceBelow(World world, BlockPos pos) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         mutable.set(pos);
-        while (world.isInBuildLimit(mutable) && world.isAir(mutable)) {
+        while (mutable.getY() > world.getBottomY() && world.isAir(mutable)) {
             mutable.move(Direction.DOWN);
         }
         while (world.isInBuildLimit(mutable) && !world.isAir(mutable)) {
@@ -348,7 +352,9 @@ public class StormCloudEntity extends Entity implements MagicImmune {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         setStormTicks(nbt.getInt("stormTicks"));
         setClearTicks(nbt.getInt("clearTicks"));
-        setSize(currentSize = nbt.getFloat("size"));
+        if (nbt.contains("size", NbtElement.FLOAT_TYPE)) {
+            setSize(currentSize = nbt.getFloat("size"));
+        }
         cursed = nbt.getBoolean("cursed");
         phase = nbt.getInt("phase");
         nextPhase = nbt.getInt("nextPhase");
