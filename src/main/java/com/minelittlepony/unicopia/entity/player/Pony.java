@@ -396,13 +396,15 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         BlockPos climbingPos = entity.getClimbingPos().orElse(null);
 
-        if (!getPhysics().isFlying() && !entity.getAbilities().flying && climbingPos != null && getObservedSpecies() == Race.CHANGELING) {
+        if (!getPhysics().isFlying() && !entity.getAbilities().flying
+                && climbingPos != null
+                && getObservedSpecies() == Race.CHANGELING) {
             Vec3d vel = entity.getVelocity();
             if (entity.isSneaking()) {
                 entity.setVelocity(vel.x, 0, vel.z);
             }
 
-            distanceClimbed += vel.length();
+            distanceClimbed += Math.abs(getMotion().getClientVelocity().y);
             BlockPos hangingPos = entity.getBlockPos().up();
             boolean canhangHere = canHangAt(hangingPos);
 
@@ -450,6 +452,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             }
         } else {
             distanceClimbed = 0;
+            attachDirection = null;
         }
 
         if (getObservedSpecies() == Race.KIRIN) {
@@ -521,7 +524,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         pos = pos.up();
         BlockState state = asWorld().getBlockState(pos);
 
-        return state.isSolidSurface(asWorld(), pos, entity, Direction.DOWN);
+        return state.isSolidSurface(asWorld(), pos, entity, Direction.DOWN) && entity.getWorld().isAir(entity.getBlockPos().down());
     }
 
     @Override
@@ -563,7 +566,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         if (isHanging()) {
             ((LivingEntityDuck)entity).setLeaningPitch(0);
-            if (!getObservedSpecies().canHang() || (ticksHanging++ > 2 && getHangingPosition().filter(getOrigin().down()::equals).filter(this::canHangAt).isEmpty())) {
+            if (!getObservedSpecies().canHang() || (ticksHanging++ > 2 && getHangingPosition().filter(this::canHangAt).isEmpty())) {
                 if (!isClient()) {
                     stopHanging();
                 }
