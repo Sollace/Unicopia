@@ -115,7 +115,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     @Override
     public float getGravityModifier() {
         float modifier = getPersistantGravityModifier();
-        if (pony.isHanging() && pony.getObservedSpecies() == Race.BAT) {
+        if (pony.getAcrobatics().isHanging() && pony.getObservedSpecies() == Race.BAT) {
             modifier *= -0.05F;
         }
         return modifier;
@@ -385,7 +385,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         entity.setVelocity(velocity.toImmutable());
 
-        if (isFlying() && !entity.isFallFlying() && !pony.isHanging() && pony.isClient()) {
+        if (isFlying() && !entity.isFallFlying() && !pony.getAcrobatics().isHanging() && pony.isClient()) {
             if (!MineLPDelegate.getInstance().getPlayerPonyRace(entity).isEquine() && getHorizontalMotion() > 0.03) {
                 float pitch = ((LivingEntityDuck)entity).getLeaningPitch();
                 if (pitch < 1) {
@@ -533,7 +533,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 && pony.getJumpingHeuristic().hasChanged(Heuristic.TWICE);
         boolean fallingTakeOffCondition = !entity.isOnGround() && velocity.y < -1.6 * getGravitySignum() && entity.fallDistance > 1;
 
-        if ((takeOffCondition || fallingTakeOffCondition) && !pony.isHanging() && !isCancelled) {
+        if ((takeOffCondition || fallingTakeOffCondition) && !pony.getAcrobatics().isHanging() && !isCancelled) {
             initiateTakeoff(velocity);
         }
     }

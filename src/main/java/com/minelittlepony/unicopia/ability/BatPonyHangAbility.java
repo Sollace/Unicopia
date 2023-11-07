@@ -38,13 +38,13 @@ public class BatPonyHangAbility implements Ability<Multi> {
     @Override
     public Optional<Multi> prepare(Pony player) {
 
-        if (player.isHanging()) {
+        if (player.getAcrobatics().isHanging()) {
             return Optional.of(new Multi(BlockPos.ZERO, 0));
         }
 
         return TraceHelper.findBlock(player.asEntity(), 5, 1)
                 .map(BlockPos::down)
-                .filter(player::canHangAt)
+                .filter(player.getAcrobatics()::canHangAt)
                 .map(pos -> new Multi(pos, 1));
     }
 
@@ -55,13 +55,13 @@ public class BatPonyHangAbility implements Ability<Multi> {
 
     @Override
     public boolean apply(Pony player, Multi data) {
-        if (data.hitType() == 0 && player.isHanging()) {
-            player.stopHanging();
+        if (data.hitType() == 0 && player.getAcrobatics().isHanging()) {
+            player.getAcrobatics().stopHanging();
             return true;
         }
 
-        if (data.hitType() == 1 && player.canHangAt(data.pos().pos())) {
-            player.startHanging(data.pos().pos());
+        if (data.hitType() == 1 && player.getAcrobatics().canHangAt(data.pos().pos())) {
+            player.getAcrobatics().startHanging(data.pos().pos());
         }
 
         return true;
