@@ -100,6 +100,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private float magicExhaustion = 0;
 
     private int ticksInvulnerable;
+    private int ticksMetamorphising;
 
     private int ticksInSun;
     private boolean hasShades;
@@ -273,6 +274,14 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public void setInvulnerabilityTicks(int ticks) {
         this.ticksInvulnerable = Math.max(0, ticks);
+    }
+
+    public int getTicksMetamorphising() {
+        return ticksMetamorphising;
+    }
+
+    public void setTicksmetamorphising(int ticks) {
+        ticksMetamorphising = ticks;
     }
 
     @Override
@@ -754,6 +763,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         compound.putInt("levels", levels.get());
         compound.putInt("corruption", corruption.get());
         compound.putInt("ticksInvulnerable", ticksInvulnerable);
+        compound.putInt("ticksMetamorphising", ticksMetamorphising);
 
         NbtCompound progress = new NbtCompound();
         advancementProgress.forEach((key, count) -> {
@@ -778,6 +788,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         ticksInvulnerable = compound.getInt("ticksInvulnerable");
         ticksInSun = compound.getInt("ticksInSun");
         hasShades = compound.getBoolean("hasShades");
+        ticksMetamorphising = compound.getInt("ticksMetamorphising");
 
         NbtCompound progress = compound.getCompound("advancementProgress");
         advancementProgress.clear();
