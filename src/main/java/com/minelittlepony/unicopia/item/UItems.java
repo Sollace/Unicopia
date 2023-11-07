@@ -141,7 +141,8 @@ public interface UItems {
     Item DIAMOND_POLEARM = register("diamond_polearm", new PolearmItem(ToolMaterials.DIAMOND, 2, -3.6F, 5, new Item.Settings()), ItemGroups.COMBAT);
     Item NETHERITE_POLEARM = register("netherite_polearm", new PolearmItem(ToolMaterials.NETHERITE, 2, -3.6F, 5, new Item.Settings().fireproof()), ItemGroups.COMBAT);
 
-    Item BUTTERFLY_SPAWN_EGG = register("butterfly_spawn_egg", new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xaaeeff, new Item.Settings()), ItemGroups.SPAWN_EGGS);
+    Item LOOT_BUG_SPAWN_EGG = register("loot_bug_spawn_egg", new SpawnEggItem(UEntities.LOOT_BUG, 0x3C9D14, 0xE66F16, new Item.Settings()), ItemGroups.SPAWN_EGGS);
+    Item BUTTERFLY_SPAWN_EGG = register("butterfly_spawn_egg", new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xAAEEFF, new Item.Settings()), ItemGroups.SPAWN_EGGS);
     Item BUTTERFLY = register("butterfly", new Item(new Item.Settings().food(UFoodComponents.INSECTS)), ItemGroups.FOOD_AND_DRINK);
 
     Item PALM_BOAT = ItemGroupRegistry.register(TerraformBoatItemHelper.registerBoatItem(Unicopia.id("palm_boat"), UWoodTypes.PALM_BOAT_TYPE, false), ItemGroups.FUNCTIONAL);
