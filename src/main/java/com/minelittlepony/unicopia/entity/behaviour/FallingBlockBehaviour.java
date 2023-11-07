@@ -53,6 +53,11 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
         }
     }
 
+    @Override
+    public boolean isEqual(FallingBlockEntity a, Entity b) {
+        return b instanceof FallingBlockEntity f && f.getBlockState() == a.getBlockState();
+    }
+
     private FallingBlockEntity configure(FallingBlockEntity entity, Block block) {
         if (block instanceof MixinFallingBlock) {
             ((MixinFallingBlock)block).invokeConfigureFallingBlockEntity(entity);
