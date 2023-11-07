@@ -59,7 +59,7 @@ public class CloudBlock extends Block {
         entity.handleFallDamage(fallDistance, 0, world.getDamageSources().fall());
         generateSurfaceParticles(world, state, pos, ShapeContext.absent(), 9);
 
-        if (fallDistance > 7) {
+        if (!world.isClient && fallDistance > 7) {
             world.breakBlock(pos, true);
         }
     }
