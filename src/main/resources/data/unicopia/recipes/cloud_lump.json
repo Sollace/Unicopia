@@ -1,7 +1,7 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    { "tag": "cloud_jars" }
+    { "tag": "unicopia:cloud_jars" }
   ],
   "result": { "item": "unicopia:cloud_lump", "count": 4 }
 }
