@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.duck.PlayerEntityDuck;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.datafixers.util.Either;
@@ -113,5 +114,21 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
             cancellable = true)
     private void onGetBlockBreakingSpeed(BlockState state, CallbackInfoReturnable<Float> info) {
         info.setReturnValue(info.getReturnValue() * get().getBlockBreakingSpeed());
+    }
+
+    @Override
+    protected int getNextAirUnderwater(int air) {
+        if (EquinePredicates.PLAYER_SEAPONY.test(this)) {
+            return super.getNextAirOnLand(air);
+        }
+        return super.getNextAirUnderwater(air);
+    }
+
+    @Override
+    protected int getNextAirOnLand(int air) {
+        if (EquinePredicates.PLAYER_SEAPONY.test(this)) {
+            return super.getNextAirUnderwater(air);
+        }
+        return super.getNextAirOnLand(air);
     }
 }

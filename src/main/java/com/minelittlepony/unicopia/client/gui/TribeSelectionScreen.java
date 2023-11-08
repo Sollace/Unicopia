@@ -54,7 +54,7 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
 
         final int itemWidth = 70 + 10;
 
-        List<Race> options = Race.REGISTRY.stream().filter(race -> !race.isHuman() && !race.isOp()).toList();
+        List<Race> options = Race.REGISTRY.stream().filter(race -> race.availability().isSelectable()).toList();
 
         int columns = Math.min(width / itemWidth, options.size());
 

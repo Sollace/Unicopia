@@ -12,7 +12,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.util.Identifier;
 
-public class PegasusFlightToggleAbility implements Ability<Hit> {
+public class ToggleFlightAbility implements Ability<Hit> {
 
     @Override
     public int getWarmupTime(Pony player) {

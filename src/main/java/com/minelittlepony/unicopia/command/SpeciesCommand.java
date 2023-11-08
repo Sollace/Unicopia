@@ -8,7 +8,6 @@ import com.minelittlepony.unicopia.network.MsgTribeSelect;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandManager.RegistrationEnvironment;
@@ -32,8 +31,6 @@ class SpeciesCommand {
             }
         }
 
-        RegistryKeyArgumentType<Race> raceArgument = Race.argument();
-
         return builder
             .then(CommandManager.literal("get")
                       .executes(context -> get(context.getSource(), context.getSource().getPlayer(), true))
@@ -41,13 +38,13 @@ class SpeciesCommand {
                       .executes(context -> get(context.getSource(), EntityArgumentType.getPlayer(context, "target"), false))
                ))
             .then(CommandManager.literal("set")
-               .then(CommandManager.argument("race", raceArgument)
+               .then(CommandManager.argument("race", Race.argument())
                        .executes(context -> set(context.getSource(), context.getSource().getPlayer(), Race.fromArgument(context, "race"), true))
                .then(CommandManager.argument("target", EntityArgumentType.player())
                        .executes(context -> set(context.getSource(), EntityArgumentType.getPlayer(context, "target"), Race.fromArgument(context, "race"), false)))
                ))
             .then(CommandManager.literal("describe")
-               .then(CommandManager.argument("race", raceArgument)
+               .then(CommandManager.argument("race", Race.argument())
                        .executes(context -> describe(context.getSource().getPlayer(), Race.fromArgument(context, "race")))
                ))
             .then(CommandManager.literal("list")
@@ -101,7 +98,7 @@ class SpeciesCommand {
 
         boolean first = true;
         for (Race i : Race.REGISTRY) {
-            if (!i.isUnset() && i.isPermitted(player)) {
+            if (i.availability().isGrantable() && !i.isUnset() && i.isPermitted(player)) {
                 message.append(Text.literal((!first ? "\n" : "") + " - "));
                 message.append(i.getDisplayName());
                 first = false;

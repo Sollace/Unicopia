@@ -22,12 +22,14 @@ public interface Toxics {
 
     Toxic EDIBLE = register("edible", new Toxic.Builder(Ailment.INNERT)
             .with(Race.CHANGELING, of(FAIR, LOVE_SICKNESS))
+            .with(Race.SEAPONY, of(FAIR, FOOD_POISONING))
     );
 
     Toxic FORAGE_EDIBLE = register("forage_edible", new Toxic.Builder(Ailment.INNERT)
             .food(UFoodComponents.RANDOM_FOLIAGE)
             .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))
             .with(Race.CHANGELING, of(FAIR, LOVE_SICKNESS))
+            .with(Race.SEAPONY, of(FAIR, FOOD_POISONING))
     );
 
     Toxic FORAGE_EDIBLE_FILLING = register("forage_edible_filling", new Toxic.Builder(Ailment.INNERT)
@@ -59,6 +61,7 @@ public interface Toxics {
     Toxic FORAGE_PRICKLY = register("forage_prickly", new Toxic.Builder(of(SAFE, INSTANT_DAMAGE.withChance(30)))
             .food(UFoodComponents.RANDOM_FOLIAGE)
             .with(Race.HUMAN, of(LETHAL, FOOD_POISONING))
+            .with(Race.HIPPOGRIFF, Ailment.INNERT)
             .with(Race.KIRIN, Ailment.INNERT)
     );
     Toxic FORAGE_STRENGHTENING = register("forage_strengthening", new Toxic.Builder(of(SEVERE, STRENGTH.and(FOOD_POISONING)))
@@ -94,6 +97,7 @@ public interface Toxics {
     Toxic COOKED_MEAT = register("cooked_meat", new Toxic.Builder(of(FAIR, FOOD_POISONING))
             .with(Race.HUMAN, Ailment.INNERT)
             .with(Race.CHANGELING, Ailment.INNERT)
+            .with(Race.HIPPOGRIFF, of(MILD, FOOD_POISONING))
             .with(Race.BAT, Ailment.INNERT)
             .with(Race.KIRIN, Ailment.INNERT)
     );
@@ -101,12 +105,16 @@ public interface Toxics {
     Toxic RAW_FISH = register("raw_fish", new Toxic.Builder(of(FAIR, FOOD_POISONING.and(CHANCE_OF_POISON)))
             .with(Race.HUMAN, Ailment.INNERT)
             .with(Race.PEGASUS, of(MILD, FOOD_POISONING))
+            .with(Race.HIPPOGRIFF, Ailment.INNERT)
+            .with(Race.SEAPONY, Ailment.INNERT)
             .with(Race.ALICORN, Ailment.INNERT)
             .with(Race.CHANGELING, of(FAIR, LOVE_SICKNESS))
     );
     Toxic COOKED_FISH = register("cooked_fish", new Toxic.Builder(of(MILD, FOOD_POISONING))
             .with(Race.HUMAN, Ailment.INNERT)
             .with(Race.PEGASUS, Ailment.INNERT)
+            .with(Race.HIPPOGRIFF, Ailment.INNERT)
+            .with(Race.SEAPONY, Ailment.INNERT)
             .with(Race.ALICORN, Ailment.INNERT)
             .with(Race.CHANGELING, of(FAIR, LOVE_SICKNESS))
     );
@@ -129,6 +137,7 @@ public interface Toxics {
 
     Toxic PINECONE = register("pinecone", new Toxic.Builder(of(Toxicity.SAFE, Toxin.healing(1)))
             .with(Race.HUMAN, Ailment.INNERT)
+            .with(Race.HIPPOGRIFF, of(Toxicity.SAFE, Toxin.healing(3)))
     );
 
     Toxic BAT_PONYS_DELIGHT = register("bat_ponys_delight", new Toxic.Builder(Ailment.INNERT)

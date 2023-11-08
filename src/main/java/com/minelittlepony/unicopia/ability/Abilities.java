@@ -42,9 +42,14 @@ public interface Abilities {
     Ability<?> RAINBOOM = register(new PegasusRainboomAbility(), "rainboom", AbilitySlot.PRIMARY);
     Ability<?> CAPTURE_CLOUD = register(new PegasusCaptureStormAbility(), "capture_cloud", AbilitySlot.SECONDARY);
 
-    // pegasus / bat / alicorn / changeling
+    // hippogriff
+    Ability<?> DASH = register(new FlyingDashAbility(), "dash", AbilitySlot.PRIMARY);
+    Ability<?> SCREECH = register(new ScreechAbility(), "screech", AbilitySlot.SECONDARY);
+    Ability<?> PECK = register(new PeckAbility(), "peck", AbilitySlot.SECONDARY);
+
+    // pegasus / bat / alicorn / changeling / hippogriff
     Ability<?> CARRY = register(new CarryAbility(), "carry", AbilitySlot.PRIMARY);
-    Ability<?> TOGGLE_FLIGHT = register(new PegasusFlightToggleAbility(), "toggle_flight", AbilitySlot.TERTIARY);
+    Ability<?> TOGGLE_FLIGHT = register(new ToggleFlightAbility(), "toggle_flight", AbilitySlot.TERTIARY);
 
     // changeling
     Ability<?> DISGUISE = register(new ChangelingDisguiseAbility(), "disguise", AbilitySlot.SECONDARY);

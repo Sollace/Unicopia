@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.item.enchantment.WantItNeedItEnchantment;
 
@@ -20,7 +19,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 
 public class SmittenEyesRenderer {
     private static final Identifier TEXTURE = Unicopia.id("textures/entity/smitten_eyes.png");
@@ -42,9 +40,6 @@ public class SmittenEyesRenderer {
         ModelPartHooks.stopCollecting().forEach(head -> {
             matrices.push();
             head.transform(matrices, 0.95F);
-            if (MineLPDelegate.getInstance().getRace(pony.asEntity()).isEquine()) {
-                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-90), 0, 1.2F, 0);
-            }
             float scale = 1F + (1.3F + MathHelper.sin(pony.asEntity().age / 3F) * 0.06F);
             matrices.scale(scale, scale, scale);
             matrices.translate(0, 0.05F, 0);

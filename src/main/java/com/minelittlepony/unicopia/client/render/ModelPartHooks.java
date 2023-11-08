@@ -32,7 +32,6 @@ public class ModelPartHooks {
 
         final var bestCandidate = new EnqueudHeadRender();
 
-        matrices.push();
         part.forEachCuboid(matrices, (entry, name, index, cube) -> {
             float x = cube.maxX - cube.minX;
             float y = cube.maxY - cube.minY;
@@ -47,7 +46,6 @@ public class ModelPartHooks {
                 bestCandidate.maxSideLength = Math.max(Math.max(x, z), y);
             }
         });
-        matrices.pop();
 
         if (bestCandidate.transformation != null) {
             head.add(bestCandidate);
@@ -75,8 +73,6 @@ public class ModelPartHooks {
 
             matrices.translate(x * PIXEL_SCALE, y * PIXEL_SCALE, z * PIXEL_SCALE);
             matrices.scale(scale, scale, scale);
-            //matrices.peek().getPositionMatrix().scaleAround(scale, x * PIXEL_SCALE, y * PIXEL_SCALE, z * PIXEL_SCALE);
-            //matrices.translate(cube.minX * PIXEL_SCALE, cube.minY * PIXEL_SCALE, cube.minZ * PIXEL_SCALE);
         }
     }
 }
