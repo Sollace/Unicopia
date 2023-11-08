@@ -36,12 +36,23 @@ public class PlayerAttributes implements Tickable {
             new ToggleableAttribute(
                     new EntityAttributeModifier(UUID.fromString("9e2699fc-3b8d-4f71-9d2d-fb92ee19b4f7"), "Pegasus Speed", 0.2, Operation.MULTIPLY_TOTAL),
                     List.of(EntityAttributes.GENERIC_MOVEMENT_SPEED, EntityAttributes.GENERIC_ATTACK_SPEED),
-                    pony -> pony.getCompositeRace().canFly()
+                    pony -> pony.getCompositeRace().canFly() && !pony.getCompositeRace().includes(Race.HIPPOGRIFF)
             ),
             new ToggleableAttribute(
                     new EntityAttributeModifier(UUID.fromString("707b50a8-03e8-40f4-8553-ecf67025fd6d"), "Pegasus Reach", 1.5, Operation.ADDITION),
                     List.of(UEntityAttributes.EXTENDED_REACH_DISTANCE),
-                    pony -> pony.getCompositeRace().canFly()
+                    pony -> pony.getCompositeRace().canFly() && !pony.getCompositeRace().includes(Race.HIPPOGRIFF)
+            ),
+
+            new ToggleableAttribute(
+                    new EntityAttributeModifier(UUID.fromString("9e2699fc-3b8d-4f71-92dd-bef19b92e4f7"), "Hippogriff Speed", 0.1, Operation.MULTIPLY_TOTAL),
+                    List.of(EntityAttributes.GENERIC_MOVEMENT_SPEED, EntityAttributes.GENERIC_ATTACK_SPEED),
+                    pony -> pony.getCompositeRace().includes(Race.HIPPOGRIFF)
+            ),
+            new ToggleableAttribute(
+                    new EntityAttributeModifier(UUID.fromString("707b50a8-03e8-40f4-5853-fc7e0f625d6d"), "Hippogriff Reach", 1.3, Operation.ADDITION),
+                    List.of(UEntityAttributes.EXTENDED_REACH_DISTANCE),
+                    pony -> pony.getCompositeRace().includes(Race.HIPPOGRIFF)
             ),
 
             new ToggleableAttribute(

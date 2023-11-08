@@ -36,7 +36,9 @@ import com.google.common.collect.Streams;
 import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
 
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
@@ -359,6 +361,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                     .orElseGet(this::getSpecies).composite(
                   AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
                 : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
+                : AmuletSelectors.PEARL_NECKLACE.test(entity) ? Race.SEAPONY
                 : null
             );
         }
@@ -424,6 +427,23 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
                 if (!EquinePredicates.RAGING.test(entity) && charge.getPercentFill() >= 1 && entity.getWorld().random.nextInt(1000) == 0) {
                     SpellType.RAGE.withTraits().apply(this, CastingMethod.INNATE);
+                }
+            }
+        }
+
+        if (getCompositeRace().includes(Race.SEAPONY)) {
+            if (entity.isSubmergedInWater()) {
+                if (entity.getVelocity().lengthSquared() > 0.02) {
+                    spawnParticles(ParticleTypes.BUBBLE, 4);
+                }
+            } else {
+                if (entity.getAir() == entity.getMaxAir()) {
+                    entity.setAir(entity.getAir() - 1);
+                }
+
+                if (entity.getAir() == -20) {
+                    entity.setAir(0);
+                    entity.damage(entity.getDamageSources().dryOut(), 2);
                 }
             }
         }
@@ -568,6 +588,14 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         if (getObservedSpecies() == Race.KIRIN) {
             return Optional.of(speed.multiply(0.5, 1, 0.5));
         }
+        if (getCompositeRace().includes(Race.SEAPONY)) {
+            float factor = entity.isSwimming() ? 1.132F : 1.232F;
+            return Optional.of(new Vec3d(
+                    speed.x * factor,
+                    speed.y * 1.101,
+                    speed.z * factor
+            ));
+        }
         return Optional.empty();
     }
 
@@ -593,6 +621,18 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             return true;
         }
         return false;
+    }
+
+    public int getImplicitEnchantmentLevel(Enchantment enchantment) {
+
+        if ((enchantment == Enchantments.AQUA_AFFINITY
+                || enchantment == Enchantments.DEPTH_STRIDER
+                || enchantment == Enchantments.LUCK_OF_THE_SEA
+                || enchantment == Enchantments.LURE) && getCompositeRace().includes(Race.SEAPONY)) {
+            return 3;
+        }
+
+        return 0;
     }
 
     public Optional<Float> modifyDamage(DamageSource cause, float amount) {

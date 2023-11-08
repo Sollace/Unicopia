@@ -4,7 +4,10 @@ import java.util.Optional;
 
 import com.minelittlepony.client.util.render.RenderLayerUtil;
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
+import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.ItemImpl;
@@ -78,6 +81,27 @@ public class WorldRenderDelegate {
         if (pony instanceof Creature creature && smittenEyesRenderer.isSmitten(creature)) {
             Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
             smittenEyesRenderer.render(creature, matrices, immediate, light, 0);
+        }
+
+        if (pony instanceof Pony p) {
+            if (p.getCompositeRace().includes(Race.SEAPONY)
+                    && pony.asEntity().isSubmergedInWater()
+                    && MineLPDelegate.getInstance().getPlayerPonyRace(p.asEntity()) != Race.SEAPONY) {
+
+                for (var head : ModelPartHooks.stopCollecting()) {
+                    matrices.push();
+                    head.transform(matrices, 1F);
+
+                    Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+                    RenderLayer layer = RenderLayers.getMagicColored();
+                    float scale = 0.9F;
+
+                    SphereModel.SPHERE.render(matrices, immediate.getBuffer(layer), light, 0, scale, 0.5F, 0.5F, 0.5F, 0.1F);
+                    SphereModel.SPHERE.render(matrices, immediate.getBuffer(layer), light, 0, scale + 0.2F, 0.5F, 0.5F, 0.5F, 0.1F);
+
+                    matrices.pop();
+                }
+            }
         }
 
         if (pony instanceof ItemImpl || pony instanceof Living) {
@@ -162,6 +186,13 @@ public class WorldRenderDelegate {
                 roll -= 180;
             }
 
+            if (p.getAcrobatics().isFloppy()) {
+                matrices.translate(0, -0.5, 0);
+                p.asEntity().setBodyYaw(0);
+                p.asEntity().setYaw(0);
+                matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(90));
+            }
+
             matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(yaw));
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(roll));
 
@@ -169,6 +200,12 @@ public class WorldRenderDelegate {
 
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(diveAngle));
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
+
+            if (p.getCompositeRace().includes(Race.SEAPONY)
+                    && pony.asEntity().isSubmergedInWater()
+                    && MineLPDelegate.getInstance().getPlayerPonyRace(p.asEntity()) != Race.SEAPONY) {
+                ModelPartHooks.startCollecting();
+            }
         } else if (pony instanceof Creature creature && smittenEyesRenderer.isSmitten(creature)) {
             ModelPartHooks.startCollecting();
         }

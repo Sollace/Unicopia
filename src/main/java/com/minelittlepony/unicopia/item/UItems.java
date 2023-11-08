@@ -197,6 +197,9 @@ public interface UItems {
             .maxCount(1)
             .maxDamage(890)
             .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
+    AmuletItem PEARL_NECKLACE = register("pearl_necklace", new AmuletItem(new FabricItemSettings()
+            .maxCount(1)
+            .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
 
     GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
     GlassesItem BROKEN_SUNGLASSES = register("broken_sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
@@ -213,6 +216,7 @@ public interface UItems {
     Item BAT_BADGE = register(Race.BAT);
     Item CHANGELING_BADGE = register(Race.CHANGELING);
     Item KIRIN_BADGE = register(Race.KIRIN);
+    Item HIPPOGRIFF_BADGE = register(Race.HIPPOGRIFF);
 
     private static <T extends Item> T register(String name, T item, RegistryKey<ItemGroup> group) {
         return ItemGroupRegistry.register(Unicopia.id(name), item, group);

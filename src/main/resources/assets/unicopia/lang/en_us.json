@@ -52,6 +52,7 @@
   "item.unicopia.changeling_badge": "Changeling Emblem",
   "item.unicopia.bat_badge": "Bat Pony Emblem",
   "item.unicopia.kirin_badge": "Kirin Emblem",
+  "item.unicopia.hippogriff_badge": "Hippogriff Emblem",
 
   "item.unicopia.butterfly_spawn_egg": "Butterfly Spawn Egg",
   "item.unicopia.butterfly": "Butterfly",
@@ -141,13 +142,16 @@
   "item.unicopia.alicorn_amulet": "Alicorn Amulet",
   "item.unicopia.alicorn_amulet.lore": "Time worn: %d",
   
+  "item.unicopia.pearl_necklace": "Pearl Necklace",
+  "item.unicopia.pearl_necklace.lore": "Gives underwater abilities to the wearer",
+
   "item.unicopia.horse_shoe.accuracy": "Accuracy: %d%%",
   "item.unicopia.horse_shoe.speed": "Speed: %d",
   "item.unicopia.iron_horse_shoe": "Iron Horse Shoe",
   "item.unicopia.golden_horse_shoe": "Golden Horse Shoe",
   "item.unicopia.copper_horse_shoe": "Copper Horse Shoe",
   "item.unicopia.netherite_horse_shoe": "Netherite Horse Shoe",
-  
+
   "item.unicopia.broken_alicorn_amulet": "Broken Alicorn Amulet",
   "item.unicopia.unicorn_amulet": "Unicorn Amulet",
   "item.unicopia.unicorn_amulet.lore": "Grants magical abilities to whoever wears it",
@@ -344,6 +348,12 @@
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_kirin": "Lingering Potion of Kirin Metamorphosis",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_kirin": "Arrow of Kirin Metamorphosis",
 
+  "effect.unicopia.change_race_hippogriff": "Hippogriff Metamorphosis",
+  "item.minecraft.potion.effect.unicopia.tribe_swap_hippogriff": "Potion of Hippogriff Metamorphosis",
+  "item.minecraft.splash_potion.effect.unicopia.tribe_swap_hippogriff": "Splash Potion of Hippogriff Metamorphosis",
+  "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_hippogriff": "Lingering Potion of Hippogriff Metamorphosis",
+  "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_hippogriff": "Arrow of Hippogriff Metamorphosis",
+
   "potion.potency.6": "VII",
 
   "spell.unicopia.frost": "Frost",
@@ -480,6 +490,11 @@
   "ability.unicopia.rainboom": "Sonic Rainboom",
   "ability.unicopia.rage": "Rage",
   "ability.unicopia.nirik_blast": "Nirik Blast",
+  "ability.unicopia.screech": "Screech",
+  "ability.unicopia.peck": "Peck/Squawk",
+  "ability.unicopia.peck.block.fled": "The block has fled",
+  "ability.unicopia.peck.block.unfased": "The block is unfazed by your threats",
+  "ability.unicopia.dash": "Flying Dash",
 
   "gui.unicopia.trait.label": "Element of %s",
   "gui.unicopia.trait.group": "\n %s",
@@ -511,6 +526,7 @@
   "gui.unicopia.tribe_selection.describe.unicopia.pegasus": "Join the Pegasus Tribe, soar with the Wonderbolts",
   "gui.unicopia.tribe_selection.describe.unicopia.bat": "Join the Bat Tribe, become the darkest night",
   "gui.unicopia.tribe_selection.describe.unicopia.kirin": "Join the Kirin's Village, take the vow of silence",
+  "gui.unicopia.tribe_selection.describe.unicopia.hippogriff": "Join Hippogriff Tibe, screech at your neighbors",
   "gui.unicopia.tribe_selection.describe.unicopia.changeling": "Join the Changeling Hive, your Queen demands it",
 
   "gui.unicopia.tribe_selection.confirm": "You have selected %s",
@@ -551,6 +567,11 @@
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.kirin": " - Is silent in their default state, and can move freely around the warden",
   "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.kirin": " - Can eat fruits and vegetables, red meats, and some foraged items normally toxic to other races",
 
+  "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.hippogriff": " - Flight and the ability to train to build endurance",
+  "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.hippogriff": " - Can dash whilst flying",
+  "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.hippogriff": " - Has a sharp and noisy beak for screeching and pecking",
+  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.hippogriff": " - Loves stairs, fish, and meat, but mostly stairs",
+
   "gui.unicopia.tribe_selection.confirm.bads": "but they...",
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.human": " - Have no magical abilities what-so-ever",
@@ -585,6 +606,11 @@
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.kirin": " - Has a tendency to burn things, especially when close to raging",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.kirin": " - Lighter than other ponies, and might take increased knockback",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.kirin": " - Doesn't like water",
+
+  "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.hippogriff": " - Weak to brute force attacks",
+  "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.hippogriff": " - Must rest between flights to regain their strength",
+  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.hippogriff": " - Has a bird brain",
+  "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.hippogriff": "",
 
   "gui.unicopia.tribe_selection.join": "Join Tribe",
   "gui.unicopia.tribe_selection.cancel": "Go Back",
@@ -811,6 +837,10 @@
   "unicopia.race.bat.alt": "Bat Ponies",
   "unicopia.race.kirin": "Kirin",
   "unicopia.race.kirin.alt": "Kirins",
+  "unicopia.race.hippogriff": "Hippogriff",
+  "unicopia.race.hippogriff.alt": "Hippogriffs",
+  "unicopia.race.seapony": "Sea Pony",
+  "unicopia.race.seapony.alt": "Sea Ponies",
 
   "death.attack.unicopia.generic.and_also": "%1$s and %2$s",
   "death.attack.unicopia.generic.whilst_flying": "%1$s whilst flying",
@@ -932,6 +962,7 @@
   "unicopia.subtitle.entity.player.kick": "Player kicks",
   "unicopia.subtitle.magic_aura": "Magic humming",
   "unicopia.subtitle.player.rebound": "Player Bounces Off Wall",
+  "unicopia.subtitle.screech": "Player Screeches",
   "unicopia.subtitle.ears_ringing": "Ears ringing",
   "unicopia.subtitle.heartbeat": "Heart beats",
   "unicopia.subtitle.entity.artefact.ambient": "Magic hums",

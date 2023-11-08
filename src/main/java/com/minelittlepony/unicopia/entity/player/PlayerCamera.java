@@ -3,9 +3,11 @@ package com.minelittlepony.unicopia.entity.player;
 import java.util.Optional;
 
 import com.minelittlepony.common.util.animation.MotionCompositor;
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 
+import net.minecraft.client.render.CameraSubmersionType;
 import net.minecraft.util.math.Vec3d;
 
 public class PlayerCamera extends MotionCompositor {
@@ -35,6 +37,11 @@ public class PlayerCamera extends MotionCompositor {
             roll = player.getInterpolator().interpolate("roll", (float)roll, 15);
         }
 
+
+        if (player.getAcrobatics().isFloppy()) {
+            roll += 90;
+        }
+
         return (float)roll;
     }
 
@@ -52,6 +59,15 @@ public class PlayerCamera extends MotionCompositor {
             .map(AbstractDisguiseSpell::getDisguise)
             .flatMap(d -> d.getDistance(player))
             .map(d -> distance * d);
+    }
+
+    public Optional<CameraSubmersionType> getSubmersionType(CameraSubmersionType original) {
+        if (player.getCompositeRace().includes(Race.SEAPONY)) {
+            if (original == CameraSubmersionType.WATER) {
+                return Optional.of(CameraSubmersionType.NONE);
+            }
+        }
+        return Optional.empty();
     }
 
     public double calculateFieldOfView(double fov) {

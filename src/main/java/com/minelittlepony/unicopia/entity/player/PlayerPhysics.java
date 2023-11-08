@@ -414,7 +414,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         if (type.isAvian()) {
             if (pony.getObservedSpecies() != Race.BAT && entity.getWorld().random.nextInt(9000) == 0) {
-                entity.dropItem(UItems.PEGASUS_FEATHER);
+                entity.dropItem(pony.getObservedSpecies() == Race.HIPPOGRIFF ? UItems.GRYPHON_FEATHER : UItems.PEGASUS_FEATHER);
                 playSound(USounds.ENTITY_PLAYER_PEGASUS_MOLT, 0.3F, 1);
                 UCriteria.SHED_FEATHER.trigger(entity);
             }
@@ -513,7 +513,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
                     if (entity.getWorld().random.nextInt(110) == 1 && !pony.isClient()) {
                         pony.getLevel().add(1);
-                        pony.getMagicalReserves().getCharge().addPercent(4);
+                        if (Abilities.RAINBOOM.canUse(pony.getCompositeRace())) {
+                            pony.getMagicalReserves().getCharge().addPercent(4);
+                        }
                         pony.getMagicalReserves().getExertion().set(0);
                         pony.getMagicalReserves().getExhaustion().set(0);
                         mana.set(mana.getMax() * 100);

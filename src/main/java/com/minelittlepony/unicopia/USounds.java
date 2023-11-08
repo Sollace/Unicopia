@@ -14,6 +14,8 @@ public interface USounds {
 
     SoundEvent ENTITY_PLAYER_CORRUPTION = PARTICLE_SOUL_ESCAPE;
     SoundEvent ENTITY_PLAYER_BATPONY_SCREECH = register("entity.player.batpony.screech");
+    SoundEvent ENTITY_PLAYER_HIPPOGRIFF_SCREECH = register("entity.player.hippogriff.screech");
+    SoundEvent ENTITY_PLAYER_HIPPOGRIFF_PECK = ENTITY_CHICKEN_STEP;
     SoundEvent ENTITY_PLAYER_REBOUND = register("entity.player.rebound");
     SoundEvent ENTITY_PLAYER_PEGASUS_WINGSFLAP = register("entity.player.pegasus.wingsflap");
     SoundEvent ENTITY_PLAYER_PEGASUS_FLYING = register("entity.player.pegasus.flying");

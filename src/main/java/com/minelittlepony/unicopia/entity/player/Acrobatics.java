@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation.Recipient;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
+import com.minelittlepony.unicopia.entity.mob.StormCloudEntity;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
 
@@ -17,6 +18,8 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -40,6 +43,17 @@ public class Acrobatics implements Tickable, NbtSerialisable {
         entity.getDataTracker().startTracking(HANGING_POSITION, Optional.empty());
 
         pony.addTicker(this::checkDislodge);
+    }
+
+    public boolean isImmobile() {
+        return isFloppy() && entity.isOnGround();
+    }
+
+    public boolean isFloppy() {
+        if (entity.isCreative() && entity.getAbilities().flying) {
+            return false;
+        }
+        return pony.getCompositeRace().any(Race::isFish) && !entity.isTouchingWater() && !entity.getWorld().isWater(StormCloudEntity.findSurfaceBelow(entity.getWorld(), entity.getBlockPos()));
     }
 
     @Override
@@ -114,6 +128,11 @@ public class Acrobatics implements Tickable, NbtSerialisable {
             }
         } else {
             ticksHanging = 0;
+        }
+
+
+        if (pony.getCompositeRace().includes(Race.SEAPONY) && !entity.isSubmergedInWater() && pony.landedChanged()) {
+            entity.getWorld().playSound(null, entity.getBlockPos(), SoundEvents.ENTITY_GUARDIAN_FLOP, SoundCategory.PLAYERS, 1, 1);
         }
     }
 

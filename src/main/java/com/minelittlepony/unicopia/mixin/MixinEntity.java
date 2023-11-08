@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.mixin;
 
+import java.util.Set;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,9 +19,15 @@ import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.Entity.PositionUpdater;
 import net.minecraft.entity.Entity.RemovalReason;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.registry.tag.TagKey;
 
 @Mixin(Entity.class)
 abstract class MixinEntity implements EntityDuck {
+    @Override
+    @Accessor("submergedFluidTag")
+    public abstract Set<TagKey<Fluid>> getSubmergedFluidTags();
+
     @Override
     @Accessor
     public abstract void setRemovalReason(RemovalReason reason);

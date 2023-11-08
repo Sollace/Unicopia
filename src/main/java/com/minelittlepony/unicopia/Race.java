@@ -24,18 +24,18 @@ import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 
-public record Race (Supplier<Composite> compositeSupplier, boolean canCast, FlightType flightType, boolean canUseEarth, boolean isNocturnal, boolean canHang) implements Affine {
+public record Race (Supplier<Composite> compositeSupplier, Availability availability, boolean canCast, FlightType flightType, boolean canUseEarth, boolean isNocturnal, boolean canHang) implements Affine {
     public static final String DEFAULT_ID = "unicopia:unset";
     public static final Registry<Race> REGISTRY = RegistryUtils.createDefaulted(Unicopia.id("race"), DEFAULT_ID);
     public static final RegistryKey<? extends Registry<Race>> REGISTRY_KEY = REGISTRY.getKey();
     private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("race.unknown", id));
 
-    public static Race register(String name, boolean magic, FlightType flight, boolean earth, boolean nocturnal, boolean canHang) {
-        return register(Unicopia.id(name), magic, flight, earth, nocturnal, canHang);
+    public static Race register(String name, Availability availability, boolean magic, FlightType flight, boolean earth, boolean nocturnal, boolean canHang) {
+        return register(Unicopia.id(name), availability, magic, flight, earth, nocturnal, canHang);
     }
 
-    public static Race register(Identifier id, boolean magic, FlightType flight, boolean earth, boolean nocturnal, boolean canHang) {
-        return Registry.register(REGISTRY, id, new Race(Suppliers.memoize(() -> new Composite(REGISTRY.get(id), null)), magic, flight, earth, nocturnal, canHang));
+    public static Race register(Identifier id, Availability availability, boolean magic, FlightType flight, boolean earth, boolean nocturnal, boolean canHang) {
+        return Registry.register(REGISTRY, id, new Race(Suppliers.memoize(() -> new Composite(REGISTRY.get(id), null)), availability, magic, flight, earth, nocturnal, canHang));
     }
 
     public static RegistryKeyArgumentType<Race> argument() {
@@ -46,15 +46,17 @@ public record Race (Supplier<Composite> compositeSupplier, boolean canCast, Flig
      * The default, unset race.
      * This is used if there are no other races.
      */
-    public static final Race UNSET = register("unset", false, FlightType.NONE, false, false, false);
-    public static final Race HUMAN = register("human", false, FlightType.NONE, false, false, false);
-    public static final Race EARTH = register("earth", false, FlightType.NONE, true, false, false);
-    public static final Race UNICORN = register("unicorn", true, FlightType.NONE, false, false, false);
-    public static final Race PEGASUS = register("pegasus", false, FlightType.AVIAN, false, false, false);
-    public static final Race BAT = register("bat", false, FlightType.AVIAN, false, true, true);
-    public static final Race ALICORN = register("alicorn", true, FlightType.AVIAN, true, false, false);
-    public static final Race CHANGELING = register("changeling", false, FlightType.INSECTOID, false, false, true);
-    public static final Race KIRIN = register("kirin", true, FlightType.NONE, false, false, false);
+    public static final Race UNSET = register("unset", Availability.COMMANDS, false, FlightType.NONE, false, false, false);
+    public static final Race HUMAN = register("human", Availability.COMMANDS, false, FlightType.NONE, false, false, false);
+    public static final Race EARTH = register("earth", Availability.DEFAULT, false, FlightType.NONE, true, false, false);
+    public static final Race UNICORN = register("unicorn", Availability.DEFAULT, true, FlightType.NONE, false, false, false);
+    public static final Race PEGASUS = register("pegasus", Availability.DEFAULT, false, FlightType.AVIAN, false, false, false);
+    public static final Race BAT = register("bat", Availability.DEFAULT, false, FlightType.AVIAN, false, true, true);
+    public static final Race ALICORN = register("alicorn", Availability.COMMANDS, true, FlightType.AVIAN, true, false, false);
+    public static final Race CHANGELING = register("changeling", Availability.DEFAULT, false, FlightType.INSECTOID, false, false, true);
+    public static final Race KIRIN = register("kirin", Availability.DEFAULT, true, FlightType.NONE, false, false, false);
+    public static final Race HIPPOGRIFF = register("hippogriff", Availability.DEFAULT, false, FlightType.AVIAN, false, false, false);
+    public static final Race SEAPONY = register("seapony", Availability.NONE, false, FlightType.NONE, false, false, false);
 
     public static void bootstrap() {}
 
@@ -83,6 +85,10 @@ public record Race (Supplier<Composite> compositeSupplier, boolean canCast, Flig
         return !isHuman();
     }
 
+    public boolean isFish() {
+        return this == SEAPONY;
+    }
+
     public boolean isHuman() {
         return this == UNSET || this == HUMAN;
     }
@@ -91,16 +97,12 @@ public record Race (Supplier<Composite> compositeSupplier, boolean canCast, Flig
         return !isNocturnal();
     }
 
-    public boolean isOp() {
-        return this == ALICORN;
-    }
-
     public boolean canFly() {
         return !flightType().isGrounded();
     }
 
     public boolean canInteractWithClouds() {
-        return canFly() && this != CHANGELING && this != BAT;
+        return canFly() && this != CHANGELING && this != BAT && this != HIPPOGRIFF;
     }
 
     public Identifier getId() {
