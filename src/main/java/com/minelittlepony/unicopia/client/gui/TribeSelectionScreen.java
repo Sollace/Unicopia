@@ -1,7 +1,10 @@
 package com.minelittlepony.unicopia.client.gui;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.common.client.gui.element.Label;
@@ -14,6 +17,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 public class TribeSelectionScreen extends GameGui implements HidesHud {
     static final Identifier TEXTURE = Unicopia.id("textures/gui/tribe_selection.png");
@@ -24,6 +28,13 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
     final Text choiceText;
 
     private boolean finished;
+
+    private final List<TribeButton> options = new ArrayList<>();
+    private static int SELECTION = -1;
+
+    private int prevScrollPosition;
+    private int scrollPosition;
+    private int targetScroll;
 
     public TribeSelectionScreen(Set<Race> allowedRaces, String baseString) {
         super(Text.translatable(baseString));
@@ -52,33 +63,26 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
         top += block.getBounds().height;
         top += 30;
 
-        final int itemWidth = 70 + 10;
-
         List<Race> options = Race.REGISTRY.stream().filter(race -> race.availability().isSelectable()).toList();
-
-        int columns = Math.min(width / itemWidth, options.size());
-
-        int x = (width - (columns * itemWidth)) / 2;
-        int y = top;
-
-        int column = 0;
-        int row = 0;
+        this.options.clear();
 
         for (Race race : options) {
-            addOption(race, x + (column * itemWidth), y + (row * itemWidth));
-            column++;
-            if (column >= columns) {
-                column = 0;
-                row++;
-            }
+            addOption(race, top);
         }
 
-        top = height - 20;
+        if (SELECTION == -1) {
+            SELECTION = options.size() / 2;
+        }
+        scroll(SELECTION, false);
     }
 
-    private void addOption(Race race, int x, int y) {
-        addDrawableChild(new TribeButton(x, y, width, race)).onClick(b -> {
+    private void addOption(Race race, int y) {
+        var option = new TribeButton(0, y, width, race);
+        int index = options.size();
+        options.add(addDrawableChild(option));
+        option.onClick(b -> {
             finished = true;
+            scroll(index, false);
             client.setScreen(new TribeConfirmationScreen(result -> {
                 finished = false;
 
@@ -93,7 +97,31 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
     }
 
     @Override
+    public void tick() {
+        prevScrollPosition = scrollPosition;
+        if (scrollPosition < targetScroll) {
+            scrollPosition++;
+        }
+        if (scrollPosition > targetScroll) {
+            scrollPosition--;
+        }
+    }
+
+    private void updateScolling() {
+        final int itemWidth = 70 + 10;
+        int x = (width - itemWidth) / 2;
+        float diff = MathHelper.lerp(client.getTickDelta(), prevScrollPosition, scrollPosition) / 8F;
+
+        for (int i = 0; i < options.size(); i++) {
+            var option = options.get(i);
+            option.setX((int)(x + (i - diff) * itemWidth));
+            option.setFocused(i == SELECTION);
+        }
+    }
+
+    @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        updateScolling();
         renderBackground(context);
         super.render(context, mouseX, mouseY, delta);
     }
@@ -102,6 +130,33 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
     public void finish() {
         finished = true;
         close();
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+
+        if (keyCode == GLFW.GLFW_KEY_LEFT) {
+            scroll(Math.max(SELECTION - 1, 0), true);
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_RIGHT) {
+            scroll(Math.min(SELECTION + 1, options.size() - 1), true);
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_ENTER) {
+            options.get(SELECTION).onPress();
+        }
+
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    private void scroll(int target, boolean animate) {
+        SELECTION = target;
+        targetScroll = SELECTION * 8;
+        if (!animate) {
+            scrollPosition = targetScroll;
+            prevScrollPosition = scrollPosition;
+        }
     }
 
     @Override

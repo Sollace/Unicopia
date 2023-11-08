@@ -535,12 +535,14 @@
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.human": " - Are omnivores and can eat all types of food except for love",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.human": " - Opposable thumbs",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.human": " - Walking upright",
-  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.human": "",
 
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.earth": " - Stronger knockback and resistance to magic",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.earth": " - Have extra weight makes them effective against magic and brute force",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.earth": " - A special connection to the earth that makes farming 10,000% more effective!",
-  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.earth": " - Cute floppy pony ears",
+  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.earth": " - Has powerful punches, kicks, and stomps that they can use to defend or attack their environment",
+  "gui.unicopia.tribe_selection.confirm.goods.5.unicopia.earth": " - Is the only one that can hug creepers and survive",
+  "gui.unicopia.tribe_selection.confirm.goods.6.unicopia.earth": " - Can eat rocks",
+  "gui.unicopia.tribe_selection.confirm.goods.7.unicopia.earth": " - Cute floppy pony ears",
 
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.unicorn": " - Teleportation and magic spells",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.unicorn": " - Research and craft magical artefacts that enhance their abilities",
@@ -550,7 +552,8 @@
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.pegasus": " - Flight and the ability to train to build endurace",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.pegasus": " - Use stored mana to dash in short bursts or build it up to perform a powerful rainboom",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.pegasus": " - Moves faster and takes less fall damage",
-  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.pegasus": " - Can eat vegetables and certain types of fish",
+  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.pegasus": " - Can interact directly with cloud items and blocks",
+  "gui.unicopia.tribe_selection.confirm.goods.5.unicopia.pegasus": " - Can eat vegetables and certain types of fish",
 
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.bat": " - Flight and the ability to train to build endurance",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.bat": " - Sees better in the night",
@@ -559,8 +562,8 @@
 
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.changeling": " - Able to fly and hover in place",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.changeling": " - Shapeshift and morph into nearly anyone or anyling",
-  "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.changeling": " - Is carnivorous. Can eat anything that doesn't make them sick",
-  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.changeling": "",
+  "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.changeling": " - Sticks to walls and can climb over almost enything",
+  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.changeling": " - Is carnivorous. Can eat anything that doesn't make them sick",
 
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.kirin": " - Immune to all types of fire damage",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.kirin": " - Can unlock a rage ability by taking damage",
@@ -570,18 +573,21 @@
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.hippogriff": " - Flight and the ability to train to build endurance",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.hippogriff": " - Can dash whilst flying",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.hippogriff": " - Has a sharp and noisy beak for screeching and pecking",
-  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.hippogriff": " - Loves stairs, fish, and meat, but mostly stairs",
+  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.hippogriff": " - Can eat raw and cooked fish, cooked meat",
+  "gui.unicopia.tribe_selection.confirm.goods.5.unicopia.hippogriff": " - Heals extra hearts when eating pinecones",
+  "gui.unicopia.tribe_selection.confirm.goods.6.unicopia.hippogriff": " - Loves stairs",
 
   "gui.unicopia.tribe_selection.confirm.bads": "but they...",
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.human": " - Have no magical abilities what-so-ever",
-  "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.human": " - Need an Elytra to fly",
+  "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.human": " - Needs an Elytra to fly",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.human": " - Must grow food the old fashioned way, through hard work and manual labour",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.human": " - No floppy ears",
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.earth": " - Cannot fly",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.earth": " - Are weak to certain types of magic",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.earth": " - Can only eat plants and vegetables",
+  "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.earth": " - Heavier and moves slower than the other ponies",
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.unicorn": " - Cannot fly",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.unicorn": " - Are weak to brute force attacks",
@@ -590,17 +596,15 @@
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.pegasus": " - Light weight makes them the weakest to brute force",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.pegasus": " - Must rest between flights to regain their strength",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.pegasus": " - Cannot use magic without aid from others",
-  "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.pegasus": "",
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.bat": " - Light weight makes them weak to brute force attacks",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.bat": " - Must rest between flights to regain their strength",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.bat": " - Is sometimes scared of even themselves",
-  "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.bat": " - Is carnivorous. Can eat anything that doesn't make them sick",
+  "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.bat": " - Is carnivorous. Can eat raw and cooked meat, or sustain themselved purely on stolen love.",
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.changeling": " - Are always starving",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.changeling": " - Requires love, collected from ponies or other hostile mobs to subsidise their diet",
-  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.changeling": " - Becomes sick from eating regular food and must eat love to hasten a cure",
-  "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.changeling": "",
+  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.changeling": " - Becomes sick from eating most regular food and must harvest love to hasten a cure",
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.kirin": " - Are no longer quiet whilst raging",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.kirin": " - Has a tendency to burn things, especially when close to raging",
@@ -608,9 +612,9 @@
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.kirin": " - Doesn't like water",
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.hippogriff": " - Weak to brute force attacks",
-  "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.hippogriff": " - Must rest between flights to regain their strength",
-  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.hippogriff": " - Has a bird brain",
-  "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.hippogriff": "",
+  "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.hippogriff": " - Cannot interact with clouds",
+  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.hippogriff": " - Must rest between flights to regain their strength",
+  "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.hippogriff": " - Has a bird brain",
 
   "gui.unicopia.tribe_selection.join": "Join Tribe",
   "gui.unicopia.tribe_selection.cancel": "Go Back",
