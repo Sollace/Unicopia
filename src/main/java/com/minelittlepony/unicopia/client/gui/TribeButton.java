@@ -41,10 +41,10 @@ public class TribeButton extends Button {
         MinecraftClient mc = MinecraftClient.getInstance();
 
         context.drawTexture(TribeSelectionScreen.TEXTURE, getX()  - 3, getY() - 13, 0, 0, 76, 69);
-        if (isHovered()) {
+        if (isSelected()) {
             context.drawTexture(TribeSelectionScreen.TEXTURE, getX()  - 4, getY() - 14, 76, 0, 78, 71);
 
-            if (hovered && screenWidth > 0) {
+            if (isFocused() && screenWidth > 0) {
                 Identifier id = Race.REGISTRY.getId(race);
                 context.drawCenteredTextWithShadow(getFont(), Text.translatable("gui.unicopia.tribe_selection.describe." + id.getNamespace() + "." + id.getPath()), screenWidth / 2, getY() + height, 0xFFFFFFFF);
             }
@@ -59,7 +59,7 @@ public class TribeButton extends Button {
         int foreColor = getStyle().getColor();
         if (!active) {
             foreColor = 10526880;
-        } else if (isHovered()) {
+        } else if (isSelected()) {
             foreColor = 16777120;
         }
 
