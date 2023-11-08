@@ -46,6 +46,10 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
         return getAppearance().flatMap(d -> d.getTargetDimensions(player));
     }
 
+    default boolean isOf(@Nullable Entity entity) {
+        return getDisguise().isOf(entity);
+    }
+
     default Disguise setDisguise(@Nullable Entity entity) {
         if (entity == getDisguise().getAppearance()) {
             entity = null;

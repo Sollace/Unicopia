@@ -46,7 +46,7 @@ public interface UEntities {
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(0.1F, 0.1F)));
     EntityType<FriendlyCreeperEntity> FRIENDLY_CREEPER = register("friendly_creeper", FabricEntityTypeBuilder.create(SpawnGroup.MISC, FriendlyCreeperEntity::new)
-            .trackRangeBlocks(8)
+            .trackRangeChunks(8)
             .dimensions(EntityDimensions.fixed(0.6f, 1.7f))
     );
     EntityType<SpellbookEntity> SPELLBOOK = register("spellbook", FabricEntityTypeBuilder.create(SpawnGroup.MISC, SpellbookEntity::new)
@@ -64,6 +64,9 @@ public interface UEntities {
     EntityType<AirBalloonEntity> AIR_BALLOON = register("air_balloon", FabricEntityTypeBuilder.create(SpawnGroup.MISC, AirBalloonEntity::new)
             .trackRangeBlocks(1000)
             .dimensions(EntityDimensions.changing(2.5F, 0.1F)));
+    EntityType<LootBugEntity> LOOT_BUG = register("loot_bug", FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, LootBugEntity::new)
+            .trackRangeChunks(8)
+            .dimensions(EntityDimensions.fixed(0.8F, 0.6F)));
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         EntityType<T> type = builder.build();
@@ -77,6 +80,7 @@ public interface UEntities {
         FabricDefaultAttributeRegistry.register(AIR_BALLOON, FlyingEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(SOMBRA, SombraEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(FRIENDLY_CREEPER, FriendlyCreeperEntity.createCreeperAttributes());
+        FabricDefaultAttributeRegistry.register(LOOT_BUG, LootBugEntity.createSilverfishAttributes());
 
         if (!Unicopia.getConfig().disableButterflySpawning.get()) {
             final Predicate<BiomeSelectionContext> butterflySpawnable = BiomeSelectors.foundInOverworld()

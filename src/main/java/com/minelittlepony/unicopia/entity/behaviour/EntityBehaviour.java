@@ -74,6 +74,10 @@ public class EntityBehaviour<T extends Entity> {
         entity.remove(RemovalReason.KILLED);
     }
 
+    public boolean isEqual(T a, Entity b) {
+        return a.getType() == b.getType();
+    }
+
     public Optional<Double> getCameraDistance(Entity entity, Pony player) {
         if (entity == null) {
             return Optional.empty();

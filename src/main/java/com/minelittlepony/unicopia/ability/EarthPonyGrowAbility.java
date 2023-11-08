@@ -5,10 +5,12 @@ import java.util.Optional;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
+import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -71,8 +73,21 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
 
         ItemStack stack = new ItemStack(Items.BONE_MEAL);
 
-        if (BoneMealItem.useOnFertilizable(stack, w, pos)
-            || BoneMealItem.useOnGround(stack, w, pos, Direction.UP)) {
+        if (state.getBlock() instanceof Growable growable) {
+            return growable.grow(w, state, pos) ? 1 : 0;
+        }
+
+        if (BoneMealItem.useOnFertilizable(stack, w, pos)) {
+            if (w.random.nextInt(350) == 0) {
+                if (w.getBlockState(pos.down()).isOf(Blocks.FARMLAND)) {
+                    w.setBlockState(pos.down(), Blocks.DIRT.getDefaultState());
+                }
+                w.setBlockState(pos, UBlocks.PLUNDER_VINE_BUD.getDefaultState());
+            }
+            return 1;
+        }
+
+        if (BoneMealItem.useOnGround(stack, w, pos, Direction.UP)) {
             return 1;
         }
 
@@ -91,5 +106,9 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
     @Override
     public void coolDown(Pony player, AbilitySlot slot) {
 
+    }
+
+    public interface Growable {
+        boolean grow(World world, BlockState state, BlockPos pos);
     }
 }

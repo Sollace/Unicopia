@@ -133,6 +133,9 @@ public interface UBlocks {
     SegmentedCropBlock OATS_STEM = register("oats_stem", OATS.createNext(5));
     SegmentedCropBlock OATS_CROWN = register("oats_crown", OATS_STEM.createNext(5));
 
+    Block PLUNDER_VINE = register("plunder_vine", new ThornBlock(Settings.create().mapColor(MapColor.DARK_CRIMSON).hardness(1).ticksRandomly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY), () -> UBlocks.PLUNDER_VINE_BUD));
+    Block PLUNDER_VINE_BUD = register("plunder_vine_bud", new ThornBudBlock(Settings.create().mapColor(MapColor.DARK_CRIMSON).hardness(1).nonOpaque().ticksRandomly().sounds(BlockSoundGroup.GRASS).pistonBehavior(PistonBehavior.DESTROY), PLUNDER_VINE.getDefaultState()));
+
     Block CHITIN = register("chitin", new SnowyBlock(Settings.create().mapColor(MapColor.PALE_PURPLE).hardness(5).requiresTool().ticksRandomly().sounds(BlockSoundGroup.CORAL)), ItemGroups.NATURAL);
     Block SURFACE_CHITIN = register("surface_chitin", new GrowableBlock(Settings.copy(CHITIN), () -> CHITIN), ItemGroups.NATURAL);
     Block CHISELLED_CHITIN = register("chiselled_chitin", new Block(Settings.create().mapColor(MapColor.PALE_PURPLE).hardness(5).requiresTool()), ItemGroups.BUILDING_BLOCKS);
@@ -218,7 +221,7 @@ public interface UBlocks {
         StrippableBlockRegistry.register(PALM_LOG, STRIPPED_PALM_LOG);
         StrippableBlockRegistry.register(ZAP_WOOD, STRIPPED_ZAP_WOOD);
         StrippableBlockRegistry.register(PALM_WOOD, STRIPPED_PALM_WOOD);
-        Collections.addAll(TRANSLUCENT_BLOCKS, WEATHER_VANE, CHITIN_SPIKES);
+        Collections.addAll(TRANSLUCENT_BLOCKS, WEATHER_VANE, CHITIN_SPIKES, PLUNDER_VINE, PLUNDER_VINE_BUD);
         TintedBlock.REGISTRY.add(PALM_LEAVES);
 
         FlammableBlockRegistry.getDefaultInstance().add(GREEN_APPLE_LEAVES, 30, 60);

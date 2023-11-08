@@ -109,6 +109,10 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         return entity != null;
     }
 
+    public boolean isOf(@Nullable Entity entity) {
+        return isPresent() && entity != null && EntityBehaviour.forEntity(this.entity).isEqual(this.entity, entity);
+    }
+
     public NbtCompound getOrCreateTag() {
         if (tag == null) {
             tag = new NbtCompound();
