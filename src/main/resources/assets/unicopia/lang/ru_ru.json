@@ -51,7 +51,8 @@
   "item.unicopia.earth_badge": "Эмблема земного пони",
   "item.unicopia.changeling_badge": "Эмблема чейнджлинга",
   "item.unicopia.bat_badge": "Эмблема бэтпони",
-  "item.unicopia.kirin_badge": "Эмблема киринов",
+  "item.unicopia.kirin_badge": "Эмблема кирина",
+  "item.unicopia.hippogriff_badge": "Эмблема гиппогрифа",
 
   "item.unicopia.butterfly_spawn_egg": "Яйцо призыва бабочки",
   "item.unicopia.butterfly": "Бабочка",
@@ -141,6 +142,9 @@
   "item.unicopia.alicorn_amulet": "Амулет аликорна",
   "item.unicopia.alicorn_amulet.lore": "Время ношения: %d",
 
+  "item.unicopia.pearl_necklace": "Жемчужное ожерелье",
+  "item.unicopia.pearl_necklace.lore": "Наделяет владельца подводными способностями",
+
   "item.unicopia.horse_shoe.accuracy": "Точность: %d%%",
   "item.unicopia.horse_shoe.speed": "Скорость: %d",
   "item.unicopia.iron_horse_shoe": "Железная подкова",
@@ -176,7 +180,7 @@
   "item.unicopia.music_disc_funk": "Пластинка",
   "item.unicopia.music_disc_funk.desc": "Фанк, просто фанк",
 
-  "item.unicopia.cloud_lump": "Облачная лампа",
+  "item.unicopia.cloud_lump": "Облачный ком",
   "item.unicopia.light_gray_bed_sheets": "Светло-серая простынь",
   "item.unicopia.gray_bed_sheets": "Серая простынь",
   "item.unicopia.black_bed_sheets": "Черная простынь",
@@ -344,6 +348,12 @@
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_kirin": "Туманное зелье метаморфоз кирина",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_kirin": "Стрела метаморфоз кирина",
 
+  "effect.unicopia.change_race_hippogriff": "Метаморфозы гиппогрифа",
+  "item.minecraft.potion.effect.unicopia.tribe_swap_hippogriff": "Зелье метаморфоз гиппогрифа",
+  "item.minecraft.splash_potion.effect.unicopia.tribe_swap_hippogriff": "Взрывное зелье метаморфоз гиппогрифа",
+  "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_hippogriff": "Туманное зелье метаморфоз гиппогрифа",
+  "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_hippogriff": "Стрела метаморфоз гиппогрифа",
+
   "potion.potency.6": "VII",
 
   "spell.unicopia.frost": "Заморозка",
@@ -480,6 +490,11 @@
   "ability.unicopia.rainboom": "Звуковая радуга",
   "ability.unicopia.rage": "Ярость",
   "ability.unicopia.nirik_blast": "Заряд нирика",
+  "ability.unicopia.screech": "Кричать",
+  "ability.unicopia.peck": "Клевать",
+  "ability.unicopia.peck.block.fled": "Блок сбежал",
+  "ability.unicopia.peck.block.unfased": "Блок не обращает внимания на ваши угрозы",
+  "ability.unicopia.dash": "Рывок",
 
   "gui.unicopia.trait.label": "Элемент %s",
   "gui.unicopia.trait.group": "\n %s",
@@ -511,6 +526,7 @@
   "gui.unicopia.tribe_selection.describe.unicopia.pegasus": "Присоединяйтесь к племени пегасов, парите вместе с Вондерболтами",
   "gui.unicopia.tribe_selection.describe.unicopia.bat": "Присоединяйтесь к племени бэтпони, станьте самой темной ночью",
   "gui.unicopia.tribe_selection.describe.unicopia.kirin": "Присоединяйтесь к Деревне Киринов, дайте обет молчания",
+  "gui.unicopia.tribe_selection.describe.unicopia.hippogriff": "Присоединяйтесь к племени гиппогрифов, кричите на своих соседей",
   "gui.unicopia.tribe_selection.describe.unicopia.changeling": "Присоединяйтесь к Улью Чейнджлингов, ваша королева требует этого",
 
   "gui.unicopia.tribe_selection.confirm": "Вы выбрали племя \"%s\"",
@@ -551,6 +567,11 @@
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.kirin": " - В обычном состоянии бесшумны и могут спокойно ходить рядом с Хранителем",
   "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.kirin": " - Могут есть фрукты и овощи, мясо и некоторые виды кормов, обычно ядовитые для других",
 
+  "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.hippogriff": " - Могут летать",
+  "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.hippogriff": " - Могут совершать рывки в полёте",
+  "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.hippogriff": " - Имеют острый и шумный клюв для кричания и клевания",
+  "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.hippogriff": " - Любят лестницы, рыбу и мясо, но в основном лестницы",
+
   "gui.unicopia.tribe_selection.confirm.bads": "но они...",
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.human": " - Не имеют никаких магических способностей",
@@ -563,15 +584,15 @@
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.earth": " - Могут есть только растения и овощи",
 
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.unicorn": " - Не могут летать",
-  "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.unicorn": " - Слабы к атакам грубой силы",
+  "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.unicorn": " - Слабы к грубым атакам",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.unicorn": " - Могут есть только растения и овощи",
 
-  "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.pegasus": " - Слабы к атакам грубой силы",
+  "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.pegasus": " - Слабы к грубым атакам",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.pegasus": " - Должны отдыхать между полётами",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.pegasus": " - Не могут использовать магию без помощи",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.pegasus": "",
 
-  "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.bat": " - Слабы к атакам грубой силы",
+  "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.bat": " - Слабы к грубым атакам",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.bat": " - Должны отдыхать между полётами",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.bat": " - Иногда боятся даже самих себя",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.bat": " - Плотоядны. Могут есть всё, от чего не тошнит",
@@ -585,6 +606,11 @@
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.kirin": " - Поджигают вещи, особенно когда близки к ярости",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.kirin": " - Легче, чем другие пони, и сильнее оттакливаются",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.kirin": " - Не любят воду",
+
+  "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.hippogriff": " - Слабы к грубым атакам",
+  "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.hippogriff": " - Должны отдыхать между полётами, чтобы восстановить силы",
+  "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.hippogriff": " - Имеют куриный мозг",
+  "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.hippogriff": "",
 
   "gui.unicopia.tribe_selection.join": "Присоединиться",
   "gui.unicopia.tribe_selection.cancel": "Назад",
@@ -811,6 +837,10 @@
   "unicopia.race.bat.alt": "Бэтпони",
   "unicopia.race.kirin": "Кирин",
   "unicopia.race.kirin.alt": "Кирины",
+  "unicopia.race.hippogriff": "Гиппогриф",
+  "unicopia.race.hippogriff.alt": "Гиппогрифы",
+  "unicopia.race.seapony": "Морской пони",
+  "unicopia.race.seapony.alt": "Морские пони",
 
   "death.attack.unicopia.generic.and_also": "%1$s и %2$s",
   "death.attack.unicopia.generic.whilst_flying": "%1$s во время полёта",
@@ -932,6 +962,7 @@
   "unicopia.subtitle.entity.player.kick": "Игрок бьёт",
   "unicopia.subtitle.magic_aura": "Магическое гудение",
   "unicopia.subtitle.player.rebound": "Игрок отскакивает от стены",
+  "unicopia.subtitle.screech": "Игрок кричит",
   "unicopia.subtitle.ears_ringing": "Звон в ушах",
   "unicopia.subtitle.heartbeat": "Стук сердца",
   "unicopia.subtitle.entity.artefact.ambient": "Магическое гудение",
