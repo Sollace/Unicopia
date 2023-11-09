@@ -60,8 +60,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
     @Override
     public Identifier getIcon(Pony player) {
-        Identifier id = Abilities.REGISTRY.getId(this);
-        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath()
+        return getId().withPath(p -> "textures/gui/ability/" + p
             + "_" + player.getObservedSpecies().getId().getPath()
             + "_" + (getKickDirection(player) > 0 ? "forward" : "backward")
             + ".png");

@@ -27,6 +27,7 @@ import net.minecraft.registry.RegistryKey;
 public record Race (Supplier<Composite> compositeSupplier, Availability availability, boolean canCast, FlightType flightType, boolean canUseEarth, boolean isNocturnal, boolean canHang) implements Affine {
     public static final String DEFAULT_ID = "unicopia:unset";
     public static final Registry<Race> REGISTRY = RegistryUtils.createDefaulted(Unicopia.id("race"), DEFAULT_ID);
+    public static final Registry<Race> COMMAND_REGISTRY = RegistryUtils.createDefaulted(Unicopia.id("race/grantable"), DEFAULT_ID);
     public static final RegistryKey<? extends Registry<Race>> REGISTRY_KEY = REGISTRY.getKey();
     private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("race.unknown", id));
 
@@ -35,11 +36,15 @@ public record Race (Supplier<Composite> compositeSupplier, Availability availabi
     }
 
     public static Race register(Identifier id, Availability availability, boolean magic, FlightType flight, boolean earth, boolean nocturnal, boolean canHang) {
-        return Registry.register(REGISTRY, id, new Race(Suppliers.memoize(() -> new Composite(REGISTRY.get(id), null)), availability, magic, flight, earth, nocturnal, canHang));
+        Race race = Registry.register(REGISTRY, id, new Race(Suppliers.memoize(() -> new Composite(REGISTRY.get(id), null, null)), availability, magic, flight, earth, nocturnal, canHang));
+        if (availability.isGrantable()) {
+            Registry.register(COMMAND_REGISTRY, id, race);
+        }
+        return race;
     }
 
     public static RegistryKeyArgumentType<Race> argument() {
-        return RegistryKeyArgumentType.registryKey(REGISTRY_KEY);
+        return RegistryKeyArgumentType.registryKey(COMMAND_REGISTRY.getKey());
     }
 
     /**
@@ -64,8 +69,8 @@ public record Race (Supplier<Composite> compositeSupplier, Availability availabi
         return compositeSupplier.get();
     }
 
-    public Composite composite(@Nullable Race pseudo) {
-        return pseudo == null ? composite() : new Composite(this, pseudo);
+    public Composite composite(@Nullable Race pseudo, @Nullable Race potential) {
+        return pseudo == null && potential == null ? composite() : new Composite(this, pseudo, potential);
     }
 
     @Override
@@ -147,6 +152,10 @@ public record Race (Supplier<Composite> compositeSupplier, Availability availabi
         return this;
     }
 
+    public Race or(Race other) {
+        return isEquine() ? this : other;
+    }
+
     @Override
     public int hashCode() {
         return getId().hashCode();
@@ -194,7 +203,7 @@ public record Race (Supplier<Composite> compositeSupplier, Availability availabi
         return REGISTRY.stream().filter(r -> r.isPermitted(player)).collect(Collectors.toSet());
     }
 
-    public record Composite (Race physical, @Nullable Race pseudo) {
+    public record Composite (Race physical, @Nullable Race pseudo, @Nullable Race potential) {
         public Race collapsed() {
             return pseudo == null ? physical : pseudo;
         }

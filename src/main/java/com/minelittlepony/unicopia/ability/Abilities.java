@@ -24,6 +24,9 @@ public interface Abilities {
                 .toList();
     });
 
+    // all races
+    Ability<?> CHANGE_FORM = register(new ChangeFormAbility(), "change_form", AbilitySlot.PRIMARY);
+
     // unicorn / alicorn
     Ability<?> CAST = register(new UnicornCastingAbility(), "cast", AbilitySlot.PRIMARY);
     Ability<?> SHOOT = register(new UnicornProjectileAbility(), "shoot", AbilitySlot.PRIMARY);

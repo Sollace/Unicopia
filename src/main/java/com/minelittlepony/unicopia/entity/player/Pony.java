@@ -66,6 +66,7 @@ import net.minecraft.world.GameRules;
 
 public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, UpdateCallback {
     private static final TrackedData<String> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.STRING);
+    private static final TrackedData<String> SUPPRESSED_RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.STRING);
 
     static final TrackedData<Float> ENERGY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> EXHAUSTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -120,6 +121,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         this.mana = addTicker(new ManaContainer(this));
 
         player.getDataTracker().startTracking(RACE, Race.DEFAULT_ID);
+        player.getDataTracker().startTracking(SUPPRESSED_RACE, Race.DEFAULT_ID);
 
         addTicker(this::updateAnimations);
         addTicker(this::updateBatPonyAbilities);
@@ -223,13 +225,30 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void setSpecies(Race race) {
         race = race.validate(entity);
+        Race current = getSpecies();
+        entity.getDataTracker().set(RACE, Race.REGISTRY.getId(race.validate(entity)).toString());
+        if (race != current) {
+            clearSuppressedRace();
+        }
+
         ticksInSun = 0;
-        entity.getDataTracker().set(RACE, Race.REGISTRY.getId(race).toString());
 
         gravity.updateFlightState();
         entity.sendAbilitiesUpdate();
 
         UCriteria.PLAYER_CHANGE_RACE.trigger(entity);
+    }
+
+    public void setSuppressedRace(Race race) {
+        entity.getDataTracker().set(SUPPRESSED_RACE, Race.REGISTRY.getId(race.validate(entity)).toString());
+    }
+
+    public void clearSuppressedRace() {
+        setSuppressedRace(Race.UNSET);
+    }
+
+    private Race getSuppressedRace() {
+        return Race.fromName(entity.getDataTracker().get(SUPPRESSED_RACE), Race.UNSET);
     }
 
     public TraitDiscovery getDiscoveries() {
@@ -354,17 +373,19 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public boolean beforeUpdate() {
         if (compositeRace.includes(Race.UNSET) || entity.age % 2 == 0) {
+            Race intrinsicRace = getSpecies();
+            Race suppressedRace = getSuppressedRace();
             compositeRace = getSpellSlot()
                     .get(SpellPredicate.IS_MIMIC, true)
                     .map(AbstractDisguiseSpell::getDisguise)
                     .map(EntityAppearance::getAppearance)
                     .flatMap(Pony::of)
                     .map(Pony::getSpecies)
-                    .orElseGet(this::getSpecies).composite(
+                    .orElse(intrinsicRace).composite(
                   AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
                 : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
-                : AmuletSelectors.PEARL_NECKLACE.test(entity) ? Race.SEAPONY
-                : null
+                : null,
+                AmuletSelectors.PEARL_NECKLACE.test(entity) ? suppressedRace.or(Race.SEAPONY) : null
             );
         }
 
@@ -794,6 +815,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public void toSyncronisedNbt(NbtCompound compound) {
         super.toSyncronisedNbt(compound);
         compound.putString("playerSpecies", Race.REGISTRY.getId(getSpecies()).toString());
+        compound.putString("suppressedSpecies", Race.REGISTRY.getId(getSuppressedRace()).toString());
         compound.putFloat("magicExhaustion", magicExhaustion);
         compound.putInt("ticksInSun", ticksInSun);
         compound.putBoolean("hasShades", hasShades);
@@ -819,6 +841,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public void fromSynchronizedNbt(NbtCompound compound) {
         super.fromSynchronizedNbt(compound);
         setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
+        setSuppressedRace(Race.fromName(compound.getString("suppressedSpecies"), Race.UNSET));
         powers.fromNBT(compound.getCompound("powers"));
         gravity.fromNBT(compound.getCompound("gravity"));
         charms.fromNBT(compound.getCompound("charms"));
