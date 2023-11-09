@@ -54,6 +54,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -340,11 +341,12 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public void onSpawn() {
-        if (entity.getWorld() instanceof ServerWorld sw
-                && getObservedSpecies() == Race.BAT
-                && sw.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE
-                && MeteorlogicalUtil.isPositionExposedToSun(sw, getOrigin())) {
-            SpawnLocator.selectSpawnPosition(sw, entity);
+        if (entity.getWorld() instanceof ServerWorld sw && sw.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE) {
+            boolean mustAvoidSun = getObservedSpecies() == Race.BAT && MeteorlogicalUtil.isPositionExposedToSun(sw, getOrigin());
+            boolean mustAvoidAir = getCompositeRace().includes(Race.SEAPONY) && !sw.getFluidState(getOrigin()).isIn(FluidTags.WATER);
+            if (mustAvoidSun || mustAvoidAir) {
+                SpawnLocator.selectSpawnPosition(sw, entity, mustAvoidAir, mustAvoidSun);
+            }
         }
         ticksSunImmunity = INITIAL_SUN_IMMUNITY;
     }
