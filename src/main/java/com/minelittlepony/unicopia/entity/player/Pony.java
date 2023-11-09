@@ -591,11 +591,12 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             return Optional.of(speed.multiply(0.5, 1, 0.5));
         }
         if (getCompositeRace().includes(Race.SEAPONY)) {
-            float factor = entity.isSwimming() ? 1.132F : 1.232F;
+            float factor = entity.isSwimming() ? 1.132F : 1.0232F;
+            float max = 0.6F;
             return Optional.of(new Vec3d(
-                    speed.x * factor,
-                    speed.y * 1.101,
-                    speed.z * factor
+                    MathHelper.clamp(speed.x * factor, -max, max),
+                    speed.y * ((speed.y * getPhysics().getGravitySignum()) > 0 ? 1.2 : 1.101),
+                    MathHelper.clamp(speed.z * factor, -max, max)
             ));
         }
         return Optional.empty();
@@ -625,16 +626,16 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return false;
     }
 
-    public int getImplicitEnchantmentLevel(Enchantment enchantment) {
+    public int getImplicitEnchantmentLevel(Enchantment enchantment, int initial) {
 
         if ((enchantment == Enchantments.AQUA_AFFINITY
                 || enchantment == Enchantments.DEPTH_STRIDER
                 || enchantment == Enchantments.LUCK_OF_THE_SEA
                 || enchantment == Enchantments.LURE) && getCompositeRace().includes(Race.SEAPONY)) {
-            return 3;
+            return MathHelper.clamp(initial + 3, enchantment.getMinLevel(), enchantment.getMaxLevel());
         }
 
-        return 0;
+        return initial;
     }
 
     public Optional<Float> modifyDamage(DamageSource cause, float amount) {
