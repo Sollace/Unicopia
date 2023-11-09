@@ -14,9 +14,11 @@ import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.LavaAffine;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.BackgroundRenderer.FogType;
 import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.*;
@@ -44,6 +46,15 @@ public class WorldRenderDelegate {
             return RED_SKY_COLOR;
         }
         return Optional.empty();
+    }
+
+    public void applyFog(Camera camera, FogType fogType, float viewDistance, boolean thickFog, float tickDelta) {
+        if (camera.getSubmersionType() == CameraSubmersionType.WATER) {
+            if (EquinePredicates.PLAYER_SEAPONY.test(MinecraftClient.getInstance().player)) {
+                RenderSystem.setShaderFogStart(RenderSystem.getShaderFogStart() - 30);
+                RenderSystem.setShaderFogEnd(RenderSystem.getShaderFogEnd() + 190);
+            }
+        }
     }
 
     public boolean beforeEntityRender(Entity entity,
