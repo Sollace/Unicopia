@@ -247,7 +247,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         setSuppressedRace(Race.UNSET);
     }
 
-    private Race getSuppressedRace() {
+    public Race getSuppressedRace() {
         return Race.fromName(entity.getDataTracker().get(SUPPRESSED_RACE), Race.UNSET);
     }
 
