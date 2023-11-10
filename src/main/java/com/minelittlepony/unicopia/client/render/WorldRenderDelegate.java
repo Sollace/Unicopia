@@ -55,6 +55,11 @@ public class WorldRenderDelegate {
                 RenderSystem.setShaderFogEnd(RenderSystem.getShaderFogEnd() + 190);
             }
         }
+        if (camera.getSubmersionType() == CameraSubmersionType.NONE) {
+            if (EquinePredicates.PLAYER_SEAPONY.test(MinecraftClient.getInstance().player)) {
+                RenderSystem.setShaderFogStart(-130);
+            }
+        }
     }
 
     public boolean beforeEntityRender(Entity entity,

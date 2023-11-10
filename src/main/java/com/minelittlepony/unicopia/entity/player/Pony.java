@@ -57,6 +57,7 @@ import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -462,6 +463,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             } else {
                 if (entity.getAir() == entity.getMaxAir()) {
                     entity.setAir(entity.getAir() - 1);
+                }
+
+                if (entity.age % 60 == 0) {
+                    entity.playSound(SoundEvents.ENTITY_TURTLE_AMBIENT_LAND, 1, 1);
                 }
 
                 if (entity.getAir() == -20) {
@@ -872,10 +877,13 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 && oldPlayer.respawnRace.isUnset())
                 || oldPlayer.getSpecies().isUnset();
 
+        Race oldSuppressedRace = oldPlayer.getSuppressedRace();
+
         if (alive) {
             oldPlayer.getSpellSlot().stream(true).forEach(getSpellSlot()::put);
         } else {
             if (forcedSwap) {
+                oldSuppressedRace = Race.UNSET;
                 Channel.SERVER_SELECT_TRIBE.sendToPlayer(new MsgTribeSelect(Race.allPermitted(entity), "gui.unicopia.tribe_selection.respawn"), (ServerPlayerEntity)entity);
             } else {
                 oldPlayer.getSpellSlot().stream(true).filter(SpellPredicate.IS_PLACED).forEach(getSpellSlot()::put);
@@ -894,6 +902,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         setSpecies(oldPlayer.respawnRace != Race.UNSET && !alive ? oldPlayer.respawnRace : oldPlayer.getSpecies());
+        setSuppressedRace(oldSuppressedRace);
         getDiscoveries().copyFrom(oldPlayer.getDiscoveries(), alive);
         getPhysics().copyFrom(oldPlayer.getPhysics(), alive);
         if (!forcedSwap) {
