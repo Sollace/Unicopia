@@ -16,9 +16,10 @@ abstract class MixinEnchantmentHelper {
     @Inject(method = "getEquipmentLevel", at = @At("RETURN"), cancellable = true)
     private static void getEquipmentLevel(Enchantment enchantment, LivingEntity entity, CallbackInfoReturnable<Integer> info) {
         Pony.of(entity).ifPresent(pony -> {
-            int implicitLevel = pony.getImplicitEnchantmentLevel(enchantment);
-            if (implicitLevel > 0) {
-                info.setReturnValue(implicitLevel + info.getReturnValue());
+            int initial = info.getReturnValue();
+            int implicitLevel = pony.getImplicitEnchantmentLevel(enchantment, initial);
+            if (implicitLevel != initial) {
+                info.setReturnValue(implicitLevel);
             }
         });
     }

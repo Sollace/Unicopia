@@ -54,6 +54,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -65,6 +66,7 @@ import net.minecraft.world.GameRules;
 
 public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, UpdateCallback {
     private static final TrackedData<String> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.STRING);
+    private static final TrackedData<String> SUPPRESSED_RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.STRING);
 
     static final TrackedData<Float> ENERGY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> EXHAUSTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -119,6 +121,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         this.mana = addTicker(new ManaContainer(this));
 
         player.getDataTracker().startTracking(RACE, Race.DEFAULT_ID);
+        player.getDataTracker().startTracking(SUPPRESSED_RACE, Race.DEFAULT_ID);
 
         addTicker(this::updateAnimations);
         addTicker(this::updateBatPonyAbilities);
@@ -222,13 +225,30 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void setSpecies(Race race) {
         race = race.validate(entity);
+        Race current = getSpecies();
+        entity.getDataTracker().set(RACE, Race.REGISTRY.getId(race.validate(entity)).toString());
+        if (race != current) {
+            clearSuppressedRace();
+        }
+
         ticksInSun = 0;
-        entity.getDataTracker().set(RACE, Race.REGISTRY.getId(race).toString());
 
         gravity.updateFlightState();
         entity.sendAbilitiesUpdate();
 
         UCriteria.PLAYER_CHANGE_RACE.trigger(entity);
+    }
+
+    public void setSuppressedRace(Race race) {
+        entity.getDataTracker().set(SUPPRESSED_RACE, Race.REGISTRY.getId(race.validate(entity)).toString());
+    }
+
+    public void clearSuppressedRace() {
+        setSuppressedRace(Race.UNSET);
+    }
+
+    public Race getSuppressedRace() {
+        return Race.fromName(entity.getDataTracker().get(SUPPRESSED_RACE), Race.UNSET);
     }
 
     public TraitDiscovery getDiscoveries() {
@@ -340,11 +360,12 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public void onSpawn() {
-        if (entity.getWorld() instanceof ServerWorld sw
-                && getObservedSpecies() == Race.BAT
-                && sw.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE
-                && MeteorlogicalUtil.isPositionExposedToSun(sw, getOrigin())) {
-            SpawnLocator.selectSpawnPosition(sw, entity);
+        if (entity.getWorld() instanceof ServerWorld sw && sw.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE) {
+            boolean mustAvoidSun = getObservedSpecies() == Race.BAT && MeteorlogicalUtil.isPositionExposedToSun(sw, getOrigin());
+            boolean mustAvoidAir = getCompositeRace().includes(Race.SEAPONY) && !sw.getFluidState(getOrigin()).isIn(FluidTags.WATER);
+            if (mustAvoidSun || mustAvoidAir) {
+                SpawnLocator.selectSpawnPosition(sw, entity, mustAvoidAir, mustAvoidSun);
+            }
         }
         ticksSunImmunity = INITIAL_SUN_IMMUNITY;
     }
@@ -352,17 +373,19 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public boolean beforeUpdate() {
         if (compositeRace.includes(Race.UNSET) || entity.age % 2 == 0) {
+            Race intrinsicRace = getSpecies();
+            Race suppressedRace = getSuppressedRace();
             compositeRace = getSpellSlot()
                     .get(SpellPredicate.IS_MIMIC, true)
                     .map(AbstractDisguiseSpell::getDisguise)
                     .map(EntityAppearance::getAppearance)
                     .flatMap(Pony::of)
                     .map(Pony::getSpecies)
-                    .orElseGet(this::getSpecies).composite(
+                    .orElse(intrinsicRace).composite(
                   AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
                 : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
-                : AmuletSelectors.PEARL_NECKLACE.test(entity) ? Race.SEAPONY
-                : null
+                : null,
+                AmuletSelectors.PEARL_NECKLACE.test(entity) ? suppressedRace.or(Race.SEAPONY) : null
             );
         }
 
@@ -589,11 +612,12 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             return Optional.of(speed.multiply(0.5, 1, 0.5));
         }
         if (getCompositeRace().includes(Race.SEAPONY)) {
-            float factor = entity.isSwimming() ? 1.132F : 1.232F;
+            float factor = entity.isSwimming() ? 1.132F : 1.0232F;
+            float max = 0.6F;
             return Optional.of(new Vec3d(
-                    speed.x * factor,
-                    speed.y * 1.101,
-                    speed.z * factor
+                    MathHelper.clamp(speed.x * factor, -max, max),
+                    speed.y * ((speed.y * getPhysics().getGravitySignum()) > 0 ? 1.2 : 1.101),
+                    MathHelper.clamp(speed.z * factor, -max, max)
             ));
         }
         return Optional.empty();
@@ -623,16 +647,16 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return false;
     }
 
-    public int getImplicitEnchantmentLevel(Enchantment enchantment) {
+    public int getImplicitEnchantmentLevel(Enchantment enchantment, int initial) {
 
         if ((enchantment == Enchantments.AQUA_AFFINITY
                 || enchantment == Enchantments.DEPTH_STRIDER
                 || enchantment == Enchantments.LUCK_OF_THE_SEA
                 || enchantment == Enchantments.LURE) && getCompositeRace().includes(Race.SEAPONY)) {
-            return 3;
+            return MathHelper.clamp(initial + 3, enchantment.getMinLevel(), enchantment.getMaxLevel());
         }
 
-        return 0;
+        return initial;
     }
 
     public Optional<Float> modifyDamage(DamageSource cause, float amount) {
@@ -791,6 +815,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public void toSyncronisedNbt(NbtCompound compound) {
         super.toSyncronisedNbt(compound);
         compound.putString("playerSpecies", Race.REGISTRY.getId(getSpecies()).toString());
+        compound.putString("suppressedSpecies", Race.REGISTRY.getId(getSuppressedRace()).toString());
         compound.putFloat("magicExhaustion", magicExhaustion);
         compound.putInt("ticksInSun", ticksInSun);
         compound.putBoolean("hasShades", hasShades);
@@ -816,6 +841,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public void fromSynchronizedNbt(NbtCompound compound) {
         super.fromSynchronizedNbt(compound);
         setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
+        setSuppressedRace(Race.fromName(compound.getString("suppressedSpecies"), Race.UNSET));
         powers.fromNBT(compound.getCompound("powers"));
         gravity.fromNBT(compound.getCompound("gravity"));
         charms.fromNBT(compound.getCompound("charms"));

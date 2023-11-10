@@ -13,7 +13,7 @@ import net.minecraft.client.util.math.MatrixStack;
 class ManaRingSlot extends Slot {
 
     public ManaRingSlot(UHud uHud, AbilitySlot normalSlot, AbilitySlot backupSlot, int x, int y) {
-        super(uHud, normalSlot, backupSlot, x, y, 8, UHud.PRIMARY_SLOT_SIZE, 33, 43, 42);
+        super(uHud, normalSlot, backupSlot, x, y, 8, UHud.PRIMARY_SLOT_SIZE, 33, 43, 30);
         background(0, 5);
         foreground(0, 59);
     }

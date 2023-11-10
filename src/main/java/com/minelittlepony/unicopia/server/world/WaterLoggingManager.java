@@ -37,11 +37,8 @@ public class WaterLoggingManager<O, S extends State<O, S>> {
     }
 
     public void getDefaultState(O owner, CallbackInfoReturnable<S> info) {
-        if (owner instanceof BedBlock) {
-            return;
-        }
         if (appliesTo(owner, info.getReturnValue())) {
-            info.setReturnValue(info.getReturnValue().with(Properties.WATERLOGGED, true));
+            info.setReturnValue(info.getReturnValue().with(Properties.WATERLOGGED, !(owner instanceof BedBlock)));
         }
     }
 

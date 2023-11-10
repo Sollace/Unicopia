@@ -59,6 +59,7 @@
   "client": [
     "client.MixinAnimalModel",
     "client.MixinArmorFeatureRenderer",
+    "client.MixinBackgroundRenderer",
     "client.MixinCamera",
     "client.MixinClientWorld",
     "client.MixinEntityRenderDispatcher",

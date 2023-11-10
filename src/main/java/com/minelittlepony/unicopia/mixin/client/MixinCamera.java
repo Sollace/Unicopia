@@ -8,7 +8,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.client.UnicopiaClient;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.CameraSubmersionType;
 
 @Mixin(Camera.class)
 abstract class MixinCamera {
@@ -33,12 +32,5 @@ abstract class MixinCamera {
             cancellable = true)
     private void redirectCameraDistance(double initial, CallbackInfoReturnable<Double> info) {
         UnicopiaClient.getCamera().flatMap(c -> c.calculateDistance(info.getReturnValueD())).ifPresent(info::setReturnValue);
-    }
-
-    @Inject(method = "getSubmersionType",
-            at = @At("RETURN"),
-            cancellable = true)
-    public void getSubmersionType(CallbackInfoReturnable<CameraSubmersionType> info) {
-        UnicopiaClient.getCamera().flatMap(c -> c.getSubmersionType(info.getReturnValue())).ifPresent(info::setReturnValue);
     }
 }
