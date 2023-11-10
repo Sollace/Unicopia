@@ -495,6 +495,7 @@
   "ability.unicopia.peck.block.fled": "Блок сбежал",
   "ability.unicopia.peck.block.unfased": "Блок не обращает внимания на ваши угрозы",
   "ability.unicopia.dash": "Рывок",
+  "ability.unicopia.change_form": "Изменить форму",
 
   "gui.unicopia.trait.label": "Элемент %s",
   "gui.unicopia.trait.group": "\n %s",
