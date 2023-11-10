@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -43,14 +44,16 @@ abstract class MixinItem implements ItemDuck {
     public abstract void setFoodComponent(FoodComponent food);
 
     @Override
-    public Toxic getToxic(ItemStack stack) {
-        setFoodComponent(originalFoodComponent.get());
-        return Toxics.lookup(this);
+    public Toxic getToxic(ItemStack stack, @Nullable LivingEntity entity) {
+        if (entity != null) {
+            setFoodComponent(originalFoodComponent.get());
+        }
+        return Toxics.lookup(this, entity);
     }
 
-    @Inject(method = "finishUsing", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "finishUsing", at = @At("HEAD"))
     private void finishUsing(ItemStack stack, World world, LivingEntity entity, CallbackInfoReturnable<ItemStack> info) {
-        getToxic(stack).finishUsing(stack, world, entity);
+        getToxic(stack, entity).finishUsing(stack, world, entity);
     }
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)

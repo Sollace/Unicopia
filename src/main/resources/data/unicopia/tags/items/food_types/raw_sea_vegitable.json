@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:kelp",
+    "minecraft:dried_kelp",
+    "minecraft:seagrass",
+    "minecraft:sea_pickle",
+    { "id": "farmersdelight:melon_popsicle", "required": false },
+    { "id": "farmersdelight:kelp_roll", "required": false },
+    { "id": "farmersdelight:kelp_roll_slice", "required": false }
+  ]
+}

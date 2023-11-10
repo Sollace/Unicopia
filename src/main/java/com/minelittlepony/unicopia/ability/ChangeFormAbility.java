@@ -31,7 +31,7 @@ public class ChangeFormAbility implements Ability<Hit> {
 
     @Override
     public boolean canUse(Race.Composite race) {
-        return race.potential() != null;
+        return race.potential() != null && race.potential() != race.physical();
     }
 
     @Override

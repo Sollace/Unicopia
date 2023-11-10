@@ -31,11 +31,6 @@ public record Ailment (
         }
     }
 
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
-        effect().afflict((PlayerEntity)entity, stack);
-        return stack;
-    }
-
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         if (!Pony.of(player).getObservedSpecies().hasIronGut()) {
             return TypedActionResult.fail(player.getStackInHand(hand));
