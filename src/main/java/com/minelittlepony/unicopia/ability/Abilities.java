@@ -67,6 +67,9 @@ public interface Abilities {
     Ability<?> NIRIK_BLAST = register(new NirikBlastAbility(), "nirik_blast", AbilitySlot.SECONDARY);
     Ability<?> KIRIN_CAST = register(new KirinCastingAbility(), "kirin_cast", AbilitySlot.SECONDARY);
 
+    // seapony
+    Ability<?> SONAR_PULSE = register(new SeaponySonarPulseAbility(), "sonar_pulse", AbilitySlot.SECONDARY);
+
     static <T extends Ability<?>> T register(T power, String name, AbilitySlot slot) {
         Identifier id = Unicopia.id(name);
         BY_SLOT.computeIfAbsent(slot, s -> new LinkedHashSet<>()).add(power);

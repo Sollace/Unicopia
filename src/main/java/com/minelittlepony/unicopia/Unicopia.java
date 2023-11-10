@@ -91,6 +91,7 @@ public class Unicopia implements ModInitializer {
 
         UGameEvents.bootstrap();
         UBlocks.bootstrap();
+        UPOIs.bootstrap();
         UItems.bootstrap();
         UPotions.bootstrap();
         UParticles.bootstrap();

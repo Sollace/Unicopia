@@ -33,7 +33,15 @@
     "category": "player",
     "subtitle": "unicopia.subtitle.screech",
     "sounds": [
-      "unicopia:screech/screech0"
+      "unicopia:screech/screech1",
+      "unicopia:screech/screech2"
+    ]
+  },
+  "entity.player.seapony.sonar": {
+    "category": "player",
+    "subtitle": "unicopia.subtitle.sonar",
+    "sounds": [
+      "unicopia:sonar/sonar0"
     ]
   },
   "item.magic.aura": {

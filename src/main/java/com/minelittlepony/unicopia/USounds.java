@@ -29,6 +29,7 @@ public interface USounds {
     SoundEvent ENTITY_PLAYER_UNICORN_TELEPORT = register("entity.player.unicorn.teleport");
     SoundEvent ENTITY_PLAYER_KIRIN_RAGE = ENTITY_POLAR_BEAR_WARNING;
     SoundEvent ENTITY_PLAYER_KIRIN_RAGE_LOOP = register("entity.player.kirin.rage.loop");
+    SoundEvent ENTITY_PLAYER_SEAPONY_SONAR = register("entity.player.seapony.sonar", 64);
 
     SoundEvent ENTITY_PLAYER_EARS_RINGING = register("entity.player.ears_ring");
     SoundEvent ENTITY_PLAYER_HEARTBEAT = register("entity.player.heartbeat");
@@ -146,6 +147,11 @@ public interface USounds {
     static SoundEvent register(String name) {
         Identifier id = Unicopia.id(name);
         return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));
+    }
+
+    static SoundEvent register(String name, float range) {
+        Identifier id = Unicopia.id(name);
+        return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id, range));
     }
 
     static void bootstrap() {}
