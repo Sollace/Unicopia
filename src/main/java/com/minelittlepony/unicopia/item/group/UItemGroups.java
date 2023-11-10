@@ -17,6 +17,7 @@ public interface UItemGroups {
     RegistryKey<ItemGroup> UNICORN_ITEMS = ItemGroupRegistry.createGroupFromTag("unicorn", UItems.UNICORN_BADGE::getDefaultStack);
     RegistryKey<ItemGroup> PEGASUS_ITEMS = ItemGroupRegistry.createGroupFromTag("pegasus", UItems.PEGASUS_BADGE::getDefaultStack);
     RegistryKey<ItemGroup> BAT_PONY_ITEMS = ItemGroupRegistry.createGroupFromTag("bat_pony", UItems.BAT_BADGE::getDefaultStack);
+    RegistryKey<ItemGroup> SEA_PON_ITEMS = ItemGroupRegistry.createGroupFromTag("sea_pony", UItems.PEARL_NECKLACE::getDefaultStack);
     RegistryKey<ItemGroup> CHANGELING_ITEMS = ItemGroupRegistry.createGroupFromTag("changeling", UItems.CHANGELING_BADGE::getDefaultStack);
 
     static void bootstrap() {
