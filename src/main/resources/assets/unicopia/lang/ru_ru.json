@@ -21,6 +21,7 @@
   "itemGroup.unicopia.unicorn": "Unicopia - Кантерлот",
   "itemGroup.unicopia.pegasus": "Unicopia - Клаудсдейл",
   "itemGroup.unicopia.bat_pony": "Unicopia - Лощина Теней",
+  "itemGroup.unicopia.sea_pony": "Unicopia - Из глубин",
   "itemGroup.unicopia.changeling": "Unicopia - Сырные Холмы",
 
   "item.unicopia.friendship_bracelet": "Браслет товарищества",
@@ -138,7 +139,7 @@
   "item.unicopia.pegasus_amulet": "Крылья Икара",
   "item.unicopia.pegasus_amulet.lore": "Дарует временный полёт тому, кто носит его",
   "item.unicopia.amulet.energy": "Энергия: %d / %d",
-  
+
   "item.unicopia.alicorn_amulet": "Амулет аликорна",
   "item.unicopia.alicorn_amulet.lore": "Время ношения: %d",
 
@@ -154,7 +155,7 @@
 
   "item.unicopia.broken_alicorn_amulet": "Сломанный амулет аликорна",
   "item.unicopia.unicorn_amulet": "Амулет единорога",
-    "item.unicopia.unicorn_amulet.lore": "Наделяет носящего магическими способностями",
+  "item.unicopia.unicorn_amulet.lore": "Наделяет носящего магическими способностями",
 
   "item.unicopia.grogars_bell": "Колокольчик Грогара",
   "item.unicopia.grogars_bell.charges": "Заряды: %d / %d",
@@ -199,7 +200,12 @@
   "item.unicopia.apple_bed_sheets": "Яблочная простынь",
   "item.unicopia.barred_bed_sheets": "Простынь в полоску",
   "item.unicopia.checkered_bed_sheets": "Простынь в клетку",
+  "item.unicopia.kelp_bed_sheets": "Простынь из ламинарии",
   "item.unicopia.rainbow_bed_sheets": "Радужная простынь",
+  "item.unicopia.rainbow_bpw_bed_sheets": "Простынь с радужным СРБ узором",
+  "item.unicopia.rainbow_bpy_bed_sheets": "Простынь с радужным СРЖ узором",
+  "item.unicopia.rainbow_pbg_bed_sheets": "Простынь с радужным ФСЧ узором",
+  "item.unicopia.rainbow_pwr_bed_sheets": "Простынь с радужным РБК узором",
 
   "block.unicopia.rocks": "Камни",
   "block.unicopia.bananas": "Бананы",
@@ -235,7 +241,7 @@
   "block.unicopia.mango_leaves": "Листья мангового дерева",
   "block.unicopia.mango_sapling": "Саженец мангового дерева",
   "block.unicopia.pineapple": "Ананас",
-  
+
   "block.unicopia.green_apple_leaves": "Листья яблони Гренни Смит",
   "block.unicopia.green_apple_sapling": "Саженец яблони Гренни Смит",
   "block.unicopia.green_apple_sprout": "Росток яблони Гренни Смит",
@@ -496,6 +502,7 @@
   "ability.unicopia.peck.block.unfased": "Блок не обращает внимания на ваши угрозы",
   "ability.unicopia.dash": "Рывок",
   "ability.unicopia.change_form": "Изменить форму",
+  "ability.unicopia.sonar_pulse": "Сонарный импульс",
 
   "gui.unicopia.trait.label": "Элемент %s",
   "gui.unicopia.trait.group": "\n %s",
@@ -740,7 +747,7 @@
   "experience.unicopia.twisted.faustian_legend": "Тёмная личность легенды",
   "experience.unicopia.corrupt.faustian_legend": "Старый Бог",
   "experience.unicopia.monstrous.faustian_legend": "Потусторонний ужас",
-  
+
   "unicopia.category.name": "Способности пони",
 
   "key.unicopia.primary": "Первичная способность",
@@ -959,7 +966,9 @@
   "unicopia.subtitle.insects": "Насекомые снуют",
   "unicopia.subtitle.changeling_buzz": "Жужжание дронов",
   "unicopia.subtitle.batpony_eeee": "Бэтпони кричит",
+  "unicopia.subtitle.sonar": "Сонарные импульсы",
   "unicopia.subtitle.changeling.transform": "Чейнджлинг трансформируется",
+  "unicopia.subtitle.screech": "Гиппогриф кричит",
   "unicopia.subtitle.pegasus.molt": "Пегас теряет перо",
   "unicopia.subtitle.unicorn.teleport": "Звук магии",
   "unicopia.subtitle.player.wololo": "Вололо!",
@@ -1014,7 +1023,7 @@
   "advancements.unicopia.lightning_bug.title": "Ошибка молнии",
   "advancements.unicopia.lightning_bug.description": "Привлеките 10 ударов молний",
   "advancements.unicopia.jar.title": "О, ничего себе. Что это?",
-  "advancements.unicopia.jar.description": "Найдите пустую банку",	
+  "advancements.unicopia.jar.description": "Найдите пустую банку",
   "advancements.unicopia.gotcha.title": "Попался!",
   "advancements.unicopia.gotcha.description": "Захватите бурю",
   "advancements.unicopia.trick_apple.title": "Яблоко раздора",
