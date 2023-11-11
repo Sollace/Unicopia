@@ -21,6 +21,11 @@
     "unicopia:apple_bed_sheets",
     "unicopia:barred_bed_sheets",
     "unicopia:checkered_bed_sheets",
-    "unicopia:rainbow_bed_sheets"
+    "unicopia:kelp_bed_sheets",
+    "unicopia:rainbow_bed_sheets",
+    "unicopia:rainbow_bpw_bed_sheets",
+    "unicopia:rainbow_bpy_bed_sheets",
+    "unicopia:rainbow_pbg_bed_sheets",
+    "unicopia:rainbow_pwr_bed_sheets"
   ]
 }

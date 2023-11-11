@@ -200,7 +200,12 @@
   "item.unicopia.apple_bed_sheets": "Apple Patterned Bed Sheets",
   "item.unicopia.barred_bed_sheets": "Bar Patterned Bed Sheets",
   "item.unicopia.checkered_bed_sheets": "Checker Patterned Bed Sheets",
+  "item.unicopia.kelp_bed_sheets": "Kelp Bed Sheets",
   "item.unicopia.rainbow_bed_sheets": "Rainbow Patterned Bed Sheets",
+  "item.unicopia.rainbow_bpw_bed_sheets": "BPW Rainbow Patterned Bed Sheets",
+  "item.unicopia.rainbow_bpy_bed_sheets": "BPY Rainbow Patterned Bed Sheets",
+  "item.unicopia.rainbow_pbg_bed_sheets": "PGB Rainbow Patterned Bed Sheets",
+  "item.unicopia.rainbow_pwr_bed_sheets": "PWR Rainbow Patterned Bed Sheets",
 
   "block.unicopia.rocks": "Rocks",
   "block.unicopia.bananas": "Bananas",

@@ -182,7 +182,12 @@ public interface UItems {
     Item APPLE_BED_SHEETS = register(CloudBedBlock.SheetPattern.APPLE);
     Item BARRED_BED_SHEETS = register("barred_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.BARS, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
     Item CHECKERED_BED_SHEETS = register("checkered_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.CHECKER, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item KELP_BED_SHEETS = register(CloudBedBlock.SheetPattern.KELP);
     Item RAINBOW_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW);
+    Item RAINBOW_BPW_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW_BPW);
+    Item RAINBOW_BPY_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW_BPY);
+    Item RAINBOW_PBG_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW_PBG);
+    Item RAINBOW_PWR_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW_PWR);
 
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new FabricItemSettings()
             .maxCount(1)
