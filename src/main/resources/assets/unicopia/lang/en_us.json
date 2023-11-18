@@ -145,6 +145,10 @@
   
   "item.unicopia.pearl_necklace": "Pearl Necklace",
   "item.unicopia.pearl_necklace.lore": "Gives underwater abilities to the wearer",
+  "item.unicopia.clam_shell": "Clam Shell",
+  "item.unicopia.scallop_shell": "Scallop Shell",
+  "item.unicopia.turret_shell": "Turret Shell",
+  "item.unicopia.shelly": "Shelly",
 
   "item.unicopia.horse_shoe.accuracy": "Accuracy: %d%%",
   "item.unicopia.horse_shoe.speed": "Speed: %d",
@@ -241,6 +245,10 @@
   "block.unicopia.mango_leaves": "Mango Leaves",
   "block.unicopia.mango_sapling": "Mango Sapling",
   "block.unicopia.pineapple": "Pineapple Plant",
+
+  "block.unicopia.clam_shell": "Clam Shell",
+  "block.unicopia.scallop_shell": "Scallop Shell",
+  "block.unicopia.turret_shell": "Turret Shell",
 
   "block.unicopia.green_apple_leaves": "Granny Smith Leaves",
   "block.unicopia.green_apple_sapling": "Granny Smith Sapling",

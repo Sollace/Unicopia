@@ -209,6 +209,11 @@ public interface UItems {
     GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
     GlassesItem BROKEN_SUNGLASSES = register("broken_sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
 
+    Item CLAM_SHELL = register("clam_shell", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
+    Item SCALLOP_SHELL = register("scallop_shell", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
+    Item TURRET_SHELL = register("turret_shell", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
+    Item SHELLY = register("shelly", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
+
     Item CARAPACE = register("carapace", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
     Item CLOTH_BED = register("cloth_bed", new FancyBedItem(UBlocks.CLOTH_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
     Item CLOUD_BED = register("cloud_bed", new CloudBedItem(UBlocks.CLOUD_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);

@@ -28,6 +28,23 @@
           "type": "minecraft:item",
           "name": "unicopia:pebbles",
           "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "unicopia:shelly",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "unicopia:food_types/shells",
+          "expand": true,
+          "weight": 2
+        },
+        {
+          "type": "minecraft:tag",
+          "name": "unicopia:food_types/pearl_necklace",
+          "expand": true,
+          "weight": 1
         }
       ],
       "rolls": 1.0

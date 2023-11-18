@@ -185,6 +185,10 @@ public interface UBlocks {
     Block CLOTH_BED = register("cloth_bed", new FancyBedBlock("cloth", Settings.copy(Blocks.WHITE_BED).sounds(BlockSoundGroup.WOOD)));
     Block CLOUD_BED = register("cloud_bed", new CloudBedBlock("cloud", CLOUD.getDefaultState(), Settings.copy(Blocks.WHITE_BED).sounds(BlockSoundGroup.WOOL)));
 
+    Block CLAM_SHELL = register("clam_shell", new ShellsBlock(Settings.create().mapColor(MapColor.DULL_PINK).breakInstantly().nonOpaque()));
+    Block SCALLOP_SHELL = register("scallop_shell", new ShellsBlock(Settings.create().mapColor(MapColor.DULL_PINK).breakInstantly().nonOpaque()));
+    Block TURRET_SHELL = register("turret_shell", new ShellsBlock(Settings.create().mapColor(MapColor.DULL_PINK).breakInstantly().nonOpaque()));
+
     private static <T extends Block> T register(String name, T item) {
         return register(Unicopia.id(name), item);
     }
@@ -221,7 +225,7 @@ public interface UBlocks {
         StrippableBlockRegistry.register(PALM_LOG, STRIPPED_PALM_LOG);
         StrippableBlockRegistry.register(ZAP_WOOD, STRIPPED_ZAP_WOOD);
         StrippableBlockRegistry.register(PALM_WOOD, STRIPPED_PALM_WOOD);
-        Collections.addAll(TRANSLUCENT_BLOCKS, WEATHER_VANE, CHITIN_SPIKES, PLUNDER_VINE, PLUNDER_VINE_BUD);
+        Collections.addAll(TRANSLUCENT_BLOCKS, WEATHER_VANE, CHITIN_SPIKES, PLUNDER_VINE, PLUNDER_VINE_BUD, CLAM_SHELL, SCALLOP_SHELL, TURRET_SHELL);
         TintedBlock.REGISTRY.add(PALM_LEAVES);
 
         FlammableBlockRegistry.getDefaultInstance().add(GREEN_APPLE_LEAVES, 30, 60);

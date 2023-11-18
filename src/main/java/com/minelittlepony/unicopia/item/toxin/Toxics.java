@@ -153,6 +153,14 @@ public interface Toxics {
             .food(Race.SEAPONY, UFoodComponents.RANDOM_FOLIAGE_FILLING)
     );
 
+    Toxic SHELLS = register("shells", new Toxic.Builder(Ailment.INNERT)
+            .food(Race.SEAPONY, UFoodComponents.SHELL)
+    );
+
+    Toxic SHELLY = register("shelly", new Toxic.Builder(Ailment.INNERT)
+            .food(Race.SEAPONY, UFoodComponents.SHELLY)
+    );
+
     static void bootstrap() {}
 
     static Toxic register(String name, Toxic.Builder builder) {
