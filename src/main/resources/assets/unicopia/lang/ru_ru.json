@@ -145,6 +145,10 @@
 
   "item.unicopia.pearl_necklace": "Жемчужное ожерелье",
   "item.unicopia.pearl_necklace.lore": "Наделяет владельца подводными способностями",
+  "item.unicopia.clam_shell": "Раковина моллюска",
+  "item.unicopia.scallop_shell": "Раковина гребешка",
+  "item.unicopia.turret_shell": "Раковина туррителлы",
+  "item.unicopia.shelly": "Шелли",
 
   "item.unicopia.horse_shoe.accuracy": "Точность: %d%%",
   "item.unicopia.horse_shoe.speed": "Скорость: %d",
@@ -241,6 +245,10 @@
   "block.unicopia.mango_leaves": "Листья мангового дерева",
   "block.unicopia.mango_sapling": "Саженец мангового дерева",
   "block.unicopia.pineapple": "Ананас",
+
+  "block.unicopia.clam_shell": "Раковина моллюска",
+  "block.unicopia.scallop_shell": "Раковина гребешка",
+  "block.unicopia.turret_shell": "Раковина туррителлы",
 
   "block.unicopia.green_apple_leaves": "Листья яблони Гренни Смит",
   "block.unicopia.green_apple_sapling": "Саженец яблони Гренни Смит",
