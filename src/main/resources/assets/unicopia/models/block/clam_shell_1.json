@@ -1,15 +1,16 @@
 {
 	"textures": {
-		"shell": "unicopia:item/clam_shell",
-		"particle": "#shell"
+		"particle": "#shell",
+		"shell": "unicopia:item/clam_shell"
 	},
 	"elements": [
 		{
-			"from": [2.4, 0.1, 0],
-			"to": [10.4, 0.1, 8],
-			"rotation": {"angle": 45, "axis": "y", "origin": [12, 0, 4]},
+			"from": [4, 1.1, 3.6],
+			"to": [12, 1.1, 11.6],
+			"rotation": {"angle": -22.5, "axis": "x", "origin": [12, 0.1, 9.6]},
 			"faces": {
-				"up": {"uv": [0, 0, 16, 16], "texture": "#shell"}
+				"up": {"uv": [0, 0, 16, 16], "rotation": 270, "texture": "#shell"},
+				"down": {"uv": [16, 0, 0, 16], "rotation": 270, "texture": "#shell"}
 			}
 		}
 	]
