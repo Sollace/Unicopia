@@ -51,6 +51,9 @@ public interface UFoodComponents {
     FoodComponent CANDY = builder(7, 0.9F).alwaysEdible().build();
     FoodComponent SALT_CUBE = builder(0, 2.9F).alwaysEdible().build();
 
+    FoodComponent SHELL = builder(3, 5).build();
+    FoodComponent SHELLY = builder(6, 7).build();
+
     static FoodComponent.Builder builder(int hunger, float saturation) {
         return new FoodComponent.Builder()
                 .hunger(hunger)
