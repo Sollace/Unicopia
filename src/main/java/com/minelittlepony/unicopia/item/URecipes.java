@@ -4,21 +4,25 @@ import java.util.List;
 
 import com.google.gson.JsonArray;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.*;
+import com.minelittlepony.unicopia.item.cloud.CloudShapingRecipe;
 
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.recipe.CuttingRecipe;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.recipe.ShapelessRecipe;
 import net.minecraft.recipe.SpecialRecipeSerializer;
+import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
 public interface URecipes {
     RecipeType<SpellbookRecipe> SPELLBOOK = RecipeType.register("unicopia:spellbook");
+    RecipeType<StonecuttingRecipe> CLOUD_SHAPING = RecipeType.register("unicopia:cloud_shaping");
 
     RecipeSerializer<ShapelessRecipe> ZAP_APPLE_SERIALIZER = RecipeSerializer.register("unicopia:crafting_zap_apple", new ZapAppleRecipe.Serializer());
     RecipeSerializer<GlowingRecipe> GLOWING_SERIALIZER = RecipeSerializer.register("unicopia:crafting_glowing", new SpecialRecipeSerializer<>(GlowingRecipe::new));
@@ -28,6 +32,7 @@ public interface URecipes {
     RecipeSerializer<SpellCraftingRecipe> TRAIT_REQUIREMENT = RecipeSerializer.register("unicopia:spellbook/crafting", new SpellCraftingRecipe.Serializer());
     RecipeSerializer<SpellEnhancingRecipe> TRAIT_COMBINING = RecipeSerializer.register("unicopia:spellbook/combining", new SpellEnhancingRecipe.Serializer());
     RecipeSerializer<SpellDuplicatingRecipe> SPELL_DUPLICATING = RecipeSerializer.register("unicopia:spellbook/duplicating", new SpellDuplicatingRecipe.Serializer());
+    RecipeSerializer<CloudShapingRecipe> CLOUD_SHAPING_SERIALIZER = RecipeSerializer.register("unicopia:cloud_shaping", new CuttingRecipe.Serializer<>(CloudShapingRecipe::new) {});
 
     static DefaultedList<Ingredient> getIngredients(JsonArray json) {
         DefaultedList<Ingredient> defaultedList = DefaultedList.of();

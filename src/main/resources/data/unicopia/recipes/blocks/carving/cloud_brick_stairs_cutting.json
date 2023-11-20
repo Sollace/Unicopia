@@ -1,0 +1,6 @@
+{
+  "type": "unicopia:cloud_shaping",
+  "ingredient": { "item": "unicopia:cloud_bricks" },
+  "result": "unicopia:cloud_brick_stairs",
+  "count": 1
+}

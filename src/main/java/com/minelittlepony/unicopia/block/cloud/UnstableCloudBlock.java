@@ -59,6 +59,10 @@ public class UnstableCloudBlock extends CloudBlock {
         }
         world.playSound(null, pos, SoundEvents.BLOCK_WOOL_HIT, SoundCategory.BLOCKS, 1, 1);
 
+        if (world.isClient) {
+            return;
+        }
+
         if (fallDistance > 3) {
             world.breakBlock(pos, true);
             return;

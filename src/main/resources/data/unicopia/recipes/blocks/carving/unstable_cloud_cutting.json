@@ -1,0 +1,6 @@
+{
+  "type": "unicopia:cloud_shaping",
+  "ingredient": { "item": "unicopia:cloud" },
+  "result": "unicopia:unstable_cloud",
+  "count": 1
+}
