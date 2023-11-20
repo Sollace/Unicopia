@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "unicopia:shaping_bench",
     "#unicopia:clouds",
     "#unicopia:bed_sheets",
     "#unicopia:food_types/raw_fish",

@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellEnhancingRe
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellShapedCraftingRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.URecipes;
@@ -22,6 +23,7 @@ import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.recipe.EmiStonecuttingRecipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -30,7 +32,9 @@ import net.minecraft.util.Identifier;
 
 public class Main implements EmiPlugin {
     static final EmiStack SPELL_BOOK_STATION = EmiStack.of(UItems.SPELLBOOK);
+    static final EmiStack CLOUD_SHAPING_STATION = EmiStack.of(UBlocks.SHAPING_BENCH);
     static final EmiRecipeCategory SPELL_BOOK_CATEGORY = new EmiRecipeCategory(Unicopia.id("spellbook"), SPELL_BOOK_STATION, SPELL_BOOK_STATION);
+    static final EmiRecipeCategory CLOUD_SHAPING_CATEGORY = new EmiRecipeCategory(Unicopia.id("cloud_shaping"), CLOUD_SHAPING_STATION, CLOUD_SHAPING_STATION);
 
     static final Identifier WIDGETS = Unicopia.id("textures/gui/widgets.png");
     static final EmiTexture EMPTY_ARROW = new EmiTexture(WIDGETS, 44, 0, 24, 17);
@@ -68,6 +72,17 @@ public class Main implements EmiPlugin {
             } else {
                 registry.addRecipe(new SpellbookEmiRecipe(recipe));
             }
+        });
+
+        registry.addCategory(CLOUD_SHAPING_CATEGORY);
+        registry.addWorkstation(CLOUD_SHAPING_CATEGORY, CLOUD_SHAPING_STATION);
+        registry.getRecipeManager().listAllOfType(URecipes.CLOUD_SHAPING).forEach(recipe -> {
+            registry.addRecipe(new EmiStonecuttingRecipe(recipe) {
+                @Override
+                public EmiRecipeCategory getCategory() {
+                    return CLOUD_SHAPING_CATEGORY;
+                }
+            });
         });
 
         Stream.of(UItems.GEMSTONE, UItems.BOTCHED_GEM, UItems.MAGIC_STAFF, UItems.FILLED_JAR).forEach(item -> {
