@@ -45,6 +45,7 @@
 
   "item.unicopia.spellbook": "Spellbook",
   "emi.category.unicopia.spellbook": "Spellbook",
+  "emi.category.unicopia.cloud_shaping": "Shaping",
 
   "item.unicopia.alicorn_badge": "Alicorn Emblem",
   "item.unicopia.unicorn_badge": "Unicorn Emblem",
@@ -270,7 +271,8 @@
   "block.unicopia.chiselled_chitin_hull": "Chiselled Chitin Hull",
   "block.unicopia.chiselled_chitin_slab": "Chiselled Chitin Slab",
   "block.unicopia.chiselled_chitin_stairs": "Chiselled Chitin Stairs",
-  
+
+  "block.unicopia.shaping_bench": "Shaping Bench",  
   "block.unicopia.cloud": "Cloud",
   "block.unicopia.cloud_slab": "Cloud Slab",
   "block.unicopia.cloud_stairs": "Cloud Stairs",

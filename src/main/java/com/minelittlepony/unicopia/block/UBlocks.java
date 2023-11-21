@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.block.cloud.CompactedCloudBlock;
 import com.minelittlepony.unicopia.block.cloud.NaturalCloudBlock;
 import com.minelittlepony.unicopia.block.cloud.OrientedCloudBlock;
 import com.minelittlepony.unicopia.block.cloud.PoreousCloudStairsBlock;
+import com.minelittlepony.unicopia.block.cloud.ShapingBenchBlock;
 import com.minelittlepony.unicopia.block.cloud.CloudBedBlock;
 import com.minelittlepony.unicopia.block.cloud.CloudBlock;
 import com.minelittlepony.unicopia.block.cloud.SoggyCloudBlock;
@@ -147,6 +148,7 @@ public interface UBlocks {
     Block MYSTERIOUS_EGG = register("mysterious_egg", new PileBlock(Settings.copy(Blocks.SLIME_BLOCK), PileBlock.MYSTERIOUS_EGG_SHAPES), ItemGroups.NATURAL);
     Block SLIME_PUSTULE = register("slime_pustule", new SlimePustuleBlock(Settings.copy(Blocks.SLIME_BLOCK)), ItemGroups.NATURAL);
 
+    Block SHAPING_BENCH = register("shaping_bench", new ShapingBenchBlock(Settings.create().mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL)), ItemGroups.FUNCTIONAL);
     Block CLOUD = register("cloud", new NaturalCloudBlock(Settings.create().mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL), true,
             () -> UBlocks.SOGGY_CLOUD,
             () -> UBlocks.COMPACTED_CLOUD), ItemGroups.NATURAL);

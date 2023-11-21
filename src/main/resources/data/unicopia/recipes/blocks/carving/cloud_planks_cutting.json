@@ -1,0 +1,6 @@
+{
+  "type": "unicopia:cloud_shaping",
+  "ingredient": { "item": "unicopia:cloud" },
+  "result": "unicopia:cloud_planks",
+  "count": 1
+}
