@@ -45,6 +45,7 @@
 
   "item.unicopia.spellbook": "Книга заклинаний",
   "emi.category.unicopia.spellbook": "Книга заклинаний",
+  "emi.category.unicopia.cloud_shaping": "Формоизменение",
 
   "item.unicopia.alicorn_badge": "Эмблема аликорна",
   "item.unicopia.unicorn_badge": "Эмблема единорога",
@@ -271,6 +272,7 @@
   "block.unicopia.chiselled_chitin_slab": "Резная хитиновая плита",
   "block.unicopia.chiselled_chitin_stairs": "Резные хитиновые ступеньки",
 
+  "block.unicopia.shaping_bench": "Стенд формоизменения",
   "block.unicopia.cloud": "Облако",
   "block.unicopia.cloud_slab": "Плита из облака",
   "block.unicopia.cloud_stairs": "Ступеньки из облака",
