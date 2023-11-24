@@ -58,6 +58,8 @@
 
   "item.unicopia.butterfly_spawn_egg": "Butterfly Spawn Egg",
   "item.unicopia.butterfly": "Butterfly",
+  "item.unicopia.loot_bug_spawn_egg": "Loot Bug Spawn Egg",
+  "item.unicopia.loot_bug": "Loot bug",
 
   "item.unicopia.green_apple": "Granny Smith Apple",
   "item.unicopia.sweet_apple": "Sweet Apple Acres Apple",
@@ -213,6 +215,8 @@
   "item.unicopia.rainbow_pwr_bed_sheets": "PWR Rainbow Patterned Bed Sheets",
 
   "block.unicopia.rocks": "Rocks",
+  "block.unicopia.plunder_vine": "Plunder Vine",
+  "block.unicopia.plunder_vine_bud": "Plunder Vine Bud",
   "block.unicopia.bananas": "Bananas",
   "block.unicopia.zapling": "Zapling",
   "block.unicopia.zap_log": "Zap Apple Log",
