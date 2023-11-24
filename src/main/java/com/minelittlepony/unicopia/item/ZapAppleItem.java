@@ -117,9 +117,10 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder, Mu
         return hasAppearance(stack) ? getAppearanceStack(stack).getName() : super.getName(stack);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public Toxic getToxic(ItemStack stack, LivingEntity entity) {
-        return hasAppearance(stack) ? Toxics.SEVERE_INNERT : Toxics.FORAGE_EDIBLE;
+        return hasAppearance(stack) ? Toxic.SEVERE_INNERT : Toxics.FORAGE_EDIBLE;
     }
 
     @Override

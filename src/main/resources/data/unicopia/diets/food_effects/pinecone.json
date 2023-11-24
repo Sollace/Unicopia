@@ -1,0 +1,12 @@
+{
+  "tag": "unicopia:food_types/pinecone",
+  "ailment": {
+    "toxicity": "safe",
+    "effects": [
+      {
+        "type": "unicopia:healing",
+        "health": 1
+      }
+    ]
+  }
+}

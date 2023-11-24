@@ -1,0 +1,153 @@
+{
+  "default_multiplier": 0.5,
+  "foraging_multiplier": 0.9,
+  "multipliers": [
+    {
+      "tags": [
+        "unicopia:food_types/cooked_fish"
+       ],
+      "hunger": 0.75,
+      "saturation": 0.75
+    },
+    {
+      "tags": [
+        "unicopia:food_types/raw_fish"
+      ],
+      "hunger": 0.5,
+      "saturation": 0.6
+    },
+    {
+      "tags": [
+        "unicopia:food_types/cooked_insect"
+      ],
+      "hunger": 1.75,
+      "saturation": 1.75
+    },
+    {
+      "tags": [
+        "unicopia:food_types/cooked_meat"
+      ],
+      "hunger": 1.15,
+      "saturation": 1.15
+    },
+    {
+      "tags": [
+        "unicopia:food_types/raw_insect"
+      ],
+      "hunger": 1,
+      "saturation": 1
+    },
+    {
+      "tags": [
+        "unicopia:food_types/raw_meat"
+      ],
+      "hunger": 0.25,
+      "saturation": 0.25
+    },
+    {
+      "tags": [
+        "unicopia:food_types/rotten_meat"
+      ],
+      "hunger": 0.2,
+      "saturation": 0.2
+    },
+    {
+      "tags": [
+        "unicopia:food_types/love"
+      ],
+      "hunger": 0,
+      "saturation": 0
+    },
+    {
+      "tags": [
+        "unicopia:food_types/pinecone"
+      ],
+      "hunger": 0.9,
+      "saturation": 0.9
+    }
+  ],
+  "effects": [
+    {
+      "tag": "unicopia:food_types/rotten_fish",
+      "ailment": {
+        "toxicity": "mild",
+        "effects": [
+          {
+            "effect": "unicopia:food_poisoning",
+            "seconds": 100,
+            "amplifier": 2,
+            "chance": 5
+          }
+        ]
+      }
+    },
+    {
+      "tags": [
+        "unicopia:food_types/cooked_insect",
+        "unicopia:food_types/cooked_meat"
+      ],
+      "ailment": {
+        "toxicity": "safe",
+        "effects": [ ]
+      }
+    },
+    {
+      "tag": "unicopia:food_types/raw_insect",
+      "ailment": {
+        "toxicity": "mild",
+        "effects": [
+          {
+            "effect": "unicopia:food_poisoning",
+            "seconds": 50,
+            "amplifier": 1
+          }
+        ]
+      }
+    },
+    {
+      "tags": [
+        "unicopia:food_types/raw_meat",
+        "unicopia:food_types/rotten_meat"
+      ],
+      "ailment": {
+        "toxicity": "risky",
+        "effects": [
+          {
+            "effect": "unicopia:food_poisoning",
+            "seconds": 100,
+            "amplifier": 2,
+            "chance": 5
+          }
+        ]
+      }
+    },
+    {
+      "tag": "unicopia:food_types/bat_ponys_delight",
+      "ailment": {
+        "toxicity": "safe",
+        "effects": [
+          {
+            "effect": "minecraft:health_boost",
+            "seconds": { "min": 30, "max": 60 },
+            "amplifier": { "min": 2, "max": 6 }
+          },
+          {
+            "effect": "minecraft:jump_boost",
+            "seconds": { "min": 30, "max": 60 },
+            "amplifier": { "min": 1, "max": 6 }
+          },
+          {
+            "effect": "minecraft:health_boost",
+            "seconds": 30,
+            "amplifier": { "min": 1, "max": 6 }
+          },
+          {
+            "effect": "minecraft:regeneration",
+            "seconds": { "min": 3, "max": 30 },
+            "amplifier": { "min": 3, "max": 6 }
+          }
+        ]
+      }
+    }
+  ]
+}

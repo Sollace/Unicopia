@@ -4,7 +4,6 @@ import java.util.*;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
-
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,6 +19,7 @@ public record Ailment (
     ) {
     public static final Ailment INNERT = of(Toxicity.SAFE, Toxin.INNERT);
 
+    @Deprecated
     public static Ailment of(Toxicity toxicity, Toxin effect) {
         return new Ailment(toxicity, effect);
     }

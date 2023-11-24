@@ -1,0 +1,22 @@
+{
+  "default_multiplier": 1,
+  "foraging_multiplier": 0,
+  "multipliers": [ ],
+  "effects": [
+    {
+      "tags": [
+        "unicopia:food_types/cooked_fish",
+        "unicopia:food_types/raw_fish",
+        "unicopia:food_types/rotten_fish",
+        "unicopia:food_types/cooked_meat",
+        "unicopia:food_types/raw_meat",
+        "unicopia:food_types/rotten_meat",
+        "unicopia:food_types/pinecone"
+      ],
+      "ailment": {
+        "toxicity": "safe",
+        "effects": [ ]
+      }
+    }
+  ]
+}

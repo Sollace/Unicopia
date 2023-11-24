@@ -1,0 +1,22 @@
+{
+  "tag": "unicopia:food_types/forage_blinding",
+  "food_component": {
+    "hunger": 2,
+    "saturation": 1
+  },
+  "ailment": {
+    "toxicity": "severe",
+    "effects": [
+      {
+        "effect": "minecraft:blindness",
+        "seconds": 30,
+        "amplifier": 0
+      },
+      {
+        "effect": "unicopia:food_poisoning",
+        "seconds": 100,
+        "amplifier": 2
+      }
+    ]
+  }
+}

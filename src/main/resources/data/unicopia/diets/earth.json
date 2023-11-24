@@ -1,0 +1,39 @@
+{
+  "default_multiplier": 0.3,
+  "foraging_multiplier": 1,
+  "multipliers": [
+    {
+      "tags": [
+        "unicopia:food_types/cooked_fish"
+       ],
+      "hunger": 0.2,
+      "saturation": 0.2
+    },
+    {
+      "tags": [
+        "unicopia:food_types/cooked_insect",
+        "unicopia:food_types/cooked_meat"
+      ],
+      "hunger": 0.1,
+      "saturation": 0.1
+    },
+    {
+      "tags": [
+        "unicopia:food_types/love",
+        "unicopia:food_types/raw_fish",
+        "unicopia:food_types/raw_insect",
+        "unicopia:food_types/raw_meat",
+        "unicopia:food_types/rotten_meat"
+      ],
+      "hunger": 0,
+      "saturation": 0
+    },
+    {
+      "tags": [
+        "unicopia:food_types/pinecone"
+      ],
+      "hunger": 1,
+      "saturation": 1
+    }
+  ]
+}

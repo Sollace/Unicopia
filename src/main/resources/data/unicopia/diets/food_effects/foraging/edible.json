@@ -1,0 +1,11 @@
+{
+  "tag": "unicopia:food_types/forage_edible",
+  "food_component": {
+    "hunger": 2,
+    "saturation": 1
+  },
+  "ailment": {
+    "toxicity": "safe",
+    "effects": []
+  }
+}

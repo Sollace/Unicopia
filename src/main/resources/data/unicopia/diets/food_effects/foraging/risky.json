@@ -1,0 +1,18 @@
+{
+  "tag": "unicopia:food_types/forage_risky",
+  "food_component": {
+    "hunger": 2,
+    "saturation": 1
+  },
+  "ailment": {
+    "toxicity": "fair",
+    "effects": [
+      {
+        "effect": "unicopia:food_poisoning",
+        "seconds": 100,
+        "amplifier": 2,
+        "chance": 80
+      }
+    ]
+  }
+}
