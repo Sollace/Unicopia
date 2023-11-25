@@ -19,6 +19,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
@@ -114,6 +115,9 @@ public class FancyBedBlock extends BedBlock {
         public void setPattern(SheetPattern pattern) {
             this.pattern = pattern;
             markDirty();
+            if (world instanceof ServerWorld sw) {
+                sw.getChunkManager().markForUpdate(getPos());
+            }
         }
 
         public SheetPattern getPattern() {
