@@ -94,7 +94,7 @@ public class RageAbilitySpell extends AbstractSpell {
         }
 
         if (source instanceof Pony pony) {
-            if (source.isClient() && pony.asEntity().getAttackCooldownProgress(0) == 0) {
+            if (pony.isClientPlayer() && pony.asEntity().getAttackCooldownProgress(0) == 0) {
                 InteractionManager.instance().playLoopingSound(source.asEntity(), InteractionManager.SOUND_KIRIN_RAGE, source.asWorld().random.nextLong());
             }
             Bar energyBar = pony.getMagicalReserves().getEnergy();
