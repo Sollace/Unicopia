@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.client.render.entity;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.block.FancyBedBlock.SheetPattern;
 import com.minelittlepony.unicopia.block.cloud.CloudBedBlock;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
 
@@ -18,7 +19,7 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -31,12 +32,19 @@ import net.minecraft.util.math.RotationAxis;
 import net.minecraft.world.World;
 
 public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBedBlock.Tile> {
-    private final ModelPart bedHead;
-    private final ModelPart bedFoot;
+    private final ModelPart bedHead = getHeadTexturedModelData().createModel();
+    private final ModelPart bedFoot = getFootTexturedModelData().createModel();
+    private final ModelPart bedSheetsHead = getSheetsTexturedModelData(0, 3, 13).createModel();
+    private final ModelPart bedSheetsFoot = getSheetsTexturedModelData(22, 0, 15).createModel();
 
     public CloudBedBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
-        this.bedHead = getHeadTexturedModelData().createModel();
-        this.bedFoot = getFootTexturedModelData().createModel();
+    }
+
+    public static TexturedModelData getSheetsTexturedModelData(int v, int y, int height) {
+        ModelData data = new ModelData();
+        ModelPartData root = data.getRoot();
+        root.addChild("main", ModelPartBuilder.create().uv(0, v).cuboid(0, y, 0, 16, height, 6), ModelTransform.NONE);
+        return TexturedModelData.of(data, 64, 64);
     }
 
     public static TexturedModelData getHeadTexturedModelData() {
@@ -65,16 +73,17 @@ public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBed
     public void render(CloudBedBlock.Tile entity, float f, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         @Nullable
         World world = entity.getWorld();
-        Identifier texture = Unicopia.id("textures/entity/bed/" + entity.getBase() + ".png");
-        CloudBedBlock.SheetPattern pattern = entity.getPattern();
-        Identifier sheetsTexture = Unicopia.id("textures/entity/bed/sheets/" + entity.getPattern().asString() + ".png");
-        if (world == null) {
 
-            renderModel(matrices, vertices, bedHead, Direction.SOUTH, texture, light, overlay, false);
-            renderModel(matrices, vertices, bedFoot, Direction.SOUTH, texture, light, overlay, true);
+        CloudBedBlock.SheetPattern pattern = entity.getPattern();
+
+        VertexConsumer buffer = getBuffer(vertices, entity.getBase());
+        if (world == null) {
+            renderModel(matrices, vertices, bedHead, Direction.SOUTH, buffer, light, overlay, false, false);
+            renderModel(matrices, vertices, bedFoot, Direction.SOUTH, buffer, light, overlay, true, false);
             if (pattern != CloudBedBlock.SheetPattern.NONE) {
-                renderModel(matrices, vertices, bedHead, Direction.SOUTH, sheetsTexture, light, overlay, false);
-                renderModel(matrices, vertices, bedFoot, Direction.SOUTH, sheetsTexture, light, overlay, true);
+                buffer = getSheetsBuffer(vertices, pattern);
+                renderModel(matrices, vertices, bedSheetsHead, Direction.SOUTH, buffer, light, overlay, false, true);
+                renderModel(matrices, vertices, bedSheetsFoot, Direction.SOUTH, buffer, light, overlay, true, true);
             }
 
             return;
@@ -85,22 +94,36 @@ public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBed
         renderModel(matrices, vertices,
                 state.get(BedBlock.PART) == BedPart.HEAD ? bedHead : bedFoot,
                 state.get(BedBlock.FACING),
-                texture,
+                buffer,
                 getModelLight(entity, light),
                 overlay,
+                false,
                 false
         );
         if (pattern != CloudBedBlock.SheetPattern.NONE) {
-            //MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers().draw();
             renderModel(matrices, vertices,
-                    state.get(BedBlock.PART) == BedPart.HEAD ? bedHead : bedFoot,
+                    state.get(BedBlock.PART) == BedPart.HEAD ? bedSheetsHead : bedSheetsFoot,
                     state.get(BedBlock.FACING),
-                    sheetsTexture,
+                    getSheetsBuffer(vertices, pattern),
                     getModelLight(entity, light),
                     overlay,
-                    false
+                    false,
+                    true
             );
         }
+    }
+
+    private VertexConsumer getBuffer(VertexConsumerProvider vertices, String base) {
+        Identifier texture = Unicopia.id("textures/entity/bed/" + base + ".png");
+        return vertices.getBuffer(base.equalsIgnoreCase("cloud")
+                ? RenderLayers.getEntityTranslucent(texture)
+                : RenderLayers.getEntityCutout(texture)
+        );
+    }
+
+    private VertexConsumer getSheetsBuffer(VertexConsumerProvider vertices, SheetPattern pattern) {
+        Identifier sheetsTexture = Unicopia.id("textures/entity/bed/sheets/" + pattern.asString() + ".png");
+        return vertices.getBuffer(RenderLayers.getEntityCutout(sheetsTexture));
     }
 
     private int getModelLight(CloudBedBlock.Tile entity, int worldLight) {
@@ -114,19 +137,18 @@ public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBed
         ).apply(new LightmapCoordinatesRetriever<>()).get(worldLight);
     }
 
-    private void renderModel(MatrixStack matrices, VertexConsumerProvider vertices, ModelPart part, Direction direction, Identifier texture, int light, int overlay, boolean translate) {
+    private void renderModel(MatrixStack matrices, VertexConsumerProvider vertices, ModelPart part, Direction direction, VertexConsumer buffer, int light, int overlay, boolean translate, boolean sheets) {
         matrices.push();
         matrices.translate(0, 0.5625f, translate ? -1 : 0);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
         matrices.translate(0.5f, 0.5f, 0.5f);
-        if (texture.getPath().indexOf("sheet") != -1) {
-            float beddingScale = 1.0001F;
+        if (sheets) {
+            float beddingScale = 1.002F;
             matrices.scale(beddingScale, beddingScale, beddingScale);
         }
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180 + direction.asRotation()));
         matrices.translate(-0.5f, -0.5f, -0.5f);
-        RenderLayer layer = RenderLayers.getEntityTranslucent(texture);
-        part.render(matrices, vertices.getBuffer(layer), light, overlay);
+        part.render(matrices, buffer, light, overlay);
         matrices.pop();
     }
 }
