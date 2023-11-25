@@ -25,6 +25,7 @@ import com.minelittlepony.unicopia.client.render.spell.SpellRendererFactory;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.EnchantableItem;
+import com.minelittlepony.unicopia.item.FancyBedItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.terraformersmc.terraform.boat.api.client.TerraformBoatClientHelper;
@@ -127,7 +128,9 @@ public interface URenderers {
 
     @SuppressWarnings("unchecked")
     private static void renderBedItem(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(((Supplier<BlockEntity>)stack.getItem()).get(), matrices, vertices, light, overlay);
+        BlockEntity entity = ((Supplier<BlockEntity>)stack.getItem()).get();
+        ((FancyBedBlock.Tile)entity).setPattern(FancyBedItem.getPattern(stack));
+        MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(entity, matrices, vertices, light, overlay);
     }
 
     private static void renderJarItem(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
