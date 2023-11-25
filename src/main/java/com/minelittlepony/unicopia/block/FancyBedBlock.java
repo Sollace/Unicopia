@@ -1,14 +1,18 @@
 package com.minelittlepony.unicopia.block;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.item.BedsheetsItem;
+import com.minelittlepony.unicopia.util.VoxelShapeUtil;
 
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -19,15 +23,37 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class FancyBedBlock extends BedBlock {
+    private static final List<Function<Direction, VoxelShape>> SHAPES = List.of(
+        VoxelShapeUtil.rotator(VoxelShapes.union(
+                createCuboidShape(0, 3, 1, 16, 9, 16),
+                createCuboidShape(-0.5, 0, 1, 1.5, 13, 4),
+                createCuboidShape(14.5, 0, 1, 16.5, 13, 4),
+                createCuboidShape(1.5, 1, 0, 14.5, 16, 3)
+        )),
+        VoxelShapeUtil.rotator(VoxelShapes.union(
+                createCuboidShape(0, 3, 0, 16, 9, 16),
+                createCuboidShape(-0.5, 0, -1, 2.5, 10, 2),
+                createCuboidShape(13.5, 0, -1, 16.5, 10, 2),
+                createCuboidShape(1.5, 1, -2, 14.5, 12, 1)
+        ))
+    );
 
     private final String base;
 
     public FancyBedBlock(String base, Settings settings) {
         super(DyeColor.WHITE, settings);
         this.base = base;
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return SHAPES.get(state.get(PART).ordinal()).apply(BedBlock.getOppositePartDirection(state));
     }
 
     @Override
