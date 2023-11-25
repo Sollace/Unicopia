@@ -51,11 +51,11 @@ public abstract class WearableItem extends Item implements Equipment {
 
     @Override
     public final EquipmentSlot getSlotType() {
-        return EquipmentSlot.OFFHAND;
+        return getSlotType(getDefaultStack());
     }
 
     public EquipmentSlot getSlotType(ItemStack stack) {
-        return getSlotType();
+        return EquipmentSlot.OFFHAND;
     }
 
     public static boolean dispenseArmor(BlockPointer pointer, ItemStack armor) {
