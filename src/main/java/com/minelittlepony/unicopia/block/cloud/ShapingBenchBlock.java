@@ -2,9 +2,12 @@ package com.minelittlepony.unicopia.block.cloud;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.EquineContext;
 import com.minelittlepony.unicopia.container.ShapingBenchScreenHandler;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandlerContext;
@@ -14,11 +17,29 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class ShapingBenchBlock extends CloudBlock {
+    private static final VoxelShape SHAPE = VoxelShapes.union(
+            Block.createCuboidShape(0, 13, 0, 3, 18, 3),
+            Block.createCuboidShape(13, 13, 0, 16, 18, 3),
+            Block.createCuboidShape(0, 13, 13, 3, 18, 16),
+            Block.createCuboidShape(13, 13, 13, 16, 18, 16),
+            Block.createCuboidShape(0, 13, 0, 16, 16, 16),
+            Block.createCuboidShape(2, 0, 2, 14, 17, 14),
+            Block.createCuboidShape(0, 0, 0, 16, 4, 16)
+    );
+
     public ShapingBenchBlock(Settings settings) {
         super(settings, false);
+    }
+
+    @Override
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context, EquineContext equineContext) {
+        return SHAPE;
     }
 
     @Override
