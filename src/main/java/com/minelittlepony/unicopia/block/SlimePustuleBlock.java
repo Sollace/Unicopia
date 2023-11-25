@@ -82,7 +82,7 @@ public class SlimePustuleBlock extends Block {
     @Deprecated
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (state.get(SHAPE) == Shape.POD) {
+        if (state.get(SHAPE) == Shape.POD && random.nextInt(130) == 0) {
             SlimeEntity slime = EntityType.SLIME.create(world);
             slime.setSize(1, true);
             slime.setPosition(pos.toCenterPos());
