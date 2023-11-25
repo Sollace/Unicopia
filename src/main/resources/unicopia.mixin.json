@@ -24,6 +24,7 @@
     "MixinFallingBlock",
     "MixinFallingBlockEntity",
     "MixinFlowableFluid",
+    "MixinGuardianTargetPredicate",
     "MixinItem",
     "MixinItemEntity",
     "MixinLivingEntity",
