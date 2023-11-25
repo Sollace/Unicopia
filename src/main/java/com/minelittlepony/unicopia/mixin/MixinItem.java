@@ -58,6 +58,8 @@ abstract class MixinItem implements ItemDuck {
 
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void use(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> info) {
+        // ensure the food component is updated before attempting to use
+        getToxic(user.getStackInHand(hand), user);
         TypedActionResult<ItemStack> result = FoodPoisoningStatusEffect.apply(this, user, hand);
         if (result.getResult() != ActionResult.PASS) {
             info.setReturnValue(result);
