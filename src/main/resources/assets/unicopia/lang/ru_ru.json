@@ -58,6 +58,8 @@
 
   "item.unicopia.butterfly_spawn_egg": "Яйцо призыва бабочки",
   "item.unicopia.butterfly": "Бабочка",
+  "item.unicopia.loot_bug_spawn_egg": "Яйцо призыва жука-сборщика",
+  "item.unicopia.loot_bug": "Жук-сборщик",
 
   "item.unicopia.green_apple": "Яблоко Гренни Смит",
   "item.unicopia.sweet_apple": "Яблоко Яблочной Аллеи",
@@ -213,6 +215,8 @@
   "item.unicopia.rainbow_pwr_bed_sheets": "Простынь с радужным РБК узором",
 
   "block.unicopia.rocks": "Камни",
+  "block.unicopia.plunder_vine": "Чёрная лоза",
+  "block.unicopia.plunder_vine_bud": "Бутон чёрной лозы",
   "block.unicopia.bananas": "Бананы",
   "block.unicopia.zapling": "Саженец зап-яблони",
   "block.unicopia.zap_log": "Бревно зап-яблони",
