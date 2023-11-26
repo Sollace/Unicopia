@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.block;
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 
 import net.minecraft.block.*;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
@@ -13,12 +14,13 @@ public class ZapAppleLeavesBlock extends BaseZapAppleLeavesBlock {
     public static final EnumProperty<ZapAppleStageStore.Stage> STAGE = EnumProperty.of("stage", ZapAppleStageStore.Stage.class);
 
     ZapAppleLeavesBlock() {
-        setDefaultState(getDefaultState().with(STAGE, ZapAppleStageStore.Stage.HIBERNATING));
+        setDefaultState(getDefaultState().with(STAGE, ZapAppleStageStore.Stage.GREENING));
     }
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (oldState.isOf(state.getBlock())
+        if (state.get(PERSISTENT)
+                || oldState.isOf(state.getBlock())
                 || oldState.isOf(UBlocks.ZAP_LEAVES)
                 || oldState.isOf(UBlocks.FLOWERING_ZAP_LEAVES)
                 || oldState.isOf(UBlocks.ZAP_LEAVES_PLACEHOLDER)
@@ -31,6 +33,11 @@ public class ZapAppleLeavesBlock extends BaseZapAppleLeavesBlock {
         if (currentStage != getStage(state)) {
             world.setBlockState(pos, currentStage.getNewState(state));
         }
+    }
+
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return super.getPlacementState(ctx).with(STAGE, ZapAppleStageStore.Stage.GREENING);
     }
 
     @Override
