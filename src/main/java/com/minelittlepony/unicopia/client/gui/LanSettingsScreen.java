@@ -113,7 +113,7 @@ public class LanSettingsScreen extends GameGui {
             WHITELIST_GRID_PACKER.start();
 
             for (Race race : Race.REGISTRY) {
-                if (!race.isUnset()) {
+                if (!race.isUnset() && race.availability().isGrantable()) {
                     Bounds bound = WHITELIST_GRID_PACKER.next();
 
                     Button button = content.addButton(new Toggle(LEFT + bound.left + 10, row + bound.top, whitelist.contains(race.getId().toString())))

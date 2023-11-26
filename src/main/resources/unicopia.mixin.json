@@ -24,6 +24,7 @@
     "MixinFallingBlock",
     "MixinFallingBlockEntity",
     "MixinFlowableFluid",
+    "MixinGuardianTargetPredicate",
     "MixinItem",
     "MixinItemEntity",
     "MixinLivingEntity",
@@ -78,6 +79,7 @@
     "client.MixinTranslationStorage",
     "client.MixinWorldRenderer",
     "client.sodium.MixinSodiumWorldRenderer",
+    "client.minelp.MixinPonyPosture",
     "trinkets.MixinTrinketCreativeSlot"
   ],
   "injectors": {
