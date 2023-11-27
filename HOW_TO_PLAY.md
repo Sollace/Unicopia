@@ -99,7 +99,7 @@ also respond to quick, short single-taps, or double-taps.
    
  - Hanging of Ceilings
 
-   Ever just want to hang out? Well bat ponies can, _literally_! All the cool kids are doing.
+   Ever just want to hang out? Well bat ponies can, _literally_! All the cool kids are doing it!
    
  - Mangoes
    
@@ -141,7 +141,7 @@ Fighting too close together with them may cause you some knockback.
 
 Zap Apple Trees occur naturally in the world and are the only way to obtain zap apples in survival. They can appear in one of several different states:
 
-Hybernating, Flowering, Fruiting, or Withering
+*Hibernating, Flowering, Fruiting, or Withering*
 
 They cycle through these states throughout the lunar cycle, so if you find one, and it's not in the state you want, wait around another few days and it
 will eventually bear fruit, but don't try to harvest the apples before they're ripe, because they will zap you!
