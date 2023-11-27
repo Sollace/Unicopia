@@ -27,6 +27,7 @@ public interface UTags {
     TagKey<Item> SPOOKED_MOB_DROPS = item("spooked_mob_drops");
     TagKey<Item> IS_DELIVERED_AGGRESSIVELY = item("is_delivered_aggressively");
     TagKey<Item> FLOATS_ON_CLOUDS = item("floats_on_clouds");
+    TagKey<Item> COOLS_OFF_KIRINS = item("cools_off_kirins");
 
     TagKey<Item> POLEARMS = item("polearms");
     TagKey<Item> HORSE_SHOES = item("horse_shoes");

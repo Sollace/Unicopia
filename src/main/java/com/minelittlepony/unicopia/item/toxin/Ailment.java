@@ -7,11 +7,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.world.World;
 
 public record Ailment (
         Toxicity toxicity,
@@ -29,13 +25,6 @@ public record Ailment (
         if (context.isAdvanced()) {
             effect().appendTooltip(tooltip);
         }
-    }
-
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        if (!Pony.of(player).getObservedSpecies().hasIronGut()) {
-            return TypedActionResult.fail(player.getStackInHand(hand));
-        }
-        return null;
     }
 
     public interface Set {

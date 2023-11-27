@@ -6,13 +6,17 @@ import java.util.*;
 import java.util.function.Function;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.entity.effect.FoodPoisoningStatusEffect;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
@@ -37,11 +41,20 @@ public record Toxic (
         ailment.get(player).ifPresent(ailment -> ailment.appendTooltip(tooltip, context));
     }
 
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
+    public TypedActionResult<ItemStack> startUsing(ItemStack stack, World world, PlayerEntity user, Hand hand) {
+        if (stack.getItem() instanceof BlockItem && ailment().get(user).isPresent() && !Pony.of(user).getObservedSpecies().hasIronGut()) {
+            return TypedActionResult.fail(stack);
+        }
+        return FoodPoisoningStatusEffect.apply(stack, user);
+    }
+
+    public void finishUsing(ItemStack stack, World world, LivingEntity entity) {
         if (entity instanceof PlayerEntity player) {
             ailment.get(entity).ifPresent(ailment -> ailment.effect().afflict(player, stack));
         }
-        return stack;
+        if (stack.isFood() || stack.getUseAction() == UseAction.DRINK) {
+            Pony.of(entity).ifPresent(pony -> pony.onEat(stack));
+        }
     }
 
     @Deprecated

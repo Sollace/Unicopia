@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.ability.*;
 import com.minelittlepony.unicopia.ability.magic.*;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
+import com.minelittlepony.unicopia.ability.magic.spell.RageAbilitySpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitDiscovery;
@@ -53,6 +54,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.potion.PotionUtil;
+import net.minecraft.potion.Potions;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -428,7 +431,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         if (getObservedSpecies() == Race.KIRIN) {
             var charge = getMagicalReserves().getCharge();
 
-            if (entity.isTouchingWater()) {
+            if (entity.isTouchingWater() || entity.isFrozen()) {
                 charge.multiply(0.5F);
             }
 
@@ -732,6 +735,18 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             return Optional.of(distance);
         }
         return Optional.empty();
+    }
+
+    public void onEat(ItemStack stack) {
+        if (isClient()) {
+            return;
+        }
+
+        if (getObservedSpecies() == Race.KIRIN
+                && (stack.isIn(UTags.COOLS_OFF_KIRINS) || PotionUtil.getPotion(stack) == Potions.WATER)) {
+            getMagicalReserves().getCharge().multiply(0.5F);
+            getSpellSlot().get(SpellType.RAGE, false).ifPresent(RageAbilitySpell::setExtenguishing);
+        }
     }
 
     @SuppressWarnings("deprecation")

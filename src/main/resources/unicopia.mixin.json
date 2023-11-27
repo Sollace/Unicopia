@@ -27,6 +27,7 @@
     "MixinGuardianTargetPredicate",
     "MixinItem",
     "MixinItemEntity",
+    "MixinItemStack",
     "MixinLivingEntity",
     "MixinMilkBucketItem",
     "MixinMobEntity",
