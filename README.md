@@ -30,7 +30,7 @@ Unicorns, Pegasi, Earth Ponies, and even Changelings get their own special abili
  - *Play as a pegasus* and dominate the skies! Besides the ability to fly, pegasi can also perform rainbooms, control the weather by shoving them into jars,
    and have a greater reach distance and speed than other races.
  
- - *Play as a humble background pony*! Earth Ponies are tougher and heavier than the other races. They also have the nify ability to
+ - *Play as a humble background pony*! Earth Ponies are tougher and heavier than the other races. They also have the nifty ability to
    kick trees to get food and hasten the growth of crops. You'll never go hungry if you're an earth pony.
 
  Feeling like going over to the dark side?
