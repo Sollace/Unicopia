@@ -3,7 +3,7 @@
 [![ru](https://img.shields.io/badge/lang-ru-d52b1e.svg)](README_RU.md)
 [![cn](https://img.shields.io/badge/lang-cn-de2910.svg)](README_CN.md)
 
-When starting a new world you're given the choice of which tribe to join. One of Unicorn, Pegasus, Earth, Bat, or Changeling.
+When starting a new world you're given the choice of which tribe to join. You can choose from _Unicorn_, _Pegasus_, _Earth Pony_, _Batpony_, or _Changeling_.
 
 Depending on which race you pick, you're given different abilities, displayed on your HUD in a series of circular elements.
 To activate an ability, simply press and hold the key corresponding to that ability. Some take longer than others, and certain abilities
@@ -17,7 +17,7 @@ also respond to quick, short single-taps, or double-taps.
 
    For unicorns, casting spells is done through gems, which you can obtain whilst mining. You first need to craft a spellbook using a gem, and then
    in the spellbook you can discover the magical traits of different items and recipes to combine them to create different spells, as well
-   as modify existing one.
+   as modify existing ones.
 
    Once you have a gem with a spell you want to use, you can equip it to your main-hand or off-hand slot by right-clicking with a gem in
    one of either hand, then to activate it you us your primary ability. You can also cast spells directly from a gem by using the ability
@@ -34,7 +34,7 @@ also respond to quick, short single-taps, or double-taps.
 ### Earth Ponies
  - Kicking & Stomping
 
-   Earth ponies kick good.
+   *Earth ponies kick good*.
 
    If Mine Little Pony is installed, and you have the appearance of a pony, kicking will target the block behind you, so twirl that rump!
    Kicking blocks will incrementally mine them, and kicking trees will shake items loose from their branches. Kicking a tree _too much_ might destroy it,
@@ -47,7 +47,7 @@ also respond to quick, short single-taps, or double-taps.
 
  - Bracing
 
-   Earth ponies can brace themselves by sneaking! It, uh, makes you harder to push! yeah!
+   Earth ponies can brace themselves by sneaking! It, uh, makes you harder to push! Yeah!
 
 ### Pegasi / Bat Ponies
 
@@ -121,6 +121,12 @@ also respond to quick, short single-taps, or double-taps.
    
    Changelings can turn into damn near anything, even other players! And blocks! And hostile mobs!
    Careful about turning into skeletons, though, because they hate the sun even more than bat ponies.
+   
+ - Crawling
+ 
+   Changelings can crawl on Ceilings, which is very useful for lining up your shot, when attempting to shoot somepony in a cave,
+   while disguised as a stone block. Or is that just me? Anyways, they can only crawl along flat surfaces, meaning that if you go off the edge of a block,
+   you will fall off. 
 
 ## Special Items, Plants, Tools
 
@@ -145,3 +151,5 @@ If you're able to obtain the wood and leaves, it also makes the perfect deterant
 ### Muffins
 
 They're bouncy and delicious, and pigs absolutely love them!
+
+<!-- https://media.tenor.com/GTYRNMAuLIUAAAAC/muffin-button-muffins.gif -->
