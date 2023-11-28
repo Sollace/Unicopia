@@ -94,7 +94,6 @@ public interface Toxin extends Affliction {
         };
     }
 
-    @Deprecated
     static Toxin of(Text name, Affliction affliction) {
         return new Toxin() {
             @Override

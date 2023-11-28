@@ -22,6 +22,8 @@ import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.container.SpellbookChapterLoader;
 import com.minelittlepony.unicopia.container.UScreenHandlers;
+import com.minelittlepony.unicopia.diet.AfflictionType;
+import com.minelittlepony.unicopia.diet.DietsLoader;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.effect.UPotions;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
@@ -83,11 +85,7 @@ public class Unicopia implements ModInitializer {
         });
         NocturnalSleepManager.bootstrap();
 
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(TreeTypeLoader.INSTANCE);
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(UEnchantments.POISONED_JOKE);
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new TraitLoader());
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(StateMapLoader.INSTANCE);
-        ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(SpellbookChapterLoader.INSTANCE);
+        registerServerDataReloaders(ResourceManagerHelper.get(ResourceType.SERVER_DATA));
 
         UGameEvents.bootstrap();
         UBlocks.bootstrap();
@@ -98,11 +96,21 @@ public class Unicopia implements ModInitializer {
         USounds.bootstrap();
         Race.bootstrap();
         SpellType.bootstrap();
+        AfflictionType.bootstrap();
         Abilities.bootstrap();
         UScreenHandlers.bootstrap();
         UWorldGen.bootstrap();
         UGameRules.bootstrap();
         UDamageTypes.bootstrap();
+    }
+
+    private void registerServerDataReloaders(ResourceManagerHelper registry) {
+        registry.registerReloadListener(TreeTypeLoader.INSTANCE);
+        registry.registerReloadListener(UEnchantments.POISONED_JOKE);
+        registry.registerReloadListener(new TraitLoader());
+        registry.registerReloadListener(StateMapLoader.INSTANCE);
+        registry.registerReloadListener(SpellbookChapterLoader.INSTANCE);
+        registry.registerReloadListener(new DietsLoader());
     }
 
     public interface SidedAccess {

@@ -374,6 +374,7 @@
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_hippogriff": "Lingering Potion of Hippogriff Metamorphosis",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_hippogriff": "Arrow of Hippogriff Metamorphosis",
 
+  "potion.withChance": "1 in %s chance of %s",
   "potion.potency.6": "VII",
 
   "spell.unicopia.frost": "Frost",
