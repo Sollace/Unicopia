@@ -3,74 +3,55 @@
   "foraging_multiplier": 0.9,
   "multipliers": [
     {
-      "tags": [
-        "unicopia:food_types/cooked_fish"
-       ],
+      "tags": [ "unicopia:food_types/cooked_fish" ],
       "hunger": 0.75,
       "saturation": 0.75
     },
     {
-      "tags": [
-        "unicopia:food_types/raw_fish"
-      ],
+      "tags": [ "unicopia:food_types/raw_fish" ],
       "hunger": 0.5,
       "saturation": 0.6
     },
     {
-      "tags": [
-        "unicopia:food_types/cooked_insect"
-      ],
+      "tags": [ "unicopia:food_types/cooked_insect" ],
       "hunger": 1.75,
       "saturation": 1.75
     },
     {
-      "tags": [
-        "unicopia:food_types/cooked_meat"
-      ],
+      "tags": [ "unicopia:food_types/cooked_meat" ],
       "hunger": 1.15,
       "saturation": 1.15
     },
     {
-      "tags": [
-        "unicopia:food_types/raw_insect"
-      ],
+      "tags": [ "unicopia:food_types/raw_insect" ],
       "hunger": 1,
       "saturation": 1
     },
     {
-      "tags": [
-        "unicopia:food_types/raw_meat"
-      ],
+      "tags": [ "unicopia:food_types/raw_meat" ],
       "hunger": 0.25,
       "saturation": 0.25
     },
     {
-      "tags": [
-        "unicopia:food_types/rotten_meat"
-      ],
+      "tags": [ "unicopia:food_types/rotten_meat" ],
       "hunger": 0.2,
       "saturation": 0.2
     },
     {
-      "tags": [
-        "unicopia:food_types/love"
-      ],
+      "tags": [ "unicopia:food_types/love" ],
       "hunger": 0,
       "saturation": 0
     },
     {
-      "tags": [
-        "unicopia:food_types/pinecone"
-      ],
+      "tags": [ "unicopia:food_types/pinecone" ],
       "hunger": 0.9,
       "saturation": 0.9
     }
   ],
   "effects": [
     {
-      "tag": "unicopia:food_types/rotten_fish",
+      "tags": [ "unicopia:food_types/rotten_fish" ],
       "ailment": {
-        "toxicity": "mild",
         "effects": [
           {
             "effect": "unicopia:food_poisoning",
@@ -87,14 +68,12 @@
         "unicopia:food_types/cooked_meat"
       ],
       "ailment": {
-        "toxicity": "safe",
         "effects": [ ]
       }
     },
     {
-      "tag": "unicopia:food_types/raw_insect",
+      "tags": [ "unicopia:food_types/raw_insect" ],
       "ailment": {
-        "toxicity": "mild",
         "effects": [
           {
             "effect": "unicopia:food_poisoning",
@@ -110,7 +89,6 @@
         "unicopia:food_types/rotten_meat"
       ],
       "ailment": {
-        "toxicity": "risky",
         "effects": [
           {
             "effect": "unicopia:food_poisoning",
@@ -122,9 +100,8 @@
       }
     },
     {
-      "tag": "unicopia:food_types/bat_ponys_delight",
+      "tags": [ "unicopia:food_types/bat_ponys_delight" ],
       "ailment": {
-        "toxicity": "safe",
         "effects": [
           {
             "effect": "minecraft:health_boost",

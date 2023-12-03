@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia;
 
-import com.minelittlepony.unicopia.item.toxin.Toxics;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageType;
@@ -78,9 +76,5 @@ public interface UTags {
 
     static TagKey<DimensionType> dimension(String name) {
         return TagKey.of(RegistryKeys.DIMENSION_TYPE, new Identifier("c", name));
-    }
-
-    static void bootstrap() {
-        Toxics.bootstrap();
     }
 }

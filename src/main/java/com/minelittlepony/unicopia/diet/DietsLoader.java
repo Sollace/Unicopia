@@ -40,23 +40,34 @@ public class DietsLoader implements IdentifiableResourceReloadListener {
             Map<Race, DietProfile> profiles = new HashMap<>();
             for (var entry : data.entrySet()) {
                 Identifier id = entry.getKey();
-                Race.REGISTRY.getOrEmpty(id).ifPresentOrElse(race -> DietProfile.CODEC.parse(JsonOps.INSTANCE, entry.getValue())
-                    .resultOrPartial(LOGGER::error)
-                    .ifPresent(profile -> profiles.put(race, profile)), () -> LOGGER.warn("Skipped diet for unknown race: " + id));
+                try {
+                    Race.REGISTRY.getOrEmpty(id).ifPresentOrElse(race -> {
+                        DietProfile.CODEC.parse(JsonOps.INSTANCE, entry.getValue())
+                                .resultOrPartial(error -> LOGGER.error("Could not load diet profile {}: {}", id, error))
+                                .ifPresent(profile -> profiles.put(race, profile));
+                    }, () -> LOGGER.warn("Skipped diet for unknown race: " + id));
+                } catch (Throwable t) {
+                    LOGGER.error("Could not load diet profile {}", id, t);
+                }
             }
             return profiles;
-        }, applyExecutor);
+        }, prepareExecutor);
 
-        var effectsLoadTask = loadData(manager, prepareExecutor, "diets/food_effects").thenApplyAsync(data -> data.values().stream()
-                    .map(value -> Effect.CODEC.parse(JsonOps.INSTANCE, value)
-                            .resultOrPartial(LOGGER::error))
+        var effectsLoadTask = loadData(manager, prepareExecutor, "diets/food_effects").thenApplyAsync(data -> data.entrySet().stream()
+                    .map(entry -> {
+                        try {
+                        return Effect.CODEC.parse(JsonOps.INSTANCE, entry.getValue())
+                                .resultOrPartial(error -> LOGGER.error("Could not load food effect {}: {}", entry.getKey(), error));
+                        } catch (Throwable t) {
+                            LOGGER.error("Could not load food effects {}", entry.getKey(), t);
+                        }
+                        return Optional.<Effect>empty();
+                    })
                             .filter(Optional::isPresent)
                             .map(Optional::get)
-                            .toList());
+                            .toList(), prepareExecutor);
 
-        var future = CompletableFuture.allOf(dietsLoadTask, effectsLoadTask);
-        sync.getClass();
-        return future.thenRunAsync(() -> {
+        return CompletableFuture.allOf(dietsLoadTask, effectsLoadTask).thenCompose(sync::whenPrepared).thenRunAsync(() -> {
             PonyDiets.load(new PonyDiets(
                     dietsLoadTask.getNow(Map.of()),
                     effectsLoadTask.getNow(List.of())

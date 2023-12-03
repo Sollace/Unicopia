@@ -24,7 +24,7 @@ public record MsgServerResources (
             SpellTraits.all(),
             SpellbookChapterLoader.INSTANCE.getChapters(),
             TreeTypeLoader.INSTANCE.getEntries(),
-            PonyDiets.getinstance()
+            PonyDiets.getInstance()
         );
     }
 

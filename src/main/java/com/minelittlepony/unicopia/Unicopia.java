@@ -22,8 +22,8 @@ import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.container.SpellbookChapterLoader;
 import com.minelittlepony.unicopia.container.UScreenHandlers;
-import com.minelittlepony.unicopia.diet.AfflictionType;
 import com.minelittlepony.unicopia.diet.DietsLoader;
+import com.minelittlepony.unicopia.diet.affliction.AfflictionType;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.effect.UPotions;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
@@ -66,7 +66,6 @@ public class Unicopia implements ModInitializer {
     @Override
     public void onInitialize() {
         Channel.bootstrap();
-        UTags.bootstrap();
         UCriteria.bootstrap();
         UEntities.bootstrap();
         Commands.bootstrap();

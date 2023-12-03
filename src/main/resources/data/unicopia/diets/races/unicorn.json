@@ -23,11 +23,10 @@
       "saturation": 0
     },
     {
-      "tags": [
-        "unicopia:food_types/pinecone"
-      ],
+      "tags": [ "unicopia:food_types/pinecone" ],
       "hunger": 0.9,
       "saturation": 0.9
     }
-  ]
+  ],
+  "effects": []
 }

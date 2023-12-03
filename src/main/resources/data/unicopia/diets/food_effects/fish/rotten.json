@@ -1,7 +1,10 @@
 {
-  "tag": "unicopia:food_types/rotten_fish",
+  "tags": [ "unicopia:food_types/rotten_fish" ],
+  "food_component": {
+    "hunger": 1,
+    "saturation": 0.1
+  },
   "ailment": {
-    "toxicity": "severe",
     "effects": [
       {
         "effect": "minecraft:poison",

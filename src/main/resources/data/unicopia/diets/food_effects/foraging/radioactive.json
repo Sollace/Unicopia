@@ -1,11 +1,10 @@
 {
-  "tag": "unicopia:food_types/forage_radioactive",
+  "tags": [ "unicopia:food_types/forage_radioactive" ],
   "food_component": {
     "hunger": 2,
     "saturation": 1
   },
   "ailment": {
-    "toxicity": "severe",
     "effects": [
       {
         "effect": "minecraft:glowing",

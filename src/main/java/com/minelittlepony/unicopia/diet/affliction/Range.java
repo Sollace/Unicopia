@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.diet;
+package com.minelittlepony.unicopia.diet.affliction;
 
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
@@ -7,7 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.dynamic.Codecs;
 
-public record Range(int min, int max) {
+record Range(int min, int max) {
     public static final Codec<Range> CODEC = Codecs.xor(
             Codec.INT.xmap(value -> Range.of(value, -1), range -> range.min()),
             RecordCodecBuilder.create(instance -> instance.group(
@@ -29,11 +29,11 @@ public record Range(int min, int max) {
         buffer.writeInt(max);
     }
 
-    public int getTicks(int currentTicks) {
-        return clamp((min * 20) + currentTicks);
+    public int getClamped(int currentTicks, int multiplier) {
+        return clamp((min * multiplier) + currentTicks, multiplier);
     }
 
-    public int clamp(int value) {
-        return max > 0 ? Math.min(value, max * 20) : value;
+    public int clamp(int value, int multiplier) {
+        return max > 0 ? Math.min(value, max * multiplier) : value;
     }
 }

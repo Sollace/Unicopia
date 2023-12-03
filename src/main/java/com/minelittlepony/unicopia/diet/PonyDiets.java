@@ -4,20 +4,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.diet.DietProfile.Multiplier;
-import com.minelittlepony.unicopia.entity.player.Pony;
+import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.entity.effect.FoodPoisoningStatusEffect;
+import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.ItemDuck;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.world.World;
 
-public class PonyDiets {
+public class PonyDiets implements DietView {
     private final Map<Race, DietProfile> diets;
     private final List<Effect> effects;
 
-    static PonyDiets INSTANCE = new PonyDiets(Map.of(), List.of());
+    private static PonyDiets INSTANCE = new PonyDiets(Map.of(), List.of());
 
-    public static PonyDiets getinstance() {
+    public static PonyDiets getInstance() {
         return INSTANCE;
     }
 
@@ -39,19 +49,61 @@ public class PonyDiets {
         buffer.writeCollection(effects, (b, e) -> e.toBuffer(b));
     }
 
-    public Optional<DietProfile> getDiet(Race race) {
-        return Optional.ofNullable(diets.get(race));
+    private DietProfile getDiet(Pony pony) {
+        return Optional.ofNullable(diets.get(pony.getObservedSpecies())).orElse(DietProfile.EMPTY);
     }
 
-    public Optional<Effect> getEffects(ItemStack stack) {
-        return effects.stream().filter(effect -> effect.test(stack)).findFirst();
+    private Effect getEffects(ItemStack stack) {
+        return effects.stream().filter(effect -> effect.test(stack)).findFirst().orElse(Effect.EMPTY);
     }
 
-    public Optional<Effect> getEffects(ItemStack stack, Pony pony) {
-        return getDiet(pony.getObservedSpecies()).flatMap(diet -> diet.findEffect(stack)).or(() -> getEffects(stack));
+    private Effect getEffects(ItemStack stack, Pony pony) {
+        return getDiet(pony).findEffect(stack).orElseGet(() -> getEffects(stack));
     }
 
-    public Optional<Multiplier> getMultiplier(ItemStack stack, Pony pony) {
-        return getDiet(pony.getObservedSpecies()).flatMap(diet -> diet.findMultiplier(stack));
+    @Override
+    public TypedActionResult<ItemStack> startUsing(ItemStack stack, World world, PlayerEntity user, Hand hand) {
+        return initEdibility(stack, user)
+                ? FoodPoisoningStatusEffect.apply(stack, user)
+                : TypedActionResult.fail(stack);
+    }
+
+    @Override
+    public void finishUsing(ItemStack stack, World world, LivingEntity entity) {
+        if (initEdibility(stack, entity)) {
+            Pony.of(entity).ifPresent(pony -> getEffects(stack, pony).afflict(pony, stack));
+        }
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, @Nullable PlayerEntity user, List<Text> tooltip, TooltipContext context) {
+        if (initEdibility(stack, user)) {
+            Pony pony = Pony.of(user);
+
+            tooltip.add(Text.translatable("unicopia.diet.information").formatted(Formatting.DARK_PURPLE));
+            getEffects(stack, pony).appendTooltip(stack, tooltip, context);
+            getDiet(pony).appendTooltip(stack, user, tooltip, context);
+        }
+    }
+
+    private boolean initEdibility(ItemStack stack, LivingEntity user) {
+        ItemDuck item = (ItemDuck)stack.getItem();
+        item.resetFoodComponent();
+        return Pony.of(user).filter(pony -> {
+            DietProfile diet = getDiet(pony);
+
+            if (!stack.isFood() && pony.getObservedSpecies().hasIronGut()) {
+                diet.findEffect(stack)
+                    .flatMap(Effect::foodComponent)
+                    .or(() -> getEffects(stack).foodComponent())
+                    .ifPresent(item::setFoodComponent);
+            }
+
+            if (stack.isFood()) {
+                item.setFoodComponent(diet.getAdjustedFoodComponent(stack));
+            }
+
+            return true;
+        }).isPresent();
     }
 }

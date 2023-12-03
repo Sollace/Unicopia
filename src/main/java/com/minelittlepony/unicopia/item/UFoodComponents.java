@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.item.toxin;
+package com.minelittlepony.unicopia.item;
 
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;

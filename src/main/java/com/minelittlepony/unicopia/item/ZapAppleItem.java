@@ -9,7 +9,6 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.group.MultiItem;
-import com.minelittlepony.unicopia.item.toxin.*;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.TraceHelper;
@@ -36,7 +35,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder, MultiItem {
+public class ZapAppleItem extends Item implements ChameleonItem, MultiItem {
     public ZapAppleItem(Settings settings) {
         super(settings);
     }
@@ -115,12 +114,6 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder, Mu
     @Override
     public Text getName(ItemStack stack) {
         return hasAppearance(stack) ? getAppearanceStack(stack).getName() : super.getName(stack);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public Toxic getToxic(ItemStack stack, LivingEntity entity) {
-        return hasAppearance(stack) ? Toxic.SEVERE_INNERT : Toxics.FORAGE_EDIBLE;
     }
 
     @Override

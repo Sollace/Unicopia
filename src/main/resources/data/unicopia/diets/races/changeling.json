@@ -3,50 +3,37 @@
   "foraging_multiplier": 0,
   "multipliers": [
     {
-      "tags": [
-        "unicopia:food_types/cooked_insect"
-      ],
+      "tags": [ "unicopia:food_types/cooked_insect" ],
       "hunger": 0.3,
       "saturation": 0.3
     },
     {
-      "tags": [
-        "unicopia:food_types/cooked_meat"
-      ],
+      "tags": [ "unicopia:food_types/cooked_meat" ],
       "hunger": 0.1,
       "saturation": 0.1
     },
     {
-      "tags": [
-        "unicopia:food_types/raw_insect"
-      ],
+      "tags": [ "unicopia:food_types/raw_insect" ],
       "hunger": 1,
       "saturation": 1
     },
     {
-      "tags": [
-        "unicopia:food_types/raw_meat"
-      ],
+      "tags": [ "unicopia:food_types/raw_meat" ],
       "hunger": 0.25,
       "saturation": 0.25
     },
     {
-      "tags": [
-        "unicopia:food_types/rotten_meat"
-      ],
+      "tags": [ "unicopia:food_types/rotten_meat" ],
       "hunger": 0.6,
       "saturation": 0.6
     },
     {
-      "tags": [
-        "unicopia:food_types/love"
-      ],
+      "tags": [ "unicopia:food_types/love" ],
       "hunger": 1,
       "saturation": 1
     }
   ],
   "default_effects": {
-    "toxicity": "fair",
     "effects": [
       {
         "effect": "unicopia:food_poisoning",
@@ -66,15 +53,12 @@
   },
   "effects": [
     {
-      "tags": [
-        "unicopia:food_types/love"
-      ],
+      "tags": [ "unicopia:food_types/love" ],
       "food_component": {
         "hunger": 2,
         "saturation": 1
       },
       "ailment": {
-        "toxicity": "safe",
         "effects": [
           {
             "name": "Love Consumption",
@@ -89,7 +73,6 @@
         "unicopia:food_types/raw_fish"
       ],
       "ailment": {
-        "toxicity": "fair",
         "effects": [
           {
             "effect": "unicopia:food_poisoning",
@@ -114,21 +97,19 @@
         "unicopia:food_types/rotten_meat"
       ],
       "ailment": {
-        "toxicity": "safe",
         "effects": [ ]
       }
     },
     {
       "tags": [
         "unicopia:food_types/forage_edible",
-        "unicopia:food_types/forage_edible_filling",
+        "unicopia:food_types/forage_edible_filling"
       ],
       "food_component": {
         "hunger": 18,
         "saturation": 9
       },
       "ailment": {
-        "toxicity": "fair",
         "effects": [
           {
             "effect": "unicopia:food_poisoning",

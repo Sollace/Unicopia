@@ -14,7 +14,6 @@
         "unicopia:food_types/pinecone"
       ],
       "ailment": {
-        "toxicity": "safe",
         "effects": [ ]
       }
     }

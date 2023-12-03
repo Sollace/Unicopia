@@ -3,9 +3,7 @@
   "foraging_multiplier": 0.7,
   "multipliers": [
     {
-      "tags": [
-        "unicopia:food_types/raw_sea_vegitable"
-      ],
+      "tags": [ "unicopia:food_types/raw_sea_vegitable" ],
       "hunger": 1,
       "saturation": 1
     },
@@ -19,7 +17,6 @@
     }
   ],
   "default_effects": {
-    "toxicity": "fair",
     "effects": [
       {
         "effect": "unicopia:food_poisoning",
@@ -30,30 +27,27 @@
   },
   "effects": [
     {
-      "tag": "unicopia:food_types/cooked_fish",
+      "tags": [ "unicopia:food_types/cooked_fish" ],
       "ailment": {
-        "toxicity": "safe",
         "effects": [ ]
       }
     },
     {
-      "tag": "unicopia:food_types/raw_fish",
+      "tags": [ "unicopia:food_types/raw_fish" ],
       "ailment": {
-        "toxicity": "safe",
         "effects": [ ]
       }
     },
     {
       "tags": [
         "unicopia:food_types/forage_edible",
-        "unicopia:food_types/forage_edible_filling",
+        "unicopia:food_types/forage_edible_filling"
       ],
       "food_component": {
         "hunger": 18,
         "saturation": 9
       },
       "ailment": {
-        "toxicity": "fair",
         "effects": [
           {
             "effect": "unicopia:food_poisoning",
@@ -64,46 +58,42 @@
       }
     },
     {
-      "tag": "unicopia:food_types/raw_sea_vegitable",
+      "tags": [ "unicopia:food_types/raw_sea_vegitable" ],
       "food_component": {
         "hunger": 2,
         "saturation": 1
       },
       "ailment": {
-        "toxicity": "safe",
         "effects": [ ]
       }
     },
     {
-      "tag": "unicopia:food_types/cooked_sea_vegitable",
+      "tags": [ "unicopia:food_types/cooked_sea_vegitable" ],
       "food_component": {
         "hunger": 6,
         "saturation": 2
       },
       "ailment": {
-        "toxicity": "safe",
         "effects": [ ]
       }
     },
     {
-      "tag": "unicopia:food_types/shells",
+      "tags": [ "unicopia:food_types/shells" ],
       "food_component": {
         "hunger": 3,
         "saturation": 5
       },
       "ailment": {
-        "toxicity": "safe",
         "effects": [ ]
       }
     },
     {
-      "tag": "unicopia:food_types/shelly",
+      "tags": [ "unicopia:food_types/shelly" ],
       "food_component": {
         "hunger": 6,
         "saturation": 7
       },
       "ailment": {
-        "toxicity": "safe",
         "effects": [ ]
       }
     }

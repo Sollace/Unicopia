@@ -5,8 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.item.toxin.ToxicHolder;
-
+import com.minelittlepony.unicopia.diet.DietView;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -20,7 +19,7 @@ abstract class MixinItemStack {
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void onUse(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> info) {
         ItemStack self = (ItemStack)(Object)this;
-        TypedActionResult<ItemStack> result = ((ToxicHolder)self.getItem()).getToxic(self, user).startUsing(self, world, user, hand);
+        TypedActionResult<ItemStack> result = ((DietView.Holder)self.getItem()).getDiets(self).startUsing(self, world, user, hand);
         if (result.getResult() != ActionResult.PASS) {
             info.setReturnValue(result);
         }
@@ -29,6 +28,6 @@ abstract class MixinItemStack {
     @Inject(method = "finishUsing", at = @At("HEAD"))
     private void onFinishUsing(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> info) {
         ItemStack self = (ItemStack)(Object)this;
-        ((ToxicHolder)self.getItem()).getToxic(self, user).finishUsing(self, world, user);
+        ((DietView.Holder)self.getItem()).getDiets(self).finishUsing(self, world, user);
     }
 }

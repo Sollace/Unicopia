@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.diet;
+package com.minelittlepony.unicopia.diet.affliction;
 
 import java.util.List;
 
@@ -30,6 +30,11 @@ class CompoundAffliction implements Affliction {
     @Override
     public AfflictionType<?> getType() {
         return AfflictionType.MANY;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return afflictions.isEmpty();
     }
 
     @Override

@@ -3,16 +3,12 @@
   "foraging_multiplier": 0.9,
   "multipliers": [
     {
-      "tags": [
-        "unicopia:food_types/cooked_meat"
-       ],
+      "tags": [ "unicopia:food_types/cooked_meat" ],
       "hunger": 1.5,
       "saturation": 1.5
     },
     {
-      "tags": [
-        "unicopia:food_types/raw_meat"
-      ],
+      "tags": [ "unicopia:food_types/raw_meat" ],
       "hunger": 0.5,
       "saturation": 0.6
     },
@@ -35,9 +31,7 @@
       "saturation": 0
     },
     {
-      "tags": [
-        "unicopia:food_types/pinecone"
-      ],
+      "tags": [ "unicopia:food_types/pinecone" ],
       "hunger": 0.9,
       "saturation": 0.9
     }
@@ -60,7 +54,6 @@
         "saturation": 1
       },
       "ailment": {
-        "toxicity": "safe",
         "effects": [ ]
       }
     }

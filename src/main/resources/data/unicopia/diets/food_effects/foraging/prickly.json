@@ -1,11 +1,10 @@
 {
-  "tag": "unicopia:food_types/forage_prickly",
+  "tags": [ "unicopia:food_types/forage_prickly" ],
   "food_component": {
     "hunger": 2,
     "saturation": 1
   },
   "ailment": {
-    "toxicity": "safe",
     "effects": [
       {
         "effect": "minecraft:instant_damage",

@@ -1,11 +1,10 @@
 {
-  "tag": "unicopia:food_types/forage_moderate",
+  "tags": [ "unicopia:food_types/forage_moderate" ],
   "food_component": {
     "hunger": 2,
     "saturation": 1
   },
   "ailment": {
-    "toxicity": "mild",
     "effects": [
       {
         "effect": "unicopia:food_poisoning",

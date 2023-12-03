@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.diet;
+package com.minelittlepony.unicopia.diet.affliction;
 
 import java.util.List;
 
@@ -9,18 +9,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.dynamic.Codecs;
 
 public interface Affliction {
-    Text NO_EFFECT_TEXT = Text.of("No Effect");
     Affliction EMPTY = new Affliction() {
         @Override
         public void afflict(PlayerEntity player, ItemStack stack) { }
-
-        @Override
-        public Text getName() {
-            return NO_EFFECT_TEXT;
-        }
 
         @Override
         public AfflictionType<?> getType() {
@@ -30,11 +25,9 @@ public interface Affliction {
         @Override
         public void toBuffer(PacketByteBuf buffer) { }
     };
-    Codec<Affliction> CODEC = Codecs.xor(Codec.list(AfflictionType.CODEC)
-            .mapResult(null)
-            .xmap(
+    Codec<Affliction> CODEC = Codecs.xor(AfflictionType.CODEC, Codec.list(AfflictionType.CODEC).xmap(
             afflictions -> {
-                afflictions.removeIf(f -> f.getType() == AfflictionType.EMPTY);
+                afflictions = afflictions.stream().filter(f -> !f.isEmpty()).toList();
                 return switch (afflictions.size()) {
                     case 0 -> EMPTY;
                     case 1 -> afflictions.get(0);
@@ -42,18 +35,24 @@ public interface Affliction {
                 };
             },
             affliction -> ((CompoundAffliction)affliction).afflictions
-    ), AfflictionType.CODEC).xmap(
+    )).xmap(
             either -> either.left().or(either::right).get(),
             affliction -> affliction instanceof CompoundAffliction ? Either.left(affliction) : Either.right(affliction)
     );
 
     void afflict(PlayerEntity player, ItemStack stack);
 
-    default void appendTooltip(List<Text> tooltip) {
-        tooltip.add(getName());
+    default boolean isEmpty() {
+        return getType() == AfflictionType.EMPTY;
     }
 
-    Text getName();
+    default void appendTooltip(List<Text> tooltip) {
+        tooltip.add(Text.literal(" ").append(getName()).formatted(Formatting.DARK_GRAY));
+    }
+
+    default Text getName() {
+        return Text.translatable(getType().getTranslationKey());
+    }
 
     AfflictionType<?> getType();
 

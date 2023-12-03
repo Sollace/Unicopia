@@ -19,9 +19,7 @@
       "saturation": 0.6
     },
     {
-      "tags": [
-        "unicopia:food_types/rotten_meat"
-      ],
+      "tags": [ "unicopia:food_types/rotten_meat" ],
       "hunger": 0.3,
       "saturation": 0.3
     },
@@ -35,29 +33,25 @@
       "saturation": 0
     },
     {
-      "tags": [
-        "unicopia:food_types/pinecone"
-      ],
+      "tags": [ "unicopia:food_types/pinecone" ],
       "hunger": 1,
       "saturation": 1
     }
   ],
   "effects": [
     {
-      "tag": "unicopia:food_types/cooked_fish",
+      "tags": [ "unicopia:food_types/cooked_fish" ],
       "food_component": {
         "hunger": 2,
         "saturation": 1
       },
       "ailment": {
-        "toxicity": "safe",
         "effects": [ ]
       }
     },
     {
-      "tag": "unicopia:food_types/raw_fish",
+      "tags": [ "unicopia:food_types/raw_fish" ],
       "ailment": {
-        "toxicity": "safe",
         "effects": [ ]
       }
     },
@@ -71,14 +65,12 @@
         "saturation": 1
       },
       "ailment": {
-        "toxicity": "safe",
         "effects": [ ]
       }
     },
     {
-      "tag": "unicopia:food_types/pinecone",
+      "tags": [ "unicopia:food_types/pinecone" ],
       "ailment": {
-        "toxicity": "safe",
         "effects": [
           {
             "type": "unicopia:healing",

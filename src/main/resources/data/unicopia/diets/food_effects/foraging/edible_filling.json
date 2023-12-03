@@ -1,11 +1,10 @@
 {
-  "tag": "unicopia:food_types/forage_edible_filling",
+  "tags": [ "unicopia:food_types/forage_edible_filling" ],
   "food_component": {
     "hunger": 18,
     "saturation": 9
   },
   "ailment": {
-    "toxicity": "safe",
     "effects": []
   }
 }

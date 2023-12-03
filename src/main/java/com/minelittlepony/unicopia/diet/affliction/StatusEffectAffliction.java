@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.diet;
+package com.minelittlepony.unicopia.diet.affliction;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.math.MathHelper;
 
-public record StatusEffectAffliction(Identifier effect, Range seconds, Range amplifier, int chance) implements Affliction {
+record StatusEffectAffliction(Identifier effect, Range seconds, Range amplifier, int chance) implements Affliction {
     public static final Codec<StatusEffectAffliction> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Identifier.CODEC.fieldOf("effect").forGetter(StatusEffectAffliction::effect),
             Range.CODEC.fieldOf("seconds").forGetter(StatusEffectAffliction::seconds),
@@ -27,6 +27,7 @@ public record StatusEffectAffliction(Identifier effect, Range seconds, Range amp
         this(buffer.readIdentifier(), Range.of(buffer), Range.of(buffer), buffer.readInt());
     }
 
+    @Override
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeIdentifier(effect);
         seconds.toBuffer(buffer);
@@ -48,8 +49,8 @@ public record StatusEffectAffliction(Identifier effect, Range seconds, Range amp
             float health = player.getHealth();
             StatusEffectInstance current = player.getStatusEffect(effect);
             player.addStatusEffect(new StatusEffectInstance(effect,
-                    seconds.getTicks(current == null ? 0 : current.getDuration()),
-                    amplifier.getTicks(current == null ? 0 : current.getAmplifier())
+                    seconds.getClamped(current == null ? 0 : current.getDuration(), 20),
+                    amplifier.getClamped(current == null ? 0 : current.getAmplifier(), 1)
             ));
             // keep original health
             if (effect.getAttributeModifiers().containsKey(EntityAttributes.GENERIC_MAX_HEALTH)) {
@@ -64,7 +65,7 @@ public record StatusEffectAffliction(Identifier effect, Range seconds, Range amp
             MutableText text = effect.getName().copy();
 
             if (amplifier.min() > 0) {
-                text = Text.translatable("potion.withAmplifier", text, Text.translatable("potion.potency." + (amplifier.min() * 20)));
+                text = Text.translatable("potion.withAmplifier", text, Text.translatable("potion.potency." + (amplifier.min())));
             }
 
             text = Text.translatable("potion.withDuration", text, StringHelper.formatTicks(seconds.min() * 20));
@@ -73,6 +74,6 @@ public record StatusEffectAffliction(Identifier effect, Range seconds, Range amp
                 text = Text.translatable("potion.withChance", chance, text);
             }
             return (Text)text;
-        }).orElse(Text.of("No Effect"));
+        }).orElse(EMPTY.getName());
     }
 }

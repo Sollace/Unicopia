@@ -1,7 +1,10 @@
 {
-  "tag": "unicopia:food_types/cooked_insect",
+  "tags": [  "unicopia:food_types/cooked_insect" ],
+  "food_component": {
+    "hunger": 1,
+    "saturation": 0.1
+  },
   "ailment": {
-    "toxicity": "severe",
     "effects": [
       {
         "effect": "unicopia:food_poisoning",

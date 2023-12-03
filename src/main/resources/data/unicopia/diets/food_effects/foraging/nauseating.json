@@ -1,11 +1,10 @@
 {
-  "tag": "unicopia:food_types/forage_nauseating",
+  "tags": [ "unicopia:food_types/forage_nauseating" ],
   "food_component": {
     "hunger": 2,
     "saturation": 1
   },
   "ailment": {
-    "toxicity": "severe",
     "effects": [
       {
         "effect": "minecraft:weakness",
