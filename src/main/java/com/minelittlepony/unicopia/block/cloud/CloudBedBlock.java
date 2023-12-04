@@ -19,7 +19,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class CloudBedBlock extends FancyBedBlock {
+public class CloudBedBlock extends FancyBedBlock implements CloudLike {
     private final BlockState baseState;
     private final CloudBlock baseBlock;
 

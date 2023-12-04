@@ -3,6 +3,7 @@
   "values": [
     "unicopia:cloud_slab",
     "unicopia:dense_cloud_slab",
+    "unicopia:etched_cloud_slab"
     "unicopia:cloud_plank_slab"
   ]
 }

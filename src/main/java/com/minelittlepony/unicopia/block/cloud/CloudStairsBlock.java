@@ -16,7 +16,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class CloudStairsBlock extends StairsBlock {
+public class CloudStairsBlock extends StairsBlock implements CloudLike {
 
     private final CloudBlock baseBlock;
 

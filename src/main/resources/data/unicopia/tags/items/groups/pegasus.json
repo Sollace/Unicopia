@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "unicopia:shaping_bench",
+    "unicopia:cloud_chest",
     "unicopia:cloud_lump",
     "unicopia:cloud",
     "unicopia:cloud_slab",
@@ -15,6 +16,9 @@
     "unicopia:dense_cloud",
     "unicopia:dense_cloud_slab",
     "unicopia:dense_cloud_stairs",
+    "unicopia:etched_cloud",
+    "unicopia:etched_cloud_slab",
+    "unicopia:etched_cloud_stairs",
     "unicopia:unstable_cloud",
     "unicopia:cloud_pillar",
     "unicopia:cloud_bed",

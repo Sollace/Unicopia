@@ -1,0 +1,6 @@
+{
+  "type": "unicopia:cloud_shaping",
+  "ingredient": { "item": "unicopia:etched_cloud" },
+  "result": "unicopia:etched_cloud_stairs",
+  "count": 1
+}

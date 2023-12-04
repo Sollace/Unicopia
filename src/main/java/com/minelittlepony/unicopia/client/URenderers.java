@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.*;
+import com.minelittlepony.unicopia.block.cloud.CloudChestBlock;
 import com.minelittlepony.unicopia.client.particle.ChangelingMagicParticle;
 import com.minelittlepony.unicopia.client.particle.CloudsEscapingParticle;
 import com.minelittlepony.unicopia.client.particle.DiskParticle;
@@ -59,6 +60,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
 
 public interface URenderers {
+    BlockEntity CHEST_RENDER_ENTITY = new CloudChestBlock.TileData(BlockPos.ORIGIN, UBlocks.CLOUD_CHEST.getDefaultState());
+
     static void bootstrap() {
         ParticleFactoryRegistry.getInstance().register(UParticles.UNICORN_MAGIC, createFactory(MagicParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.CHANGELING_MAGIC, createFactory(ChangelingMagicParticle::new));
@@ -97,9 +100,11 @@ public interface URenderers {
 
         BlockEntityRendererFactories.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(UBlockEntities.FANCY_BED, CloudBedBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(UBlockEntities.CLOUD_CHEST, CloudChestBlockEntityRenderer::new);
 
         register(URenderers::renderJarItem, UItems.FILLED_JAR);
         register(URenderers::renderBedItem, UItems.CLOTH_BED, UItems.CLOUD_BED);
+        register(URenderers::renderChestItem, UBlocks.CLOUD_CHEST.asItem());
         PolearmRenderer.register(UItems.WOODEN_POLEARM, UItems.STONE_POLEARM, UItems.IRON_POLEARM, UItems.GOLDEN_POLEARM, UItems.DIAMOND_POLEARM, UItems.NETHERITE_POLEARM);
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity, seed) -> EnchantableItem.isEnchanted(stack) ? EnchantableItem.getSpellKey(stack).getAffinity().getAlignment() : 0);
         ModelPredicateProviderRegistry.register(UItems.ROCK_CANDY, new Identifier("count"), (stack, world, entity, seed) -> stack.getCount() / (float)stack.getMaxCount());
@@ -131,6 +136,10 @@ public interface URenderers {
         BlockEntity entity = ((Supplier<BlockEntity>)stack.getItem()).get();
         ((FancyBedBlock.Tile)entity).setPattern(FancyBedItem.getPattern(stack));
         MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(entity, matrices, vertices, light, overlay);
+    }
+
+    private static void renderChestItem(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        MinecraftClient.getInstance().getBlockEntityRenderDispatcher().renderEntity(CHEST_RENDER_ENTITY, matrices, vertices, light, overlay);
     }
 
     private static void renderJarItem(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
