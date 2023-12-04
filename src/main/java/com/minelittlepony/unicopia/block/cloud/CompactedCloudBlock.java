@@ -48,7 +48,7 @@ public class CompactedCloudBlock extends CloudBlock {
     private final BlockState baseState;
 
     public CompactedCloudBlock(BlockState baseState) {
-        super(Settings.copy(baseState.getBlock()), true);
+        super(Settings.copy(baseState.getBlock()).dropsLike(baseState.getBlock()), true);
         this.baseState = baseState;
         PROPERTIES.forEach(property -> {
             setDefaultState(getDefaultState().with(property, true));

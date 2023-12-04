@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.block.cloud.PoreousCloudStairsBlock;
 import com.minelittlepony.unicopia.block.cloud.ShapingBenchBlock;
 import com.minelittlepony.unicopia.block.cloud.CloudBedBlock;
 import com.minelittlepony.unicopia.block.cloud.CloudChestBlock;
+import com.minelittlepony.unicopia.block.cloud.CloudDoorBlock;
 import com.minelittlepony.unicopia.block.cloud.CloudLike;
 import com.minelittlepony.unicopia.block.cloud.SoggyCloudBlock;
 import com.minelittlepony.unicopia.block.cloud.SoggyCloudSlabBlock;
@@ -199,6 +200,11 @@ public interface UBlocks {
     Block CLAM_SHELL = register("clam_shell", new ShellsBlock(Settings.create().mapColor(MapColor.DULL_PINK).breakInstantly().nonOpaque()));
     Block SCALLOP_SHELL = register("scallop_shell", new ShellsBlock(Settings.create().mapColor(MapColor.DULL_PINK).breakInstantly().nonOpaque()));
     Block TURRET_SHELL = register("turret_shell", new ShellsBlock(Settings.create().mapColor(MapColor.DULL_PINK).breakInstantly().nonOpaque()));
+
+    Block STABLE_DOOR = register("stable_door", new StableDoorBlock(Settings.copy(Blocks.OAK_DOOR), BlockSetType.OAK), ItemGroups.FUNCTIONAL);
+    Block DARK_OAK_DOOR = register("dark_oak_stable_door", new StableDoorBlock(Settings.copy(Blocks.OAK_DOOR), BlockSetType.OAK), ItemGroups.FUNCTIONAL);
+    Block CRYSTAL_DOOR = register("crystal_door", new CrystalDoorBlock(Settings.copy(Blocks.IRON_DOOR), UWoodTypes.CRYSTAL), ItemGroups.FUNCTIONAL);
+    Block CLOUD_DOOR = register("cloud_door", new CloudDoorBlock(Settings.copy(CLOUD), CLOUD.getDefaultState(), UWoodTypes.CLOUD), ItemGroups.FUNCTIONAL);
 
     private static <T extends Block> T register(String name, T item) {
         return register(Unicopia.id(name), item);

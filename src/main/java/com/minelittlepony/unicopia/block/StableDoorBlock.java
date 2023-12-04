@@ -11,8 +11,8 @@ import net.minecraft.world.WorldAccess;
 
 public class StableDoorBlock extends DoorBlock {
 
-    public StableDoorBlock(Settings settings) {
-        super(settings, BlockSetType.OAK);
+    public StableDoorBlock(Settings settings, BlockSetType blockSet) {
+        super(settings, blockSet);
     }
 
     @Override
@@ -21,6 +21,12 @@ public class StableDoorBlock extends DoorBlock {
 
         if (direction.getAxis() == Direction.Axis.Y && half == DoubleBlockHalf.LOWER == (direction == Direction.UP)) {
             if (neighborState.isOf(this) && neighborState.get(HALF) != half) {
+                state = state
+                        .with(FACING, neighborState.get(FACING))
+                        .with(HINGE, neighborState.get(HINGE));
+                if (half ==  DoubleBlockHalf.UPPER && direction == Direction.DOWN && !state.get(POWERED)) {
+                    state = state.with(OPEN, neighborState.get(OPEN));
+                }
                 return state;
             }
 
