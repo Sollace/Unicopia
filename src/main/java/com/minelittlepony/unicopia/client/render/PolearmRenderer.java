@@ -7,8 +7,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.ClampedModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.*;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.model.TridentEntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -26,7 +26,7 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
     private static final PolearmRenderer INSTANCE = new PolearmRenderer();
     private static final Identifier THROWING = new Identifier("throwing");
 
-    private final TridentEntityModel model = new TridentEntityModel(getTexturedModelData().createModel());
+    private final ModelPart model = getTexturedModelData().createModel();
 
     public static void register(Item...items) {
         for (Item item : items) {
@@ -89,7 +89,7 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
             }
             Identifier id = Registries.ITEM.getId(stack.getItem());
             Identifier texture = new Identifier(id.getNamespace(), "textures/entity/polearm/" + id.getPath() + ".png");
-            model.render(matrices, ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, model.getLayer(texture), false, stack.hasGlint()), light, overlay, 1, 1, 1, 1);
+            model.render(matrices, ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, RenderLayer.getEntitySolid(texture), false, stack.hasGlint()), light, overlay, 1, 1, 1, 1);
             matrices.pop();
         }
     }
