@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.block.state.StatePredicate;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -163,16 +164,19 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
         Vec3d dest = destination.vec().add(offset);
 
-        participant.teleport(
-                dest.x,
-                getTargetYPosition(participant.getEntityWorld(), BlockPos.ofFloored(dest), ShapeContext.of(participant)),
-                dest.z
-        );
+        dest = new Vec3d(dest.x, getTargetYPosition(participant.getEntityWorld(), BlockPos.ofFloored(dest), ShapeContext.of(participant)), dest.z);
+
+        participant.teleport(dest.x, dest.y, dest.z);
         teleporter.subtractEnergyCost(distance);
 
         participant.fallDistance /= distance;
 
-        participant.getWorld().playSound(null, destination.pos(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
+        BlockPos blockPos = BlockPos.ofFloored(dest);
+
+        participant.getWorld().playSound(null, blockPos, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
+        if (!participant.getEntityWorld().isInBuildLimit(blockPos)) {
+            UCriteria.TELEPORT_ABOVE_WORLD.trigger(teleporter.asEntity());
+        }
 
         return true;
     }

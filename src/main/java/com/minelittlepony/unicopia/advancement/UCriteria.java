@@ -27,6 +27,7 @@ public interface UCriteria {
     CustomEventCriterion.Trigger POWER_UP_HEART = CUSTOM_EVENT.createTrigger("power_up_heart");
     CustomEventCriterion.Trigger SPLIT_SEA = CUSTOM_EVENT.createTrigger("split_sea");
     CustomEventCriterion.Trigger RIDE_BALLOON = CUSTOM_EVENT.createTrigger("ride_balloon");
+    CustomEventCriterion.Trigger TELEPORT_ABOVE_WORLD = CUSTOM_EVENT.createTrigger("teleport_above_world");
 
     static void bootstrap() { }
 }
