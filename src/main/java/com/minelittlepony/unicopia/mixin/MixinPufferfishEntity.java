@@ -16,7 +16,7 @@ import net.minecraft.entity.passive.PufferfishEntity;
 abstract class MixinPufferfishEntity extends FishEntity {
     MixinPufferfishEntity() { super(null, null); }
 
-    @Inject(method = "method_6591(Lnet/minecraft/class_1309;)Z", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "method_6591(Lnet/minecraft/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
     private static void onShouldTarget(LivingEntity entity, CallbackInfoReturnable<Boolean> info) {
         Pony.of(entity).filter(pony -> pony.getCompositeRace().includes(Race.SEAPONY)).ifPresent(pony -> {
             info.setReturnValue(false);
