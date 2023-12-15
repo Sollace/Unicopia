@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -50,9 +51,13 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
 
         player.getEntityWorld().playSound(null, player.getBlockPos(), USounds.ENTITY_PLAYER_CHANGELING_TRANSFORM, SoundCategory.PLAYERS, 1.4F, 0.4F);
 
-        iplayer.getSpellSlot().get(SpellType.CHANGELING_DISGUISE, true)
-            .orElseGet(() -> SpellType.CHANGELING_DISGUISE.withTraits().apply(iplayer, CastingMethod.INNATE))
-            .setDisguise(looked);
+        Disguise currentDisguise = iplayer.getSpellSlot().get(SpellType.CHANGELING_DISGUISE, true)
+            .orElseGet(() -> SpellType.CHANGELING_DISGUISE.withTraits().apply(iplayer, CastingMethod.INNATE));
+
+        if (currentDisguise.isOf(looked)) {
+            looked = null;
+        }
+        currentDisguise.setDisguise(looked);
 
         if (!player.isCreative()) {
             iplayer.getMagicalReserves().getMana().multiply(0.1F);
@@ -65,7 +70,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
 
     @Override
     public void warmUp(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().getEnergy().add(20);
+        player.getMagicalReserves().getEnergy().add(2F);
         player.spawnParticles(UParticles.CHANGELING_MAGIC, 5);
     }
 

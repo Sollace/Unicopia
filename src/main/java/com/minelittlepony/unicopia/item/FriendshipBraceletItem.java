@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
+import com.minelittlepony.unicopia.entity.AmuletSelectors;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.fabricmc.api.EnvType;
@@ -37,7 +38,7 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        if (!isSigned(stack) && EquinePredicates.PLAYER_UNICORN.test(player)) {
+        if (!isSigned(stack) && (EquinePredicates.PLAYER_UNICORN.test(player) || AmuletSelectors.PEARL_NECKLACE.test(player))) {
             player.setCurrentHand(hand);
 
             ItemStack result = stack.copy();

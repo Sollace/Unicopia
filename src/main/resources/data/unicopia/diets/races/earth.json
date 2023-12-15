@@ -1,0 +1,74 @@
+{
+  "default_multiplier": 1,
+  "foraging_multiplier": 1,
+  "multipliers": [
+    {
+      "tags": [
+        "unicopia:food_types/candy",
+        "unicopia:food_types/desserts",
+        "unicopia:food_types/rocks"
+      ],
+      "hunger": 2.5,
+      "saturation": 1.7
+    },
+    {
+      "tags": [ "unicopia:food_types/cooked_fish" ],
+      "hunger": 0.2,
+      "saturation": 0.2
+    },
+    {
+      "tags": [
+        "unicopia:food_types/cooked_insect",
+        "unicopia:food_types/cooked_meat"
+      ],
+      "hunger": 0.1,
+      "saturation": 0.1
+    },
+    {
+      "tags": [
+        "unicopia:food_types/love",
+        "unicopia:food_types/raw_fish",
+        "unicopia:food_types/raw_insect",
+        "unicopia:food_types/raw_meat",
+        "unicopia:food_types/rotten_meat"
+      ],
+      "hunger": 0,
+      "saturation": 0
+    },
+    {
+      "tags": [ "unicopia:food_types/pinecone" ],
+      "hunger": 1,
+      "saturation": 1
+    }
+  ],
+  "effects": [
+    {
+      "tags": [
+        "unicopia:food_types/candy",
+        "unicopia:food_types/rocks"
+      ],
+      "food_component": {
+        "hunger": 5,
+        "saturation": 12,
+        "fastFood": true
+      },
+      "ailment": {
+        "effects": [ ]
+      }
+    },
+    {
+      "tags": [
+        "unicopia:food_types/desserts"
+      ],
+      "food_component": {
+        "hunger": 12,
+        "saturation": 32,
+        "eatenQuickly": true,
+        "fastFood": true
+      },
+      "ailment": {
+        "effects": [ ]
+      }
+    }
+  ]
+}

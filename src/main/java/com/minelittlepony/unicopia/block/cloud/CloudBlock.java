@@ -26,11 +26,7 @@ import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
-public class CloudBlock extends Block {
-    public static boolean isCloudBlock(Block block) {
-        return block instanceof CloudBlock || block instanceof CloudStairsBlock || block instanceof CloudBedBlock;
-    }
-
+public class CloudBlock extends Block implements CloudLike {
     protected final boolean meltable;
 
     public CloudBlock(Settings settings, boolean meltable) {
@@ -59,7 +55,7 @@ public class CloudBlock extends Block {
         entity.handleFallDamage(fallDistance, 0, world.getDamageSources().fall());
         generateSurfaceParticles(world, state, pos, ShapeContext.absent(), 9);
 
-        if (fallDistance > 7) {
+        if (!world.isClient && fallDistance > 7) {
             world.breakBlock(pos, true);
         }
     }

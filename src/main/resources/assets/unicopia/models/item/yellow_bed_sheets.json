@@ -1,0 +1,6 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "unicopia:item/yellow_bed_sheets"
+    }
+}

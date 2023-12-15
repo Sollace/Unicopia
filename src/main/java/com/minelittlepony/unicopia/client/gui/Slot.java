@@ -93,8 +93,9 @@ class Slot {
 
         AbilityDispatcher.Stat stat = abilities.getStat(bSwap ? bSlot : aSlot);
 
+        int iconPosition = ((size - iconSize + slotPadding + 1) / 2);
         int sz = iconSize - slotPadding;
-        uHud.renderAbilityIcon(context, stat, slotPadding, slotPadding, sz, sz, sz, sz);
+        uHud.renderAbilityIcon(context, stat, iconPosition, iconPosition, sz, sz, sz, sz);
 
         float cooldown = stat.getFillProgress();
 

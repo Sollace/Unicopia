@@ -7,12 +7,26 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "unicopia:dense_cloud",
+          "name": "unicopia:cloud_lump",
           "functions": [
             {
               "add": false,
-              "count": 3,
+              "count": 4,
               "function": "minecraft:set_count"
+            },
+            {
+              "add": false,
+              "count": 8,
+              "function": "minecraft:set_count",
+              "conditions": [
+                {
+                  "block": "unicopia:dense_cloud_slab",
+                  "condition": "minecraft:block_state_property",
+                  "properties": {
+                    "type": "double"
+                  }
+                }
+              ]
             }
           ]
         }

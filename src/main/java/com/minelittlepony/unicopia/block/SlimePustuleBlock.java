@@ -1,6 +1,9 @@
 package com.minelittlepony.unicopia.block;
 
+import java.util.Arrays;
 import java.util.Locale;
+
+import org.joml.Vector3f;
 
 import com.minelittlepony.unicopia.USounds;
 
@@ -14,11 +17,14 @@ import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.BlockStateParticleEffect;
+import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -34,24 +40,29 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SlimePustuleBlock extends Block {
-    static final EnumProperty<Shape> SHAPE = EnumProperty.of("shape", Shape.class);
-    static final VoxelShape SHAFT_SHAPE = Block.createCuboidShape(7.5, 0, 7.5, 8.5, 16, 8.5);
-    static final VoxelShape DRIP_SHAPE = VoxelShapes.union(
+    private static final EnumProperty<Shape> SHAPE = EnumProperty.of("shape", Shape.class);
+    private static final BooleanProperty POWERED = Properties.POWERED;
+    private static final Direction[] DIRECTIONS = Arrays.stream(Direction.values())
+            .filter(direction -> direction != Direction.UP)
+            .toArray(Direction[]::new);
+    private static final VoxelShape SHAFT_SHAPE = Block.createCuboidShape(7.5, 0, 7.5, 8.5, 16, 8.5);
+    private static final VoxelShape DRIP_SHAPE = VoxelShapes.union(
             Block.createCuboidShape(7, 10, 7, 9, 16, 9),
             Block.createCuboidShape(3, 15, 4, 9, 16, 10),
             Block.createCuboidShape(7, 15, 7, 12, 16, 12)
     );
-    static final VoxelShape BULB_SHAPE = VoxelShapes.union(
+    private static final VoxelShape BULB_SHAPE = VoxelShapes.union(
             Block.createCuboidShape(4, 1, 4, 12, 10, 12),
             Block.createCuboidShape(5, 10, 5, 11, 13, 11),
             Block.createCuboidShape(6, 13, 6, 10, 15, 10),
             Block.createCuboidShape(7, 13, 7, 9, 20, 9)
     );
-    static final VoxelShape CAP_SHAPE = VoxelShapes.union(SHAFT_SHAPE, DRIP_SHAPE);
+    private static final VoxelShape CAP_SHAPE = VoxelShapes.union(SHAFT_SHAPE, DRIP_SHAPE);
+    private static final Vector3f DUST_COLOR = new Vector3f(1, 0.2F, 0.1F);
 
     public SlimePustuleBlock(Settings settings) {
         super(settings.ticksRandomly());
-        setDefaultState(getDefaultState().with(SHAPE, Shape.DRIP));
+        setDefaultState(getDefaultState().with(SHAPE, Shape.DRIP).with(POWERED, false));
     }
 
     @Override
@@ -68,6 +79,17 @@ public class SlimePustuleBlock extends Block {
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         super.randomDisplayTick(state, world, pos, random);
 
+        if (state.get(POWERED)) {
+
+            VoxelShape shape = state.getCullingShape(world, pos);
+            float x = (float)MathHelper.lerp(random.nextFloat(), shape.getMin(Axis.X), shape.getMax(Axis.X));
+            float z = (float)MathHelper.lerp(random.nextFloat(), shape.getMin(Axis.Z), shape.getMax(Axis.Z));
+            world.addParticle(new DustParticleEffect(DUST_COLOR, 1),
+                    pos.getX() + x,
+                    pos.getY() + random.nextDouble(),
+                    pos.getZ() + z, 0, 0, 0);
+        }
+
         if (random.nextInt(15) == 0) {
             VoxelShape shape = state.getCullingShape(world, pos);
             float x = (float)MathHelper.lerp(random.nextFloat(), shape.getMin(Axis.X), shape.getMax(Axis.X));
@@ -82,7 +104,7 @@ public class SlimePustuleBlock extends Block {
     @Deprecated
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (state.get(SHAPE) == Shape.POD) {
+        if (state.get(SHAPE) == Shape.POD && random.nextInt(130) == 0) {
             SlimeEntity slime = EntityType.SLIME.create(world);
             slime.setSize(1, true);
             slime.setPosition(pos.toCenterPos());
@@ -132,7 +154,7 @@ public class SlimePustuleBlock extends Block {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(SHAPE);
+        builder.add(SHAPE, POWERED);
     }
 
     @Deprecated
@@ -154,20 +176,66 @@ public class SlimePustuleBlock extends Block {
             Shape currentShape = state.get(SHAPE);
 
             if (direction == Direction.DOWN && (currentShape == Shape.CAP || currentShape == Shape.STRING)) {
-                return state;
+                return state.with(POWERED, getReceivedRedstonePower(world, pos) > 0);
             }
 
             Shape shape = determineShape(world, pos);
-            return state.with(SHAPE, shape);
+            return state.with(SHAPE, shape).with(POWERED, getReceivedRedstonePower(world, pos) > 0);
         }
 
-        return state;
+        return state.with(POWERED, getReceivedRedstonePower(world, pos) > 0);
     }
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         Shape shape = determineShape(ctx.getWorld(), ctx.getBlockPos());
-        return super.getPlacementState(ctx).with(SHAPE, shape == Shape.STRING ? Shape.POD : shape);
+        return super.getPlacementState(ctx)
+                .with(SHAPE, shape == Shape.STRING ? Shape.POD : shape)
+                .with(POWERED, getReceivedRedstonePower(ctx.getWorld(), ctx.getBlockPos()) > 0);
+    }
+
+    @Override
+    @Deprecated
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        super.onStateReplaced(state, world, pos, newState, moved);
+        if (state.isOf(this) && newState.isOf(this) && state.get(POWERED) != newState.get(POWERED)) {
+            world.updateNeighbor(pos.up(), this, pos);
+        }
+    }
+
+    @Override
+    @Deprecated
+    public boolean emitsRedstonePower(BlockState state) {
+        return state.get(POWERED);
+    }
+
+    @Override
+    @Deprecated
+    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+        if (direction == Direction.DOWN && emitsRedstonePower(state)) {
+            return 15;
+        }
+        return 0;
+    }
+
+    @Override
+    @Deprecated
+    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+        if (direction == Direction.DOWN && emitsRedstonePower(state)) {
+            return 15;
+        }
+        return 0;
+    }
+
+    private int getReceivedRedstonePower(BlockView world, BlockPos pos) {
+        int power = 0;
+        for (Direction direction : DIRECTIONS) {
+            power = Math.max(power, world.getBlockState(pos.offset(direction)).getStrongRedstonePower(world, pos, direction));
+            if (power >= 15) {
+                return Math.min(15, power);
+            }
+        }
+        return Math.min(15, power);
     }
 
     private Shape determineShape(WorldAccess world, BlockPos pos) {

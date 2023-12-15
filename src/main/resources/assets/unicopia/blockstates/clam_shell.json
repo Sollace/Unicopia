@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "count=1": { "model": "unicopia:block/clam_shell_1" },
+    "count=2": { "model": "unicopia:block/clam_shell_2" },
+    "count=3": { "model": "unicopia:block/clam_shell_3" },
+    "count=4": { "model": "unicopia:block/clam_shell_4" }
+  }
+}

@@ -18,6 +18,8 @@ public interface UPotions {
     Potion TRIBE_SWAP_PEGASUS = register("tribe_swap_pegasus", new Potion("unicopia.tribe_swap_pegasus", new StatusEffectInstance(RaceChangeStatusEffect.CHANGE_RACE_PEGASUS, RaceChangeStatusEffect.MAX_DURATION)));
     Potion TRIBE_SWAP_BAT = register("tribe_swap_bat", new Potion("unicopia.tribe_swap_bat", new StatusEffectInstance(RaceChangeStatusEffect.CHANGE_RACE_BAT, RaceChangeStatusEffect.MAX_DURATION)));
     Potion TRIBE_SWAP_CHANGELING = register("tribe_swap_changeling", new Potion("unicopia.tribe_swap_changeling", new StatusEffectInstance(RaceChangeStatusEffect.CHANGE_RACE_CHANGELING, RaceChangeStatusEffect.MAX_DURATION)));
+    Potion TRIBE_SWAP_KIRIN = register("tribe_swap_kirin", new Potion("unicopia.tribe_swap_kirin", new StatusEffectInstance(RaceChangeStatusEffect.CHANGE_RACE_KIRIN, RaceChangeStatusEffect.MAX_DURATION)));
+    Potion TRIBE_SWAP_HIPPOGRIFF = register("tribe_swap_hippogriff", new Potion("unicopia.tribe_swap_hippogriff", new StatusEffectInstance(RaceChangeStatusEffect.CHANGE_RACE_HIPPOGRIFF, RaceChangeStatusEffect.MAX_DURATION)));
 
     static Potion register(String name, Potion potion) {
         REGISTRY.add(potion);

@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "bed_sheets",
+  "pattern": [
+    "ROY",
+    "L B",
+    " PG"
+  ],
+  "key": {
+    "Y": {
+      "item": "minecraft:yellow_wool"
+    },
+    "O": {
+      "item": "minecraft:orange_wool"
+    },
+    "R": {
+      "item": "minecraft:red_wool"
+    },
+    "G": {
+      "item": "minecraft:green_wool"
+    },
+    "B": {
+      "item": "minecraft:blue_wool"
+    },
+    "P": {
+      "item": "minecraft:purple_wool"
+    },
+    "L": {
+      "item": "minecraft:light_blue_wool"
+    }
+  },
+  "result": {
+    "count": 1,
+    "item": "unicopia:rainbow_bed_sheets"
+  }
+}

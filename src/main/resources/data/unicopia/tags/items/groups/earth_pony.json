@@ -10,6 +10,8 @@
     "unicopia:stripped_zap_log",
     "unicopia:stripped_zap_wood",
     "unicopia:candied_apple",
+    "unicopia:stable_door",
+    "unicopia:dark_oak_stable_door",
     "minecraft:apple",
     "unicopia:green_apple",
     "unicopia:sweet_apple",
@@ -61,6 +63,8 @@
     "unicopia:apple_pie_slice",
     "unicopia:weather_vane",
     "#unicopia:baskets",
-    "unicopia:giant_balloon"
+    "unicopia:giant_balloon",
+    "unicopia:cloth_bed",
+    "#unicopia:bed_sheets"
   ]
 }

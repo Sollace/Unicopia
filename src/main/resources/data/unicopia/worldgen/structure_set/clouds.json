@@ -1,0 +1,22 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 54138171,
+    "separation": 2,
+    "spacing": 10
+  },
+  "structures": [
+    {
+      "structure": "unicopia:cloud_village",
+      "weight": 90
+    },
+    {
+      "structure": "unicopia:floating_island",
+      "weight": 1
+    },
+    {
+      "structure": "unicopia:cloud_continent",
+      "weight": 5
+    }
+  ]
+}

@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
+
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -67,7 +68,7 @@ public interface TrinketsDelegate {
     }
 
     default Set<Identifier> getAvailableTrinketSlots(LivingEntity entity, Set<Identifier> probedSlots) {
-        return probedSlots.stream().filter(slot -> getEquipped(entity, slot).count() == 0).collect(Collectors.toSet());
+        return probedSlots.stream().filter(slot -> getEquipped(entity, slot).anyMatch(ItemStack::isEmpty)).collect(Collectors.toSet());
     }
 
     default Stream<ItemStack> getEquipped(LivingEntity entity, Identifier slot) {

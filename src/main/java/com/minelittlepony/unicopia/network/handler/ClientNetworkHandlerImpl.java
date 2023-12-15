@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.minelittlepony.unicopia.client.gui.TribeSelectionScreen;
 import com.minelittlepony.unicopia.client.gui.spellbook.ClientChapters;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Chapter;
+import com.minelittlepony.unicopia.diet.PonyDiets;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.*;
@@ -98,6 +99,7 @@ public class ClientNetworkHandlerImpl {
         SpellTraits.load(packet.traits());
         ClientChapters.load((Map<Identifier, Chapter>)packet.chapters());
         TreeTypes.load(packet.treeTypes());
+        PonyDiets.load(packet.diets());
     }
 
     private void handlePlayerAnimation(PlayerEntity sender, MsgPlayerAnimationChange packet) {

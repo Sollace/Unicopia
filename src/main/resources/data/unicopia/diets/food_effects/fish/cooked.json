@@ -1,0 +1,16 @@
+{
+  "tags": [ "unicopia:food_types/cooked_fish" ],
+  "food_component": {
+    "hunger": 1,
+    "saturation": 0.1
+  },
+  "ailment": {
+    "effects": [
+      {
+        "effect": "unicopia:food_poisoning",
+        "seconds": 100,
+        "amplifier": 2
+      }
+    ]
+  }
+}

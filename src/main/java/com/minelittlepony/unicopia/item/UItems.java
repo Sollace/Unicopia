@@ -2,15 +2,16 @@ package com.minelittlepony.unicopia.item;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.minelittlepony.unicopia.*;
+import com.minelittlepony.unicopia.block.FancyBedBlock.SheetPattern;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.UWoodTypes;
+import com.minelittlepony.unicopia.block.cloud.CloudBedBlock;
 import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.cloud.CloudBedItem;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.item.group.UItemGroups;
-import com.minelittlepony.unicopia.item.toxin.UFoodComponents;
 import com.terraformersmc.terraform.boat.api.TerraformBoatType;
 import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
 import com.terraformersmc.terraform.boat.api.item.TerraformBoatItemHelper;
@@ -139,7 +140,8 @@ public interface UItems {
     Item DIAMOND_POLEARM = register("diamond_polearm", new PolearmItem(ToolMaterials.DIAMOND, 2, -3.6F, 5, new Item.Settings()), ItemGroups.COMBAT);
     Item NETHERITE_POLEARM = register("netherite_polearm", new PolearmItem(ToolMaterials.NETHERITE, 2, -3.6F, 5, new Item.Settings().fireproof()), ItemGroups.COMBAT);
 
-    Item BUTTERFLY_SPAWN_EGG = register("butterfly_spawn_egg", new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xaaeeff, new Item.Settings()), ItemGroups.SPAWN_EGGS);
+    Item LOOT_BUG_SPAWN_EGG = register("loot_bug_spawn_egg", new SpawnEggItem(UEntities.LOOT_BUG, 0x3C9D14, 0xE66F16, new Item.Settings()), ItemGroups.SPAWN_EGGS);
+    Item BUTTERFLY_SPAWN_EGG = register("butterfly_spawn_egg", new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xAAEEFF, new Item.Settings()), ItemGroups.SPAWN_EGGS);
     Item BUTTERFLY = register("butterfly", new Item(new Item.Settings().food(UFoodComponents.INSECTS)), ItemGroups.FOOD_AND_DRINK);
 
     Item PALM_BOAT = ItemGroupRegistry.register(TerraformBoatItemHelper.registerBoatItem(Unicopia.id("palm_boat"), UWoodTypes.PALM_BOAT_TYPE, false), ItemGroups.FUNCTIONAL);
@@ -160,6 +162,32 @@ public interface UItems {
 
     Item GIANT_BALLOON = register("giant_balloon", new HotAirBalloonItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
 
+    Item LIGHT_GRAY_BED_SHEETS = register(CloudBedBlock.SheetPattern.LIGHT_GRAY);
+    Item GRAY_BED_SHEETS = register(CloudBedBlock.SheetPattern.GRAY);
+    Item BLACK_BED_SHEETS = register(CloudBedBlock.SheetPattern.BLACK);
+    Item BROWN_BED_SHEETS = register(CloudBedBlock.SheetPattern.BROWN);
+    Item RED_BED_SHEETS = register(CloudBedBlock.SheetPattern.RED);
+    Item ORANGE_BED_SHEETS = register(CloudBedBlock.SheetPattern.ORANGE);
+    Item YELLOW_BED_SHEETS = register(CloudBedBlock.SheetPattern.YELLOW);
+    Item LIME_BED_SHEETS = register(CloudBedBlock.SheetPattern.LIME);
+    Item GREEN_BED_SHEETS = register(CloudBedBlock.SheetPattern.GREEN);
+    Item CYAN_BED_SHEETS = register(CloudBedBlock.SheetPattern.CYAN);
+    Item LIGHT_BLUE_BED_SHEETS = register(CloudBedBlock.SheetPattern.LIGHT_BLUE);
+    Item BLUE_SHEETS = register(CloudBedBlock.SheetPattern.BLUE);
+    Item PURPLE_BED_SHEETS = register(CloudBedBlock.SheetPattern.PURPLE);
+    Item MAGENTA_BED_SHEETS = register(CloudBedBlock.SheetPattern.MAGENTA);
+    Item PINK_BED_SHEETS = register(CloudBedBlock.SheetPattern.PINK);
+
+    Item APPLE_BED_SHEETS = register(CloudBedBlock.SheetPattern.APPLE);
+    Item BARRED_BED_SHEETS = register("barred_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.BARS, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item CHECKERED_BED_SHEETS = register("checkered_bed_sheets", new BedsheetsItem(CloudBedBlock.SheetPattern.CHECKER, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item KELP_BED_SHEETS = register(CloudBedBlock.SheetPattern.KELP);
+    Item RAINBOW_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW);
+    Item RAINBOW_BPW_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW_BPW);
+    Item RAINBOW_BPY_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW_BPY);
+    Item RAINBOW_PBG_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW_PBG);
+    Item RAINBOW_PWR_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW_PWR);
+
     AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new FabricItemSettings()
             .maxCount(1)
             .maxDamage(890)
@@ -173,13 +201,22 @@ public interface UItems {
             .maxCount(1)
             .maxDamage(890)
             .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
+    AmuletItem PEARL_NECKLACE = register("pearl_necklace", new AmuletItem(new FabricItemSettings()
+            .maxCount(1)
+            .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
 
     GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
     GlassesItem BROKEN_SUNGLASSES = register("broken_sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
 
+    Item CLAM_SHELL = register("clam_shell", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
+    Item SCALLOP_SHELL = register("scallop_shell", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
+    Item TURRET_SHELL = register("turret_shell", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
+    Item SHELLY = register("shelly", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
 
     Item CARAPACE = register("carapace", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
+    Item CLOTH_BED = register("cloth_bed", new FancyBedItem(UBlocks.CLOTH_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
     Item CLOUD_BED = register("cloud_bed", new CloudBedItem(UBlocks.CLOUD_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item CLOUD_LUMP = register("cloud_lump", new Item(new Item.Settings()), ItemGroups.NATURAL);
 
     Item ALICORN_BADGE = register(Race.ALICORN);
     Item PEGASUS_BADGE = register(Race.PEGASUS);
@@ -188,6 +225,7 @@ public interface UItems {
     Item BAT_BADGE = register(Race.BAT);
     Item CHANGELING_BADGE = register(Race.CHANGELING);
     Item KIRIN_BADGE = register(Race.KIRIN);
+    Item HIPPOGRIFF_BADGE = register(Race.HIPPOGRIFF);
 
     private static <T extends Item> T register(String name, T item, RegistryKey<ItemGroup> group) {
         return ItemGroupRegistry.register(Unicopia.id(name), item, group);
@@ -206,6 +244,10 @@ public interface UItems {
 
     static Item register(Race race) {
         return Registry.register(Registries.ITEM, race.getId().withPath(p -> p + "_badge"), new Item(new Settings()));
+    }
+
+    static Item register(SheetPattern pattern) {
+        return register(pattern.asString() + "_bed_sheets", new BedsheetsItem(pattern, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
     }
 
     static void bootstrap() {

@@ -14,6 +14,8 @@ public interface USounds {
 
     SoundEvent ENTITY_PLAYER_CORRUPTION = PARTICLE_SOUL_ESCAPE;
     SoundEvent ENTITY_PLAYER_BATPONY_SCREECH = register("entity.player.batpony.screech");
+    SoundEvent ENTITY_PLAYER_HIPPOGRIFF_SCREECH = register("entity.player.hippogriff.screech");
+    SoundEvent ENTITY_PLAYER_HIPPOGRIFF_PECK = ENTITY_CHICKEN_STEP;
     SoundEvent ENTITY_PLAYER_REBOUND = register("entity.player.rebound");
     SoundEvent ENTITY_PLAYER_PEGASUS_WINGSFLAP = register("entity.player.pegasus.wingsflap");
     SoundEvent ENTITY_PLAYER_PEGASUS_FLYING = register("entity.player.pegasus.flying");
@@ -27,6 +29,7 @@ public interface USounds {
     SoundEvent ENTITY_PLAYER_UNICORN_TELEPORT = register("entity.player.unicorn.teleport");
     SoundEvent ENTITY_PLAYER_KIRIN_RAGE = ENTITY_POLAR_BEAR_WARNING;
     SoundEvent ENTITY_PLAYER_KIRIN_RAGE_LOOP = register("entity.player.kirin.rage.loop");
+    SoundEvent ENTITY_PLAYER_SEAPONY_SONAR = register("entity.player.seapony.sonar", 64);
 
     SoundEvent ENTITY_PLAYER_EARS_RINGING = register("entity.player.ears_ring");
     SoundEvent ENTITY_PLAYER_HEARTBEAT = register("entity.player.heartbeat");
@@ -144,6 +147,11 @@ public interface USounds {
     static SoundEvent register(String name) {
         Identifier id = Unicopia.id(name);
         return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));
+    }
+
+    static SoundEvent register(String name, float range) {
+        Identifier id = Unicopia.id(name);
+        return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id, range));
     }
 
     static void bootstrap() {}

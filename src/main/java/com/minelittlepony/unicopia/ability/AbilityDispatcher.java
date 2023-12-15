@@ -179,6 +179,10 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
                     return;
                 }
 
+                if (cooldown > 100 && player.asEntity().isCreative()) {
+                    cooldown = Math.max(10, cooldown - 100);
+                }
+
                 if (cooldown > 0 && cooldown-- > 0) {
                     ability.coolDown(player, slot);
 

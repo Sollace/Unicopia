@@ -1,0 +1,6 @@
+{
+  "type": "unicopia:cloud_shaping",
+  "ingredient": { "item": "unicopia:dense_cloud" },
+  "result": "unicopia:etched_cloud",
+  "count": 1
+}

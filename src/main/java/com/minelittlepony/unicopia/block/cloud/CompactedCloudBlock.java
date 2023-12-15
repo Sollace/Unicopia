@@ -19,6 +19,8 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
@@ -43,11 +45,19 @@ public class CompactedCloudBlock extends CloudBlock {
         );
     });
 
-    public CompactedCloudBlock(Settings settings) {
-        super(settings, true);
+    private final BlockState baseState;
+
+    public CompactedCloudBlock(BlockState baseState) {
+        super(Settings.copy(baseState.getBlock()).dropsLike(baseState.getBlock()), true);
+        this.baseState = baseState;
         PROPERTIES.forEach(property -> {
             setDefaultState(getDefaultState().with(property, true));
         });
+    }
+
+    @Override
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+        return baseState.getBlock().getPickStack(world, pos, baseState);
     }
 
     @Override
@@ -75,5 +85,25 @@ public class CompactedCloudBlock extends CloudBlock {
         }
 
         return ActionResult.PASS;
+    }
+
+    @Override
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return transform(state, rotation::rotate);
+    }
+
+    @Override
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return transform(state, mirror::apply);
+    }
+
+    private BlockState transform(BlockState state, Function<Direction, Direction> transformation) {
+        BlockState result = state;
+        for (var property : FACING_PROPERTIES.entrySet()) {
+            if (property.getKey().getAxis() != Direction.Axis.Y) {
+                result = result.with(FACING_PROPERTIES.get(transformation.apply(property.getKey())), state.get(property.getValue()));
+            }
+        }
+        return result;
     }
 }

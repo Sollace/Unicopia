@@ -10,6 +10,7 @@ public interface AmuletSelectors {
     Predicate<LivingEntity> ALICORN_AMULET = UItems.ALICORN_AMULET::isApplicable;
     Predicate<LivingEntity> PEGASUS_AMULET = UItems.PEGASUS_AMULET::isApplicable;
     Predicate<LivingEntity> UNICORN_AMULET = UItems.UNICORN_AMULET::isApplicable;
+    Predicate<LivingEntity> PEARL_NECKLACE = UItems.PEARL_NECKLACE::isApplicable;
 
     Predicate<LivingEntity> ALICORN_AMULET_AFTER_1_DAYS = ALICORN_AMULET.and(ItemTracker.wearing(UItems.ALICORN_AMULET, ItemTracker.after(ItemTracker.DAYS)));
     Predicate<LivingEntity> ALICORN_AMULET_AFTER_2_DAYS = ALICORN_AMULET.and(ItemTracker.wearing(UItems.ALICORN_AMULET, ItemTracker.after(2 * ItemTracker.DAYS)));

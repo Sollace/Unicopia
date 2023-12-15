@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.duck.PlayerEntityDuck;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.datafixers.util.Either;
@@ -28,6 +29,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 @Mixin(PlayerEntity.class)
 abstract class MixinPlayerEntity extends LivingEntity implements Equine.Container<Pony>, PlayerEntityDuck {
@@ -39,6 +41,11 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
     @Override
     public Equine<?> create() {
         return new Pony((PlayerEntity)(Object)this);
+    }
+
+    @Inject(method = "createPlayerAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
+    private static void onCreateAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {
+        Pony.registerAttributes(info.getReturnValue());
     }
 
     @ModifyVariable(method = "applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V", at = @At("HEAD"), ordinal = 0)
@@ -59,9 +66,9 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
         });
     }
 
-    @Inject(method = "createPlayerAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
-    private static void onCreateAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {
-        Pony.registerAttributes(info.getReturnValue());
+    @Inject(method = "eatFood(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/item/ItemStack;", at = @At("HEAD"))
+    private void onEatFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> info) {
+        get().onEat(stack);
     }
 
     @Inject(method = "trySleep(Lnet/minecraft/util/math/BlockPos;)Lcom/mojang/datafixers/util/Either;",
@@ -113,5 +120,21 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
             cancellable = true)
     private void onGetBlockBreakingSpeed(BlockState state, CallbackInfoReturnable<Float> info) {
         info.setReturnValue(info.getReturnValue() * get().getBlockBreakingSpeed());
+    }
+
+    @Override
+    protected int getNextAirUnderwater(int air) {
+        if (EquinePredicates.PLAYER_SEAPONY.test(this)) {
+            return super.getNextAirOnLand(air);
+        }
+        return super.getNextAirUnderwater(air);
+    }
+
+    @Override
+    protected int getNextAirOnLand(int air) {
+        if (EquinePredicates.PLAYER_SEAPONY.test(this)) {
+            return super.getNextAirUnderwater(air);
+        }
+        return super.getNextAirOnLand(air);
     }
 }

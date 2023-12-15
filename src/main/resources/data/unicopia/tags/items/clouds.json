@@ -1,9 +1,13 @@
 {
   "replace": false,
   "values": [
+    "unicopia:cloud_lump",
     "unicopia:cloud",
     "unicopia:cloud_planks",
+    "unicopia:cloud_bricks",
     "unicopia:dense_cloud",
-    "unicopia:unstable_cloud"
+    "unicopia:etched_cloud",
+    "unicopia:unstable_cloud",
+    "unicopia:cloud_door"
   ]
 }

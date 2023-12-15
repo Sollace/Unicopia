@@ -8,6 +8,8 @@ import net.minecraft.block.*;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.state.State;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
@@ -36,7 +38,15 @@ public class WaterLoggingManager<O, S extends State<O, S>> {
 
     public void getDefaultState(O owner, CallbackInfoReturnable<S> info) {
         if (appliesTo(owner, info.getReturnValue())) {
-            info.setReturnValue(info.getReturnValue().with(Properties.WATERLOGGED, true));
+            info.setReturnValue(info.getReturnValue().with(Properties.WATERLOGGED, !(owner instanceof BedBlock)));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void getPlacementState(ItemPlacementContext context, CallbackInfoReturnable<BlockState> info) {
+        BlockState state = info.getReturnValue();
+        if (state != null && appliesTo((O)state.getBlock(), (S)state)) {
+            info.setReturnValue(state.with(Properties.WATERLOGGED, context.getWorld().getFluidState(context.getBlockPos()).isIn(FluidTags.WATER)));
         }
     }
 
@@ -61,7 +71,8 @@ public class WaterLoggingManager<O, S extends State<O, S>> {
             && (block instanceof SeagrassBlock
                 || block instanceof TallSeagrassBlock
                 || block instanceof KelpBlock
-                || block instanceof KelpPlantBlock);
+                || block instanceof KelpPlantBlock
+                || block instanceof BedBlock);
     }
 
     public boolean shouldPreventRemoval(WorldAccess world, BlockPos pos, AbstractBlock.AbstractBlockState oldState, AbstractBlock.AbstractBlockState newState) {

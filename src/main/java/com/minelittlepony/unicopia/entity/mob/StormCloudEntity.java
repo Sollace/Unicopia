@@ -6,29 +6,42 @@ import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.EquineContext;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.World;
 
@@ -135,10 +148,11 @@ public class StormCloudEntity extends Entity implements MagicImmune {
         }
 
         if (isLogicalSideForUpdatingMovement()) {
-            float groundY = getWorld().getTopY(Type.MOTION_BLOCKING_NO_LEAVES, (int)getX(), (int)getZ());
-            float cloudY = (float)getY() - (isStormy() ? STORMY_TARGET_ALTITUDE : CLEAR_TARGET_ALTITUDE);
+            float groundY = findSurfaceBelow(getWorld(), getBlockPos()).getY();
+            float targetY = isStormy() ? STORMY_TARGET_ALTITUDE : CLEAR_TARGET_ALTITUDE;
+            float cloudY = (float)getY() - targetY;
 
-            addVelocity(0, 0.03F * (groundY - cloudY), 0);
+            addVelocity(0, 0.0003F * (groundY - cloudY), 0);
 
             if (!cursed && !isStormy()) {
                 Vec3d wind = WeatherConditions.get(getWorld()).getWindDirection();
@@ -264,7 +278,7 @@ public class StormCloudEntity extends Entity implements MagicImmune {
     public static BlockPos findSurfaceBelow(World world, BlockPos pos) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         mutable.set(pos);
-        while (world.isInBuildLimit(mutable) && world.isAir(mutable)) {
+        while (mutable.getY() > world.getBottomY() && world.isAir(mutable)) {
             mutable.move(Direction.DOWN);
         }
         while (world.isInBuildLimit(mutable) && !world.isAir(mutable)) {
@@ -289,10 +303,46 @@ public class StormCloudEntity extends Entity implements MagicImmune {
     }
 
     @Override
-    public void onDamaged(DamageSource damageSource) {
-        if (random.nextInt(35) == 0) {
-            split(2 + random.nextInt(4));
+    public boolean damage(DamageSource source, float amount) {
+        super.damage(source, amount);
+        if (!cursed) {
+            if (random.nextInt(35) == 0 || (source.isOf(DamageTypes.PLAYER_ATTACK) && EquineContext.of(source.getAttacker()).collidesWithClouds())) {
+                if (getSize(1) < 2) {
+                    if (!getWorld().isClient() && getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+                        Identifier identifier = getType().getLootTableId();
+                        LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)this.getWorld())
+                                .add(LootContextParameters.THIS_ENTITY, this)
+                                .add(LootContextParameters.ORIGIN, this.getPos())
+                                .add(LootContextParameters.DAMAGE_SOURCE, source)
+                                .addOptional(LootContextParameters.KILLER_ENTITY, source.getAttacker())
+                                .addOptional(LootContextParameters.DIRECT_KILLER_ENTITY, source.getSource());
+                        if (source.getAttacker() instanceof PlayerEntity player) {
+                            builder = builder.add(LootContextParameters.LAST_DAMAGE_PLAYER, player).luck(player.getLuck());
+                        }
+                        getWorld().getServer().getLootManager().getLootTable(identifier)
+                            .generateLoot(builder.build(LootContextTypes.ENTITY), 0L, this::dropStack);
+                    }
+                    kill();
+                    getWorld().sendEntityStatus(this, EntityStatuses.ADD_DEATH_PARTICLES);
+                } else {
+                    split(2 + random.nextInt(4));
+                }
+            }
         }
+        return false;
+    }
+
+    @Override
+    @Nullable
+    public ItemEntity dropStack(ItemStack stack) {
+        stack = stack.copy();
+        while (!stack.isEmpty()) {
+            ItemEntity drop = super.dropStack(stack.split(1));
+            if (drop != null) {
+                drop.addVelocity(random.nextTriangular(0, 0.3), 0, random.nextTriangular(0, 0.3));
+            }
+        }
+        return null;
     }
 
     public void split(int splitCount) {
@@ -322,7 +372,29 @@ public class StormCloudEntity extends Entity implements MagicImmune {
 
     @Override
     public void handleStatus(byte status) {
-        super.handleStatus(status);
+        switch (status) {
+            case EntityStatuses.ADD_DEATH_PARTICLES:
+                for (int i = 0; i < 20; ++i) {
+                    double d = random.nextGaussian() * 0.02;
+                    double e = random.nextGaussian() * 0.02;
+                    double f = random.nextGaussian() * 0.02;
+                    getWorld().addParticle(ParticleTypes.POOF, getParticleX(1), getRandomBodyY(), getParticleZ(1), d, e, f);
+                }
+                break;
+            default:
+                super.handleStatus(status);
+        }
+
+    }
+
+    @Override
+    public boolean canBeHitByProjectile() {
+        return false;
+    }
+
+    @Override
+    public final boolean canHit() {
+        return true;
     }
 
     private ServerBossBar getBossBar() {
@@ -348,7 +420,9 @@ public class StormCloudEntity extends Entity implements MagicImmune {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         setStormTicks(nbt.getInt("stormTicks"));
         setClearTicks(nbt.getInt("clearTicks"));
-        setSize(currentSize = nbt.getFloat("size"));
+        if (nbt.contains("size", NbtElement.FLOAT_TYPE)) {
+            setSize(currentSize = nbt.getFloat("size"));
+        }
         cursed = nbt.getBoolean("cursed");
         phase = nbt.getInt("phase");
         nextPhase = nbt.getInt("nextPhase");

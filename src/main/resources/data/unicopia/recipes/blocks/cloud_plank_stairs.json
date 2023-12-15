@@ -10,5 +10,5 @@
       { "item": "unicopia:cloud_planks" }
     ]
   },
-  "result": { "item": "unicopia:cloud_planks_stairs", "count": 4 }
+  "result": { "item": "unicopia:cloud_plank_stairs", "count": 4 }
 }

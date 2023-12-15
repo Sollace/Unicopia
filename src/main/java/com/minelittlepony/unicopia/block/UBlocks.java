@@ -10,10 +10,16 @@ import com.minelittlepony.unicopia.block.cloud.CloudSlabBlock;
 import com.minelittlepony.unicopia.block.cloud.CloudStairsBlock;
 import com.minelittlepony.unicopia.block.cloud.CompactedCloudBlock;
 import com.minelittlepony.unicopia.block.cloud.NaturalCloudBlock;
+import com.minelittlepony.unicopia.block.cloud.OrientedCloudBlock;
+import com.minelittlepony.unicopia.block.cloud.PoreousCloudStairsBlock;
+import com.minelittlepony.unicopia.block.cloud.ShapingBenchBlock;
 import com.minelittlepony.unicopia.block.cloud.CloudBedBlock;
-import com.minelittlepony.unicopia.block.cloud.CloudBlock;
+import com.minelittlepony.unicopia.block.cloud.CloudChestBlock;
+import com.minelittlepony.unicopia.block.cloud.CloudDoorBlock;
+import com.minelittlepony.unicopia.block.cloud.CloudLike;
 import com.minelittlepony.unicopia.block.cloud.SoggyCloudBlock;
 import com.minelittlepony.unicopia.block.cloud.SoggyCloudSlabBlock;
+import com.minelittlepony.unicopia.block.cloud.SoggyCloudStairsBlock;
 import com.minelittlepony.unicopia.block.cloud.UnstableCloudBlock;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.cloud.CloudBlockItem;
@@ -130,6 +136,9 @@ public interface UBlocks {
     SegmentedCropBlock OATS_STEM = register("oats_stem", OATS.createNext(5));
     SegmentedCropBlock OATS_CROWN = register("oats_crown", OATS_STEM.createNext(5));
 
+    Block PLUNDER_VINE = register("plunder_vine", new ThornBlock(Settings.create().mapColor(MapColor.DARK_CRIMSON).hardness(1).ticksRandomly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY), () -> UBlocks.PLUNDER_VINE_BUD));
+    Block PLUNDER_VINE_BUD = register("plunder_vine_bud", new ThornBudBlock(Settings.create().mapColor(MapColor.DARK_CRIMSON).hardness(1).nonOpaque().ticksRandomly().sounds(BlockSoundGroup.GRASS).pistonBehavior(PistonBehavior.DESTROY), PLUNDER_VINE.getDefaultState()));
+
     Block CHITIN = register("chitin", new SnowyBlock(Settings.create().mapColor(MapColor.PALE_PURPLE).hardness(5).requiresTool().ticksRandomly().sounds(BlockSoundGroup.CORAL)), ItemGroups.NATURAL);
     Block SURFACE_CHITIN = register("surface_chitin", new GrowableBlock(Settings.copy(CHITIN), () -> CHITIN), ItemGroups.NATURAL);
     Block CHISELLED_CHITIN = register("chiselled_chitin", new Block(Settings.create().mapColor(MapColor.PALE_PURPLE).hardness(5).requiresTool()), ItemGroups.BUILDING_BLOCKS);
@@ -141,27 +150,61 @@ public interface UBlocks {
     Block MYSTERIOUS_EGG = register("mysterious_egg", new PileBlock(Settings.copy(Blocks.SLIME_BLOCK), PileBlock.MYSTERIOUS_EGG_SHAPES), ItemGroups.NATURAL);
     Block SLIME_PUSTULE = register("slime_pustule", new SlimePustuleBlock(Settings.copy(Blocks.SLIME_BLOCK)), ItemGroups.NATURAL);
 
+    Block SHAPING_BENCH = register("shaping_bench", new ShapingBenchBlock(Settings.create().mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL)), ItemGroups.FUNCTIONAL);
     Block CLOUD = register("cloud", new NaturalCloudBlock(Settings.create().mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL), true,
             () -> UBlocks.SOGGY_CLOUD,
             () -> UBlocks.COMPACTED_CLOUD), ItemGroups.NATURAL);
+    Block COMPACTED_CLOUD = register("compacted_cloud", new CompactedCloudBlock(CLOUD.getDefaultState()));
     Block CLOUD_SLAB = register("cloud_slab", new CloudSlabBlock(Settings.copy(CLOUD), true, () -> UBlocks.SOGGY_CLOUD_SLAB), ItemGroups.NATURAL);
-    Block CLOUD_STAIRS = register("cloud_stairs", new CloudStairsBlock(CLOUD.getDefaultState(), Settings.copy(CLOUD), () -> UBlocks.SOGGY_CLOUD_STAIRS), ItemGroups.NATURAL);
-    Block COMPACTED_CLOUD = register("compacted_cloud", new CompactedCloudBlock(Settings.copy(CLOUD)));
-    Block CLOUD_PLANKS = register("cloud_planks", new NaturalCloudBlock(Settings.copy(CLOUD).requiresTool(), false,
+    PoreousCloudStairsBlock CLOUD_STAIRS = register("cloud_stairs", new PoreousCloudStairsBlock(CLOUD.getDefaultState(), Settings.copy(CLOUD), () -> UBlocks.SOGGY_CLOUD_STAIRS), ItemGroups.NATURAL);
+
+    Block CLOUD_PLANKS = register("cloud_planks", new NaturalCloudBlock(Settings.copy(CLOUD).hardness(0.4F).requiresTool().solid(), false,
             null,
             () -> UBlocks.COMPACTED_CLOUD_PLANKS), ItemGroups.BUILDING_BLOCKS);
-    Block CLOUD_PLANKS_SLAB = register("cloud_planks_slab", new CloudSlabBlock(Settings.copy(CLOUD_PLANKS), false, null), ItemGroups.BUILDING_BLOCKS);
-    Block CLOUD_PLANKS_STAIRS = register("cloud_planks_stairs", new CloudStairsBlock(CLOUD_PLANKS.getDefaultState(), Settings.copy(CLOUD_PLANKS), null), ItemGroups.BUILDING_BLOCKS);
-    Block COMPACTED_CLOUD_PLANKS = register("compacted_cloud_planks", new CompactedCloudBlock(Settings.copy(CLOUD_PLANKS)));
+    Block COMPACTED_CLOUD_PLANKS = register("compacted_cloud_planks", new CompactedCloudBlock(CLOUD_PLANKS.getDefaultState()));
+    Block CLOUD_PLANK_SLAB = register("cloud_plank_slab", new CloudSlabBlock(Settings.copy(CLOUD_PLANKS), false, null), ItemGroups.BUILDING_BLOCKS);
+    Block CLOUD_PLANK_STAIRS = register("cloud_plank_stairs", new CloudStairsBlock(CLOUD_PLANKS.getDefaultState(), Settings.copy(CLOUD_PLANKS)), ItemGroups.BUILDING_BLOCKS);
+
+    Block CLOUD_BRICKS = register("cloud_bricks", new NaturalCloudBlock(Settings.copy(CLOUD).hardness(0.6F).requiresTool().solid(), false,
+            null,
+            () -> UBlocks.COMPACTED_CLOUD_BRICKS), ItemGroups.BUILDING_BLOCKS);
+    Block COMPACTED_CLOUD_BRICKS = register("compacted_cloud_bricks", new CompactedCloudBlock(CLOUD_BRICKS.getDefaultState()));
+    Block CLOUD_BRICK_SLAB = register("cloud_brick_slab", new CloudSlabBlock(Settings.copy(CLOUD_BRICKS), false, null), ItemGroups.BUILDING_BLOCKS);
+    Block CLOUD_BRICK_STAIRS = register("cloud_brick_stairs", new CloudStairsBlock(CLOUD_BRICKS.getDefaultState(), Settings.copy(CLOUD_PLANKS)), ItemGroups.BUILDING_BLOCKS);
+
+    Block ETCHED_CLOUD = register("etched_cloud", new NaturalCloudBlock(Settings.copy(CLOUD_BRICKS), false,
+            null,
+            () -> UBlocks.COMPACTED_CLOUD_BRICKS), ItemGroups.BUILDING_BLOCKS);
+    Block COMPACTED_ETCHED_CLOUD = register("compacted_etched_cloud", new CompactedCloudBlock(ETCHED_CLOUD.getDefaultState()));
+    Block ETCHED_CLOUD_SLAB = register("etched_cloud_slab", new CloudSlabBlock(Settings.copy(ETCHED_CLOUD), false, null), ItemGroups.BUILDING_BLOCKS);
+    Block ETCHED_CLOUD_STAIRS = register("etched_cloud_stairs", new CloudStairsBlock(ETCHED_CLOUD.getDefaultState(), Settings.copy(CLOUD_PLANKS)), ItemGroups.BUILDING_BLOCKS);
+
+    SoggyCloudBlock SOGGY_CLOUD = register("soggy_cloud", new SoggyCloudBlock(Settings.copy(CLOUD).hardness(0.7F), () -> UBlocks.CLOUD));
+    SoggyCloudSlabBlock SOGGY_CLOUD_SLAB = register("soggy_cloud_slab", new SoggyCloudSlabBlock(Settings.copy(SOGGY_CLOUD), () -> UBlocks.CLOUD_SLAB));
+    SoggyCloudStairsBlock SOGGY_CLOUD_STAIRS = register("soggy_cloud_stairs", new SoggyCloudStairsBlock(SOGGY_CLOUD.getDefaultState(), Settings.copy(CLOUD), () -> UBlocks.CLOUD_STAIRS));
+
+    Block DENSE_CLOUD = register("dense_cloud", new NaturalCloudBlock(Settings.create().mapColor(MapColor.GRAY).hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL).solid(), false,
+            null,
+            () -> UBlocks.COMPACTED_DENSE_CLOUD), ItemGroups.BUILDING_BLOCKS);
+    Block COMPACTED_DENSE_CLOUD = register("compacted_dense_cloud", new CompactedCloudBlock(DENSE_CLOUD.getDefaultState()));
+    Block DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudSlabBlock(Settings.copy(DENSE_CLOUD), false, null), ItemGroups.BUILDING_BLOCKS);
+    Block DENSE_CLOUD_STAIRS = register("dense_cloud_stairs", new CloudStairsBlock(DENSE_CLOUD.getDefaultState(), Settings.copy(DENSE_CLOUD)), ItemGroups.BUILDING_BLOCKS);
+
+    Block CARVED_CLOUD = register("carved_cloud", new OrientedCloudBlock(Settings.copy(CLOUD).hardness(0.4F).requiresTool().solid(), false), ItemGroups.BUILDING_BLOCKS);
     Block UNSTABLE_CLOUD = register("unstable_cloud", new UnstableCloudBlock(Settings.copy(CLOUD)), ItemGroups.NATURAL);
-    SoggyCloudBlock SOGGY_CLOUD = register("soggy_cloud", new SoggyCloudBlock(Settings.copy(CLOUD), () -> UBlocks.CLOUD));
-    SoggyCloudSlabBlock SOGGY_CLOUD_SLAB = register("soggy_cloud_slab", new SoggyCloudSlabBlock(Settings.copy(CLOUD), () -> UBlocks.CLOUD_SLAB));
-    CloudStairsBlock SOGGY_CLOUD_STAIRS = register("soggy_cloud_stairs", new CloudStairsBlock(SOGGY_CLOUD.getDefaultState(), Settings.copy(CLOUD), null));
-    Block DENSE_CLOUD = register("dense_cloud", new CloudBlock(Settings.create().mapColor(MapColor.GRAY).hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL), false), ItemGroups.NATURAL);
-    Block DENSE_CLOUD_SLAB = register("dense_cloud_slab", new CloudSlabBlock(Settings.copy(DENSE_CLOUD), false, null), ItemGroups.NATURAL);
-    Block DENSE_CLOUD_STAIRS = register("dense_cloud_stairs", new CloudStairsBlock(DENSE_CLOUD.getDefaultState(), Settings.copy(DENSE_CLOUD), null), ItemGroups.NATURAL);
-    Block CLOUD_PILLAR = register("cloud_pillar", new CloudPillarBlock(Settings.create().mapColor(MapColor.GRAY).hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL)), ItemGroups.NATURAL);
-    Block CLOUD_BED = register("cloud_bed", new CloudBedBlock(CLOUD.getDefaultState(), Settings.copy(Blocks.WHITE_BED).sounds(BlockSoundGroup.WOOL)));
+    Block CLOUD_PILLAR = register("cloud_pillar", new CloudPillarBlock(Settings.create().mapColor(MapColor.GRAY).hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL).solid()), ItemGroups.NATURAL);
+    Block CLOUD_CHEST = register("cloud_chest", new CloudChestBlock(Settings.copy(DENSE_CLOUD).instrument(Instrument.BASS).strength(2.5f), DENSE_CLOUD.getDefaultState()), ItemGroups.FUNCTIONAL);
+    Block CLOTH_BED = register("cloth_bed", new FancyBedBlock("cloth", Settings.copy(Blocks.WHITE_BED).sounds(BlockSoundGroup.WOOD)));
+    Block CLOUD_BED = register("cloud_bed", new CloudBedBlock("cloud", CLOUD.getDefaultState(), Settings.copy(Blocks.WHITE_BED).sounds(BlockSoundGroup.WOOL)));
+
+    Block CLAM_SHELL = register("clam_shell", new ShellsBlock(Settings.create().mapColor(MapColor.DULL_PINK).breakInstantly().nonOpaque()));
+    Block SCALLOP_SHELL = register("scallop_shell", new ShellsBlock(Settings.create().mapColor(MapColor.DULL_PINK).breakInstantly().nonOpaque()));
+    Block TURRET_SHELL = register("turret_shell", new ShellsBlock(Settings.create().mapColor(MapColor.DULL_PINK).breakInstantly().nonOpaque()));
+
+    Block STABLE_DOOR = register("stable_door", new StableDoorBlock(Settings.copy(Blocks.OAK_DOOR), BlockSetType.OAK), ItemGroups.FUNCTIONAL);
+    Block DARK_OAK_DOOR = register("dark_oak_stable_door", new StableDoorBlock(Settings.copy(Blocks.OAK_DOOR), BlockSetType.OAK), ItemGroups.FUNCTIONAL);
+    Block CRYSTAL_DOOR = register("crystal_door", new CrystalDoorBlock(Settings.copy(Blocks.IRON_DOOR), UWoodTypes.CRYSTAL), ItemGroups.FUNCTIONAL);
+    Block CLOUD_DOOR = register("cloud_door", new CloudDoorBlock(Settings.copy(CLOUD), CLOUD.getDefaultState(), UWoodTypes.CLOUD), ItemGroups.FUNCTIONAL);
 
     private static <T extends Block> T register(String name, T item) {
         return register(Unicopia.id(name), item);
@@ -172,9 +215,7 @@ public interface UBlocks {
     }
 
     static <T extends Block> T register(Identifier id, T block, RegistryKey<ItemGroup> group) {
-        ItemGroupRegistry.register(id,
-                CloudBlock.isCloudBlock(block) ? new CloudBlockItem(block, new Item.Settings()) : new BlockItem(block, new Item.Settings()
-        ), group);
+        ItemGroupRegistry.register(id, block instanceof CloudLike ? new CloudBlockItem(block, new Item.Settings()) : new BlockItem(block, new Item.Settings()), group);
         return register(id, block);
     }
 
@@ -185,7 +226,7 @@ public interface UBlocks {
         if (block instanceof SaplingBlock || block instanceof SproutBlock || block instanceof FruitBlock || block instanceof CropBlock || block instanceof DoorBlock || block instanceof TrapdoorBlock) {
             TRANSLUCENT_BLOCKS.add(block);
         }
-        if (CloudBlock.isCloudBlock(block) || block instanceof SlimePustuleBlock || block instanceof PileBlock) {
+        if (block instanceof CloudLike || block instanceof SlimePustuleBlock || block instanceof PileBlock) {
             SEMI_TRANSPARENT_BLOCKS.add(block);
         }
         return Registry.register(Registries.BLOCK, id, block);
@@ -199,7 +240,7 @@ public interface UBlocks {
         StrippableBlockRegistry.register(PALM_LOG, STRIPPED_PALM_LOG);
         StrippableBlockRegistry.register(ZAP_WOOD, STRIPPED_ZAP_WOOD);
         StrippableBlockRegistry.register(PALM_WOOD, STRIPPED_PALM_WOOD);
-        Collections.addAll(TRANSLUCENT_BLOCKS, WEATHER_VANE, CHITIN_SPIKES);
+        Collections.addAll(TRANSLUCENT_BLOCKS, WEATHER_VANE, CHITIN_SPIKES, PLUNDER_VINE, PLUNDER_VINE_BUD, CLAM_SHELL, SCALLOP_SHELL, TURRET_SHELL);
         TintedBlock.REGISTRY.add(PALM_LEAVES);
 
         FlammableBlockRegistry.getDefaultInstance().add(GREEN_APPLE_LEAVES, 30, 60);

@@ -24,6 +24,9 @@ public interface Abilities {
                 .toList();
     });
 
+    // all races
+    Ability<?> CHANGE_FORM = register(new ChangeFormAbility(), "change_form", AbilitySlot.PRIMARY);
+
     // unicorn / alicorn
     Ability<?> CAST = register(new UnicornCastingAbility(), "cast", AbilitySlot.PRIMARY);
     Ability<?> SHOOT = register(new UnicornProjectileAbility(), "shoot", AbilitySlot.PRIMARY);
@@ -42,9 +45,14 @@ public interface Abilities {
     Ability<?> RAINBOOM = register(new PegasusRainboomAbility(), "rainboom", AbilitySlot.PRIMARY);
     Ability<?> CAPTURE_CLOUD = register(new PegasusCaptureStormAbility(), "capture_cloud", AbilitySlot.SECONDARY);
 
-    // pegasus / bat / alicorn / changeling
+    // hippogriff
+    Ability<?> DASH = register(new FlyingDashAbility(), "dash", AbilitySlot.PRIMARY);
+    Ability<?> SCREECH = register(new ScreechAbility(), "screech", AbilitySlot.SECONDARY);
+    Ability<?> PECK = register(new PeckAbility(), "peck", AbilitySlot.SECONDARY);
+
+    // pegasus / bat / alicorn / changeling / hippogriff
     Ability<?> CARRY = register(new CarryAbility(), "carry", AbilitySlot.PRIMARY);
-    Ability<?> TOGGLE_FLIGHT = register(new PegasusFlightToggleAbility(), "toggle_flight", AbilitySlot.TERTIARY);
+    Ability<?> TOGGLE_FLIGHT = register(new ToggleFlightAbility(), "toggle_flight", AbilitySlot.TERTIARY);
 
     // changeling
     Ability<?> DISGUISE = register(new ChangelingDisguiseAbility(), "disguise", AbilitySlot.SECONDARY);
@@ -58,6 +66,9 @@ public interface Abilities {
     Ability<?> RAGE = register(new KirinRageAbility(), "rage", AbilitySlot.PRIMARY);
     Ability<?> NIRIK_BLAST = register(new NirikBlastAbility(), "nirik_blast", AbilitySlot.SECONDARY);
     Ability<?> KIRIN_CAST = register(new KirinCastingAbility(), "kirin_cast", AbilitySlot.SECONDARY);
+
+    // seapony
+    Ability<?> SONAR_PULSE = register(new SeaponySonarPulseAbility(), "sonar_pulse", AbilitySlot.SECONDARY);
 
     static <T extends Ability<?>> T register(T power, String name, AbilitySlot slot) {
         Identifier id = Unicopia.id(name);

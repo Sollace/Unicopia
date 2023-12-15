@@ -35,6 +35,11 @@ public class PlayerCamera extends MotionCompositor {
             roll = player.getInterpolator().interpolate("roll", (float)roll, 15);
         }
 
+
+        if (player.getAcrobatics().isFloppy()) {
+            roll += 90;
+        }
+
         return (float)roll;
     }
 

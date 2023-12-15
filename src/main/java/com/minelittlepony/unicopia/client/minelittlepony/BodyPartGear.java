@@ -15,6 +15,7 @@ import com.minelittlepony.client.model.entity.race.UnicornModel;
 import com.minelittlepony.client.model.part.UnicornHorn;
 import com.minelittlepony.mson.api.MsonModel;
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.AmuletSelectors;
@@ -43,7 +44,7 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity>> implements Gear {
     public static final Predicate<LivingEntity> UNICORN_HORN_PREDICATE = MINE_LP_HAS_NO_HORN.and(AmuletSelectors.ALICORN_AMULET.or(EquinePredicates.raceMatches(Race::canCast)));
     public static final Identifier UNICORN_HORN = Unicopia.id("textures/models/horn/unicorn.png");
 
-    public static final Predicate<LivingEntity> PEGA_WINGS_PREDICATE = MINE_LP_HAS_NO_WINGS.and(AmuletSelectors.PEGASUS_AMULET.or(EquinePredicates.raceMatches(Race::canInteractWithClouds)));
+    public static final Predicate<LivingEntity> PEGA_WINGS_PREDICATE = MINE_LP_HAS_NO_WINGS.and(AmuletSelectors.PEGASUS_AMULET.or(EquinePredicates.raceMatches(race -> race.flightType() == FlightType.AVIAN)));
     public static final Identifier PEGASUS_WINGS = Unicopia.id("textures/models/wings/pegasus_pony.png");
 
     public static BodyPartGear<WingsGearModel> pegasusWings() {

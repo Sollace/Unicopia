@@ -1,0 +1,31 @@
+{
+  "replace": false,
+  "values": [
+    "unicopia:light_gray_bed_sheets",
+    "unicopia:gray_bed_sheets",
+    "unicopia:black_bed_sheets",
+    "unicopia:brown_bed_sheets",
+    "unicopia:red_bed_sheets",
+    "unicopia:orange_bed_sheets",
+    "unicopia:yellow_bed_sheets",
+    "unicopia:lime_bed_sheets",
+    "unicopia:green_bed_sheets",
+    "unicopia:cyan_bed_sheets",
+    "unicopia:light_blue_bed_sheets",
+    "unicopia:blue_bed_sheets",
+    "unicopia:purple_bed_sheets",
+    "unicopia:magenta_bed_sheets",
+    "unicopia:pink_bed_sheets",
+
+
+    "unicopia:apple_bed_sheets",
+    "unicopia:barred_bed_sheets",
+    "unicopia:checkered_bed_sheets",
+    "unicopia:kelp_bed_sheets",
+    "unicopia:rainbow_bed_sheets",
+    "unicopia:rainbow_bpw_bed_sheets",
+    "unicopia:rainbow_bpy_bed_sheets",
+    "unicopia:rainbow_pbg_bed_sheets",
+    "unicopia:rainbow_pwr_bed_sheets"
+  ]
+}

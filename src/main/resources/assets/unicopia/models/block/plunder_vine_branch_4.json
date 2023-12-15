@@ -1,0 +1,75 @@
+{
+	"textures": {
+		"particle": "unicopia:block/plunder_vine",
+		"stem": "unicopia:block/plunder_vine",
+		"leaf": "unicopia:block/plunder_leaf"
+	},
+	"elements": [
+		{
+			"from": [6, 0, 6],
+			"to": [10, 9, 10],
+			"faces": {
+				"north": {"uv": [0, 2, 4, 11], "texture": "#stem"},
+				"east": {"uv": [0, 2, 4, 11], "texture": "#stem"},
+				"south": {"uv": [0, 2, 4, 11], "texture": "#stem"},
+				"west": {"uv": [0, 2, 4, 11], "texture": "#stem"},
+				"up": {"uv": [2, 2, 0, 0], "texture": "#stem"},
+				"down": {"uv": [2, 0, 0, 2], "texture": "#stem"}
+			}
+		},
+		{
+			"from": [3, 0, 8],
+			"to": [13, 8, 8],
+			"rotation": {"angle": 45, "axis": "y", "origin": [8, 11, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#leaf"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#leaf"}
+			}
+		},
+		{
+			"from": [3, 5, 8],
+			"to": [13, 13, 8],
+			"rotation": {"angle": -45, "axis": "y", "origin": [8, 11, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 16, 16], "texture": "#leaf"},
+				"south": {"uv": [0, 0, 16, 16], "texture": "#leaf"}
+			}
+		},
+		{
+			"from": [4.8, 3.95, 8.1],
+			"to": [5.8, 4.95, 8.1],
+			"rotation": {"angle": -45, "axis": "z", "origin": [5.8, 4, 8]},
+			"faces": {
+				"north": {"uv": [2, 0, 3, 1], "texture": "#stem"},
+				"south": {"uv": [2, 0, 3, 1], "texture": "#stem"}
+			}
+		},
+		{
+			"from": [7.8, 6.95, 8.1],
+			"to": [8.8, 7.95, 8.1],
+			"rotation": {"angle": -45, "axis": "z", "origin": [8.8, 4, 8]},
+			"faces": {
+				"north": {"uv": [2, 0, 3, 1], "texture": "#stem"},
+				"south": {"uv": [2, 0, 3, 1], "texture": "#stem"}
+			}
+		},
+		{
+			"from": [8, 2.35, 11.4],
+			"to": [8, 3.35, 12.4],
+			"rotation": {"angle": 45, "axis": "x", "origin": [7, 4, 9.3]},
+			"faces": {
+				"east": {"uv": [2, 0, 3, 1], "texture": "#stem"},
+				"west": {"uv": [2, 0, 3, 1], "texture": "#stem"}
+			}
+		},
+		{
+			"from": [8, 5.35, 2.9],
+			"to": [8, 6.35, 3.9],
+			"rotation": {"angle": 45, "axis": "x", "origin": [7, 4, 6.8]},
+			"faces": {
+				"east": {"uv": [2, 0, 3, 1], "texture": "#stem"},
+				"west": {"uv": [2, 0, 3, 1], "texture": "#stem"}
+			}
+		}
+	]
+}

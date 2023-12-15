@@ -13,13 +13,13 @@ public class TextBlock extends Label {
     public TextBlock(int x, int y, int width) {
         super(x, y);
         this.maxWidth = width;
-        this.render(null, x, y, width);
     }
 
     @Override
     public Bounds getBounds() {
         Bounds bounds = super.getBounds();
         bounds.height = getFont().wrapLines(getStyle().getText(), maxWidth).size() * getFont().fontHeight;
+        bounds.width = 0;
         return bounds;
     }
 

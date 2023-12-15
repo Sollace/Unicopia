@@ -11,7 +11,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.util.math.BlockPos;
 
-public class CloudBedItem extends CloudBlockItem {
+public class CloudBedItem extends CloudBlockItem implements Supplier<BlockEntity> {
 
     private final Supplier<BlockEntity> renderEntity;
 
@@ -25,7 +25,8 @@ public class CloudBedItem extends CloudBlockItem {
         return context.getWorld().setBlockState(context.getBlockPos(), state, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD | Block.FORCE_STATE);
     }
 
-    public BlockEntity getRenderEntity() {
+    @Override
+    public BlockEntity get() {
         return renderEntity.get();
     }
 }

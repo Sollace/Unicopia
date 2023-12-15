@@ -41,6 +41,10 @@ public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock 
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+        if (state.get(PERSISTENT)) {
+            return state;
+        }
+
         if (world instanceof ServerWorld sw) {
             ZapAppleStageStore store = ZapAppleStageStore.get(sw);
             ZapAppleStageStore.Stage currentStage = store.getStage();
@@ -56,7 +60,9 @@ public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock 
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.scheduledTick(state, world, pos, random);
         tryAdvanceStage(state, world, pos, random);
-        world.scheduleBlockTick(pos, this, 1);
+        if (!state.get(PERSISTENT)) {
+            world.scheduleBlockTick(pos, this, 1);
+        }
     }
 
     private void tryAdvanceStage(BlockState state, ServerWorld world, BlockPos pos, Random random) {

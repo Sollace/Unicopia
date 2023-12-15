@@ -1,0 +1,6 @@
+{
+  "parent": "unicopia:block/clam_shell_4",
+	"textures": {
+		"shell": "unicopia:item/scallop_shell"
+	}
+}

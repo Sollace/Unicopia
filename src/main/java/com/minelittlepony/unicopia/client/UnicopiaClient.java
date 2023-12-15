@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.LanSettingsScreen;
+import com.minelittlepony.unicopia.client.gui.ShapingBenchScreen;
 import com.minelittlepony.unicopia.client.gui.UHud;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
@@ -101,6 +102,7 @@ public class UnicopiaClient implements ClientModInitializer {
         URenderers.bootstrap();
 
         HandledScreens.register(UScreenHandlers.SPELL_BOOK, SpellbookScreen::new);
+        HandledScreens.register(UScreenHandlers.SHAPING_BENCH, ShapingBenchScreen::new);
 
         ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
         ClientTickEvents.END_WORLD_TICK.register(this::onWorldTick);

@@ -6,7 +6,6 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
-import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation.Recipient;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.AnimationInstance;
 import com.minelittlepony.unicopia.*;
@@ -14,6 +13,7 @@ import com.minelittlepony.unicopia.ability.*;
 import com.minelittlepony.unicopia.ability.magic.*;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
+import com.minelittlepony.unicopia.ability.magic.spell.RageAbilitySpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitDiscovery;
@@ -37,9 +37,9 @@ import com.google.common.collect.Streams;
 import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.SideShapeType;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
@@ -54,24 +54,27 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.potion.PotionUtil;
+import net.minecraft.potion.Potions;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
 
 public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, UpdateCallback {
     private static final TrackedData<String> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.STRING);
+    private static final TrackedData<String> SUPPRESSED_RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.STRING);
 
     static final TrackedData<Float> ENERGY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> EXHAUSTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> EXERTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    static final TrackedData<Optional<BlockPos>> HANGING_POSITION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS);
     static final TrackedData<Float> MANA = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> XP = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
     static final TrackedData<Float> CHARGE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -87,6 +90,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private final PlayerCharmTracker charms = new PlayerCharmTracker(this);
     private final PlayerCamera camera = new PlayerCamera(this);
     private final TraitDiscovery discoveries = new TraitDiscovery(this);
+    private final Acrobatics acrobatics = new Acrobatics(this);
 
     private final Map<String, Integer> advancementProgress = new HashMap<>();
 
@@ -101,18 +105,14 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     private boolean dirty;
 
-    private int ticksHanging;
-
     private float magicExhaustion = 0;
 
     private int ticksInvulnerable;
+    private int ticksMetamorphising;
 
     private int ticksInSun;
     private boolean hasShades;
     private int ticksSunImmunity = INITIAL_SUN_IMMUNITY;
-
-    private Direction attachDirection;
-    private double distanceClimbed;
 
     private AnimationInstance animation = new AnimationInstance(Animation.NONE, Animation.Recipient.ANYONE);
     private int animationMaxDuration;
@@ -125,7 +125,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         this.mana = addTicker(new ManaContainer(this));
 
         player.getDataTracker().startTracking(RACE, Race.DEFAULT_ID);
-        player.getDataTracker().startTracking(HANGING_POSITION, Optional.empty());
+        player.getDataTracker().startTracking(SUPPRESSED_RACE, Race.DEFAULT_ID);
 
         addTicker(this::updateAnimations);
         addTicker(this::updateBatPonyAbilities);
@@ -229,13 +229,30 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void setSpecies(Race race) {
         race = race.validate(entity);
+        Race current = getSpecies();
+        entity.getDataTracker().set(RACE, Race.REGISTRY.getId(race.validate(entity)).toString());
+        if (race != current) {
+            clearSuppressedRace();
+        }
+
         ticksInSun = 0;
-        entity.getDataTracker().set(RACE, Race.REGISTRY.getId(race).toString());
 
         gravity.updateFlightState();
         entity.sendAbilitiesUpdate();
 
         UCriteria.PLAYER_CHANGE_RACE.trigger(entity);
+    }
+
+    public void setSuppressedRace(Race race) {
+        entity.getDataTracker().set(SUPPRESSED_RACE, Race.REGISTRY.getId(race.validate(entity)).toString());
+    }
+
+    public void clearSuppressedRace() {
+        setSuppressedRace(Race.UNSET);
+    }
+
+    public Race getSuppressedRace() {
+        return Race.fromName(entity.getDataTracker().get(SUPPRESSED_RACE), Race.UNSET);
     }
 
     public TraitDiscovery getDiscoveries() {
@@ -248,6 +265,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public PlayerCharmTracker getCharms() {
         return charms;
+    }
+
+    public Acrobatics getAcrobatics() {
+        return acrobatics;
     }
 
     @Override
@@ -279,6 +300,14 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public void setInvulnerabilityTicks(int ticks) {
         this.ticksInvulnerable = Math.max(0, ticks);
+    }
+
+    public int getTicksMetamorphising() {
+        return ticksMetamorphising;
+    }
+
+    public void setTicksmetamorphising(int ticks) {
+        ticksMetamorphising = ticks;
     }
 
     @Override
@@ -335,11 +364,12 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public void onSpawn() {
-        if (entity.getWorld() instanceof ServerWorld sw
-                && getObservedSpecies() == Race.BAT
-                && sw.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE
-                && MeteorlogicalUtil.isPositionExposedToSun(sw, getOrigin())) {
-            SpawnLocator.selectSpawnPosition(sw, entity);
+        if (entity.getWorld() instanceof ServerWorld sw && sw.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE) {
+            boolean mustAvoidSun = getObservedSpecies() == Race.BAT && MeteorlogicalUtil.isPositionExposedToSun(sw, getOrigin());
+            boolean mustAvoidAir = getCompositeRace().includes(Race.SEAPONY) && !sw.getFluidState(getOrigin()).isIn(FluidTags.WATER);
+            if (mustAvoidSun || mustAvoidAir) {
+                SpawnLocator.selectSpawnPosition(sw, entity, mustAvoidAir, mustAvoidSun);
+            }
         }
         ticksSunImmunity = INITIAL_SUN_IMMUNITY;
     }
@@ -347,16 +377,19 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public boolean beforeUpdate() {
         if (compositeRace.includes(Race.UNSET) || entity.age % 2 == 0) {
+            Race intrinsicRace = getSpecies();
+            Race suppressedRace = getSuppressedRace();
             compositeRace = getSpellSlot()
                     .get(SpellPredicate.IS_MIMIC, true)
                     .map(AbstractDisguiseSpell::getDisguise)
                     .map(EntityAppearance::getAppearance)
                     .flatMap(Pony::of)
                     .map(Pony::getSpecies)
-                    .orElseGet(this::getSpecies).composite(
+                    .orElse(intrinsicRace).composite(
                   AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
                 : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
-                : null
+                : null,
+                AmuletSelectors.PEARL_NECKLACE.test(entity) ? suppressedRace.or(Race.SEAPONY) : null
             );
         }
 
@@ -393,69 +426,12 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         magicExhaustion = ManaConsumptionUtil.burnFood(entity, magicExhaustion);
 
         powers.tick();
-
-        BlockPos climbingPos = entity.getClimbingPos().orElse(null);
-
-        if (!getPhysics().isFlying() && !entity.getAbilities().flying && climbingPos != null && getObservedSpecies() == Race.CHANGELING) {
-            Vec3d vel = entity.getVelocity();
-            if (entity.isSneaking()) {
-                entity.setVelocity(vel.x, 0, vel.z);
-            }
-
-            distanceClimbed += vel.length();
-            BlockPos hangingPos = entity.getBlockPos().up();
-            boolean canhangHere = canHangAt(hangingPos);
-
-            if (distanceClimbed > 1.5) {
-                if (vel.length() > 0.08F && entity.age % (3 + entity.getRandom().nextInt(5)) == 0) {
-                    entity.playSound(USounds.ENTITY_PLAYER_CHANGELING_CLIMB,
-                            (float)entity.getRandom().nextTriangular(0.5, 0.3),
-                            entity.getSoundPitch()
-                    );
-                }
-
-                boolean skipHangCheck = false;
-                Direction newAttachDirection = entity.getHorizontalFacing();
-                if (isFaceClimbable(entity.getWorld(), entity.getBlockPos(), newAttachDirection) && (newAttachDirection != attachDirection)) {
-                    attachDirection = newAttachDirection;
-                    skipHangCheck = true;
-                }
-
-                if (!skipHangCheck && canhangHere) {
-                    if (!isHanging()) {
-                        startHanging(hangingPos);
-                    } else {
-                        if (((LivingEntityDuck)entity).isJumping()) {
-                            // Jump to let go
-                            return false;
-                        }
-                        entity.setVelocity(entity.getVelocity().multiply(1, 0, 1));
-                        entity.setSneaking(false);
-                    }
-                } else if (attachDirection != null) {
-                    if (isFaceClimbable(entity.getWorld(), entity.getBlockPos(), attachDirection)) {
-                        entity.setBodyYaw(attachDirection.asRotation());
-                        entity.prevBodyYaw = attachDirection.asRotation();
-                    } else {
-                        entity.setVelocity(vel);
-                        entity.isClimbing();
-                    }
-                }
-            }
-
-            if (canhangHere) {
-                setAnimation(Animation.HANG, Recipient.ANYONE);
-            } else if (distanceClimbed > 1.5) {
-                setAnimation(Animation.CLIMB, Recipient.ANYONE);
-            }
-        } else {
-            distanceClimbed = 0;
-        }
+        acrobatics.tick();
 
         if (getObservedSpecies() == Race.KIRIN) {
             var charge = getMagicalReserves().getCharge();
 
-            if (entity.isTouchingWater()) {
+            if (entity.isTouchingWater() || entity.isFrozen()) {
                 charge.multiply(0.5F);
             }
 
@@ -482,52 +458,34 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             }
         }
 
-        return super.beforeUpdate();
-    }
+        if (getCompositeRace().includes(Race.SEAPONY)) {
+            if (entity.isSubmergedInWater()) {
+                if (entity.getVelocity().lengthSquared() > 0.02) {
+                    spawnParticles(ParticleTypes.BUBBLE, 4);
+                }
+            } else {
+                if (entity.getAir() == entity.getMaxAir()) {
+                    entity.setAir(entity.getAir() - 1);
+                }
 
-    private boolean isFaceClimbable(World world, BlockPos pos, Direction direction) {
-        pos = pos.offset(direction);
-        return world.getBlockState(pos).isSideSolid(world, pos, direction, SideShapeType.CENTER);
-    }
+                if (entity.age % 60 == 0) {
+                    entity.playSound(SoundEvents.ENTITY_TURTLE_AMBIENT_LAND, 1, 1);
+                }
 
-    public Optional<BlockPos> getHangingPosition() {
-        return entity.getDataTracker().get(HANGING_POSITION);
-    }
-
-    public boolean isHanging() {
-        return getHangingPosition().isPresent();
-    }
-
-    public void stopHanging() {
-        entity.getDataTracker().set(HANGING_POSITION, Optional.empty());
-        entity.calculateDimensions();
-        ticksHanging = 0;
-    }
-
-    public void startHanging(BlockPos pos) {
-        entity.getDataTracker().set(HANGING_POSITION, Optional.of(pos));
-        entity.teleport(pos.getX() + 0.5, pos.getY() - 1, pos.getZ() + 0.5);
-        entity.setVelocity(Vec3d.ZERO);
-        entity.setSneaking(false);
-        entity.stopFallFlying();
-        getPhysics().cancelFlight(true);
-    }
-
-    public boolean canHangAt(BlockPos pos) {
-        if (!asWorld().isAir(pos) || !asWorld().isAir(pos.down())) {
-            return false;
+                if (entity.getAir() == -20) {
+                    entity.setAir(0);
+                    entity.damage(entity.getDamageSources().dryOut(), 2);
+                }
+            }
         }
 
-        pos = pos.up();
-        BlockState state = asWorld().getBlockState(pos);
-
-        return state.isSolidSurface(asWorld(), pos, entity, Direction.DOWN);
+        return super.beforeUpdate();
     }
 
     @Override
     public Optional<BlockPos> chooseClimbingPos() {
         if (getObservedSpecies() == Race.CHANGELING && getSpellSlot().get(SpellPredicate.IS_DISGUISE, false).isEmpty()) {
-            if (isFaceClimbable(entity.getWorld(), entity.getBlockPos(), entity.getHorizontalFacing()) || canHangAt(entity.getBlockPos())) {
+            if (acrobatics.isFaceClimbable(entity.getWorld(), entity.getBlockPos(), entity.getHorizontalFacing()) || acrobatics.canHangAt(entity.getBlockPos())) {
                 return Optional.of(entity.getBlockPos());
             }
         }
@@ -536,7 +494,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     private void updateAnimations() {
 
-        if (distanceClimbed > 0
+        if (acrobatics.distanceClimbed > 0
                 && ((animation.isOf(Animation.CLIMB) && entity.isSneaking()) || animation.isOf(Animation.HANG))
                 && entity.getClimbingPos().isPresent()
                 && entity.getVelocity().length() < 0.08F) {
@@ -548,7 +506,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         if (animationDuration > 0 && --animationDuration <= 0) {
 
-            if (animation.renderBothArms() && distanceClimbed > 0) {
+            if (animation.renderBothArms() && acrobatics.distanceClimbed > 0) {
                 return;
             }
 
@@ -559,17 +517,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private void updateBatPonyAbilities() {
         if (ticksSunImmunity > 0) {
             ticksSunImmunity--;
-        }
-
-        if (isHanging()) {
-            ((LivingEntityDuck)entity).setLeaningPitch(0);
-            if (!getObservedSpecies().canHang() || (ticksHanging++ > 2 && getHangingPosition().filter(getOrigin().down()::equals).filter(this::canHangAt).isEmpty())) {
-                if (!isClient()) {
-                    stopHanging();
-                }
-            }
-        } else {
-            ticksHanging = 0;
         }
 
         if (getObservedSpecies() == Race.BAT && !entity.hasPortalCooldown()) {
@@ -672,6 +619,15 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         if (getObservedSpecies() == Race.KIRIN) {
             return Optional.of(speed.multiply(0.5, 1, 0.5));
         }
+        if (getCompositeRace().includes(Race.SEAPONY)) {
+            float factor = entity.isSwimming() ? 1.132F : 1.0232F;
+            float max = 0.6F;
+            return Optional.of(new Vec3d(
+                    MathHelper.clamp(speed.x * factor, -max, max),
+                    speed.y * ((speed.y * getPhysics().getGravitySignum()) > 0 ? 1.2 : 1.101),
+                    MathHelper.clamp(speed.z * factor, -max, max)
+            ));
+        }
         return Optional.empty();
     }
 
@@ -697,6 +653,18 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             return true;
         }
         return false;
+    }
+
+    public int getImplicitEnchantmentLevel(Enchantment enchantment, int initial) {
+
+        if ((enchantment == Enchantments.AQUA_AFFINITY
+                || enchantment == Enchantments.DEPTH_STRIDER
+                || enchantment == Enchantments.LUCK_OF_THE_SEA
+                || enchantment == Enchantments.LURE) && getCompositeRace().includes(Race.SEAPONY)) {
+            return MathHelper.clamp(initial + 3, enchantment.getMinLevel(), enchantment.getMaxLevel());
+        }
+
+        return initial;
     }
 
     public Optional<Float> modifyDamage(DamageSource cause, float amount) {
@@ -767,6 +735,18 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             return Optional.of(distance);
         }
         return Optional.empty();
+    }
+
+    public void onEat(ItemStack stack) {
+        if (isClient()) {
+            return;
+        }
+
+        if (getObservedSpecies() == Race.KIRIN
+                && (stack.isIn(UTags.COOLS_OFF_KIRINS) || PotionUtil.getPotion(stack) == Potions.WATER)) {
+            getMagicalReserves().getCharge().multiply(0.5F);
+            getSpellSlot().get(SpellType.RAGE, false).ifPresent(RageAbilitySpell::setExtenguishing);
+        }
     }
 
     @SuppressWarnings("deprecation")
@@ -855,11 +835,11 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public void toSyncronisedNbt(NbtCompound compound) {
         super.toSyncronisedNbt(compound);
         compound.putString("playerSpecies", Race.REGISTRY.getId(getSpecies()).toString());
+        compound.putString("suppressedSpecies", Race.REGISTRY.getId(getSuppressedRace()).toString());
         compound.putFloat("magicExhaustion", magicExhaustion);
-        compound.putInt("ticksHanging", ticksHanging);
-        BLOCK_POS.writeOptional("hangingPosition", compound, getHangingPosition());
         compound.putInt("ticksInSun", ticksInSun);
         compound.putBoolean("hasShades", hasShades);
+        compound.put("acrobatics", acrobatics.toNBT());
         compound.put("powers", powers.toNBT());
         compound.put("gravity", gravity.toNBT());
         compound.put("charms", charms.toNBT());
@@ -868,6 +848,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         compound.putInt("levels", levels.get());
         compound.putInt("corruption", corruption.get());
         compound.putInt("ticksInvulnerable", ticksInvulnerable);
+        compound.putInt("ticksMetamorphising", ticksMetamorphising);
 
         NbtCompound progress = new NbtCompound();
         advancementProgress.forEach((key, count) -> {
@@ -880,6 +861,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public void fromSynchronizedNbt(NbtCompound compound) {
         super.fromSynchronizedNbt(compound);
         setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
+        setSuppressedRace(Race.fromName(compound.getString("suppressedSpecies"), Race.UNSET));
         powers.fromNBT(compound.getCompound("powers"));
         gravity.fromNBT(compound.getCompound("gravity"));
         charms.fromNBT(compound.getCompound("charms"));
@@ -887,13 +869,12 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         levels.set(compound.getInt("levels"));
         corruption.set(compound.getInt("corruption"));
         mana.fromNBT(compound.getCompound("mana"));
-
+        acrobatics.fromNBT(compound.getCompound("acrobatics"));
         magicExhaustion = compound.getFloat("magicExhaustion");
-        ticksHanging = compound.getInt("ticksHanging");
         ticksInvulnerable = compound.getInt("ticksInvulnerable");
-        entity.getDataTracker().set(HANGING_POSITION, NbtSerialisable.BLOCK_POS.readOptional("hangingPosition", compound));
         ticksInSun = compound.getInt("ticksInSun");
         hasShades = compound.getBoolean("hasShades");
+        ticksMetamorphising = compound.getInt("ticksMetamorphising");
 
         NbtCompound progress = compound.getCompound("advancementProgress");
         advancementProgress.clear();
@@ -911,10 +892,13 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 && oldPlayer.respawnRace.isUnset())
                 || oldPlayer.getSpecies().isUnset();
 
+        Race oldSuppressedRace = oldPlayer.getSuppressedRace();
+
         if (alive) {
             oldPlayer.getSpellSlot().stream(true).forEach(getSpellSlot()::put);
         } else {
             if (forcedSwap) {
+                oldSuppressedRace = Race.UNSET;
                 Channel.SERVER_SELECT_TRIBE.sendToPlayer(new MsgTribeSelect(Race.allPermitted(entity), "gui.unicopia.tribe_selection.respawn"), (ServerPlayerEntity)entity);
             } else {
                 oldPlayer.getSpellSlot().stream(true).filter(SpellPredicate.IS_PLACED).forEach(getSpellSlot()::put);
@@ -933,6 +917,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         setSpecies(oldPlayer.respawnRace != Race.UNSET && !alive ? oldPlayer.respawnRace : oldPlayer.getSpecies());
+        setSuppressedRace(oldSuppressedRace);
         getDiscoveries().copyFrom(oldPlayer.getDiscoveries(), alive);
         getPhysics().copyFrom(oldPlayer.getPhysics(), alive);
         if (!forcedSwap) {

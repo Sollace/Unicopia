@@ -40,6 +40,11 @@ abstract class MixinKeyboardInput extends Input {
                 movementForward = 0;
                 jumping = false;
             }
+
+            if (player.getAcrobatics().isImmobile()) {
+                movementSideways = 0;
+                movementForward = 0;
+            }
         }
     }
 }

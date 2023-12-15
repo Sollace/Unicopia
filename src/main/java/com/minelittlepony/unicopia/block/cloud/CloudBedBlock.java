@@ -3,20 +3,14 @@ package com.minelittlepony.unicopia.block.cloud;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
-import com.minelittlepony.unicopia.block.UBlockEntities;
-
-import net.minecraft.block.BedBlock;
+import com.minelittlepony.unicopia.block.FancyBedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.BedBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -25,12 +19,12 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class CloudBedBlock extends BedBlock {
+public class CloudBedBlock extends FancyBedBlock implements CloudLike {
     private final BlockState baseState;
     private final CloudBlock baseBlock;
 
-    public CloudBedBlock(BlockState baseState, Settings settings) {
-        super(DyeColor.WHITE, settings);
+    public CloudBedBlock(String base, BlockState baseState, Settings settings) {
+        super(base, settings);
         this.baseState = baseState;
         this.baseBlock = (CloudBlock)baseState.getBlock();
     }
@@ -82,21 +76,5 @@ public class CloudBedBlock extends BedBlock {
     @Deprecated
     public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
         return true;
-    }
-
-    @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new Tile(pos, state);
-    }
-
-    public static class Tile extends BedBlockEntity {
-        public Tile(BlockPos pos, BlockState state) {
-            super(pos, state);
-        }
-
-        @Override
-        public BlockEntityType<?> getType() {
-            return UBlockEntities.CLOUD_BED;
-        }
     }
 }

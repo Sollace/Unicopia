@@ -24,8 +24,10 @@ public class AccessoryFeatureRenderer<
 
     private static final List<FeatureFactory<?>> REGISTRY = new ArrayList<>();
 
-    public static <T extends LivingEntity> void register(FeatureFactory<T> factory) {
-        REGISTRY.add(factory);
+    public static void register(FeatureFactory<?>...factories) {
+        for (var factory : factories) {
+            REGISTRY.add(factory);
+        }
     }
 
     private final Iterable<Feature<T>> features;

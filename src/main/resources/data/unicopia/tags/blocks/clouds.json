@@ -3,7 +3,10 @@
   "values": [
     "unicopia:cloud",
     "unicopia:cloud_planks",
+    "unicopia:cloud_bricks",
     "unicopia:dense_cloud",
+    "unicopia:etched_cloud",
+    "unicopia:carved_cloud",
     "unicopia:compacted_cloud",
     "unicopia:compacted_cloud_planks",
     "unicopia:unstable_cloud",

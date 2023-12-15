@@ -12,10 +12,8 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 
 public class FoodPoisoningStatusEffect extends StatusEffect {
@@ -54,18 +52,18 @@ public class FoodPoisoningStatusEffect extends StatusEffect {
         return i <= 0 || duration % i == 0;
     }
 
-    public static TypedActionResult<ItemStack> apply(ItemConvertible sender, PlayerEntity user, Hand hand) {
+    public static TypedActionResult<ItemStack> apply(ItemStack stack, PlayerEntity user) {
         @Nullable
-        FoodComponent food = sender.asItem().getFoodComponent();
+        FoodComponent food = stack.getItem().getFoodComponent();
 
         if (food == null || !user.canConsume(food.isAlwaysEdible()) || !user.hasStatusEffect(UEffects.FOOD_POISONING)) {
-            return TypedActionResult.pass(user.getStackInHand(hand));
+            return TypedActionResult.pass(stack);
         }
 
         user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), USounds.Vanilla.ENTITY_PLAYER_BURP, SoundCategory.NEUTRAL,
                 1,
                 1 + (user.getWorld().random.nextFloat() - user.getWorld().random.nextFloat()) * 0.4f);
         user.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 1, true, false, false));
-        return TypedActionResult.fail(user.getStackInHand(hand));
+        return TypedActionResult.fail(stack);
     }
 }

@@ -1,0 +1,44 @@
+{
+	"textures": {
+		"particle": "#shell",
+		"shell": "unicopia:item/clam_shell"
+	},
+	"elements": [
+		{
+			"from": [8, 0.5, 0.6],
+			"to": [16, 0.5, 8.6],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [12, 0.5, 3]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "rotation": 270, "texture": "#shell"},
+				"down": {"uv": [16, 0, 0, 16], "rotation": 270, "texture": "#shell"}
+			}
+		},
+		{
+			"from": [0.36402, 0, 7.02286],
+			"to": [8.36402, 0, 15.02286],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [4.36402, 0, 11.02286]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "rotation": 270, "texture": "#shell"},
+				"down": {"uv": [16, 0, 0, 16], "rotation": 270, "texture": "#shell"}
+			}
+		},
+		{
+			"from": [1.36402, 0, 0.02286],
+			"to": [9.36402, 0, 8.02286],
+			"rotation": {"angle": 22.5, "axis": "z", "origin": [5.36402, 0, 4.02286]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "rotation": 180, "texture": "#shell"},
+				"down": {"uv": [0, 16, 16, 0], "rotation": 180, "texture": "#shell"}
+			}
+		},
+		{
+			"from": [7.75505, 0, 8.08433],
+			"to": [15.75505, 0, 16.08433],
+			"rotation": {"angle": -22.5, "axis": "x", "origin": [11.75505, 0, 12.08433]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "rotation": 90, "texture": "#shell"},
+				"down": {"uv": [0, 16, 16, 0], "rotation": 270, "texture": "#shell"}
+			}
+		}
+	]
+}

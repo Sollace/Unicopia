@@ -30,9 +30,15 @@ public class RageAbilitySpell extends AbstractSpell {
     private int age;
     private int ticksExtenguishing;
 
+    private int ticksToExtenguish;
+
     public RageAbilitySpell(CustomisedSpellType<?> type) {
         super(type);
         setHidden(true);
+    }
+
+    public void setExtenguishing() {
+        ticksToExtenguish += 15;
     }
 
     @Override
@@ -42,13 +48,17 @@ public class RageAbilitySpell extends AbstractSpell {
             return false;
         }
 
-        if (source.asEntity().isInsideWaterOrBubbleColumn()) {
+        if (source.asEntity().isInsideWaterOrBubbleColumn() || source.asEntity().isFrozen() || ticksToExtenguish > 0) {
             ticksExtenguishing++;
             source.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 1);
             source.spawnParticles(ParticleTypes.CLOUD, 12);
             setDirty();
         } else {
             ticksExtenguishing = 0;
+        }
+
+        if (ticksToExtenguish > 0) {
+            ticksToExtenguish--;
         }
 
         if (ticksExtenguishing > 10) {
@@ -94,7 +104,7 @@ public class RageAbilitySpell extends AbstractSpell {
         }
 
         if (source instanceof Pony pony) {
-            if (source.isClient() && pony.asEntity().getAttackCooldownProgress(0) == 0) {
+            if (pony.isClientPlayer() && pony.asEntity().getAttackCooldownProgress(0) == 0) {
                 InteractionManager.instance().playLoopingSound(source.asEntity(), InteractionManager.SOUND_KIRIN_RAGE, source.asWorld().random.nextLong());
             }
             Bar energyBar = pony.getMagicalReserves().getEnergy();

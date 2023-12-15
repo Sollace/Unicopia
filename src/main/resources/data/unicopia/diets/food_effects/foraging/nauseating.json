@@ -1,0 +1,22 @@
+{
+  "tags": [ "unicopia:food_types/forage_nauseating" ],
+  "food_component": {
+    "hunger": 2,
+    "saturation": 1
+  },
+  "ailment": {
+    "effects": [
+      {
+        "effect": "minecraft:weakness",
+        "seconds": 200,
+        "amplifier": 1,
+        "chance": 30
+      },
+      {
+        "effect": "unicopia:food_poisoning",
+        "seconds": 100,
+        "amplifier": 2
+      }
+    ]
+  }
+}

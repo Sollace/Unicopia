@@ -1,0 +1,41 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1.0,
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "unicopia:cloud_lump",
+          "functions": [
+            {
+              "add": false,
+              "count": 4,
+              "function": "minecraft:set_count"
+            },
+            {
+              "add": false,
+              "count": 8,
+              "function": "minecraft:set_count",
+              "conditions": [
+                {
+                  "block": "unicopia:etched_cloud_slab",
+                  "condition": "minecraft:block_state_property",
+                  "properties": {
+                    "type": "double"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
+    }
+  ]
+}

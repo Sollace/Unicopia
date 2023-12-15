@@ -54,9 +54,9 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
         registerRaceMapping(com.minelittlepony.api.pony.meta.Race.CHANGEDLING, Race.CHANGELING);
         registerRaceMapping(com.minelittlepony.api.pony.meta.Race.ZEBRA, Race.EARTH);
         registerRaceMapping(com.minelittlepony.api.pony.meta.Race.GRYPHON, Race.PEGASUS);
-        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.HIPPOGRIFF, Race.PEGASUS);
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.HIPPOGRIFF, Race.HIPPOGRIFF);
         registerRaceMapping(com.minelittlepony.api.pony.meta.Race.BATPONY, Race.BAT);
-        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.SEAPONY, Race.UNICORN);
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.SEAPONY, Race.SEAPONY);
     }
 
     private void onPonyModelPrepared(Entity entity, PonyModel<?> model, ModelAttributes.Mode mode) {
