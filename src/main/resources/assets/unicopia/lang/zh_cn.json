@@ -144,7 +144,7 @@
   "item.unicopia.amulet.energy": "能量: %d / %d",
   
   "item.unicopia.alicorn_amulet": "天角兽护符",
-  "item.unicopia.alicorn_amulet.lore": "老化度: %d",
+  "item.unicopia.alicorn_amulet.lore": "佩戴时长: %d",
   
   "item.unicopia.pearl_necklace": "珍珠项链",
   "item.unicopia.pearl_necklace.lore": "给予佩带者水下活动的能力",
