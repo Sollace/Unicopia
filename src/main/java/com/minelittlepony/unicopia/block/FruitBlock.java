@@ -26,7 +26,7 @@ public class FruitBlock extends Block implements Buckable {
     public static final MapCodec<FruitBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Direction.CODEC.fieldOf("attachment_face").forGetter(b -> b.attachmentFace),
             Registries.BLOCK.getCodec().fieldOf("stem").forGetter(b -> b.stem),
-            RecordCodecBuilder.create(i -> i.group(
+            RecordCodecBuilder.<VoxelShape>create(i -> i.group(
                     Codec.DOUBLE.fieldOf("stem_offset").forGetter(b -> (double)0),
                     Codec.DOUBLE.fieldOf("fruit_offset").forGetter(b -> (double)0)
             ).apply(i, FruitBlock::createFruitShape)).fieldOf("shape").forGetter(b -> b.shape),
