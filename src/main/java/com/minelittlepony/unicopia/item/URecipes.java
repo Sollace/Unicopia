@@ -13,7 +13,6 @@ import net.minecraft.recipe.CuttingRecipe;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.util.Identifier;
@@ -38,7 +37,7 @@ public interface URecipes {
     RecipeSerializer<GlowingRecipe> GLOWING_SERIALIZER = RecipeSerializer.register("unicopia:crafting_glowing", new SpecialRecipeSerializer<>(GlowingRecipe::new));
     RecipeSerializer<JarInsertRecipe> JAR_INSERT_SERIALIZER = RecipeSerializer.register("unicopia:jar_insert", new SpecialRecipeSerializer<>(JarInsertRecipe::new));
     RecipeSerializer<JarExtractRecipe> JAR_EXTRACT_SERIALIZER = RecipeSerializer.register("unicopia:jar_extract", new SpecialRecipeSerializer<>(JarExtractRecipe::new));
-    RecipeSerializer<ShapedRecipe> CRAFTING_MAGICAL_SERIALIZER = RecipeSerializer.register("unicopia:crafting_magical", new SpellShapedCraftingRecipe.Serializer());
+    RecipeSerializer<SpellShapedCraftingRecipe> CRAFTING_MAGICAL_SERIALIZER = RecipeSerializer.register("unicopia:crafting_magical", new SpellShapedCraftingRecipe.Serializer());
     RecipeSerializer<SpellCraftingRecipe> TRAIT_REQUIREMENT = RecipeSerializer.register("unicopia:spellbook/crafting", new SpellCraftingRecipe.Serializer());
     RecipeSerializer<SpellEnhancingRecipe> TRAIT_COMBINING = RecipeSerializer.register("unicopia:spellbook/combining", new SpellEnhancingRecipe.Serializer());
     RecipeSerializer<SpellDuplicatingRecipe> SPELL_DUPLICATING = RecipeSerializer.register("unicopia:spellbook/duplicating", new SpellDuplicatingRecipe.Serializer());

@@ -3,11 +3,15 @@ package com.minelittlepony.unicopia.block;
 import java.util.List;
 
 import com.minelittlepony.unicopia.ability.EarthPonyKickAbility.Buckable;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.math.*;
@@ -19,6 +23,16 @@ public class FruitBlock extends Block implements Buckable {
     public static final int DEFAULT_FRUIT_SIZE = 5;
     public static final double DEFAULT_STEM_OFFSET = 2.6F;
     public static final VoxelShape DEFAULT_SHAPE = createFruitShape(DEFAULT_STEM_OFFSET, DEFAULT_FRUIT_SIZE);
+    public static final MapCodec<FruitBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Direction.CODEC.fieldOf("attachment_face").forGetter(b -> b.attachmentFace),
+            Registries.BLOCK.getCodec().fieldOf("stem").forGetter(b -> b.stem),
+            RecordCodecBuilder.create(i -> i.group(
+                    Codec.DOUBLE.fieldOf("stem_offset").forGetter(b -> (double)0),
+                    Codec.DOUBLE.fieldOf("fruit_offset").forGetter(b -> (double)0)
+            ).apply(i, FruitBlock::createFruitShape)).fieldOf("shape").forGetter(b -> b.shape),
+            Codec.BOOL.fieldOf("flammable").forGetter(b -> false),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, FruitBlock::new));
 
     private final Direction attachmentFace;
     private final Block stem;
@@ -31,11 +45,16 @@ public class FruitBlock extends Block implements Buckable {
         return createCuboidShape(min, top - fruitSize, min, max, top, max);
     }
 
-    public FruitBlock(Settings settings, Direction attachmentFace, Block stem, VoxelShape shape) {
-        this(settings.sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY), attachmentFace, stem, shape, true);
+    @Override
+    public MapCodec<? extends FruitBlock> getCodec() {
+        return CODEC;
     }
 
-    public FruitBlock(Settings settings, Direction attachmentFace, Block stem, VoxelShape shape, boolean flammable) {
+    public FruitBlock(Direction attachmentFace, Block stem, VoxelShape shape, Settings settings) {
+        this(attachmentFace, stem, shape, true, settings.sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY));
+    }
+
+    public FruitBlock(Direction attachmentFace, Block stem, VoxelShape shape, boolean flammable, Settings settings) {
         super(settings.nonOpaque().suffocates(BlockConstructionUtils::never).blockVision(BlockConstructionUtils::never));
         this.attachmentFace = attachmentFace;
         this.stem = stem;

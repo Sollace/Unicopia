@@ -46,16 +46,16 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     private int inWaterTime;
 
-    public PhysicsBodyProjectileEntity(EntityType<PhysicsBodyProjectileEntity> type, World world) {
-        super(type, world);
+    public PhysicsBodyProjectileEntity(EntityType<PhysicsBodyProjectileEntity> type, World world, ItemStack stack) {
+        super(type, world, stack);
     }
 
-    public PhysicsBodyProjectileEntity(World world) {
-        this(UEntities.MUFFIN, world);
+    public PhysicsBodyProjectileEntity(World world, ItemStack stack) {
+        this(UEntities.MUFFIN, world, stack);
     }
 
-    public PhysicsBodyProjectileEntity(World world, @Nullable LivingEntity thrower) {
-        super(UEntities.MUFFIN, thrower, world);
+    public PhysicsBodyProjectileEntity(World world, @Nullable LivingEntity thrower, ItemStack stack) {
+        super(UEntities.MUFFIN, thrower, world, stack);
     }
 
     @Override

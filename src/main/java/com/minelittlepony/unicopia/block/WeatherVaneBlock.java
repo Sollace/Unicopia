@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
@@ -20,6 +21,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class WeatherVaneBlock extends BlockWithEntity {
+    public static final MapCodec<WeatherVaneBlock> CODEC = createCodec(WeatherVaneBlock::new);
     private static final VoxelShape SHAPE = VoxelShapes.union(
             Block.createCuboidShape(7.5F, 0, 7.5F, 8.5F, 14, 8.5F),
             Block.createCuboidShape(7, 0, 7, 9, 1, 9)
@@ -27,6 +29,11 @@ public class WeatherVaneBlock extends BlockWithEntity {
 
     protected WeatherVaneBlock(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    protected MapCodec<? extends WeatherVaneBlock> getCodec() {
+        return CODEC;
     }
 
     @Deprecated

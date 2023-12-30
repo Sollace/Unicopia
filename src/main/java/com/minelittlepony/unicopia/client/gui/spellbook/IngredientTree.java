@@ -134,7 +134,7 @@ public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         }
 
         @Override
-        public void renderButton(DrawContext context, int mouseX, int mouseY, float tickDelta) {
+        public void renderWidget(DrawContext context, int mouseX, int mouseY, float tickDelta) {
             RenderSystem.setShaderColor(1, 1, 1, 1);
             RenderSystem.enableBlend();
 

@@ -8,10 +8,15 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.EarthPonyKickAbility.Buckable;
 import com.minelittlepony.unicopia.compat.seasons.FertilizableUtil;
+import com.minelittlepony.unicopia.util.CodecUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.block.*;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
@@ -25,6 +30,12 @@ import net.minecraft.world.*;
 import net.minecraft.world.event.GameEvent;
 
 public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Buckable {
+    public static final MapCodec<FruitBearingBlock> CODEC = RecordCodecBuilder.<FruitBearingBlock>mapCodec(instance -> instance.group(
+            Codec.INT.fieldOf("overlay").forGetter(b -> b.overlay),
+            CodecUtils.supplierOf(Registries.BLOCK.getCodec()).fieldOf("fruit").forGetter(b -> b.fruit),
+            CodecUtils.supplierOf(ItemStack.CODEC).fieldOf("rotten_fruit").forGetter(b -> b.rottenFruitSupplier),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, FruitBearingBlock::new));
     public static final IntProperty AGE = Properties.AGE_25;
     public static final int WITHER_AGE = 15;
     public static final EnumProperty<Stage> STAGE = EnumProperty.of("stage", Stage.class);
@@ -36,7 +47,7 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
 
     private final int overlay;
 
-    public FruitBearingBlock(Settings settings, int overlay, Supplier<Block> fruit, Supplier<ItemStack> rottenFruitSupplier) {
+    public FruitBearingBlock(int overlay, Supplier<Block> fruit, Supplier<ItemStack> rottenFruitSupplier, Settings settings) {
         super(settings
                 .ticksRandomly()
                 .nonOpaque()
@@ -49,6 +60,11 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
         this.rottenFruitSupplier = rottenFruitSupplier;
         REGISTRY.add(this);
         FlammableBlockRegistry.getDefaultInstance().add(this, 30, 60);
+    }
+
+    @Override
+    public MapCodec<? extends FruitBearingBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

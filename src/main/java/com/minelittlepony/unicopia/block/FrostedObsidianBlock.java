@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.block;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -14,8 +16,16 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class FrostedObsidianBlock extends FrostedIceBlock {
+    public static final MapCodec<FrostedObsidianBlock> CODEC = createCodec(FrostedObsidianBlock::new);
+
     public FrostedObsidianBlock(Settings settings) {
         super(settings);
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    public MapCodec<FrostedIceBlock> getCodec() {
+        return (MapCodec)CODEC;
     }
 
     @Override

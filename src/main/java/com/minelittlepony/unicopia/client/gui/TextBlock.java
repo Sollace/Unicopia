@@ -24,7 +24,7 @@ public class TextBlock extends Label {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float partialTicks) {
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float partialTicks) {
         int textY = (int)(getY() + MinecraftClient.getInstance().textRenderer.fontHeight/1.5F);
 
         for (OrderedText line : getFont().wrapLines(getStyle().getText(), maxWidth)) {

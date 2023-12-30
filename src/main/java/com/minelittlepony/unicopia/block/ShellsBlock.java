@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.block;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -22,6 +24,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class ShellsBlock extends Block implements Waterloggable {
+    public static final MapCodec<ShellsBlock> CODEC = createCodec(ShellsBlock::new);
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     public static final IntProperty COUNT = IntProperty.of("count", 1, 4);
 
@@ -29,6 +32,11 @@ public class ShellsBlock extends Block implements Waterloggable {
 
     public ShellsBlock(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    protected MapCodec<? extends ShellsBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

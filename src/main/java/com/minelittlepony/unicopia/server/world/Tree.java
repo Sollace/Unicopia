@@ -11,10 +11,8 @@ import net.fabricmc.fabric.api.biome.v1.*;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistrySetupCallback;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
-import net.minecraft.block.sapling.SaplingGenerator;
 import net.minecraft.item.*;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.world.gen.GenerationStep;
@@ -136,12 +134,7 @@ public record Tree (
                 RegistryKey<PlacedFeature> i = RegistryKey.of(RegistryKeys.PLACED_FEATURE, id);
                 BiomeModifications.addFeature(selector, GenerationStep.Feature.VEGETAL_DECORATION, i);
                 return i;
-            }), saplingId.map(id -> UBlocks.register(id, saplingConstructor.apply(new SaplingGenerator() {
-                @Override
-                protected RegistryKey<ConfiguredFeature<?, ?>> getTreeFeature(Random rng, boolean flowersNearby) {
-                    return configuredFeatureId;
-                }
-            }, FabricBlockSettings.copy(Blocks.OAK_SAPLING)), ItemGroups.NATURAL)), countModifier);
+            }), saplingId.map(id -> UBlocks.register(id, saplingConstructor.apply(new SaplingGenerator("dark_oak", Optional.of(configuredFeatureId), Optional.empty(), Optional.empty()), FabricBlockSettings.copy(Blocks.OAK_SAPLING)), ItemGroups.NATURAL)), countModifier);
 
             if (REGISTRY.isEmpty()) {
                 bootstrap();

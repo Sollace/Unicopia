@@ -9,7 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
+import net.minecraft.world.WorldView;
 
 public class SoggyCloudStairsBlock extends CloudStairsBlock implements Soakable {
 
@@ -28,7 +28,7 @@ public class SoggyCloudStairsBlock extends CloudStairsBlock implements Soakable 
     }
 
     @Override
-    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         return dryBlock.get().getPickStack(world, pos, state);
     }
 

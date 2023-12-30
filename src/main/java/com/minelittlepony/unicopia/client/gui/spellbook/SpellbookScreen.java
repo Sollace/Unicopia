@@ -330,7 +330,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
         }
 
         @Override
-        public void renderButton(DrawContext context, int mouseX, int mouseY, float tickDelta) {
+        public void renderWidget(DrawContext context, int mouseX, int mouseY, float tickDelta) {
             if (!active) {
                return;
             }
@@ -338,7 +338,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
             int state = hovered ? 1 : 0;
 
             sprite.setTextureOffset(23 * state, (int)(479 + 6.5F - (increment * 6.5F)));
-            super.renderButton(context, mouseX, mouseY, tickDelta);
+            super.renderWidget(context, mouseX, mouseY, tickDelta);
         }
     }
 
@@ -353,7 +353,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
         }
 
         @Override
-        public void renderButton(DrawContext context, int mouseX, int mouseY, float tickDelta) {
+        public void renderWidget(DrawContext context, int mouseX, int mouseY, float tickDelta) {
             RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 
             RenderSystem.setShaderColor(1, 1, 1, alpha);

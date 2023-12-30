@@ -1,7 +1,12 @@
 package com.minelittlepony.unicopia.util;
 
+import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -10,7 +15,13 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Encoder;
 import com.mojang.serialization.MapCodec;
 
+import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.item.ItemConvertible;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.dynamic.Codecs;
+
 public interface CodecUtils {
+    Codec<ItemConvertible> ITEM = Registries.ITEM.getCodec().xmap(i -> () -> i, ItemConvertible::asItem);
     /**
      * Combines the result of two unrelated codecs into a single object.
      * <p>
@@ -57,5 +68,25 @@ public interface CodecUtils {
                 ), input));
             }
         });
+    }
+
+    static <K> Codec<K> xor(Codec<K> left, Codec<K> right) {
+        return Codecs.xor(left, right).xmap(either -> either.left().or(either::right).get(), Either::left);
+    }
+
+    static <K> Codec<Set<K>> setOf(Codec<K> codec) {
+        return codec.listOf().xmap(
+                l -> l.stream().distinct().collect(Collectors.toUnmodifiableSet()),
+                s -> new ArrayList<>(s)
+        );
+    }
+
+    static <K> Codec<Supplier<K>> supplierOf(Codec<K> codec) {
+        return codec.xmap(k -> () -> k, Supplier::get);
+    }
+
+    static MapCodec<TriState> tristateOf(String fieldName) {
+        return Codec.BOOL.optionalFieldOf(fieldName)
+                .<TriState>xmap(b -> b.map(TriState::of).orElse(TriState.DEFAULT), t -> Optional.ofNullable(t.get()));
     }
 }

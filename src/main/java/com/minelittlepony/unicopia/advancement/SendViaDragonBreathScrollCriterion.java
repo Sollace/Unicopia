@@ -3,34 +3,28 @@ package com.minelittlepony.unicopia.advancement;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.CodecUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.advancement.criterion.AbstractCriterion;
-import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.TypeFilter;
+import net.minecraft.util.dynamic.Codecs;
 
 public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendViaDragonBreathScrollCriterion.Conditions> {
     @Override
-    protected Conditions conditionsFromJson(JsonObject json, Optional<LootContextPredicate> playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
-        return new Conditions(playerPredicate,
-                ItemPredicate.fromJson(json.get("item")),
-                JsonHelper.getBoolean(json, "is_receiving_end", false),
-                json.has("recipient_name") ? Optional.of(JsonHelper.getString(json, "recipient_name")) : Optional.empty(),
-                json.has("recipient_present") ? TriState.of(JsonHelper.getBoolean(json, "recipient_present")) : TriState.DEFAULT,
-                json.has("counter") ? Optional.of(JsonHelper.getString(json, "counter")) : Optional.empty(),
-                RacePredicate.fromJson(json.get("race"))
-        );
+    public Codec<Conditions> getConditionsCodec() {
+        return Conditions.CODEC;
     }
 
     public void triggerSent(PlayerEntity player, ItemStack payload, String recipient, BiConsumer<String, Integer> counterCallback) {
@@ -53,23 +47,24 @@ public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendVi
         }
     }
 
-    public static class Conditions extends AbstractCriterionConditions {
-        private final Optional<ItemPredicate> item;
-        private final boolean isReceivingEnd;
-        private final Optional<String> recipientName;
-        private final TriState recipientPresent;
-        private final Optional<String> counter;
-        private final RacePredicate races;
-
-        public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item, boolean isReceivingEnd, Optional<String> recipient, TriState recipientPresent, Optional<String> counter, RacePredicate races) {
-            super(playerPredicate);
-            this.item = item;
-            this.isReceivingEnd = isReceivingEnd;
-            this.recipientName = recipient;
-            this.recipientPresent = recipientPresent;
-            this.counter = counter;
-            this.races = races;
-        }
+    public record Conditions (
+            Optional<LootContextPredicate> player,
+            Optional<ItemPredicate> item,
+            boolean isReceivingEnd,
+            Optional<String> recipientName,
+            TriState recipientPresent,
+            Optional<String> counter,
+            RacePredicate races
+    ) implements AbstractCriterion.Conditions {
+        public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(Conditions::player),
+                ItemPredicate.CODEC.optionalFieldOf("item").forGetter(Conditions::item),
+                Codec.BOOL.optionalFieldOf("is_receiving_end", false).forGetter(Conditions::isReceivingEnd),
+                Codec.STRING.optionalFieldOf("recipient_name").forGetter(Conditions::recipientName),
+                CodecUtils.tristateOf("recipient_present").forGetter(Conditions::recipientPresent),
+                Codec.STRING.optionalFieldOf("counter").forGetter(Conditions::counter),
+                RacePredicate.CODEC.fieldOf("races").forGetter(Conditions::races)
+            ).apply(instance, Conditions::new));
 
         public boolean test(ServerPlayerEntity player, ItemStack payload, String recipient, boolean receiving) {
             return isReceivingEnd == receiving
@@ -81,19 +76,6 @@ public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendVi
 
         private boolean isRecipientAbsent(ServerWorld world, String recipient) {
             return world.getEntitiesByType(TypeFilter.instanceOf(LivingEntity.class), e -> e.hasCustomName() && e.getCustomName().getString().equalsIgnoreCase(recipient)).isEmpty();
-        }
-
-        @Override
-        public JsonObject toJson() {
-            JsonObject json = super.toJson();
-            item.ifPresent(item -> json.add("item", item.toJson()));
-            json.add("race", races.toJson());
-            recipientName.ifPresent(recipient -> json.addProperty("recipient_name", recipient));
-            if (recipientPresent != TriState.DEFAULT) {
-                json.addProperty("recipient_present", recipientPresent.getBoxed());
-            }
-            counter.ifPresent(counter -> json.addProperty("counter", counter));
-            return json;
         }
     }
 }

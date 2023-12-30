@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.*;
 import net.minecraft.server.world.ServerWorld;
@@ -9,9 +10,16 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldAccess;
 
 public class ZapAppleLeavesPlaceholderBlock extends AirBlock {
+    public static final MapCodec<ZapAppleLeavesPlaceholderBlock> CODEC = createCodec(ZapAppleLeavesPlaceholderBlock::new);
 
-    ZapAppleLeavesPlaceholderBlock() {
-        super(Settings.create().replaceable().noCollision().dropsNothing().air());
+    ZapAppleLeavesPlaceholderBlock(Settings settings) {
+        super(settings);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public MapCodec<AirBlock> getCodec() {
+        return (MapCodec)CODEC;
     }
 
     @Override

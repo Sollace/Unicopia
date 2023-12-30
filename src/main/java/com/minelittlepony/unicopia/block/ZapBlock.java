@@ -3,6 +3,9 @@ package com.minelittlepony.unicopia.block;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -17,14 +20,25 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class ZapBlock extends Block {
+    public static final MapCodec<ZapBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            BlockState.CODEC.fieldOf("model_block").forGetter(b -> b.artificialModelBlock),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, ZapBlock::new));
     public static final BooleanProperty NATURAL = BooleanProperty.of("natural");
 
-    private final Block artificialModelBlock;
+    private final BlockState artificialModelBlock;
 
-    ZapBlock(Settings settings, Block artificialModelBlock) {
+    // unused but we keep it in the event we ever want to return to the zap planks idea
+    @Deprecated
+    ZapBlock(BlockState artificialModelBlock, Settings settings) {
         super(settings.strength(500, 1200));
         setDefaultState(getDefaultState().with(NATURAL, true));
         this.artificialModelBlock = artificialModelBlock;
+    }
+
+    @Override
+    public MapCodec<? extends ZapBlock> getCodec() {
+        return CODEC;
     }
 
     @Override
@@ -48,7 +62,7 @@ public class ZapBlock extends Block {
     @Override
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
         if (!state.get(NATURAL)) {
-            return artificialModelBlock.calcBlockBreakingDelta(artificialModelBlock.getDefaultState(), player, world, pos);
+            return artificialModelBlock.calcBlockBreakingDelta(player, world, pos);
         }
 
         float delta = super.calcBlockBreakingDelta(state, player, world, pos);

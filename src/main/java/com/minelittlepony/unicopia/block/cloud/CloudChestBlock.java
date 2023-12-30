@@ -45,8 +45,8 @@ public class CloudChestBlock extends ChestBlock implements CloudLike {
                 @Nullable
                 public ScreenHandler createMenu(int i, PlayerInventory playerInventory, PlayerEntity player) {
                     if (first.checkUnlocked(player) && second.checkUnlocked(player)) {
-                        first.checkLootInteraction(playerInventory.player);
-                        second.checkLootInteraction(playerInventory.player);
+                        first.generateLoot(playerInventory.player);
+                        second.generateLoot(playerInventory.player);
                         return GenericContainerScreenHandler.createGeneric9x6(i, playerInventory, inventory);
                     }
                     return null;

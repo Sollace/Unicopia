@@ -4,6 +4,11 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.util.CodecUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.block.*;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.ItemConvertible;
@@ -17,6 +22,13 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.*;
 
 public class SproutBlock extends CropBlock implements TintedBlock {
+    public static final MapCodec<SproutBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.INT.fieldOf("overlay").forGetter(b -> b.overlay),
+            CodecUtils.ITEM.fieldOf("seeds").forGetter(b -> b.seeds),
+            CodecUtils.supplierOf(BlockState.CODEC).fieldOf("mature_state").forGetter(b -> b.matureState),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, SproutBlock::new));
+
     private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
             Block.createCuboidShape(7, 0, 7, 9, 2, 9),
             Block.createCuboidShape(7, 0, 7, 9, 4, 9),
@@ -28,22 +40,31 @@ public class SproutBlock extends CropBlock implements TintedBlock {
             Block.createCuboidShape(7, 0, 7, 9, 16, 9)
     };
 
+    public static Settings settings() {
+        return Settings.create()
+                .noCollision()
+                .ticksRandomly()
+                .breakInstantly()
+                .sounds(BlockSoundGroup.STEM)
+                .pistonBehavior(PistonBehavior.DESTROY);
+    }
+
     private final ItemConvertible seeds;
 
     private final Supplier<BlockState> matureState;
 
     private final int overlay;
 
-    public SproutBlock(int overlay, ItemConvertible seeds, Supplier<BlockState> matureState) {
-        super(Settings.create()
-                .noCollision()
-                .ticksRandomly()
-                .breakInstantly()
-                .sounds(BlockSoundGroup.STEM)
-                .pistonBehavior(PistonBehavior.DESTROY));
+    public SproutBlock(int overlay, ItemConvertible seeds, Supplier<BlockState> matureState, Settings settings) {
+        super(settings);
         this.seeds = seeds;
         this.matureState = matureState;
         this.overlay = overlay;
+    }
+
+    @Override
+    public MapCodec<? extends SproutBlock> getCodec() {
+        return CODEC;
     }
 
     @Override
@@ -75,7 +96,7 @@ public class SproutBlock extends CropBlock implements TintedBlock {
     }
 
     @Override
-    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         return new ItemStack(seeds.asItem());
     }
 

@@ -67,7 +67,7 @@ public class ShapingBenchScreenHandler extends StonecutterScreenHandler {
             Item item = movingStack.getItem();
             originalStack = movingStack.copy();
             if (slot == 1) {
-                item.onCraft(movingStack, player.getWorld(), player);
+                item.onCraftByPlayer(movingStack, player.getWorld(), player);
                 if (!insertItem(movingStack, 2, 38, true)) {
                     return ItemStack.EMPTY;
                 }

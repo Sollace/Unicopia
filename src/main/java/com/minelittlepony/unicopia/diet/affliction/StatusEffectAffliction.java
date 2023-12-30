@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.diet.affliction;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -68,7 +69,8 @@ record StatusEffectAffliction(Identifier effect, Range seconds, Range amplifier,
                 text = Text.translatable("potion.withAmplifier", text, Text.translatable("potion.potency." + (amplifier.min())));
             }
 
-            text = Text.translatable("potion.withDuration", text, StringHelper.formatTicks(seconds.min() * 20));
+            float tickRate = MinecraftClient.getInstance().world.getTickManager().getTickRate();
+            text = Text.translatable("potion.withDuration", text, StringHelper.formatTicks(seconds.min() * 20, tickRate));
 
             if (chance > 0) {
                 text = Text.translatable("potion.withChance", chance, text);

@@ -5,9 +5,14 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.compat.seasons.FertilizableUtil;
+import com.minelittlepony.unicopia.util.CodecUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.*;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -18,6 +23,18 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.*;
 
 public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
+    private static final Codec<Supplier<SegmentedCropBlock>> SEGMENT_CODEC = CodecUtils.supplierOf(Registries.BLOCK.getCodec().xmap(
+            b -> (SegmentedCropBlock)b,
+            b -> (Block)b
+    ));
+    public static final MapCodec<SegmentedCropBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.INT.fieldOf("max_age").forGetter(b -> b.getAgeProperty().getValues().stream().mapToInt(i -> i).max().orElse(0)),
+            Codec.INT.fieldOf("progression_age").forGetter(b -> b.progressionAge),
+            CodecUtils.ITEM.fieldOf("seeds").forGetter(b -> b.seeds),
+            SEGMENT_CODEC.optionalFieldOf("prev", null).forGetter(b -> b.prevSegmentSupplier),
+            SEGMENT_CODEC.optionalFieldOf("next", null).forGetter(b -> b.nextSegmentSupplier),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, SegmentedCropBlock::create));
 
     static final float BASE_GROWTH_CHANCE = /*1 in */ 50F /* chance, half the speed of regular crops */;
 
@@ -30,10 +47,10 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
 
     private final int progressionAge;
 
-    public static SegmentedCropBlock create(final int maxAge, int progressionAge, Block.Settings settings,
+    public static SegmentedCropBlock create(final int maxAge, int progressionAge,
             ItemConvertible seeds,
             @Nullable Supplier<SegmentedCropBlock> prevSegmentSupplier,
-            @Nullable Supplier<SegmentedCropBlock> nextSegmentSupplier) {
+            @Nullable Supplier<SegmentedCropBlock> nextSegmentSupplier, Block.Settings settings) {
 
         final IntProperty age = IntProperty.of("age", 0, maxAge);
         return new SegmentedCropBlock(progressionAge, settings, seeds, prevSegmentSupplier, nextSegmentSupplier) {
@@ -66,9 +83,14 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
     }
 
     public SegmentedCropBlock createNext(int progressionAge) {
-        SegmentedCropBlock next = create(getMaxAge() - this.progressionAge, progressionAge, Settings.copy(this), seeds, () -> this, null);
+        SegmentedCropBlock next = create(getMaxAge() - this.progressionAge, progressionAge, seeds, () -> this, null, Settings.copy(this));
         nextSegmentSupplier = () -> next;
         return next;
+    }
+
+    @Override
+    public MapCodec<? extends SegmentedCropBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

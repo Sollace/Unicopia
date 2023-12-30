@@ -18,7 +18,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.recipe.RecipeCodecs;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.collection.DefaultedList;
@@ -125,7 +124,7 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<SpellCraftingRecipe> {
-        private static final Codec<ItemStack> RESULT_CODEC = CodecUtils.extend(RecipeCodecs.CRAFTING_RESULT, SpellType.REGISTRY.getCodec().fieldOf("spell")).xmap(
+        private static final Codec<ItemStack> RESULT_CODEC = CodecUtils.extend(ItemStack.RECIPE_RESULT_CODEC, SpellType.REGISTRY.getCodec().fieldOf("spell")).xmap(
                 pair -> pair.getSecond().map(spell -> EnchantableItem.enchant(pair.getFirst().orElse(ItemStack.EMPTY), spell)).orElse(pair.getFirst().orElse(ItemStack.EMPTY)),
                 stack -> Pair.of(Optional.of(stack), EnchantableItem.getSpellKeyOrEmpty(stack))
         );

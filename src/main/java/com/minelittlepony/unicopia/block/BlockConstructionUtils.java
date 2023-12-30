@@ -16,12 +16,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 
 interface BlockConstructionUtils {
-    static ButtonBlock woodenButton() {
-        return woodenButton(BlockSoundGroup.WOOD, BlockSetType.OAK);
-    }
-
-    static ButtonBlock woodenButton(BlockSoundGroup soundGroup, BlockSetType setType) {
-        return new ButtonBlock(AbstractBlock.Settings.create().noCollision().strength(0.5f).pistonBehavior(PistonBehavior.DESTROY).sounds(soundGroup), setType, 30, true);
+    static ButtonBlock woodenButton(BlockSetType setType) {
+        return new ButtonBlock(setType, 30, AbstractBlock.Settings.create().noCollision().strength(0.5f).pistonBehavior(PistonBehavior.DESTROY));
     }
 
     static boolean never(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {

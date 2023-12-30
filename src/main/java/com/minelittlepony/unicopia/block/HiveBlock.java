@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -29,6 +30,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class HiveBlock extends ConnectingBlock {
+    public static final MapCodec<HiveBlock> CODEC = createCodec(HiveBlock::new);
     static final BooleanProperty AWAKE = BooleanProperty.of("awake");
     static final Collection<BooleanProperty> PROPERTIES = FACING_PROPERTIES.values();
 
@@ -38,6 +40,11 @@ public class HiveBlock extends ConnectingBlock {
         PROPERTIES.forEach(property -> {
             setDefaultState(getDefaultState().with(property, true));
         });
+    }
+
+    @Override
+    protected MapCodec<? extends HiveBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

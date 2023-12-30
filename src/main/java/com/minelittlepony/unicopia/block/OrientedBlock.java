@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.block;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FacingBlock;
@@ -9,8 +11,15 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 
 public class OrientedBlock extends FacingBlock {
+    public static final MapCodec<OrientedBlock> CODEC = createCodec(OrientedBlock::new);
+
     protected OrientedBlock(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    protected MapCodec<? extends OrientedBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

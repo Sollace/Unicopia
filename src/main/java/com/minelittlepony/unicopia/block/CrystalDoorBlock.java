@@ -6,6 +6,8 @@ import com.minelittlepony.unicopia.EquineContext;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.item.UItems;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSetType;
@@ -24,9 +26,18 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class CrystalDoorBlock extends DoorBlock {
+    public static final MapCodec<CrystalDoorBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            BlockSetType.CODEC.fieldOf("block_set_type").forGetter(CrystalDoorBlock::getBlockSetType),
+            DoorBlock.createSettingsCodec()
+    ).apply(instance, CrystalDoorBlock::new));
 
-    public CrystalDoorBlock(Settings settings, BlockSetType blockSet) {
-        super(settings, blockSet);
+    public CrystalDoorBlock(BlockSetType blockSet, Settings settings) {
+        super(blockSet, settings);
+    }
+
+    @Override
+    public MapCodec<? extends CrystalDoorBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

@@ -3,13 +3,18 @@ package com.minelittlepony.unicopia.block;
 import java.util.function.Supplier;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.util.CodecUtils;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SnowBlock;
 import net.minecraft.block.SpreadableBlock;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -21,12 +26,21 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.light.ChunkLightProvider;
 
 public class GrowableBlock extends SpreadableBlock {
+    public static final MapCodec<GrowableBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            CodecUtils.supplierOf(Registries.BLOCK.getCodec()).fieldOf("dead").forGetter(b -> b.dead),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, GrowableBlock::new));
 
     private final Supplier<Block> dead;
 
-    protected GrowableBlock(Settings settings, Supplier<Block> converted) {
+    protected GrowableBlock(Supplier<Block> converted, Settings settings) {
         super(settings);
         this.dead = converted;
+    }
+
+    @Override
+    protected MapCodec<? extends GrowableBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

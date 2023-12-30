@@ -5,7 +5,10 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.EarthPonyGrowAbility;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,16 +28,25 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class ThornBudBlock extends Block implements EarthPonyGrowAbility.Growable, Fertilizable {
+    public static final MapCodec<ThornBudBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            BlockState.CODEC.fieldOf("branch_state").forGetter(b -> b.branchState),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, ThornBudBlock::new));
     static final DirectionProperty FACING = Properties.FACING;
     static final int MAX_DISTANCE = 25;
     static final IntProperty DISTANCE = IntProperty.of("distance", 0, MAX_DISTANCE);
 
     private final BlockState branchState;
 
-    public ThornBudBlock(Settings settings, BlockState branchState) {
+    public ThornBudBlock(BlockState branchState, Settings settings) {
         super(settings);
         setDefaultState(getDefaultState().with(FACING, Direction.DOWN).with(DISTANCE, 0));
         this.branchState = branchState;
+    }
+
+    @Override
+    protected MapCodec<? extends ThornBudBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

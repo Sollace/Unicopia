@@ -15,8 +15,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class SoggyCloudSlabBlock extends CloudSlabBlock {
 
@@ -35,7 +35,7 @@ public class SoggyCloudSlabBlock extends CloudSlabBlock {
     }
 
     @Override
-    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         return dryBlock.get().getPickStack(world, pos, state);
     }
 

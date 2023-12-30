@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.block;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.block.BlockSetType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -10,9 +13,18 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
 
 public class StableDoorBlock extends DoorBlock {
+    public static final MapCodec<StableDoorBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            BlockSetType.CODEC.fieldOf("block_set_type").forGetter(StableDoorBlock::getBlockSetType),
+            DoorBlock.createSettingsCodec()
+    ).apply(instance, StableDoorBlock::new));
 
-    public StableDoorBlock(Settings settings, BlockSetType blockSet) {
-        super(settings, blockSet);
+    public StableDoorBlock(BlockSetType blockSet, Settings settings) {
+        super(blockSet, settings);
+    }
+
+    @Override
+    public MapCodec<? extends StableDoorBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

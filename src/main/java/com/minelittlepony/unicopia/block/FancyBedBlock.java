@@ -8,6 +8,9 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.item.BedsheetsItem;
 import com.minelittlepony.unicopia.util.VoxelShapeUtil;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
@@ -30,6 +33,10 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class FancyBedBlock extends BedBlock {
+    public static final MapCodec<FancyBedBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.STRING.fieldOf("base").forGetter(b -> b.base),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, FancyBedBlock::new));
     private static final List<Function<Direction, VoxelShape>> SHAPES = List.of(
         VoxelShapeUtil.rotator(VoxelShapes.union(
                 createCuboidShape(0, 3, 1, 16, 9, 16),
@@ -50,6 +57,12 @@ public class FancyBedBlock extends BedBlock {
     public FancyBedBlock(String base, Settings settings) {
         super(DyeColor.WHITE, settings);
         this.base = base;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public MapCodec<BedBlock> getCodec() {
+        return (MapCodec)CODEC;
     }
 
     @Override

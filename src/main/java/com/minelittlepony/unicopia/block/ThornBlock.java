@@ -4,14 +4,19 @@ import java.util.Collection;
 import java.util.function.Supplier;
 import com.minelittlepony.unicopia.ability.EarthPonyGrowAbility;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
+import com.minelittlepony.unicopia.util.CodecUtils;
 import com.minelittlepony.unicopia.util.VecHelper;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ConnectingBlock;
 import net.minecraft.block.Fertilizable;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -29,6 +34,10 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class ThornBlock extends ConnectingBlock implements EarthPonyGrowAbility.Growable, Fertilizable {
+    public static final MapCodec<ThornBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            CodecUtils.supplierOf(Registries.BLOCK.getCodec()).fieldOf("bud").forGetter(b -> b.bud),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, ThornBlock::new));
     static final Collection<BooleanProperty> PROPERTIES = FACING_PROPERTIES.values();
     static final DirectionProperty FACING = Properties.FACING;
     static final int MAX_DISTANCE = 25;
@@ -38,7 +47,7 @@ public class ThornBlock extends ConnectingBlock implements EarthPonyGrowAbility.
 
     private final Supplier<Block> bud;
 
-    public ThornBlock(Settings settings, Supplier<Block> bud) {
+    public ThornBlock(Supplier<Block> bud, Settings settings) {
         super(0.125F, settings);
         this.bud = bud;
         PROPERTIES.forEach(property -> setDefaultState(getDefaultState().with(property, false)));
@@ -48,6 +57,11 @@ public class ThornBlock extends ConnectingBlock implements EarthPonyGrowAbility.
                 .with(AGE, 0)
                 .with(DOWN, true)
         );
+    }
+
+    @Override
+    public MapCodec<? extends ThornBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

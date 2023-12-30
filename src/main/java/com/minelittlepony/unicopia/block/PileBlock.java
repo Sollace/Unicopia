@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.block;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,6 +26,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class PileBlock extends Block implements Waterloggable {
+    public static final MapCodec<PileBlock> CODEC = createCodec(settings -> new PileBlock(settings, PileBlock.MYSTERIOUS_EGG_SHAPES));
     public static final int MAX_COUNT = 3;
     public static final IntProperty COUNT = IntProperty.of("count", 1, MAX_COUNT);
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -48,6 +50,11 @@ public class PileBlock extends Block implements Waterloggable {
         super(settings.offset(OffsetType.XZ).dynamicBounds());
         setDefaultState(getDefaultState().with(COUNT, 1));
         this.shapes = shapes;
+    }
+
+    @Override
+    protected MapCodec<? extends PileBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

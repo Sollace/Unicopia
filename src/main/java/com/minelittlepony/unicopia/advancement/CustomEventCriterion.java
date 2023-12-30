@@ -4,27 +4,23 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.CodecUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.advancement.criterion.AbstractCriterion;
-import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.entity.Entity;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
+import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
 public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion.Conditions> {
     @Override
-    protected Conditions conditionsFromJson(JsonObject json, Optional<LootContextPredicate> playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
-        return new Conditions(
-                playerPredicate,
-                JsonHelper.getString(json, "event"),
-                RacePredicate.fromJson(json.get("race")),
-                json.has("flying") ? json.get("flying").getAsBoolean() : null,
-                JsonHelper.getInt(json, "repeats", 0)
-        );
+    public Codec<Conditions> getConditionsCodec() {
+        return Conditions.CODEC;
     }
 
     public CustomEventCriterion.Trigger createTrigger(String name) {
@@ -41,42 +37,26 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
         void trigger(@Nullable Entity player);
     }
 
-    public static class Conditions extends AbstractCriterionConditions {
-        private final String event;
-
-        private final RacePredicate races;
-
-        private final Boolean flying;
-
-        private final int repeatCount;
-
-        public Conditions(Optional<LootContextPredicate> playerPredicate, String event, RacePredicate races, Boolean flying, int repeatCount) {
-            super(playerPredicate);
-            this.event = event;
-            this.races = races;
-            this.flying = flying;
-            this.repeatCount = repeatCount;
-        }
+    public record Conditions (
+            Optional<LootContextPredicate> player,
+            String event,
+            RacePredicate races,
+            TriState flying,
+            int repeatCount) implements AbstractCriterion.Conditions {
+        public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(Conditions::player),
+                Codec.STRING.fieldOf("event").forGetter(Conditions::event),
+                RacePredicate.CODEC.fieldOf("races").forGetter(Conditions::races),
+                CodecUtils.tristateOf("flying").forGetter(Conditions::flying),
+                Codec.INT.optionalFieldOf("repeatCount", 0).forGetter(Conditions::repeatCount)
+            ).apply(instance, Conditions::new));
 
         public boolean test(String event, int count, ServerPlayerEntity player) {
+            boolean isFlying = Pony.of(player).getPhysics().isFlying();
             return this.event.equalsIgnoreCase(event)
                     && races.test(player)
-                    && (flying == null || flying == Pony.of(player).getPhysics().isFlying())
+                    && flying.orElse(isFlying) == isFlying
                     && (repeatCount <= 0 || (count > 0 && count % repeatCount == 0));
-        }
-
-        @Override
-        public JsonObject toJson() {
-            JsonObject json = super.toJson();
-            json.addProperty("event", event);
-            json.add("race", races.toJson());
-            if (flying != null) {
-                json.addProperty("flying", flying);
-            }
-            if (repeatCount > 0) {
-                json.addProperty("repeats", repeatCount);
-            }
-            return json;
         }
     }
 }

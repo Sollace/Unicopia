@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.EquineContext;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.item.UItems;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropBlock;
@@ -20,6 +21,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.*;
 
 public class RockCropBlock extends CropBlock {
+    public static final MapCodec<RockCropBlock> CODEC = createCodec(RockCropBlock::new);
     private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[] {
             VoxelShapes.union(
                     createCuboidShape(7, -1, 11, 8, 0, 12),
@@ -65,6 +67,11 @@ public class RockCropBlock extends CropBlock {
 
     protected RockCropBlock(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    public MapCodec<? extends RockCropBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

@@ -4,6 +4,7 @@ import java.util.function.Predicate;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.behaviour.EntityBehaviour;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.PhysicsBodyProjectileEntity;
 
@@ -28,7 +29,7 @@ public interface UEntities {
             .trackRangeBlocks(100)
             .trackedUpdateRate(2)
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));
-    EntityType<PhysicsBodyProjectileEntity> MUFFIN = register("muffin", FabricEntityTypeBuilder.<PhysicsBodyProjectileEntity>create(SpawnGroup.MISC, PhysicsBodyProjectileEntity::new)
+    EntityType<PhysicsBodyProjectileEntity> MUFFIN = register("muffin", FabricEntityTypeBuilder.<PhysicsBodyProjectileEntity>create(SpawnGroup.MISC, (type, world) -> new PhysicsBodyProjectileEntity(type, world, UItems.MUFFIN.getDefaultStack()))
             .trackRangeBlocks(100)
             .trackedUpdateRate(2)
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));

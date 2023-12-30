@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.compat.seasons.FertilizableUtil;
 import com.minelittlepony.unicopia.item.UItems;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -23,6 +24,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class PineappleCropBlock extends CropBlock {
+    public static final MapCodec<PineappleCropBlock> CODEC = createCodec(PineappleCropBlock::new);
     public static final EnumProperty<BlockHalf> HALF = Properties.BLOCK_HALF;
     public static final BooleanProperty WILD = BooleanProperty.of("wild");
 
@@ -31,9 +33,13 @@ public class PineappleCropBlock extends CropBlock {
         setDefaultState(getDefaultState().with(HALF, BlockHalf.BOTTOM).with(WILD, false));
     }
 
+    @Override
+    public MapCodec<? extends PineappleCropBlock> getCodec() {
+        return CODEC;
+    }
 
     @Override
-    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         if (state.get(HALF) == BlockHalf.TOP) {
             return UItems.PINEAPPLE.getDefaultStack();
         }

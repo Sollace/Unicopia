@@ -90,6 +90,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
         int tabY,
         int color,
         List<Page> pages) {
+        @Deprecated
         public Chapter(Identifier id, JsonObject json) {
             this(id,
                 TabSide.valueOf(JsonHelper.getString(json, "side")),
@@ -99,6 +100,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             );
         }
 
+        @Deprecated
         private static List<Page> loadContent(JsonObject json) {
             return Optional.of(JsonHelper.getArray(json, "pages", new JsonArray()))
                 .filter(pages -> pages.size() > 0)
@@ -123,13 +125,15 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             int level,
             List<Element> elements
         ) {
+        @Deprecated
         public Page(JsonElement json) {
             this(json.getAsJsonObject());
         }
 
+        @Deprecated
         public Page(JsonObject json) {
             this(
-                Text.Serializer.fromJson(json.get("title")),
+                Text.Serialization.fromJsonTree(json.get("title")),
                 JsonHelper.getInt(json, "level", 0),
                 new ArrayList<>()
             );
@@ -200,6 +204,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
         }
 
         record Ingredients(List<Element> entries) implements Element {
+            @Deprecated
             static Element loadIngredient(JsonObject json) {
                 int count = JsonHelper.getInt(json, "count", 1);
                 if (json.has("item")) {
@@ -214,7 +219,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
                     return new Multi(count, new Id((byte)4, Identifier.tryParse(json.get("spell").getAsString())));
                 }
 
-                return new Multi(count, new TextBlock(Text.Serializer.fromJson(json.get("text"))));
+                return new Multi(count, new TextBlock(Text.Serialization.fromJsonTree(json.get("text"))));
             }
 
             @Override
@@ -258,7 +263,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
                 }
             }
 
-            return new TextBlock(Text.Serializer.fromJson(json));
+            return new TextBlock(Text.Serialization.fromJsonTree(json));
         }
 
         private static Bounds boundsFromJson(JsonObject el) {

@@ -197,7 +197,7 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
         }
 
         @Override
-        public void renderButton(DrawContext context, int mouseX, int mouseY, float tickDelta) {
+        public void renderWidget(DrawContext context, int mouseX, int mouseY, float tickDelta) {
             TraitDiscovery discoveries = Pony.of(MinecraftClient.getInstance().player).getDiscoveries();
             setEnabled(discoveries.isKnown(trait));
 
@@ -213,7 +213,7 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
                 context.drawTexture(SpellbookScreen.TEXTURE, getX() - 8, getY() - 8, 225, 219, 35, 32, 512, 256);
             }
 
-            super.renderButton(context, mouseX, mouseY, tickDelta);
+            super.renderWidget(context, mouseX, mouseY, tickDelta);
             hovered &= active;
         }
 

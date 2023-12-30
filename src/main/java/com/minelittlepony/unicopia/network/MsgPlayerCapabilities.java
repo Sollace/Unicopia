@@ -15,6 +15,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.nbt.NbtTagSizeTracker;
 
 /**
  * Sent to the client to update various data pertaining to a particular player.
@@ -30,7 +31,7 @@ public class MsgPlayerCapabilities implements HandledPacket<PlayerEntity> {
     MsgPlayerCapabilities(PacketByteBuf buffer) {
         playerId = buffer.readUuid();
         try (InputStream in = new ByteBufInputStream(buffer)) {
-            compoundTag = NbtIo.readCompressed(in);
+            compoundTag = NbtIo.readCompressed(in, NbtTagSizeTracker.ofUnlimitedBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

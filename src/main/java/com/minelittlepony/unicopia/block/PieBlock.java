@@ -2,7 +2,10 @@ package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.util.CodecUtils;
 import com.minelittlepony.unicopia.util.SoundEmitter;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
@@ -28,6 +31,12 @@ import net.minecraft.world.*;
 import net.minecraft.world.event.GameEvent;
 
 public class PieBlock extends Block implements Waterloggable {
+    public static final MapCodec<PieBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            CodecUtils.ITEM.fieldOf("slice_item").forGetter(b -> b.sliceItem),
+            CodecUtils.ITEM.fieldOf("normal_item").forGetter(b -> b.normalItem),
+            CodecUtils.ITEM.fieldOf("stomped_item").forGetter(b -> b.stompedItem),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, PieBlock::new));
     public static final int MAX_BITES = 3;
     public static final IntProperty BITES = IntProperty.of("bites", 0, MAX_BITES);
     public static final BooleanProperty STOMPED = BooleanProperty.of("stomped");
@@ -50,12 +59,17 @@ public class PieBlock extends Block implements Waterloggable {
     private final ItemConvertible normalItem;
     private final ItemConvertible stompedItem;
 
-    public PieBlock(Settings settings, ItemConvertible sliceItem, ItemConvertible normalItem, ItemConvertible stompedItem) {
+    public PieBlock(ItemConvertible sliceItem, ItemConvertible normalItem, ItemConvertible stompedItem, Settings settings) {
         super(settings);
         setDefaultState(getDefaultState().with(STOMPED, false).with(WATERLOGGED, false));
         this.sliceItem = sliceItem;
         this.normalItem = normalItem;
         this.stompedItem = stompedItem;
+    }
+
+    @Override
+    protected MapCodec<? extends PieBlock> getCodec() {
+        return CODEC;
     }
 
     @Deprecated
@@ -127,7 +141,7 @@ public class PieBlock extends Block implements Waterloggable {
     }
 
     @Override
-    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         return (state.get(STOMPED) ? stompedItem : normalItem).asItem().getDefaultStack();
     }
 

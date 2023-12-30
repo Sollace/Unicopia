@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.block;
 
 import org.joml.Vector3f;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SideShapeType;
@@ -20,8 +22,15 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SpikesBlock extends OrientedBlock {
+    public static final MapCodec<SpikesBlock> CODEC = createCodec(SpikesBlock::new);
+
     public SpikesBlock(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    protected MapCodec<? extends SpikesBlock> getCodec() {
+        return CODEC;
     }
 
     @Deprecated

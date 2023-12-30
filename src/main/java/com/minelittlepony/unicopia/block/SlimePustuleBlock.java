@@ -6,6 +6,7 @@ import java.util.Locale;
 import org.joml.Vector3f;
 
 import com.minelittlepony.unicopia.USounds;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -40,6 +41,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class SlimePustuleBlock extends Block {
+    public static final MapCodec<SlimePustuleBlock> CODEC = createCodec(SlimePustuleBlock::new);
     private static final EnumProperty<Shape> SHAPE = EnumProperty.of("shape", Shape.class);
     private static final BooleanProperty POWERED = Properties.POWERED;
     private static final Direction[] DIRECTIONS = Arrays.stream(Direction.values())
@@ -63,6 +65,11 @@ public class SlimePustuleBlock extends Block {
     public SlimePustuleBlock(Settings settings) {
         super(settings.ticksRandomly());
         setDefaultState(getDefaultState().with(SHAPE, Shape.DRIP).with(POWERED, false));
+    }
+
+    @Override
+    protected MapCodec<? extends SlimePustuleBlock> getCodec() {
+        return CODEC;
     }
 
     @Override
@@ -113,7 +120,7 @@ public class SlimePustuleBlock extends Block {
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (state.get(SHAPE) == Shape.POD) {
             world.getOtherEntities(null, new Box(pos).expand(1)).forEach(entity -> {
                 entity.damage(entity.getDamageSources().inFire(), 2);
@@ -147,9 +154,11 @@ public class SlimePustuleBlock extends Block {
                         world.random.nextGaussian() * 1.5F
                 );
             }
-        } else {
-            super.onBreak(world, pos, state, player);
+
+            return state;
         }
+
+        return super.onBreak(world, pos, state, player);
     }
 
     @Override

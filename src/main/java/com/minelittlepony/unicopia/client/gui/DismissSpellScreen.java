@@ -198,7 +198,8 @@ public class DismissSpellScreen extends GameGui {
                 tooltip.addAll(FlowingText.wrap(Text.translatable(actualSpell.getType().getTranslationKey() + ".lore").formatted(actualSpell.getAffinity().getColor()), 180).toList());
                 if (spell instanceof TimedSpell timed) {
                     tooltip.add(ScreenTexts.EMPTY);
-                    tooltip.add(Text.translatable("gui.unicopia.dispell_screen.time_left", StringHelper.formatTicks(timed.getTimer().getTicksRemaining())));
+                    float tickRate = MinecraftClient.getInstance().world.getTickManager().getTickRate();
+                    tooltip.add(Text.translatable("gui.unicopia.dispell_screen.time_left", StringHelper.formatTicks(timed.getTimer().getTicksRemaining(), tickRate)));
                 }
                 tooltip.add(ScreenTexts.EMPTY);
                 tooltip.add(Text.translatable("gui.unicopia.dispell_screen.discard"));

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.*;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,9 +15,10 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 
 public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock {
+    public static final MapCodec<BaseZapAppleLeavesBlock> CODEC = LeavesBlock.createCodec(BaseZapAppleLeavesBlock::new);
 
-    BaseZapAppleLeavesBlock() {
-        super(Settings.create()
+    public static Settings settings() {
+        return Settings.create()
                 .mapColor(MapColor.PURPLE)
                 .strength(500, 1200)
                 .ticksRandomly()
@@ -24,8 +26,16 @@ public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock 
                 .nonOpaque()
                 .allowsSpawning(BlockConstructionUtils::canSpawnOnLeaves)
                 .suffocates(BlockConstructionUtils::never)
-                .blockVision(BlockConstructionUtils::never)
-        );
+                .blockVision(BlockConstructionUtils::never);
+    }
+
+    BaseZapAppleLeavesBlock(Settings settings) {
+        super(settings);
+    }
+
+    @Override
+    public MapCodec<? extends BaseZapAppleLeavesBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

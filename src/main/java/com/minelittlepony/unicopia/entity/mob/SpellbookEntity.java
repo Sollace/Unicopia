@@ -41,6 +41,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
 
 public class SpellbookEntity extends MobEntity implements MagicImmune {
     private static final TrackedData<Byte> LOCKED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -304,7 +305,7 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
     }
 
     @Override
-    public boolean isImmuneToExplosion() {
+    public boolean isImmuneToExplosion(Explosion explosion) {
         return true;
     }
 
