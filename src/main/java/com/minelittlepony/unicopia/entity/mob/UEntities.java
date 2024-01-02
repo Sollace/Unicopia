@@ -67,6 +67,9 @@ public interface UEntities {
     EntityType<LootBugEntity> LOOT_BUG = register("loot_bug", FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, LootBugEntity::new)
             .trackRangeChunks(8)
             .dimensions(EntityDimensions.fixed(0.8F, 0.6F)));
+    EntityType<TentacleEntity> TENTACLE = register("tentacle", FabricEntityTypeBuilder.<TentacleEntity>create(SpawnGroup.MISC, TentacleEntity::new)
+            .trackRangeChunks(8)
+            .dimensions(EntityDimensions.fixed(0.8F, 0.8F)));
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         EntityType<T> type = builder.build();

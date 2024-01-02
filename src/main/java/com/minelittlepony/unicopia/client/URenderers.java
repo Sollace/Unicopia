@@ -97,6 +97,7 @@ public interface URenderers {
         EntityRendererRegistry.register(UEntities.AIR_BALLOON, AirBalloonEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.FRIENDLY_CREEPER, FriendlyCreeperEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.LOOT_BUG, LootBugEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.TENTACLE, TentacleEntityRenderer::new);
 
         BlockEntityRendererFactories.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(UBlockEntities.FANCY_BED, CloudBedBlockEntityRenderer::new);
