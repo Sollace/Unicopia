@@ -4,6 +4,8 @@ import java.util.Comparator;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -19,9 +21,10 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -126,7 +129,7 @@ public class TentacleEntity extends AbstractDecorationEntity {
     @Override
     public boolean damage(DamageSource source, float amount) {
         if (source.getAttacker() instanceof PlayerEntity player) {
-            if (player.getStackInHand(Hand.MAIN_HAND).isIn(ItemTags.SHOVELS)) {
+            if (player.getStackInHand(Hand.MAIN_HAND).isIn(ItemTags.AXES)) {
                 kill();
                 ParticleUtils.spawnParticles(ParticleTypes.EFFECT, this, 10);
             }
@@ -134,15 +137,20 @@ public class TentacleEntity extends AbstractDecorationEntity {
                 setTarget(player);
             }
         }
-        ticksActive += 20;
-        playSound(SoundEvents.ENTITY_RAVAGER_ROAR, 5, 1);
+        addActiveTicks(20 + getWorld().random.nextInt(30));
+        playSound(USounds.ENTITY_TENTACLE_ROAR, 5, 1);
         return true;
+    }
+
+    public void addActiveTicks(int ticks) {
+        ticksActive += ticks;
     }
 
     @Override
     public void tick() {
         prevMotionOffset = getMotionOffset();
-        prevGrowth = getGrowth();
+        int growth = getGrowth();
+        prevGrowth = growth;
         super.tick();
         prevAttackingTicks = attackingTicks;
         if (isAttacking()) {
@@ -164,9 +172,6 @@ public class TentacleEntity extends AbstractDecorationEntity {
 
                     target = null;
                 }
-
-
-                playSound(SoundEvents.BLOCK_POINTED_DRIPSTONE_LAND, 1, 1);
             }
         }
 
@@ -175,8 +180,6 @@ public class TentacleEntity extends AbstractDecorationEntity {
         ParticleUtils.spawnParticles(getWorld(), sphere, ParticleTypes.ASH, 4);
 
         if (!getWorld().isClient) {
-            int growth = getGrowth();
-
             if (growth >= MAX_GROWTH / 2) {
                 if (age % 50 == 0) {
                     updateTarget();
@@ -189,26 +192,38 @@ public class TentacleEntity extends AbstractDecorationEntity {
 
             if (growth < MAX_GROWTH) {
                 setGrowth(growth + 1);
+
+                if (growth == 0) {
+                    playSound(USounds.ENTITY_TENTACLE_DIG, 1, 1);
+                }
             }
 
             if (getWorld().random.nextInt(110) == 0) {
-                playSound(SoundEvents.BLOCK_CONDUIT_AMBIENT_SHORT, 1, 0.3F);
+                playSound(USounds.ENTITY_TENTACLE_AMBIENT, 1, 0.3F);
             }
 
             if (ticksActive > 0) {
                 ticksActive--;
                 setMotionOffset(getMotionOffset() + ticksActive);
             }
+        } else {
+            if (growth < MAX_GROWTH && age % 15 == getWorld().random.nextInt(14)) {
+                getWorld().addBlockBreakParticles(getBlockPos().down(), getWorld().getBlockState(getBlockPos().down()));
+            }
         }
     }
 
     public void setTarget(LivingEntity target) {
         this.target = target;
-        playSound(SoundEvents.ENTITY_RAVAGER_ROAR, 5, 1);
+        playSound(USounds.ENTITY_TENTACLE_ROAR, 5, 1);
 
         if (target instanceof PlayerEntity player) {
             Pony.of(player).getMagicalReserves().getEnergy().add(6);
         }
+    }
+
+    public LivingEntity getTarget() {
+        return target;
     }
 
     private void updateTarget() {
@@ -260,6 +275,16 @@ public class TentacleEntity extends AbstractDecorationEntity {
 
     }
 
+
+    @Override
+    public void remove(RemovalReason reason) {
+        super.remove(reason);
+        if (getWorld().isAir(getBlockPos()) && getWorld().getBlockState(getBlockPos().down()).isIn(BlockTags.DIRT)) {
+            getWorld().setBlockState(getBlockPos(), UBlocks.CURING_JOKE.getDefaultState());
+        }
+    }
+
+
     @Override
     public boolean canStayAttached() {
         return getWorld().isTopSolid(getBlockPos().down(), this);
@@ -286,4 +311,18 @@ public class TentacleEntity extends AbstractDecorationEntity {
 
     @Override
     public void addVelocity(double deltaX, double deltaY, double deltaZ) { }
+
+    @Override
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("growth", getGrowth());
+        nbt.putInt("motion_offset", getMotionOffset());
+    }
+
+    @Override
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        setGrowth(nbt.getInt("growth"));
+        setMotionOffset(nbt.getInt("motion_offset"));
+    }
 }

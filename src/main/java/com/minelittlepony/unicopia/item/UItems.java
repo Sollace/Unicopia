@@ -88,6 +88,7 @@ public interface UItems {
     Item ACORN = register("acorn", new Item(new Item.Settings().food(UFoodComponents.ACORN).maxCount(16)), ItemGroups.FOOD_AND_DRINK);
     Item MANGO = register("mango", new Item(new Item.Settings().food(UFoodComponents.MANGO)), ItemGroups.FOOD_AND_DRINK);
     Item BANANA = register("banana", new Item(new Item.Settings().food(UFoodComponents.BANANA)), ItemGroups.FOOD_AND_DRINK);
+    Item CURING_JOKE = register("curing_joke", new CuringJokeItem(UBlocks.CURING_JOKE, new Item.Settings().food(UFoodComponents.POISON_JOKE)), ItemGroups.NATURAL);
     Item PINEAPPLE = register("pineapple", new PineappleItem(new Item.Settings().food(UFoodComponents.BANANA).maxDamage(3)), ItemGroups.FOOD_AND_DRINK);
     Item PINEAPPLE_CROWN = register("pineapple_crown", new AliasedBlockItem(UBlocks.PINEAPPLE, new Item.Settings()), ItemGroups.NATURAL);
 

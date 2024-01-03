@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FarmlandBlock;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -84,11 +85,11 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
                     w.setBlockState(pos.down(), Blocks.DIRT.getDefaultState());
                 }
                 w.setBlockState(pos, UBlocks.PLUNDER_VINE_BUD.getDefaultState());
-            } else if (w.random.nextInt(5000) == 0) {
+            } else if (w.random.nextInt(5000) == 0 || w.getBlockState(pos).isOf(UBlocks.CURING_JOKE)) {
                 if (w.getBlockState(pos.down()).isOf(Blocks.FARMLAND)) {
-                    w.setBlockState(pos.down(), Blocks.DIRT.getDefaultState());
+                    FarmlandBlock.setToDirt(null, state, w, pos.down());
                 }
-                w.breakBlock(pos, true);
+                w.breakBlock(pos, false);
                 TentacleEntity tentacle = new TentacleEntity(w, pos);
                 tentacle.updatePositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
                 w.spawnEntity(tentacle);

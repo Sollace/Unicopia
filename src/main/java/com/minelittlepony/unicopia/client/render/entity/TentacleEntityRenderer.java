@@ -9,6 +9,7 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 public class TentacleEntityRenderer extends EntityRenderer<TentacleEntity> {
     private static final Identifier TEXTURE = Unicopia.id("textures/entity/poison_joke/tentacle.png");
@@ -26,8 +27,9 @@ public class TentacleEntityRenderer extends EntityRenderer<TentacleEntity> {
         matrices.scale(-1, -1, 1);
         float scale = entity.getGrowth(tickDelta);
 
+        matrices.translate(0, -0.75F + 3F * (1 - scale), 0);
+        scale = MathHelper.clamp(scale, 0.5F, 1);
         matrices.scale(scale, scale, scale);
-        matrices.translate(0, -0.9F, 0);
 
         model.setAngles(entity, 0, 0, tickDelta, entity.getYaw(tickDelta), entity.getPitch(tickDelta));
         model.render(matrices, vertices.getBuffer(model.getLayer(getTexture(entity))), light, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);

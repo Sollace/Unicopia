@@ -97,6 +97,9 @@ public class TentacleEntityModel extends EntityModel<TentacleEntity> {
 
 	@Override
 	public void setAngles(TentacleEntity entity, float limbSwing, float limbSwingAmount, float tickDelta, float yaw, float pitch) {
+
+	    boolean growing = entity.getGrowth(tickDelta) < 1;
+
 	    float age = entity.age + tickDelta + (entity.getUuid().getMostSignificantBits() % 100);
 	    float idleWaveTimer = entity.getAnimationTimer(tickDelta);
 
@@ -116,9 +119,11 @@ public class TentacleEntityModel extends EntityModel<TentacleEntity> {
 	        bendIntentisty += 3F;
 	        bone.resetTransform();
 
-	        bone.pitch = MathHelper.lerp(attackProgress, idlePitch, bone.pitch + attackCurve);
-	        bone.yaw = MathHelper.lerp(attackProgress, idleYaw, bone.yaw + sweepDirection * attackCurve);
-	        bone.roll = MathHelper.lerp(attackProgress, idleRoll, bone.roll);
+	        if (!growing) {
+    	        bone.pitch = MathHelper.lerp(attackProgress, idlePitch, bone.pitch + attackCurve);
+    	        bone.yaw = MathHelper.lerp(attackProgress, idleYaw, bone.yaw + sweepDirection * attackCurve);
+    	        bone.roll = MathHelper.lerp(attackProgress, idleRoll, bone.roll);
+	        }
 	        attackCurve *= 1.04F;
 	    }
 

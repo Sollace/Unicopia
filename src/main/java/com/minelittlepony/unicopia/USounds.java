@@ -62,10 +62,17 @@ public interface USounds {
     SoundEvent ENTITY_SOMBRA_AMBIENT = register("entity.sombra.ambient");
     SoundEvent ENTITY_SOMBRA_LAUGH = register("entity.sombra.laugh");
     SoundEvent ENTITY_SOMBRA_SNICKER = register("entity.sombra.snicker");
-    SoundEvent ENTITY_SOMBRA_SCARY = USounds.Vanilla.ENTITY_GHAST_AMBIENT;
+    SoundEvent ENTITY_SOMBRA_SCARY = ENTITY_GHAST_AMBIENT;
 
     SoundEvent ENTITY_CRYSTAL_SHARDS_AMBIENT = BLOCK_AMETHYST_BLOCK_HIT;
     SoundEvent ENTITY_CRYSTAL_SHARDS_JOSTLE = BLOCK_AMETHYST_BLOCK_BREAK;
+
+    SoundEvent ENTITY_IGNIMEOUS_BULB_HURT = ENTITY_WARDEN_HURT;
+    SoundEvent ENTITY_IGNIMEOUS_BULB_DEATH = ENTITY_WARDEN_DEATH;
+
+    SoundEvent ENTITY_TENTACLE_ROAR = ENTITY_RAVAGER_ROAR;
+    SoundEvent ENTITY_TENTACLE_AMBIENT = BLOCK_CONDUIT_AMBIENT_SHORT;
+    SoundEvent ENTITY_TENTACLE_DIG = ENTITY_WARDEN_DIG;
 
     SoundEvent ITEM_AMULET_CHARGING = register("item.amulet.charging");
     SoundEvent ITEM_AMULET_RECHARGE = register("item.amulet.recharge");
@@ -89,6 +96,8 @@ public interface USounds {
 
     SoundEvent ITEM_STAFF_STRIKE = ENTITY_PLAYER_ATTACK_CRIT;
     SoundEvent ITEM_MAGIC_STAFF_CHARGE = ENTITY_GUARDIAN_ATTACK;
+
+    SoundEvent ITEM_CURING_JOKE_CURE = BLOCK_AMETHYST_BLOCK_BREAK;
 
     SoundEvent ITEM_ROCK_LAND = BLOCK_STONE_HIT;
     RegistryEntry.Reference<SoundEvent> ITEM_MUFFIN_BOUNCE = BLOCK_NOTE_BLOCK_BANJO;

@@ -246,6 +246,7 @@
   "block.unicopia.palm_hanging_sign": "Palm Hanging Sign",
   "block.unicopia.apple_pie": "Apple Pie",
   "block.unicopia.weather_vane": "Weather Vane",
+  "block.unicopia.curing_joke": "Curing Joke",
   "block.unicopia.mango": "Mango",
   "block.unicopia.mango_leaves": "Mango Leaves",
   "block.unicopia.mango_sapling": "Mango Sapling",
@@ -322,6 +323,8 @@
   "entity.unicopia.sombra.taunt": "That's not going to work on me!",
   "entity.unicopia.storm_cloud": "Storm Cloud",
   "entity.unicopia.crystal_shards": "Crystal Shards",
+  "entity.unicopia.ignimeous_vine": "Ignimeous Vine",
+  "entity.unicopia.ignimeous_bulb": "Ignimeous Bulb",
 
   "player.reachDistance": "Reach Distance",
   "player.miningSpeed": "Mining Speed",
