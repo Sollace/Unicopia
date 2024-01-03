@@ -308,6 +308,10 @@
   "block.unicopia.cloud_bed": "Cloud Bed",
   "block.unicopia.cloud_chest": "Cloudsdale Chest",
   "block.unicopia.cloud_chest.double": "Large Cloudsdale Chest",
+  "block.unicopia.cloud_door": "Cloud Door",
+  "block.unicopia.crystal_door": "Crystal Door",
+  "block.unicopia.stable_door": "Stable Door",
+  "block.unicopia.dark_oak_stable_door": "Wooden Stable Door",
 
   "block.unicopia.oats": "Oats",
   "block.unicopia.oats_stem": "Oats",
