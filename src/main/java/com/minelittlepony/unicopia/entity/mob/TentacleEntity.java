@@ -15,6 +15,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -156,7 +157,7 @@ public class TentacleEntity extends AbstractDecorationEntity {
         if (isAttacking()) {
             if (--attackingTicks == 12) {
                 if (target != null) {
-                    target.damage(getDamageSources().generic(), 15);
+                    target.damage(getDamageSources().create(DamageTypes.MOB_ATTACK, this), 15);
                     Vec3d diff = target.getPos().subtract(getPos());
                     target.takeKnockback(1, diff.x, diff.z);
 
