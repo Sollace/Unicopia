@@ -6,7 +6,7 @@
   ],
   "key": {
     "#": [
-      { "item": "unicopia:cloud_block" }
+      { "item": "unicopia:dense_cloud" }
     ]
   },
   "result": { "item": "unicopia:cloud_door", "count": 1 }
