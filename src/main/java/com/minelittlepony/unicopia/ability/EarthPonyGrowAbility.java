@@ -78,6 +78,10 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
             return growable.grow(w, state, pos) ? 1 : 0;
         }
 
+        if (w.getBlockState(pos).isOf(Blocks.GRASS_BLOCK)) {
+            return 0;
+        }
+
         if (BoneMealItem.useOnFertilizable(stack, w, pos)) {
             if (w.random.nextInt(350) == 0) {
                 if (w.getBlockState(pos.down()).isOf(Blocks.FARMLAND)) {
