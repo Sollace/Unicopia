@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -120,13 +121,25 @@ public class IgnimeousBulbEntity extends MobEntity {
         World w = getWorld();
         mutable.set(getBlockPos());
         mutable.move(offset);
-        while (w.isAir(mutable.down()) && w.isInBuildLimit(mutable)) {
+        while (isSpace(w, mutable.down()) && w.isInBuildLimit(mutable)) {
             mutable.move(Direction.DOWN);
         }
-        while (!w.isAir(mutable) && w.isInBuildLimit(mutable)) {
+        while (!isPosValid(w, mutable) && w.isInBuildLimit(mutable)) {
             mutable.move(Direction.UP);
         }
+        if (w.getBlockState(mutable).isReplaceable()) {
+            w.breakBlock(mutable, true);
+        }
         return mutable.toImmutable();
+    }
+
+    private boolean isPosValid(World w, BlockPos pos) {
+        return w.isTopSolid(pos.down(), this) && isSpace(w, pos);
+    }
+
+    private boolean isSpace(World w, BlockPos pos) {
+        BlockState state = w.getBlockState(pos);
+        return state.isAir() || state.isReplaceable();
     }
 
     @Override

@@ -139,7 +139,7 @@ public interface UBlocks {
 
     Block PLUNDER_VINE = register("plunder_vine", new ThornBlock(Settings.create().mapColor(MapColor.DARK_CRIMSON).hardness(1).ticksRandomly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY), () -> UBlocks.PLUNDER_VINE_BUD));
     Block PLUNDER_VINE_BUD = register("plunder_vine_bud", new ThornBudBlock(Settings.create().mapColor(MapColor.DARK_CRIMSON).hardness(1).nonOpaque().ticksRandomly().sounds(BlockSoundGroup.GRASS).pistonBehavior(PistonBehavior.DESTROY), PLUNDER_VINE.getDefaultState()));
-    Block CURING_JOKE = register("curing_joke", new CuringJokeBlock(UEffects.BUTTER_FINGERS, 7, AbstractBlock.Settings.create().mapColor(MapColor.PALE_PURPLE).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS).offset(AbstractBlock.OffsetType.XZ).pistonBehavior(PistonBehavior.DESTROY)));
+    CuringJokeBlock CURING_JOKE = register("curing_joke", new CuringJokeBlock(UEffects.BUTTER_FINGERS, 7, AbstractBlock.Settings.create().mapColor(MapColor.PALE_PURPLE).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS).offset(AbstractBlock.OffsetType.XZ).pistonBehavior(PistonBehavior.DESTROY)));
 
     Block CHITIN = register("chitin", new SnowyBlock(Settings.create().mapColor(MapColor.PALE_PURPLE).hardness(5).requiresTool().ticksRandomly().sounds(BlockSoundGroup.CORAL)), ItemGroups.NATURAL);
     Block SURFACE_CHITIN = register("surface_chitin", new GrowableBlock(Settings.copy(CHITIN), () -> CHITIN), ItemGroups.NATURAL);
