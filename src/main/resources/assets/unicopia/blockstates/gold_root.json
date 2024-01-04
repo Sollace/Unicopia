@@ -1,0 +1,12 @@
+{
+    "variants": {
+        "age=0": { "model": "unicopia:block/gold_root_stage0" },
+        "age=1": { "model": "unicopia:block/gold_root_stage0" },
+        "age=2": { "model": "unicopia:block/gold_root_stage1" },
+        "age=3": { "model": "unicopia:block/gold_root_stage1" },
+        "age=4": { "model": "unicopia:block/gold_root_stage2" },
+        "age=5": { "model": "unicopia:block/gold_root_stage2" },
+        "age=6": { "model": "unicopia:block/gold_root_stage2" },
+        "age=7": { "model": "unicopia:block/gold_root_stage3" }
+    }
+}
