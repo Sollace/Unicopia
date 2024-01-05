@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.ability.EarthPonyGrowAbility.Growable;
-import com.minelittlepony.unicopia.entity.mob.IgnimeousBulbEntity;
+import com.minelittlepony.unicopia.entity.mob.IgnominiousBulbEntity;
 import com.minelittlepony.unicopia.entity.mob.TentacleEntity;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 
@@ -34,7 +34,7 @@ public class CuringJokeBlock extends FlowerBlock implements Growable {
                 .toList();
 
         if (otherFlowers.size() >= 8) {
-            IgnimeousBulbEntity bulb = new IgnimeousBulbEntity(world);
+            IgnominiousBulbEntity bulb = new IgnominiousBulbEntity(world);
             bulb.updatePositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
 
             if (Dismounting.canPlaceEntityAt(world, bulb, bulb.getBoundingBox())) {

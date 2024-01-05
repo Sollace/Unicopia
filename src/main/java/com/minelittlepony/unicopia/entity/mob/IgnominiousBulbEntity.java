@@ -29,8 +29,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class IgnimeousBulbEntity extends MobEntity {
-    private static final TrackedData<Boolean> ANGRY = DataTracker.registerData(IgnimeousBulbEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+public class IgnominiousBulbEntity extends MobEntity {
+    private static final TrackedData<Boolean> ANGRY = DataTracker.registerData(IgnominiousBulbEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final List<BlockPos> TENTACLE_OFFSETS = List.of(
         new BlockPos(-3, 0, -3), new BlockPos(0, 0, -4), new BlockPos(3, 0, -3),
         new BlockPos(-4, 0,  0),                         new BlockPos(4, 0,  0),
@@ -40,12 +40,12 @@ public class IgnimeousBulbEntity extends MobEntity {
     @Nullable
     private Map<BlockPos, TentacleEntity> tentacles;
 
-    public IgnimeousBulbEntity(EntityType<? extends IgnimeousBulbEntity> type, World world) {
+    public IgnominiousBulbEntity(EntityType<? extends IgnominiousBulbEntity> type, World world) {
         super(type, world);
     }
 
-    public IgnimeousBulbEntity(World world) {
-        super(UEntities.IGNIMEOUS_BULB, world);
+    public IgnominiousBulbEntity(World world) {
+        super(UEntities.IGNOMINIOUS_BULB, world);
     }
 
     @Override

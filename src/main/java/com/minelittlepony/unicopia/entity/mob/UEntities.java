@@ -67,10 +67,10 @@ public interface UEntities {
     EntityType<LootBugEntity> LOOT_BUG = register("loot_bug", FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, LootBugEntity::new)
             .trackRangeChunks(8)
             .dimensions(EntityDimensions.fixed(0.8F, 0.6F)));
-    EntityType<TentacleEntity> TENTACLE = register("ignimeous_vine", FabricEntityTypeBuilder.<TentacleEntity>create(SpawnGroup.MISC, TentacleEntity::new)
+    EntityType<TentacleEntity> TENTACLE = register("ignominious_vine", FabricEntityTypeBuilder.<TentacleEntity>create(SpawnGroup.MISC, TentacleEntity::new)
             .trackRangeChunks(8)
             .dimensions(EntityDimensions.fixed(0.8F, 0.8F)));
-    EntityType<IgnimeousBulbEntity> IGNIMEOUS_BULB = register("ignimeous_bulb", FabricEntityTypeBuilder.<IgnimeousBulbEntity>create(SpawnGroup.MISC, IgnimeousBulbEntity::new)
+    EntityType<IgnominiousBulbEntity> IGNOMINIOUS_BULB = register("ignominious_bulb", FabricEntityTypeBuilder.<IgnominiousBulbEntity>create(SpawnGroup.MISC, IgnominiousBulbEntity::new)
             .trackRangeChunks(8)
             .dimensions(EntityDimensions.fixed(3, 2)));
 
@@ -87,7 +87,7 @@ public interface UEntities {
         FabricDefaultAttributeRegistry.register(SOMBRA, SombraEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(FRIENDLY_CREEPER, FriendlyCreeperEntity.createCreeperAttributes());
         FabricDefaultAttributeRegistry.register(LOOT_BUG, LootBugEntity.createSilverfishAttributes());
-        FabricDefaultAttributeRegistry.register(IGNIMEOUS_BULB, IgnimeousBulbEntity.createMobAttributes());
+        FabricDefaultAttributeRegistry.register(IGNOMINIOUS_BULB, IgnominiousBulbEntity.createMobAttributes());
 
         if (!Unicopia.getConfig().disableButterflySpawning.get()) {
             final Predicate<BiomeSelectionContext> butterflySpawnable = BiomeSelectors.foundInOverworld()

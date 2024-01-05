@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
-import com.minelittlepony.unicopia.entity.mob.IgnimeousBulbEntity;
+import com.minelittlepony.unicopia.entity.mob.IgnominiousBulbEntity;
 
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
@@ -15,14 +15,14 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
-public class IgnimeousBulbEntityModel extends EntityModel<IgnimeousBulbEntity> {
+public class IgnominiousBulbEntityModel extends EntityModel<IgnominiousBulbEntity> {
 
     private final ModelPart part;
 
     private final ModelPart head;
     private final ModelPart leaves;
 
-    public IgnimeousBulbEntityModel(ModelPart root) {
+    public IgnominiousBulbEntityModel(ModelPart root) {
         super(RenderLayer::getEntityTranslucent);
         this.part = root;
         head = root.getChild("head");
@@ -54,7 +54,7 @@ public class IgnimeousBulbEntityModel extends EntityModel<IgnimeousBulbEntity> {
     }
 
     @Override
-    public void setAngles(IgnimeousBulbEntity entity, float limbSwing, float limbSwingAmount, float tickDelta, float yaw, float pitch) {
+    public void setAngles(IgnominiousBulbEntity entity, float limbSwing, float limbSwingAmount, float tickDelta, float yaw, float pitch) {
 
         float age = entity.age + tickDelta;
 
