@@ -12,13 +12,29 @@
             "unicopia:green_apple",
             "unicopia:sweet_apple",
             "unicopia:sour_apple",
-            "unicopia:mango"
+            "unicopia:mango",
+            "unicopia:cider",
+            "unicopia:love_bottle",
+            "unicopia:love_mug"
         ]
     },
     "3": {
         "replace": false,
         "items": [
-            "unicopia:pineapple"
+            "unicopia:pineapple",
+            "unicopia:rock_stew"
+        ]
+    },
+    "4": {
+        "replace": false,
+        "items": [
+            "unicopia:love_bucket"
+        ]
+    },
+    "12": {
+        "replace": false,
+        "items": [
+            "unicopia:juice"
         ]
     }
 }
