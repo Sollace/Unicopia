@@ -1,0 +1,24 @@
+{
+    "1": {
+        "replace": false,
+        "items": [
+            "unicopia:banana",
+            "unicopia:rotten_apple"
+        ]
+    },
+    "2": {
+        "replace": false,
+        "items": [
+            "unicopia:green_apple",
+            "unicopia:sweet_apple",
+            "unicopia:sour_apple",
+            "unicopia:mango"
+        ]
+    },
+    "3": {
+        "replace": false,
+        "items": [
+            "unicopia:pineapple"
+        ]
+    }
+}
