@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.ability.EarthPonyGrowAbility.Growable;
 import com.minelittlepony.unicopia.entity.mob.IgnominiousBulbEntity;
-import com.minelittlepony.unicopia.entity.mob.TentacleEntity;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 
 import net.minecraft.block.BlockState;
@@ -33,21 +32,16 @@ public class CuringJokeBlock extends FlowerBlock implements Growable {
                 .map(BlockPos::toImmutable)
                 .toList();
 
-        if (otherFlowers.size() >= 8) {
-            IgnominiousBulbEntity bulb = new IgnominiousBulbEntity(world);
-            bulb.updatePositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
+        IgnominiousBulbEntity bulb = new IgnominiousBulbEntity(world);
+        bulb.setBaby(true);
+        bulb.updatePositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
 
-            if (Dismounting.canPlaceEntityAt(world, bulb, bulb.getBoundingBox())) {
-                otherFlowers.forEach(p -> world.removeBlock(p, false));
-                world.spawnEntity(bulb);
-                return true;
-            }
+        if (Dismounting.canPlaceEntityAt(world, bulb, bulb.getBoundingBox())) {
+            otherFlowers.forEach(p -> world.breakBlock(p, false));
+            world.spawnEntity(bulb);
+            return true;
         }
 
-        world.removeBlock(pos, false);
-        TentacleEntity tentacle = new TentacleEntity(world, pos);
-        tentacle.updatePositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0, 0);
-        world.spawnEntity(tentacle);
-        return true;
+        return false;
     }
 }

@@ -27,6 +27,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
@@ -109,7 +110,7 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         int left = (int)caster.asEntity().getWidth() * 64;
 
         for (Text line : debugLines) {
-            client.textRenderer.draw(line, left += 1, top += spacing, 0xFFFFFFFF, false, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, j, light);
+            client.textRenderer.draw(line, left += 1, top += spacing, Colors.WHITE, false, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, j, light);
         }
         matrices.pop();
     }

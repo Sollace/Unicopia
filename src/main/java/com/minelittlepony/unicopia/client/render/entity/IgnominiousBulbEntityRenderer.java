@@ -26,7 +26,7 @@ public class IgnominiousBulbEntityRenderer extends EntityRenderer<IgnominiousBul
         matrices.scale(-1, -1, 1);
         matrices.translate(0, -1.5F, 0);
 
-        model.setAngles(entity, 0, 0, tickDelta, entity.getYaw(tickDelta), entity.getPitch(tickDelta));
+        model.setAngles(entity, 0, 0, tickDelta, 180 + yaw, entity.getPitch(tickDelta));
         model.render(matrices, vertices.getBuffer(model.getLayer(getTexture(entity))), light, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
         matrices.pop();
         super.render(entity, yaw, tickDelta, matrices, vertices, light);

@@ -57,6 +57,13 @@ public class IgnominiousBulbEntityModel extends EntityModel<IgnominiousBulbEntit
     public void setAngles(IgnominiousBulbEntity entity, float limbSwing, float limbSwingAmount, float tickDelta, float yaw, float pitch) {
 
         float age = entity.age + tickDelta;
+        float scale = entity.getScale(tickDelta);
+
+        part.xScale = scale;
+        part.yScale = scale;
+        part.zScale = scale;
+        part.pivotY = (1 - scale) * 24;
+        part.yaw = yaw * MathHelper.RADIANS_PER_DEGREE;
 
         head.yScale = 1 - MathHelper.sin(age * 0.05F) * 0.02F;
 
@@ -65,9 +72,10 @@ public class IgnominiousBulbEntityModel extends EntityModel<IgnominiousBulbEntit
         head.zScale = hScale;
 
         head.pitch = MathHelper.sin(age * 0.02F) * 0.02F;
-        head.yaw = MathHelper.cos(age * 0.02F) * 0.02F;
+        head.yaw = (MathHelper.cos(age * 0.02F) * 0.02F);
 
         leaves.yScale = 1 + MathHelper.sin(age * 0.05F) * 0.12F;
+        leaves.yaw = -part.yaw;
     }
 
     @Override

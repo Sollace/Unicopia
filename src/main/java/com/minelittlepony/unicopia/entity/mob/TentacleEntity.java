@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
+import net.minecraft.command.argument.EntityAnchorArgumentType.EntityAnchor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -55,6 +56,9 @@ public class TentacleEntity extends AbstractDecorationEntity {
     private LivingEntity target;
     private final Comparator<LivingEntity> targetSorting = Comparator.comparing(this::distanceTo);
 
+    @Nullable
+    private IgnominiousBulbEntity bulb;
+
     public TentacleEntity(EntityType<? extends TentacleEntity> type, World world) {
         super(type, world);
     }
@@ -70,6 +74,10 @@ public class TentacleEntity extends AbstractDecorationEntity {
         dataTracker.startTracking(MOTION_OFFSET, 0);
     }
 
+    public void setBulb(IgnominiousBulbEntity bulb) {
+        this.bulb = bulb;
+    }
+
     public void attack(BlockPos pos) {
         var offset = pos.toCenterPos().subtract(getBlockPos().toCenterPos());
 
@@ -82,6 +90,10 @@ public class TentacleEntity extends AbstractDecorationEntity {
         setYaw(MathHelper.wrapDegrees((float)(MathHelper.atan2(dZ, dX) * MathHelper.DEGREES_PER_RADIAN) - 90));
         getWorld().sendEntityStatus(this, ATTACK_STATUS);
         attackingTicks = 30;
+        if (bulb != null) {
+            bulb.setAngryFor(10);
+            bulb.lookAt(EntityAnchor.FEET, pos.toCenterPos());
+        }
     }
 
     public float getAttackProgress(float tickDelta) {
@@ -144,7 +156,7 @@ public class TentacleEntity extends AbstractDecorationEntity {
     }
 
     public void addActiveTicks(int ticks) {
-        ticksActive += ticks;
+        ticksActive = Math.min(200, ticksActive + ticks);
     }
 
     @Override
