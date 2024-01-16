@@ -483,7 +483,7 @@
   "trait.unicopia.poison.name": "毒性",
   "trait.unicopia.poison.description": "一枚绝命毒镖能轻松放倒一头巨兽。",
   
-  "unicopia.diet.information": "信饮食息：",
+  "unicopia.diet.information": "食物情况：",
   "unicopia.diet.side_effects": "副作用：",
   "unicopia.diet.not_edible": "吃不了",
   "unicopia.diet.base_multiplier": "基础倍率： %s%%",
