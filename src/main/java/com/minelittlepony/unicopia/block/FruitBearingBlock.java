@@ -70,7 +70,7 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
             return;
         }
 
-        if (world.isDay()) {
+        if (world.getBaseLightLevel(pos, 0) > 8) {
             BlockSoundGroup group = getSoundGroup(state);
             int steps = FertilizableUtil.getGrowthSteps(world, pos, state, random);
             while (steps-- > 0) {
