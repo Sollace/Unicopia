@@ -2,13 +2,13 @@
   "parent": "unicopia:unicopia/earth/born_on_a_rock_farm",
   "display": {
     "icon": {
-      "item": "unicopia:horseshoe"
+      "item": "unicopia:rock"
     },
     "title": {
-      "translate": "advancements.unicopia.dead_ringer.title"
+      "translate": "advancements.unicopia.sticks_and_stones.title"
     },
     "description": {
-      "translate": "advancements.unicopia.dead_ringer.description"
+      "translate": "advancements.unicopia.sticks_and_stones.description"
     },
     "frame": "task",
     "show_toast": true,
@@ -16,13 +16,13 @@
     "hidden": true
   },
   "criteria": {
-    "killed_entity_with_horseshoe": {
+    "killed_entity_with_rock": {
       "trigger": "minecraft:player_killed_entity",
       "conditions": {
         "killing_blow": {
           "tags": [
             {
-              "id": "unicopia:from_horseshoes",
+              "id": "unicopia:from_rocks",
               "expected": true
             }
           ]
@@ -31,6 +31,6 @@
     }
   },
   "requirements": [
-    [ "killed_entity_with_horseshoe" ]
+    [ "killed_entity_with_rock" ]
   ]
 }
