@@ -10,11 +10,13 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -34,7 +36,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -58,7 +59,7 @@ public class IgnominiousBulbEntity extends MobEntity {
     );
 
     @Nullable
-    private Map<BlockPos, TentacleEntity> tentacles;
+    private Map<BlockPos, EntityReference<TentacleEntity>> tentacles;
 
     private int prevAge;
     private int happyTicks;
@@ -146,7 +147,9 @@ public class IgnominiousBulbEntity extends MobEntity {
         Vec3d change = new Vec3d(x, y, z).subtract(getPos());
         super.setPosition(x, y, z);
         getTentacles().values().forEach(tentacle -> {
-            tentacle.setPosition(tentacle.getPos().add(change));
+            tentacle.ifPresent(getWorld(), t -> {
+                t.setPosition(t.getPos().add(change));
+            });
         });
     }
 
@@ -170,9 +173,11 @@ public class IgnominiousBulbEntity extends MobEntity {
                 });
             }
 
-            for (TentacleEntity tentacle : tentacles.values()) {
+            for (EntityReference<TentacleEntity> tentacle : tentacles.values()) {
                 if (getWorld().random.nextInt(isAngry() ? 12 : 1200) == 0) {
-                    tentacle.addActiveTicks(120);
+                    tentacle.ifPresent(getWorld(), t -> {
+                        t.addActiveTicks(120);
+                    });
                 }
             }
             LivingEntity target = getAttacker();
@@ -191,6 +196,7 @@ public class IgnominiousBulbEntity extends MobEntity {
 
                 tentacles.values()
                         .stream()
+                        .flatMap(tentacle -> tentacle.getOrEmpty(getWorld()).stream())
                         .sorted(Comparator.comparing(a -> a.distanceTo(target)))
                         .limit(2)
                         .forEach(tentacle -> {
@@ -224,27 +230,29 @@ public class IgnominiousBulbEntity extends MobEntity {
         }
     }
 
-    private Map<BlockPos, TentacleEntity> getTentacles() {
+    private Map<BlockPos, EntityReference<TentacleEntity>> getTentacles() {
         if (tentacles == null) {
-            tentacles = getWorld().getEntitiesByClass(TentacleEntity.class, this.getBoundingBox().expand(5, 0, 5), EntityPredicates.VALID_ENTITY)
+            tentacles = getWorld().getEntitiesByClass(TentacleEntity.class, getBoundingBox().expand(5, 0, 5), EntityPredicates.VALID_ENTITY)
                     .stream()
                     .collect(Collectors.toMap(TentacleEntity::getBlockPos, tentacle -> {
                         tentacle.setBulb(this);
-                        return tentacle;
+                        return new EntityReference<>(tentacle);
                     }));
         }
         return tentacles;
     }
 
-    private TentacleEntity updateTentacle(BlockPos pos, @Nullable TentacleEntity tentacle) {
-        if (tentacle == null || tentacle.isRemoved()) {
-            tentacle = new TentacleEntity(getWorld(), pos);
-            tentacle.updatePositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, getWorld().random.nextFloat() * 360, 0);
-            tentacle.setBulb(this);
+    private EntityReference<TentacleEntity> updateTentacle(BlockPos pos, @Nullable EntityReference<TentacleEntity> tentacle) {
+        if (tentacle == null || tentacle.getOrEmpty(getWorld()).filter(Entity::isAlive).isEmpty()) {
+            var created = new TentacleEntity(getWorld(), pos);
+            created.updatePositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, getWorld().random.nextFloat() * 360, 0);
+            created.setBulb(this);
 
             if (getWorld().isTopSolid(pos.down(), this)) {
-                getWorld().spawnEntity(tentacle);
+                getWorld().spawnEntity(created);
             }
+
+            return new EntityReference<>(created);
         }
         return tentacle;
     }
@@ -277,7 +285,9 @@ public class IgnominiousBulbEntity extends MobEntity {
     @Override
     public void remove(RemovalReason reason) {
         super.remove(reason);
-        getTentacles().values().forEach(tentacle -> tentacle.remove(reason));
+        getTentacles().values().forEach(tentacle -> {
+            tentacle.ifPresent(getWorld(), t -> t.remove(reason));
+        });
     }
 
     @Override
@@ -319,7 +329,7 @@ public class IgnominiousBulbEntity extends MobEntity {
         getTentacles().forEach((pos, tentacle) -> {
             var compound = new NbtCompound();
             compound.put("pos", NbtSerialisable.BLOCK_POS.write(pos));
-            compound.putUuid("uuid", tentacle.getUuid());
+            compound.put("target", tentacle.toNBT());
             tentacles.add(compound);
         });
         nbt.put("tentacles", tentacles);
@@ -332,13 +342,10 @@ public class IgnominiousBulbEntity extends MobEntity {
         setAge(nbt.getInt("age"));
         if (!getWorld().isClient) {
             if (nbt.contains("tentacles", NbtElement.LIST_TYPE)) {
-                var tentacles = new HashMap<BlockPos, TentacleEntity>();
+                var tentacles = new HashMap<BlockPos, EntityReference<TentacleEntity>>();
                 nbt.getList("tentacles", NbtElement.COMPOUND_TYPE).forEach(tag -> {
                     var compound = (NbtCompound)tag;
-                    if (((ServerWorld)getWorld()).getEntity(compound.getUuid("uuid")) instanceof TentacleEntity tentacle) {
-                        tentacle.setBulb(this);
-                        tentacles.put(NbtSerialisable.BLOCK_POS.read(compound.getCompound("pos")), tentacle);
-                    }
+                    tentacles.put(NbtSerialisable.BLOCK_POS.read(compound.getCompound("pos")), new EntityReference<>(compound.getCompound("target")));
                 });
                 this.tentacles = tentacles;
             }
