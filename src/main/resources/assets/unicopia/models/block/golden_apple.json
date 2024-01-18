@@ -1,0 +1,6 @@
+{
+  "parent": "unicopia:block/fruit",
+  "textures": {
+    "cross": "minecraft:item/golden_apple"
+  }
+}

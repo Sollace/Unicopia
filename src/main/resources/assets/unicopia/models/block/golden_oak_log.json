@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "unicopia:block/golden_oak_log_top",
+    "side": "unicopia:block/golden_oak_log"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "unicopia:golden_oak_seeds",
+    "unicopia:golden_oak_leaves",
+    "unicopia:golden_oak_log",
+    "unicopia:golden_oak_sapling"
+  ]
+}

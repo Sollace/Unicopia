@@ -1,8 +1,8 @@
 {
   "replace": false,
   "values": [
-    "unicopia:frosted_obsidian",
     "unicopia:golden_oak_leaves",
-    "unicopia:golden_oak_log"
+    "unicopia:golden_oak_log",
+    "unicopia:golden_oak_sapling"
   ]
 }
