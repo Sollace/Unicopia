@@ -8,6 +8,9 @@
     "unicopia:sweet_apple_leaves",
     "unicopia:sour_apple_leaves",
     "unicopia:golden_oak_leaves",
-    "unicopia:mango_leaves"
+    "unicopia:mango_leaves",
+    "unicopia:hay_block",
+    { "id": "unicopia:rice_block", "required": false },
+    { "id": "unicopia:straw_block", "required": false }
   ]
 }

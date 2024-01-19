@@ -29,6 +29,7 @@ import com.minelittlepony.unicopia.server.world.UTreeGen;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
 import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.block.entity.BlockEntityType;
@@ -224,6 +225,8 @@ public interface UBlocks {
     Block CRYSTAL_DOOR = register("crystal_door", new CrystalDoorBlock(Settings.copy(Blocks.IRON_DOOR), UWoodTypes.CRYSTAL), ItemGroups.FUNCTIONAL);
     Block CLOUD_DOOR = register("cloud_door", new CloudDoorBlock(Settings.copy(CLOUD), CLOUD.getDefaultState(), UWoodTypes.CLOUD), ItemGroups.FUNCTIONAL);
 
+    EdibleBlock HAY_BLOCK = register("hay_block", new EdibleBlock(new Identifier("hay_block"), true));
+
     private static <T extends Block> T register(String name, T item) {
         return register(Unicopia.id(name), item);
     }
@@ -247,10 +250,15 @@ public interface UBlocks {
         if (block instanceof CloudLike || block instanceof SlimePustuleBlock || block instanceof PileBlock) {
             SEMI_TRANSPARENT_BLOCKS.add(block);
         }
+
         return Registry.register(Registries.BLOCK, id, block);
     }
 
     static void bootstrap() {
+        if (FabricLoader.getInstance().isModLoaded("farmersdelight")) {
+            register("rice_block", new EdibleBlock(new Identifier("farmersdelight", "rice_bale"), true));
+            register("straw_block", new EdibleBlock(new Identifier("farmersdelight", "straw_bale"), true));
+        }
         BlockEntityTypeSupportHelper.of(BlockEntityType.SIGN).addSupportedBlocks(PALM_SIGN, PALM_WALL_SIGN);
         BlockEntityTypeSupportHelper.of(BlockEntityType.HANGING_SIGN).addSupportedBlocks(PALM_HANGING_SIGN, PALM_WALL_HANGING_SIGN);
 
@@ -276,5 +284,6 @@ public interface UBlocks {
         FlammableBlockRegistry.getDefaultInstance().add(BANANAS, 5, 20);
 
         UBlockEntities.bootstrap();
+        EdibleBlock.bootstrap();
     }
 }

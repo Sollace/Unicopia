@@ -11,7 +11,6 @@ import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.registry.Registries;
@@ -50,7 +49,7 @@ public abstract class StateChange {
                         return state;
                     }
                     return Registries.BLOCK.getOrEmpty(id).map(Block::getDefaultState)
-                            .map(newState -> merge(newState, state))
+                            .map(newState -> StateUtil.copyState(state, newState))
                             .orElse(state);
                 }
             };
@@ -100,18 +99,5 @@ public abstract class StateChange {
         return Optional.of(SERIALIZERS.get(new Identifier(action))).map(serializer -> {
             return serializer.apply(json);
         }).orElseThrow(() -> new IllegalArgumentException("Invalid action " + action));
-    }
-
-    private static BlockState merge(BlockState into, BlockState from) {
-        for (var property : from.getProperties()) {
-            if (into.contains(property)) {
-                into = copy(into, from, property);
-            }
-        }
-        return into;
-    }
-
-    private static <T extends Comparable<T>> BlockState copy(BlockState to, BlockState from, Property<T> property) {
-        return to.with(property, from.get(property));
     }
 }

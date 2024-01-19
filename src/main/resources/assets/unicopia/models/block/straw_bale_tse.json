@@ -1,0 +1,8 @@
+{
+  "parent": "unicopia:block/hay_bale_tse",
+  "textures": {
+    "top": "farmersdelight:block/straw_bale_end",
+    "particle": "farmersdelight:block/straw_bale_side",
+    "side": "farmersdelight:block/straw_bale_side"
+  }
+}

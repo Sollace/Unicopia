@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.block.state.StateUtil;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
@@ -29,7 +30,6 @@ import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -233,16 +233,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
         }
 
         public BlockState getResult(World world, BlockPos pos) {
-            BlockState input = world.getBlockState(pos);
-            BlockState output = this.output;
-            for (var property : input.getProperties()) {
-                output = copyProperty(input, output, property);
-            }
-            return output;
-        }
-
-        private <T extends Comparable<T>> BlockState copyProperty(BlockState from, BlockState to, Property<T> property) {
-            return to.withIfExists(property, from.get(property));
+            return StateUtil.copyState(world.getBlockState(pos), output);
         }
 
         record Result (TransmutationRecipe recipe, Set<BlockPos> matchedLocations) {
