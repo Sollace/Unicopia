@@ -97,18 +97,22 @@ public class ShieldSpell extends AbstractSpell {
 
         long costMultiplier = applyEntities(source);
         if (costMultiplier > 0) {
-            double cost = 2 - source.getLevel().getScaled(2);
-
-            cost *= costMultiplier / ((1 + source.getLevel().get()) * 3F);
-            cost /= knowledge;
-            cost += getDrawDropOffRange(source) / 10F;
-
-            if (!source.subtractEnergyCost(cost)) {
-                setDead();
-            }
+            consumeManage(source, costMultiplier, knowledge);
         }
 
         return !isDead();
+    }
+
+    protected void consumeManage(Caster<?> source, long costMultiplier, float knowledge) {
+        double cost = 2 - source.getLevel().getScaled(2);
+
+        cost *= costMultiplier / ((1 + source.getLevel().get()) * 3F);
+        cost /= knowledge;
+        cost += getDrawDropOffRange(source) / 10F;
+
+        if (!source.subtractEnergyCost(cost)) {
+            setDead();
+        }
     }
 
     /**

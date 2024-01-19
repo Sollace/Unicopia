@@ -37,10 +37,6 @@ import net.minecraft.world.World.ExplosionSourceType;
 
 /**
  * More powerful version of the vortex spell which creates a black hole.
- *
- * TODO: Possible uses
- *  - Garbage bin
- *  - Link with a teleportation spell to create a wormhole
  */
 public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelegate.BlockHitListener {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
@@ -91,16 +87,20 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
             source.asWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_ADDITIONS, SoundCategory.AMBIENT, 1, 1);
         }
 
-        if (!source.subtractEnergyCost(-accumulatedMass)) {
-            setDead();
-        }
-
         if (!source.isClient() && source.asWorld().random.nextInt(300) == 0) {
             ParticleUtils.spawnParticle(source.asWorld(), LightningBoltParticleEffect.DEFAULT, getOrigin(source), Vec3d.ZERO);
         }
 
         return super.tick(source, situation);
     }
+
+    @Override
+    protected void consumeManage(Caster<?> source, long costMultiplier, float knowledge) {
+        if (!source.subtractEnergyCost(-accumulatedMass)) {
+            setDead();
+        }
+    }
+
 
     @Override
     public boolean isFriendlyTogether(Affine other) {
