@@ -155,7 +155,9 @@ public class EdibleBlock extends HayBlock {
             BooleanProperty segment = getHitCorner(hit, 1);
 
             if (!state.get(segment)) {
-                stack.decrement(1);
+                if (!player.isCreative()) {
+                    stack.decrement(1);
+                }
                 if (!world.isClient) {
                     state = state.with(segment, true);
                     if (SHAPE_CACHE.apply(state) == VoxelShapes.fullCube()) {
@@ -195,6 +197,7 @@ public class EdibleBlock extends HayBlock {
         }
 
         if (usingHoe) {
+            stack.damage(1, player, p -> p.sendToolBreakStatus(hand));
             dropStack(world, pos, Registries.ITEM.get(material).getDefaultStack());
             player.playSound(USounds.Vanilla.ITEM_HOE_TILL, 1, 1);
         } else {
