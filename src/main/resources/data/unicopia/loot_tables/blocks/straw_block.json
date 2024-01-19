@@ -5,7 +5,7 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "block": "unicopia:hay_block",
+          "block": "unicopia:straw_block",
           "condition": "minecraft:block_state_property",
           "properties": {
             "top_north_east": "true"
@@ -15,7 +15,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:wheat"
+          "name": "farmersdelight:straw"
         }
       ],
       "rolls": 1.0
@@ -24,7 +24,7 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "block": "unicopia:hay_block",
+          "block": "unicopia:straw_block",
           "condition": "minecraft:block_state_property",
           "properties": {
             "top_north_west": "true"
@@ -34,7 +34,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:wheat"
+          "name": "farmersdelight:straw"
         }
       ],
       "rolls": 1.0
@@ -43,7 +43,7 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "block": "unicopia:hay_block",
+          "block": "unicopia:straw_block",
           "condition": "minecraft:block_state_property",
           "properties": {
             "top_south_east": "true"
@@ -53,7 +53,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:wheat"
+          "name": "farmersdelight:straw"
         }
       ],
       "rolls": 1.0
@@ -62,7 +62,7 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "block": "unicopia:hay_block",
+          "block": "unicopia:straw_block",
           "condition": "minecraft:block_state_property",
           "properties": {
             "top_south_west": "true"
@@ -72,7 +72,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:wheat"
+          "name": "farmersdelight:straw"
         }
       ],
       "rolls": 1.0
@@ -81,7 +81,7 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "block": "unicopia:hay_block",
+          "block": "unicopia:straw_block",
           "condition": "minecraft:block_state_property",
           "properties": {
             "bottom_north_east": "true"
@@ -91,7 +91,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:wheat"
+          "name": "farmersdelight:straw"
         }
       ],
       "rolls": 1.0
@@ -100,7 +100,7 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "block": "unicopia:hay_block",
+          "block": "unicopia:straw_block",
           "condition": "minecraft:block_state_property",
           "properties": {
             "bottom_north_west": "true"
@@ -110,7 +110,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:wheat"
+          "name": "farmersdelight:straw"
         }
       ],
       "rolls": 1.0
@@ -119,7 +119,7 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "block": "unicopia:hay_block",
+          "block": "unicopia:straw_block",
           "condition": "minecraft:block_state_property",
           "properties": {
             "bottom_south_east": "true"
@@ -129,7 +129,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:wheat"
+          "name": "farmersdelight:straw"
         }
       ],
       "rolls": 1.0
@@ -138,7 +138,7 @@
       "bonus_rolls": 0.0,
       "conditions": [
         {
-          "block": "unicopia:hay_block",
+          "block": "unicopia:straw_block",
           "condition": "minecraft:block_state_property",
           "properties": {
             "bottom_south_west": "true"
@@ -148,7 +148,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:wheat"
+          "name": "farmersdelight:straw"
         }
       ],
       "rolls": 1.0
