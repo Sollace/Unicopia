@@ -225,7 +225,7 @@ public interface UBlocks {
     Block CRYSTAL_DOOR = register("crystal_door", new CrystalDoorBlock(Settings.copy(Blocks.IRON_DOOR), UWoodTypes.CRYSTAL), ItemGroups.FUNCTIONAL);
     Block CLOUD_DOOR = register("cloud_door", new CloudDoorBlock(Settings.copy(CLOUD), CLOUD.getDefaultState(), UWoodTypes.CLOUD), ItemGroups.FUNCTIONAL);
 
-    EdibleBlock HAY_BLOCK = register("hay_block", new EdibleBlock(new Identifier("hay_block"), true));
+    EdibleBlock HAY_BLOCK = register("hay_block", new EdibleBlock(new Identifier("hay_block"), new Identifier("wheat"), true));
 
     private static <T extends Block> T register(String name, T item) {
         return register(Unicopia.id(name), item);
@@ -256,8 +256,8 @@ public interface UBlocks {
 
     static void bootstrap() {
         if (FabricLoader.getInstance().isModLoaded("farmersdelight")) {
-            register("rice_block", new EdibleBlock(new Identifier("farmersdelight", "rice_bale"), true));
-            register("straw_block", new EdibleBlock(new Identifier("farmersdelight", "straw_bale"), true));
+            register("rice_block", new EdibleBlock(new Identifier("farmersdelight", "rice_bale"), new Identifier("farmersdelight", "rice_panicle"), true));
+            register("straw_block", new EdibleBlock(new Identifier("farmersdelight", "straw_bale"), new Identifier("farmersdelight", "straw"), true));
         }
         BlockEntityTypeSupportHelper.of(BlockEntityType.SIGN).addSupportedBlocks(PALM_SIGN, PALM_WALL_SIGN);
         BlockEntityTypeSupportHelper.of(BlockEntityType.HANGING_SIGN).addSupportedBlocks(PALM_HANGING_SIGN, PALM_WALL_HANGING_SIGN);

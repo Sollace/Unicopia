@@ -19,8 +19,8 @@ import net.minecraft.block.HayBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -107,13 +107,15 @@ public class EdibleBlock extends HayBlock {
     }
 
     private final Identifier baseBlock;
+    private final Identifier material;
 
-    public EdibleBlock(Identifier baseBlock, boolean register) {
+    public EdibleBlock(Identifier baseBlock, Identifier material, boolean register) {
         super(Settings.copy(Blocks.HAY_BLOCK));
         for (BooleanProperty segment : SEGMENTS) {
             setDefaultState(getDefaultState().with(segment, true));
         }
         this.baseBlock = baseBlock;
+        this.material = material;
         if (register) {
             REGISTRY.add(this);
             FlammableBlockRegistry.getDefaultInstance().add(this, 60, 20);
@@ -148,7 +150,8 @@ public class EdibleBlock extends HayBlock {
         }
 
         ItemStack stack = player.getStackInHand(hand);
-        if (stack.isOf(Items.WHEAT)) {
+
+        if (!stack.isEmpty() && stack.isOf(Registries.ITEM.get(material))) {
             BooleanProperty segment = getHitCorner(hit, 1);
 
             if (!state.get(segment)) {
@@ -160,7 +163,7 @@ public class EdibleBlock extends HayBlock {
                     }
                     world.setBlockState(pos, state);
                 }
-                world.playSound(player, pos, this.getSoundGroup(state).getPlaceSound(), SoundCategory.BLOCKS);
+                world.playSound(player, pos, getSoundGroup(state).getPlaceSound(), SoundCategory.BLOCKS);
 
                 return ActionResult.SUCCESS;
             }
@@ -174,8 +177,12 @@ public class EdibleBlock extends HayBlock {
             return ActionResult.PASS;
         }
 
-        if (!(player.isCreative() || player.getHungerManager().isNotFull()) || !player.isSneaking()) {
-            return ActionResult.FAIL;
+        boolean usingHoe = stack.isIn(ItemTags.HOES);
+
+        if (!usingHoe) {
+            if (!(player.isCreative() || player.getHungerManager().isNotFull()) || !player.isSneaking()) {
+                return ActionResult.FAIL;
+            }
         }
 
         if (!world.isClient) {
@@ -186,11 +193,17 @@ public class EdibleBlock extends HayBlock {
                 world.setBlockState(pos, state);
             }
         }
-        player.playSound(USounds.Vanilla.ENTITY_GENERIC_EAT, 1, 1);
-        if (world.random.nextInt(10) == 0) {
-            player.playSound(USounds.Vanilla.ENTITY_PLAYER_BURP, 1, player.getSoundPitch());
+
+        if (usingHoe) {
+            dropStack(world, pos, Registries.ITEM.get(material).getDefaultStack());
+            player.playSound(USounds.Vanilla.ITEM_HOE_TILL, 1, 1);
+        } else {
+            player.playSound(USounds.Vanilla.ENTITY_GENERIC_EAT, 1, 1);
+            if (world.random.nextInt(10) == 0) {
+                player.playSound(USounds.Vanilla.ENTITY_PLAYER_BURP, 1, player.getSoundPitch());
+            }
+            player.getHungerManager().add(4, 2.3F);
         }
-        player.getHungerManager().add(4, 2.3F);
         return ActionResult.SUCCESS;
     }
 
@@ -202,13 +215,12 @@ public class EdibleBlock extends HayBlock {
         return SEGMENTS[
                   (4 * getIndex(pos.y, bPos.getY()))
                 + (2 * getIndex(pos.z, bPos.getZ()))
-                + (1 - getIndex(pos.x, bPos.getX()))
+                + (getIndex(pos.x, bPos.getX()))
         ];
     }
 
     static int getIndex(double axisHit, int tile) {
-        axisHit = Math.abs(axisHit);
-        tile = Math.abs(tile);
-        return axisHit - ((int)axisHit) > 0.5 ? 1 : 0;
+        axisHit -= tile;
+        return Math.abs(axisHit) > 0.5 ? 1 : 0;
     }
 }
