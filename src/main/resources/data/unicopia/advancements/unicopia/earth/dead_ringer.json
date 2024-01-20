@@ -2,7 +2,7 @@
   "parent": "unicopia:unicopia/earth/born_on_a_rock_farm",
   "display": {
     "icon": {
-      "item": "unicopia:iron_horseshoe"
+      "item": "unicopia:iron_horse_shoe"
     },
     "title": {
       "translate": "advancements.unicopia.dead_ringer.title"
