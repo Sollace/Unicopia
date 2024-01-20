@@ -219,6 +219,9 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         position.ifPresent(pos -> {
             compound.put("position", NbtSerialisable.writeVector(pos));
         });
+        if (placedSpellId != null) {
+            compound.putUuid("placedSpellId", placedSpellId);
+        }
         if (dimension != null) {
             compound.putString("dimension", dimension.getValue().toString());
         }
@@ -232,6 +235,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         pitch = compound.getFloat("pitch");
         yaw = compound.getFloat("yaw");
         position = compound.contains("position") ? Optional.of(NbtSerialisable.readVector(compound.getList("position", NbtElement.FLOAT_TYPE))) : Optional.empty();
+        placedSpellId = compound.containsUuid("placedSpellId") ? compound.getUuid("placedSpellId") : null;
         if (compound.contains("dimension", NbtElement.STRING_TYPE)) {
             Identifier id = Identifier.tryParse(compound.getString("dimension"));
             if (id != null) {
