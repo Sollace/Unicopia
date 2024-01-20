@@ -22,9 +22,9 @@ public class MagicParticle extends SpriteBillboardParticle {
         velocityX = vX;
         velocityY = vY;
         velocityZ = vZ;
-        startX = x + random.nextGaussian()/3;
-        startY = y + random.nextGaussian()/3;
-        startZ = z + random.nextGaussian()/3;
+        startX = x;// + random.nextGaussian()/3;
+        startY = y;// + random.nextGaussian()/3;
+        startZ = z;// + random.nextGaussian()/3;
         scale = random.nextFloat() * 0.12F;
         maxAge = (int)(Math.random() * 10) + 20;
 

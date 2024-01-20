@@ -72,7 +72,15 @@ public final class RenderLayers extends RenderLayer {
     }
 
     public static RenderLayer getMagicNoColor() {
-        return MAGIC_NO_COLOR;
+        //return MAGIC_NO_COLOR;
+        return of("magic_no_color", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
+                VertexFormat.DrawMode.QUADS, 256, true, true, MultiPhaseParameters.builder()
+                .program(COLOR_PROGRAM)
+                .transparency(TRANSLUCENT_TRANSPARENCY)
+                .target(TRANSLUCENT_TARGET)
+                .cull(DISABLE_CULLING)
+                .writeMaskState(COLOR_MASK)
+            .build(false));
     }
 
     public static RenderLayer getMagicColored() {

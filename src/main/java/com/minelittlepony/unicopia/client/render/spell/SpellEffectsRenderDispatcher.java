@@ -45,6 +45,7 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
 
     static {
         register(SpellType.PLACED_SPELL, PlacedSpellRenderer::new);
+        register(SpellType.SHIELD, ShieldSpellRenderer::new);
     }
 
     @Nullable

@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
+import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -50,6 +51,9 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
 
     private int age = 0;
     private float accumulatedMass = 0;
+
+    @Deprecated
+    protected final ParticleHandle particlEffect = new ParticleHandle();
 
     protected DarkVortexSpell(CustomisedSpellType<?> type) {
         super(type);
@@ -107,6 +111,11 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
     @Override
     protected boolean isValidTarget(Caster<?> source, Entity entity) {
         return EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity) && getAttractiveForce(source, entity) > 0;
+    }
+
+    @Override
+    protected void onDestroyed(Caster<?> caster) {
+        particlEffect.destroy();
     }
 
     @Override
