@@ -44,9 +44,10 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
             if (timer.getTicksRemaining() <= 0) {
                 return false;
             }
+
+            setDirty();
         }
 
-        setDirty();
         target.getOrEmpty(caster.asWorld())
             .filter(entity -> entity.distanceTo(caster.asEntity()) > getDrawDropOffRange(caster))
             .ifPresent(entity -> {

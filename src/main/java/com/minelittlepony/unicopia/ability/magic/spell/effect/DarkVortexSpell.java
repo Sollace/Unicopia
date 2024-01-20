@@ -80,10 +80,7 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
             return true;
         }
 
-        age++;
-        setDirty();
-
-        if (age % 20 == 0) {
+        if (++age % 20 == 0) {
             source.asWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_ADDITIONS, SoundCategory.AMBIENT, 1, 1);
         }
 
@@ -162,7 +159,6 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
                             applyRadialEffect(source, e, e.getPos().distanceTo(origin), radius);
                         });
                     }
-                    setDirty();
                 });
             }
         }
@@ -221,8 +217,11 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
 
             double massOfTarget = AttractionUtils.getMass(target);
 
-            accumulatedMass += massOfTarget;
-            setDirty();
+            if (massOfTarget != 0) {
+                accumulatedMass += massOfTarget;
+                setDirty();
+            }
+
             target.damage(source.damageOf(UDamageTypes.GAVITY_WELL_RECOIL, source), Integer.MAX_VALUE);
             if (!(target instanceof PlayerEntity)) {
                 target.discard();
