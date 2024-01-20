@@ -43,9 +43,15 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         REGISTRY.put(type, rendererFactory);
     }
 
+    static {
+        register(SpellType.PLACED_SPELL, PlacedSpellRenderer::new);
+    }
+
     @Nullable
     private Map<SpellType<?>, SpellRenderer<?>> renderers = Map.of();
     private final MinecraftClient client = MinecraftClient.getInstance();
+
+    private SpellEffectsRenderDispatcher() {}
 
     @Override
     public Identifier getFabricId() {

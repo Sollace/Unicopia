@@ -20,6 +20,7 @@ import net.minecraft.world.World;
 /**
  * A connection class for updating and persisting an attached particle effect.
  */
+@Deprecated
 public class ParticleHandle {
     private final Map<String, Attachment> loadedEffects = new WeakHashMap<>();
 

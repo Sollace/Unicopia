@@ -14,7 +14,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 import com.minelittlepony.unicopia.particle.*;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.shape.*;
 
@@ -175,14 +174,6 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
         Vec3d targetPos = caster.getRotationVector().multiply(3).add(caster.getEyePos());
         parent.setOrientation(pitch, yaw);
         entity.setPos(targetPos.x, caster.getY() + 1.5, targetPos.z);
-    }
-
-    @Override
-    public void updatePlacement(Caster<?> source, PlaceableSpell parent) {
-        parent.getParticleEffectAttachment(source).ifPresent(attachment -> {
-            attachment.setAttribute(Attachment.ATTR_RADIUS, 2);
-            attachment.setAttribute(Attachment.ATTR_OPACITY, 0.92F);
-        });
     }
 
     @Override

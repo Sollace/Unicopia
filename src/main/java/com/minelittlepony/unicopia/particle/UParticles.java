@@ -16,6 +16,7 @@ public interface UParticles {
     ParticleType<OrientedBillboardParticleEffect> RAINBOOM_RING = register("rainboom_ring", FabricParticleTypes.complex(OrientedBillboardParticleEffect.FACTORY));
     DefaultParticleType RAINBOOM_TRAIL = register("rainboom_trail", FabricParticleTypes.simple());
 
+    @Deprecated
     ParticleType<OrientedBillboardParticleEffect> MAGIC_RUNES = register("magic_runes", FabricParticleTypes.complex(OrientedBillboardParticleEffect.FACTORY));
 
     DefaultParticleType RAIN_DROPS = register("rain_drops", FabricParticleTypes.simple());

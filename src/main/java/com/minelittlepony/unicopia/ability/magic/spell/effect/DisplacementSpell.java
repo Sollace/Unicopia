@@ -6,8 +6,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
-import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
@@ -16,7 +14,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 
-public class DisplacementSpell extends AbstractSpell implements HomingSpell, PlaceableSpell.PlacementDelegate, ProjectileDelegate.EntityHitListener {
+public class DisplacementSpell extends AbstractSpell implements HomingSpell, ProjectileDelegate.EntityHitListener {
 
     private final EntityReference<Entity> target = new EntityReference<>();
 
@@ -65,19 +63,6 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
         teleport(originator, target, sourcePos, sourceVel);
         teleport(originator, originator.asEntity(), destinationPos, destinationVel);
         originator.subtractEnergyCost(destinationPos.distanceTo(sourcePos) / 20F);
-    }
-
-    @Override
-    public void onPlaced(Caster<?> source, PlaceableSpell parent, CastSpellEntity entity) {
-
-    }
-
-    @Override
-    public void updatePlacement(Caster<?> caster, PlaceableSpell parent) {
-        parent.getParticleEffectAttachment(caster).ifPresent(attachment -> {
-            float r = 3 - (1 - ((ticks + 10) / 20F)) * 3;
-            attachment.setAttribute(Attachment.ATTR_RADIUS, r);
-        });
     }
 
     private void teleport(Caster<?> source, Entity entity, Vec3d pos, Vec3d vel) {

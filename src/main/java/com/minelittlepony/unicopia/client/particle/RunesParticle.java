@@ -20,6 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
+@Deprecated
 public class RunesParticle extends OrientedBillboardParticle implements Attachment {
 
     private static final Identifier[] TEXTURES = new Identifier[] {
