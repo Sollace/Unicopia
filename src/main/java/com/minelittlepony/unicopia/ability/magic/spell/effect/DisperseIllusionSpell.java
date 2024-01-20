@@ -12,7 +12,7 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.util.math.Vec3d;
 
 /**
- * An area-effect spell that disperses illussions.
+ * An area-effect spell that disperses illusions.
  */
 public class DisperseIllusionSpell extends AbstractAreaEffectSpell {
     protected DisperseIllusionSpell(CustomisedSpellType<?> type) {

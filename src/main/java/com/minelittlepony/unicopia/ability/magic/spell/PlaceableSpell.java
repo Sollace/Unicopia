@@ -46,6 +46,12 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     private final ParticleHandle particlEffect = new ParticleHandle();
 
     /**
+     * ID of the placed counterpart of this spell.
+     */
+    @Nullable
+    private UUID placedSpellId;
+
+    /**
      * The cast spell entity
      */
     private final EntityReference<CastSpellEntity> castEntity = new EntityReference<>();
@@ -82,10 +88,8 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-
         if (situation == Situation.BODY) {
             if (!source.isClient()) {
-
                 if (dimension == null) {
                     dimension = source.asWorld().getRegistryKey();
                     if (source instanceof Pony) {
@@ -105,8 +109,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
         if (situation == Situation.GROUND_ENTITY) {
             if (!source.isClient()) {
-                Ether ether = Ether.get(source.asWorld());
-                if (ether.getEntry(getType(), source).isEmpty()) {
+                if (Ether.get(source.asWorld()).get(this, source) == null) {
                     setDead();
                     return false;
                 }
@@ -127,7 +130,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     }
 
     private void checkDetachment(Caster<?> source, EntityValues<?> target) {
-        if (getWorld(source).map(Ether::get).flatMap(ether -> ether.getEntry(getType(), target.uuid())).isEmpty()) {
+        if (getWorld(source).map(Ether::get).map(ether -> ether.get(getType(), target, placedSpellId)).isEmpty()) {
             setDead();
         }
     }
@@ -143,7 +146,8 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         entity.getSpellSlot().put(copy);
         entity.setCaster(source);
         entity.getWorld().spawnEntity(entity);
-        Ether.get(entity.getWorld()).put(getType(), entity);
+        placedSpellId = copy.getUuid();
+        Ether.get(entity.getWorld()).getOrCreate(copy, entity);
 
         castEntity.set(entity);
         setDirty();
@@ -174,8 +178,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         if (!source.isClient()) {
             castEntity.getTarget().ifPresent(target -> {
                 getWorld(source).map(Ether::get)
-                    .flatMap(ether -> ether.getEntry(getType(), target.uuid()))
-                    .ifPresent(Ether.Entry::markDead);
+                    .ifPresent(ether -> ether.remove(getType(), target.uuid()));
             });
             castEntity.set(null);
             getSpellEntity(source).ifPresent(e -> {
@@ -183,7 +186,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
             });
 
             if (source.asEntity() instanceof CastSpellEntity spellcast) {
-                Ether.get(source.asWorld()).remove(getType(), source);
+                Ether.get(source.asWorld()).remove(this, source);
             }
         }
         super.onDestroyed(source);

@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.damage.UDamageSources;
 import com.minelittlepony.unicopia.particle.ParticleSource;
+import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.util.SoundEmitter;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -99,11 +100,7 @@ public interface Caster<E extends Entity> extends
     }
 
     default boolean canCastAt(Vec3d pos) {
-        return findAllSpellsInRange(500, SpellType.ARCANE_PROTECTION::isOn).noneMatch(caster -> caster
-                .getSpellSlot().get(SpellType.ARCANE_PROTECTION, false)
-                .filter(spell -> spell.blocksMagicFor(caster, this, pos))
-                .isPresent()
-        );
+        return !Ether.get(asWorld()).anyMatch(SpellType.ARCANE_PROTECTION, (spell, caster) -> spell.blocksMagicFor(caster, this, pos));
     }
 
     static Stream<Caster<?>> stream(Stream<Entity> entities) {

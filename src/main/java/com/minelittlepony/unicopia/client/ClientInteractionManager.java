@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.client;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -13,14 +12,12 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.ability.magic.CasterView;
 import com.minelittlepony.unicopia.client.gui.DismissSpellScreen;
 import com.minelittlepony.unicopia.client.gui.spellbook.ClientChapters;
 import com.minelittlepony.unicopia.client.sound.*;
 import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyClientPlayerEntity;
-import com.minelittlepony.unicopia.server.world.Ether;
 import com.mojang.authlib.GameProfile;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -37,28 +34,16 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class ClientInteractionManager extends InteractionManager {
 
     private final MinecraftClient client = MinecraftClient.getInstance();
 
-    private final Optional<CasterView> clientWorld = Optional.of(() -> MinecraftClient.getInstance().world);
-
     private final Int2ObjectMap<WeakReference<TickableSoundInstance>> playingSounds = new Int2ObjectOpenHashMap<>();
-
-    @Override
-    public Optional<CasterView> getCasterView(BlockView view) {
-        if (view instanceof ServerWorld world) {
-            return Optional.of(Ether.get(world));
-        }
-        return clientWorld;
-    }
 
     @Override
     public Map<Identifier, ?> readChapters(PacketByteBuf buffer) {
