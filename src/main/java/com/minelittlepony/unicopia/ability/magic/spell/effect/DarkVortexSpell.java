@@ -11,9 +11,10 @@ import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
+import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
-import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -48,9 +49,6 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
 
     private int age = 0;
     private float accumulatedMass = 0;
-
-    @Deprecated
-    protected final ParticleHandle particlEffect = new ParticleHandle();
 
     protected DarkVortexSpell(CustomisedSpellType<?> type) {
         super(type);
@@ -114,21 +112,17 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
     public void generateParticles(Caster<?> source) {
         super.generateParticles(source);
 
-        /*float radius = (float)getEventHorizonRadius();
-
-        particlEffect.update(getUuid(), source, spawner -> {
-            spawner.addParticle(new SphereParticleEffect(UParticles.SPHERE, 0x000000, 0.99F, radius, SPHERE_OFFSET), source.getOriginVector(), Vec3d.ZERO);
-        }).ifPresent(p -> {
-            p.setAttribute(Attachment.ATTR_RADIUS, radius);
-            p.setAttribute(Attachment.ATTR_OPACITY, 2F);
-        });
-        particlEffect.update(getUuid(), "_ring", source, spawner -> {
-            spawner.addParticle(new SphereParticleEffect(UParticles.DISK, 0xAAAAAA, 0.4F, radius + 1, SPHERE_OFFSET), getOrigin(source), Vec3d.ZERO);
-        }).ifPresent(p -> {
-            p.setAttribute(Attachment.ATTR_RADIUS, radius * 0F);
-        });*/
-
-        source.spawnParticles(ParticleTypes.SMOKE, 3);
+        if (getEventHorizonRadius() > 3) {
+            double range = getDrawDropOffRange(source);
+            source.spawnParticles(getOrigin(source), new Sphere(false, range), 17, p -> {
+                source.addParticle(
+                        new FollowingParticleEffect(UParticles.HEALTH_DRAIN, source.asEntity(), 0.4F)
+                            .withChild(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE),
+                        p,
+                        Vec3d.ZERO
+                );
+            });
+        }
     }
 
     @Override
@@ -178,7 +172,7 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
     // 3. force reaches 0 at distance of drawDropOffRange
 
     public double getEventHorizonRadius() {
-        return Math.sqrt(Math.max(0.001, getMass() - 12));
+        return Math.sqrt(Math.max(0.001, getMass() / 3F));
     }
 
     private double getAttractiveForce(Caster<?> source, Entity target) {
@@ -186,8 +180,8 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
     }
 
     private double getMass() {
-        float pulse = (float)Math.sin(age * 8) / 1F;
-        return 10 + Math.min(15, Math.min(0.5F + pulse, (float)Math.exp(age) / 8F - 90) + accumulatedMass / 10F) + pulse;
+        float pulse = (float)Math.sin(age * 8) / 160F;
+        return Math.min(15, Math.min(0.5F, (float)Math.exp(age) / 8F - 90) + accumulatedMass / 10F) + pulse;
     }
 
     @Override

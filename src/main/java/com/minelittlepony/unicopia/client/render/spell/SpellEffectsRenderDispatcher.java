@@ -46,6 +46,7 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
     static {
         register(SpellType.PLACED_SPELL, PlacedSpellRenderer::new);
         register(SpellType.SHIELD, ShieldSpellRenderer::new);
+        register(SpellType.DARK_VORTEX, DarkVortexSpellRenderer::new);
     }
 
     @Nullable
@@ -67,6 +68,7 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, Spell spell, Caster<?> caster, int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         var renderer = getRenderer(spell);
         if (renderer != null) {
+            MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers().draw();
             renderer.render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
         }
     }

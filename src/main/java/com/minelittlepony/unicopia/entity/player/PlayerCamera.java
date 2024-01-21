@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.minelittlepony.common.util.animation.MotionCompositor;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
+import com.minelittlepony.unicopia.client.render.spell.DarkVortexSpellRenderer;
 
 import net.minecraft.util.math.Vec3d;
 
@@ -62,6 +63,7 @@ public class PlayerCamera extends MotionCompositor {
     public double calculateFieldOfView(double fov) {
         fov += player.getMagicalReserves().getExertion().get() / 5F;
         fov += getEnergyAddition();
+        fov += DarkVortexSpellRenderer.getCameraDistortion();
 
         return fov;
     }

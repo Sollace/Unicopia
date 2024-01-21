@@ -7,7 +7,6 @@ import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
-import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
@@ -16,6 +15,7 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -60,12 +60,12 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
 
     @Override
     public void generateParticles(Caster<?> source) {
-        double range = getDrawDropOffRange(source) + 10;
+        double range = getDrawDropOffRange(source);
 
         source.spawnParticles(getOrigin(source), new Sphere(false, range), 7, p -> {
             source.addParticle(
                     new FollowingParticleEffect(UParticles.HEALTH_DRAIN, source.asEntity(), 0.4F)
-                        .withChild(new MagicParticleEffect(getType().getColor())),
+                        .withChild(ParticleTypes.AMBIENT_ENTITY_EFFECT),
                     p,
                     Vec3d.ZERO
             );

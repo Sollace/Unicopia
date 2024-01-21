@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.PlaceableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.client.render.RenderUtil;
+import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -35,6 +36,10 @@ public class PlacedSpellRenderer implements SpellRenderer<PlaceableSpell> {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, PlaceableSpell spell, Caster<?> caster, int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+
+        if (!(caster.asEntity() instanceof CastSpellEntity)) {
+            return;
+        }
 
         for (Spell delegate : spell.getDelegates()) {
 

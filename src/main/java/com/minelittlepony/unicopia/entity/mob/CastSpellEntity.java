@@ -37,6 +37,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
 
     public CastSpellEntity(EntityType<?> type, World world) {
         super(type, world);
+        ignoreCameraFrustum = true;
     }
 
     @Override

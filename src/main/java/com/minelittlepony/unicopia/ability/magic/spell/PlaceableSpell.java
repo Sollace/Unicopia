@@ -106,11 +106,11 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
                     setDead();
                     return false;
                 }
-            } else {
-                prevAge = age;
-                if (age < 25) {
-                    age++;
-                }
+            }
+
+            prevAge = age;
+            if (age < 25) {
+                age++;
             }
 
             return super.tick(source, Situation.GROUND);

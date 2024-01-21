@@ -7,10 +7,8 @@ import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.util.ColorHelper;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
@@ -20,9 +18,6 @@ public class ShieldSpellRenderer implements SpellRenderer<ShieldSpell> {
         matrices.push();
         double height = caster.asEntity().getEyeY() - caster.getOriginVector().y;
         matrices.translate(0, height, 0);
-
-        Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-        immediate.draw();
 
         int color = ColorHelper.lerp(caster.getCorruption().getScaled(1) * (tickDelta / (1 + caster.asWorld().random.nextFloat())), spell.getType().getColor(), 0xFF000);
         float[] colors = ColorHelper.changeSaturation(Color.r(color), Color.g(color), Color.b(color), 4);
