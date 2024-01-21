@@ -72,10 +72,7 @@ public class PlacedSpellRenderer implements SpellRenderer<PlaceableSpell> {
 
             matrices.pop();
 
-            var renderer = SpellEffectsRenderDispatcher.INSTANCE.getRenderer(delegate);
-            if (renderer != null) {
-                renderer.render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
-            }
+            SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertices, delegate, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
         }
     }
 

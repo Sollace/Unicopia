@@ -64,12 +64,16 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         return (SpellRenderer<S>)renderers.get(spell.getType());
     }
 
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, Spell spell, Caster<?> caster, int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+        var renderer = getRenderer(spell);
+        if (renderer != null) {
+            renderer.render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
+        }
+    }
+
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, Caster<?> caster, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         caster.getSpellSlot().forEach(spell -> {
-            var renderer = getRenderer(spell);
-            if (renderer != null) {
-                renderer.render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
-            }
+            render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
             return Operation.SKIP;
         }, false);
 
