@@ -28,7 +28,7 @@ public class ShieldSpellRenderer implements SpellRenderer<ShieldSpell> {
         float[] colors = ColorHelper.changeSaturation(Color.r(color), Color.g(color), Color.b(color), 4);
         float radius = 0.35F + spell.getRadius(tickDelta) + MathHelper.sin(animationProgress / 30F) * 0.01F;
 
-        VertexConsumer buffer = vertices.getBuffer(RenderLayers.getMagicNoColor());
+        VertexConsumer buffer = vertices.getBuffer(RenderLayers.getMagicShield());
 
         float thickness = 0.02F * MathHelper.sin(animationProgress / 30F);
         float alpha = 1 - Math.abs(MathHelper.sin(animationProgress / 20F)) * 0.2F;

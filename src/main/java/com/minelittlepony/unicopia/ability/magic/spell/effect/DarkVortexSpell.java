@@ -11,12 +11,9 @@ import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleHandle;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
-import com.minelittlepony.unicopia.particle.SphereParticleEffect;
-import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -114,15 +111,10 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
     }
 
     @Override
-    protected void onDestroyed(Caster<?> caster) {
-        particlEffect.destroy();
-    }
-
-    @Override
     public void generateParticles(Caster<?> source) {
         super.generateParticles(source);
 
-        float radius = (float)getEventHorizonRadius();
+        /*float radius = (float)getEventHorizonRadius();
 
         particlEffect.update(getUuid(), source, spawner -> {
             spawner.addParticle(new SphereParticleEffect(UParticles.SPHERE, 0x000000, 0.99F, radius, SPHERE_OFFSET), source.getOriginVector(), Vec3d.ZERO);
@@ -134,7 +126,7 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
             spawner.addParticle(new SphereParticleEffect(UParticles.DISK, 0xAAAAAA, 0.4F, radius + 1, SPHERE_OFFSET), getOrigin(source), Vec3d.ZERO);
         }).ifPresent(p -> {
             p.setAttribute(Attachment.ATTR_RADIUS, radius * 0F);
-        });
+        });*/
 
         source.spawnParticles(ParticleTypes.SMOKE, 3);
     }
@@ -185,7 +177,7 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
     // 2. max force (at dist 0) is taken from accumulated mass
     // 3. force reaches 0 at distance of drawDropOffRange
 
-    private double getEventHorizonRadius() {
+    public double getEventHorizonRadius() {
         return Math.sqrt(Math.max(0.001, getMass() - 12));
     }
 

@@ -39,6 +39,15 @@ public final class RenderLayers extends RenderLayer {
             .target(TRANSLUCENT_TARGET)
         .build(false));
 
+    private static final RenderLayer MAGIC_SHIELD = of("magic_shield", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
+            VertexFormat.DrawMode.QUADS, 256, true, true, MultiPhaseParameters.builder()
+            .program(COLOR_PROGRAM)
+            .transparency(TRANSLUCENT_TRANSPARENCY)
+            .target(TRANSLUCENT_TARGET)
+            .cull(DISABLE_CULLING)
+            .writeMaskState(COLOR_MASK)
+        .build(false));
+
     private static final Function<Integer, RenderLayer> MAGIC_COLORIN_FUNC = Util.memoize(color -> {
         return of("magic_colored_" + color,
                     VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
@@ -72,15 +81,11 @@ public final class RenderLayers extends RenderLayer {
     }
 
     public static RenderLayer getMagicNoColor() {
-        //return MAGIC_NO_COLOR;
-        return of("magic_no_color", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
-                VertexFormat.DrawMode.QUADS, 256, true, true, MultiPhaseParameters.builder()
-                .program(COLOR_PROGRAM)
-                .transparency(TRANSLUCENT_TRANSPARENCY)
-                .target(TRANSLUCENT_TARGET)
-                .cull(DISABLE_CULLING)
-                .writeMaskState(COLOR_MASK)
-            .build(false));
+        return MAGIC_NO_COLOR;
+    }
+
+    public static RenderLayer getMagicShield() {
+        return MAGIC_SHIELD;
     }
 
     public static RenderLayer getMagicColored() {
