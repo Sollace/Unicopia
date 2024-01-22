@@ -61,10 +61,11 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
     @Override
     public void generateParticles(Caster<?> source) {
         double range = getDrawDropOffRange(source);
+        Vec3d origin = getOrigin(source);
 
-        source.spawnParticles(getOrigin(source), new Sphere(false, range), 7, p -> {
+        source.spawnParticles(origin, new Sphere(false, range), 7, p -> {
             source.addParticle(
-                    new FollowingParticleEffect(UParticles.HEALTH_DRAIN, source.asEntity(), 0.4F)
+                    new FollowingParticleEffect(UParticles.HEALTH_DRAIN, origin, 0.4F)
                         .withChild(ParticleTypes.AMBIENT_ENTITY_EFFECT),
                     p,
                     Vec3d.ZERO

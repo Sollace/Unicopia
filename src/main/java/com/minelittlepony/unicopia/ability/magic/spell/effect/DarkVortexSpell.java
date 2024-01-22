@@ -114,9 +114,10 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
 
         if (getEventHorizonRadius() > 3) {
             double range = getDrawDropOffRange(source);
-            source.spawnParticles(getOrigin(source), new Sphere(false, range), 17, p -> {
+            Vec3d origin = getOrigin(source);
+            source.spawnParticles(origin, new Sphere(false, range), 17, p -> {
                 source.addParticle(
-                        new FollowingParticleEffect(UParticles.HEALTH_DRAIN, source.asEntity(), 0.4F)
+                        new FollowingParticleEffect(UParticles.HEALTH_DRAIN, origin, 0.4F)
                             .withChild(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE),
                         p,
                         Vec3d.ZERO

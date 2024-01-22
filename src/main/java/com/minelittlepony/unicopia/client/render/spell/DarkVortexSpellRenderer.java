@@ -1,12 +1,9 @@
 package com.minelittlepony.unicopia.client.render.spell;
 
-import org.joml.Vector3f;
-import org.joml.Vector4f;
-
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.DarkVortexSpell;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
-import com.minelittlepony.unicopia.client.render.RenderUtil;
+import com.minelittlepony.unicopia.client.render.model.PlaneModel;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
@@ -20,12 +17,13 @@ import net.minecraft.util.math.RotationAxis;
 
 public class DarkVortexSpellRenderer implements SpellRenderer<DarkVortexSpell> {
 
+    private static final Identifier ECRETION_RING_TEXTURE = new Identifier("textures/misc/forcefield.png");
+
     private static float cameraDistortion;
 
     public static float getCameraDistortion() {
         cameraDistortion *= 0.9F;
         cameraDistortion = MathHelper.clamp(cameraDistortion, 0, 80);
-        System.out.println(cameraDistortion);
         return cameraDistortion;
     }
 
@@ -79,20 +77,9 @@ public class DarkVortexSpellRenderer implements SpellRenderer<DarkVortexSpell> {
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(45));
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(animationProgress * 168));
 
+            VertexConsumer buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(ECRETION_RING_TEXTURE));
 
-            RenderUtil.Vertex[] CORNERS = new RenderUtil.Vertex[]{
-                    new RenderUtil.Vertex(new Vector3f(-1, -1, 0), 0, 0),
-                    new RenderUtil.Vertex(new Vector3f(-1,  1, 0), 1, 0),
-                    new RenderUtil.Vertex(new Vector3f( 1,  1, 0), 1, 1),
-                    new RenderUtil.Vertex(new Vector3f( 1, -1, 0), 0, 1)
-            };
-
-            VertexConsumer buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(new Identifier("textures/misc/forcefield.png")));
-
-            for (var corner : CORNERS) {
-                Vector4f pos = corner.position(matrices);
-                buffer.vertex(pos.x, pos.y, pos.z, 1, 1, 1, 1, corner.u(), corner.v(), 0, light, 1, 1, 1);
-            }
+            PlaneModel.INSTANCE.render(matrices, buffer, light, 0, 1, 1, 1, 1, 1);
         }
         matrices.pop();
     }
