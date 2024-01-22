@@ -13,9 +13,11 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.RotationAxis;
 
-public class BubbleSpellRenderer implements SpellRenderer<BubbleSpell> {
+public class BubbleSpellRenderer extends SpellRenderer<BubbleSpell> {
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, BubbleSpell spell, Caster<?> caster, int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+        super.render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
+
         matrices.push();
         double height = caster.asEntity().getEyeY() - caster.getOriginVector().y;
         matrices.translate(0, height * 0.5F, 0);

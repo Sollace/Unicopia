@@ -41,7 +41,7 @@ public interface UEntities {
             .dimensions(EntityDimensions.fixed(1, 1)));
     EntityType<CastSpellEntity> CAST_SPELL = register("cast_spell", FabricEntityTypeBuilder.create(SpawnGroup.MISC, CastSpellEntity::new)
             .trackRangeBlocks(200)
-            .dimensions(EntityDimensions.fixed(1, 0.4F)));
+            .dimensions(EntityDimensions.fixed(1, 1)));
     EntityType<FairyEntity> TWITTERMITE = register("twittermite", FabricEntityTypeBuilder.create(SpawnGroup.MISC, FairyEntity::new)
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(0.1F, 0.1F)));

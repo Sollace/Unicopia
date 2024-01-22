@@ -12,9 +12,11 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
-public class ShieldSpellRenderer implements SpellRenderer<ShieldSpell> {
+public class ShieldSpellRenderer extends SpellRenderer<ShieldSpell> {
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, ShieldSpell spell, Caster<?> caster, int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+        super.render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
+
         matrices.push();
         double height = caster.asEntity().getEyeY() - caster.getOriginVector().y;
         matrices.translate(0, height, 0);

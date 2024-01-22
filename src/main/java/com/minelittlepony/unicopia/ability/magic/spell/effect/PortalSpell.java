@@ -42,8 +42,6 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
 
     private boolean publishedPosition;
 
-    private final ParticleHandle particleEffect = new ParticleHandle();
-
     private float pitch;
     private float yaw;
 
@@ -51,6 +49,10 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
 
     protected PortalSpell(CustomisedSpellType<?> type) {
         super(type);
+    }
+
+    public boolean isLinked() {
+        return teleportationTarget.getTarget().isPresent();
     }
 
     @Override
@@ -73,17 +75,9 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
                 source.spawnParticles(origin, particleArea, 5, pos -> {
                     source.addParticle(effect, pos, Vec3d.ZERO);
                 });
-
-                teleportationTarget.getTarget().ifPresentOrElse(target -> {
-                    particleEffect.update(getUuid(), source, spawner -> {
-                        spawner.addParticle(new SphereParticleEffect(UParticles.DISK, getType().getColor(), 0.8F, 1.8F, new Vec3d(-pitch + 90, -yaw, 0)), source.getOriginVector(), Vec3d.ZERO);
-                    });
-                }, () -> {
-                    particleEffect.destroy();
-                });
             } else {
                 teleportationTarget.getTarget().ifPresent(target -> {
-                    if (Ether.get(source.asWorld()).get(getType(), target, targetPortalId) != null) {
+                    if (Ether.get(source.asWorld()).get(getType(), target, targetPortalId) == null) {
                         Unicopia.LOGGER.debug("Lost sibling, breaking connection to " + target.uuid());
                         teleportationTarget.set(null);
                         setDirty();
@@ -178,7 +172,6 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
 
     @Override
     protected void onDestroyed(Caster<?> caster) {
-        particleEffect.destroy();
         Ether ether = Ether.get(caster.asWorld());
         ether.remove(getType(), caster);
         getTarget(caster).ifPresent(e -> e.setTaken(false));

@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client.render.spell;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.DarkVortexSpell;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.client.render.model.PlaneModel;
@@ -16,7 +17,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
-public class DarkVortexSpellRenderer implements SpellRenderer<DarkVortexSpell> {
+public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell> {
 
     private static final Identifier ACCRETION_DISK_TEXTURE = Unicopia.id("textures/spells/dark_vortex/accretion_disk.png");
 
@@ -29,8 +30,13 @@ public class DarkVortexSpellRenderer implements SpellRenderer<DarkVortexSpell> {
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, DarkVortexSpell spell, Caster<?> caster, int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+    public boolean shouldRenderEffectPass(int pass) {
+        return pass < 2;
+    }
 
+    @Override
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, DarkVortexSpell spell, Caster<?> caster, int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+        super.render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
 
         Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
 
@@ -43,14 +49,11 @@ public class DarkVortexSpellRenderer implements SpellRenderer<DarkVortexSpell> {
         SphereModel.SPHERE.render(matrices, vertices.getBuffer(RenderLayers.getSolid()), light, 1, Math.min(radius * 0.6F, absDistance * 0.1F), 0, 0, 0, 1);
 
         matrices.push();
-
-
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90));
         matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(90 + cameraEntity.getYaw(tickDelta)));
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-cameraEntity.getPitch(tickDelta)));
 
         matrices.scale(0.7F, 1, 1);
-
 
         float distance = 1F / MathHelper.clamp((absDistance / (radius * 4)), 0.0000001F, 1);
         distance *= distance;
@@ -96,5 +99,10 @@ public class DarkVortexSpellRenderer implements SpellRenderer<DarkVortexSpell> {
         }
         matrices.pop();
         matrices.pop();
+    }
+
+    @Override
+    protected void renderCountdown(MatrixStack matrices, TimedSpell spell, float tickDelta) {
+
     }
 }
