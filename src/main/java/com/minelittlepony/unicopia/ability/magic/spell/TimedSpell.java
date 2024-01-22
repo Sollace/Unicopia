@@ -29,7 +29,7 @@ public interface TimedSpell extends Spell {
         }
 
         public float getPercentTimeRemaining(float tickDelta) {
-            return MathHelper.lerp(tickDelta, prevDuration, duration) / maxDuration;
+            return MathHelper.lerp(tickDelta, prevDuration, duration) / (float)maxDuration;
         }
 
         public int getTicksRemaining() {
