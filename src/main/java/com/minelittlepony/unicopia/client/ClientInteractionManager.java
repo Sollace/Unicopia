@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -14,10 +15,12 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.gui.DismissSpellScreen;
 import com.minelittlepony.unicopia.client.gui.spellbook.ClientChapters;
+import com.minelittlepony.unicopia.client.particle.ClientBoundParticleSpawner;
 import com.minelittlepony.unicopia.client.sound.*;
 import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyClientPlayerEntity;
+import com.minelittlepony.unicopia.particle.ParticleSpawner;
 import com.mojang.authlib.GameProfile;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -47,7 +50,7 @@ public class ClientInteractionManager extends InteractionManager {
 
     @Override
     public Map<Identifier, ?> readChapters(PacketByteBuf buffer) {
-        return  buffer.readMap(PacketByteBuf::readIdentifier, ClientChapters::loadChapter);
+        return buffer.readMap(PacketByteBuf::readIdentifier, ClientChapters::loadChapter);
     }
 
     @Override
@@ -143,5 +146,10 @@ public class ClientInteractionManager extends InteractionManager {
     @Override
     public int getViewMode() {
         return client.options.getPerspective().ordinal();
+    }
+
+    @Override
+    public ParticleSpawner createBoundParticle(UUID id) {
+        return new ClientBoundParticleSpawner(id);
     }
 }

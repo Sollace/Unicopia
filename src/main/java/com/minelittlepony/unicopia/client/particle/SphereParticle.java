@@ -10,22 +10,13 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-
-import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.particle.SphereParticleEffect;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Link;
 import com.minelittlepony.unicopia.util.ColorHelper;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import java.util.Optional;
-
-import com.minelittlepony.common.util.Color;
-
-public class SphereParticle extends Particle implements Attachment {
+public class SphereParticle extends Particle {
 
     protected float prevRadius;
     protected float radius;
@@ -33,12 +24,6 @@ public class SphereParticle extends Particle implements Attachment {
     protected int steps;
     protected float lerpIncrement;
     protected float toRadius;
-
-    private Optional<Link> link = Optional.empty();
-
-    private final SphereParticleEffect parameters;
-
-    private boolean bound;
 
     public SphereParticle(SphereParticleEffect parameters, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {
         this(parameters, w, x, y, z);
@@ -50,7 +35,6 @@ public class SphereParticle extends Particle implements Attachment {
 
     public SphereParticle(SphereParticleEffect parameters, ClientWorld w, double x, double y, double z) {
         super(w, x, y, z);
-        this.parameters = parameters;
         this.radius = parameters.radius();
         this.red = parameters.color().x / 255F;
         this.green = parameters.color().y / 255F;
@@ -58,43 +42,6 @@ public class SphereParticle extends Particle implements Attachment {
         this.alpha = parameters.alpha();
 
         setMaxAge(10);
-    }
-
-    @Override
-    public boolean isStillAlive() {
-        return age < (maxAge - 1);
-    }
-
-    @Override
-    public void attach(Link link) {
-        setMaxAge(50000);
-        this.link = Optional.of(link);
-    }
-
-    @Override
-    public void detach() {
-        markDead();
-    }
-
-    @Override
-    public void setAttribute(int key, Number value) {
-        if (key == ATTR_RADIUS) {
-            toRadius = value.floatValue();
-            steps = 20;
-            lerpIncrement = (toRadius - radius) / steps;
-        }
-        if (key == ATTR_COLOR) {
-            int tint = value.intValue();
-            red = Color.r(tint);
-            green = Color.g(tint);
-            blue = Color.b(tint);
-        }
-        if (key == ATTR_OPACITY) {
-            alpha = value.floatValue();
-        }
-        if (key == ATTR_BOUND) {
-            bound = value.intValue() == 1;
-        }
     }
 
     @Override
@@ -106,24 +53,7 @@ public class SphereParticle extends Particle implements Attachment {
     public void tick() {
         super.tick();
 
-        if (link.isPresent()) {
-            link.flatMap(Link::get).map(EntityConvertable::asEntity).ifPresentOrElse(e -> {
-                if (!bound) {
-                    Vec3d offset = parameters.offset();
-                    setPos(e.getX() + offset.getX(), e.getY() + offset.getY(), e.getZ() + offset.getZ());
-
-                    prevPosX = e.lastRenderX + offset.getX();
-                    prevPosY = e.lastRenderY + offset.getY();
-                    prevPosZ = e.lastRenderZ + offset.getZ();
-                }
-            }, this::detach);
-
-            if (steps-- > 0) {
-                radius += lerpIncrement;
-            }
-        } else {
-            radius *= 0.9998281;
-        }
+        radius *= 0.9998281;
     }
 
     @Override

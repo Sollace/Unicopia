@@ -48,6 +48,7 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         register(SpellType.DARK_VORTEX, DarkVortexSpellRenderer::new);
         register(SpellType.BUBBLE, BubbleSpellRenderer::new);
         register(SpellType.PORTAL, PortalSpellRenderer::new);
+        register(SpellType.RAINBOOM, RainboomSpellRenderer::new);
     }
 
     @Nullable

@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.client.particle;
 
 import org.joml.Vector3f;
 
+import com.minelittlepony.unicopia.client.render.RenderUtil;
+
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.render.BufferBuilder;
@@ -35,6 +37,16 @@ public abstract class AbstractGeometryBasedParticle extends Particle {
 
         te.draw();
     }
+
+    protected final void renderQuad(Tessellator te, BufferBuilder buffer, RenderUtil.Vertex[] corners, float alpha, float tickDelta) {
+        int light = getBrightness(tickDelta);
+        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+        for (RenderUtil.Vertex corner : corners) {
+            buffer.vertex(corner.position().x, corner.position().y, corner.position().z).texture(corner.u(), corner.v()).color(red, green, blue, alpha).light(light).next();
+        }
+        te.draw();
+    }
+
 
     protected final void renderQuad(VertexConsumer buffer, Vector3f[] corners, float alpha, float tickDelta) {
         int light = getBrightness(tickDelta);

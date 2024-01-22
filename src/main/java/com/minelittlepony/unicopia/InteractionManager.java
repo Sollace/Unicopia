@@ -1,11 +1,13 @@
 package com.minelittlepony.unicopia;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.entity.player.dummy.DummyPlayerEntity;
+import com.minelittlepony.unicopia.particle.ParticleSpawner;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;
@@ -30,6 +32,10 @@ public class InteractionManager {
 
     public static InteractionManager instance() {
         return INSTANCE;
+    }
+
+    public ParticleSpawner createBoundParticle(UUID id) {
+        return ParticleSpawner.EMPTY;
     }
 
     public Map<Identifier, ?> readChapters(PacketByteBuf buf) {

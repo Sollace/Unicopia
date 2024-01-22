@@ -10,10 +10,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
-import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
-import com.minelittlepony.unicopia.particle.UParticles;
-
-import net.minecraft.util.math.Vec3d;
 
 /**
  * Pegasus ability to perform rainbooms
@@ -72,7 +68,6 @@ public class PegasusRainboomAbility implements Ability<Hit> {
         }
 
         if (player.consumeSuperMove()) {
-            player.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, player.getPhysics().getMotionAngle()), player.getOriginVector(), Vec3d.ZERO);
             SpellType.RAINBOOM.withTraits().apply(player, CastingMethod.INNATE);
         }
         return true;
