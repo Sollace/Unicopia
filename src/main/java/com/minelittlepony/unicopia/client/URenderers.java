@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.block.cloud.CloudChestBlock;
 import com.minelittlepony.unicopia.client.particle.ChangelingMagicParticle;
 import com.minelittlepony.unicopia.client.particle.CloudsEscapingParticle;
 import com.minelittlepony.unicopia.client.particle.DiskParticle;
+import com.minelittlepony.unicopia.client.particle.FloatingBubbleParticle;
 import com.minelittlepony.unicopia.client.particle.GroundPoundParticle;
 import com.minelittlepony.unicopia.client.particle.HealthDrainParticle;
 import com.minelittlepony.unicopia.client.particle.LightningBoltParticle;
@@ -65,6 +66,7 @@ public interface URenderers {
     static void bootstrap() {
         ParticleFactoryRegistry.getInstance().register(UParticles.UNICORN_MAGIC, createFactory(MagicParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.CHANGELING_MAGIC, createFactory(ChangelingMagicParticle::new));
+        ParticleFactoryRegistry.getInstance().register(UParticles.BUBBLE, createFactory(FloatingBubbleParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.RAIN_DROPS, createFactory(RaindropsParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.HEALTH_DRAIN, createFactory(HealthDrainParticle::create));
         ParticleFactoryRegistry.getInstance().register(UParticles.RAINBOOM_RING, RainboomParticle::new);

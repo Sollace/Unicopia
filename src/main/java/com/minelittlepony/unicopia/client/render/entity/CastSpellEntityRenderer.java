@@ -11,8 +11,6 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 
 public class CastSpellEntityRenderer extends EntityRenderer<CastSpellEntity> {
-    private final SpellEffectsRenderDispatcher spellRenderDispatcher = new SpellEffectsRenderDispatcher();
-
     public CastSpellEntityRenderer(EntityRendererFactory.Context ctx) {
         super(ctx);
     }
@@ -24,7 +22,7 @@ public class CastSpellEntityRenderer extends EntityRenderer<CastSpellEntity> {
 
     @Override
     public void render(CastSpellEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-        spellRenderDispatcher.render(matrices, vertexConsumers, light, entity, 0, 0, tickDelta, getAnimationProgress(entity, tickDelta), yaw, 0);
+        SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertexConsumers, light, entity, 0, 0, tickDelta, getAnimationProgress(entity, tickDelta), yaw, 0);
     }
 
     protected float getAnimationProgress(CastSpellEntity entity, float tickDelta) {

@@ -12,10 +12,12 @@ public interface UParticles {
 
     ParticleType<MagicParticleEffect> UNICORN_MAGIC = register("unicorn_magic", FabricParticleTypes.complex(MagicParticleEffect.FACTORY));
     DefaultParticleType CHANGELING_MAGIC = register("changeling_magic", FabricParticleTypes.simple());
+    DefaultParticleType BUBBLE = register("bubble", FabricParticleTypes.simple());
 
     ParticleType<OrientedBillboardParticleEffect> RAINBOOM_RING = register("rainboom_ring", FabricParticleTypes.complex(OrientedBillboardParticleEffect.FACTORY));
     DefaultParticleType RAINBOOM_TRAIL = register("rainboom_trail", FabricParticleTypes.simple());
 
+    @Deprecated
     ParticleType<OrientedBillboardParticleEffect> MAGIC_RUNES = register("magic_runes", FabricParticleTypes.complex(OrientedBillboardParticleEffect.FACTORY));
 
     DefaultParticleType RAIN_DROPS = register("rain_drops", FabricParticleTypes.simple());

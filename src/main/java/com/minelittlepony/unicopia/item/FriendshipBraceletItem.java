@@ -78,7 +78,7 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
 
     @Override
     public EquipmentSlot getSlotType(ItemStack stack) {
-        return isSigned(stack) ? EquipmentSlot.CHEST : super.getSlotType();
+        return isSigned(stack) ? EquipmentSlot.CHEST : super.getSlotType(stack);
     }
 
     private boolean checkSignature(ItemStack stack, PlayerEntity player) {

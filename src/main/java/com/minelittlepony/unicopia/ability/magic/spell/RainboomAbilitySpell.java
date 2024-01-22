@@ -54,7 +54,7 @@ public class RainboomAbilitySpell extends AbstractSpell {
         });
 
         if (source.isClient()) {
-           // source.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, source.getPhysics().getMotionAngle()), source.getOriginVector(), Vec3d.ZERO);
+            //source.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, source.getPhysics().getMotionAngle()), source.getOriginVector(), Vec3d.ZERO);
         }
 
         source.findAllEntitiesInRange(RADIUS).forEach(e -> {

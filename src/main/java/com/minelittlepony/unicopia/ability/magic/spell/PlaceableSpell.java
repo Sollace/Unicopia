@@ -13,10 +13,6 @@ import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgCasterLookRequest;
-import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
-import com.minelittlepony.unicopia.particle.ParticleHandle;
-import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
@@ -24,6 +20,7 @@ import net.minecraft.nbt.*;
 import net.minecraft.registry.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -39,11 +36,6 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
      */
     @Nullable
     private RegistryKey<World> dimension;
-
-    /**
-     * The visual effect
-     */
-    private final ParticleHandle particlEffect = new ParticleHandle();
 
     /**
      * ID of the placed counterpart of this spell.
@@ -64,6 +56,9 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     public float pitch;
     public float yaw;
 
+    private int prevAge;
+    private int age;
+
     private Optional<Vec3d> position = Optional.empty();
 
     public PlaceableSpell(CustomisedSpellType<?> type) {
@@ -75,15 +70,13 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         return this;
     }
 
-    @Override
-    public Collection<Spell> getDelegates() {
-        return List.of(spell);
+    public float getAge(float tickDelta) {
+        return MathHelper.lerp(tickDelta, prevAge, age);
     }
 
     @Override
-    public void setDead() {
-        super.setDead();
-        particlEffect.destroy();
+    public Collection<Spell> getDelegates() {
+        return List.of(spell);
     }
 
     @Override
@@ -115,13 +108,10 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
                 }
             }
 
-            if (spell instanceof PlacementDelegate delegate) {
-                delegate.updatePlacement(source, this);
+            prevAge = age;
+            if (age < 25) {
+                age++;
             }
-
-            getParticleEffectAttachment(source).ifPresent(p -> {
-                p.setAttribute(Attachment.ATTR_COLOR, spell.getType().getColor());
-            });
 
             return super.tick(source, Situation.GROUND);
         }
@@ -200,12 +190,6 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         return castEntity.getTarget().map(EntityValues::pos);
     }
 
-    public Optional<Attachment> getParticleEffectAttachment(Caster<?> source) {
-        return particlEffect.update(getUuid(), source, spawner -> {
-            spawner.addParticle(new OrientedBillboardParticleEffect(UParticles.MAGIC_RUNES, pitch + 90, yaw), Vec3d.ZERO, Vec3d.ZERO);
-        });
-    }
-
     protected Optional<World> getWorld(Caster<?> source) {
         return Optional.ofNullable(dimension)
                 .map(dim -> source.asWorld().getServer().getWorld(dim));
@@ -214,11 +198,15 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
+        compound.putInt("age", age);
         compound.putFloat("pitch", pitch);
         compound.putFloat("yaw", yaw);
         position.ifPresent(pos -> {
             compound.put("position", NbtSerialisable.writeVector(pos));
         });
+        if (placedSpellId != null) {
+            compound.putUuid("placedSpellId", placedSpellId);
+        }
         if (dimension != null) {
             compound.putString("dimension", dimension.getValue().toString());
         }
@@ -229,9 +217,11 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
+        age = compound.getInt("age");
         pitch = compound.getFloat("pitch");
         yaw = compound.getFloat("yaw");
         position = compound.contains("position") ? Optional.of(NbtSerialisable.readVector(compound.getList("position", NbtElement.FLOAT_TYPE))) : Optional.empty();
+        placedSpellId = compound.containsUuid("placedSpellId") ? compound.getUuid("placedSpellId") : null;
         if (compound.contains("dimension", NbtElement.STRING_TYPE)) {
             Identifier id = Identifier.tryParse(compound.getString("dimension"));
             if (id != null) {
@@ -260,9 +250,6 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     }
 
     public interface PlacementDelegate {
-
         void onPlaced(Caster<?> source, PlaceableSpell parent, CastSpellEntity entity);
-
-        void updatePlacement(Caster<?> source, PlaceableSpell parent);
     }
 }

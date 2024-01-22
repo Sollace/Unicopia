@@ -7,6 +7,8 @@ import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.*;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.client.render.RenderLayers;
+import com.minelittlepony.unicopia.client.render.spell.DarkVortexSpellRenderer;
 import com.minelittlepony.unicopia.client.sound.*;
 import com.minelittlepony.unicopia.entity.ItemTracker;
 import com.minelittlepony.unicopia.entity.effect.EffectUtils;
@@ -192,6 +194,19 @@ public class UHud {
     }
 
     protected void renderViewEffects(Pony pony, DrawContext context, int scaledWidth, int scaledHeight, float tickDelta) {
+
+        float vortexDistortion = DarkVortexSpellRenderer.getCameraDistortion();
+
+        if (vortexDistortion > 20) {
+            context.fill(RenderLayers.getEndPortal(), 0, 0, scaledWidth, scaledHeight, 0);
+            context.getMatrices().push();
+            context.getMatrices().translate(scaledWidth / 2, scaledHeight / 2, 0);
+            DrawableUtil.drawArc(context.getMatrices(), 0, 20, 0, MathHelper.TAU, 0x000000FF, false);
+            context.getMatrices().pop();
+            return;
+        } else if (vortexDistortion > 0) {
+            context.fill(0, 0, scaledWidth, scaledHeight, (int)((vortexDistortion / 20F) * 255) << 24);
+        }
 
         boolean hasEffect = client.player.hasStatusEffect(UEffects.SUN_BLINDNESS);
 
