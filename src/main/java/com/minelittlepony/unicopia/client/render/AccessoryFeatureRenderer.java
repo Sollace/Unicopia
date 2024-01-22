@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.client.FirstPersonRendererOverrides.ArmRenderer;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.client.render.spell.SpellEffectsRenderDispatcher;
 
 import net.minecraft.client.MinecraftClient;
@@ -13,14 +14,14 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Arm;
 
 public class AccessoryFeatureRenderer<
         T extends LivingEntity,
-        M extends BipedEntityModel<T>> extends FeatureRenderer<T, M> {
+        M extends EntityModel<T>> extends FeatureRenderer<T, M> {
 
     private static final List<FeatureFactory<?>> REGISTRY = new ArrayList<>();
 
@@ -40,6 +41,10 @@ public class AccessoryFeatureRenderer<
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+        if (MineLPDelegate.getInstance().getRace(entity).isEquine()) {
+            return;
+        }
+
         features.forEach(feature -> feature.render(matrices, vertexConsumers, light, entity, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch));
 
         Caster.of(entity).ifPresent(caster -> {
@@ -60,7 +65,7 @@ public class AccessoryFeatureRenderer<
     }
 
     public interface FeatureFactory<T extends LivingEntity> {
-        Feature<T> create(FeatureRendererContext<T, ? extends BipedEntityModel<T>> context);
+        Feature<T> create(FeatureRendererContext<T, ? extends EntityModel<T>> context);
     }
 
     public interface Feature<T extends LivingEntity> {
@@ -75,11 +80,11 @@ public class AccessoryFeatureRenderer<
 
     public interface FeatureRoot<
             T extends LivingEntity,
-            M extends BipedEntityModel<T>> {
+            M extends EntityModel<T>> {
         AccessoryFeatureRenderer<T, M> getAccessories();
         @SuppressWarnings("unchecked")
         @Nullable
-        static <T extends LivingEntity, M extends BipedEntityModel<T>> FeatureRoot<T, M> of(T entity) {
+        static <T extends LivingEntity, M extends EntityModel<T>> FeatureRoot<T, M> of(T entity) {
             var renderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity);
             if (renderer instanceof FeatureRoot) {
                 return (FeatureRoot<T, M>)renderer;
