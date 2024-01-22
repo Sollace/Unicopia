@@ -8,12 +8,18 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.client.gui.DrawableUtil;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.util.ColorHelper;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
@@ -22,6 +28,7 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
@@ -31,6 +38,7 @@ import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 
@@ -47,6 +55,7 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         register(SpellType.PLACED_SPELL, PlacedSpellRenderer::new);
         register(SpellType.SHIELD, ShieldSpellRenderer::new);
         register(SpellType.DARK_VORTEX, DarkVortexSpellRenderer::new);
+        register(SpellType.BUBBLE, BubbleSpellRenderer::new);
     }
 
     @Nullable
@@ -67,9 +76,15 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
 
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, Spell spell, Caster<?> caster, int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         var renderer = getRenderer(spell);
+
         if (renderer != null) {
-            MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers().draw();
+            client.getBufferBuilders().getEntityVertexConsumers().draw();
+
             renderer.render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
+
+            if (EquinePredicates.IS_CASTER.test(client.player)) {
+                renderGemstone(matrices, vertices, spell, caster, light, tickDelta, animationProgress);
+            }
         }
     }
 
@@ -88,6 +103,38 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
     @Override
     public void reload(ResourceManager manager) {
         renderers = REGISTRY.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().create()));
+    }
+
+    private void renderGemstone(MatrixStack matrices, VertexConsumerProvider vertices, Spell spell, Caster<?> caster, int light, float tickDelta, float animationProgress) {
+        matrices.push();
+
+        if (!(caster.asEntity() instanceof MagicProjectileEntity)) {
+
+            float y = -caster.asEntity().getHeight();
+            if (caster.asEntity() instanceof CastSpellEntity) {
+                y = 1F;
+            }
+
+            matrices.translate(0, y + MathHelper.sin(animationProgress / 3F) * 0.2F, 0);
+            matrices.push();
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(animationProgress));
+
+            client.getItemRenderer().renderItem(spell.getType().withTraits(spell.getTraits()).getDefaultStack(), ModelTransformationMode.FIXED, light, 0, matrices, vertices, caster.asWorld(), 0);
+            matrices.pop();
+
+            if (spell instanceof TimedSpell timed && spell.getType() != SpellType.DARK_VORTEX) {
+                matrices.multiply(client.getEntityRenderDispatcher().getRotation().invert());
+                float radius = 0.6F;
+                float timeRemaining = timed.getTimer().getPercentTimeRemaining(tickDelta);
+
+                DrawableUtil.drawArc(matrices, radius, radius + 0.3F, 0, DrawableUtil.TAU * timeRemaining,
+                        ColorHelper.lerp(MathHelper.clamp(timeRemaining * 4, 0, 1), 0xFF0000FF, 0xFFFFFFFF),
+                        false
+                );
+            }
+        }
+
+        matrices.pop();
     }
 
     private void renderSpellDebugInfo(MatrixStack matrices, VertexConsumerProvider vertices, Caster<?> caster, int light) {
