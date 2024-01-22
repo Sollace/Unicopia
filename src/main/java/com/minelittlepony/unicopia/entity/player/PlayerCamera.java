@@ -63,7 +63,7 @@ public class PlayerCamera extends MotionCompositor {
     public double calculateFieldOfView(double fov) {
         fov += player.getMagicalReserves().getExertion().get() / 5F;
         fov += getEnergyAddition();
-        fov += DarkVortexSpellRenderer.getCameraDistortion();
+        fov += DarkVortexSpellRenderer.getCameraDistortion() * 2.5F;
 
         return fov;
     }

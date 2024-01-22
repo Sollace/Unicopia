@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
@@ -29,7 +28,7 @@ public class TargetSelecter {
     public Stream<Entity> getEntities(Caster<?> source, double radius, BiPredicate<Caster<?>, Entity> filter) {
         targets.values().removeIf(Target::tick);
         return source.findAllEntitiesInRange(radius)
-            .filter(entity -> entity.isAlive() && !entity.isRemoved() && notOwnerOrFriend(spell, source, entity) && !SpellPredicate.IS_SHIELD_LIKE.isOn(entity))
+            .filter(entity -> entity.isAlive() && !entity.isRemoved() && notOwnerOrFriend(spell, source, entity))
             .filter(EquinePredicates.EXCEPT_MAGIC_IMMUNE)
             .filter(e -> filter.test(source, e))
             .map(i -> {
@@ -56,6 +55,11 @@ public class TargetSelecter {
 
     public static <T extends Entity> boolean isOwnerOrFriend(Affine affine, Caster<?> source, Entity target) {
         Entity owner = source.getMaster();
+
+        var equine = Pony.of(target);
+        if (equine.isPresent() && !affine.isFriendlyTogether(equine.get())) {
+            return false;
+        }
 
         if (affine.isEnemy(source)) {
             return FriendshipBraceletItem.isComrade(source, target);
