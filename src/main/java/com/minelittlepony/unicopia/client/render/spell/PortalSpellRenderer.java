@@ -23,6 +23,7 @@ import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.mixin.client.MixinMinecraftClient;
 import com.mojang.blaze3d.platform.GlConst;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.systems.VertexSorter;
 
@@ -48,6 +49,8 @@ import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 
 public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
+    static boolean FANCY_PORTAlS = false;
+
     private static final LoadingCache<UUID, PortalFrameBuffer> FRAME_BUFFERS = CacheBuilder.newBuilder()
             .expireAfterAccess(10, TimeUnit.SECONDS)
             .<UUID, PortalFrameBuffer>removalListener(n -> n.getValue().close())
@@ -79,6 +82,20 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
         SphereModel.DISK.render(matrices, buff, light, 0, 2F, red, green, blue, 1);
         matrices.pop();
 
+        if (!FANCY_PORTAlS) {
+            matrices.push();
+            matrices.translate(0, -0.02, 0);
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
+            SphereModel.DISK.render(matrices, buff, light, 0, 2F, red, green, blue, 1);
+            matrices.pop();
+            return;
+        }
+
+        // Fancy portal rendering is disabled for now
+        // Need to fix:
+        // 1. Transparent parts of the sky (because the game sets the clear to (0,0,0,0)
+        // 2. Chunk flickering at long distances between portals
+
         if (caster.asEntity().distanceTo(client.cameraEntity) > 50) {
             return; // don't bother rendering if too far away
         }
@@ -87,12 +104,12 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
             try {
                 float grown = Math.min(caster.asEntity().age, 20) / 20F;
                 matrices.push();
-                matrices.translate(0, 0.01, 0);
+                matrices.translate(0, -0.01, 0);
                 matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-spell.getYaw()));
                 matrices.scale(grown, 1, grown);
                 PortalFrameBuffer buffer = FRAME_BUFFERS.get(target.uuid());
                 buffer.build(spell, caster, target);
-                buffer.draw(matrices);
+                buffer.draw(matrices, vertices);
                 matrices.pop();
             } catch (ExecutionException e) { }
         });
@@ -101,6 +118,8 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
     static class PortalFrameBuffer implements AutoCloseable {
         @Nullable
         private SimpleFramebuffer framebuffer;
+        @Nullable
+        private SimpleFramebuffer backgroundBuffer;
         private boolean closed;
 
         private final MinecraftClient client = MinecraftClient.getInstance();
@@ -109,31 +128,32 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
 
         private static int recursionCount;
 
-        public void draw(MatrixStack matrices) {
-            if (closed || framebuffer == null) {
-                return;
+        public void draw(MatrixStack matrices, VertexConsumerProvider vertices) {
+            Vec3d skyColor = client.world.getSkyColor(client.gameRenderer.getCamera().getPos(), client.getTickDelta());
+            BackgroundRenderer.setFogBlack();
+            SphereModel.DISK.render(matrices, vertices.getBuffer(RenderLayers.getMagicShield()), 0, 0, 2, (float)skyColor.x, (float)skyColor.y, (float)skyColor.z, 1);
+            matrices.translate(0, -0.001, 0);
+
+            if (!(closed || framebuffer == null)) {
+                RenderSystem.assertOnRenderThread();
+                GlStateManager._colorMask(true, true, true, false);
+                GlStateManager._enableDepthTest();
+                GlStateManager._disableCull();
+                Tessellator tessellator = RenderSystem.renderThreadTesselator();
+                BufferBuilder buffer = tessellator.getBuffer();
+                float uScale = (float)framebuffer.viewportWidth / (float)framebuffer.textureWidth;
+                float vScale = (float)framebuffer.viewportHeight / (float)framebuffer.textureHeight;
+                RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+                RenderSystem._setShaderTexture(0, framebuffer.getColorAttachment());
+                buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+                TexturedSphereModel.DISK.render(matrices, buffer, 2F, 1, 1, 1, 1, uScale, vScale);
+                tessellator.draw();
+
+                client.getTextureManager().bindTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
+                GlStateManager._enableCull();
+                GlStateManager._colorMask(true, true, true, true);
+                GlStateManager._depthMask(true);
             }
-            float uScale = (float)framebuffer.viewportWidth / (float)framebuffer.textureWidth;
-            float vScale = (float)framebuffer.viewportHeight / (float)framebuffer.textureHeight;
-
-            Tessellator tessellator = RenderSystem.renderThreadTesselator();
-            BufferBuilder buffer = tessellator.getBuffer();
-
-            RenderSystem.enableDepthTest();
-            RenderSystem.disableCull();
-            RenderSystem.setShaderTexture(0, framebuffer.getColorAttachment());
-            RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
-
-            Matrix4f textureMatrix = matrices.peek().getPositionMatrix();
-
-            RenderSystem.setTextureMatrix(textureMatrix);
-
-            buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-            TexturedSphereModel.DISK.render(matrices, buffer, 2F, 1, 1, 1, 1, uScale, vScale);
-            tessellator.draw();
-            client.getTextureManager().bindTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
-            RenderSystem.enableCull();
-            RenderSystem.resetTextureMatrix();
         }
 
         public void build(PortalSpell spell, Caster<?> caster, EntityReference.EntityValues<Entity> target) {
@@ -177,15 +197,15 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
                     int originalFov = fov.getValue();
                     fov.setValue(110);
 
-                    Vec3d offset = new Vec3d(0, -1.2, -0.2);
-                    float yaw = spell.getYawDifference();// spell.getYawDifference();
+                    Vec3d offset = new Vec3d(0, 1.8, 0);
+                    float yaw = spell.getYawDifference();
 
                     offset = offset.rotateY(yaw * MathHelper.RADIANS_PER_DEGREE);
 
                     Entity cameraEntity = UEntities.CAST_SPELL.create(caster.asWorld());
                     cameraEntity.setPosition(target.pos().add(offset));
                     cameraEntity.setPitch(spell.getTargetPitch());
-                    cameraEntity.setYaw(yaw);
+                    cameraEntity.setYaw(spell.getTargetYaw() + 180);
 
                     drawWorld(cameraEntity, 400, 400);
 
@@ -216,6 +236,8 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
 
             if (framebuffer == null) {
                 framebuffer = new SimpleFramebuffer(width, height, true, MinecraftClient.IS_SYSTEM_MAC);
+                framebuffer.setClearColor(0, 0, 0, 0);
+                framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
             }
 
             window.setFramebufferWidth(width);
@@ -231,12 +253,10 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
             int fbo = client.getFramebuffer().fbo;
             client.getFramebuffer().fbo = framebuffer.fbo;
 
-            framebuffer.setClearColor(0, 0, 0, 0);
-            framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
-
             RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT | GlConst.GL_COLOR_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
             framebuffer.beginWrite(true);
             BackgroundRenderer.clearFog();
+            RenderSystem.enableCull();
 
             Camera camera = client.gameRenderer.getCamera();
 
@@ -254,13 +274,15 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
             }
             framebuffer.endWrite();
 
+            client.getFramebuffer().fbo = fbo;
+            client.getFramebuffer().beginWrite(true);
+
             chunkInfos.clear();
             chunkInfos.addAll((List)backup);
 
             view.pop();
             RenderSystem.applyModelViewMatrix();
 
-            client.getFramebuffer().fbo = fbo;
             window.setFramebufferWidth(i);
             window.setFramebufferHeight(j);
 
@@ -278,8 +300,6 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
                         1
                 );
             }
-
-            client.getFramebuffer().beginWrite(true);
         }
 
         @Override
@@ -288,6 +308,11 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
             if (framebuffer != null) {
                 SimpleFramebuffer fb = framebuffer;
                 framebuffer = null;
+                fb.delete();
+            }
+            if (backgroundBuffer != null) {
+                SimpleFramebuffer fb = backgroundBuffer;
+                backgroundBuffer = null;
                 fb.delete();
             }
         }

@@ -248,6 +248,8 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
         teleportationTarget.fromNBT(compound.getCompound("teleportationTarget"));
         pitch = compound.getFloat("pitch");
         yaw = compound.getFloat("yaw");
+        targetPortalPitch = compound.getFloat("targetPortalPitch");
+        targetPortalYaw = compound.getFloat("targetPortalYaw");
         particleArea = PARTICLE_AREA.rotate(
             pitch * MathHelper.RADIANS_PER_DEGREE,
             (180 - yaw) * MathHelper.RADIANS_PER_DEGREE
