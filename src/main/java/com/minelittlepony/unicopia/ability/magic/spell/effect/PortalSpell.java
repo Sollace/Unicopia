@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 import com.minelittlepony.unicopia.particle.*;
 import com.minelittlepony.unicopia.server.world.Ether;
@@ -19,11 +20,16 @@ import com.minelittlepony.unicopia.util.shape.*;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldEvents;
@@ -38,6 +44,8 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
 
     @Nullable
     private UUID targetPortalId;
+    private float targetPortalPitch;
+    private float targetPortalYaw;
     private final EntityReference<Entity> teleportationTarget = new EntityReference<>();
 
     private boolean publishedPosition;
@@ -55,6 +63,35 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
         return teleportationTarget.getTarget().isPresent();
     }
 
+    public Optional<EntityReference.EntityValues<Entity>> getTarget() {
+        return teleportationTarget.getTarget();
+    }
+
+    public float getPitch() {
+        return pitch;
+    }
+
+    public float getYaw() {
+        return yaw;
+    }
+
+    public float getTargetPitch() {
+        return targetPortalPitch;
+    }
+
+    public float getTargetYaw() {
+        return targetPortalYaw;
+    }
+
+    public float getYawDifference() {
+        return MathHelper.wrapDegrees(180 + targetPortalYaw - yaw);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Optional<Ether.Entry<PortalSpell>> getTarget(Caster<?> source) {
+        return getTarget().map(target -> Ether.get(source.asWorld()).get((SpellType<PortalSpell>)getType(), target, targetPortalId));
+    }
+
     @Override
     public boolean apply(Caster<?> caster) {
         setOrientation(caster.asEntity().getPitch(), caster.asEntity().getYaw());
@@ -68,7 +105,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
             if (source.isClient()) {
                 Vec3d origin = source.getOriginVector();
 
-                ParticleEffect effect = teleportationTarget.getTarget()
+                ParticleEffect effect = getTarget()
                         .map(target -> (ParticleEffect)new FollowingParticleEffect(UParticles.HEALTH_DRAIN, target.pos(), 0.2F).withChild(ParticleTypes.ELECTRIC_SPARK))
                         .orElse(ParticleTypes.ELECTRIC_SPARK);
 
@@ -76,7 +113,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
                     source.addParticle(effect, pos, Vec3d.ZERO);
                 });
             } else {
-                teleportationTarget.getTarget().ifPresent(target -> {
+                getTarget().ifPresent(target -> {
                     if (Ether.get(source.asWorld()).get(getType(), target, targetPortalId) == null) {
                         Unicopia.LOGGER.debug("Lost sibling, breaking connection to " + target.uuid());
                         teleportationTarget.set(null);
@@ -94,6 +131,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
             var entry = Ether.get(source.asWorld()).getOrCreate(this, source);
             entry.pitch = pitch;
             entry.yaw = yaw;
+            Ether.get(source.asWorld()).markDirty();
         }
 
         return !isDead();
@@ -101,23 +139,40 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
 
     private void tickWithTargetLink(Caster<?> source, Ether.Entry<?> destination) {
 
+        if (!MathHelper.approximatelyEquals(targetPortalPitch, destination.pitch)) {
+            targetPortalPitch = destination.pitch;
+            setDirty();
+        }
+        if (!MathHelper.approximatelyEquals(targetPortalYaw, destination.yaw)) {
+            targetPortalYaw = destination.yaw;
+            setDirty();
+        }
+
         destination.entity.getTarget().ifPresent(target -> {
             source.findAllEntitiesInRange(1).forEach(entity -> {
                 if (!entity.hasPortalCooldown() && entity.timeUntilRegen <= 0) {
                     Vec3d offset = entity.getPos().subtract(source.getOriginVector());
-                    float yawDifference = pitch < 15 ? (180 - yaw + destination.yaw) : 0;
-                    Vec3d dest = target.pos().add(offset.rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE)).add(0, 0.05, 0);
+                    float yawDifference = pitch < 15 ? getYawDifference() : 0;
+                    Vec3d dest = target.pos().add(offset.rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE)).add(0, 0.1, 0);
+                    MinecraftClient.getInstance().player.sendMessage(Text.literal(yawDifference + ""));
+
+                    if (entity.getWorld().isTopSolid(BlockPos.ofFloored(dest).up(), entity)) {
+                        dest = dest.add(0, 1, 0);
+                    }
 
                     entity.resetPortalCooldown();
                     entity.timeUntilRegen = 100;
 
-                    entity.setYaw(entity.getYaw() + yawDifference);
+                    float yaw = MathHelper.wrapDegrees(entity.getYaw() + yawDifference);
+
                     entity.setVelocity(entity.getVelocity().rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE));
 
                     entity.getWorld().playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
-                    entity.teleport(dest.x, dest.y, dest.z);
+                    entity.teleport((ServerWorld)entity.getWorld(), dest.x, dest.y, dest.z, PositionFlag.VALUES, yaw, entity.getPitch());
                     entity.getWorld().playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
                     setDirty();
+
+                    Living.updateVelocity(entity);
 
                     if (!source.subtractEnergyCost(Math.sqrt(entity.getPos().subtract(dest).length()))) {
                         setDead();
@@ -145,12 +200,6 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
         });
     }
 
-    @SuppressWarnings("unchecked")
-    private Optional<Ether.Entry<PortalSpell>> getTarget(Caster<?> source) {
-        return teleportationTarget.getTarget()
-                .map(target -> Ether.get(source.asWorld()).get((SpellType<PortalSpell>)getType(), target, targetPortalId));
-    }
-
     @Override
     public void setOrientation(float pitch, float yaw) {
         this.pitch = pitch;
@@ -167,7 +216,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
         LivingEntity caster = source.getMaster();
         Vec3d targetPos = caster.getRotationVector().multiply(3).add(caster.getEyePos());
         parent.setOrientation(pitch, yaw);
-        entity.setPos(targetPos.x, caster.getY() + 1.5, targetPos.z);
+        entity.setPos(targetPos.x, caster.getEyePos().y, targetPos.z);
     }
 
     @Override
@@ -180,15 +229,21 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
+        if (targetPortalId != null) {
+            compound.putUuid("targetPortalId", targetPortalId);
+        }
         compound.putBoolean("publishedPosition", publishedPosition);
         compound.put("teleportationTarget", teleportationTarget.toNBT());
         compound.putFloat("pitch", pitch);
         compound.putFloat("yaw", yaw);
+        compound.putFloat("targetPortalPitch", targetPortalPitch);
+        compound.putFloat("targetPortalYaw", targetPortalYaw);
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
+        targetPortalId = compound.containsUuid("targetPortalId") ? compound.getUuid("targetPortalId") : null;
         publishedPosition = compound.getBoolean("publishedPosition");
         teleportationTarget.fromNBT(compound.getCompound("teleportationTarget"));
         pitch = compound.getFloat("pitch");
