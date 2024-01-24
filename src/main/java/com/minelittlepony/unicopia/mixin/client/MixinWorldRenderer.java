@@ -15,7 +15,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.minelittlepony.unicopia.client.ClientBlockDestructionManager;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
+import com.minelittlepony.unicopia.client.render.spell.PortalSpellRenderer;
+
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.render.BlockBreakingInfo;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.WorldRenderer;
@@ -25,7 +28,7 @@ import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.math.RotationAxis;
 
 @Mixin(value = WorldRenderer.class, priority = 1001)
-abstract class MixinWorldRenderer implements SynchronousResourceReloader, AutoCloseable, ClientBlockDestructionManager.Source {
+abstract class MixinWorldRenderer implements SynchronousResourceReloader, AutoCloseable, ClientBlockDestructionManager.Source, PortalSpellRenderer.WorldRendererDuck {
 
     private final ClientBlockDestructionManager destructions = new ClientBlockDestructionManager();
 
@@ -40,6 +43,10 @@ abstract class MixinWorldRenderer implements SynchronousResourceReloader, AutoCl
     public ClientBlockDestructionManager getDestructionManager() {
         return destructions;
     }
+
+    @Override
+    @Accessor("chunkInfos")
+    public abstract ObjectArrayList<?> unicopia_getChunkInfos();
 
     @Override
     @Accessor("ticks")

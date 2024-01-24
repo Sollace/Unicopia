@@ -27,6 +27,8 @@ public class PlacedSpellRenderer extends SpellRenderer<PlaceableSpell> {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, PlaceableSpell spell, Caster<?> caster, int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+
+
         if (!(caster.asEntity() instanceof CastSpellEntity castSpell)) {
             return;
         }

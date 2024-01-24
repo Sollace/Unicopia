@@ -17,18 +17,27 @@ public class RenderUtil {
             new Vertex(new Vector3f(1, 1, 0), 0, 0),
             new Vertex(new Vector3f(1, 0, 0), 0, 1)
     };
+    public static final Vertex[] FRAME_BUFFER_VERTICES = new Vertex[] {
+            new Vertex(new Vector3f(0, 1, 0), 0, 0),
+            new Vertex(new Vector3f(1, 1, 0), 1, 0),
+            new Vertex(new Vector3f(1, 0, 0), 1, 1),
+            new Vertex(new Vector3f(0, 0, 0), 0, 1)
+    };
 
     public static void renderFace(MatrixStack matrices, Tessellator te, BufferBuilder buffer, float r, float g, float b, float a, int light) {
+        renderFace(matrices, te, buffer, r, g, b, a, light, 1, 1);
+    }
+
+    public static void renderFace(MatrixStack matrices, Tessellator te, BufferBuilder buffer, float r, float g, float b, float a, int light, float uScale, float vScale) {
         buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
         for (Vertex vertex : UNIT_FACE) {
             Vector4f position = vertex.position(matrices);
-            buffer.vertex(position.x, position.y, position.z).texture(vertex.u(), vertex.v()).color(r, g, b, a).light(light).next();
+            buffer.vertex(position.x, position.y, position.z).texture(vertex.u() * uScale, vertex.v() * vScale).color(r, g, b, a).light(light).next();
         }
         te.draw();
     }
 
     public record Vertex(Vector3f position, float u, float v) {
-
         public Vector4f position(MatrixStack matrices) {
             matrices.peek().getPositionMatrix().transform(TEMP_VECTOR.set(position, 1));
             return TEMP_VECTOR;
