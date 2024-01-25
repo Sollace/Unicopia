@@ -49,6 +49,9 @@ public class ShieldSpell extends AbstractSpell {
     private float rangeMultiplier;
     private float targetRangeMultiplier;
 
+    private int prevTicksDying;
+    private int ticksDying;
+
     protected ShieldSpell(CustomisedSpellType<?> type) {
         super(type);
     }
@@ -102,6 +105,14 @@ public class ShieldSpell extends AbstractSpell {
         return !isDead();
     }
 
+    @Override
+    public void tickDying(Caster<?> caster) {
+        prevTicksDying = ticksDying;
+        if (ticksDying++ > 25) {
+            super.tickDying(caster);
+        }
+    }
+
     protected void consumeManage(Caster<?> source, long costMultiplier, float knowledge) {
         double cost = 2 - source.getLevel().getScaled(2);
 
@@ -115,7 +126,9 @@ public class ShieldSpell extends AbstractSpell {
     }
 
     public float getRadius(float tickDelta) {
-        return MathHelper.lerp(tickDelta, prevRadius, radius);
+        float base = MathHelper.lerp(tickDelta, prevRadius, radius);
+        float scale = MathHelper.clamp(MathHelper.lerp(tickDelta, prevTicksDying, ticksDying), 0, 1);
+        return base * scale;
     }
 
     /**

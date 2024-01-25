@@ -3,16 +3,21 @@ package com.minelittlepony.unicopia.client.render.spell;
 import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.ShieldSpell;
+import com.minelittlepony.unicopia.client.gui.DrawableUtil;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.util.ColorHelper;
 
+import net.minecraft.client.option.Perspective;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 
 public class ShieldSpellRenderer extends SpellRenderer<ShieldSpell> {
+    private final SphereModel model = new SphereModel(40, 40, DrawableUtil.PI);
+
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, ShieldSpell spell, Caster<?> caster, int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         super.render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
@@ -27,11 +32,21 @@ public class ShieldSpellRenderer extends SpellRenderer<ShieldSpell> {
 
         VertexConsumer buffer = vertices.getBuffer(RenderLayers.getMagicShield());
 
+        boolean firstPerson = caster.asEntity() == client.player && client.options.getPerspective() == Perspective.FIRST_PERSON;
+
         float thickness = 0.02F * MathHelper.sin(animationProgress / 30F);
         float alpha = 1 - Math.abs(MathHelper.sin(animationProgress / 20F)) * 0.2F;
-        SphereModel.SPHERE.render(matrices, buffer, light, 1, radius + thickness, colors[0], colors[1], colors[2], alpha * 0.08F);
-        SphereModel.SPHERE.render(matrices, buffer, light, 1, radius - thickness, colors[0], colors[1], colors[2], alpha * 0.05F);
-        SphereModel.SPHERE.render(matrices, buffer, light, 1, radius + thickness * 2, colors[0], colors[1], colors[2], alpha * 0.05F);
+
+        if (firstPerson) {
+            matrices.translate(0, -1.75F, 0);
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(client.cameraEntity.getPitch(tickDelta)));
+            model.render(matrices, buffer, light, 1, radius, colors[0], colors[1], colors[2], alpha * 0.2F);
+        } else {
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
+            model.render(matrices, buffer, light, 1, radius + thickness, colors[0], colors[1], colors[2], alpha * 0.08F);
+            model.render(matrices, buffer, light, 1, radius - thickness, colors[0], colors[1], colors[2], alpha * 0.05F);
+            model.render(matrices, buffer, light, 1, radius + thickness * 2, colors[0], colors[1], colors[2], alpha * 0.05F);
+        }
 
         matrices.pop();
     }

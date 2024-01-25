@@ -57,6 +57,10 @@ public class AccessoryFeatureRenderer<
     }
 
     public boolean beforeRenderArms(ArmRenderer sender, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, T entity, int light) {
+        Caster<?> caster = Caster.of(entity).orElse(null);
+        if (caster != null) {
+            SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertexConsumers, light, caster, 0, 0, tickDelta, entity.age + tickDelta, 0, 0);
+        }
         boolean cancelled = false;
         for (var feature : features) {
             cancelled |= feature.beforeRenderArms(sender, tickDelta, matrices, vertexConsumers, entity, light);
