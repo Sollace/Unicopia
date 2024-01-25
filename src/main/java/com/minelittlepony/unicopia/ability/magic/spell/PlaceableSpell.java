@@ -59,6 +59,10 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     private int prevAge;
     private int age;
 
+    private boolean dead;
+    private int prevDeathTicks;
+    private int deathTicks;
+
     private Optional<Vec3d> position = Optional.empty();
 
     public PlaceableSpell(CustomisedSpellType<?> type) {
@@ -72,6 +76,29 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     public float getAge(float tickDelta) {
         return MathHelper.lerp(tickDelta, prevAge, age);
+    }
+
+    public float getScale(float tickDelta) {
+        float add = MathHelper.clamp(getAge(tickDelta) / 25F, 0, 1);
+        float subtract = dead ? 1 - (MathHelper.lerp(tickDelta, prevDeathTicks, deathTicks) / 20F) : 0;
+        return MathHelper.clamp(add - subtract, 0, 1);
+    }
+
+    @Override
+    public boolean isDying() {
+        return dead && deathTicks > 0;
+    }
+
+    @Override
+    public void setDead() {
+        super.setDead();
+        dead = true;
+        deathTicks = 20;
+    }
+
+    @Override
+    public boolean isDead() {
+        return dead && deathTicks <= 0;
     }
 
     @Override
@@ -117,6 +144,12 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         }
 
         return !isDead();
+    }
+
+    @Override
+    public void tickDying(Caster<?> caster) {
+        prevDeathTicks = deathTicks;
+        deathTicks--;
     }
 
     private void checkDetachment(Caster<?> source, EntityValues<?> target) {
@@ -198,6 +231,8 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
+        compound.putBoolean("dead", dead);
+        compound.putInt("deathTicks", deathTicks);
         compound.putInt("age", age);
         compound.putFloat("pitch", pitch);
         compound.putFloat("yaw", yaw);
@@ -217,6 +252,8 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
+        dead = compound.getBoolean("dead");
+        deathTicks = compound.getInt("deathTicks");
         age = compound.getInt("age");
         pitch = compound.getFloat("pitch");
         yaw = compound.getFloat("yaw");

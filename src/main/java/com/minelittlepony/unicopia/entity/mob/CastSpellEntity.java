@@ -72,6 +72,10 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
         }
     }
 
+    protected void updatePostDeath() {
+
+    }
+
     @Override
     public EntityReference<LivingEntity> getMasterReference() {
         return owner;

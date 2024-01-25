@@ -57,7 +57,7 @@ public class PlacedSpellRenderer extends SpellRenderer<PlaceableSpell> {
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180 - spell.yaw));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
 
-        float scale = (spell.getAge(tickDelta) / 25F) * 3;
+        float scale = spell.getScale(tickDelta) * 3;
         matrices.scale(scale, scale, scale);
 
         float angle = (animationProgress / 9F) % 360;

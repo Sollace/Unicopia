@@ -44,7 +44,13 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
     }
 
     public boolean tick(Situation situation) {
-        return tick(spell -> Operation.ofBoolean(spell.tick(owner, situation)));
+        return tick(spell -> {
+            if (spell.isDying()) {
+                spell.tickDying(owner);
+                return Operation.ofBoolean(!spell.isDead());
+            }
+            return Operation.ofBoolean(spell.tick(owner, situation));
+        });
     }
 
     public boolean tick(Function<Spell, Operation> tickAction) {
