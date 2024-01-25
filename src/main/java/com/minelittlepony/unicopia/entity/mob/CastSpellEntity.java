@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.MagicImmune;
@@ -13,6 +14,8 @@ import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.network.datasync.EffectSync;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
@@ -72,8 +75,9 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
         }
     }
 
-    protected void updatePostDeath() {
-
+    @Override
+    public EntityDimensions getDimensions(EntityPose pose) {
+        return super.getDimensions(pose).scaled(getSpellSlot().get(SpellType.IS_PLACED, false).map(spell -> spell.getScale(1)).orElse(1F));
     }
 
     @Override
@@ -115,6 +119,11 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
     @Override
     public SpellContainer getSpellSlot() {
         return effectDelegate;
+    }
+
+    @Override
+    public boolean canHit() {
+        return false;
     }
 
     @Override

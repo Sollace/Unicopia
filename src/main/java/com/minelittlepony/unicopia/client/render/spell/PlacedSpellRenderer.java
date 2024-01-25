@@ -27,8 +27,6 @@ public class PlacedSpellRenderer extends SpellRenderer<PlaceableSpell> {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, PlaceableSpell spell, Caster<?> caster, int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
-
-
         if (!(caster.asEntity() instanceof CastSpellEntity castSpell)) {
             return;
         }
@@ -36,13 +34,16 @@ public class PlacedSpellRenderer extends SpellRenderer<PlaceableSpell> {
         matrices.push();
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-castSpell.getYaw()));
 
+
         for (Spell delegate : spell.getDelegates()) {
             renderAmbientEffects(matrices, vertices, spell, delegate, caster, light, animationProgress, tickDelta);
 
             matrices.push();
+            float height = caster.asEntity().getHeight();
+            matrices.translate(0, (-spell.pitch / 90F) * height * 0.5F, 0);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-spell.pitch));
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180 - spell.yaw));
-            SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertices, delegate, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
+            SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertices, delegate, caster, light, spell.getScale(tickDelta), limbDistance, tickDelta, animationProgress, headYaw, headPitch);
             matrices.pop();
         }
 
@@ -52,6 +53,9 @@ public class PlacedSpellRenderer extends SpellRenderer<PlaceableSpell> {
     protected void renderAmbientEffects(MatrixStack matrices, VertexConsumerProvider vertices, PlaceableSpell spell, Spell delegate, Caster<?> caster, int light, float animationProgress, float tickDelta) {
         matrices.push();
         matrices.translate(0, 0.001, 0);
+
+        float height = caster.asEntity().getHeight();
+        matrices.translate(0, (-spell.pitch / 90F) * height * 0.5F, 0);
 
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-spell.pitch));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180 - spell.yaw));
