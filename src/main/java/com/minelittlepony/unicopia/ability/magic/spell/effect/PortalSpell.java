@@ -20,7 +20,6 @@ import com.minelittlepony.unicopia.util.shape.*;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -28,7 +27,6 @@ import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -110,7 +108,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
                         .orElse(ParticleTypes.ELECTRIC_SPARK);
 
                 source.spawnParticles(origin, particleArea, 5, pos -> {
-                    source.addParticle(effect, pos, Vec3d.ZERO);
+                    source.addParticle(ParticleTypes.ELECTRIC_SPARK, pos, Vec3d.ZERO);
                 });
             } else {
                 getTarget().ifPresent(target -> {
@@ -150,18 +148,22 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
 
         destination.entity.getTarget().ifPresent(target -> {
             source.findAllEntitiesInRange(1).forEach(entity -> {
-                if (!entity.hasPortalCooldown() && entity.timeUntilRegen <= 0) {
+                if (!entity.hasPortalCooldown()) {
+
+                    float approachYaw = Math.abs(MathHelper.wrapDegrees(entity.getYaw() - this.yaw));
+                    if (approachYaw > 80) {
+                        return;
+                    }
+
                     Vec3d offset = entity.getPos().subtract(source.getOriginVector());
                     float yawDifference = pitch < 15 ? getYawDifference() : 0;
                     Vec3d dest = target.pos().add(offset.rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE)).add(0, 0.1, 0);
-                    MinecraftClient.getInstance().player.sendMessage(Text.literal(yawDifference + ""));
 
                     if (entity.getWorld().isTopSolid(BlockPos.ofFloored(dest).up(), entity)) {
                         dest = dest.add(0, 1, 0);
                     }
 
                     entity.resetPortalCooldown();
-                    entity.timeUntilRegen = 100;
 
                     float yaw = MathHelper.wrapDegrees(entity.getYaw() + yawDifference);
 
