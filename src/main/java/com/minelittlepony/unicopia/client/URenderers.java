@@ -60,10 +60,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
 
+@SuppressWarnings("deprecation")
 public interface URenderers {
     BlockEntity CHEST_RENDER_ENTITY = new CloudChestBlock.TileData(BlockPos.ORIGIN, UBlocks.CLOUD_CHEST.getDefaultState());
 
-    @SuppressWarnings("unchecked")
     static void bootstrap() {
         ParticleFactoryRegistry.getInstance().register(UParticles.UNICORN_MAGIC, createFactory(MagicParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.CHANGELING_MAGIC, createFactory(ChangelingMagicParticle::new));
