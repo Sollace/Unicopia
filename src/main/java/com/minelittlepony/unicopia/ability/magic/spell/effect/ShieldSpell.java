@@ -41,7 +41,7 @@ public class ShieldSpell extends AbstractSpell {
             .with(Trait.AIR, 9)
             .build();
 
-    private final TargetSelecter targetSelecter = new TargetSelecter(this);
+    private final TargetSelecter targetSelecter = new TargetSelecter(this).setFilter(this::isValidTarget);
 
     private float prevRadius;
     private float radius;
@@ -174,11 +174,8 @@ public class ShieldSpell extends AbstractSpell {
     }
 
     protected long applyEntities(Caster<?> source) {
-        double radius = this.radius;
-
         Vec3d origin = getOrigin(source);
-
-        targetSelecter.getEntities(source, radius, this::isValidTarget).forEach(i -> {
+        targetSelecter.getEntities(source, radius).forEach(i -> {
             try {
                 applyRadialEffect(source, i, i.getPos().distanceTo(origin), radius);
             } catch (Throwable e) {

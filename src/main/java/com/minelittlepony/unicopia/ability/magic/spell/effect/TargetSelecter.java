@@ -11,26 +11,31 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
-import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import net.minecraft.entity.Entity;
+import net.minecraft.predicate.entity.EntityPredicates;
 
 public class TargetSelecter {
-
     private final Map<UUID, Target> targets = new TreeMap<>();
 
     private final Spell spell;
+
+    private BiPredicate<Caster<?>, Entity> filter = (a, b) -> true;
 
     public TargetSelecter(Spell spell) {
         this.spell = spell;
     }
 
-    public Stream<Entity> getEntities(Caster<?> source, double radius, BiPredicate<Caster<?>, Entity> filter) {
+    public TargetSelecter setFilter(BiPredicate<Caster<?>, Entity> filter) {
+        this.filter = filter;
+        return this;
+    }
+
+    public Stream<Entity> getEntities(Caster<?> source, double radius) {
         targets.values().removeIf(Target::tick);
         return source.findAllEntitiesInRange(radius)
-            .filter(entity -> entity.isAlive() && !entity.isRemoved() && notOwnerOrFriend(spell, source, entity))
+            .filter(EntityPredicates.VALID_ENTITY)
             .filter(EquinePredicates.EXCEPT_MAGIC_IMMUNE)
-            .filter(e -> filter.test(source, e))
+            .filter(entity -> entity != source.asEntity() && validTarget(spell, source, entity) && filter.test(source, entity))
             .map(i -> {
                 targets.computeIfAbsent(i.getUuid(), Target::new);
                 return i;
@@ -41,35 +46,19 @@ public class TargetSelecter {
         return targets.values().stream().filter(Target::canHurt).count();
     }
 
-    public static <T extends Entity> Predicate<T> notOwnerOrFriend(Affine affine, Caster<?> source) {
-        return target -> notOwnerOrFriend(affine, source, target);
+    public static <T extends Entity> Predicate<T> validTarget(Affine affine, Caster<?> source) {
+        return target -> validTarget(affine, source, target);
     }
 
-    public static <T extends Entity> Predicate<T> isOwnerOrFriend(Affine affine, Caster<?> source) {
-        return target -> isOwnerOrFriend(affine, source, target);
-    }
-
-    public static <T extends Entity> boolean notOwnerOrFriend(Affine affine, Caster<?> source, Entity target) {
+    public static boolean validTarget(Affine affine, Caster<?> source, Entity target) {
         return !isOwnerOrFriend(affine, source, target);
     }
 
-    public static <T extends Entity> boolean isOwnerOrFriend(Affine affine, Caster<?> source, Entity target) {
-        Entity owner = source.getMaster();
-
-        var equine = Pony.of(target);
-        if (equine.isPresent() && !affine.isFriendlyTogether(equine.get())) {
-            return false;
-        }
-
-        if (affine.isEnemy(source)) {
-            return FriendshipBraceletItem.isComrade(source, target);
-        }
-
-        return FriendshipBraceletItem.isComrade(source, target)
-            || (owner != null && (Pony.equal(target, owner) || owner.isConnectedThroughVehicle(target)));
+    public static boolean isOwnerOrFriend(Affine affine, Caster<?> source, Entity target) {
+        return affine.applyInversion(source, source.isOwnerOrFriend(target));
     }
 
-    static final class Target {
+    private static final class Target {
         private int cooldown = 20;
 
         Target(UUID id) { }

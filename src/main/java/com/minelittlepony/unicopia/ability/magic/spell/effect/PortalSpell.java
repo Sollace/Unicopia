@@ -24,7 +24,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
-import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -101,13 +100,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
         if (situation == Situation.GROUND) {
 
             if (source.isClient()) {
-                Vec3d origin = source.getOriginVector();
-
-                ParticleEffect effect = getTarget()
-                        .map(target -> (ParticleEffect)new FollowingParticleEffect(UParticles.HEALTH_DRAIN, target.pos(), 0.2F).withChild(ParticleTypes.ELECTRIC_SPARK))
-                        .orElse(ParticleTypes.ELECTRIC_SPARK);
-
-                source.spawnParticles(origin, particleArea, 5, pos -> {
+                source.spawnParticles(particleArea, 5, pos -> {
                     source.addParticle(ParticleTypes.ELECTRIC_SPARK, pos, Vec3d.ZERO);
                 });
             } else {

@@ -97,7 +97,6 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
         }
     }
 
-
     @Override
     public boolean isFriendlyTogether(Affine other) {
         return accumulatedMass < 4;

@@ -362,6 +362,11 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return asEntity();
     }
 
+    @Override
+    public Optional<UUID> getMasterId() {
+        return Optional.of(asEntity().getUuid());
+    }
+
     public void onSpawn() {
         if (entity.getWorld() instanceof ServerWorld sw && sw.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE) {
             boolean mustAvoidSun = getObservedSpecies() == Race.BAT && MeteorlogicalUtil.isPositionExposedToSun(sw, getOrigin());
