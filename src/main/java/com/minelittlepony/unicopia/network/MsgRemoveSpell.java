@@ -10,7 +10,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
- * Sent to the server when a player activates an ability.
+ * Sent to the server when a player dismisses a spell from their dismiss spell screen
  */
 public record MsgRemoveSpell (UUID id) implements HandledPacket<ServerPlayerEntity> {
     MsgRemoveSpell(PacketByteBuf buffer) {
@@ -30,7 +30,7 @@ public record MsgRemoveSpell (UUID id) implements HandledPacket<ServerPlayerEnti
     public void handle(ServerPlayerEntity sender) {
         Pony player = Pony.of(sender);
         if (player != null) {
-            player.getSpellSlot().removeIf(spell -> spell.getUuid().equals(id), true);
+            player.getSpellSlot().remove(id);
         }
     }
 }

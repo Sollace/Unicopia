@@ -94,6 +94,16 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
     }
 
     @Override
+    public void remove(UUID id) {
+        Spell spell = spells.getReference(id);
+        spell.setDead();
+        spell.tickDying(owner);
+        if (spell.isDead()) {
+            spells.removeReference(id);
+        }
+    }
+
+    @Override
     public boolean removeWhere(Predicate<Spell> test, boolean update) {
         return reduce(update, (initial, effect) -> {
             if (!test.test(effect)) {

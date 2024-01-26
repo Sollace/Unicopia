@@ -76,14 +76,10 @@ class PortalFrameBuffer implements AutoCloseable {
 
     private boolean pendingDraw;
 
-    private final UUID id;
-
     @Nullable
     private Frustum frustum;
 
-    PortalFrameBuffer(UUID id) {
-        this.id = id;
-    }
+    PortalFrameBuffer(UUID id) { }
 
     public void draw(MatrixStack matrices, VertexConsumerProvider vertices) {
         matrices.translate(0, -0.001, 0);
