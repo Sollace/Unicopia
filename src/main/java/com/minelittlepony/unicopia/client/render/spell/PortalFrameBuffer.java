@@ -15,7 +15,6 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.PortalSpell;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
-import com.minelittlepony.unicopia.client.render.model.TexturedSphereModel;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.mixin.client.MixinMinecraftClient;
@@ -96,7 +95,7 @@ class PortalFrameBuffer implements AutoCloseable {
             RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
             RenderSystem._setShaderTexture(0, framebuffer.getColorAttachment());
             buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-            TexturedSphereModel.DISK.render(matrices, buffer, 2F, 1, 1, 1, 1, uScale, vScale);
+            SphereModel.DISK.render(matrices, buffer, 2F, 1, 1, 1, 1, uScale, vScale);
             tessellator.draw();
 
             client.getTextureManager().bindTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
