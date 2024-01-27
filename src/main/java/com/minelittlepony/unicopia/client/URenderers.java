@@ -23,6 +23,7 @@ import com.minelittlepony.unicopia.client.particle.ShockwaveParticle;
 import com.minelittlepony.unicopia.client.particle.SphereParticle;
 import com.minelittlepony.unicopia.client.render.*;
 import com.minelittlepony.unicopia.client.render.entity.*;
+import com.minelittlepony.unicopia.client.render.shader.UShaders;
 import com.minelittlepony.unicopia.client.render.spell.SpellRendererFactory;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.ChameleonItem;
@@ -128,6 +129,7 @@ public interface URenderers {
         TerraformBoatClientHelper.registerModelLayers(Unicopia.id("palm"), false);
 
         SpellRendererFactory.bootstrap();
+        UShaders.bootstrap();
     }
 
     private static void register(DynamicItemRenderer renderer, ItemConvertible...items) {

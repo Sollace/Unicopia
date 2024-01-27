@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.PortalSpell;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
+import com.minelittlepony.unicopia.client.render.shader.UShaders;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.mixin.client.MixinMinecraftClient;
@@ -30,7 +31,6 @@ import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormat;
@@ -41,6 +41,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 class PortalFrameBuffer implements AutoCloseable {
@@ -92,10 +93,14 @@ class PortalFrameBuffer implements AutoCloseable {
             BufferBuilder buffer = tessellator.getBuffer();
             float uScale = (float)framebuffer.viewportWidth / (float)framebuffer.textureWidth;
             float vScale = (float)framebuffer.viewportHeight / (float)framebuffer.textureHeight;
-            RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+            RenderSystem.setShader(UShaders::getRenderTypePortalSurfaceProgram);
+            //RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
             RenderSystem._setShaderTexture(0, framebuffer.getColorAttachment());
             buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-            SphereModel.DISK.render(matrices, buffer, 2F, 1, 1, 1, 1, uScale, vScale);
+            SphereModel.DISK.scaleUV(uScale, vScale);
+
+            RenderSystem.setTextureMatrix(SphereModel.DISK.getTextureMatrix());
+            SphereModel.DISK.render(matrices, buffer, 2F, 1, 1, 1, 1);
             tessellator.draw();
 
             client.getTextureManager().bindTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
@@ -110,11 +115,11 @@ class PortalFrameBuffer implements AutoCloseable {
 
     public void build(PortalSpell spell, Caster<?> caster, EntityReference.EntityValues<Entity> target) {
 
-        if (framebuffer != null && System.currentTimeMillis() % 100 != 0) {
+        if (framebuffer != null && System.currentTimeMillis() % 1 != 0) {
             return;
         }
 
-        if (pendingDraw && recursionCount > 0) {
+        if (pendingDraw && recursionCount > 2) {
             innerBuild(spell, caster, target);
             return;
         }
@@ -134,7 +139,7 @@ class PortalFrameBuffer implements AutoCloseable {
         synchronized (client) {
             pendingDraw = false;
 
-            if (recursionCount > 2) {
+            if (recursionCount > 0) {
                 return;
             }
             recursionCount++;
@@ -149,10 +154,17 @@ class PortalFrameBuffer implements AutoCloseable {
                 int originalFov = fov.getValue();
                 fov.setValue(110);
 
+                Camera camera = client.gameRenderer.getCamera();
+
                 Entity cameraEntity = UEntities.CAST_SPELL.create(caster.asWorld());
-                cameraEntity.setPosition(target.pos());
-                cameraEntity.setPitch(spell.getTargetPitch());
-                cameraEntity.setYaw(spell.getTargetYaw() + 180);
+                Vec3d offset = new Vec3d(0, -0.2F, -0.2F).rotateY(-spell.getTargetYaw() * MathHelper.RADIANS_PER_DEGREE);
+
+                float yaw = spell.getTargetYaw() + camera.getYaw() - spell.getYaw() + 180;
+                float pitch = spell.getTargetPitch() + (camera.getPitch() - spell.getPitch()) * 1.65F;
+
+                cameraEntity.setPosition(target.pos().add(offset));
+                cameraEntity.setPitch(pitch);
+                cameraEntity.setYaw(yaw);
 
                 drawWorld(cameraEntity, 400, 400);
 
@@ -220,11 +232,8 @@ class PortalFrameBuffer implements AutoCloseable {
             renderer.scheduleBlockRenders((int)cameraEntity.getX() / 16, (int)cameraEntity.getY() / 16, (int)cameraEntity.getZ() / 16);
 
             client.gameRenderer.setRenderHand(false);
-            MatrixStack matrices = new MatrixStack();
 
-            matrices.scale((float)width / height, 1, 1);
-
-            client.gameRenderer.renderWorld(1, 0, matrices);
+            client.gameRenderer.renderWorld(1, 0, new MatrixStack());
 
             // Strip transparency
             RenderSystem.colorMask(false, false, false, true);
