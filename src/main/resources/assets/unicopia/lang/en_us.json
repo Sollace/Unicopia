@@ -352,6 +352,19 @@
   "effect.unicopia.butter_fingers": "Butterfingers",
 
   "effect.unicopia.change_race_earth": "Earth Pony Metamorphosis",
+  "effect.unicopia.change_race_pegasus": "Pegasus Metamorphosis",
+  "effect.unicopia.change_race_changeling": "Changeling Metamorphosis",
+  "effect.unicopia.change_race_bat": "Bat Pony Metamorphosis",
+  "effect.unicopia.change_race_kirin": "Kirin Metamorphosis",
+  "effect.unicopia.change_race_hippogriff": "Hippogriff Metamorphosis",
+
+  "effect.unicopia.morph_race_earth": "Earth Pony Transformation",
+  "effect.unicopia.morph_race_pegasus": "Pegasus Transformation",
+  "effect.unicopia.morph_race_changeling": "Changeling Transformation",
+  "effect.unicopia.morph_race_bat": "Bat Pony Transformation",
+  "effect.unicopia.morph_race_kirin": "Kirin Transformation",
+  "effect.unicopia.morph_race_hippogriff": "Hippogriff Transformation",
+
   "item.minecraft.potion.effect.unicopia.tribe_swap_earth": "Potion of Earth Pony Metamorphosis",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_earth": "Splash Potion of Earth Pony Metamorphosis",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_earth": "Lingering Potion of Earth Pony Metamorphosis",
@@ -363,35 +376,100 @@
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_unicorn": "Lingering Potion of Unicorn Metamorphosis",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_unicorn": "Arrow of Unicorn Metamorphosis",
 
-  "effect.unicopia.change_race_pegasus": "Pegasus Metamorphosis",
   "item.minecraft.potion.effect.unicopia.tribe_swap_pegasus": "Potion of Pegasus Metamorphosis",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_pegasus": "Splash Potion of Pegasus Metamorphosis",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_pegasus": "Lingering Potion of Pegasus Metamorphosis",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_pegasus": "Arrow of Pegasus Metamorphosis",
 
-  "effect.unicopia.change_race_changeling": "Changeling Metamorphosis",
   "item.minecraft.potion.effect.unicopia.tribe_swap_changeling": "Potion of Changeling Metamorphosis",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_changeling": "Splash Potion of Changeling Metamorphosis",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_changeling": "Lingering Potion of Changeling Metamorphosis",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_changeling": "Arrow of Changeling Metamorphosis",
 
-  "effect.unicopia.change_race_bat": "Bat Pony Metamorphosis",
   "item.minecraft.potion.effect.unicopia.tribe_swap_bat": "Potion of Bat Pony Metamorphosis",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_bat": "Splash Potion of Bat Pony Metamorphosis",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_bat": "Lingering Potion of Bat Pony Metamorphosis",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_bat": "Arrow of Bat Pony Metamorphosis",
 
-  "effect.unicopia.change_race_kirin": "Kirin Metamorphosis",
   "item.minecraft.potion.effect.unicopia.tribe_swap_kirin": "Potion of Kirin Metamorphosis",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_kirin": "Splash Potion of Kirin Metamorphosis",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_kirin": "Lingering Potion of Kirin Metamorphosis",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_kirin": "Arrow of Kirin Metamorphosis",
 
-  "effect.unicopia.change_race_hippogriff": "Hippogriff Metamorphosis",
   "item.minecraft.potion.effect.unicopia.tribe_swap_hippogriff": "Potion of Hippogriff Metamorphosis",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_hippogriff": "Splash Potion of Hippogriff Metamorphosis",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_hippogriff": "Lingering Potion of Hippogriff Metamorphosis",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_hippogriff": "Arrow of Hippogriff Metamorphosis",
+
+  "item.minecraft.potion.effect.unicopia.short_morph_earth": "Potion of Earth Pony Short Transformation",
+  "item.minecraft.splash_potion.effect.unicopia.short_morph_earth": "Splash Potion of Earth Pony Short Transformation",
+  "item.minecraft.lingering_potion.effect.unicopia.short_morph_earth": "Lingering Potion of Earth Pony Short Transformation",
+  "item.minecraft.tipped_arrow.effect.unicopia.short_morph_earth": "Arrow of Earth Pony Short Transformation",
+
+  "item.minecraft.potion.effect.unicopia.short_morph_unicorn": "Potion of Unicorn Short Transformation",
+  "item.minecraft.splash_potion.effect.unicopia.short_morph_unicorn": "Splash Potion of Unicorn Short Transformation",
+  "item.minecraft.lingering_potion.effect.unicopia.short_morph_unicorn": "Lingering Potion of Unicorn Short Transformation",
+  "item.minecraft.tipped_arrow.effect.unicopia.short_morph_unicorn": "Arrow of Unicorn Short Transformation",
+
+  "item.minecraft.potion.effect.unicopia.short_morph_pegasus": "Potion of Pegasus Short Transformation",
+  "item.minecraft.splash_potion.effect.unicopia.short_morph_pegasus": "Splash Potion of Pegasus Short Transformation",
+  "item.minecraft.lingering_potion.effect.unicopia.short_morph_pegasus": "Lingering Potion of Pegasus Short Transformation",
+  "item.minecraft.tipped_arrow.effect.unicopia.short_morph_pegasus": "Arrow of Pegasus Short Transformation",
+
+  "item.minecraft.potion.effect.unicopia.short_morph_changeling": "Potion of Changeling Short Transformation",
+  "item.minecraft.splash_potion.effect.unicopia.short_morph_changeling": "Splash Potion of Changeling Short Transformation",
+  "item.minecraft.lingering_potion.effect.unicopia.short_morph_changeling": "Lingering Potion of Changeling Short Transformation",
+  "item.minecraft.tipped_arrow.effect.unicopia.short_morph_changeling": "Arrow of Changeling Short Transformation",
+
+  "item.minecraft.potion.effect.unicopia.short_morph_bat": "Potion of Bat Pony Short Transformation",
+  "item.minecraft.splash_potion.effect.unicopia.short_morph_bat": "Splash Potion of Bat Pony Short Transformation",
+  "item.minecraft.lingering_potion.effect.unicopia.short_morph_bat": "Lingering Potion of Bat Pony Short Transformation",
+  "item.minecraft.tipped_arrow.effect.unicopia.short_morph_bat": "Arrow of Bat Pony Short Transformation",
+
+  "item.minecraft.potion.effect.unicopia.short_morph_kirin": "Potion of Kirin Short Transformation",
+  "item.minecraft.splash_potion.effect.unicopia.short_morph_kirin": "Splash Potion of Kirin Short Transformation",
+  "item.minecraft.lingering_potion.effect.unicopia.short_morph_kirin": "Lingering Potion of Kirin Short Transformation",
+  "item.minecraft.tipped_arrow.effect.unicopia.short_morph_kirin": "Arrow of Kirin Short Transformation",
+
+  "item.minecraft.potion.effect.unicopia.short_morph_hippogriff": "Potion of Hippogriff Short Transformation",
+  "item.minecraft.splash_potion.effect.unicopia.short_morph_hippogriff": "Splash Potion of Hippogriff Short Transformation",
+  "item.minecraft.lingering_potion.effect.unicopia.short_morph_hippogriff": "Lingering Potion of Hippogriff Short Transformation",
+  "item.minecraft.tipped_arrow.effect.unicopia.short_morph_hippogriff": "Arrow of Hippogriff Short Transformation",
+
+  "item.minecraft.potion.effect.unicopia.long_morph_earth": "Potion of Earth Pony Long Transformation",
+  "item.minecraft.splash_potion.effect.unicopia.long_morph_earth": "Splash Potion of Earth Pony Long Transformation",
+  "item.minecraft.lingering_potion.effect.unicopia.long_morph_earth": "Lingering Potion of Earth Pony Long Transformation",
+  "item.minecraft.tipped_arrow.effect.unicopia.long_morph_earth": "Arrow of Earth Pony Long Transformation",
+
+  "item.minecraft.potion.effect.unicopia.long_morph_unicorn": "Potion of Unicorn Long Transformation",
+  "item.minecraft.splash_potion.effect.unicopia.long_morph_unicorn": "Splash Potion of Unicorn Long Transformation",
+  "item.minecraft.lingering_potion.effect.unicopia.long_morph_unicorn": "Lingering Potion of Unicorn Long Transformation",
+  "item.minecraft.tipped_arrow.effect.unicopia.long_morph_unicorn": "Arrow of Unicorn Long Transformation",
+
+  "item.minecraft.potion.effect.unicopia.long_morph_pegasus": "Potion of Pegasus Long Transformation",
+  "item.minecraft.splash_potion.effect.unicopia.long_morph_pegasus": "Splash Potion of Pegasus Long Transformation",
+  "item.minecraft.lingering_potion.effect.unicopia.long_morph_pegasus": "Lingering Potion of Pegasus Long Transformation",
+  "item.minecraft.tipped_arrow.effect.unicopia.long_morph_pegasus": "Arrow of Pegasus Long Transformation",
+
+  "item.minecraft.potion.effect.unicopia.long_morph_changeling": "Potion of Changeling Long Transformation",
+  "item.minecraft.splash_potion.effect.unicopia.long_morph_changeling": "Splash Potion of Changeling Long Transformation",
+  "item.minecraft.lingering_potion.effect.unicopia.long_morph_changeling": "Lingering Potion of Changeling Long Transformation",
+  "item.minecraft.tipped_arrow.effect.unicopia.long_morph_changeling": "Arrow of Changeling Long Transformation",
+
+  "item.minecraft.potion.effect.unicopia.long_morph_bat": "Potion of Bat Pony Long Transformation",
+  "item.minecraft.splash_potion.effect.unicopia.long_morph_bat": "Splash Potion of Bat Pony Long Transformation",
+  "item.minecraft.lingering_potion.effect.unicopia.long_morph_bat": "Lingering Potion of Bat Pony Long Transformation",
+  "item.minecraft.tipped_arrow.effect.unicopia.long_morph_bat": "Arrow of Bat Pony Long Transformation",
+
+  "item.minecraft.potion.effect.unicopia.long_morph_kirin": "Potion of Kirin Long Transformation",
+  "item.minecraft.splash_potion.effect.unicopia.long_morph_kirin": "Splash Potion of Kirin Long Transformation",
+  "item.minecraft.lingering_potion.effect.unicopia.long_morph_kirin": "Lingering Potion of Kirin Long Transformation",
+  "item.minecraft.tipped_arrow.effect.unicopia.long_morph_kirin": "Arrow of Kirin Long Transformation",
+  
+  "item.minecraft.potion.effect.unicopia.long_morph_hippogriff": "Potion of Hippogriff Long Transformation",
+  "item.minecraft.splash_potion.effect.unicopia.long_morph_hippogriff": "Splash Potion of Hippogriff Long Transformation",
+  "item.minecraft.lingering_potion.effect.unicopia.long_morph_hippogriff": "Lingering Potion of Hippogriff Long Transformation",
+  "item.minecraft.tipped_arrow.effect.unicopia.long_morph_hippogriff": "Arrow of Hippogriff Long Transformation",
 
   "potion.withChance": "1 in %s chance of %s",
   "potion.potency.6": "VII",

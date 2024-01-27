@@ -21,6 +21,7 @@ import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
+import com.minelittlepony.unicopia.entity.effect.MetamorphosisStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
@@ -476,13 +477,13 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private void recalculateCompositeRace() {
         Race intrinsicRace = getSpecies();
         Race suppressedRace = getSuppressedRace();
-        compositeRace = getSpellSlot()
+        compositeRace = MetamorphosisStatusEffect.getEffectiveRace(entity, getSpellSlot()
                 .get(SpellPredicate.IS_MIMIC, true)
                 .map(AbstractDisguiseSpell::getDisguise)
                 .map(EntityAppearance::getAppearance)
                 .flatMap(Pony::of)
                 .map(Pony::getSpecies)
-                .orElse(intrinsicRace).composite(
+                .orElse(intrinsicRace)).composite(
               AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
             : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
             : null,

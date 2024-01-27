@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.entity.effect;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
@@ -28,25 +31,31 @@ public class RaceChangeStatusEffect extends StatusEffect {
     public static final int STAGE_DURATION = 200;
     public static final int MAX_DURATION = Stage.VALUES.length * STAGE_DURATION + 1;
 
-    public static final StatusEffect CHANGE_RACE_EARTH = register(0x886F0F, Race.EARTH);
-    public static final StatusEffect CHANGE_RACE_UNICORN = register(0x88FFFF, Race.UNICORN);
-    public static final StatusEffect CHANGE_RACE_PEGASUS = register(0x00FFFF, Race.PEGASUS);
-    public static final StatusEffect CHANGE_RACE_BAT = register(0x0FFF00, Race.BAT);
-    public static final StatusEffect CHANGE_RACE_CHANGELING = register(0xFFFF00, Race.CHANGELING);
-    public static final StatusEffect CHANGE_RACE_KIRIN = register(0xFF8800, Race.KIRIN);
-    public static final StatusEffect CHANGE_RACE_HIPPOGRIFF = register(0x00FFFF, Race.HIPPOGRIFF);
+    private static final Map<Race, StatusEffect> REGISTRY = new HashMap<>();
+
+    @Nullable
+    public static StatusEffect forRace(Race race) {
+        return REGISTRY.get(race);
+    }
+
+    public static final StatusEffect EARTH = register(0x886F0F, Race.EARTH);
+    public static final StatusEffect UNICORN = register(0x88FFFF, Race.UNICORN);
+    public static final StatusEffect PEGASUS = register(0x00C0ff, Race.PEGASUS);
+    public static final StatusEffect BAT = register(0x152F13, Race.BAT);
+    public static final StatusEffect CHANGELING = register(0xFFFF00, Race.CHANGELING);
+    public static final StatusEffect KIRIN = register(0xFF8800, Race.KIRIN);
+    public static final StatusEffect HIPPOGRIFF = register(0xE04F77, Race.HIPPOGRIFF);
 
     private final Race race;
 
     public static StatusEffect register(int color, Race race) {
-        Identifier id = Race.REGISTRY.getId(race);
-        return Registry.register(Registries.STATUS_EFFECT,
-                new Identifier(id.getNamespace(), "change_race_" + id.getPath().toLowerCase()),
-                new RaceChangeStatusEffect(color, race)
-        );
+        Identifier id = race.getId();
+        StatusEffect effect = new RaceChangeStatusEffect(color, race);
+        REGISTRY.put(race, effect);
+        return Registry.register(Registries.STATUS_EFFECT, id.withPath(p -> "change_race_" + id.getPath()), effect);
     }
 
-    public RaceChangeStatusEffect(int color, Race race) {
+    private RaceChangeStatusEffect(int color, Race race) {
         super(StatusEffectCategory.NEUTRAL, color);
         this.race = race;
     }
