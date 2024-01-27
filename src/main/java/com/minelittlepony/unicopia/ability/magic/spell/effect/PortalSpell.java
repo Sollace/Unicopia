@@ -211,7 +211,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
         LivingEntity caster = source.getMaster();
         Vec3d targetPos = caster.getRotationVector().multiply(3).add(caster.getEyePos());
         parent.setOrientation(pitch, yaw);
-        entity.setPos(targetPos.x, caster.getEyePos().y - (entity.getHeight() * 0.5F), targetPos.z);
+        entity.setPos(targetPos.x, Math.abs(pitch) > 15 ? targetPos.y : caster.getPos().y, targetPos.z);
     }
 
     @Override
