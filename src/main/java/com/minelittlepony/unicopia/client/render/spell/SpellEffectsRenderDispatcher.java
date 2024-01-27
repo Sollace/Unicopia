@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.entity.Living;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
+import net.minecraft.client.option.Perspective;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -83,7 +84,9 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
             return Operation.SKIP;
         }, false);
 
-        if (client.getEntityRenderDispatcher().shouldRenderHitboxes() && !client.hasReducedDebugInfo()) {
+        if (client.getEntityRenderDispatcher().shouldRenderHitboxes()
+                && !client.hasReducedDebugInfo()
+                && !(caster.asEntity() == client.cameraEntity && client.options.getPerspective() == Perspective.FIRST_PERSON)) {
             renderHotspot(matrices, vertices, caster, animationProgress);
             renderSpellDebugInfo(matrices, vertices, caster, light);
         }
