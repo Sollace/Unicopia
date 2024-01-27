@@ -45,6 +45,16 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
             .addComment("Removes butterflies from spawning in your world")
             .addComment("Turn this ON if you have another mod that adds butterflies.");
 
+    public final Setting<Boolean> simplifiedPortals = value("compatibility", "simplifiedPortals", false)
+            .addComment("Disables dynamic portal rendering");
+
+    public final Setting<Long> fancyPortalRefreshRate = value("client", "fancyPortalRefreshRate", -1L)
+            .addComment("Sets the refresh rate of portals when using fancy portal rendering")
+            .addComment("Set to -1 (default) for unlimited");
+
+    public final Setting<Integer> maxPortalRecursion = value("client", "maxPortalRecursion", 2)
+            .addComment("Sets the maximum depth to reach when rendering portals through portals");
+
     public Config() {
         super(new HeirarchicalJsonConfigAdapter(new GsonBuilder()
                 .registerTypeAdapter(Race.class, RegistryTypeAdapter.of(Race.REGISTRY))

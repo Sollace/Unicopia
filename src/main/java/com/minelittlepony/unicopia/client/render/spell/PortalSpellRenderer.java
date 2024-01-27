@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client.render.spell;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.PortalSpell;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
@@ -14,8 +15,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.RotationAxis;
 
 public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
-    static boolean FANCY_PORTAlS = true;
-
     @Override
     public boolean shouldRenderEffectPass(int pass) {
         return pass == 0;
@@ -32,7 +31,7 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
         SphereModel.DISK.render(matrices, buff, light, 0, 2F * strength, 1, 1, 1, 1);
         matrices.pop();
 
-        if (!FANCY_PORTAlS || !spell.isLinked()) {
+        if (Unicopia.getConfig().simplifiedPortals.get() || !spell.isLinked()) {
             matrices.push();
             matrices.translate(0, -0.02, 0);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));

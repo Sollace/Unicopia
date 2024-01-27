@@ -11,6 +11,7 @@ import org.joml.Matrix4f;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.PortalSpell;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
@@ -115,11 +116,12 @@ class PortalFrameBuffer implements AutoCloseable {
 
     public void build(PortalSpell spell, Caster<?> caster, EntityReference.EntityValues<Entity> target) {
 
-        if (framebuffer != null && System.currentTimeMillis() % 1 != 0) {
+        long refreshRate = Unicopia.getConfig().fancyPortalRefreshRate.get();
+        if (refreshRate > 0 && framebuffer != null && System.currentTimeMillis() % refreshRate != 0) {
             return;
         }
 
-        if (pendingDraw && recursionCount > 2) {
+        if (pendingDraw && recursionCount > Math.max(0, Unicopia.getConfig().maxPortalRecursion.get())) {
             innerBuild(spell, caster, target);
             return;
         }
