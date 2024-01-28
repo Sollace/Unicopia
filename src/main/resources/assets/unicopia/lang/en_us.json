@@ -352,6 +352,7 @@
   "effect.unicopia.butter_fingers": "Butterfingers",
 
   "effect.unicopia.change_race_earth": "Earth Pony Metamorphosis",
+  "effect.unicopia.change_race_unicorn": "Unicorn Metamorphosis",
   "effect.unicopia.change_race_pegasus": "Pegasus Metamorphosis",
   "effect.unicopia.change_race_changeling": "Changeling Metamorphosis",
   "effect.unicopia.change_race_bat": "Bat Pony Metamorphosis",
@@ -359,6 +360,7 @@
   "effect.unicopia.change_race_hippogriff": "Hippogriff Metamorphosis",
 
   "effect.unicopia.morph_race_earth": "Earth Pony Transformation",
+  "effect.unicopia.morph_race_unicorn": "Unicorn Transformation",
   "effect.unicopia.morph_race_pegasus": "Pegasus Transformation",
   "effect.unicopia.morph_race_changeling": "Changeling Transformation",
   "effect.unicopia.morph_race_bat": "Bat Pony Transformation",
@@ -370,7 +372,6 @@
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_earth": "Lingering Potion of Earth Pony Metamorphosis",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_earth": "Arrow of Earth Pony Metamorphosis",
 
-  "effect.unicopia.change_race_unicorn": "Unicorn Metamorphosis",
   "item.minecraft.potion.effect.unicopia.tribe_swap_unicorn": "Potion of Unicorn Metamorphosis",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_unicorn": "Splash Potion of Unicorn Metamorphosis",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_unicorn": "Lingering Potion of Unicorn Metamorphosis",
