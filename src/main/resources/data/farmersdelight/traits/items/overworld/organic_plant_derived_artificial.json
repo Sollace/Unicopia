@@ -1,0 +1,8 @@
+{
+   "replace": false,
+   "traits": "order:1 knowledge:3",
+   "items": [
+     "#farmersdelight:canvas_signs",
+     "#farmersdelight:cabinets"
+   ]
+}

@@ -27,6 +27,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -38,6 +39,7 @@ import net.minecraft.registry.Registries;
 
 public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     public static final SpellTraits EMPTY = new SpellTraits(Map.of());
+    private static final SpellTraits SPAWN_EGG_TRAITS = new SpellTraits(Map.of(Trait.LIFE, 20F));
 
     private static Map<Identifier, SpellTraits> REGISTRY = new HashMap<>();
     static final Map<Trait, List<Item>> ITEMS = new HashMap<>();
@@ -212,6 +214,12 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static SpellTraits of(Item item) {
+        if (item instanceof ItemWithTraits i) {
+            return i.getDefaultTraits();
+        }
+        if (item instanceof SpawnEggItem) {
+            return SPAWN_EGG_TRAITS;
+        }
         return REGISTRY.getOrDefault(Registries.ITEM.getId(item), EMPTY);
     }
 

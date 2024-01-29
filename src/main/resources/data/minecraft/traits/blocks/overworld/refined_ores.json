@@ -2,7 +2,7 @@
   "replace": false,
   "traits": "strength:1 earth:1 knowledge:2",
   "items": [
-    "minecraft:coal_block",
+    "#c:ores",
     "minecraft:emerald_block",
     "minecraft:iron_block",
     "minecraft:copper_block",

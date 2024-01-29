@@ -5,6 +5,8 @@
     "#unicopia:cloud_slabs",
     "#unicopia:cloud_stairs",
     "#unicopia:cloud_beds",
-    "unicopia:cloud_pillar"
+    "unicopia:cloud_pillar",
+    "unicopia:carved_cloud",
+    "unicopia:shaping_bench"
   ]
 }

@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "traits": "knowledge:9 life:3 water:9",
+  "items": [
+    "minecraft:ochre_froglight",
+    "minecraft:verdant_froglight",
+    "minecraft:pearlescent_froglight",
+    "minecraft:frogspawn"
+  ]
+}

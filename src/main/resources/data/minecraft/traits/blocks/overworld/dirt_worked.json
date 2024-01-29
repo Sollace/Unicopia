@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "traits": "earth:5 strength:3",
+  "items": [
+    "minecraft:packed_mud",
+    "minecraft:decorated_pot",
+    "minecraft:reinforced_deepslate",
+    "minecraft:mud_bricks",
+    "minecraft:farmland"
+  ]
+}

@@ -23,6 +23,7 @@ public interface UTags {
     TagKey<Item> SHADES = item("shades");
     TagKey<Item> CHANGELING_EDIBLE = item("food_types/changeling_edible");
     TagKey<Item> SPOOKED_MOB_DROPS = item("spooked_mob_drops");
+    TagKey<Item> HAS_NO_TRAITS = item("has_no_traits");
     TagKey<Item> IS_DELIVERED_AGGRESSIVELY = item("is_delivered_aggressively");
     TagKey<Item> FLOATS_ON_CLOUDS = item("floats_on_clouds");
     TagKey<Item> COOLS_OFF_KIRINS = item("cools_off_kirins");

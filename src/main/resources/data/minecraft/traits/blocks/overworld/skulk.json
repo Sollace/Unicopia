@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "traits": "darkness:11 blood:1 earth:2",
+  "items": [
+    "minecraft:sculk",
+    "minecraft:sculk_shrieker",
+    "minecraft:sculk_catalyst",
+    "minecraft:echo_shard",
+    "minecraft:sculk_vein"
+  ]
+}
