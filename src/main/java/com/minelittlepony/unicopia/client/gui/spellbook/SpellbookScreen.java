@@ -160,7 +160,6 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
         tabs.getAllTabs().forEach(tab -> {
             Bounds bounds = tab.bounds();
-            chapters.getCurrentChapter();
             boolean hover = bounds.contains(mouseX, mouseY);
 
             int color = tab.chapter().color() & 0xFFFFFF;

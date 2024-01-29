@@ -21,12 +21,16 @@ import net.minecraft.util.*;
 
 public class DynamicContent implements Content {
     private static final Text UNKNOWN = Text.of("???");
-    private static final Text UNKNOWN_LEVEL = Text.literal("Level: ???").formatted(Formatting.DARK_GREEN);
 
     private SpellbookState.PageState state = new SpellbookState.PageState();
     private final List<Page> pages;
 
     private Bounds bounds = Bounds.empty();
+
+    private final Panel leftPanel = new Panel(this);
+    private final Panel rightPanel = new Panel(this);
+
+    private int headerColor;
 
     public DynamicContent(PacketByteBuf buffer) {
         pages = buffer.readList(Page::new);
@@ -35,32 +39,26 @@ public class DynamicContent implements Content {
     @Override
     public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
         int pageIndex = state.getOffset() * 2;
-
-        getPage(pageIndex).ifPresent(page -> page.draw(context, mouseX, mouseY, container));
-
-        context.getMatrices().push();
-        getPage(pageIndex + 1).ifPresent(page -> {
-            page.bounds.left = bounds.left + bounds.width / 2 + 20;
-            page.draw(context, mouseX, mouseY, container);
-        });
-        context.getMatrices().pop();
-
         TextRenderer font = MinecraftClient.getInstance().textRenderer;
-        int headerColor = mouseY % 255;
+        headerColor = mouseY % 255;
 
-        Text pageText = Text.translatable("%s/%s", (pageIndex / 2) + 1, pages.size() / 2);
+        Text pageText = Text.translatable("%s/%s", (pageIndex / 2) + 1, (int)Math.ceil(pages.size() / 2F));
         context.drawText(font, pageText, (int)(337 - font.getWidth(pageText) / 2F), 190, headerColor, false);
     }
 
     @Override
     public void copyStateFrom(Content old) {
         if (old instanceof DynamicContent o) {
+            if (state.getOffset() == o.state.getOffset()) {
+                leftPanel.verticalScrollbar.getScrubber().scrollTo(o.leftPanel.verticalScrollbar.getScrubber().getPosition(), false);
+                rightPanel.verticalScrollbar.getScrubber().scrollTo(o.rightPanel.verticalScrollbar.getScrubber().getPosition(), false);
+            }
             state = o.state;
             setBounds(o.bounds);
         }
     }
 
-    private Optional<Page> getPage(int index) {
+    Optional<Page> getPage(int index) {
         if (index < 0 || index >= pages.size()) {
             return Optional.empty();
         }
@@ -71,9 +69,15 @@ public class DynamicContent implements Content {
         this.bounds = bounds;
         pages.forEach(page -> {
             page.reset();
+            int oldHeight = page.bounds.height;
             page.bounds.copy(bounds);
+            page.bounds.left = 0;
+            page.bounds.top = 0;
             page.bounds.width /= 2;
+            page.bounds.height = oldHeight;
         });
+
+        leftPanel.setBounds(bounds);
     }
 
     @Override
@@ -83,6 +87,10 @@ public class DynamicContent implements Content {
         screen.addPageButtons(187, 30, 350, incr -> {
             state.swap(incr, (int)Math.ceil(pages.size() / 2F));
         });
+
+        int pageIndex = state.getOffset() * 2;
+        leftPanel.init(screen, pageIndex);
+        rightPanel.init(screen, pageIndex + 1);
     }
 
     class Page implements Drawable {
@@ -145,18 +153,17 @@ public class DynamicContent implements Content {
                     element.compile(relativeY, container);
                     relativeY += element.bounds().height;
                 }
+                bounds.height = relativeY;
             }
 
             boolean needsMoreXp = level < 0 || Pony.of(MinecraftClient.getInstance().player).getLevel().get() < level;
 
-            int headerColor = mouseY % 255;
-
             MatrixStack matrices = context.getMatrices();
             DrawableUtil.drawScaledText(context, needsMoreXp ? UNKNOWN : title, bounds.left, bounds.top - 10, 1.3F, headerColor);
-            DrawableUtil.drawScaledText(context, level < 0 ? UNKNOWN_LEVEL : Text.literal("Level: " + (level + 1)).formatted(Formatting.DARK_GREEN), bounds.left, bounds.top - 10 + 12, 0.8F, headerColor);
+            DrawableUtil.drawScaledText(context, Text.translatable("gui.unicopia.spellbook.page.level_requirement", level < 0 ? "???" : "" + (level + 1)).formatted(Formatting.DARK_GREEN), bounds.left, bounds.top - 10 + 12, 0.8F, headerColor);
 
             matrices.push();
-            matrices.translate(bounds.left, bounds.top + 16, 0);
+            matrices.translate(0, 16, 0);
             elements.stream().filter(PageElement::isFloating).forEach(element -> {
                 Bounds bounds = element.bounds();
                 matrices.push();
