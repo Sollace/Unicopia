@@ -5,52 +5,44 @@
   "content": {
     "pages": [
       {
-        "title": "Ch.5 The Arcane",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p1.title",
         "level": 10,
         "elements": [
           { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/dark_magic.png" }
         ]
       },
       {
-        "title": "30th Hoof '12",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p2.title",
         "level": 8,
         "elements": [
-          "A new communication from the crown today. The situation seems to be worsening in the west and though they've been satisfied with my work until now, they are putting pressure on me to produce something more destructive.",
-          "I tried to tell the messenger that I couldn't-"
+          "gui.unicopia.spellbook.chapter.dark_magic.p2.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p2.2.body"
         ]
       },
+      { },
       {
-        "title": "",
-        "level": 0,
-        "elements": []
-      },
-      {
-        "title": "3rd Slep '12",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p3.title",
         "level": 9,
         "elements": [
-          "Let it be known that it was never my intention that anypony use my work for nefarious purposes. I am a researcher, above and beyond all else. My intentions are pure, and my wants are nothing more than this world to be at peace."
+          "gui.unicopia.spellbook.chapter.dark_magic.p3.1.body"
         ]
       },
+      { },
       {
-        "title": "",
-        "level": 0,
-        "elements": []
-      },
-      {
-        "title": "4th Slep '12",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p4.title",
         "level": 10,
         "elements": [
-          "No review of magic is ever complete without a glimpse into the other side.",
-          "Dark magic, or as I'm going to refer to it as The Arcane are tip-toeing the line between the normal light magic we normally know and the more nefarious side of reality.",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.dark_magic.p4.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p4.2.body",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "Attraction",
+        "title": "spell.unicopia.vortex",
         "level": 5,
         "elements": [
-          "If someone were to ask you 'what is the opposite of a repulsion spell, what would you say? An attraction spell, of course!",
-          "By twisting the purpose of the protection spell, I've been able to reverse its function to create a spell that pulls objects and entities closer to the caster.",
+          "gui.unicopia.spellbook.chapter.dark_magic.vortex.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.vortex.2.body",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/knowledge.png" }
         ]
@@ -60,7 +52,7 @@
         "level": 5,
         "elements": [
           { "recipe": "unicopia:spells/vortex" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "spell": "unicopia:shield" },
@@ -71,107 +63,93 @@
           },
           {
             "ingredients": [
-              { "text": "+ 10x knowledge to narrow the effect's range to items" },
-              { "text": "+ add focus trait to increase duration\n+ add power trait to increase range" }
+              { "text": "gui.unicopia.spellbook.chapter.dark_magic.vortex.modifier.1" },
+              { "text": "gui.unicopia.spellbook.chapter.dark_magic.vortex.modifier.2" }
             ]
           }
         ]
       },
       {
-        "title": "8th Slep '12",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p6.title",
         "level": 6,
         "elements": [
-          "Additional Notes for the Attraction Spell",
-          "I caught Luna playing with my spellcrafting grid today, even though I expressly forbid her from entering my study when I'm not there.",
-          "Apparently it was over some dispute with Celly, I don't really remember, but it culminated in Luna sneaking into the study whilst I was out to get some bread."
+          "gui.unicopia.spellbook.chapter.dark_magic.p6.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p6.2.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p6.3.body"
         ]
       },
       {
-        "title": "Arcane Attraction II",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p7.title",
         "level": 6,
         "elements": [
-          "This isn't really about that, though. She's been scolded and sent back to her room, however as I was cleaning up the mess she'd made I noticed something in the piles of gems.",
-          "It's hard to describe, really. This is still distincly an attraction gem, but it's different.",
-          "It has traits I hadn't considered before, and the way it behaves... "
+          "gui.unicopia.spellbook.chapter.dark_magic.p7.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p7.2.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p7.3.body"
         ]
       },
       {
-        "title": "Arcane Attraction II Cont.",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p8.title",
         "level": 6,
         "elements": [
-          "Well I'll leave that up to tomorrow. I'm still tired from everything that's happened this week.",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.dark_magic.p8.1.body",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
         "title": "",
         "level": 6,
         "elements": [
-          ">0 generosity --> ??",
-          ">20 order trait --> ???"
+          "gui.unicopia.spellbook.chapter.dark_magic.p8.2.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p8.3.body"
         ]
       },
       {
-        "title": "20th Slep '12",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p9.title",
         "level": 11,
         "elements": [
-          "As per their agreement, the council have sent certain...supplimental materials to aid in the new direction my research is taking. I was a little shocked at first.",
-          "This... thing... Whatever it is. Was, rather.",
-          "Is this really what we're fighting in the west?",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.dark_magic.p9.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p9.2.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p9.3.body",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "21st Slep '12",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p10.title",
         "level": 11,
         "elements": [
-          "I've put the... thing. In the basement. Locked the door.",
-          "I just couldn't stand looking at it any longer. It's vaguely pony-shaped, but also...",
-          "I couldn't well let Luna see it. I've sent her out to spend the next few nights with Celly whilst I sort out what to do with this.",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.dark_magic.p10.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p10.2.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p10.3.body",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
+      { },
+      { },
       {
-        "title": "",
-        "level": -1,
-        "elements": []
-      },
-      {
-        "title": "",
-        "level": -1,
-        "elements": []
-      },
-      {
-        "title": "25th Slep '12",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p11.title",
         "level": 13,
         "elements": [
-          "I'm sorry for the long delays. Things have been... busy.",
-          "I've learned a lot about these creatures. Attached are some illustrations, done best I could so I wouldn't have to look at the thing directly.",
-          {
-            "text": "Its body is black and vaguely",
-            "extra": [
-              { "text": "insect-like", "obfuscated": true },
-              "with ponish proportions. It has no fur."
-            ]
-          }
+          "gui.unicopia.spellbook.chapter.dark_magic.p11.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p11.2.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p11.3.body"
         ]
       },
       {
         "title": "",
         "level": 14,
         "elements": [
-          "The magic they use is unusual. Not unusual, like what I've been studying. It's unnatural. Wild.",
-          "There is definitely something I might be able to harness here, but I shudder... Should I?",
-          "I fear that this may be a line that shouldn't be crossed.",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.dark_magic.p11.4.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p11.5.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p11.6.body",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "Transmutation",
+        "title": "spell.unicopia.transformation",
         "level": 13,
         "elements": [
-          "I've begun by simply harnessing their ability. It's unfocused and hard to control. I can rarely predict what is going to happen, but this gem has very clear transmodrification properties.",
-          "Throwing this at any creature has the chance to transform it into any other creature.",
+          "gui.unicopia.spellbook.chapter.dark_magic.transformation.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.transformation.2.body",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/life.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
         ]
@@ -181,7 +159,7 @@
         "level": 13,
         "elements": [
           { "recipe": "unicopia:spells/transformation" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 18, "trait": "unicopia:knowledge" },
@@ -192,11 +170,11 @@
         ]
       },
       {
-        "title": "Dispell Illusion",
+        "title": "spell.unicopia.reveal",
         "level": 15,
         "elements": [
-          "Dispell Illusion is the first line of defense against transformation/illusion spells.",
-          "When cast it will force any nearby disguised changelings in its range to reveal their true form.",
+          "gui.unicopia.spellbook.chapter.dark_magic.reveal.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.reveal.2.body",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/knowledge.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
         ]
@@ -206,7 +184,7 @@
         "level": 15,
         "elements": [
           { "recipe": "unicopia:spells/reveal" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "spell": "unicopia:shield" },
@@ -215,64 +193,60 @@
               { "count": 4, "trait": "unicopia:order" }
             ]
           },
-          "* Increase range by adding the power trait"
+          "gui.unicopia.spellbook.chapter.dark_magic.reveal.modifier.1"
         ]
       },
       {
-        "title": "27th Slep '12",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p14.title",
         "level": 14,
         "elements": [
-          "Sleep the last few nights has become... elusive.",
-          "I don't know how to describe it, really. Luna appears unaffected, but every night after the sun goes down I find myself lying awake at night unable to sleep. It doesn't help that that sounds in the village have resumed."
+          "gui.unicopia.spellbook.chapter.dark_magic.p14.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p14.2.body"
         ]
       },
       {
-        "title": "Lost Sleep",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p15.title",
         "level": 15,
         "elements": [
-          "Last night, especially, I found myself pacing in the observatory. The air became chill, more than is normal for this time of year, and beyond anything that raging fire in corner of the room could combat.",
-          "The room where I keep the--my patient opposite the wall behind me."
+          "gui.unicopia.spellbook.chapter.dark_magic.p15.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p15.2.body"
         ]
       },
       {
-        "title": "Lost Sleep Cont.",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p16.title",
         "level": 15,
         "elements": [
-          "I've long since taken to keeping that door locked because every so often I could swear I heard something moving in there...",
-          "Gods, am I going crazy?",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.dark_magic.p16.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p16.2.body",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
+      { },
       {
-        "title": "",
-        "level": -1,
-        "elements": []
-      },
-      {
-        "title": "29th Slep '12",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p17.title",
         "level": 18,
         "elements": [
-          "Bits, there it is again!",
-          "I thought last night was a fluke, but I just heard it again--I'm shaking. My hooves, I can barely hold this book as I struggle to pen these words.",
-          "There's something--I heard something. Like a chittering--",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.dark_magic.p17.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p17.2.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p17.3.body",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "1st Croptober '12",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p18.title",
         "level": 14,
         "elements": [
-          "I made a call into town. One of the local blacksmiths have agreed to install a new lock, one of the heavy kind that not even earth ponies can bust.",
-          "I fear it may not be enough, though, it--whatever it is, clearly has magic. I may be forced to research a magical solution to my insomnia.",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.dark_magic.p18.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p18.2.body",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "Arcane Protection",
+        "title": "spell.unicopia.arcane_protection",
         "level": 16,
         "elements": [
-          "This spell will create a magical shroud that can be used to protect from other spellcasters.",
-          "No one else will be able to use magic within its radius.",
+          "gui.unicopia.spellbook.chapter.dark_magic.arcane_protection.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.arcane_protection.2.body",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/knowledge.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/darkness.png" }
         ]
@@ -282,7 +256,7 @@
         "level": 16,
         "elements": [
           { "recipe": "unicopia:spells/arcane_protection" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "spell": "unicopia:shield" },
@@ -291,14 +265,14 @@
               { "count": 1, "trait": "unicopia:darkness" }
             ]
           },
-          "* Increase range by adding the power trait"
+          "gui.unicopia.spellbook.chapter.dark_magic.arcane_protection.modifier.1"
         ]
       },
       {
-        "title": "Displacement",
+        "title": "spell.unicopia.displacement",
         "level": 17,
         "elements": [
-          "By casting this spell, a unicorn is able to swap their location with any other creature.",
+          "gui.unicopia.spellbook.chapter.dark_magic.displacement.1.body",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/knowledge.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
         ]
@@ -308,7 +282,7 @@
         "level": 17,
         "elements": [
           { "recipe": "unicopia:spells/displacement" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "item": "unicopia:gemstone" },
@@ -319,26 +293,24 @@
         ]
       },
       {
-        "title": "3rd Croptober '12",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p21.title",
         "level": 14,
         "elements": [
-          "The locks have been installed, and with the addition of some extra wardings, I'm feeling a little more at ease.",
-          "The motions at night have all but stopped, though I feel like I can almost hear it at times...",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.dark_magic.p21.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p21.2.body",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "4th Cropt-",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p22.title",
         "level": 15,
-        "elements": [
-          ""
-        ]
+        "elements": []
       },
       {
-        "title": "Mimic",
+        "title": "spell.unicopia.mimic",
         "level": 17,
         "elements": [
-          "I've been able to tap into some of this strange creature's abilities. There's still a lot to figure out here, but for now I've merely distilled its essense into a gem.",
+          "gui.unicopia.spellbook.chapter.dark_magic.mimic.1.body",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/dark_magic.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/darkness.png" }
         ]
@@ -348,7 +320,7 @@
         "level": 18,
         "elements": [
           { "recipe": "unicopia:spells/mimic" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "spell": "unicopia:transformation" },
@@ -357,65 +329,50 @@
               { "count": 4, "trait": "unicopia:chaos" }
             ]
           },
-          "* Add the focus trait to increase the effect's duration"
+          "gui.unicopia.spellbook.chapter.dark_magic.mimic.modifier.1"
         ]
       },
+      { },
+      { },
       {
-        "title": "",
-        "level": 0,
+        "title": "??? ???? ??",
+        "level": 44,
         "elements": [
-          ""
-        ]
-      },
-      {
-        "title": "",
-        "level": 0,
-        "elements": [
-          ""
+          "gui.unicopia.spellbook.chapter.dark_magic.p24.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p24.2.body"
         ]
       },
       {
         "title": "??? ???? ??",
         "level": 44,
         "elements": [
-          "There's been a wave of darkness that has come over the town. Nothing's been the same since that gods-forsaken creature arrived.",
-          "Ponies in town have begun remarking on lack of sleep, and it's showing. Just today I saw a poor stallion walking around in a daze. Bags under his eyes, barely any colour in his cheeks."
+          "gui.unicopia.spellbook.chapter.dark_magic.p25.1.body",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "??? ???? ??",
-        "level": 44,
-        "elements": [
-          "He looked almost like a zombie the way he went through the motions, not really paying any attention even after he nearly ran into me.",
-          "- Starswirl the Bearded"
-        ]
-      },
-            {
-        "title": "Scrap",
+        "title": "gui.unicopia.spellbook.chapter.dark_magic.p26.title",
         "level": 21,
         "elements": [
-          {
-            "text": "It's not enough. Never enough. Crawling. I feel crawling. Oh gods the crawling won't stop.",
-            "obfuscated": true
-          }
+          "gui.unicopia.spellbook.chapter.dark_magic.p26.1.body"
         ]
       },
       {
         "title": "??? ???? ??",
         "level": 33,
         "elements": [
-          "The insomnia. I can't take it. I lie in my bed every night waiting to go to sleep.",
-          "I thought I could stop it, keep it at bay, but I still hear it. That creature. Cold, unfeeling.",
-          "I feel myself being drained any time I'm around it. Is it... feeding on me?",
-          "No, it couldn't be."
+          "gui.unicopia.spellbook.chapter.dark_magic.p27.1.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p27.2.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p27.3.body",
+          "gui.unicopia.spellbook.chapter.dark_magic.p27.4.body"
         ]
       },
       {
         "title": "????? ????",
         "level": 19,
         "elements": [
-          "I found this incantation under some old notes whilst clearing out the lab. It's... simplistic and hard to manage, but it gets the job done.",
-          "- Starswirl the Bearded",
+          "gui.unicopia.spellbook.chapter.dark_magic.p28.1.body",
+          "gui.unicopia.spellbook.author1.name",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/dark_magic.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/kindness.png" }
         ]
@@ -425,7 +382,7 @@
         "level": 19,
         "elements": [
           { "recipe": "unicopia:spells/dispel_evil" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "spell": "unicopia:arcane_protection" },
@@ -434,7 +391,7 @@
               { "count": 1, "trait": "unicopia:power" }
             ]
           },
-          "* Add the power trait to increase the effect's range"
+          "gui.unicopia.spellbook.chapter.dark_magic.p27.2.body"
         ]
       }
     ]

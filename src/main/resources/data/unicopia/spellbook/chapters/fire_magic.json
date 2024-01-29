@@ -5,28 +5,28 @@
   "content": {
     "pages": [
       {
-        "title": "Ch.2 Fire Magic",
+        "title": "gui.unicopia.spellbook.chapter.fire.p1.title",
         "level": 0,
         "elements": [
           { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/fire_magic.png" }
         ]
       },
       {
-        "title": "9th Jum '12",
+        "title": "gui.unicopia.spellbook.chapter.fire.p2.title",
         "level": 0,
         "elements": [
-          "It took me longer than I anticipated, nearly a month! Hah! But I present to you, dear reader, my findings for the first elementary form of magic: FIRE.",
-          "It's a working title, okay?",
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.fire.p2.1.body",
+          "gui.unicopia.spellbook.chapter.fire.p2.2.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "Scorch",
+        "title": "spell.unicopia.scorch",
         "level": 0,
         "elements": [
-          "Simple and to the point, Scorch does exactly what you'd think. By embuing a gem with the fire trait, one can indute it to glow and become hot to the touch.",
-          "The effect becomes stronger the more fire you load it with, but take care not to overload it, as it may become volatile.",
+          "gui.unicopia.spellbook.chapter.fire.scorch.1.body",
+          "gui.unicopia.spellbook.chapter.fire.scorch.2.body",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/fire.png" }
         ]
@@ -36,7 +36,7 @@
         "level": 0,
         "elements": [
           { "recipe": "unicopia:spells/scorch" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 10, "trait": "unicopia:fire" }
@@ -45,11 +45,11 @@
         ]
       },
       {
-        "title": "Flame",
+        "title": "spell.unicopia.flame",
         "level": 1,
         "elements": [
-          "Creates a heating affect up to a radius of 3 hooves from any surfaces it touches.",
-          "Useful when one needs a flame in a hurry or to fend off a wild wendigo.",
+          "gui.unicopia.spellbook.chapter.fire.flame.1.body",
+          "gui.unicopia.spellbook.chapter.fire.flame.2.body",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/fire.png" }
         ]
@@ -59,7 +59,7 @@
         "level": 1,
         "elements": [
           { "recipe": "unicopia:spells/flame" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "item": "unicopia:gemstone" },
@@ -69,60 +69,51 @@
           }
         ]
       },
+      { },
       {
-        "title": "",
-        "level": 0,
-        "elements": []
-      },
-      {
-        "title": "10th Jum '12",
+        "title": "gui.unicopia.spellbook.chapter.fire.p5.title",
         "level": 0,
         "elements": [
-          "Progress?",
-          "I've managed to improve the previous spell somewhat, but there is still something lacking. It's all very orderly. Predicatable.",
-          "Luna has suggested adding more fire, but I'm weary to create more scorch marks on the tower. Faust save me if anypony were to find out what I've been doing..."
+          "gui.unicopia.spellbook.chapter.fire.p5.1.body",
+          "gui.unicopia.spellbook.chapter.fire.p5.2.body",
+          "gui.unicopia.spellbook.chapter.fire.p5.3.body"
         ]
       },
       {
-        "title": "Fire Magic III",
+        "title": "gui.unicopia.spellbook.chapter.fire.p6.title",
         "level": 2,
         "elements": [
-          "Focusing Magic",
-          "Some spells normally take a great amount of focus to cast, and a steady wit to control, However I've found objects embued with the focusing trait work wonderfully as a substitute for when the caster is lacking.",
+          "gui.unicopia.spellbook.chapter.fire.p6.1.body",
+          "gui.unicopia.spellbook.chapter.fire.p6.2.body",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/focus.png" }
         ]
       },
       {
-        "title": "Fire Magic III-II",
+        "title": "gui.unicopia.spellbook.chapter.fire.p7.title",
         "level": 2,
         "elements": [
-          "Any glass objects you can find, eyes, bottles, whatever incorporates a lense can be used to embue focus on a spell.",
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.fire.p7.1.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "Scrap 2",
+        "title": "gui.unicopia.spellbook.chapter.fire.p8.title",
         "level": 21,
         "elements": [
-          "We went to the market today. Had to get out of that tower, do something, be somewhere. Luna suggested we go in to see what they were selling for the fair so I decided to indulge her.",
-          "The townsfolk are still rather skeptical of us, though who's to blame them. Luna was getting along well with the other foals, at least."
+          "gui.unicopia.spellbook.chapter.fire.p8.1.body",
+          "gui.unicopia.spellbook.chapter.fire.p8.2.body"
         ]
       },
+      { },
       {
-        "title": "",
-        "level": 21,
-        "elements": [
-        ]
-      },
-      {
-        "title": "Fire Bolt",
+        "title": "spell.unicopia.fire_bolt",
         "level": 2,
         "elements": [
-          "Creates a series of heated projectiles to fling at a target. Upon impact the target will be set alight.",
-          "- Increase focus will allow finer grained control of the projectile's trajectory.",
-          "- With over 50 focus it's almost like they know where the target is (homing?).",
+          "gui.unicopia.spellbook.chapter.fire.fire_bolt.1.body",
+          "gui.unicopia.spellbook.chapter.fire.fire_bolt.2.body",
+          "gui.unicopia.spellbook.chapter.fire.fire_bolt.3.body",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/focus.png" }
         ]
@@ -132,7 +123,7 @@
         "level": 2,
         "elements": [
           { "recipe": "unicopia:spells/fire_bolt" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "spell": "unicopia:flame" },
@@ -143,104 +134,80 @@
         ]
       },
       {
-        "title": "Fire Magic IV",
+        "title": "gui.unicopia.spellbook.chapter.fire.p10.title",
         "level": 2,
         "elements": [
-          "Powerful Magic",
-          "Where some spells take focus, others require power. Either to exert a force, or to generate energy in some form.",
-          "There are few unicorns that have the inherent strength and power to cast spells of these kinds, but luckily such a trait is not in short supply around us.",
+          "gui.unicopia.spellbook.chapter.fire.p10.1.body",
+          "gui.unicopia.spellbook.chapter.fire.p10.2.body",
+          "gui.unicopia.spellbook.chapter.fire.p10.3.body",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
           { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/strength.png" }
         ]
       },
       {
-        "title": "Fire Magic IV-II",
+        "title": "gui.unicopia.spellbook.chapter.fire.p11.title",
         "level": 2,
         "elements": [
-          "Earthly elements, stone, many metals and minerals, that are strong under compression will exhibit the strength trait.",
-          "Electrical/Conductive elements that can be used to power things, or that glow can also be used to obtain the power trait.",
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.fire.p11.1.body",
+          "gui.unicopia.spellbook.chapter.fire.p11.2.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "11th Jum '12",
+        "title": "gui.unicopia.spellbook.chapter.fire.p12.title",
         "level": 2,
         "elements": [
-          "Got a knock at the door today. Luna was very eager to answer it but I had to send her away as it was a messenger from the crown.",
-          "My research has garnered a certain bit of notoriety, it appears. The royals are very eager to see what I have concocted.",
-          "They've gotten it in their heads that they can use it against the West."
+          "gui.unicopia.spellbook.chapter.fire.p12.1.body",
+          "gui.unicopia.spellbook.chapter.fire.p12.2.body",
+          "gui.unicopia.spellbook.chapter.fire.p12.3.body"
         ]
       },
       {
         "title": "",
         "level": 13,
         "elements": [
-          "Gods forbid they succeed. I shudder to think what the council might do if they got their hooves on my work.",
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.fire.p12.4.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
         "title": "",
         "level": 3,
         "elements": [
-          "Addendum",
-          {
-            "text": "",
-            "strikethrough": true,
-            "extra": [
-              {"text": "I am told the crown has started giving directions to find other uses. Ways to..."}
-            ]
-          }
+          "gui.unicopia.spellbook.chapter.fire.p12.5.body",
+          "gui.unicopia.spellbook.chapter.fire.p12.6.body"
         ]
       },
+      { },
+      { },
       {
-        "title": "",
-        "level": 0,
-        "elements": []
-      },
-      {
-        "title": "",
-        "level": 0,
-        "elements": []
-      },
-      {
-        "title": "20th Jum '12",
+        "title": "gui.unicopia.spellbook.chapter.fire.p13.title",
         "level": 9,
         "elements": [
-          "I have word from the crown. They appear satisfied, for now, and have agreed to let my continue my research as I have into the winter.",
-          "I am under duress to destroy the last several entries, I'm afraid.",
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.fire.p13.1.body",
+          "gui.unicopia.spellbook.chapter.fire.p13.2.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "21st Jum '12",
+        "title": "gui.unicopia.spellbook.chapter.fire.p14.title",
         "level": 0,
         "elements": [
-          {
-            "text": "I shall visit",
-            "extra": [
-              { "text": "Commander Hurricane", "obfuscated": true },
-              " tomorrow. Perhaps she may shed light onto my predicament."
-            ]
-          },
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.fire.p14.1.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
+      { },
       {
-        "title": "",
-        "level": 0,
-        "elements": []
-      },
-      {
-        "title": "Protection",
+        "title": "spell.unicopia.shield",
         "level": 2,
         "elements": [
-          "Casting shields are one of the first things every unicorn learns in self-defense. It's simple and easy to cast, and is an excellent introduction to incanting.",
-          "Its disadvantage is the energy and mental cost, however we can negate both by attaching it to a gem as per follows...",
+          "gui.unicopia.spellbook.chapter.fire.shield.1.body",
+          "gui.unicopia.spellbook.chapter.fire.shield.2.body",
           { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/strength.png" }
         ]
       },
@@ -249,7 +216,7 @@
         "level": 2,
         "elements": [
           { "recipe": "unicopia:spells/shield" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "item": "unicopia:gemstone" },
@@ -258,35 +225,30 @@
               { "count": 10, "trait": "unicopia:power" }
             ]
           },
-          "+ add power trait to increase effect range"
+          "gui.unicopia.spellbook.chapter.fire.shield.modifier.1"
         ]
       },
       {
-        "title": "Protection II",
+        "title": "gui.unicopia.spellbook.chapter.fire.p16.title",
         "level": 4,
         "elements": [
-          "By adding extra traits, I was able to slightly modify the shield to allow or deny certain parties into the effect range.",
-          "+ add life trait --> all animals may enter\n+ add blood trait --> all monsters may enter\n+ add ice trait --> all ponies may enter"
+          "gui.unicopia.spellbook.chapter.fire.p16.1.body",
+          "gui.unicopia.spellbook.chapter.fire.p16.2.body"
         ]
       },
       {
-        "title": "Protection III",
+        "title": "gui.unicopia.spellbook.chapter.fire.p17.title",
         "level": 5,
         "elements": [
-          "+ add genorosity trait to attach the spell to a location rather than yourself"
+          "gui.unicopia.spellbook.chapter.fire.p17.1.body"
         ]
       },
       {
-        "title": "Scrap: 9th Jum '12",
+        "title": "gui.unicopia.spellbook.chapter.fire.p18.title",
         "level": 3,
         "elements": [
-          "Fire magic has proven to a be a little more... unpredictable than anticipated. Every time I feel like I'm making progress it finds a way to set me back.",
-          {
-            "text": "I can't stop now, though...I'm told the situation in the west is growing dire. They have asked me to pick up the pace and produce something we can use to get the upper hoof against the",
-            "extra": [
-              { "text": "Changeling Storm.", "obfuscated": true}
-            ]
-          }
+          "gui.unicopia.spellbook.chapter.fire.p18.1.body",
+          "gui.unicopia.spellbook.chapter.fire.p18.2.body"
         ]
       }
     ]
