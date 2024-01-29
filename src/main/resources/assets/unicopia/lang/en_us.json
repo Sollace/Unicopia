@@ -46,6 +46,7 @@
   "item.unicopia.spellbook": "Spellbook",
   "emi.category.unicopia.spellbook": "Spellbook",
   "emi.category.unicopia.cloud_shaping": "Shaping",
+  "emi.category.unicopia.growing": "Growing",
 
   "item.unicopia.alicorn_badge": "Alicorn Emblem",
   "item.unicopia.unicorn_badge": "Unicorn Emblem",
@@ -73,6 +74,7 @@
   "item.unicopia.love_bucket": "Love Bucket",
   "item.unicopia.love_mug": "Mug o' Love",
 
+  "item.unicopia.plunder_vine": "Plunder Vine",
   "item.unicopia.empty_jar": "Glass Jar",
   "item.unicopia.filled_jar": "%s in a Jar",
   "item.unicopia.rain_cloud_jar": "Rain in a Jar",

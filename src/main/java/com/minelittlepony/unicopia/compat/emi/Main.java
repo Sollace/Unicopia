@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.item.EnchantableItem;
+import com.minelittlepony.unicopia.item.TransformCropsRecipe;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.URecipes;
 import com.minelittlepony.unicopia.item.group.MultiItem;
@@ -20,6 +21,7 @@ import com.minelittlepony.unicopia.item.group.MultiItem;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
+import dev.emi.emi.api.recipe.EmiWorldInteractionRecipe;
 import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiStack;
@@ -33,8 +35,10 @@ import net.minecraft.util.Identifier;
 public class Main implements EmiPlugin {
     static final EmiStack SPELL_BOOK_STATION = EmiStack.of(UItems.SPELLBOOK);
     static final EmiStack CLOUD_SHAPING_STATION = EmiStack.of(UBlocks.SHAPING_BENCH);
+    static final EmiStack GROWING_STATION = EmiStack.of(UItems.EARTH_BADGE);
     static final EmiRecipeCategory SPELL_BOOK_CATEGORY = new EmiRecipeCategory(Unicopia.id("spellbook"), SPELL_BOOK_STATION, SPELL_BOOK_STATION);
     static final EmiRecipeCategory CLOUD_SHAPING_CATEGORY = new EmiRecipeCategory(Unicopia.id("cloud_shaping"), CLOUD_SHAPING_STATION, CLOUD_SHAPING_STATION);
+    static final EmiRecipeCategory GROWING_CATEGORY = new EmiRecipeCategory(Unicopia.id("growing"), GROWING_STATION, GROWING_STATION);
 
     static final Identifier WIDGETS = Unicopia.id("textures/gui/widgets.png");
     static final EmiTexture EMPTY_ARROW = new EmiTexture(WIDGETS, 44, 0, 24, 17);
@@ -102,6 +106,21 @@ public class Main implements EmiPlugin {
                     }
                 });
             }
+        });
+
+        registry.addCategory(GROWING_CATEGORY);
+        registry.addWorkstation(GROWING_CATEGORY, GROWING_STATION);
+        registry.getRecipeManager().listAllOfType(URecipes.GROWING).forEach(recipe -> {
+            registry.addRecipe(new EmiWorldInteractionRecipe(EmiWorldInteractionRecipe.builder()
+                .id(recipe.getId())
+                .leftInput(EmiStack.of(recipe.getTargetAsItem()))
+                .rightInput(EmiStack.of(recipe.getCatalyst(), TransformCropsRecipe.MINIMUM_INPUT), true)
+                .output(EmiStack.of(recipe.getOutput()))) {
+                @Override
+                public EmiRecipeCategory getCategory() {
+                    return GROWING_CATEGORY;
+                }
+            });
         });
     }
 }

@@ -1,9 +1,6 @@
 package com.minelittlepony.unicopia.ability;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import com.minelittlepony.unicopia.Race;
@@ -12,12 +9,12 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.block.UBlocks;
-import com.minelittlepony.unicopia.block.state.StateUtil;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.TransformCropsRecipe;
+import com.minelittlepony.unicopia.item.URecipes;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
-import com.minelittlepony.unicopia.server.world.UTreeGen;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -33,7 +30,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
@@ -139,40 +135,41 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
     }
 
     private boolean applyDirectly(Pony player, BlockPos pos) {
-        return TransmutationRecipe.RECIPES.stream()
-            .filter(recipe -> recipe.matches(player.asWorld(), pos))
-            .map(recipe -> recipe.checkPattern(player.asWorld(), pos))
-            .filter(result -> result.matchedLocations().size() + 1 >= TransmutationRecipe.MINIMUM_INPUT)
-            .filter(result -> {
-                boolean transform = result.shoudTransform(player.asWorld().random);
+        return player.asWorld().getRecipeManager()
+                .getAllMatches(URecipes.GROWING, new TransformCropsRecipe.PlacementArea(player, pos), player.asWorld())
+                .stream()
+                .map(recipe -> recipe.checkPattern(player.asWorld(), pos))
+                .filter(result -> result.matchedLocations().size() + 1 >= TransformCropsRecipe.MINIMUM_INPUT)
+                .filter(result -> {
+            boolean transform = result.shoudTransform(player.asWorld().random);
 
-                player.playSound(USounds.ENTITY_CRYSTAL_SHARDS_AMBIENT, 1);
+            player.playSound(USounds.ENTITY_CRYSTAL_SHARDS_AMBIENT, 1);
 
-                result.matchedLocations().forEach(cell -> {
-                    spawnConversionParticles(player.asWorld(), cell.up(), false);
-                    BlockDestructionManager manager = BlockDestructionManager.of(player.asWorld());
-                    if (transform) {
-                        if (manager.damageBlock(cell, 8) >= BlockDestructionManager.MAX_DAMAGE || player.asWorld().random.nextInt(20) == 0) {
-                            player.asWorld().setBlockState(cell, Blocks.DIRT.getDefaultState());
-                            player.asWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, cell, Block.getRawIdFromState(player.asWorld().getBlockState(cell)));
-                        }
-                    } else {
-                        if (manager.damageBlock(cell, 4) >= BlockDestructionManager.MAX_DAMAGE || player.asWorld().random.nextInt(20) == 0) {
-                            player.asWorld().setBlockState(cell, Blocks.DIRT.getDefaultState());
-                            player.asWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, cell, Block.getRawIdFromState(player.asWorld().getBlockState(cell)));
-                        }
-                    }
-                });
-
-                spawnConversionParticles(player.asWorld(), pos, transform);
+            result.matchedLocations().forEach(cell -> {
+                spawnConversionParticles(player.asWorld(), cell.up(), false);
+                BlockDestructionManager manager = BlockDestructionManager.of(player.asWorld());
                 if (transform) {
-                    player.asWorld().setBlockState(pos, result.recipe().getResult(player.asWorld(), pos));
+                    if (manager.damageBlock(cell, 8) >= BlockDestructionManager.MAX_DAMAGE || player.asWorld().random.nextInt(20) == 0) {
+                        player.asWorld().setBlockState(cell, Blocks.DIRT.getDefaultState());
+                        player.asWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, cell, Block.getRawIdFromState(player.asWorld().getBlockState(cell)));
+                    }
+                } else {
+                    if (manager.damageBlock(cell, 4) >= BlockDestructionManager.MAX_DAMAGE || player.asWorld().random.nextInt(20) == 0) {
+                        player.asWorld().setBlockState(cell, Blocks.DIRT.getDefaultState());
+                        player.asWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, cell, Block.getRawIdFromState(player.asWorld().getBlockState(cell)));
+                    }
                 }
+            });
 
-                return true;
-            })
-            .findFirst()
-            .isPresent();
+            spawnConversionParticles(player.asWorld(), pos, transform);
+            if (transform) {
+                player.asWorld().setBlockState(pos, result.recipe().getResult(player.asWorld(), pos));
+            }
+
+            return true;
+        })
+        .findFirst()
+        .isPresent();
     }
 
     private static void spawnConversionParticles(World w, BlockPos pos, boolean success) {
@@ -199,48 +196,6 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
     @Override
     public void coolDown(Pony player, AbilitySlot slot) {
 
-    }
-
-    private static record TransmutationRecipe(Block input, BlockState output, BlockState material) {
-        static final List<TransmutationRecipe> RECIPES = List.of(
-                new TransmutationRecipe(Blocks.OAK_SAPLING, UTreeGen.GOLDEN_APPLE_TREE.sapling().get().getDefaultState(), Blocks.RAW_GOLD_BLOCK.getDefaultState()),
-                new TransmutationRecipe(Blocks.CARROTS, UBlocks.GOLD_ROOT.getDefaultState(), Blocks.RAW_GOLD_BLOCK.getDefaultState()),
-                new TransmutationRecipe(Blocks.CORNFLOWER, UBlocks.CURING_JOKE.getDefaultState(), Blocks.LAPIS_BLOCK.getDefaultState()),
-                new TransmutationRecipe(Blocks.WITHER_ROSE, UBlocks.PLUNDER_VINE_BUD.getDefaultState(), Blocks.NETHERRACK.getDefaultState())
-        );
-        static final int RADIUS = 3;
-        static final int SIDE_LENGTH = (2 * RADIUS) + 1;
-        static final int AREA = (SIDE_LENGTH * SIDE_LENGTH) - 1;
-        static final int MINIMUM_INPUT = 9;
-
-        public boolean matches(World world, BlockPos pos) {
-            return world.getBlockState(pos).isOf(input);
-        }
-
-        public Result checkPattern(World world, BlockPos pos) {
-            BlockPos center = pos.down();
-            Set<BlockPos> matches = new HashSet<>();
-            for (BlockPos cell : BlockPos.iterateInSquare(center, RADIUS, Direction.EAST, Direction.NORTH)) {
-                if (cell.equals(center)) {
-                    continue;
-                }
-                if (!world.getBlockState(cell).equals(material)) {
-                    break;
-                }
-                matches.add(cell.toImmutable());
-            }
-            return new Result(this, matches);
-        }
-
-        public BlockState getResult(World world, BlockPos pos) {
-            return StateUtil.copyState(world.getBlockState(pos), output);
-        }
-
-        record Result (TransmutationRecipe recipe, Set<BlockPos> matchedLocations) {
-            public boolean shoudTransform(Random random) {
-                return random.nextInt(TransmutationRecipe.AREA) < matchedLocations().size();
-            }
-        }
     }
 
     public interface Growable {
