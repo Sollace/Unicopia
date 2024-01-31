@@ -44,6 +44,7 @@ public interface UTags {
     TagKey<Block> CRYSTAL_HEART_BASE = block("crystal_heart_base");
     TagKey<Block> CRYSTAL_HEART_ORNAMENT = block("crystal_heart_ornament");
     TagKey<Block> UNAFFECTED_BY_GROW_ABILITY = block("unaffected_by_grow_ability");
+    TagKey<Block> KICKS_UP_DUST = block("kicks_up_dust");
 
     TagKey<Block> POLEARM_MINEABLE = block("mineable/polearm");
 

@@ -11,6 +11,7 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 
 public abstract class AbstractGeometryBasedParticle extends Particle {
@@ -38,6 +39,16 @@ public abstract class AbstractGeometryBasedParticle extends Particle {
         te.draw();
     }
 
+    protected final void renderQuad(MatrixStack matrices, Tessellator te, BufferBuilder buffer, RenderUtil.Vertex[] corners, float alpha, float tickDelta) {
+        int light = getBrightness(tickDelta);
+        buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+        for (RenderUtil.Vertex corner : corners) {
+            var position = corner.position(matrices.peek().getPositionMatrix());
+            buffer.vertex(position.x, position.y, position.z).texture(corner.texture().x, corner.texture().y).color(red, green, blue, alpha).light(light).next();
+        }
+        te.draw();
+    }
+
     protected final void renderQuad(Tessellator te, BufferBuilder buffer, RenderUtil.Vertex[] corners, float alpha, float tickDelta) {
         int light = getBrightness(tickDelta);
         buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
@@ -46,7 +57,6 @@ public abstract class AbstractGeometryBasedParticle extends Particle {
         }
         te.draw();
     }
-
 
     protected final void renderQuad(VertexConsumer buffer, Vector3f[] corners, float alpha, float tickDelta) {
         int light = getBrightness(tickDelta);

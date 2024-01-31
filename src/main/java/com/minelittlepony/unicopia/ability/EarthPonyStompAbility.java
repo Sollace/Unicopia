@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.Living;
@@ -17,6 +18,7 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 import com.minelittlepony.unicopia.util.PosHelper;
+import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -26,6 +28,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -33,6 +36,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
@@ -156,7 +160,10 @@ public class EarthPonyStompAbility implements Ability<Hit> {
             spawnEffectAround(player, center, radius, rad);
 
             ParticleUtils.spawnParticle(player.getWorld(), UParticles.GROUND_POUND, player.getX(), player.getY() - 1, player.getZ(), 0, 0, 0);
-            ParticleUtils.spawnParticle(player.getWorld(), UParticles.SHOCKWAVE, player.getX(), player.getY() - 1, player.getZ(), 0, 0, 0);
+            BlockState steppingState = player.getSteppingBlockState();
+            if (steppingState.isIn(UTags.KICKS_UP_DUST)) {
+                ParticleUtils.spawnParticle(player.getWorld(), new BlockStateParticleEffect(UParticles.DUST_CLOUD, steppingState), player.getBlockPos().down().toCenterPos(), Vec3d.ZERO);
+            }
 
             iplayer.subtractEnergyCost(rad);
             iplayer.asEntity().addExhaustion(3);
@@ -217,6 +224,12 @@ public class EarthPonyStompAbility implements Ability<Hit> {
             }
         } else {
             w.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
+        }
+
+        if (state.isIn(UTags.KICKS_UP_DUST)) {
+            if (w.random.nextInt(4) == 0 && w.isAir(pos.up()) && w.getFluidState(pos.up()).isEmpty()) {
+                ParticleUtils.spawnParticle(w, new BlockStateParticleEffect(UParticles.DUST_CLOUD, state), pos.up().toCenterPos(), VecHelper.supply(() -> w.random.nextTriangular(0, 0.1F)));
+            }
         }
     }
 

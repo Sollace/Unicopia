@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.particle;
 import com.minelittlepony.unicopia.Unicopia;
 
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
+import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.registry.Registry;
@@ -13,6 +14,7 @@ public interface UParticles {
     ParticleType<MagicParticleEffect> UNICORN_MAGIC = register("unicorn_magic", FabricParticleTypes.complex(MagicParticleEffect.FACTORY));
     DefaultParticleType CHANGELING_MAGIC = register("changeling_magic", FabricParticleTypes.simple());
     DefaultParticleType BUBBLE = register("bubble", FabricParticleTypes.simple());
+    ParticleType<BlockStateParticleEffect> DUST_CLOUD = register("dust_cloud", FabricParticleTypes.complex(BlockStateParticleEffect.PARAMETERS_FACTORY));
 
     ParticleType<OrientedBillboardParticleEffect> RAINBOOM_RING = register("rainboom_ring", FabricParticleTypes.complex(OrientedBillboardParticleEffect.FACTORY));
     ParticleType<TargetBoundParticleEffect> RAINBOOM_TRAIL = register("rainboom_trail", FabricParticleTypes.complex(TargetBoundParticleEffect.FACTORY));

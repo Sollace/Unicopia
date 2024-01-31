@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.block.cloud.CloudChestBlock;
 import com.minelittlepony.unicopia.client.particle.ChangelingMagicParticle;
 import com.minelittlepony.unicopia.client.particle.CloudsEscapingParticle;
 import com.minelittlepony.unicopia.client.particle.DiskParticle;
+import com.minelittlepony.unicopia.client.particle.DustCloudParticle;
 import com.minelittlepony.unicopia.client.particle.FloatingBubbleParticle;
 import com.minelittlepony.unicopia.client.particle.GroundPoundParticle;
 import com.minelittlepony.unicopia.client.particle.HealthDrainParticle;
@@ -80,6 +81,7 @@ public interface URenderers {
         ParticleFactoryRegistry.getInstance().register(UParticles.GROUND_POUND, GroundPoundParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.CLOUDS_ESCAPING, CloudsEscapingParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.LIGHTNING_BOLT, LightningBoltParticle::new);
+        ParticleFactoryRegistry.getInstance().register(UParticles.DUST_CLOUD, DustCloudParticle::new);
 
         AccessoryFeatureRenderer.register(
                 BraceletFeatureRenderer::new, AmuletFeatureRenderer::new, GlassesFeatureRenderer::new,
