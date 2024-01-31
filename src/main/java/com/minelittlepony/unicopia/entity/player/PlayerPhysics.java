@@ -40,6 +40,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryKeys;
@@ -564,10 +565,14 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         entity.calculateDimensions();
 
         if (entity.isOnGround() || !force) {
-            Supplier<Vec3d> pos = VecHelper.sphere(pony.asWorld().getRandom(), 0.5D);
-            Supplier<Vec3d> vel = VecHelper.sphere(pony.asWorld().getRandom(), 0.15D);
-            pony.spawnParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, pos, vel, 5);
-            pony.spawnParticles(ParticleTypes.CLOUD, pos, vel, 5);
+            BlockState steppingState = pony.asEntity().getSteppingBlockState();
+            if (steppingState.isIn(UTags.KICKS_UP_DUST)) {
+                pony.addParticle(new BlockStateParticleEffect(UParticles.DUST_CLOUD, steppingState), pony.getOrigin().down().toCenterPos(), Vec3d.ZERO);
+            } else {
+                Supplier<Vec3d> pos = VecHelper.sphere(pony.asWorld().getRandom(), 0.5D);
+                Supplier<Vec3d> vel = VecHelper.sphere(pony.asWorld().getRandom(), 0.015D);
+                pony.spawnParticles(ParticleTypes.CLOUD, pos, vel, 5);
+            }
         }
     }
 
