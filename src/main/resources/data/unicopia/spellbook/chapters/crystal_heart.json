@@ -8,7 +8,7 @@
         "title": "gui.unicopia.spellbook.chapter.artefacts.p1.title",
         "level": 0,
         "elements": [
-          { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/crystal_heart.png" }
+          { "x": 15, "y": -10, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/crystal_heart.png" }
         ]
       },
       {

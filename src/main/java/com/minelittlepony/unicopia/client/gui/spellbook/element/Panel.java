@@ -24,15 +24,16 @@ class Panel extends ScrollContainer {
         getContentPadding().top = 15;
         page = content.getPage(pageIndex);
 
-        margin.left = screen.getX() + 30;
-        margin.top = screen.getY() + 15;
-        margin.right = screen.width - screen.getBackgroundWidth() - screen.getX() + 20;
+        int width = screen.getBackgroundWidth() / 2;
+        margin.top = screen.getY() + 35;
         margin.bottom = screen.height - screen.getBackgroundHeight() - screen.getY() + 40;
+        margin.left = screen.getX() + 30;
 
         if (pageIndex % 2 == 1) {
-            margin.left += screen.getBackgroundWidth() / 2 - 10;
+            margin.left += screen.getBackgroundWidth() / 2 - 20;
+            margin.right = screen.getX() + 20;
         } else {
-            margin.right += screen.getBackgroundWidth() / 2;
+            margin.right = screen.width - width - margin.left + 30;
         }
         init(() -> {});
         screen.addDrawable(this);
@@ -63,4 +64,15 @@ class Panel extends ScrollContainer {
 
     @Override
     protected void drawDecorations(DrawContext context, int mouseX, int mouseY, float partialTicks) { }
+
+    @Override
+    protected void drawOverlays(DrawContext context, int mouseX, int mouseY, float partialTicks) {
+        context.getMatrices().push();
+        this.getBounds().translate(context.getMatrices());
+        page.ifPresent(p -> {
+            p.drawHeader(context, mouseX, mouseY);
+        });
+        context.getMatrices().pop();
+        super.drawOverlays(context, mouseX, mouseY, partialTicks);
+    }
 }

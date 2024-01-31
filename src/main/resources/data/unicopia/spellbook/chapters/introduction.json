@@ -73,7 +73,7 @@
         "title": "gui.unicopia.spellbook.chapter.introduction.p8.title",
         "level": 1,
         "elements": [
-          { "x": 127, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/item/botched_gem.png" },
+          { "x": 127, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/item/botched_gem.png" },
           "gui.unicopia.spellbook.chapter.introduction.p8.1.body",
           "gui.unicopia.spellbook.chapter.introduction.p8.2.body",
           "gui.unicopia.spellbook.chapter.introduction.p8.3.body"

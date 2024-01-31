@@ -139,6 +139,19 @@ public class DynamicContent implements Content {
             compiled = false;
         }
 
+        public void drawHeader(DrawContext context, int mouseX, int mouseY) {
+
+            if (elements.isEmpty()) {
+                return;
+            }
+            boolean needsMoreXp = level < 0 || Pony.of(MinecraftClient.getInstance().player).getLevel().get() < level;
+            int x = bounds.left;
+            int y = bounds.top - 16;
+
+            DrawableUtil.drawScaledText(context, needsMoreXp ? UNKNOWN : title, x, y, 1.3F, headerColor);
+            DrawableUtil.drawScaledText(context, Text.translatable("gui.unicopia.spellbook.page.level_requirement", level < 0 ? "???" : "" + (level + 1)).formatted(Formatting.DARK_GREEN), x, y + 12, 0.8F, headerColor);
+        }
+
         @Override
         public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
 
@@ -149,25 +162,24 @@ public class DynamicContent implements Content {
             if (!compiled) {
                 compiled = true;
                 int relativeY = 0;
+                int textHeight = 0;
                 for (PageElement element : elements.stream().filter(PageElement::isInline).toList()) {
                     element.compile(relativeY, container);
                     relativeY += element.bounds().height;
+                    if (element instanceof TextBlock) {
+                        textHeight += element.bounds().height;
+                    }
                 }
-                bounds.height = relativeY;
+                bounds.height = textHeight == 0 ? 0 : relativeY;
             }
 
-            boolean needsMoreXp = level < 0 || Pony.of(MinecraftClient.getInstance().player).getLevel().get() < level;
-
             MatrixStack matrices = context.getMatrices();
-            DrawableUtil.drawScaledText(context, needsMoreXp ? UNKNOWN : title, bounds.left, bounds.top - 10, 1.3F, headerColor);
-            DrawableUtil.drawScaledText(context, Text.translatable("gui.unicopia.spellbook.page.level_requirement", level < 0 ? "???" : "" + (level + 1)).formatted(Formatting.DARK_GREEN), bounds.left, bounds.top - 10 + 12, 0.8F, headerColor);
 
             matrices.push();
-            matrices.translate(0, 16, 0);
+            matrices.translate(0, -8, 0);
             elements.stream().filter(PageElement::isFloating).forEach(element -> {
-                Bounds bounds = element.bounds();
                 matrices.push();
-                bounds.translate(matrices);
+                element.bounds().translate(matrices);
                 element.draw(context, mouseX, mouseY, container);
                 matrices.pop();
             });
