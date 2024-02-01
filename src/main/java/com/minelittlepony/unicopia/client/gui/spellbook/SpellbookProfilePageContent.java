@@ -72,7 +72,7 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
         float currentScaledLevel = pony.getLevel().getScaled(1);
         float currentCorruption = pony.getCorruption().getScaled(1);
 
-        DrawableUtil.drawScaledText(context, pony.asEntity().getName(), SpellbookScreen.TITLE_X, y, 1.3F, SpellbookScreen.TITLE_COLOR);
+        DrawableUtil.drawScaledText(context, pony.asEntity().getName(), SpellbookScreen.TITLE_X, y, 1.3F, MagicText.getColor());
         DrawableUtil.drawScaledText(context, ExperienceGroup.forLevel(
                 currentScaledLevel,
                 currentCorruption
@@ -89,7 +89,7 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
         matrices.push();
         matrices.translate(screen.getBackgroundWidth() / 2 + SpellbookScreen.TITLE_X - 10, y, 0);
         matrices.scale(1.3F, 1.3F, 1);
-        context.drawText(font, SpellbookCraftingPageContent.INVENTORY_TITLE, 0, 0, SpellbookScreen.TITLE_COLOR, false);
+        context.drawText(font, SpellbookCraftingPageContent.INVENTORY_TITLE, 0, 0, MagicText.getColor(), false);
         matrices.pop();
 
         Bounds bounds = screen.getFrameBounds();

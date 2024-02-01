@@ -5,6 +5,7 @@ import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
+import com.minelittlepony.unicopia.client.gui.MagicText;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.item.URecipes;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -42,13 +43,10 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
 
     @Override
     public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
-
-        int headerColor = mouseY % 255;
-
-        DrawableUtil.drawScaledText(context, state.getOffset() == 0 ? INVENTORY_TITLE : RECIPES_TITLE, screen.getFrameBounds().left + screen.getFrameBounds().width / 2 + 20, SpellbookScreen.TITLE_Y, 1.3F, headerColor);
+        DrawableUtil.drawScaledText(context, state.getOffset() == 0 ? INVENTORY_TITLE : RECIPES_TITLE, screen.getFrameBounds().left + screen.getFrameBounds().width / 2 + 20, SpellbookScreen.TITLE_Y, 1.3F, MagicText.getColor());
 
         Text pageText = Text.translatable("%s/%s", state.getOffset() + 1, TOTAL_PAGES);
-        context.drawText(textRenderer, pageText, (int)(337 - textRenderer.getWidth(pageText) / 2F), 190, headerColor, false);
+        context.drawText(textRenderer, pageText, (int)(337 - textRenderer.getWidth(pageText) / 2F), 190, MagicText.getColor(), false);
     }
 
     @Override

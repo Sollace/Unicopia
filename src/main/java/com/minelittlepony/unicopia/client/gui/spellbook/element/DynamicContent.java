@@ -5,6 +5,7 @@ import java.util.*;
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
+import com.minelittlepony.unicopia.client.gui.MagicText;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Content;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Drawable;
@@ -12,7 +13,6 @@ import com.minelittlepony.unicopia.container.SpellbookChapterLoader.Flow;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.PacketByteBuf;
@@ -39,11 +39,10 @@ public class DynamicContent implements Content {
     @Override
     public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
         int pageIndex = state.getOffset() * 2;
-        TextRenderer font = MinecraftClient.getInstance().textRenderer;
-        headerColor = mouseY % 255;
+        MinecraftClient client = MinecraftClient.getInstance();
 
         Text pageText = Text.translatable("%s/%s", (pageIndex / 2) + 1, (int)Math.ceil(pages.size() / 2F));
-        context.drawText(font, pageText, (int)(337 - font.getWidth(pageText) / 2F), 190, headerColor, false);
+        context.drawText(client.textRenderer, pageText, (int)(337 - client.textRenderer.getWidth(pageText) / 2F), 190, MagicText.getColor(), false);
     }
 
     @Override
@@ -148,8 +147,8 @@ public class DynamicContent implements Content {
             int x = bounds.left;
             int y = bounds.top - 16;
 
-            DrawableUtil.drawScaledText(context, needsMoreXp ? UNKNOWN : title, x, y, 1.3F, headerColor);
-            DrawableUtil.drawScaledText(context, Text.translatable("gui.unicopia.spellbook.page.level_requirement", level < 0 ? "???" : "" + (level + 1)).formatted(Formatting.DARK_GREEN), x, y + 12, 0.8F, headerColor);
+            DrawableUtil.drawScaledText(context, needsMoreXp ? UNKNOWN : title, x, y, 1.3F, MagicText.getColor());
+            DrawableUtil.drawScaledText(context, Text.translatable("gui.unicopia.spellbook.page.level_requirement", level < 0 ? "???" : "" + (level + 1)).formatted(Formatting.DARK_GREEN), x, y + 12, 0.8F, MagicText.getColor());
         }
 
         @Override
