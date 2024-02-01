@@ -30,16 +30,10 @@ public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock,
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (state.get(PERSISTENT)
-                || oldState.isOf(state.getBlock())
-                || oldState.isOf(UBlocks.ZAP_LEAVES)
-                || oldState.isOf(UBlocks.FLOWERING_ZAP_LEAVES)
-                || oldState.isOf(UBlocks.ZAP_LEAVES_PLACEHOLDER)
-                || !(world instanceof ServerWorld sw)) {
+        if (state.get(PERSISTENT) || oldState.isOf(state.getBlock())) {
             return;
         }
-
-        updateStage(state, sw, pos);
+        updateStage(state, world, pos);
     }
 
     @Override

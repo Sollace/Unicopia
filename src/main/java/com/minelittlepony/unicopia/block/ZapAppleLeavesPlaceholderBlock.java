@@ -22,9 +22,7 @@ public class ZapAppleLeavesPlaceholderBlock extends AirBlock implements ZapStage
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (world instanceof ServerWorld sw) {
-            updateStage(state, sw, pos);
-        }
+        updateStage(state, world, pos);
     }
 
     @Deprecated

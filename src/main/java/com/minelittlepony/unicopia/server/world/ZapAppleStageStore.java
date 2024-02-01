@@ -5,13 +5,10 @@ import java.util.stream.StreamSupport;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.block.UBlocks;
-import com.minelittlepony.unicopia.block.ZapAppleLeavesBlock;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.Tickable;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.nbt.*;
@@ -156,24 +153,9 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
             return VALUES[MathHelper.clamp(id, 0, VALUES.length)];
         }
 
-        public boolean mustChangeIntoInstantly(Stage to) {
-            return this != to;// && (this == HIBERNATING || to == HIBERNATING);
-        }
-
-        public BlockState getNewState(BlockState currentState) {
-            if (this == ZapAppleStageStore.Stage.HIBERNATING) {
-                return UBlocks.ZAP_LEAVES_PLACEHOLDER.getDefaultState();
-            }
-            if (this == ZapAppleStageStore.Stage.FLOWERING) {
-                return UBlocks.FLOWERING_ZAP_LEAVES.getDefaultState();
-            }
-            return UBlocks.ZAP_LEAVES.getDefaultState().with(ZapAppleLeavesBlock.STAGE, this);
-        }
-
         @Override
         public String asString() {
             return name().toLowerCase(Locale.ROOT);
         }
     }
-
 }

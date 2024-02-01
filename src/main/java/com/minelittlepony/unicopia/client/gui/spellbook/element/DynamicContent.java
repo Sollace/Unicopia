@@ -30,8 +30,6 @@ public class DynamicContent implements Content {
     private final Panel leftPanel = new Panel(this);
     private final Panel rightPanel = new Panel(this);
 
-    private int headerColor;
-
     public DynamicContent(PacketByteBuf buffer) {
         pages = buffer.readList(Page::new);
     }
