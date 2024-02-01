@@ -156,12 +156,8 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
             return VALUES[MathHelper.clamp(id, 0, VALUES.length)];
         }
 
-        public boolean mustChangeInto(Stage to) {
-            return this != to && (getNext() == to || this == HIBERNATING || to == HIBERNATING);
-        }
-
         public boolean mustChangeIntoInstantly(Stage to) {
-            return this != to && (this == HIBERNATING || to == HIBERNATING);
+            return this != to;// && (this == HIBERNATING || to == HIBERNATING);
         }
 
         public BlockState getNewState(BlockState currentState) {
