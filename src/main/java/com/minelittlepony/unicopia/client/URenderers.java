@@ -116,6 +116,7 @@ public interface URenderers {
         PolearmRenderer.register(UItems.WOODEN_POLEARM, UItems.STONE_POLEARM, UItems.IRON_POLEARM, UItems.GOLDEN_POLEARM, UItems.DIAMOND_POLEARM, UItems.NETHERITE_POLEARM);
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity, seed) -> EnchantableItem.isEnchanted(stack) ? EnchantableItem.getSpellKey(stack).getAffinity().getAlignment() : 0);
         ModelPredicateProviderRegistry.register(UItems.ROCK_CANDY, new Identifier("count"), (stack, world, entity, seed) -> stack.getCount() / (float)stack.getMaxCount());
+        ModelPredicateProviderRegistry.register(Unicopia.id("zap_cycle"), (stack, world, entity, seed) -> UnicopiaClient.getInstance().getZapStageDelta());
 
         ColorProviderRegistry.BLOCK.register(URenderers::getTintedBlockColor, TintedBlock.REGISTRY.stream().toArray(Block[]::new));
         ColorProviderRegistry.ITEM.register((stack, i) -> getTintedBlockColor(Block.getBlockFromItem(stack.getItem()).getDefaultState(), null, null, i), TintedBlock.REGISTRY.stream().map(Block::asItem).filter(i -> i != Items.AIR).toArray(Item[]::new));

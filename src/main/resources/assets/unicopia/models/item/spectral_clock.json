@@ -1,0 +1,29 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "unicopia:item/spectral_clock_0"
+    },
+    "overrides": [
+      { "predicate": { "unicopia:zap_cycle": 0.00}, "model": "unicopia:item/spectral_clock" },
+      { "predicate": { "unicopia:zap_cycle": 0.05}, "model": "unicopia:item/spectral_clock_1" },
+      { "predicate": { "unicopia:zap_cycle": 0.10}, "model": "unicopia:item/spectral_clock_2" },
+      { "predicate": { "unicopia:zap_cycle": 0.15}, "model": "unicopia:item/spectral_clock_3" },
+      { "predicate": { "unicopia:zap_cycle": 0.20}, "model": "unicopia:item/spectral_clock_greening_0" },
+      { "predicate": { "unicopia:zap_cycle": 0.25}, "model": "unicopia:item/spectral_clock_greening_1" },
+      { "predicate": { "unicopia:zap_cycle": 0.30}, "model": "unicopia:item/spectral_clock_greening_2" },
+      { "predicate": { "unicopia:zap_cycle": 0.35}, "model": "unicopia:item/spectral_clock_greening_3" },
+      { "predicate": { "unicopia:zap_cycle": 0.40}, "model": "unicopia:item/spectral_clock_flowering_0" },
+      { "predicate": { "unicopia:zap_cycle": 0.45}, "model": "unicopia:item/spectral_clock_flowering_1" },
+      { "predicate": { "unicopia:zap_cycle": 0.50}, "model": "unicopia:item/spectral_clock_flowering_2" },
+      { "predicate": { "unicopia:zap_cycle": 0.55}, "model": "unicopia:item/spectral_clock_flowering_3" },
+      { "predicate": { "unicopia:zap_cycle": 0.60}, "model": "unicopia:item/spectral_clock_fruiting_0" },
+      { "predicate": { "unicopia:zap_cycle": 0.65}, "model": "unicopia:item/spectral_clock_fruiting_1" },
+      { "predicate": { "unicopia:zap_cycle": 0.70}, "model": "unicopia:item/spectral_clock_fruiting_2" },
+      { "predicate": { "unicopia:zap_cycle": 0.75}, "model": "unicopia:item/spectral_clock_fruiting_3" },
+      { "predicate": { "unicopia:zap_cycle": 0.80}, "model": "unicopia:item/spectral_clock_ripe_0" },
+      { "predicate": { "unicopia:zap_cycle": 0.85}, "model": "unicopia:item/spectral_clock_ripe_1" },
+      { "predicate": { "unicopia:zap_cycle": 0.90}, "model": "unicopia:item/spectral_clock_ripe_2" },
+      { "predicate": { "unicopia:zap_cycle": 0.95}, "model": "unicopia:item/spectral_clock_ripe_3" },
+      { "predicate": { "unicopia:zap_cycle": 1.00}, "model": "unicopia:item/spectral_clock" }
+    ]
+}

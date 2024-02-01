@@ -5,6 +5,8 @@ import java.util.stream.StreamSupport;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.network.Channel;
+import com.minelittlepony.unicopia.network.MsgZapAppleStage;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.Tickable;
@@ -20,10 +22,13 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
 
 public class ZapAppleStageStore extends PersistentState implements Tickable {
     private static final Identifier ID = Unicopia.id("zap_apple_stage");
+    static final long DAY_LENGTH = World.field_30969;
+    static final long MOON_PHASES = DimensionType.MOON_SIZES.length;
 
     public static ZapAppleStageStore get(World world) {
         return WorldOverlay.getPersistableStorage(world, ID, ZapAppleStageStore::new, ZapAppleStageStore::new);
@@ -32,7 +37,9 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
     private final World world;
 
     private Stage lastStage = Stage.HIBERNATING;
-    private int countdown;
+    private long stageDelta;
+    private long lastTime;
+
     private boolean stageChanged;
     private boolean playedMoonEffect;
     private int nextLightningEvent = 1200;
@@ -40,8 +47,8 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
     ZapAppleStageStore(World world, NbtCompound compound) {
         this(world);
         lastStage = Stage.VALUES[Math.max(0, compound.getInt("stage")) % Stage.VALUES.length];
+        stageDelta = compound.getLong("stageDelta");
         stageChanged = compound.getBoolean("stageChanged");
-        countdown = compound.getInt("countdown");
         playedMoonEffect = compound.getBoolean("playedMoonEffect");
         nextLightningEvent = compound.getInt("nextLightningEvent");
     }
@@ -55,32 +62,38 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
         if (!world.isDay()) {
             if (nextLightningEvent > 0) {
                 nextLightningEvent--;
-                markDirty();
             }
 
             if (!stageChanged && (lastStage != Stage.HIBERNATING || (world.getMoonPhase() == 0))) {
                 stageChanged = true;
-                if (countDay()) {
-                    lastStage = lastStage.getNext();
-                    countdown = 1;
-                    playedMoonEffect = false;
-                    markDirty();
-                    onStageChanged();
-                }
+                lastStage = lastStage.getNext();
+                stageDelta = 0;
+                playedMoonEffect = false;
+                sendUpdate();
             }
         } else if (stageChanged) {
             stageChanged = false;
-            markDirty();
         }
-    }
 
-    private boolean countDay() {
+        long timeOfDay = world.getTimeOfDay();
+        if (stageDelta != 0 && (timeOfDay < lastTime || timeOfDay > lastTime + 10)) {
+            long timeDifference = timeOfDay - lastTime;
+            Unicopia.LOGGER.info("Times a changing {}!", timeDifference);
+            while (timeDifference < 0) {
+                timeDifference += DAY_LENGTH;
+            }
+            stageDelta += timeDifference;
+            sendUpdate();
+        }
+        lastTime = timeOfDay;
+
+
+        stageDelta++;
         markDirty();
-        return countdown-- <= 0;
     }
 
-    protected void onStageChanged() {
-        //world.setRainGradient(0.5F);
+    protected void sendUpdate() {
+        Channel.SERVER_ZAP_STAGE.sendToAllPlayers(new MsgZapAppleStage(getStage(), stageDelta), world);
     }
 
     public void playMoonEffect(BlockPos pos) {
@@ -112,7 +125,6 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
 
     /**
      * Returns true during nights that the zap apples must change their states.
-     * @return
      */
     public boolean hasStageChanged() {
         return stageChanged;
@@ -125,28 +137,58 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
         return lastStage;
     }
 
+    public long getStageDelta() {
+        return stageDelta;
+    }
+
+    public float getStageProgress() {
+        return getStage().getStageProgress(getStageDelta());
+    }
+
+    public float getCycleProgress() {
+        return getStage().getCycleProgress(getStageDelta());
+    }
+
     @Override
     public NbtCompound writeNbt(NbtCompound compound) {
         compound.putInt("stage", lastStage.ordinal());
+        compound.putLong("stageDelta", stageDelta);
         compound.putBoolean("stageChanged", stageChanged);
-        compound.putInt("countdown", countdown);
         compound.putBoolean("playedMoonEffect", playedMoonEffect);
         compound.putInt("nextLightningEvent", nextLightningEvent);
         return compound;
     }
 
     public enum Stage implements StringIdentifiable {
-        HIBERNATING,
-        GREENING,
-        FLOWERING,
-        FRUITING,
-        RIPE;
+        HIBERNATING(MOON_PHASES * DAY_LENGTH),
+        GREENING(DAY_LENGTH),
+        FLOWERING(DAY_LENGTH),
+        FRUITING(DAY_LENGTH),
+        RIPE(DAY_LENGTH);
 
-        static final long DAY_LENGTH = 24000;
         static final Stage[] VALUES = values();
+
+        private final long duration;
+
+        Stage(long duration) {
+            this.duration = duration;
+        }
 
         public Stage getNext() {
             return byId((ordinal() + 1) % VALUES.length);
+        }
+
+        public Stage getPrevious() {
+            return byId(((ordinal() - 1) + VALUES.length) % VALUES.length);
+        }
+
+        public float getStageProgress(long time) {
+            return (time % duration) / (float)duration;
+        }
+
+        public float getCycleProgress(long time) {
+            float ordinal = ordinal();
+            return MathHelper.lerp(getStageProgress(time), ordinal, ordinal + 1) / 5F;
         }
 
         public static Stage byId(int id) {
