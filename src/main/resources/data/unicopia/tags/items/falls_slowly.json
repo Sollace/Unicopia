@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "minecraft:feather",
-    "#unicopia:magic_feathers"
+    "#unicopia:magic_feathers",
+    "unicopia:cloud_lump"
   ]
 }

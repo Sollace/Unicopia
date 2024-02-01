@@ -86,4 +86,8 @@ public class InteractionManager {
     public PlayerEntity createPlayer(World world, GameProfile profile) {
         return new DummyPlayerEntity(world, profile);
     }
+
+    public void sendPlayerLookAngles(PlayerEntity player) {
+
+    }
 }

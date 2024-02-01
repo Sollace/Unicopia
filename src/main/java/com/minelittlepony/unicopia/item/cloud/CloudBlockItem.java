@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.item.cloud;
 
+import com.minelittlepony.unicopia.InteractionManager;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,7 +32,7 @@ extends BlockItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-
+        InteractionManager.instance().sendPlayerLookAngles(user);
         Vec3d targetPos = user.getEyePos().add(user.getRotationVec(1).multiply(1, 1.5, 1).normalize().multiply(2));
         ItemPlacementContext context = new ItemPlacementContext(user, hand, user.getStackInHand(hand), new BlockHitResult(
             targetPos,

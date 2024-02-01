@@ -26,6 +26,7 @@ import com.mojang.authlib.GameProfile;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.sound.AggressiveBeeSoundInstance;
 import net.minecraft.client.sound.MovingMinecartSoundInstance;
 import net.minecraft.client.sound.PassiveBeeSoundInstance;
@@ -37,6 +38,7 @@ import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
@@ -151,5 +153,12 @@ public class ClientInteractionManager extends InteractionManager {
     @Override
     public ParticleSpawner createBoundParticle(UUID id) {
         return new ClientBoundParticleSpawner(id);
+    }
+
+    @Override
+    public void sendPlayerLookAngles(PlayerEntity player) {
+        if (player instanceof ClientPlayerEntity c) {
+            c.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(player.getYaw(), player.getPitch(), player.isOnGround()));
+        }
     }
 }
