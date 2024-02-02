@@ -42,23 +42,9 @@
         "title": "gui.unicopia.spellbook.chapter.artefacts.torn_page.title",
         "level": 0,
         "elements": [
-          {
-            "text": "",
-            "extra": [
-              { "text": "aaa", "obfuscated": "true" },
-              { "text": "ential c" },
-              { "text": "a", "obfuscated": "true" },
-              { "text": "r" },
-              { "text": "aaa", "obfuscated": "true" },
-              { "text": "nial purpose" },
-              { "text": "aaa", "obfuscated": "true" },
-              { "text": "?" }
-            ]
-          },
-          {
-            "text": "Aasa sasa fwefsd q43rgfd wqklmsdfl as, klasn.", "obfuscated": "true"
-          },
+          "gui.unicopia.spellbook.chapter.artefacts.torn_page.1.body",
           "gui.unicopia.spellbook.chapter.artefacts.torn_page.2.body",
+          "gui.unicopia.spellbook.chapter.artefacts.torn_page.3.body",
           {
             "ingredients": [
               { "count": 2, "item": "minecraft:end_rod" },
