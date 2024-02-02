@@ -1088,7 +1088,7 @@
   "gui.unicopia.spellbook.chapter.dark_magic.p27.3.body": "I feel myself being drained any time I'm around it. Is it... feeding on me?",
   "gui.unicopia.spellbook.chapter.dark_magic.p27.4.body": "No, it couldn't be.",
   "gui.unicopia.spellbook.chapter.dark_magic.p28.1.body": "I found this incantation under some old notes whilst clearing out the lab. It's... simplistic and hard to manage, but it gets the job done.",
-  "gui.unicopia.spellbook.chapter.dark_magic.p27.2.body": "* Add the power trait to increase the effect's range",
+  "gui.unicopia.spellbook.chapter.dark_magic.dispel_evil.modifier.1": "* Add the power trait to increase the effect's range",
 
   "gui.unicopia.spellbook.chapter.otherworldly.p1.title": "Ch.6 The Beyond",
   "gui.unicopia.spellbook.chapter.otherworldly.p2.title": "2nd Croptober '12",
