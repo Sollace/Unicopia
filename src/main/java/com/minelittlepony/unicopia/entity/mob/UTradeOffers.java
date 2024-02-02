@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.entity.effect.UPotions;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.RegistryUtils;
@@ -14,7 +13,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.potion.PotionUtil;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Util;
@@ -22,7 +20,6 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.village.VillagerProfession;
-import net.minecraft.village.TradeOffers.Factory;
 
 public interface UTradeOffers {
     static void bootstrap() {
@@ -59,10 +56,6 @@ public interface UTradeOffers {
             factories.add(buy(UItems.CRYSTAL_HEART, 1, UItems.MUSIC_DISC_CRUSADE, 1, 10, 6, 0.08F));
             factories.add(buy(UItems.PEGASUS_AMULET, 1, UItems.ALICORN_AMULET, 1, 2, 6, 0.05F));
             factories.add(buyForEmeralds(UItems.FRIENDSHIP_BRACELET, 2, 1, 10, 7, 0.17F));
-            factories.add(new SellPotionHoldingItemFactory(
-                    new Item[] { Items.ARROW, Items.GLASS_BOTTLE, Items.GLASS_BOTTLE },
-                    new Item[] { Items.TIPPED_ARROW, Items.POTION, Items.SPLASH_POTION },
-                    5, 5, 2, 12, 30));
         });
     }
 
@@ -103,19 +96,6 @@ public interface UTradeOffers {
             TradeOffer offer = factory.create(entity, rng);
 
             return new TradeOffer(offer.getOriginalFirstBuyItem(), offer.getSecondBuyItem(), UItems.FILLED_JAR.withContents(offer.getSellItem()), offer.getUses(), offer.getMaxUses(), offer.getMerchantExperience(), offer.getPriceMultiplier(), offer.getDemandBonus());
-        }
-    }
-
-    record SellPotionHoldingItemFactory (Item[] secondBuy, Item[] tippedArrow, int secondCount, int sellCount, int price, int maxUses, int experience) implements Factory {
-        @Override
-        public TradeOffer create(Entity entity, Random random) {
-            int index = random.nextInt(tippedArrow.length);
-            return new TradeOffer(
-                new ItemStack(Items.EMERALD, price),
-                new ItemStack(secondBuy[index], secondCount),
-                PotionUtil.setPotion(new ItemStack(tippedArrow[index], sellCount), UPotions.REGISTRY.get(random.nextInt(UPotions.REGISTRY.size()))),
-                maxUses, experience, 0.05f
-            );
         }
     }
 }

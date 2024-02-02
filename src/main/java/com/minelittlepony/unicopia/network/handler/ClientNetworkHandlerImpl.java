@@ -36,8 +36,9 @@ public class ClientNetworkHandlerImpl {
         Channel.SERVER_BLOCK_DESTRUCTION.receiver().addPersistentListener(this::handleBlockDestruction);
         Channel.CANCEL_PLAYER_ABILITY.receiver().addPersistentListener(this::handleCancelAbility);
         Channel.UNLOCK_TRAITS.receiver().addPersistentListener(this::handleUnlockTraits);
-        Channel.SERVER_RESOURCES_SEND.receiver().addPersistentListener(this::handleServerResources);
+        Channel.SERVER_RESOURCES.receiver().addPersistentListener(this::handleServerResources);
         Channel.SERVER_SKY_ANGLE.receiver().addPersistentListener(this::handleSkyAngle);
+        Channel.SERVER_ZAP_STAGE.receiver().addPersistentListener(this::handleZapStage);
         Channel.SERVER_PLAYER_ANIMATION_CHANGE.receiver().addPersistentListener(this::handlePlayerAnimation);
         Channel.SERVER_REQUEST_PLAYER_LOOK.receiver().addPersistentListener(this::handleCasterLookRequest);
     }
@@ -92,6 +93,10 @@ public class ClientNetworkHandlerImpl {
 
     private void handleSkyAngle(PlayerEntity sender, MsgSkyAngle packet) {
         UnicopiaClient.getInstance().tangentalSkyAngle.update(packet.tangentalSkyAngle(), 200);
+    }
+
+    private void handleZapStage(PlayerEntity sender, MsgZapAppleStage packet) {
+        UnicopiaClient.getInstance().setZapAppleStage(packet.stage(), packet.delta());
     }
 
     @SuppressWarnings("unchecked")

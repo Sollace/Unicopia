@@ -13,10 +13,6 @@ import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgCasterLookRequest;
-import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
-import com.minelittlepony.unicopia.particle.ParticleHandle;
-import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
@@ -24,6 +20,7 @@ import net.minecraft.nbt.*;
 import net.minecraft.registry.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -41,9 +38,10 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     private RegistryKey<World> dimension;
 
     /**
-     * The visual effect
+     * ID of the placed counterpart of this spell.
      */
-    private final ParticleHandle particlEffect = new ParticleHandle();
+    @Nullable
+    private UUID placedSpellId;
 
     /**
      * The cast spell entity
@@ -58,6 +56,13 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     public float pitch;
     public float yaw;
 
+    private int prevAge;
+    private int age;
+
+    private boolean dead;
+    private int prevDeathTicks;
+    private int deathTicks;
+
     private Optional<Vec3d> position = Optional.empty();
 
     public PlaceableSpell(CustomisedSpellType<?> type) {
@@ -69,23 +74,42 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         return this;
     }
 
+    public float getAge(float tickDelta) {
+        return MathHelper.lerp(tickDelta, prevAge, age);
+    }
+
+    public float getScale(float tickDelta) {
+        float add = MathHelper.clamp(getAge(tickDelta) / 25F, 0, 1);
+        float subtract = dead ? 1 - (MathHelper.lerp(tickDelta, prevDeathTicks, deathTicks) / 20F) : 0;
+        return MathHelper.clamp(add - subtract, 0, 1);
+    }
+
+    @Override
+    public boolean isDying() {
+        return dead && deathTicks > 0;
+    }
+
+    @Override
+    public void setDead() {
+        super.setDead();
+        dead = true;
+        deathTicks = 20;
+    }
+
+    @Override
+    public boolean isDead() {
+        return dead && deathTicks <= 0;
+    }
+
     @Override
     public Collection<Spell> getDelegates() {
         return List.of(spell);
     }
 
     @Override
-    public void setDead() {
-        super.setDead();
-        particlEffect.destroy();
-    }
-
-    @Override
     public boolean tick(Caster<?> source, Situation situation) {
-
         if (situation == Situation.BODY) {
             if (!source.isClient()) {
-
                 if (dimension == null) {
                     dimension = source.asWorld().getRegistryKey();
                     if (source instanceof Pony) {
@@ -105,20 +129,16 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
         if (situation == Situation.GROUND_ENTITY) {
             if (!source.isClient()) {
-                Ether ether = Ether.get(source.asWorld());
-                if (ether.getEntry(getType(), source).isEmpty()) {
+                if (Ether.get(source.asWorld()).get(this, source) == null) {
                     setDead();
                     return false;
                 }
             }
 
-            if (spell instanceof PlacementDelegate delegate) {
-                delegate.updatePlacement(source, this);
+            prevAge = age;
+            if (age < 25) {
+                age++;
             }
-
-            getParticleEffectAttachment(source).ifPresent(p -> {
-                p.setAttribute(Attachment.ATTR_COLOR, spell.getType().getColor());
-            });
 
             return super.tick(source, Situation.GROUND);
         }
@@ -126,8 +146,14 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         return !isDead();
     }
 
+    @Override
+    public void tickDying(Caster<?> caster) {
+        prevDeathTicks = deathTicks;
+        deathTicks--;
+    }
+
     private void checkDetachment(Caster<?> source, EntityValues<?> target) {
-        if (getWorld(source).map(Ether::get).flatMap(ether -> ether.getEntry(getType(), target.uuid())).isEmpty()) {
+        if (getWorld(source).map(Ether::get).map(ether -> ether.get(getType(), target, placedSpellId)).isEmpty()) {
             setDead();
         }
     }
@@ -143,7 +169,8 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         entity.getSpellSlot().put(copy);
         entity.setCaster(source);
         entity.getWorld().spawnEntity(entity);
-        Ether.get(entity.getWorld()).put(getType(), entity);
+        placedSpellId = copy.getUuid();
+        Ether.get(entity.getWorld()).getOrCreate(copy, entity);
 
         castEntity.set(entity);
         setDirty();
@@ -174,8 +201,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         if (!source.isClient()) {
             castEntity.getTarget().ifPresent(target -> {
                 getWorld(source).map(Ether::get)
-                    .flatMap(ether -> ether.getEntry(getType(), target.uuid()))
-                    .ifPresent(Ether.Entry::markDead);
+                    .ifPresent(ether -> ether.remove(getType(), target.uuid()));
             });
             castEntity.set(null);
             getSpellEntity(source).ifPresent(e -> {
@@ -183,7 +209,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
             });
 
             if (source.asEntity() instanceof CastSpellEntity spellcast) {
-                Ether.get(source.asWorld()).remove(getType(), source);
+                Ether.get(source.asWorld()).remove(this, source);
             }
         }
         super.onDestroyed(source);
@@ -197,12 +223,6 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         return castEntity.getTarget().map(EntityValues::pos);
     }
 
-    public Optional<Attachment> getParticleEffectAttachment(Caster<?> source) {
-        return particlEffect.update(getUuid(), source, spawner -> {
-            spawner.addParticle(new OrientedBillboardParticleEffect(UParticles.MAGIC_RUNES, pitch + 90, yaw), Vec3d.ZERO, Vec3d.ZERO);
-        });
-    }
-
     protected Optional<World> getWorld(Caster<?> source) {
         return Optional.ofNullable(dimension)
                 .map(dim -> source.asWorld().getServer().getWorld(dim));
@@ -211,11 +231,17 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
+        compound.putBoolean("dead", dead);
+        compound.putInt("deathTicks", deathTicks);
+        compound.putInt("age", age);
         compound.putFloat("pitch", pitch);
         compound.putFloat("yaw", yaw);
         position.ifPresent(pos -> {
             compound.put("position", NbtSerialisable.writeVector(pos));
         });
+        if (placedSpellId != null) {
+            compound.putUuid("placedSpellId", placedSpellId);
+        }
         if (dimension != null) {
             compound.putString("dimension", dimension.getValue().toString());
         }
@@ -226,9 +252,13 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
+        dead = compound.getBoolean("dead");
+        deathTicks = compound.getInt("deathTicks");
+        age = compound.getInt("age");
         pitch = compound.getFloat("pitch");
         yaw = compound.getFloat("yaw");
         position = compound.contains("position") ? Optional.of(NbtSerialisable.readVector(compound.getList("position", NbtElement.FLOAT_TYPE))) : Optional.empty();
+        placedSpellId = compound.containsUuid("placedSpellId") ? compound.getUuid("placedSpellId") : null;
         if (compound.contains("dimension", NbtElement.STRING_TYPE)) {
             Identifier id = Identifier.tryParse(compound.getString("dimension"));
             if (id != null) {
@@ -257,9 +287,6 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     }
 
     public interface PlacementDelegate {
-
         void onPlaced(Caster<?> source, PlaceableSpell parent, CastSpellEntity entity);
-
-        void updatePlacement(Caster<?> source, PlaceableSpell parent);
     }
 }

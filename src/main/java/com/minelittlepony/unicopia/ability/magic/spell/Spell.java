@@ -61,6 +61,8 @@ public interface Spell extends NbtSerialisable, Affine {
      */
     boolean isDead();
 
+    boolean isDying();
+
     /**
      * Returns true if this effect has changes that need to be sent to the client.
      */
@@ -68,6 +70,7 @@ public interface Spell extends NbtSerialisable, Affine {
 
     /**
      * Applies this spell to the supplied caster.
+     * @param caster    The caster to apply the spell to
      */
     default boolean apply(Caster<?> caster) {
         caster.getSpellSlot().put(this);
@@ -76,7 +79,7 @@ public interface Spell extends NbtSerialisable, Affine {
 
     /**
      * Gets the default form of this spell used to apply to a caster.
-     * @param caster
+     * @param caster    The caster currently fueling this spell
      */
     default Spell prepareForCast(Caster<?> caster, CastingMethod method) {
         return this;
@@ -88,6 +91,12 @@ public interface Spell extends NbtSerialisable, Affine {
      * @param situation The situation in which the spell is being applied.
      */
     boolean tick(Caster<?> caster, Situation situation);
+
+    /**
+     * Called on spells that are actively dying to update any post-death animations before removal.
+     * @param caster    The caster currently fueling this spell
+     */
+    void tickDying(Caster<?> caster);
 
     /**
      * Marks this effect as dirty.

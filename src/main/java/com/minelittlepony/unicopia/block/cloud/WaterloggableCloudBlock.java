@@ -5,7 +5,12 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
+import com.minelittlepony.unicopia.util.CodecUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Waterloggable;
@@ -23,11 +28,22 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class WaterloggableCloudBlock extends PoreousCloudBlock implements Waterloggable {
+    private static final MapCodec<WaterloggableCloudBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.BOOL.fieldOf("meltable").forGetter(b -> b.meltable),
+            CodecUtils.supplierOf(Soakable.CODEC).optionalFieldOf("soggy_block", null).forGetter(b -> b.soggyBlock),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, WaterloggableCloudBlock::new));
+
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 
-    public WaterloggableCloudBlock(Settings settings, boolean meltable, @Nullable Supplier<Soakable> soggyBlock) {
-        super(settings, meltable, soggyBlock);
+    public WaterloggableCloudBlock(boolean meltable, @Nullable Supplier<Soakable> soggyBlock, Settings settings) {
+        super(meltable, soggyBlock, settings);
         setDefaultState(getDefaultState().with(WATERLOGGED, false));
+    }
+
+    @Override
+    public MapCodec<? extends WaterloggableCloudBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

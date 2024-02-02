@@ -76,9 +76,9 @@ public class ChangeFormAbility implements Ability<Hit> {
         targets.forEach(target -> {
             Race supressed = target.getSuppressedRace();
             if (target == player || supressed.isUnset() == isTransforming) {
-                Race actualRace = target.getSpecies();
+                Race actualRace = isTransforming ? target.getSpecies() : Race.UNSET;
                 target.setSpecies(supressed.or(player.getCompositeRace().potential()));
-                target.setSuppressedRace(isTransforming ? actualRace : Race.UNSET);
+                target.setSuppressedRace(actualRace);
             }
         });
 

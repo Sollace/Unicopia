@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.entity.player.dummy;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,6 +16,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -78,5 +82,10 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
     @Override
     public void setMaster(PlayerEntity owner) {
         this.owner = owner;
+    }
+
+    @Override
+    public Optional<UUID> getMasterId() {
+        return Optional.ofNullable(owner).map(Entity::getUuid);
     }
 }

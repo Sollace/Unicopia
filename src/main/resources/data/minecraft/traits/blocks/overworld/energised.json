@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "traits": "power:4",
+  "items": [
+    "minecraft:coal_block"
+  ]
+}

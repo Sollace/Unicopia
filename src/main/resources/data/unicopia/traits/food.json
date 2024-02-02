@@ -1,0 +1,33 @@
+{
+  "replace": false,
+  "items": {
+    "unicopia:green_apple": "life:3",
+    "unicopia:sweet_apple": "life:3",
+    "unicopia:sour_apple": "life:3",
+    "unicopia:zap_apple": "chaos:5",
+    "unicopia:rotten_apple": "rot:2",
+    "unicopia:cooked_zap_apple": "chaos:10",
+    "unicopia:daffodil_daisy_sandwich": "life:2 earth:1",
+    "unicopia:hay_burger": "life:2 earth:1",
+    "unicopia:hay_fries": "life:1 earth:2",
+    "unicopia:crispy_hay_fries": "life:1 earth:2 happiness:2",
+    "unicopia:wheat_worms": "life:4 earth:6",
+    "unicopia:cider": "chaos:1 darkness:1",
+    "unicopia:juice": "chaos:-1 darkness:-9",
+    "unicopia:burned_juice": "chaos:-1 darkness:-19",
+    "unicopia:pineapple_crown": "life:6",
+    "unicopia:banana": "life:5 generosity:3",
+    "unicopia:mango": "earth:2 life:1",
+    "unicopia:pineapple": "life4 generosity:10",
+    "unicopia:pinecone": "life:1 happiness:-1",
+    "#unicopia:oats": "life:1 happiness:1",
+    "unicopia:apple_pie_slice": "life4 generosity:10",
+    "unicopia:oatmeal": "happiness:4",
+    "unicopia:imported_oats": "life:1 happiness:2",
+    "#unicopia:food_types/candy": "earth:7 strength:3",
+    "unicopia:zap_bulb": "life:6 power:10",
+    "unicopia:muffin": "happiness:11",
+    "unicopia:horse_shoe_fries": "earth:1 strength:11",
+    "#unicopia:acorns": "life:1 earth:4 strength:3"
+  }
+}

@@ -5,60 +5,46 @@
   "content": {
     "pages": [
       {
-        "title": "Ch.7 Artefacts",
+        "title": "gui.unicopia.spellbook.chapter.artefacts.p1.title",
         "level": 0,
         "elements": [
-          { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/crystal_heart.png" }
+          { "x": 15, "y": -10, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/crystal_heart.png" }
         ]
       },
       {
-        "title": "2nd Mare '12",
+        "title": "gui.unicopia.spellbook.chapter.artefacts.p2.title",
         "level": 0,
         "elements": [
-          "What follows is a compendium of research into certain objects of interest identified through my research.",
-          "Not all of these have gotten anywhere, as they have been proven to either be pure legend, or perhaps a hoax, so I cannot put stock into their stories.",
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.artefacts.p2.1.body",
+          "gui.unicopia.spellbook.chapter.artefacts.p2.2.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "The Crystal Heart",
+        "title": "item.unicopia.crystal_heart",
         "level": 0,
         "elements": [
           { "item": { "item": "unicopia:crystal_heart" } },
-          "Status: Lost",
-          "Crafted by a group of unicorns long ago, its origin and current location is unknown.",
-          "What few accounts exist claim it was a powerful tool of protection and support, as it would funnel life force from enemies towards the caster and their allies."
+          "gui.unicopia.spellbook.chapter.artefacts.status.lost",
+          "gui.unicopia.spellbook.chapter.artefacts.crystal_heart.1.body",
+          "gui.unicopia.spellbook.chapter.artefacts.crystal_heart.2.body"
         ]
       },
       {
-        "title": "5th Mare '12",
+        "title": "gui.unicopia.spellbook.chapter.artefacts.crystal_heart.title",
         "level": 0,
         "elements": [
-          "Other accounts say that this artefact only functions when mounted on a specific pedestal of diamond blocks, like a beacon."
+          "gui.unicopia.spellbook.chapter.artefacts.crystal_heart.3.body"
         ]
       },
       {
-        "title": "Torn Page",
+        "title": "gui.unicopia.spellbook.chapter.artefacts.torn_page.title",
         "level": 0,
         "elements": [
-          {
-            "text": "",
-            "extra": [
-              { "text": "aaa", "obfuscated": "true" },
-              { "text": "ential c" },
-              { "text": "a", "obfuscated": "true" },
-              { "text": "r" },
-              { "text": "aaa", "obfuscated": "true" },
-              { "text": "nial purpose" },
-              { "text": "aaa", "obfuscated": "true" },
-              { "text": "?" }
-            ]
-          },
-          {
-            "text": "Aasa sasa fwefsd q43rgfd wqklmsdfl as, klasn.", "obfuscated": "true"
-          },
-          "Building Materials:",
+          "gui.unicopia.spellbook.chapter.artefacts.torn_page.1.body",
+          "gui.unicopia.spellbook.chapter.artefacts.torn_page.2.body",
+          "gui.unicopia.spellbook.chapter.artefacts.torn_page.3.body",
           {
             "ingredients": [
               { "count": 2, "item": "minecraft:end_rod" },
@@ -69,7 +55,7 @@
         ]
       },
       {
-        "title": "Crystal Podium",
+        "title": "gui.unicopia.spellbook.chapter.artefacts.crystal_podium.title",
         "level": 0,
         "elements": [
           { "x": 40, "item": { "item": "minecraft:diamond_block" } },
@@ -86,134 +72,134 @@
         ]
       },
       {
-        "title": "Dragon's Breath Scroll",
+        "title": "item.unicopia.dragon_breath_scroll",
         "level": 0,
         "elements": [
           { "item": { "item": "unicopia:dragon_breath_scroll" } },
-          "Status: Confirmed",
-          "It's, um a scroll that you write somepony's name on it and you hold it in one hoof and something in the other hoof and, like, um it goes whooosh and the item is sent to that pony.",
-          "- XOXOX Lulu"
+          "gui.unicopia.spellbook.chapter.artefacts.status.confirmed",
+          "gui.unicopia.spellbook.chapter.artefacts.dragon_breath_scroll.2.body",
+          "gui.unicopia.spellbook.author3.name"
         ]
       },
       {
-        "title": "2nd Hoof '12",
+        "title": "gui.unicopia.spellbook.chapter.artefacts.dragon_breath_scroll.title",
         "level": 0,
         "elements": [
-          "P.S. Uncle Starswirly is a dunderhead.",
+          "gui.unicopia.spellbook.chapter.artefacts.dragon_breath_scroll.3.body",
           { "recipe": "unicopia:dragon_breath_scroll" }
         ]
       },
       {
-        "title": "Bangle of Comradery",
+        "title": "item.unicopia.friendship_bracelet",
         "level": 0,
         "elements": [
           { "item": { "item": "unicopia:friendship_bracelet" } },
-          "Status: Confirmed",
-          "Used in the past by spellcasters to communicate over long distances, this band has long since lost its old use.",
-          "Unicorns who sign and hand out this band can use it to share certain magic effects with their friends."
+          "gui.unicopia.spellbook.chapter.artefacts.status.confirmed",
+          "gui.unicopia.spellbook.chapter.artefacts.friendship_bracelet.1.body",
+          "gui.unicopia.spellbook.chapter.artefacts.friendship_bracelet.2.body"
         ]
       },
       {
-        "title": "13th Mare '12",
+        "title": "gui.unicopia.spellbook.chapter.artefacts.friendship_bracelet.title",
         "level": 0,
         "elements": [
-          "Anyone wearing a bangle you have signed will be able to benefit from the positive effects of your spells, or will be allowed through protection and shield spells.",
-          "Mana costs are also shared equally between all nearby members."
+          "gui.unicopia.spellbook.chapter.artefacts.friendship_bracelet.3.body",
+          "gui.unicopia.spellbook.chapter.artefacts.friendship_bracelet.4.body"
         ]
       },
       {
-        "title": "Wings of Icarus",
+        "title": "item.unicopia.pegasus_amulet",
         "level": 0,
         "elements": [
           { "item": { "item": "unicopia:pegasus_amulet" } },
-          "Status: Lost",
-          "Commander Hurricane informed me of this, though I've found little texts to back up his claims.",
-          "The Pegasus Amulet is claimed to grant the wearer temporary flight, like a pegasus."
+          "gui.unicopia.spellbook.chapter.artefacts.status.lost",
+          "gui.unicopia.spellbook.chapter.artefacts.pegasus_amulet.1.body",
+          "gui.unicopia.spellbook.chapter.artefacts.pegasus_amulet.2.body"
         ]
       },
       {
-        "title": "21st Trot '12",
+        "title": "gui.unicopia.spellbook.chapter.artefacts.pegasus_amulet.title",
         "level": 0,
         "elements": [
-          "It was intended as an aide for early unicorn ambassadors to Cloud Heights, but was lost after negotiations broke down."
+          "gui.unicopia.spellbook.chapter.artefacts.pegasus_amulet.3.body"
         ]
       },
       {
-        "title": "Meadowbrook's Staff",
+        "title": "item.unicopia.meadowbrooks_staff",
         "level": 3,
         "elements": [
           { "item": { "item": "unicopia:meadowbrooks_staff" } },
-          "Status: Confirmed",
-          "A precursor to magic staffs, the meadwobrook's staff is an upright support structure commonly used by warlocks during long incantation sessions.",
-          "It features a twisting and mottled shape with a dense and sturdy core capable of supporting the weight of an average-sized, adult male."
+          "gui.unicopia.spellbook.chapter.artefacts.status.confirmed",
+          "gui.unicopia.spellbook.chapter.artefacts.meadowbrooks_staff.1.body",
+          "gui.unicopia.spellbook.chapter.artefacts.meadowbrooks_staff.2.body"
         ]
       },
       {
-        "title": "22nd Trot '12",
+        "title": "gui.unicopia.spellbook.chapter.artefacts.meadowbrooks_staff.title",
         "level": 3,
         "elements": [
-          "Due to its dense structure and flamability, this object also serves a secondary purpose as an offensive weapon and fuel source should the situation demand.",
-          "To use correctly in combat, one must begin by gripping the staff by the narrow end in both hands, followed by a swift swing from above one's head whilst yelling 'Fus Roh DAH!'"
+          "gui.unicopia.spellbook.chapter.artefacts.meadowbrooks_staff.3.body",
+          "gui.unicopia.spellbook.chapter.artefacts.meadowbrooks_staff.4.body"
         ]
       },
       {
-        "title": "Magic Staffs",
+        "title": "item.unicopia.magic_staff",
         "level": 5,
         "elements": [
           { "item": { "item": "unicopia:magic_staff" } },
-          "Status: Unconfirmed",
-          "Magical aides for non-magical users. Magic staffs work in a similar way to a unicorns horn in that they can be used to channel and harness the innate magic stored within gems."
+          "gui.unicopia.spellbook.chapter.artefacts.status.unconfirmed",
+          "gui.unicopia.spellbook.chapter.artefacts.magic_staff.1.body"
         ]
       },
       {
-        "title": "22nd Trot '12",
+        "title": "gui.unicopia.spellbook.chapter.artefacts.magic_staff.title",
         "level": 5,
         "elements": [
-          "Not all spells work in the same way, but for those that do, a good staff is an essential tool for any beginner magi.",
-          "The simplest way to create these is to put a gem on the end of a stick. Yes, very revolutionary, I know."
+          "gui.unicopia.spellbook.chapter.artefacts.magic_staff.2.body",
+          "gui.unicopia.spellbook.chapter.artefacts.magic_staff.3.body"
         ]
       },
       {
-        "title": "Grogar's Bell",
+        "title": "item.unicopia.grogars_bell",
         "level": 0,
         "elements": [
           { "item": { "item": "unicopia:grogars_bell" } },
-          "Status: Lost",
-          "A powerful artifact once thought to be the source of King Grogar's power.",
-          "In skilled hooves, the bell may be used to transfer magical energy from one being to another."
+          "gui.unicopia.spellbook.chapter.artefacts.status.lost",
+          "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.1.body",
+          "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.2.body"
         ]
       },
       {
-        "title": "22nd Trot '12",
+        "title": "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.title",
         "level": 80,
         "elements": [
-          "It's theorised this artifact was forged from the claws of an Ursa Major during the era of Discord's reign, possibly as a weapon against the tyrant.",
-          "By its nature, the bell a corrupting influence inherent to it that will destroy the minds of anyone who dares weird its power."
+          "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.3.body",
+          "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.4.body"
         ]
       },
       {
-        "title": "Grogar's Bell II",
+        "title": "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.2.title",
         "level": 80,
         "elements": [
-          "Legend says that after its first bearer, King Grogar, was driven to madness, the bell was stowed far away.",
-          "beyond most ponies' grasp, guarded inside an ancient city by an unbeatable beast."
+          "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.5.body",
+          "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.6.body"
         ]
       },
       {
-        "title": "Alicorn Amulet",
+        "title": "item.unicopia.alicorn_amulet",
         "level": 0,
         "elements": [
           { "item": { "item": "unicopia:alicorn_amulet" } },
-          "Status: Unconfirmed",
-          "Like the crystal heart, little is known of this artefact and thus nothing, not even its existance can be confirmed."
+          "gui.unicopia.spellbook.chapter.artefacts.status.unconfirmed",
+          "gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.1.body"
         ]
       },
       {
-        "title": "23nd Trot '12",
+        "title": "gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.title",
         "level": 999,
         "elements": [
-          "The alicorn amulet is a powerful force of dark magic created created by an unknown mage as their attempt to create the perfect being.",
-          "It combines the traits of all races into one powerful form, but it hard to control and addictive in nature. Anyone who uses it quickly becomes reliant on it and few attempt to remove it survive the ordeal."
+          "gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.2.body",
+          "gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.3.body"
         ]
       }
     ]

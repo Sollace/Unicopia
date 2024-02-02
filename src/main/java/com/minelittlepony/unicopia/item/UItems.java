@@ -48,6 +48,7 @@ public interface UItems {
 
     FriendshipBraceletItem FRIENDSHIP_BRACELET = register("friendship_bracelet", new FriendshipBraceletItem(new FabricItemSettings().rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
 
+    Item PLUNDER_VINE = register("plunder_vine", new BlockItem(UBlocks.PLUNDER_VINE_BUD, new Item.Settings()));
     Item EMPTY_JAR = register("empty_jar", new JarItem(new Item.Settings().maxCount(16).fireproof(), false, false, false), ItemGroups.FUNCTIONAL);
     FilledJarItem FILLED_JAR = register("filled_jar", new FilledJarItem(new Item.Settings().maxCount(1).recipeRemainder(EMPTY_JAR)));
     Item RAIN_CLOUD_JAR  = register("rain_cloud_jar", new JarItem(new Item.Settings().maxCount(1).fireproof().recipeRemainder(EMPTY_JAR), true, false, false), ItemGroups.FUNCTIONAL);
@@ -88,6 +89,7 @@ public interface UItems {
     Item ACORN = register("acorn", new Item(new Item.Settings().food(UFoodComponents.ACORN).maxCount(16)), ItemGroups.FOOD_AND_DRINK);
     Item MANGO = register("mango", new Item(new Item.Settings().food(UFoodComponents.MANGO)), ItemGroups.FOOD_AND_DRINK);
     Item BANANA = register("banana", new Item(new Item.Settings().food(UFoodComponents.BANANA)), ItemGroups.FOOD_AND_DRINK);
+    Item CURING_JOKE = register("curing_joke", new CuringJokeItem(UBlocks.CURING_JOKE, new Item.Settings().food(UFoodComponents.POISON_JOKE)), ItemGroups.NATURAL);
     Item PINEAPPLE = register("pineapple", new PineappleItem(new Item.Settings().food(UFoodComponents.BANANA).maxDamage(3)), ItemGroups.FOOD_AND_DRINK);
     Item PINEAPPLE_CROWN = register("pineapple_crown", new AliasedBlockItem(UBlocks.PINEAPPLE, new Item.Settings()), ItemGroups.NATURAL);
 
@@ -106,6 +108,7 @@ public interface UItems {
     Item GREEN_APPLE_SEEDS = register("green_apple_seeds", new AliasedBlockItem(UBlocks.GREEN_APPLE_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
     Item SWEET_APPLE_SEEDS = register("sweet_apple_seeds", new AliasedBlockItem(UBlocks.SWEET_APPLE_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
     Item SOUR_APPLE_SEEDS = register("sour_apple_seeds", new AliasedBlockItem(UBlocks.SOUR_APPLE_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
+    Item GOLDEN_OAK_SEEDS = register("golden_oak_seeds", new AliasedBlockItem(UBlocks.GOLDEN_OAK_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
 
     Item MUG = register("mug", new Item(new Settings().maxCount(16)), ItemGroups.TOOLS);
     Item CIDER = register("cider", new DrinkableItem(new Item.Settings().food(UFoodComponents.CIDER).maxCount(1).recipeRemainder(MUG)), ItemGroups.FOOD_AND_DRINK);
@@ -161,6 +164,7 @@ public interface UItems {
     Item PALM_BASKET = register("palm_basket", new BasketItem(AirBalloonEntity.BasketType.of(UWoodTypes.PALM_BOAT_TYPE), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
 
     Item GIANT_BALLOON = register("giant_balloon", new HotAirBalloonItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
+    Item SPECTRAL_CLOCK = register("spectral_clock", new Item(new Item.Settings()), ItemGroups.TOOLS);
 
     Item LIGHT_GRAY_BED_SHEETS = register(CloudBedBlock.SheetPattern.LIGHT_GRAY);
     Item GRAY_BED_SHEETS = register(CloudBedBlock.SheetPattern.GRAY);

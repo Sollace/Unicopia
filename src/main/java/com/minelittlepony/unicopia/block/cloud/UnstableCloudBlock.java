@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.minelittlepony.unicopia.entity.mob.StormCloudEntity;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -28,12 +29,18 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestTypes;
 
 public class UnstableCloudBlock extends CloudBlock {
+    private static final MapCodec<UnstableCloudBlock> CODEC = Block.createCodec(UnstableCloudBlock::new);
     private static final int MAX_CHARGE = 6;
     private static final IntProperty CHARGE = IntProperty.of("charge", 0, MAX_CHARGE);
 
     public UnstableCloudBlock(Settings settings) {
-        super(settings, false);
+        super(false, settings);
         setDefaultState(getDefaultState().with(CHARGE, 0));
+    }
+
+    @Override
+    public MapCodec<UnstableCloudBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

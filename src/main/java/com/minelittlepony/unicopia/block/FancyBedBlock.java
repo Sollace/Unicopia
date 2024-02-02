@@ -52,7 +52,7 @@ public class FancyBedBlock extends BedBlock {
         ))
     );
 
-    private final String base;
+    protected final String base;
 
     public FancyBedBlock(String base, Settings settings) {
         super(DyeColor.WHITE, settings);

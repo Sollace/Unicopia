@@ -46,7 +46,7 @@
         "amplifier": 1
       },
       {
-        "type": "unicopia:multiply_hunger",
+        "type": "unicopia:lose_hunger",
         "multiplier": 0.5
       }
     ]
@@ -62,7 +62,7 @@
         "effects": [
           {
             "name": "Love Consumption",
-            "type": "unicopia:clear_love_sickness"
+            "type": "unicopia:cure_love_sickness"
           }
         ]
       }
@@ -81,7 +81,7 @@
           },
           {
             "name": "unicopia.affliction.love_sickness",
-            "type": "unicopia:multiply_hunger",
+            "type": "unicopia:lose_hunger",
             "multiplier": 0.5
           }
         ]
@@ -122,7 +122,7 @@
             "amplifier": 1
           },
           {
-            "type": "unicopia:multiply_hunger",
+            "type": "unicopia:lose_hunger",
             "multiplier": 0.5
           }
         ]

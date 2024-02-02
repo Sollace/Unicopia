@@ -5,14 +5,16 @@ import java.util.Set;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.CasterView;
+import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.shape.*;
 
@@ -21,8 +23,10 @@ import net.minecraft.fluid.*;
 import net.minecraft.nbt.*;
 import net.minecraft.state.property.Properties;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class HydrophobicSpell extends AbstractSpell {
@@ -41,16 +45,15 @@ public class HydrophobicSpell extends AbstractSpell {
     }
 
     @Override
-    public boolean apply(Caster<?> source) {
-        if (getTraits().get(Trait.GENEROSITY) > 0) {
-            return toPlaceable().apply(source);
+    public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
+        if ((method == CastingMethod.DIRECT || method == CastingMethod.STAFF) && getTraits().get(Trait.GENEROSITY) > 0) {
+            return toPlaceable();
         }
-        return super.apply(source);
+        return this;
     }
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-
         if (!source.isClient()) {
             World world = source.asWorld();
 
@@ -86,7 +89,11 @@ public class HydrophobicSpell extends AbstractSpell {
                 setDead();
             }
 
-            source.spawnParticles(new Sphere(true, getRange(source)), 10, pos -> {
+            double range = getRange(source);
+            var entry = Ether.get(source.asWorld()).getOrCreate(this, source);
+            entry.radius =  (float)range;
+
+            source.spawnParticles(new Sphere(true, range), 10, pos -> {
                 BlockPos bp = BlockPos.ofFloored(pos);
                 if (source.asWorld().getFluidState(bp.up()).isIn(affectedFluid)) {
                     source.addParticle(UParticles.RAIN_DROPS, pos, Vec3d.ZERO);
@@ -107,6 +114,7 @@ public class HydrophobicSpell extends AbstractSpell {
 
     @Override
     protected void onDestroyed(Caster<?> caster) {
+        Ether.get(caster.asWorld()).remove(this, caster);
         storedFluidPositions.removeIf(entry -> {
             entry.restore(caster.asWorld());
             return true;
@@ -162,13 +170,20 @@ public class HydrophobicSpell extends AbstractSpell {
         }
     }
 
-    public boolean blocksFlow(Caster<?> caster, BlockPos pos, FluidState fluid) {
-        return fluid.isIn(affectedFluid) && pos.isWithinDistance(caster.getOrigin(), getRange(caster) + 1);
+    public boolean blocksFlow(Ether.Entry<?> entry, Vec3d center, BlockPos pos, FluidState fluid) {
+        return fluid.isIn(affectedFluid) && pos.isWithinDistance(center, (double)entry.radius + 1);
     }
 
-    public static boolean blocksFluidFlow(CasterView world, BlockPos pos, FluidState state) {
-        return world.findAllSpellsInRange(pos, 500, SpellType.HYDROPHOBIC).anyMatch(pair -> {
-            return pair.getValue().blocksFlow(pair.getKey(), pos, state);
-        });
+    public static boolean blocksFluidFlow(BlockView world, BlockPos pos, FluidState state) {
+        if (world instanceof ServerWorld sw) {
+            return Ether.get(sw).anyMatch(SpellType.HYDROPHOBIC, entry -> {
+                var spell = entry.getSpell();
+                var target = entry.entity.getTarget().orElse(null);
+                return spell != null && target != null && spell.blocksFlow(entry, target.pos(), pos, state);
+            });
+        }
+
+        return false;
+
     }
 }

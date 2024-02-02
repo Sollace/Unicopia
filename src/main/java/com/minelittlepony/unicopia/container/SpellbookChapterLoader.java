@@ -57,7 +57,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             dirty = false;
             MsgServerResources msg = new MsgServerResources();
             server.getWorlds().forEach(world -> {
-                Channel.SERVER_RESOURCES_SEND.sendToAllPlayers(msg, world);
+                Channel.SERVER_RESOURCES.sendToAllPlayers(msg, world);
             });
         }
     }
@@ -84,6 +84,14 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
         }
     }
 
+    private static Text readText(JsonElement json) {
+        return json.isJsonPrimitive() ? Text.translatable(json.getAsString()) : Text.Serialization.fromJsonTree(json);
+    }
+
+    public enum Flow {
+        NONE, LEFT, RIGHT
+    }
+
     public record Chapter (
         Identifier id,
         TabSide side,
@@ -106,7 +114,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
                 .filter(pages -> pages.size() > 0)
                 .stream()
                 .flatMap(pages -> StreamSupport.stream(pages.spliterator(), false))
-                .map(Page::new)
+                .map(Page::of)
                 .toList();
         }
 
@@ -125,15 +133,21 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             int level,
             List<Element> elements
         ) {
+        private static final Page EMPTY = new Page(Text.empty(), 0, List.of());
+
+        public static Page of(JsonElement json) {
+            return json.isJsonObject() && json.getAsJsonObject().keySet().isEmpty() ? EMPTY : new Page(json);
+        }
+
         @Deprecated
-        public Page(JsonElement json) {
+        Page(JsonElement json) {
             this(json.getAsJsonObject());
         }
 
         @Deprecated
-        public Page(JsonObject json) {
+        Page(JsonObject json) {
             this(
-                Text.Serialization.fromJsonTree(json.get("title")),
+                readText(json.get("title")),
                 JsonHelper.getInt(json, "level", 0),
                 new ArrayList<>()
             );
@@ -151,10 +165,6 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
         public static void write(PacketByteBuf buffer, Page page) {
             page.toBuffer(buffer);
         }
-    }
-
-    public enum Flow {
-        NONE, LEFT, RIGHT
     }
 
     private interface Element {
@@ -219,7 +229,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
                     return new Multi(count, new Id((byte)4, Identifier.tryParse(json.get("spell").getAsString())));
                 }
 
-                return new Multi(count, new TextBlock(Text.Serialization.fromJsonTree(json.get("text"))));
+                return new Multi(count, new TextBlock(readText(json.get("text"))));
             }
 
             @Override
@@ -236,7 +246,6 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
         @Deprecated
         static Element read(JsonElement json) {
             if (!json.isJsonPrimitive()) {
-
                 JsonObject el = JsonHelper.asObject(json, "element");
                 if (el.has("texture")) {
                     return new Image(
@@ -263,7 +272,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
                 }
             }
 
-            return new TextBlock(Text.Serialization.fromJsonTree(json));
+            return new TextBlock(readText(json));
         }
 
         private static Bounds boundsFromJson(JsonObject el) {

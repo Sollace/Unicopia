@@ -5,6 +5,7 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -20,6 +21,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class CloudPillarBlock extends CloudBlock {
+    private static final MapCodec<CloudPillarBlock> CODEC = Block.createCodec(CloudPillarBlock::new);
     private static final BooleanProperty NORTH = BooleanProperty.of("north");
     private static final BooleanProperty SOUTH = BooleanProperty.of("south");
     private static final Map<Direction, BooleanProperty> DIRECTION_PROPERTIES = Map.of(
@@ -41,8 +43,13 @@ public class CloudPillarBlock extends CloudBlock {
     // [1,0] [1,1]
 
     public CloudPillarBlock(Settings settings) {
-        super(settings, false);
+        super(false, settings);
         setDefaultState(getDefaultState().with(NORTH, true).with(SOUTH, true));
+    }
+
+    @Override
+    public MapCodec<CloudPillarBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

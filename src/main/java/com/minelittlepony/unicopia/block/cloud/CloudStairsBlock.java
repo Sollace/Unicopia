@@ -3,6 +3,9 @@ package com.minelittlepony.unicopia.block.cloud;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.StairsBlock;
@@ -17,12 +20,21 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class CloudStairsBlock extends StairsBlock implements CloudLike {
+    private static final MapCodec<CloudStairsBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            BlockState.CODEC.fieldOf("base_state").forGetter(block -> block.baseBlockState),
+            StairsBlock.createSettingsCodec()
+    ).apply(instance, CloudStairsBlock::new));
 
     private final CloudBlock baseBlock;
 
     public CloudStairsBlock(BlockState baseState, Settings settings) {
         super(baseState, settings);
         this.baseBlock = (CloudBlock)baseState.getBlock();
+    }
+
+    @Override
+    public MapCodec<? extends StairsBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

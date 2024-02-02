@@ -1,12 +1,16 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
+import org.jetbrains.annotations.Nullable;
+
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.particle.ParticleHandle;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
+import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
+import com.minelittlepony.unicopia.particle.ParticleSpawner;
+import com.minelittlepony.unicopia.particle.TargetBoundParticleEffect;
 import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.shape.Shape;
@@ -26,7 +30,8 @@ public class RainboomAbilitySpell extends AbstractSpell {
     private static final int RADIUS = 5;
     private static final Shape EFFECT_RANGE = new Sphere(false, RADIUS);
 
-    private final ParticleHandle particlEffect = new ParticleHandle();
+    @Nullable
+    private ParticleSpawner boundParticle;
 
     private int age;
 
@@ -36,25 +41,21 @@ public class RainboomAbilitySpell extends AbstractSpell {
     }
 
     @Override
-    protected void onDestroyed(Caster<?> source) {
-        particlEffect.destroy();
-    }
-
-    @Override
     public boolean tick(Caster<?> source, Situation situation) {
 
         if (situation != Situation.BODY) {
             return false;
         }
 
-        particlEffect.update(getUuid(), source, spawner -> {
-            spawner.addParticle(UParticles.RAINBOOM_TRAIL, source.getOriginVector(), Vec3d.ZERO);
-        }).ifPresent(attachment -> {
-            attachment.setAttribute(Attachment.ATTR_BOUND, 1);
-        });
-
         if (source.isClient()) {
-           // source.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, source.getPhysics().getMotionAngle()), source.getOriginVector(), Vec3d.ZERO);
+            if (boundParticle == null) {
+                boundParticle = InteractionManager.INSTANCE.createBoundParticle(getUuid());
+            }
+            boundParticle.addParticle(new TargetBoundParticleEffect(UParticles.RAINBOOM_TRAIL, source.asEntity()), source.getOriginVector(), Vec3d.ZERO);
+
+            if (age == 0) {
+                source.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, source.getPhysics().getMotionAngle()), source.getOriginVector(), Vec3d.ZERO);
+            }
         }
 
         source.findAllEntitiesInRange(RADIUS).forEach(e -> {
@@ -92,5 +93,6 @@ public class RainboomAbilitySpell extends AbstractSpell {
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         age = compound.getInt("age");
+        boundParticle = null;
     }
 }

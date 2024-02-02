@@ -10,6 +10,8 @@ import com.minelittlepony.unicopia.block.cloud.CloudChestBlock;
 import com.minelittlepony.unicopia.client.particle.ChangelingMagicParticle;
 import com.minelittlepony.unicopia.client.particle.CloudsEscapingParticle;
 import com.minelittlepony.unicopia.client.particle.DiskParticle;
+import com.minelittlepony.unicopia.client.particle.DustCloudParticle;
+import com.minelittlepony.unicopia.client.particle.FloatingBubbleParticle;
 import com.minelittlepony.unicopia.client.particle.GroundPoundParticle;
 import com.minelittlepony.unicopia.client.particle.HealthDrainParticle;
 import com.minelittlepony.unicopia.client.particle.LightningBoltParticle;
@@ -22,6 +24,7 @@ import com.minelittlepony.unicopia.client.particle.ShockwaveParticle;
 import com.minelittlepony.unicopia.client.particle.SphereParticle;
 import com.minelittlepony.unicopia.client.render.*;
 import com.minelittlepony.unicopia.client.render.entity.*;
+import com.minelittlepony.unicopia.client.render.shader.UShaders;
 import com.minelittlepony.unicopia.client.render.spell.SpellRendererFactory;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.ChameleonItem;
@@ -59,12 +62,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
 
+@SuppressWarnings("deprecation")
 public interface URenderers {
     BlockEntity CHEST_RENDER_ENTITY = new CloudChestBlock.TileData(BlockPos.ORIGIN, UBlocks.CLOUD_CHEST.getDefaultState());
 
     static void bootstrap() {
         ParticleFactoryRegistry.getInstance().register(UParticles.UNICORN_MAGIC, createFactory(MagicParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.CHANGELING_MAGIC, createFactory(ChangelingMagicParticle::new));
+        ParticleFactoryRegistry.getInstance().register(UParticles.BUBBLE, createFactory(FloatingBubbleParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.RAIN_DROPS, createFactory(RaindropsParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.HEALTH_DRAIN, createFactory(HealthDrainParticle::create));
         ParticleFactoryRegistry.getInstance().register(UParticles.RAINBOOM_RING, RainboomParticle::new);
@@ -76,6 +81,7 @@ public interface URenderers {
         ParticleFactoryRegistry.getInstance().register(UParticles.GROUND_POUND, GroundPoundParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.CLOUDS_ESCAPING, CloudsEscapingParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.LIGHTNING_BOLT, LightningBoltParticle::new);
+        ParticleFactoryRegistry.getInstance().register(UParticles.DUST_CLOUD, DustCloudParticle::new);
 
         AccessoryFeatureRenderer.register(
                 BraceletFeatureRenderer::new, AmuletFeatureRenderer::new, GlassesFeatureRenderer::new,
@@ -97,6 +103,8 @@ public interface URenderers {
         EntityRendererRegistry.register(UEntities.AIR_BALLOON, AirBalloonEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.FRIENDLY_CREEPER, FriendlyCreeperEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.LOOT_BUG, LootBugEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.TENTACLE, TentacleEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.IGNOMINIOUS_BULB, IgnominiousBulbEntityRenderer::new);
 
         BlockEntityRendererFactories.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(UBlockEntities.FANCY_BED, CloudBedBlockEntityRenderer::new);
@@ -108,6 +116,7 @@ public interface URenderers {
         PolearmRenderer.register(UItems.WOODEN_POLEARM, UItems.STONE_POLEARM, UItems.IRON_POLEARM, UItems.GOLDEN_POLEARM, UItems.DIAMOND_POLEARM, UItems.NETHERITE_POLEARM);
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity, seed) -> EnchantableItem.isEnchanted(stack) ? EnchantableItem.getSpellKey(stack).getAffinity().getAlignment() : 0);
         ModelPredicateProviderRegistry.register(UItems.ROCK_CANDY, new Identifier("count"), (stack, world, entity, seed) -> stack.getCount() / (float)stack.getMaxCount());
+        ModelPredicateProviderRegistry.register(Unicopia.id("zap_cycle"), (stack, world, entity, seed) -> UnicopiaClient.getInstance().getZapStageDelta());
 
         ColorProviderRegistry.BLOCK.register(URenderers::getTintedBlockColor, TintedBlock.REGISTRY.stream().toArray(Block[]::new));
         ColorProviderRegistry.ITEM.register((stack, i) -> getTintedBlockColor(Block.getBlockFromItem(stack.getItem()).getDefaultState(), null, null, i), TintedBlock.REGISTRY.stream().map(Block::asItem).filter(i -> i != Items.AIR).toArray(Item[]::new));
@@ -123,6 +132,7 @@ public interface URenderers {
         TerraformBoatClientHelper.registerModelLayers(Unicopia.id("palm"), false);
 
         SpellRendererFactory.bootstrap();
+        UShaders.bootstrap();
     }
 
     private static void register(DynamicItemRenderer renderer, ItemConvertible...items) {

@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.util;
 
 import java.util.*;
 import java.util.function.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.mojang.datafixers.util.Pair;
@@ -63,6 +64,18 @@ public interface NbtSerialisable {
     static NbtCompound subTag(String name, NbtCompound parent, Consumer<NbtCompound> writer) {
         writer.accept(subTag(name, parent));
         return parent;
+    }
+
+    static <K, V> Map<K, V> readMap(NbtCompound nbt, Function<String, K> keyFunction, Function<NbtElement, V> valueFunction) {
+        return nbt.getKeys().stream().collect(Collectors.toMap(keyFunction, k -> valueFunction.apply(nbt.get(k))));
+    }
+
+    static <K, V> NbtCompound writeMap(Map<K, V> map, Function<K, String> keyFunction, Function<V, ? extends NbtElement> valueFunction) {
+        NbtCompound nbt = new NbtCompound();
+        map.forEach((k, v) -> {
+            nbt.put(keyFunction.apply(k), valueFunction.apply(v));
+        });
+        return nbt;
     }
 
     interface Serializer<T> {

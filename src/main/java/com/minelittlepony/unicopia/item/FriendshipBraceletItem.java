@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
@@ -78,7 +79,7 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
 
     @Override
     public EquipmentSlot getSlotType(ItemStack stack) {
-        return isSigned(stack) ? EquipmentSlot.CHEST : super.getSlotType();
+        return isSigned(stack) ? EquipmentSlot.CHEST : super.getSlotType(stack);
     }
 
     private boolean checkSignature(ItemStack stack, PlayerEntity player) {
@@ -113,15 +114,10 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
                 && ((FriendshipBraceletItem)stack.getItem()).checkSignature(stack, player);
     }
 
-    public static boolean isComrade(Caster<?> caster, Entity entity) {
-        if (entity instanceof LivingEntity) {
-            return caster.getMasterId()
-                    .filter(id -> getWornBangles((LivingEntity)entity)
-                            .anyMatch(stack -> isSignedBy(stack, id))
-                    )
-                    .isPresent();
-        }
-        return false;
+    public static boolean isComrade(Owned<?> caster, Entity entity) {
+        return entity instanceof LivingEntity l && caster.getMasterId()
+                .filter(id -> getWornBangles(l).anyMatch(stack -> isSignedBy(stack, id)))
+                .isPresent();
     }
 
     public static Stream<Pony> getPartyMembers(Caster<?> caster, double radius) {

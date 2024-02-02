@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "traits": "life:2 blood:1 earth:6",
+  "items": [
+    "minecraft:infested_cracked_stone_bricks",
+    "minecraft:infested_stone",
+    "minecraft:infested_stone_bricks",
+    "minecraft:infested_chiseled_stone_bricks",
+    "minecraft:infested_deepslate",
+    "minecraft:infested_cobblestone",
+    "minecraft:infested_mossy_stone_bricks"
+  ]
+}

@@ -70,8 +70,17 @@ public abstract class AbstractDelegatingSpell implements Spell,
     }
 
     @Override
+    public void tickDying(Caster<?> caster) {
+    }
+
+    @Override
     public boolean isDead() {
         return getDelegates().isEmpty() || getDelegates().stream().allMatch(Spell::isDead);
+    }
+
+    @Override
+    public boolean isDying() {
+        return false;
     }
 
     @Override
@@ -110,7 +119,13 @@ public abstract class AbstractDelegatingSpell implements Spell,
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        return execute(getDelegates().stream(), a -> a.tick(source, situation));
+        return execute(getDelegates().stream(), a -> {
+            if (a.isDying()) {
+                a.tickDying(source);
+                return !a.isDead();
+            }
+            return a.tick(source, situation);
+        });
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.projectile;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
@@ -19,6 +21,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageSources;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -27,9 +30,13 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -45,6 +52,8 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
     private static final TrackedData<Boolean> BOUNCY = DataTracker.registerData(PhysicsBodyProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     private int inWaterTime;
+
+    private RegistryKey<DamageType> damageType = UDamageTypes.ROCK;
 
     public PhysicsBodyProjectileEntity(EntityType<PhysicsBodyProjectileEntity> type, World world, ItemStack stack) {
         super(type, world, stack);
@@ -72,6 +81,10 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
     @Override
     public ItemStack getStack() {
         return getDataTracker().get(ITEM);
+    }
+
+    public void setDamageType(RegistryKey<DamageType> damageType) {
+        this.damageType = damageType;
     }
 
     @Override
@@ -149,7 +162,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
         return new DamageSources(getWorld().getRegistryManager()) {
             @Override
             public DamageSource arrow(PersistentProjectileEntity source, @Nullable Entity attacker) {
-                return create(UDamageTypes.ROCK, source, attacker);
+                return create(damageType, source, attacker);
             }
         };
     }
@@ -262,11 +275,17 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
         if (!stack.isEmpty()) {
             nbt.put("Item", stack.writeNbt(new NbtCompound()));
         }
+        nbt.putString("damageType", damageType.getValue().toString());
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         setStack(ItemStack.fromNbt(nbt.getCompound("Item")));
+        if (nbt.contains("damageType", NbtElement.STRING_TYPE)) {
+            Optional.ofNullable(Identifier.tryParse(nbt.getString("damageType"))).ifPresent(id -> {
+                setDamageType(RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id));
+            });
+        }
     }
 }

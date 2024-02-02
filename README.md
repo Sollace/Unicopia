@@ -11,7 +11,7 @@
 
 Bringing the magic of friendship to Minecraft!
 
-What started as a humble utility to make playing as a unicorn a little more emersive has grown into a full-blown pony
+What started as a humble utility to make playing as a unicorn a little more immersive has grown into a full-blown pony
 conversion experience that brings new magic, mechanics and experience to the world of Minecraft to make it truly feel like you've
 entered the world of Equestria!
 
@@ -24,13 +24,13 @@ Unicorns, Pegasi, Earth Ponies, and even Changelings get their own special abili
  - *Play as a unicorn* and learn to use magic! Craft your first spellbook and experiment, finding the different spells you can
    make and what they do, or simply delve into the lore to learn more about the past of this mysterious world!
   
-   Besides casting spells, such as a shield to protect themselves, of fire a bolt of magic to incinerate your foes,
+   Besides casting spells, such as a shield to protect themselves, or a bolt of magic to incinerate your foes,
    Unicorns can also teleport to get around obstacles or simply reach those hard to reach places.   
  
- - *Play as a pegasus* and dominate the skies! Besides the ability to fly, pegasi can also perform rainbooms, control the weather by shoving them into jars,
+ - *Play as a pegasus* and dominate the skies! Besides the ability to fly, pegasi can also perform sonic rainbooms, control the weather by shoving them into jars,
    and have a greater reach distance and speed than other races.
  
- - *Play as a humble background pony*! Earth Ponies are tougher and heavier than the other races. They also have the nify ability to
+ - *Play as a humble background pony*! Earth Ponies are tougher and heavier than the other races. They also have the nifty ability to
    kick trees to get food and hasten the growth of crops. You'll never go hungry if you're an earth pony.
 
  Feeling like going over to the dark side?
@@ -58,7 +58,7 @@ Unicorns, Pegasi, Earth Ponies, and even Changelings get their own special abili
 
   - Airflow is simulated (badly)
     Pegasi, beware about flying during storms! It can get dangerous out there!
-    If you're playing as a flying species, or just like having nice things, try building a weather vein.
+    If you're playing as a flying species, or just like having nice things, try building a weather vane.
     It shows the actual, totally real and not simulated badly, wind direction of your minecraft world. Just beware
     that the direction and strength is situational (and bad), and will be different depending where you are and
     how high up you are.

@@ -12,6 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 public abstract class AbstractSpell implements Spell {
 
     private boolean dead;
+    private boolean dying;
     private boolean dirty;
     private boolean hidden;
     private boolean destroyed;
@@ -45,13 +46,18 @@ public abstract class AbstractSpell implements Spell {
 
     @Override
     public final void setDead() {
-        dead = true;
+        dying = true;
         setDirty();
     }
 
     @Override
     public final boolean isDead() {
         return dead;
+    }
+
+    @Override
+    public final boolean isDying() {
+        return dying;
     }
 
     @Override
@@ -83,6 +89,11 @@ public abstract class AbstractSpell implements Spell {
     }
 
     @Override
+    public void tickDying(Caster<?> caster) {
+        dead = true;
+    }
+
+    @Override
     public final void destroy(Caster<?> caster) {
         if (destroyed) {
             return;
@@ -94,6 +105,7 @@ public abstract class AbstractSpell implements Spell {
 
     @Override
     public void toNBT(NbtCompound compound) {
+        compound.putBoolean("dying", dying);
         compound.putBoolean("dead", dead);
         compound.putBoolean("hidden", hidden);
         compound.putUuid("uuid", uuid);
@@ -106,6 +118,7 @@ public abstract class AbstractSpell implements Spell {
         if (compound.contains("uuid")) {
             uuid = compound.getUuid("uuid");
         }
+        dying = compound.getBoolean("dying");
         dead = compound.getBoolean("dead");
         hidden = compound.getBoolean("hidden");
         if (compound.contains("traits")) {

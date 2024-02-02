@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
 import com.minelittlepony.unicopia.container.ShapingBenchScreenHandler;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -23,6 +24,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class ShapingBenchBlock extends CloudBlock {
+    private static final MapCodec<ShapingBenchBlock> CODEC = Block.createCodec(ShapingBenchBlock::new);
     private static final VoxelShape SHAPE = VoxelShapes.union(
             Block.createCuboidShape(0, 13, 0, 3, 18, 3),
             Block.createCuboidShape(13, 13, 0, 16, 18, 3),
@@ -34,7 +36,12 @@ public class ShapingBenchBlock extends CloudBlock {
     );
 
     public ShapingBenchBlock(Settings settings) {
-        super(settings, false);
+        super(false, settings);
+    }
+
+    @Override
+    public MapCodec<ShapingBenchBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

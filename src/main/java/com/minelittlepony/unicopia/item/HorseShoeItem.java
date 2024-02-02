@@ -9,6 +9,7 @@ import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.projectile.PhysicsBodyProjectileEntity;
@@ -75,6 +76,7 @@ public class HorseShoeItem extends HeavyProjectileItem {
     @Override
     protected PhysicsBodyProjectileEntity createProjectile(ItemStack stack, World world, @Nullable PlayerEntity player) {
         PhysicsBodyProjectileEntity projectile = super.createProjectile(stack, world, player);
+        projectile.setDamageType(UDamageTypes.HORSESHOE);
 
         float degradation = (stack.getDamage() / (float)stack.getMaxDamage());
 

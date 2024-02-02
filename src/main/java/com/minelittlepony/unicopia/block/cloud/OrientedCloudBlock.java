@@ -1,7 +1,11 @@
 package com.minelittlepony.unicopia.block.cloud;
 
 import com.minelittlepony.unicopia.EquineContext;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemPlacementContext;
@@ -13,11 +17,20 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.Direction;
 
 public class OrientedCloudBlock extends CloudBlock {
+    private static final MapCodec<OrientedCloudBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.BOOL.fieldOf("meltable").forGetter(b -> b.meltable),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, OrientedCloudBlock::new));
     public static final DirectionProperty FACING = Properties.FACING;
 
-    public OrientedCloudBlock(Settings settings, boolean meltable) {
-        super(settings, meltable);
+    public OrientedCloudBlock(boolean meltable, Settings settings) {
+        super(meltable, settings);
         this.setDefaultState(getDefaultState().with(FACING, Direction.UP));
+    }
+
+    @Override
+    public MapCodec<? extends CloudBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

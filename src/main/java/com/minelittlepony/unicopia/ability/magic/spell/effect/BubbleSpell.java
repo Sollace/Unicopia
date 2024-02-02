@@ -11,12 +11,10 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.particle.ParticleHandle;
-import com.minelittlepony.unicopia.particle.SphereParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
+import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -48,11 +46,11 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
             .with(Trait.POWER, 1)
             .build();
 
-    protected final ParticleHandle particlEffect = new ParticleHandle();
-
     private final Timer timer;
 
     private int struggles;
+
+    private float prevRadius;
     private float radius;
 
     protected BubbleSpell(CustomisedSpellType<?> type) {
@@ -64,6 +62,10 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
     @Override
     public Timer getTimer() {
         return timer;
+    }
+
+    public float getRadius(float tickDelta) {
+        return MathHelper.lerp(tickDelta, prevRadius, radius);
     }
 
     @Override
@@ -95,14 +97,19 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
     public boolean tick(Caster<?> source, Situation situation) {
 
         if (situation == Situation.PROJECTILE) {
-
-            source.spawnParticles(ParticleTypes.BUBBLE, 2);
+            source.spawnParticles(UParticles.BUBBLE, 2);
             return true;
         }
 
         timer.tick();
 
-        if (timer.getTicksRemaining() <= 0) {
+        boolean done = timer.getTicksRemaining() <= 0;
+
+        source.spawnParticles(source.getOriginVector().add(0, 1, 0), new Sphere(true, radius * (done ? 0.25F : 0.5F)), done ? 13 : 1, pos -> {
+            source.addParticle(done ? ParticleTypes.BUBBLE_POP : UParticles.BUBBLE, pos, Vec3d.ZERO);
+        });
+
+        if (done) {
             return false;
         }
 
@@ -116,7 +123,7 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
 
         source.asEntity().fallDistance = 0;
 
-        Vec3d origin = source.getOriginVector();
+        prevRadius = radius;
 
         if (source instanceof Pony pony && pony.sneakingChanged() && pony.asEntity().isSneaking()) {
             setDirty();
@@ -128,18 +135,11 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
             }
         }
 
-        particlEffect.update(getUuid(), source, spawner -> {
-            spawner.addParticle(new SphereParticleEffect(UParticles.SPHERE, 0xFFFFFF, 0.3F, 0, new Vec3d(0, radius / 2F, 0)), origin, Vec3d.ZERO);
-        }).ifPresent(p -> {
-            p.setAttribute(Attachment.ATTR_RADIUS, radius);
-        });
-
         return !isDead();
     }
 
     @Override
     protected void onDestroyed(Caster<?> source) {
-        particlEffect.destroy();
         if (source.asEntity() instanceof LivingEntity l) {
             MODIFIERS.forEach((attribute, modifier) -> {
                 if (l.getAttributes().hasAttribute(attribute)) {

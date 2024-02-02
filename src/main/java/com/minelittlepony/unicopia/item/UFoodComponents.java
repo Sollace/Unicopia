@@ -53,6 +53,8 @@ public interface UFoodComponents {
     FoodComponent CANDY = builder(7, 0.9F).alwaysEdible().build();
     FoodComponent SALT_CUBE = builder(0, 2.9F).alwaysEdible().build();
 
+    FoodComponent POISON_JOKE = builder(0, 0F).alwaysEdible().snack().build();
+
     @Deprecated
     FoodComponent SHELL = builder(3, 5).build();
     @Deprecated

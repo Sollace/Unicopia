@@ -4,6 +4,8 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
 import com.minelittlepony.unicopia.Race;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.BlockSetType;
 import net.minecraft.block.BlockState;
@@ -22,15 +24,24 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class CloudDoorBlock extends DoorBlock implements CloudLike {
+    private static final MapCodec<CloudDoorBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            BlockState.CODEC.fieldOf("base_state").forGetter(b -> b.baseState),
+            BlockSetType.CODEC.fieldOf("block_set_type").forGetter(DoorBlock::getBlockSetType),
+            DoorBlock.createSettingsCodec()
+    ).apply(instance, CloudDoorBlock::new));
     private final BlockState baseState;
     private final CloudBlock baseBlock;
 
-    public CloudDoorBlock(Settings settings, BlockState baseState, BlockSetType blockSet) {
+    public CloudDoorBlock(BlockState baseState, BlockSetType blockSet, Settings settings) {
         super(blockSet, settings);
         this.baseState = baseState;
         this.baseBlock = (CloudBlock)baseState.getBlock();
     }
 
+    @Override
+    public MapCodec<? extends CloudDoorBlock> getCodec() {
+        return CODEC;
+    }
 
     @Override
     public final VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {

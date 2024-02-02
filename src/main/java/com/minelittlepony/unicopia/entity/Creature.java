@@ -60,7 +60,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     private boolean discordedChanged = true;
     private int smittenTicks;
 
-    private final Predicate<LivingEntity> targetPredicate = TargetSelecter.<LivingEntity>notOwnerOrFriend(() -> getOriginatingCaster().getAffinity(), this).and(e -> {
+    private final Predicate<LivingEntity> targetPredicate = TargetSelecter.<LivingEntity>validTarget(() -> getOriginatingCaster().getAffinity(), this).and(e -> {
         return Equine.of(e)
                 .filter(eq -> eq instanceof Creature)
                 .filter(eq -> isDiscorded() != ((Creature)eq).hasCommonOwner(this))

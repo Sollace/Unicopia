@@ -4,7 +4,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -27,11 +31,21 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
 public class CloudBlock extends Block implements CloudLike {
+    private static final MapCodec<CloudBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.BOOL.fieldOf("meltable").forGetter(b -> b.meltable),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, CloudBlock::new));
+
     protected final boolean meltable;
 
-    public CloudBlock(Settings settings, boolean meltable) {
+    public CloudBlock(boolean meltable, Settings settings) {
         super((meltable ? settings.ticksRandomly() : settings).nonOpaque());
         this.meltable = meltable;
+    }
+
+    @Override
+    public MapCodec<? extends CloudBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

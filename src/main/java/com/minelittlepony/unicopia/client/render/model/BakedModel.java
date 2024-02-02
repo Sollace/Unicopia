@@ -1,40 +1,70 @@
 package com.minelittlepony.unicopia.client.render.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
+import com.minelittlepony.unicopia.client.render.RenderUtil;
+
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class BakedModel {
-    private static final Vector4f drawVert = new Vector4f();
+    protected final List<RenderUtil.Vertex> vertices = new ObjectArrayList<>();
 
-    protected final List<Vertex> vertices = new ArrayList<>();
+    private final Matrix4f textureMatrix = new Matrix4f();
+
+    public Matrix4f getTextureMatrix() {
+        return textureMatrix;
+    }
+
+    public void scaleUV(float uScale, float vScale) {
+        getTextureMatrix().scale(uScale, vScale, 1);
+    }
 
     protected void addVertex(Vector4f vertex) {
-        addVertex(vertex.x, vertex.y, vertex.z, 0, 0);
+        addVertex(vertex.x, vertex.y, vertex.z, (vertex.x + 1) * 0.5F, (vertex.z + 1) * 0.5F);
     }
 
     protected void addVertex(float x, float y, float z, float u, float v) {
-        vertices.add(new Vertex(x, y, z, u, v));
+        vertices.add(new RenderUtil.Vertex(x, y, z, u, v));
     }
 
-    public final void render(MatrixStack matrices, VertexConsumer vertexWriter, int light, int overlay, float scale, float r, float g, float b, float a) {
+    public final void render(MatrixStack matrices, VertexConsumer buffer, int light, int overlay, float scale, float r, float g, float b, float a) {
         scale = Math.abs(scale);
         if (scale < 0.001F) {
             return;
         }
 
-        Matrix4f model = matrices.peek().getPositionMatrix();
-        for (Vertex vertex : vertices) {
-            drawVert.set(vertex.x() * scale, vertex.y() * scale, vertex.z() * scale, 1);
-            drawVert.mul(model);
-            vertexWriter.vertex(drawVert.x, drawVert.y, drawVert.z, r, g, b, a, vertex.u(), vertex.v(), overlay, light, 0, 0, 0);
+        matrices.push();
+        matrices.scale(scale, scale, scale);
+        Matrix4f positionmatrix = matrices.peek().getPositionMatrix();
+        for (RenderUtil.Vertex vertex : vertices) {
+            Vector4f pos = vertex.position(positionmatrix);
+            Vector4f tex = vertex.texture(textureMatrix);
+            buffer.vertex(pos.x, pos.y, pos.z, r, g, b, a, tex.x, tex.y, overlay, light, 0, 0, 0);
         }
+        matrices.pop();
+        textureMatrix.identity();
     }
 
-    record Vertex(float x, float y, float z, float u, float v) {}
+    public final void render(MatrixStack matrices, VertexConsumer buffer, float scale, float r, float g, float b, float a) {
+        scale = Math.abs(scale);
+        if (scale < 0.001F) {
+            return;
+        }
+
+        matrices.push();
+        matrices.scale(scale, scale, scale);
+        Matrix4f positionmatrix = matrices.peek().getPositionMatrix();
+        for (RenderUtil.Vertex vertex : vertices) {
+            Vector4f pos = vertex.position(positionmatrix);
+            Vector4f tex = vertex.texture(textureMatrix);
+            buffer.vertex(pos.x, pos.y, pos.z).texture(tex.x, tex.y).color(r, g, b, a).next();
+        }
+        matrices.pop();
+        textureMatrix.identity();
+    }
 }

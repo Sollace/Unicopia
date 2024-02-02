@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    { "id": "farmersdelight:horse_feed", "required": false }
+    { "id": "farmersdelight:horse_feed", "required": false },
+    { "id": "farmersdelight:rice_bale", "required": false },
+    { "id": "farmersdelight:straw_bale", "required": false }
   ]
 }

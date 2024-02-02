@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:oak_boat",
+    "minecraft:bamboo_raft",
+    "minecraft:spruce_boat",
+    "minecraft:birch_boat",
+    "minecraft:jungle_boat",
+    "minecraft:acacia_boat",
+    "minecraft:dark_oak_boat",
+    "minecraft:mangrove_boat",
+    "minecraft:cherry_boat",
+    "unicopia:palm_boat"
+  ]
+}

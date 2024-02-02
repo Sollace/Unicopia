@@ -6,10 +6,14 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
 import com.minelittlepony.unicopia.block.UBlockEntities;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.DoubleBlockProperties;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.block.StairsBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -33,6 +37,10 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class CloudChestBlock extends ChestBlock implements CloudLike {
+    private static final MapCodec<CloudChestBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            BlockState.CODEC.fieldOf("base_state").forGetter(block -> block.baseState),
+            StairsBlock.createSettingsCodec()
+    ).apply(instance, CloudChestBlock::new));
     private final BlockState baseState;
     private final CloudBlock baseBlock;
 
@@ -76,10 +84,15 @@ public class CloudChestBlock extends ChestBlock implements CloudLike {
         }
     };
 
-    public CloudChestBlock(Settings settings, BlockState baseState) {
+    public CloudChestBlock(BlockState baseState, Settings settings) {
         super(settings, () -> UBlockEntities.CLOUD_CHEST);
         this.baseState = baseState;
         this.baseBlock = (CloudBlock)baseState.getBlock();
+    }
+
+    @Override
+    public MapCodec<? extends ChestBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

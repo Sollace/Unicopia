@@ -2,9 +2,12 @@ package com.minelittlepony.unicopia.entity.mob;
 
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.ability.magic.spell.crafting.AltarRecipeMatch;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.entity.MagicImmune;
@@ -19,6 +22,7 @@ import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -30,6 +34,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.screen.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -38,14 +43,19 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
+import net.minecraft.world.World.ExplosionSourceType;
 
 public class SpellbookEntity extends MobEntity implements MagicImmune {
     private static final TrackedData<Byte> LOCKED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Boolean> ALTERED = DataTracker.registerData(SpellbookEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final byte ALTAR_BEAMS_START = 61;
+    private static final byte ALTAR_BEAMS_END = 62;
 
     private static final int TICKS_TO_SLEEP = 600;
 
@@ -55,6 +65,12 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
     private final SpellbookState state = new SpellbookState();
 
     private Optional<Altar> altar = Optional.empty();
+
+    private boolean hasBeams;
+    private int beamsActive;
+
+    @Nullable
+    private AltarRecipeMatch activeRecipe;
 
     public SpellbookEntity(EntityType<SpellbookEntity> type, World world) {
         super(type, world);
@@ -103,6 +119,14 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
 
     public void setAltar(Altar altar) {
         this.altar = Optional.of(altar);
+    }
+
+    public Optional<Altar> getAltar() {
+        return altar;
+    }
+
+    public boolean hasBeams() {
+        return hasBeams && altar.isPresent();
     }
 
     public boolean isAltered() {
@@ -206,41 +230,80 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
                     return false;
                 }
 
-                altar.pillars().forEach(pillar -> {
-                    Vec3d center = pillar.toCenterPos().add(
-                            random.nextTriangular(0.5, 0.2),
-                            random.nextTriangular(0.5, 0.2),
-                            random.nextTriangular(0.5, 0.2)
-                    );
+                tickAltarCrafting(altar);
 
-                    ((ServerWorld)getWorld()).spawnParticles(
-                            ParticleTypes.SOUL_FIRE_FLAME,
-                            center.x - 0.5, center.y + 0.5, center.z - 0.5,
-                            0,
-                            0.5, 0.5, 0.5, 0);
-
-                    if (random.nextInt(12) != 0) {
-                        return;
-                    }
-
-                    Vec3d vel = center.subtract(this.altar.get().origin().toCenterPos()).normalize();
-
-                    ((ServerWorld)getWorld()).spawnParticles(
-                            ParticleTypes.SOUL_FIRE_FLAME,
-                            center.x - 0.5, center.y + 0.5, center.z - 0.5,
-                            0,
-                            vel.x, vel.y, vel.z, -0.2);
-
-                    if (random.nextInt(2000) == 0) {
-                        if (getWorld().getBlockState(pillar).isOf(Blocks.CRYING_OBSIDIAN)) {
-                            pillar = pillar.down();
-                        }
-                        getWorld().setBlockState(pillar, Blocks.CRYING_OBSIDIAN.getDefaultState());
-                    }
-                });
+                Vec3d origin = altar.origin().toCenterPos();
+                altar.pillars().forEach(pillar -> tickAltarPillar(origin, pillar));
 
                 return true;
             });
+        }
+    }
+
+    public void setBeamTicks(int ticks) {
+        getWorld().sendEntityStatus(this, ticks > 0 ? ALTAR_BEAMS_START : ALTAR_BEAMS_END);
+        beamsActive = ticks;
+    }
+
+    private void tickAltarCrafting(Altar altar) {
+        if (activeRecipe == null || activeRecipe.isRemoved()) {
+            activeRecipe = AltarRecipeMatch.of(getWorld().getEntitiesByClass(ItemEntity.class, Box.of(altar.origin().toCenterPos(), 2, 2, 2), EntityPredicates.VALID_ENTITY));
+
+            if (activeRecipe != null) {
+                setBeamTicks(5);
+            }
+        }
+
+        if (beamsActive <= 0) {
+            return;
+        }
+
+        if (--beamsActive > 0) {
+            playSound(USounds.Vanilla.ENTITY_GUARDIAN_ATTACK, 1.5F, 0.5F);
+            return;
+        }
+
+        //setBeamTicks(0);
+
+        if (activeRecipe == null) {
+            return;
+        }
+
+        activeRecipe.craft();
+        activeRecipe = null;
+        getWorld().createExplosion(this, altar.origin().getX(), altar.origin().getY(), altar.origin().getZ(), 0, ExplosionSourceType.NONE);
+    }
+
+    private void tickAltarPillar(Vec3d origin, BlockPos pillar) {
+        Vec3d center = pillar.toCenterPos().add(
+                random.nextTriangular(0.5, 0.2),
+                random.nextTriangular(0.5, 0.2),
+                random.nextTriangular(0.5, 0.2)
+        );
+
+        ((ServerWorld)getWorld()).spawnParticles(
+                ParticleTypes.SOUL_FIRE_FLAME,
+                center.x - 0.5, center.y + 0.5, center.z - 0.5,
+                0,
+                0.5, 0.5, 0.5, 0);
+
+        if (random.nextInt(12) != 0) {
+            return;
+        }
+
+        Vec3d vel = center.subtract(origin).normalize();
+
+        ((ServerWorld)getWorld()).spawnParticles(
+                ParticleTypes.SOUL_FIRE_FLAME,
+                center.x - 0.5, center.y + 0.5, center.z - 0.5,
+                0,
+                vel.x, vel.y, vel.z, -0.2);
+
+        if (random.nextInt(2000) == 0) {
+            if (getWorld().getBlockState(pillar).isOf(Blocks.CRYING_OBSIDIAN)) {
+                pillar = pillar.down();
+            }
+            getWorld().setBlockState(pillar, Blocks.CRYING_OBSIDIAN.getDefaultState());
         }
     }
 
@@ -337,5 +400,20 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
             return null;
         });
         Altar.SERIALIZER.writeOptional("altar", compound, altar);
+    }
+
+    @Override
+    public void handleStatus(byte status) {
+        switch (status) {
+            case ALTAR_BEAMS_START:
+                altar = Altar.locateAltar(getWorld(), getBlockPos());
+                hasBeams = altar.isPresent();
+                break;
+            case ALTAR_BEAMS_END:
+                altar = Optional.empty();
+                hasBeams = false;
+            default:
+                super.handleStatus(status);
+        }
     }
 }

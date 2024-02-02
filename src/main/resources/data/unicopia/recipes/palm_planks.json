@@ -1,7 +1,9 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "planks",
   "ingredients": [
-    { "item": "unicopia:palm_log" }
+    { "tag": "unicopia:palm_logs" }
   ],
   "result": {
     "item": "unicopia:palm_planks",

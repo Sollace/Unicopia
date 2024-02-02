@@ -2,23 +2,12 @@
   "replace": false,
   "traits": "earth:1 chaos:1",
   "items": [
+    "#minecraft:walls",
+    "#minecraft:slabs",
+    "#minecraft:stairs",
     "minecraft:cobblestone",
-    "minecraft:cobblestone_stairs",
-    "minecraft:cobblestone_slab",
-    "minecraft:cobblestone_wall",
-    "minecraft:mossy_cobblestone_wall",
-    "minecraft:mossy_cobblestone_stairs",
-    "minecraft:mossy_cobblestone_slab",
-    "minecraft:cobbled_deepslate_wall",
-    "minecraft:cobbled_deepslate_stairs",
-    "minecraft:cobbled_deepslate_slab",
-    "minecraft:sandstone_stairs",
-    "minecraft:sandstone",
-    "minecraft:chiseled_sandstone",
-    "minecraft:cut_sandstone",
-    "minecraft:sandstone_slab",
-    "minecraft:cut_sandstone_slab",
-    "minecraft:sandstone_wall",
-    "minecraft:smooth_sandstone_slab"
+    "#c:uncolored_sandstone_blocks",
+    "#c:uncolored_sandstone_stairs",
+    "#c:uncolored_sandstone_slabs"
   ]
 }

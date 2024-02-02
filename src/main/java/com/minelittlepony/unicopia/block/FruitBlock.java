@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.block;
 import java.util.List;
 
 import com.minelittlepony.unicopia.ability.EarthPonyKickAbility.Buckable;
+import com.mojang.datafixers.util.Function5;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -23,20 +24,24 @@ public class FruitBlock extends Block implements Buckable {
     public static final int DEFAULT_FRUIT_SIZE = 5;
     public static final double DEFAULT_STEM_OFFSET = 2.6F;
     public static final VoxelShape DEFAULT_SHAPE = createFruitShape(DEFAULT_STEM_OFFSET, DEFAULT_FRUIT_SIZE);
-    public static final MapCodec<FruitBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Direction.CODEC.fieldOf("attachment_face").forGetter(b -> b.attachmentFace),
-            Registries.BLOCK.getCodec().fieldOf("stem").forGetter(b -> b.stem),
-            RecordCodecBuilder.<VoxelShape>create(i -> i.group(
-                    Codec.DOUBLE.fieldOf("stem_offset").forGetter(b -> (double)0),
-                    Codec.DOUBLE.fieldOf("fruit_offset").forGetter(b -> (double)0)
-            ).apply(i, FruitBlock::createFruitShape)).fieldOf("shape").forGetter(b -> b.shape),
-            Codec.BOOL.fieldOf("flammable").forGetter(b -> false),
-            BedBlock.createSettingsCodec()
-    ).apply(instance, FruitBlock::new));
+    private static final MapCodec<FruitBlock> CODEC = createCodec(FruitBlock::new);
 
-    private final Direction attachmentFace;
-    private final Block stem;
-    private final VoxelShape shape;
+    protected final Direction attachmentFace;
+    protected final Block stem;
+    protected final VoxelShape shape;
+
+    public static <T extends FruitBlock> MapCodec<T> createCodec(Function5<Direction, Block, VoxelShape, Boolean, Settings, T> constructor) {
+        return RecordCodecBuilder.mapCodec(instance -> instance.group(
+                Direction.CODEC.fieldOf("attachment_face").forGetter(b -> b.attachmentFace),
+                Registries.BLOCK.getCodec().fieldOf("stem").forGetter(b -> b.stem),
+                RecordCodecBuilder.<VoxelShape>create(i -> i.group(
+                        Codec.DOUBLE.fieldOf("stem_offset").forGetter(b -> (double)0),
+                        Codec.DOUBLE.fieldOf("fruit_offset").forGetter(b -> (double)0)
+                ).apply(i, FruitBlock::createFruitShape)).fieldOf("shape").forGetter(b -> b.shape),
+                Codec.BOOL.fieldOf("flammable").forGetter(b -> false),
+                BedBlock.createSettingsCodec()
+        ).apply(instance, constructor));
+    }
 
     public static VoxelShape createFruitShape(double stemOffset, double fruitSize) {
         final double min = (16 - fruitSize) * 0.5;

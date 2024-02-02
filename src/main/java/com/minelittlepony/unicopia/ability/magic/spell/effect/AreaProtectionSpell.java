@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
+import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
@@ -42,6 +43,8 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
                     source.addParticle(new MagicParticleEffect(getType().getColor()), pos, Vec3d.ZERO);
                 }
             });
+        } else {
+            Ether.get(source.asWorld()).getOrCreate(this, source);
         }
 
         source.findAllSpellsInRange(radius, e -> isValidTarget(source, e)).filter(caster -> !caster.hasCommonOwner(source)).forEach(caster -> {
@@ -49,6 +52,11 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
         });
 
         return !isDead();
+    }
+
+    @Override
+    protected void onDestroyed(Caster<?> caster) {
+        Ether.get(caster.asWorld()).remove(this, caster);
     }
 
     /**

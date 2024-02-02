@@ -14,10 +14,10 @@ import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.Living;
-
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
+import net.minecraft.client.option.Perspective;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -27,6 +27,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
@@ -42,9 +43,20 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         REGISTRY.put(type, rendererFactory);
     }
 
+    static {
+        register(SpellType.PLACED_SPELL, PlacedSpellRenderer::new);
+        register(SpellType.SHIELD, ShieldSpellRenderer::new);
+        register(SpellType.DARK_VORTEX, DarkVortexSpellRenderer::new);
+        register(SpellType.BUBBLE, BubbleSpellRenderer::new);
+        register(SpellType.PORTAL, PortalSpellRenderer::new);
+        register(SpellType.RAINBOOM, RainboomSpellRenderer::new);
+    }
+
     @Nullable
     private Map<SpellType<?>, SpellRenderer<?>> renderers = Map.of();
     private final MinecraftClient client = MinecraftClient.getInstance();
+
+    private SpellEffectsRenderDispatcher() {}
 
     @Override
     public Identifier getFabricId() {
@@ -53,19 +65,28 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
 
     @SuppressWarnings("unchecked")
     public <S extends Spell> SpellRenderer<S> getRenderer(S spell) {
-        return (SpellRenderer<S>)renderers.get(spell.getType());
+        return (SpellRenderer<S>)renderers.getOrDefault(spell.getType(), SpellRenderer.DEFAULT);
+    }
+
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, Spell spell, Caster<?> caster, int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+        var renderer = getRenderer(spell);
+
+        if (renderer != SpellRenderer.DEFAULT) {
+            client.getBufferBuilders().getEntityVertexConsumers().draw();
+
+            renderer.render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
+        }
     }
 
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, Caster<?> caster, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
         caster.getSpellSlot().forEach(spell -> {
-            var renderer = getRenderer(spell);
-            if (renderer != null) {
-                renderer.render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
-            }
+            render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
             return Operation.SKIP;
         }, false);
 
-        if (client.getEntityRenderDispatcher().shouldRenderHitboxes() && !client.hasReducedDebugInfo()) {
+        if (client.getEntityRenderDispatcher().shouldRenderHitboxes()
+                && !client.hasReducedDebugInfo()
+                && !(caster.asEntity() == client.cameraEntity && client.options.getPerspective() == Perspective.FIRST_PERSON)) {
             renderHotspot(matrices, vertices, caster, animationProgress);
             renderSpellDebugInfo(matrices, vertices, caster, light);
         }
@@ -109,7 +130,7 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         int left = (int)caster.asEntity().getWidth() * 64;
 
         for (Text line : debugLines) {
-            client.textRenderer.draw(line, left += 1, top += spacing, 0xFFFFFFFF, false, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, j, light);
+            client.textRenderer.draw(line, left += 1, top += spacing, Colors.WHITE, false, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, j, light);
         }
         matrices.pop();
     }

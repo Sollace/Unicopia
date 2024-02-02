@@ -4,6 +4,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
 import com.minelittlepony.unicopia.block.FancyBedBlock;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
@@ -20,6 +25,12 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class CloudBedBlock extends FancyBedBlock implements CloudLike {
+    private static final MapCodec<CloudBedBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.STRING.fieldOf("base").forGetter(b -> b.base),
+            BlockState.CODEC.fieldOf("base_state").forGetter(b -> b.baseState),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, CloudBedBlock::new));
+
     private final BlockState baseState;
     private final CloudBlock baseBlock;
 
@@ -27,6 +38,12 @@ public class CloudBedBlock extends FancyBedBlock implements CloudLike {
         super(base, settings);
         this.baseState = baseState;
         this.baseBlock = (CloudBlock)baseState.getBlock();
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public MapCodec<BedBlock> getCodec() {
+        return (MapCodec)CODEC;
     }
 
     @Override

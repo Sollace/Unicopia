@@ -40,6 +40,13 @@ public interface SpellContainer {
     void put(@Nullable Spell effect);
 
     /**
+     * Cleanly removes a spell from this spell container.
+     *
+     * @param spellid ID of the spell to remove.
+     */
+    void remove(UUID spellid);
+
+    /**
      * Removes all active effects that match or contain a matching effect.
      *
      * @return True if the collection was changed

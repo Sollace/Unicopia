@@ -4,10 +4,17 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.util.CodecUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -19,14 +26,26 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class NaturalCloudBlock extends PoreousCloudBlock {
+    private static final MapCodec<NaturalCloudBlock> CODEC = RecordCodecBuilder.<NaturalCloudBlock>mapCodec(instance -> instance.group(
+            Codec.BOOL.fieldOf("meltable").forGetter(b -> b.meltable),
+            CodecUtils.supplierOf(Soakable.CODEC).optionalFieldOf("soggy_block", null).forGetter(b -> b.soggyBlock),
+            CodecUtils.supplierOf(Registries.BLOCK.getCodec()).fieldOf("compacted_block").forGetter(b -> b.compactedBlock),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, NaturalCloudBlock::new));
 
     private final Supplier<Block> compactedBlock;
 
-    public NaturalCloudBlock(Settings settings, boolean meltable,
+    public NaturalCloudBlock(boolean meltable,
             @Nullable Supplier<Soakable> soggyBlock,
-            Supplier<Block> compactedBlock) {
-        super(settings.nonOpaque(), meltable, soggyBlock);
+            Supplier<Block> compactedBlock,
+            Settings settings) {
+        super(meltable, soggyBlock, settings.nonOpaque());
         this.compactedBlock = compactedBlock;
+    }
+
+    @Override
+    public MapCodec<NaturalCloudBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

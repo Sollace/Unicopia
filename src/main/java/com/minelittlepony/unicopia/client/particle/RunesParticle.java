@@ -1,26 +1,20 @@
 package com.minelittlepony.unicopia.client.particle;
 
-import java.util.Optional;
-
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import com.minelittlepony.common.util.Color;
-import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Link;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
-public class RunesParticle extends OrientedBillboardParticle implements Attachment {
+@Deprecated
+public class RunesParticle extends OrientedBillboardParticle {
 
     private static final Identifier[] TEXTURES = new Identifier[] {
             Unicopia.id("textures/particles/runes_0.png"),
@@ -39,10 +33,6 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
     private float prevRotationAngle;
     private float rotationAngle;
 
-    private Optional<Link> link = Optional.empty();
-
-    private int stasisAge = -1;
-
     public RunesParticle(OrientedBillboardParticleEffect effect, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         super(effect, world, x, y, z, velocityX, velocityY, velocityZ);
         setMaxAge(70);
@@ -50,52 +40,6 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
         red = world.random.nextFloat();
         green = world.random.nextFloat();
         blue = world.random.nextFloat();
-    }
-
-    @Override
-    public boolean isStillAlive() {
-        return age < (maxAge - 1);
-    }
-
-    @Override
-    public void attach(Link link) {
-        this.link = Optional.of(link);
-        velocityX = 0;
-        velocityY = 0;
-        velocityZ = 0;
-        Vec3d pos = link.get().map(EntityConvertable::asEntity).map(Entity::getPos).orElse(Vec3d.ZERO);
-        setPos(pos.x, pos.y + 0.25, pos.z);
-    }
-
-    @Override
-    public void detach() {
-        link = Optional.empty();
-        if (targetSize > 1) {
-            this.targetSize = 0;
-        }
-    }
-
-    @Override
-    public void setAttribute(int key, Number value) {
-        if (key == ATTR_COLOR) {
-            int tint = value.intValue();
-            red = Color.r(tint);
-            green = Color.g(tint);
-            blue = Color.b(tint);
-        }
-        if (key == ATTR_OPACITY) {
-            alpha = value.floatValue();
-        }
-        if (key == ATTR_RADIUS) {
-            targetSize = value.floatValue();
-        }
-        if (key == ATTR_PITCH) {
-            rotation = new Quaternionf(0, 0, 0, 1);
-            rotation.mul(RotationAxis.POSITIVE_Y.rotationDegrees(value.floatValue()));
-        }
-        if (key == ATTR_YAW) {
-            rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(180 - value.floatValue()));
-        }
     }
 
     @Override
@@ -164,15 +108,6 @@ public class RunesParticle extends OrientedBillboardParticle implements Attachme
     @Override
     public void tick() {
         super.tick();
-
-        link.flatMap(Link::get).map(EntityConvertable::asEntity).ifPresentOrElse(e -> {
-            if (getAlphaScale() >= 0.9F) {
-                if (stasisAge < 0) {
-                    stasisAge = age;
-                }
-                age = stasisAge;
-            }
-        }, this::detach);
 
         prevBaseSize = baseSize;
         if (baseSize < targetSize) {

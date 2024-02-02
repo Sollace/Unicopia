@@ -42,7 +42,7 @@ public interface UEntities {
             .dimensions(EntityDimensions.fixed(1, 1)));
     EntityType<CastSpellEntity> CAST_SPELL = register("cast_spell", FabricEntityTypeBuilder.create(SpawnGroup.MISC, CastSpellEntity::new)
             .trackRangeBlocks(200)
-            .dimensions(EntityDimensions.fixed(1, 0.4F)));
+            .dimensions(EntityDimensions.changing(4, 4)));
     EntityType<FairyEntity> TWITTERMITE = register("twittermite", FabricEntityTypeBuilder.create(SpawnGroup.MISC, FairyEntity::new)
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(0.1F, 0.1F)));
@@ -68,6 +68,12 @@ public interface UEntities {
     EntityType<LootBugEntity> LOOT_BUG = register("loot_bug", FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, LootBugEntity::new)
             .trackRangeChunks(8)
             .dimensions(EntityDimensions.fixed(0.8F, 0.6F)));
+    EntityType<TentacleEntity> TENTACLE = register("ignominious_vine", FabricEntityTypeBuilder.<TentacleEntity>create(SpawnGroup.MISC, TentacleEntity::new)
+            .trackRangeChunks(8)
+            .dimensions(EntityDimensions.fixed(0.8F, 0.8F)));
+    EntityType<IgnominiousBulbEntity> IGNOMINIOUS_BULB = register("ignominious_bulb", FabricEntityTypeBuilder.<IgnominiousBulbEntity>create(SpawnGroup.MISC, IgnominiousBulbEntity::new)
+            .trackRangeChunks(8)
+            .dimensions(EntityDimensions.fixed(3, 2)));
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         EntityType<T> type = builder.build();
@@ -82,6 +88,7 @@ public interface UEntities {
         FabricDefaultAttributeRegistry.register(SOMBRA, SombraEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(FRIENDLY_CREEPER, FriendlyCreeperEntity.createCreeperAttributes());
         FabricDefaultAttributeRegistry.register(LOOT_BUG, LootBugEntity.createSilverfishAttributes());
+        FabricDefaultAttributeRegistry.register(IGNOMINIOUS_BULB, IgnominiousBulbEntity.createMobAttributes());
 
         if (!Unicopia.getConfig().disableButterflySpawning.get()) {
             final Predicate<BiomeSelectionContext> butterflySpawnable = BiomeSelectors.foundInOverworld()

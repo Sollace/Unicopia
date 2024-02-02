@@ -5,7 +5,12 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
+import com.minelittlepony.unicopia.util.CodecUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -24,12 +29,22 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class CloudSlabBlock extends WaterloggableCloudBlock {
+    private static final MapCodec<WaterloggableCloudBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.BOOL.fieldOf("meltable").forGetter(b -> b.meltable),
+            CodecUtils.supplierOf(Soakable.CODEC).optionalFieldOf("soggy_block", null).forGetter(b -> b.soggyBlock),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, WaterloggableCloudBlock::new));
     private static final VoxelShape BOTTOM_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
     private static final VoxelShape TOP_SHAPE = Block.createCuboidShape(0.0, 8.0, 0.0, 16.0, 16.0, 16.0);
 
-    public CloudSlabBlock(Settings settings, boolean meltable, @Nullable Supplier<Soakable> soggyBlock) {
-        super(settings, meltable, soggyBlock);
+    public CloudSlabBlock(boolean meltable, @Nullable Supplier<Soakable> soggyBlock, Settings settings) {
+        super(meltable, soggyBlock, settings);
         setDefaultState(getDefaultState().with(SlabBlock.TYPE, SlabType.BOTTOM));
+    }
+
+    @Override
+    public MapCodec<? extends WaterloggableCloudBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

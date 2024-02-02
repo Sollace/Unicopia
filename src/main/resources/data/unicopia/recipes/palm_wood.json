@@ -1,5 +1,7 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "bark",
   "pattern": [
     "##",
     "##"
@@ -10,6 +12,7 @@
     }
   },
   "result": {
+    "count": 3,
     "item": "unicopia:palm_wood"
   }
 }

@@ -83,7 +83,13 @@ public class NetworkedReferenceSet<T> {
         }
     }
 
-    private synchronized void removeReference(UUID id) {
+    @Nullable
+    synchronized T getReference(UUID id) {
+        NetworkedReference<T> i = values.get(id);
+        return i == null ? null : i.getReference().orElse(null);
+    }
+
+    synchronized void removeReference(UUID id) {
         dirty |= ids.remove(id);
         NetworkedReference<T> i = values.remove(id);
         if (i != null) {

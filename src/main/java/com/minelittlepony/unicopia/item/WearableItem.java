@@ -49,6 +49,7 @@ public abstract class WearableItem extends Item implements Equipment {
         return ArmorMaterials.LEATHER.getEquipSound();
     }
 
+    @Deprecated
     @Override
     public final EquipmentSlot getSlotType() {
         return getSlotType(getDefaultStack());

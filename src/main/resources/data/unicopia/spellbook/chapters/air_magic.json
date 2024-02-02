@@ -5,68 +5,68 @@
   "content": {
     "pages": [
       {
-        "title": "Ch.4 Air Magic",
+        "title": "gui.unicopia.spellbook.chapter.air.p1.title",
         "level": 1,
         "elements": [
-          { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/air_magic.png" }
+          { "x": 15, "y": -10, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/air_magic.png" }
         ]
       },
       {
-        "title": "1st Hoof '12",
+        "title": "gui.unicopia.spellbook.chapter.air.p2.title",
         "level": 1,
         "elements": [
-          "A new month, a new chapter. Little Luna was getting bored of sitting in the tower all day (and who's to blame her? We've been on this assignment for over two months at this point).",
-          "So as a little treat, we've decided to go on a little trip to the Grand Marepid Falls to visit my friend, Commander Hurricane."
+          "gui.unicopia.spellbook.chapter.air.p1.1.body",
+          "gui.unicopia.spellbook.chapter.air.p1.2.body"
         ]
       },
       {
         "title": "",
         "level": 1,
         "elements": [
-          "The Commander has also very graciously allowed me access to her library to continue my studies. I'm excited to see what combining unicorn and pegasus magics might bring.",
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.air.p1.3.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
 
       {
-        "title": "2nd Hoof '12",
+        "title": "gui.unicopia.spellbook.chapter.air.p3.title",
         "level": 0,
         "elements": [
-          "Apologies for the, um, unusual entry in the appendices for today. It appears some little gremlin managed to obscond with my journal.",
-          "At the princess' behest, so dreadfully sorry",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.air.p3.1.body",
+          "gui.unicopia.spellbook.author1.sign_off.b",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "Air Magic I",
+        "title": "gui.unicopia.spellbook.chapter.air.p4.title",
         "level": 3,
         "elements": [
-          "Pegasus Magic",
-          "Air magic is to pegasi like fire is to unicorns. They're both equally hard to control but where fire is primarily focused around force, destruction, or protection, air is all about flexibility and free motion.",
-          "Command Hurricane has very kindly given me some tips on how to identify this trait in everyday objects.",
-          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
-          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+          "gui.unicopia.spellbook.chapter.air.p4.1.body",
+          "gui.unicopia.spellbook.chapter.air.p4.2.body",
+          "gui.unicopia.spellbook.chapter.air.p4.3.body",
+          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
+          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
         ]
       },
       {
         "title": "",
         "level": 3,
         "elements": [
-          "Anything relating to flight, or that originated from creatures that fly, or that comes from up above can be considered a source of the air trait.",
-          "Eg. Feathers.",
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.air.p4.4.body",
+          "gui.unicopia.spellbook.chapter.air.p4.5.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "Catapult",
+        "title": "spell.unicopia.catapult",
         "level": 4,
         "elements": [
-          "This is a straightforward application of a unicorn's telekineses. The catapult gem allows a caster to grab any block or creature and fling them into the air.",
-          "Use it again on something already thrown to push it away from you.",
-          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
-          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+          "gui.unicopia.spellbook.chapter.air.catapult.1.body",
+          "gui.unicopia.spellbook.chapter.air.catapult.2.body",
+          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
+          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
         ]
       },
       {
@@ -74,7 +74,7 @@
         "level": 4,
         "elements": [
           { "recipe": "unicopia:spells/catapult" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "spell": "unicopia:flame" },
@@ -82,17 +82,17 @@
               { "count": 9, "trait": "unicopia:air" }
             ]
           },
-          "* One can add apply more force by adding the strength trait"
+          "gui.unicopia.spellbook.chapter.air.catapult.modifier.1"
         ]
       },
       {
-        "title": "Bubble",
+        "title": "spell.unicopia.bubble",
         "level": 2,
         "elements": [
-          "A defensive and utility spell. Bubble will trap the target in a giant soap bubble, rendering them defensless.",
-          "Use it again will pop the bubble.",
-          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
-          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/water.png" }
+          "gui.unicopia.spellbook.chapter.air.bubble.1.body",
+          "gui.unicopia.spellbook.chapter.air.bubble.2.body",
+          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
+          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/water.png" }
         ]
       },
       {
@@ -100,7 +100,7 @@
         "level": 2,
         "elements": [
           { "recipe": "unicopia:spells/bubble" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "spell": "unicopia:catapult" },
@@ -111,46 +111,46 @@
         ]
       },
       {
-        "title": "8th Hoof '12",
+        "title": "gui.unicopia.spellbook.chapter.air.p7.title",
         "level": 4,
         "elements": [
-          "I thought I would take a short moment to write down an entry to record my findings whilst Luna and The Commander are out.",
-          "Pegasi magic really is a fascinating beast. It's not like our magic, which is more of a study, with rigid rules and practices."
+          "gui.unicopia.spellbook.chapter.air.p7.1.body",
+          "gui.unicopia.spellbook.chapter.air.p7.2.body"
         ]
       },
       {
-        "title": "Pegasi",
+        "title": "gui.unicopia.spellbook.chapter.air.p8.title",
         "level": 5,
         "elements": [
-          "Pegasus magic is more about feeling. It's an art form. They don't think about what they want to do, it just happens, but it all still follows the same principle."
+          "gui.unicopia.spellbook.chapter.air.p8.1.body"
         ]
       },
       {
-        "title": "Pegasi II",
+        "title": "gui.unicopia.spellbook.chapter.air.p9.title",
         "level": 6,
         "elements": [
-          "Take for example their cloud homes. There are no spells I can read that would let me do this, but if you feel, not with your hooves or your horn, but properly, with your mind, your heart, you will find magic buzzing all throughout.",
-          "Clouds are teeming with the air and water trait, but also others, like power, strength, life, earth. All traits of the material the clouds are mimicking."
+          "gui.unicopia.spellbook.chapter.air.p9.1.body",
+          "gui.unicopia.spellbook.chapter.air.p9.2.body"
         ]
       },
       {
-        "title": "Pegasi III",
+        "title": "gui.unicopia.spellbook.chapter.air.p10.title",
         "level": 7,
         "elements": [
-          "I wish I could study this further, but I'm afraid to interfere in this magic I don't yet fully understand.",
-          "Commander Hurricane may never forgive me if I destroy her home the first time I'm here.",
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.air.p10.1.body",
+          "gui.unicopia.spellbook.chapter.air.p10.2.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "Feather Falling",
+        "title": "spell.unicopia.feather_fall",
         "level": 5,
         "elements": [
-          "Expanding on the defensive capabilities of the protection gem, I've attempted to extend its advantages to party members.",
-          "This one is unusual because of its complexity, but in theory it should allow one to slow their own and friends' descent.",
-          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
-          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+          "gui.unicopia.spellbook.chapter.air.feather_fall.1.body",
+          "gui.unicopia.spellbook.chapter.air.feather_fall.2.body",
+          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
+          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
         ]
       },
       {
@@ -158,7 +158,7 @@
         "level": 5,
         "elements": [
           { "recipe": "unicopia:spells/feather_fall" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "spell": "unicopia:shield" },
@@ -171,68 +171,47 @@
         ]
       },
       {
-        "title": "10th Hoof '12",
+        "title": "gui.unicopia.spellbook.chapter.air.p12.title",
         "level": 6,
         "elements": [
-          "Went to dinner with Commander Huricane and Luna. We got to talking about architecture and Hurricane mentioned the Taz Marehall.",
-          "Luna thought it was a rather funny name of a castle. I had to remind her that not all cultures are the same.",
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.air.p12.1.body",
+          "gui.unicopia.spellbook.chapter.air.p12.2.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
+      { },
       {
-        "title": "",
-        "level": 0,
-        "elements": []
-      },
-      {
-        "title": "21st Hoof '12",
+        "title": "gui.unicopia.spellbook.chapter.air.p13.title",
         "level": 7,
         "elements": [
-          {
-            "text": "I'm writing this on the eve of my return to",
-            "extra": [
-              { "text": "Trotholm.", "obfuscated": true },
-              "Though my time in Cloudopolis has been elightening, I look forward to a return to the familiar surroundings and a proper rest in my own solid bed."
-            ]
-          },
-          "I cannot say the same for Luna, though. She is currently sitting on my bed beside me pouting over every little thing she sees me put into my saddlebag."
+          "gui.unicopia.spellbook.chapter.air.p13.1.body",
+          "gui.unicopia.spellbook.chapter.air.p13.2.body"
         ]
       },
       {
-        "title": "Returning Home",
+        "title": "gui.unicopia.spellbook.chapter.air.p14.title",
         "level": 7,
         "elements": [
-          {
-            "text": "She keeps insisting that we stay a little longer",
-            "extra": [
-              { "text": "to hang out with that pegasus colt I saw her with the other day, no doubt", "strikethrough": true}
-            ]
-          },
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.air.p14.1.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "22nd Hoof '12",
+        "title": "gui.unicopia.spellbook.chapter.air.p15.title",
         "level": 8,
         "elements": [
-          {
-            "text": "As we're flying above the mountain tops, I can't help but feel in awe the beauty that",
-            "extra": [
-              { "text": "Mother Faust", "obfuscated": true},
-              "has given us."
-            ]
-          },
-          "I had to spend the whole time keeping Luna from falling out, and of course answering questions about all the different kinds of clouds. Thankfully, the balloon operator was there to help with the subtleties."
+          "gui.unicopia.spellbook.chapter.air.p15.1.body",
+          "gui.unicopia.spellbook.chapter.air.p15.2.body"
         ]
       },
       {
         "title": "",
         "level": 8,
         "elements": [
-          "Being out here, above all of our troubles, really makes me forget the rest of the world for a moment. It takes me back to a simpler time, before the--",
-          "Of course the flashes of explosions to the west has to ruin it all. There appears to be a storm on the horizon. I certainly hope it not to be a bad omen..."
+          "gui.unicopia.spellbook.chapter.air.p15.3.body",
+          "gui.unicopia.spellbook.chapter.air.p15.4.body"
         ]
       }
     ]

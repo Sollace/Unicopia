@@ -1,21 +1,22 @@
 package com.minelittlepony.unicopia.block.cloud;
 
 import java.util.Arrays;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
+import com.mojang.serialization.Codec;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.IntProperty;
-import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
@@ -27,6 +28,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public interface Soakable {
+    Codec<Soakable> CODEC = Registries.BLOCK.getCodec().xmap(b -> (Soakable)b, s -> (Block)s);
+
     IntProperty MOISTURE = IntProperty.of("moisture", 1, 7);
     Direction[] DIRECTIONS = Arrays.stream(Direction.values()).filter(d -> d != Direction.UP).toArray(Direction[]::new);
 
@@ -104,16 +107,5 @@ public interface Soakable {
     private static void updateMoisture(Soakable soakable, BlockState state, World world, BlockPos pos, int newMoisture) {
         world.setBlockState(pos, soakable.getStateWithMoisture(state, newMoisture));
         world.playSound(null, pos, SoundEvents.ENTITY_SALMON_FLOP, SoundCategory.BLOCKS, 1, (float)world.random.nextTriangular(0.5, 0.3F));
-    }
-
-    @Nullable
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    static BlockState copyProperties(BlockState from, @Nullable BlockState to) {
-        if (to != null) {
-            for (Property property : from.getProperties()) {
-                to = to.withIfExists(property, from.get(property));
-            }
-        }
-        return to;
     }
 }

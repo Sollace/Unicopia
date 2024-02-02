@@ -42,10 +42,10 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
 
     public static final List<FruitBearingBlock> REGISTRY = new ArrayList<>();
 
-    private final Supplier<Block> fruit;
-    private final Supplier<ItemStack> rottenFruitSupplier;
+    protected final Supplier<Block> fruit;
+    protected final Supplier<ItemStack> rottenFruitSupplier;
 
-    private final int overlay;
+    protected final int overlay;
 
     public FruitBearingBlock(int overlay, Supplier<Block> fruit, Supplier<ItemStack> rottenFruitSupplier, Settings settings) {
         super(settings
@@ -78,6 +78,14 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
         return true;
     }
 
+    protected boolean shouldAdvance(Random random) {
+        return true;
+    }
+
+    protected BlockState getPlacedFruitState(Random random) {
+        return fruit.get().getDefaultState();
+    }
+
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.randomTick(state, world, pos, random);
@@ -86,10 +94,14 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
             return;
         }
 
-        if (world.isDay()) {
+        if (world.getBaseLightLevel(pos, 0) > 8) {
             BlockSoundGroup group = getSoundGroup(state);
             int steps = FertilizableUtil.getGrowthSteps(world, pos, state, random);
             while (steps-- > 0) {
+                if (!shouldAdvance(random)) {
+                    continue;
+                }
+
                 if (state.get(STAGE) == Stage.FRUITING) {
                     state = state.cycle(AGE);
                     if (state.get(AGE) > 20) {
@@ -105,7 +117,7 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
 
                 if (stage == Stage.FRUITING && isPositionValidForFruit(state, pos)) {
                     if (world.isAir(fruitPosition)) {
-                        world.setBlockState(fruitPosition, fruit.get().getDefaultState(), Block.NOTIFY_ALL);
+                        world.setBlockState(fruitPosition, getPlacedFruitState(random), Block.NOTIFY_ALL);
                     }
                 }
 

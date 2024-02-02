@@ -15,6 +15,11 @@ public class CloudShapingRecipe extends StonecuttingRecipe {
     }
 
     @Override
+    public boolean isIgnoredInRecipeBook() {
+        return true;
+    }
+
+    @Override
     public RecipeType<?> getType() {
         return URecipes.CLOUD_SHAPING;
     }

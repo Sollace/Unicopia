@@ -24,7 +24,7 @@ import net.minecraft.world.gen.trunk.UpwardsBranchingTrunkPlacer;
 
 public interface UTreeGen {
     Tree ZAP_APPLE_TREE = Tree.Builder.create(Unicopia.id("zap_apple_tree"), new UpwardsBranchingTrunkPlacer(
-                    7, 2, 3,
+                    5, 3, 0,
                     UniformIntProvider.create(3, 6),
                     0.3f,
                     UniformIntProvider.create(1, 3),
@@ -46,6 +46,16 @@ public interface UTreeGen {
     Tree GREEN_APPLE_TREE = createAppleTree("green_apple", UBlocks.GREEN_APPLE_LEAVES, 2);
     Tree SWEET_APPLE_TREE = createAppleTree("sweet_apple", UBlocks.SWEET_APPLE_LEAVES, 3);
     Tree SOUR_APPLE_TREE = createAppleTree("sour_apple", UBlocks.SOUR_APPLE_LEAVES, 5);
+    Tree GOLDEN_APPLE_TREE = Tree.Builder.create(Unicopia.id("golden_oak_tree"),
+            new StraightTrunkPlacer(6, 1, 3),
+            new BlobFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), 3)
+        )
+            .configure(TreeFeatureConfig.Builder::forceDirt)
+            .farmingCondition(1, 3, 5)
+            .log(UBlocks.GOLDEN_OAK_LOG)
+            .leaves(UBlocks.GOLDEN_OAK_LEAVES)
+            .sapling(Unicopia.id("golden_oak_sapling"))
+            .build();
     Tree BANANA_TREE = Tree.Builder.create(Unicopia.id("banana_tree"),
             new StraightTrunkPlacer(4, 5, 3),
             new FernFoliagePlacer(ConstantIntProvider.create(4), ConstantIntProvider.create(0))
@@ -80,10 +90,12 @@ public interface UTreeGen {
 
     static Tree createAppleTree(String name, Block leaves, int preferredDensity) {
         return Tree.Builder.create(Unicopia.id(name + "_tree"),
-                new StraightTrunkPlacer(4, 6, 2),
+                new StraightTrunkPlacer(4, 3, 2),
                 new BlobFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), 3)
             )
                 .configure(TreeFeatureConfig.Builder::forceDirt)
+                .biomes(selector -> selector.hasTag(BiomeTags.IS_FOREST))
+                .count(2, 0.01F, 1)
                 .farmingCondition(1, preferredDensity - 2, preferredDensity)
                 .log(Blocks.OAK_LOG)
                 .leaves(leaves)

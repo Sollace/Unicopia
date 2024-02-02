@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 import com.minelittlepony.unicopia.EquineContext;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -32,6 +34,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class CompactedCloudBlock extends CloudBlock {
+    private static final MapCodec<CompactedCloudBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            BlockState.CODEC.fieldOf("base_state").forGetter(block -> block.baseState)
+    ).apply(instance, CompactedCloudBlock::new));
     static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectingBlock.FACING_PROPERTIES;
     static final Collection<BooleanProperty> PROPERTIES = FACING_PROPERTIES.values();
 
@@ -49,11 +54,16 @@ public class CompactedCloudBlock extends CloudBlock {
     private final BlockState baseState;
 
     public CompactedCloudBlock(BlockState baseState) {
-        super(Settings.copy(baseState.getBlock()).dropsLike(baseState.getBlock()), true);
+        super(true, Settings.copy(baseState.getBlock()).dropsLike(baseState.getBlock()));
         this.baseState = baseState;
         PROPERTIES.forEach(property -> {
             setDefaultState(getDefaultState().with(property, true));
         });
+    }
+
+    @Override
+    public MapCodec<CompactedCloudBlock> getCodec() {
+        return CODEC;
     }
 
     @Override

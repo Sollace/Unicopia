@@ -22,6 +22,7 @@ import com.minelittlepony.unicopia.entity.player.PlayerCamera;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.handler.ClientNetworkHandlerImpl;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
+import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 import com.minelittlepony.unicopia.util.Lerp;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -53,6 +54,9 @@ public class UnicopiaClient implements ClientModInitializer {
     public final Lerp tangentalSkyAngle = new Lerp(0, true);
     public final Lerp skyAngle = new Lerp(0, true);
 
+    private ZapAppleStageStore.Stage zapAppleStage = ZapAppleStageStore.Stage.HIBERNATING;
+    private long zapStageTime;
+
     public static Optional<PlayerCamera> getCamera() {
         PlayerEntity player = MinecraftClient.getInstance().player;
 
@@ -82,6 +86,15 @@ public class UnicopiaClient implements ClientModInitializer {
 
     public UnicopiaClient() {
         instance = this;
+    }
+
+    public void setZapAppleStage(ZapAppleStageStore.Stage stage, long delta) {
+        zapAppleStage = stage;
+        zapStageTime = delta;
+    }
+
+    public float getZapStageDelta() {
+        return zapAppleStage.getCycleProgress(zapStageTime);
     }
 
     public float getSkyAngleDelta(float tickDelta) {
@@ -135,6 +148,8 @@ public class UnicopiaClient implements ClientModInitializer {
             world.setRainGradient(gradient);
             world.setThunderGradient(gradient);
         }
+
+        zapStageTime++;
     }
 
     private Float getTargetRainGradient(ClientWorld world, BlockPos pos, float tickDelta) {

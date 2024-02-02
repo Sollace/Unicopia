@@ -15,6 +15,7 @@ import net.minecraft.util.Identifier;
 
 public interface UWoodTypes {
     WoodType PALM = register("palm");
+    WoodType GOLDEN_OAK = register("golden_oak");
     RegistryKey<TerraformBoatType> PALM_BOAT_TYPE = TerraformBoatTypeRegistry.createKey(Unicopia.id("palm"));
 
     BlockSetType CLOUD = new BlockSetTypeBuilder()
