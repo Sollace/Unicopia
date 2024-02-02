@@ -3,12 +3,9 @@ package com.minelittlepony.unicopia.item;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.block.state.StateUtil;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.Block;
@@ -22,7 +19,6 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -35,14 +31,11 @@ public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.Placeme
     public static final int AREA = (SIDE_LENGTH * SIDE_LENGTH) - 1;
     public static final int MINIMUM_INPUT = 9;
 
-    private final Identifier id;
-
     private final Block target;
     private final BlockState catalyst;
     private final BlockState output;
 
-    public TransformCropsRecipe(Identifier id, Block target, BlockState catalyst, BlockState output) {
-        this.id = id;
+    public TransformCropsRecipe(Block target, BlockState catalyst, BlockState output) {
         this.output = output;
         this.target = target;
         this.catalyst = catalyst;
@@ -58,11 +51,6 @@ public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.Placeme
 
     public ItemStack getOutput() {
         return output.getBlock().getPickStack(EmptyBlockView.INSTANCE, BlockPos.ORIGIN, output);
-    }
-
-    @Override
-    public Identifier getId() {
-        return id;
     }
 
     @Override
@@ -82,11 +70,11 @@ public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.Placeme
 
     @Override
     public ItemStack craft(PlacementArea inventory, DynamicRegistryManager manager) {
-        return getOutput(manager);
+        return getResult(manager);
     }
 
     @Override
-    public ItemStack getOutput(DynamicRegistryManager manager) {
+    public ItemStack getResult(DynamicRegistryManager manager) {
         return output.getBlock().asItem().getDefaultStack();
     }
 
@@ -115,22 +103,20 @@ public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.Placeme
     }
 
     public static class Serializer implements RecipeSerializer<TransformCropsRecipe> {
-        record Intermediate(Block target, BlockState fuel, BlockState output) {}
-        private static final Codec<Intermediate> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Registries.BLOCK.getCodec().fieldOf("target").forGetter(Intermediate::target),
-                BlockState.CODEC.fieldOf("consume").forGetter(Intermediate::fuel),
-                BlockState.CODEC.fieldOf("output").forGetter(Intermediate::output)
-        ).apply(instance, Intermediate::new));
+        private static final Codec<TransformCropsRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Registries.BLOCK.getCodec().fieldOf("target").forGetter(recipe -> recipe.target),
+                BlockState.CODEC.fieldOf("consume").forGetter(recipe -> recipe.catalyst),
+                BlockState.CODEC.fieldOf("output").forGetter(recipe -> recipe.output)
+        ).apply(instance, TransformCropsRecipe::new));
 
         @Override
-        public TransformCropsRecipe read(Identifier id, JsonObject json) {
-            Intermediate content = CODEC.decode(JsonOps.INSTANCE, json).result().map(Pair::getFirst).get();
-            return new TransformCropsRecipe(id, content.target(), content.fuel(), content.output());
+        public Codec<TransformCropsRecipe> codec() {
+            return CODEC;
         }
 
         @Override
-        public TransformCropsRecipe read(Identifier id, PacketByteBuf buffer) {
-            return new TransformCropsRecipe(id,
+        public TransformCropsRecipe read(PacketByteBuf buffer) {
+            return new TransformCropsRecipe(
                     buffer.readRegistryValue(Registries.BLOCK),
                     Block.getStateFromRawId(buffer.readInt()),
                     Block.getStateFromRawId(buffer.readInt())

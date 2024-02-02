@@ -112,10 +112,10 @@ public class Main implements EmiPlugin {
         registry.addWorkstation(GROWING_CATEGORY, GROWING_STATION);
         registry.getRecipeManager().listAllOfType(URecipes.GROWING).forEach(recipe -> {
             registry.addRecipe(new EmiWorldInteractionRecipe(EmiWorldInteractionRecipe.builder()
-                .id(recipe.getId())
-                .leftInput(EmiStack.of(recipe.getTargetAsItem()))
-                .rightInput(EmiStack.of(recipe.getCatalyst(), TransformCropsRecipe.MINIMUM_INPUT), true)
-                .output(EmiStack.of(recipe.getOutput()))) {
+                .id(recipe.id())
+                .leftInput(EmiStack.of(recipe.value().getTargetAsItem()))
+                .rightInput(EmiStack.of(recipe.value().getCatalyst(), TransformCropsRecipe.MINIMUM_INPUT), true)
+                .output(EmiStack.of(recipe.value().getOutput()))) {
                 @Override
                 public EmiRecipeCategory getCategory() {
                     return GROWING_CATEGORY;

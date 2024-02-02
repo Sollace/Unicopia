@@ -138,7 +138,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
         return player.asWorld().getRecipeManager()
                 .getAllMatches(URecipes.GROWING, new TransformCropsRecipe.PlacementArea(player, pos), player.asWorld())
                 .stream()
-                .map(recipe -> recipe.checkPattern(player.asWorld(), pos))
+                .map(recipe -> recipe.value().checkPattern(player.asWorld(), pos))
                 .filter(result -> result.matchedLocations().size() + 1 >= TransformCropsRecipe.MINIMUM_INPUT)
                 .filter(result -> {
             boolean transform = result.shoudTransform(player.asWorld().random);
