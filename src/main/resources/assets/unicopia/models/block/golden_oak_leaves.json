@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/leaves",
+  "textures": {
+    "all": "unicopia:block/golden_oak_leaves"
+  }
+}

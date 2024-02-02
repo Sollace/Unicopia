@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "traits": "earth:9 darkness:8 kindness:-3",
+  "items": [
+    "#unicopia:chitin",
+    "unicopia:slime_pustule",
+    "unicopia:carapace"
+  ]
+}

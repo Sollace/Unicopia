@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity.player;
 
+import java.util.Objects;
+
 import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
@@ -53,7 +55,9 @@ public class PlayerCharmTracker implements NbtSerialisable {
     public CustomisedSpellType<?> equipSpell(Hand hand, CustomisedSpellType<?> spell) {
         CustomisedSpellType<?> previous = handSpells[hand.ordinal()];
         handSpells[hand.ordinal()] = spell;
-        pony.asEntity().playSound(USounds.GUI_SPELL_EQUIP.value(), 0.25F, 1.75F);
+        if (!Objects.equals(previous, spell)) {
+            pony.asEntity().playSound(USounds.GUI_SPELL_EQUIP.value(), 0.25F, 1.75F);
+        }
         pony.setDirty();
         return previous;
     }

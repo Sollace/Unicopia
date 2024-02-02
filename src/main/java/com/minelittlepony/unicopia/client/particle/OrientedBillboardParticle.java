@@ -22,7 +22,6 @@ public abstract class OrientedBillboardParticle extends AbstractBillboardParticl
 
         fixed = effect.fixed();
         if (fixed) {
-            // Was hamiltonianProduct (CHECK THIS!!)
             rotation.mul(RotationAxis.POSITIVE_Y.rotationDegrees(effect.pitch()));
             rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(180 - effect.yaw()));
         }

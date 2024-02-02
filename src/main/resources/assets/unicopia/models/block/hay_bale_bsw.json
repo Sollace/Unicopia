@@ -1,0 +1,22 @@
+{
+  "textures": {
+    "top": "block/hay_block_top",
+    "particle": "block/hay_block_side",
+    "side": "block/hay_block_side"
+  },
+	"elements": [
+    {
+      "name": "bottom_south_west",
+      "from": [0, 0, 8],
+      "to": [8, 8, 16],
+      "faces": {
+        "north": {"uv": [8, 8, 16, 16], "texture": "#top"},
+        "east": {"uv": [0, 8, 8, 16], "texture": "#top"},
+        "south": {"uv": [0, 8, 8, 16], "texture": "#side"},
+        "west": {"uv": [8, 8, 16, 16], "texture": "#side"},
+        "up": {"uv": [0, 8, 8, 16], "texture": "#top"},
+        "down": {"uv": [0, 0, 8, 8], "texture": "#top"}
+      }
+    }
+	]
+}

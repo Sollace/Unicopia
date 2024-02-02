@@ -44,7 +44,13 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
     }
 
     public boolean tick(Situation situation) {
-        return tick(spell -> Operation.ofBoolean(spell.tick(owner, situation)));
+        return tick(spell -> {
+            if (spell.isDying()) {
+                spell.tickDying(owner);
+                return Operation.ofBoolean(!spell.isDead());
+            }
+            return Operation.ofBoolean(spell.tick(owner, situation));
+        });
     }
 
     public boolean tick(Function<Spell, Operation> tickAction) {
@@ -84,6 +90,16 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
         write();
         if (owner instanceof UpdateCallback callback) {
             callback.onSpellSet(effect);
+        }
+    }
+
+    @Override
+    public void remove(UUID id) {
+        Spell spell = spells.getReference(id);
+        spell.setDead();
+        spell.tickDying(owner);
+        if (spell.isDead()) {
+            spells.removeReference(id);
         }
     }
 
@@ -136,7 +152,7 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
     @SuppressWarnings("unchecked")
     private <T extends Spell> Stream<T> read(@Nullable SpellPredicate<T> type, boolean synchronize, boolean sendUpdate) {
         if (synchronize && spells.fromNbt(owner.asEntity().getDataTracker().get(param)) && sendUpdate) {
-            owner.asEntity().getDataTracker().set(param, spells.toNbt());
+            write();
         }
 
         if (type == null) {

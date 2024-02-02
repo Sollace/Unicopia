@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.network;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
+import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 import com.sollace.fabwork.api.packets.*;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -29,11 +30,12 @@ public interface Channel {
     S2CPacketType<MsgSpellbookStateChanged<PlayerEntity>> SERVER_SPELLBOOK_UPDATE = SimpleNetworking.serverToClient(Unicopia.id("server_spellbook_update"), MsgSpellbookStateChanged::new);
     C2SPacketType<MsgSpellbookStateChanged<ServerPlayerEntity>> CLIENT_SPELLBOOK_UPDATE = SimpleNetworking.clientToServer(Unicopia.id("client_spellbook_update"), MsgSpellbookStateChanged::new);
 
-    S2CPacketType<MsgServerResources> SERVER_RESOURCES_SEND = SimpleNetworking.serverToClient(Unicopia.id("resources_send"), MsgServerResources::new);
+    S2CPacketType<MsgServerResources> SERVER_RESOURCES = SimpleNetworking.serverToClient(Unicopia.id("resources"), MsgServerResources::new);
 
     S2CPacketType<MsgOtherPlayerCapabilities> SERVER_OTHER_PLAYER_CAPABILITIES = SimpleNetworking.serverToClient(Unicopia.id("other_player_capabilities"), MsgOtherPlayerCapabilities::new);
     S2CPacketType<MsgPlayerAnimationChange> SERVER_PLAYER_ANIMATION_CHANGE = SimpleNetworking.serverToClient(Unicopia.id("other_player_animation_change"), MsgPlayerAnimationChange::new);
     S2CPacketType<MsgSkyAngle> SERVER_SKY_ANGLE = SimpleNetworking.serverToClient(Unicopia.id("sky_angle"), MsgSkyAngle::new);
+    S2CPacketType<MsgZapAppleStage> SERVER_ZAP_STAGE = SimpleNetworking.serverToClient(Unicopia.id("zap_stage"), MsgZapAppleStage::new);
 
     static void bootstrap() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
@@ -50,8 +52,10 @@ public interface Channel {
                     Unicopia.LOGGER.info("Setting {}'s race to {} due to host setting", handler.player.getDisplayName().getString(), Race.REGISTRY.getId(race).toString());
                 }
             }
-            sender.sendPacket(SERVER_RESOURCES_SEND.id(), new MsgServerResources().toBuffer());
+            sender.sendPacket(SERVER_RESOURCES.id(), new MsgServerResources().toBuffer());
             sender.sendPacket(SERVER_SKY_ANGLE.id(), new MsgSkyAngle(UnicopiaWorldProperties.forWorld(handler.getPlayer().getServerWorld()).getTangentalSkyAngle()).toBuffer());
+            ZapAppleStageStore store = ZapAppleStageStore.get(handler.player.getServerWorld());
+            sender.sendPacket(SERVER_ZAP_STAGE.id(), new MsgZapAppleStage(store.getStage(), store.getStageDelta()).toBuffer());
         });
     }
 }

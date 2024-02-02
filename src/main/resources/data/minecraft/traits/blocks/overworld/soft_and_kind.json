@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "traits": "kindness:3",
+  "items": [
+    "#minecraft:beds",
+    "#minecraft:wool",
+    "#minecraft:wool_carpets"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "replace": false,
+  "traits": "earth:2 life:1",
+  "items": [
+    "#minecraft:planks",
+    "#minecraft:logs_that_burn",
+    "#minecraft:wooden_stairs",
+    "#minecraft:wooden_slabs",
+    "#minecraft:wooden_fences",
+
+    "minecraft:sponge",
+    "minecraft:cobweb",
+
+    "minecraft:kelp",
+    "minecraft:cake",
+    "minecraft:chorus_plant",
+    "minecraft:moss_carpet",
+    "minecraft:mossy_cobblestone",
+
+    "minecraft:brown_mushroom_block",
+    "minecraft:red_mushroom_block",
+    "minecraft:mushroom_stem",
+
+    "minecraft:slime_block",
+    "minecraft:honey_block",
+    "minecraft:honeycomb_block",
+    "minecraft:bee_nest",
+    "minecraft:beehive"
+  ]
+}

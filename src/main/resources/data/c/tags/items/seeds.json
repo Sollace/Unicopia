@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
+    "minecraft:pumpkin_seeds",
+    "minecraft:melon_seeds",
     "unicopia:oat_seeds",
     "unicopia:green_apple_seeds",
     "unicopia:sweet_apple_seeds",

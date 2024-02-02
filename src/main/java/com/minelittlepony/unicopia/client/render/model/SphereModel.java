@@ -20,7 +20,7 @@ public class SphereModel extends BakedModel {
         compileVertices(azimuthRange, zenithIncrement, azimuthIncrement, this::addVertex);
     }
 
-    private static void compileVertices(double azimuthRange, double zenithIncrement, double azimuthIncrement, Consumer<Vector4f> collector) {
+    static void compileVertices(double azimuthRange, double zenithIncrement, double azimuthIncrement, Consumer<Vector4f> collector) {
         Vector4f vector = new Vector4f();
         for (double zenith = 0; zenith < DrawableUtil.PI; zenith += zenithIncrement) {
             for (double azimuth = 0; azimuth < azimuthRange; azimuth += azimuthIncrement) {

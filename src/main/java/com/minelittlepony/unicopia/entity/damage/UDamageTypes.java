@@ -30,6 +30,7 @@ public interface UDamageTypes {
     RegistryKey<DamageType> SUNLIGHT = register("sunlight");
     RegistryKey<DamageType> PETRIFIED = register("petrified");
     RegistryKey<DamageType> ROCK = register("rock");
+    RegistryKey<DamageType> HORSESHOE = register("horseshoe");
 
     private static RegistryKey<DamageType> register(String name) {
         var key = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Unicopia.id(name));

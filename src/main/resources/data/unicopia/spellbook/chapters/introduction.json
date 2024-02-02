@@ -5,112 +5,88 @@
   "content": {
     "pages": [
       {
-        "title": "Preface",
+        "title": "gui.unicopia.spellbook.chapter.introduction.p1.title",
         "level": 0,
         "elements": [
-          {
-             "text": "To whomever holds this tome, beware what you seek for you might not like what you find.",
-             "extra": [
-                { "text": "Hither yonder equs.", "obfuscated": true }
-             ]
-          },
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.introduction.p1.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "Ch.1 Magic in Equestria",
+        "title": "gui.unicopia.spellbook.chapter.introduction.p2.title",
         "level": 0,
         "elements": [
-          {
-            "text": "Equestria is filled with magic of all different shapes and forms. Following recent events, however, it's has become plainly obvious that we do not fully understand all that there is about the world of Equestria. That is why the crown has tasked me with researching Magic in all of its forms, so we might utilise it and, I hope, save ourselves from the",
-            "extra": [
-              { "text": "aaaaaaa", "obfuscated": "true" }
-            ]
-          },
+          "gui.unicopia.spellbook.chapter.introduction.p2.body",
           { "x": 125, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/profile.png" }
         ]
       },
       {
-        "title": "1st Mare '12",
+        "title": "gui.unicopia.spellbook.chapter.introduction.p3.title",
         "level": 0,
         "elements": [
-          "Odd Rocks",
-          "These 'Gemstones' as the locals call them are a common material found around the world. Farm-Ponies dig them up all the time and consider it a local delicacy, but I believe these stones are capable of a lot more than they let on.",
+          "gui.unicopia.spellbook.chapter.introduction.p3.1.body",
+          "gui.unicopia.spellbook.chapter.introduction.p3.2.body",
           { "x": 125, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/item/gemstone.png" }
         ]
       },
       {
-        "title": "Gemstones",
+        "title": "gui.unicopia.spellbook.chapter.introduction.p4.title",
         "level": 0,
         "elements": [
-          {
-            "text": "My research is still incomplete but I may have stumbled upon something. These stones have high magical potentia! More than I've ever seen before!"
-          },
-          {
-            "text": "Luna-wants",
-            "strikethrough": true,
-            "extra": [
-              { "text": "I'm going to keep experimenting. Hooves-crossed, I'll update you tomorrow if I find anything.", "strikethrough": false}
-            ]
-          },
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.introduction.p4.1.body",
+          "gui.unicopia.spellbook.chapter.introduction.p4.2.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "2nd Mare '12",
+        "title": "gui.unicopia.spellbook.chapter.introduction.p5.title",
         "level": 0,
         "elements": [
-          {
-            "text": "It worked! Holy",
-            "extra": [
-              { "text": "Celestia's ass-cheeks'", "obfuscated": true},
-              { "text": "it actually worked." }
-            ]
-          },
-          "This is amazing! These can do so much more than I could have ever imagined. Think of the advances I could bring to Equestria. Gem-powered lighting, heating, cooling, I'd no longer have to spend summer sitting on this-",
-          "I'm getting ahead of myself. Let me explain..."
+          "gui.unicopia.spellbook.chapter.introduction.p5.1.body",
+          "gui.unicopia.spellbook.chapter.introduction.p5.2.body",
+          "gui.unicopia.spellbook.chapter.introduction.p5.3.body"
         ]
       },
       {
-        "title": "Spellcrafting",
+        "title": "gui.unicopia.spellbook.chapter.introduction.p6.title",
         "level": 0,
         "elements": [
           { "x": 125, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/crafting.png" },
-          "I drew a guide at the start of this book to help with the placement.",
-          "Put a raw gem-it mustn't have any spells already-in the middle and place materials around it in the slots I marked.",
-          "Each material gives different effects and putting them closer enhances their influence on the gem."
+          "gui.unicopia.spellbook.chapter.introduction.p6.1.body",
+          "gui.unicopia.spellbook.chapter.introduction.p6.2.body",
+          "gui.unicopia.spellbook.chapter.introduction.p6.3.body"
         ]
       },
       {
-        "title": "3rd Mare '12",
+        "title": "gui.unicopia.spellbook.chapter.introduction.p7.title",
         "level": 0,
         "elements": [
-          "I'm going to start documenting spell combinations as I find them. Some of them are pretty obvious, like gem + fire = fire gem",
-          "But some are less clear. For instance, what traits would an egg add? Much experimenting is needed. Oh, I'm giddy with excitement!",
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.introduction.p7.1.body",
+          "gui.unicopia.spellbook.chapter.introduction.p7.2.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "Botched Gems",
+        "title": "gui.unicopia.spellbook.chapter.introduction.p8.title",
         "level": 1,
         "elements": [
-          { "x": 127, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/item/botched_gem.png" },
-          "Not every combination works. What's dissapointing is now I have all these useless stones piling up in my chambers.",
-          "I don't know what to do with them. They're not edible. At least the locals don't think so.",
-          "They do still have the traits I gave them, so maybe I can find a use other than building a rock-fort with little Luna..."
+          { "x": 127, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/item/botched_gem.png" },
+          "gui.unicopia.spellbook.chapter.introduction.p8.1.body",
+          "gui.unicopia.spellbook.chapter.introduction.p8.2.body",
+          "gui.unicopia.spellbook.chapter.introduction.p8.3.body"
         ]
       },
       {
-        "title": "13th Mare '12",
+        "title": "gui.unicopia.spellbook.chapter.introduction.p9.title",
         "level": 0,
         "elements": [
-          "Sorry for the long delay in updates. I've been hard at work researching different spells and desciding my approach.",
-          "Fire is becomg a very interesting aspect, what with traits for it being readily available.",
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.introduction.p9.1.body",
+          "gui.unicopia.spellbook.chapter.introduction.p9.2.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       }
     ]

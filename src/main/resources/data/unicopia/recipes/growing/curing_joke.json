@@ -1,0 +1,12 @@
+{
+  "type": "unicopia:transform_crop",
+  "target": "minecraft:cornflower",
+  "consume": {
+    "Name": "minecraft:lapis_block",
+    "Properties": {}
+  },
+  "output": {
+    "Name": "unicopia:curing_joke",
+    "Properties": {}
+  }
+}

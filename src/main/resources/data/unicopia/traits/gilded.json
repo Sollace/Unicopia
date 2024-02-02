@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "traits": "strength:10 generosity:-3",
+  "items": [
+    "unicopia:golden_oak_sapling",
+    "unicopia:golden_oak_leaves",
+    "unicopia:golden_oak_log",
+    "unicopia:golden_wing",
+    "unicopia:golden_oak_seeds"
+  ]
+}

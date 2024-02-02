@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.entity.player.dummy;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.InteractionManager;
@@ -7,6 +10,7 @@ import com.minelittlepony.unicopia.Owned;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -40,6 +44,11 @@ public class DummyPlayerEntity extends PlayerEntity implements Owned<PlayerEntit
     @Override
     public void setMaster(PlayerEntity owner) {
         this.owner = owner;
+    }
+
+    @Override
+    public Optional<UUID> getMasterId() {
+        return Optional.ofNullable(owner).map(Entity::getUuid);
     }
 
     @Override

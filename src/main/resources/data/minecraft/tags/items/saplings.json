@@ -1,6 +1,11 @@
 {
   "replace": false,
   "values": [
-    "unicopia:mango_sapling"
+    "unicopia:mango_sapling",
+    "unicopia:palm_sapling",
+    "unicopia:green_apple_sapling",
+    "unicopia:sour_apple_sapling",
+    "unicopia:sweet_apple_sapling",
+    "unicopia:zapling"
   ]
 }

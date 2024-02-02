@@ -1,22 +1,37 @@
 package com.minelittlepony.unicopia.ability;
 
 import java.util.Optional;
-
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.TransformCropsRecipe;
+import com.minelittlepony.unicopia.item.URecipes;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 import com.minelittlepony.unicopia.util.TraceHelper;
+import com.minelittlepony.unicopia.util.VecHelper;
+
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CarrotsBlock;
+import net.minecraft.block.FarmlandBlock;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 
 /**
  * Earth Pony ability to grow crops
@@ -57,10 +72,14 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
     public boolean apply(Pony player, Pos data) {
         int count = 0;
 
-        for (BlockPos pos : BlockPos.iterate(
-                data.pos().add(-2, -2, -2),
-                data.pos().add( 2,  2,  2))) {
-            count += applySingle(player.asWorld(), player.asWorld().getBlockState(pos), pos);
+        if (!applyDirectly(player, data.pos())) {
+            for (BlockPos pos : BlockPos.iterate(
+                    data.pos().add(-2, -2, -2),
+                    data.pos().add( 2,  2,  2))) {
+                count += applySingle(player, player.asWorld(), player.asWorld().getBlockState(pos), pos);
+            }
+        } else {
+            count = 1;
         }
 
         if (count > 0) {
@@ -69,7 +88,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
         return true;
     }
 
-    protected int applySingle(World w, BlockState state, BlockPos pos) {
+    protected int applySingle(Pony player, World w, BlockState state, BlockPos pos) {
 
         ItemStack stack = new ItemStack(Items.BONE_MEAL);
 
@@ -77,12 +96,33 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
             return growable.grow(w, state, pos) ? 1 : 0;
         }
 
+        if (state.isOf(Blocks.CARROTS)) {
+            if (state.get(CarrotsBlock.AGE) == CarrotsBlock.MAX_AGE) {
+                boolean transform = w.random.nextInt(3) == 0;
+                spawnConversionParticles(w, pos, transform);
+                if (transform) {
+                    w.setBlockState(pos, UBlocks.GOLD_ROOT.getDefaultState().with(CarrotsBlock.AGE, CarrotsBlock.MAX_AGE));
+                }
+
+                return 5;
+            }
+        }
+
+        if (w.getBlockState(pos).isIn(UTags.UNAFFECTED_BY_GROW_ABILITY)) {
+            return 0;
+        }
+
         if (BoneMealItem.useOnFertilizable(stack, w, pos)) {
             if (w.random.nextInt(350) == 0) {
                 if (w.getBlockState(pos.down()).isOf(Blocks.FARMLAND)) {
-                    w.setBlockState(pos.down(), Blocks.DIRT.getDefaultState());
+                    FarmlandBlock.setToDirt(null, state, w, pos.down());
                 }
                 w.setBlockState(pos, UBlocks.PLUNDER_VINE_BUD.getDefaultState());
+            } else if (w.random.nextInt(5000) == 0) {
+                if (w.getBlockState(pos.down()).isOf(Blocks.FARMLAND)) {
+                    FarmlandBlock.setToDirt(null, state, w, pos.down());
+                }
+                UBlocks.CURING_JOKE.grow(w, state, pos);
             }
             return 1;
         }
@@ -92,6 +132,56 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
         }
 
         return 0;
+    }
+
+    private boolean applyDirectly(Pony player, BlockPos pos) {
+        return player.asWorld().getRecipeManager()
+                .getAllMatches(URecipes.GROWING, new TransformCropsRecipe.PlacementArea(player, pos), player.asWorld())
+                .stream()
+                .map(recipe -> recipe.checkPattern(player.asWorld(), pos))
+                .filter(result -> result.matchedLocations().size() + 1 >= TransformCropsRecipe.MINIMUM_INPUT)
+                .filter(result -> {
+            boolean transform = result.shoudTransform(player.asWorld().random);
+
+            player.playSound(USounds.ENTITY_CRYSTAL_SHARDS_AMBIENT, 1);
+
+            result.matchedLocations().forEach(cell -> {
+                spawnConversionParticles(player.asWorld(), cell.up(), false);
+                BlockDestructionManager manager = BlockDestructionManager.of(player.asWorld());
+                if (transform) {
+                    if (manager.damageBlock(cell, 8) >= BlockDestructionManager.MAX_DAMAGE || player.asWorld().random.nextInt(20) == 0) {
+                        player.asWorld().setBlockState(cell, Blocks.DIRT.getDefaultState());
+                        player.asWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, cell, Block.getRawIdFromState(player.asWorld().getBlockState(cell)));
+                    }
+                } else {
+                    if (manager.damageBlock(cell, 4) >= BlockDestructionManager.MAX_DAMAGE || player.asWorld().random.nextInt(20) == 0) {
+                        player.asWorld().setBlockState(cell, Blocks.DIRT.getDefaultState());
+                        player.asWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, cell, Block.getRawIdFromState(player.asWorld().getBlockState(cell)));
+                    }
+                }
+            });
+
+            spawnConversionParticles(player.asWorld(), pos, transform);
+            if (transform) {
+                player.asWorld().setBlockState(pos, result.recipe().getResult(player.asWorld(), pos));
+            }
+
+            return true;
+        })
+        .findFirst()
+        .isPresent();
+    }
+
+    private static void spawnConversionParticles(World w, BlockPos pos, boolean success) {
+        DoubleSupplier vecComponentFactory = () -> w.random.nextTriangular(0, 0.5);
+        Supplier<Vec3d> posSupplier = () -> pos.toCenterPos().add(VecHelper.supply(vecComponentFactory));
+
+        for (int i = 0; i < 25; i++) {
+            ParticleUtils.spawnParticle(w, new MagicParticleEffect(0xFFFF00), posSupplier.get(), Vec3d.ZERO);
+            if (success) {
+                ParticleUtils.spawnParticle(w, ParticleTypes.CLOUD, posSupplier.get(), Vec3d.ZERO);
+            }
+        }
     }
 
     @Override

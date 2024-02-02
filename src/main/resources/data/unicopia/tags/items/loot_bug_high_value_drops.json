@@ -23,6 +23,7 @@
     "unicopia:golden_polearm",
     "unicopia:golden_feather",
     "unicopia:golden_wing",
+    "unicopia:golden_oak_seeds",
     { "id": "farmersdelight:golden_knife", "required": false }
   ]
 }

@@ -3,7 +3,6 @@
   "values": [
     "minecraft:hay_block",
     "#minecraft:leaves",
-    "#c:foraging/edibles_filling",
-    { "id": "farmersdelight:rice_bale", "required": false }
+    "#c:foraging/edibles_filling"
   ]
 }

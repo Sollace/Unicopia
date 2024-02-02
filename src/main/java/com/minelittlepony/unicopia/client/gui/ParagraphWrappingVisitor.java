@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.client.gui;
 
 import java.util.*;
 import java.util.function.BiConsumer;
-
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextHandler;
@@ -31,12 +30,18 @@ public class ParagraphWrappingVisitor implements StyledVisitor<Object> {
     }
 
     @Override
-    public Optional<Object> accept(Style style, String s) {
+    public Optional<Object> accept(Style initialStyle, String s) {
+        StyleBreakingVisitor visitor = new StyleBreakingVisitor(initialStyle, this::acceptFragment);
+        TextVisitFactory.visitFormatted(s, 0, initialStyle, initialStyle, visitor);
+        visitor.flush();
+        return Optional.empty();
+    }
 
+    private Optional<Object> acceptFragment(Style inlineStyle, String s) {
         int remainingLength = (int)(pageWidth - currentLineCollectedLength);
 
         while (!s.isEmpty()) {
-            int trimmedLength = handler.getTrimmedLength(s, remainingLength, style);
+            int trimmedLength = handler.getTrimmedLength(s, remainingLength, inlineStyle);
             int newline = s.indexOf('\n');
 
             if (newline >= 0 && newline < trimmedLength) {
@@ -57,7 +62,7 @@ public class ParagraphWrappingVisitor implements StyledVisitor<Object> {
                 trimmedLength = lastSpace > 0 ? Math.min(lastSpace, trimmedLength) : trimmedLength;
             }
 
-            Text fragment = Text.literal(s.substring(0, trimmedLength).trim()).setStyle(style);
+            Text fragment = Text.literal(s.substring(0, trimmedLength).trim()).setStyle(inlineStyle);
             float grabbedWidth = handler.getWidth(fragment);
 
             // advance if appending the next segment would cause an overflow
@@ -101,14 +106,42 @@ public class ParagraphWrappingVisitor implements StyledVisitor<Object> {
     }
 
     public void advance() {
+        line++;
         if (progressedNonEmpty || currentLineCollectedLength > 0) {
             progressedNonEmpty = true;
-            lineConsumer.accept(currentLine, (++line) * font.fontHeight);
+            lineConsumer.accept(currentLine, line * font.fontHeight);
         }
-        pageWidth = widthSupplier.applyAsInt((++line) * font.fontHeight);
+        pageWidth = widthSupplier.applyAsInt(line * font.fontHeight);
         currentLine = Text.empty();
         currentLineCollectedLength = 0;
     }
 
-    record StyledString (String string, Style style) {}
+    static final class StyleBreakingVisitor implements CharacterVisitor {
+        private final StyledVisitor<?> fragmentVisitor;
+        private final StringBuilder collectedText = new StringBuilder();
+
+        private Style currentStyle;
+
+        public StyleBreakingVisitor(Style initialStyle, StyledVisitor<?> fragmentVisitor) {
+            this.currentStyle = initialStyle;
+            this.fragmentVisitor = fragmentVisitor;
+        }
+
+        @Override
+        public boolean accept(int index, Style style, int codepoint) {
+            if (!style.equals(currentStyle)) {
+                flush();
+            }
+            currentStyle = style;
+            collectedText.append((char)codepoint);
+            return true;
+        }
+
+        public void flush() {
+            if (collectedText.length() > 0) {
+                fragmentVisitor.accept(currentStyle, collectedText.toString());
+                collectedText.setLength(0);
+            }
+        }
+    }
 }

@@ -19,7 +19,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ConsumptionEnchantment extends SimpleEnchantment {
@@ -44,7 +43,7 @@ public class ConsumptionEnchantment extends SimpleEnchantment {
 
         Block.getDroppedStacks(state, world, pos, blockEntity, entity, tool).forEach(s -> {
             world.playSound(null, pos, USounds.ENCHANTMENT_CONSUMPTION_CONSUME, SoundCategory.BLOCKS, 0.05F, (float)world.random.nextTriangular(0.6F, 0.2F));
-            ExperienceOrbEntity.spawn(world, Vec3d.ofCenter(pos).add(VecHelper.supply(vecComponentFactory)), s.getCount());
+            ExperienceOrbEntity.spawn(world, pos.toCenterPos().add(VecHelper.supply(vecComponentFactory)), s.getCount());
             UCriteria.USE_CONSUMPTION.trigger(entity);
         });
         state.onStacksDropped(world, pos, tool, true);

@@ -5,28 +5,28 @@
   "content": {
     "pages": [
       {
-        "title": "Ch.6 The Beyond",
+        "title": "gui.unicopia.spellbook.chapter.otherworldly.p1.title",
         "level": 10,
         "elements": [
-          { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/the_otherworldly.png" }
+          { "x": 15, "y": -10, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/the_otherworldly.png" }
         ]
       },
       {
-        "title": "2nd Croptober '12",
+        "title": "gui.unicopia.spellbook.chapter.otherworldly.p2.title",
         "level": 20,
         "elements": [
-          "This chapter serves as an exploration of the worlds beyond our own and a delving into what most unicorns would normally shy away from.",
-          "In this section can be found the most powerful of the powerful spells, but also the most danger. Read further at your own peril, as this is not for the light of mind.",
-          "- Lord Sombra"
+          "gui.unicopia.spellbook.chapter.otherworldly.p2.1.body",
+          "gui.unicopia.spellbook.chapter.otherworldly.p2.2.body",
+          "gui.unicopia.spellbook.author2.name"
         ]
       },
       {
-        "title": "Life Sapping",
+        "title": "spell.unicopia.siphoning",
         "level": 20,
         "elements": [
-          "A simple spell that siphons life force out of a living entity and uses it to revitalise the caster.",
-          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/darkness.png" },
-          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/blood.png" }
+          "gui.unicopia.spellbook.chapter.otherworldly.siphoning.1.body",
+          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/darkness.png" },
+          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/blood.png" }
         ]
       },
       {
@@ -34,7 +34,7 @@
         "level": 20,
         "elements": [
           { "recipe": "unicopia:spells/siphoning" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "spell": "unicopia:infernal" },
@@ -45,18 +45,13 @@
         ]
       },
       {
-        "title": "Necromancy",
+        "title": "spell.unicopia.necromancy",
         "level": 21,
         "elements": [
-          "This area effect spell taps into the great beyond to summon life to serve its master.",
-          {
-            "text": "This spell is not very useful when used on its own, but combined with other traits may become a powerful tool against the",
-            "extra": [
-              { "text": "Changeling Swarms.", "obfuscated": true }
-            ]
-          },
-          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/darkness.png" },
-          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/blood.png" }
+          "gui.unicopia.spellbook.chapter.otherworldly.necromancy.1.body",
+          "gui.unicopia.spellbook.chapter.otherworldly.necromancy.2.body",
+          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/darkness.png" },
+          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/blood.png" }
         ]
       },
       {
@@ -64,7 +59,7 @@
         "level": 21,
         "elements": [
           { "recipe": "unicopia:spells/necromancy" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "spell": "unicopia:siphoning" },
@@ -79,13 +74,13 @@
         ]
       },
       {
-        "title": "Dark Vortex",
+        "title": "spell.unicopia.dark_vortex",
         "level": 23,
         "elements": [
-          "Dipping below the fabric of reality, this spell taps into the deep arcane powers of the beyond to punch a hole in reality.",
-          "The resulting hole is a hungry mass that consumes all who approach. It grants massive energy, but feed it at your peril.",
-          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/chaos.png" },
-          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/darkness.png" }
+          "gui.unicopia.spellbook.chapter.otherworldly.dark_vortex.1.body",
+          "gui.unicopia.spellbook.chapter.otherworldly.dark_vortex.2.body",
+          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/chaos.png" },
+          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/darkness.png" }
         ]
       },
       {
@@ -93,7 +88,7 @@
         "level": 23,
         "elements": [
           { "recipe": "unicopia:spells/dark_vortex" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "spell": "unicopia:vortex" },
@@ -106,13 +101,13 @@
         ]
       },
       {
-        "title": "Arcane Rift",
+        "title": "spell.unicopia.portal",
         "level": 24,
         "elements": [
-          "Combining the effects of the displacement spell created by my predecessor and the dark vortex gem, one is able to tame its chaotic nature.",
-          "The arcane rift spell allows the caster to link two locations together to create a bridge across the ether. Anything that enters one end will appear at the other maintaining its velocity.",
-          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/knowledge.png" },
-          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+          "gui.unicopia.spellbook.chapter.otherworldly.portal.1.body",
+          "gui.unicopia.spellbook.chapter.otherworldly.portal.2.body",
+          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/knowledge.png" },
+          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
         ]
       },
       {
@@ -120,7 +115,7 @@
         "level": 24,
         "elements": [
           { "recipe": "unicopia:spells/portal" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "item": "unicopia:gemstone" },
@@ -133,13 +128,13 @@
         ]
       },
       {
-        "title": "Mind Swap",
+        "title": "spell.unicopia.mind_swap",
         "level": 27,
         "elements": [
-          "Continuing my predecessor's research into the abilities of the Changeling Spawn, I have enhanced his mimic spell by adding a chaotic twist.",
-          "Mind Swap extends the effects of mimic to cover two individuals, in effect swapping their bodies for a limited time.",
-          { "x": 125, "y": -20, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/dark_magic.png" },
-          { "x": 125, "y": -20, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+          "gui.unicopia.spellbook.chapter.otherworldly.mind_swap.1.body",
+          "gui.unicopia.spellbook.chapter.otherworldly.mind_swap.2.body",
+          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/dark_magic.png" },
+          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
         ]
       },
       {
@@ -147,7 +142,7 @@
         "level": 28,
         "elements": [
           { "recipe": "unicopia:spells/mind_swap" },
-          "Requires:",
+          "gui.unicopia.spellbook.recipe.requires",
           {
             "ingredients": [
               { "count": 1, "spell": "unicopia:mimic" },
@@ -156,7 +151,7 @@
               { "count": 40, "trait": "unicopia:chaos" }
             ]
           },
-          "* Add the focus trait to increase the effect's duration"
+          "gui.unicopia.spellbook.chapter.otherworldly.mind_swap.3.body"
         ]
       }
     ]

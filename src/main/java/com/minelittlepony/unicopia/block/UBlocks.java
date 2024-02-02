@@ -21,6 +21,7 @@ import com.minelittlepony.unicopia.block.cloud.SoggyCloudBlock;
 import com.minelittlepony.unicopia.block.cloud.SoggyCloudSlabBlock;
 import com.minelittlepony.unicopia.block.cloud.SoggyCloudStairsBlock;
 import com.minelittlepony.unicopia.block.cloud.UnstableCloudBlock;
+import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.cloud.CloudBlockItem;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
@@ -28,6 +29,7 @@ import com.minelittlepony.unicopia.server.world.UTreeGen;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
 import net.minecraft.block.AbstractBlock.Settings;
 import net.minecraft.block.entity.BlockEntityType;
@@ -78,7 +80,7 @@ public interface UBlocks {
     Block PALM_STAIRS = register("palm_stairs", new StairsBlock(PALM_PLANKS.getDefaultState(), Settings.copy(PALM_PLANKS).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
     Block PALM_SLAB = register("palm_slab", new SlabBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
     Block PALM_FENCE = register("palm_fence", new FenceBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
-    Block PALM_FENCE_GATE = register("palm_fence_gate", new FenceGateBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL), WoodType.OAK), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_FENCE_GATE = register("palm_fence_gate", new FenceGateBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL), UWoodTypes.PALM), ItemGroups.BUILDING_BLOCKS);
     Block PALM_DOOR = register("palm_door", new DoorBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).instrument(Instrument.BASS).strength(3.0f).nonOpaque().burnable().pistonBehavior(PistonBehavior.DESTROY), UWoodTypes.PALM.setType()), ItemGroups.FUNCTIONAL);
     Block PALM_TRAPDOOR = register("palm_trapdoor", new TrapdoorBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).instrument(Instrument.BASS).strength(3).nonOpaque().allowsSpawning(BlockConstructionUtils::never).burnable(), UWoodTypes.PALM.setType()), ItemGroups.FUNCTIONAL);
     Block PALM_PRESSURE_PLATE = register("palm_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY), BlockSetType.OAK), ItemGroups.BUILDING_BLOCKS);
@@ -126,6 +128,16 @@ public interface UBlocks {
     Block SOUR_APPLE = register("sour_apple", new FruitBlock(Settings.create().mapColor(MapColor.GREEN), Direction.DOWN, SOUR_APPLE_LEAVES, FruitBlock.DEFAULT_SHAPE));
     Block SOUR_APPLE_SPROUT = register("sour_apple_sprout", new SproutBlock(0xE5FFCC88, () -> UItems.SOUR_APPLE_SEEDS, () -> UTreeGen.SOUR_APPLE_TREE.sapling().map(Block::getDefaultState).get()));
 
+    Block GOLDEN_OAK_LEAVES = register("golden_oak_leaves", new GoldenOakLeavesBlock(FabricBlockSettings.copy(Blocks.OAK_LEAVES),
+            MapColor.GOLD.color,
+            () -> UBlocks.GOLDEN_APPLE,
+            () -> Items.GOLDEN_APPLE.getDefaultStack()
+    ), ItemGroups.NATURAL);
+    Block GOLDEN_APPLE = register("golden_apple", new EnchantedFruitBlock(Settings.create().mapColor(MapColor.GOLD), Direction.DOWN, GOLDEN_OAK_LEAVES, FruitBlock.DEFAULT_SHAPE));
+    Block GOLDEN_OAK_SPROUT = register("golden_oak_sprout", new SproutBlock(0xE5FFCC88, () -> UItems.GOLDEN_OAK_SEEDS, () -> UTreeGen.GOLDEN_APPLE_TREE.sapling().map(Block::getDefaultState).get()));
+
+    Block GOLDEN_OAK_LOG = register("golden_oak_log", BlockConstructionUtils.createLogBlock(MapColor.OFF_WHITE, MapColor.GOLD), ItemGroups.BUILDING_BLOCKS);
+
     Block APPLE_PIE = register("apple_pie", new PieBlock(Settings.create().solid().mapColor(MapColor.ORANGE).strength(0.5F).sounds(BlockSoundGroup.WOOL).pistonBehavior(PistonBehavior.DESTROY),
             () -> UItems.APPLE_PIE_SLICE,
             () -> UItems.APPLE_PIE,
@@ -138,6 +150,13 @@ public interface UBlocks {
 
     Block PLUNDER_VINE = register("plunder_vine", new ThornBlock(Settings.create().mapColor(MapColor.DARK_CRIMSON).hardness(1).ticksRandomly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY), () -> UBlocks.PLUNDER_VINE_BUD));
     Block PLUNDER_VINE_BUD = register("plunder_vine_bud", new ThornBudBlock(Settings.create().mapColor(MapColor.DARK_CRIMSON).hardness(1).nonOpaque().ticksRandomly().sounds(BlockSoundGroup.GRASS).pistonBehavior(PistonBehavior.DESTROY), PLUNDER_VINE.getDefaultState()));
+    CuringJokeBlock CURING_JOKE = register("curing_joke", new CuringJokeBlock(UEffects.BUTTER_FINGERS, 7, AbstractBlock.Settings.create().mapColor(MapColor.PALE_PURPLE).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS).offset(AbstractBlock.OffsetType.XZ).pistonBehavior(PistonBehavior.DESTROY)));
+    Block GOLD_ROOT = register("gold_root", new CarrotsBlock(AbstractBlock.Settings.create().mapColor(MapColor.GOLD).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP).pistonBehavior(PistonBehavior.DESTROY)) {
+        @Override
+        protected ItemConvertible getSeedsItem() {
+            return Items.GOLDEN_CARROT;
+        }
+    });
 
     Block CHITIN = register("chitin", new SnowyBlock(Settings.create().mapColor(MapColor.PALE_PURPLE).hardness(5).requiresTool().ticksRandomly().sounds(BlockSoundGroup.CORAL)), ItemGroups.NATURAL);
     Block SURFACE_CHITIN = register("surface_chitin", new GrowableBlock(Settings.copy(CHITIN), () -> CHITIN), ItemGroups.NATURAL);
@@ -206,6 +225,8 @@ public interface UBlocks {
     Block CRYSTAL_DOOR = register("crystal_door", new CrystalDoorBlock(Settings.copy(Blocks.IRON_DOOR), UWoodTypes.CRYSTAL), ItemGroups.FUNCTIONAL);
     Block CLOUD_DOOR = register("cloud_door", new CloudDoorBlock(Settings.copy(CLOUD), CLOUD.getDefaultState(), UWoodTypes.CLOUD), ItemGroups.FUNCTIONAL);
 
+    EdibleBlock HAY_BLOCK = register("hay_block", new EdibleBlock(new Identifier("hay_block"), new Identifier("wheat"), true));
+
     private static <T extends Block> T register(String name, T item) {
         return register(Unicopia.id(name), item);
     }
@@ -229,10 +250,15 @@ public interface UBlocks {
         if (block instanceof CloudLike || block instanceof SlimePustuleBlock || block instanceof PileBlock) {
             SEMI_TRANSPARENT_BLOCKS.add(block);
         }
+
         return Registry.register(Registries.BLOCK, id, block);
     }
 
     static void bootstrap() {
+        if (FabricLoader.getInstance().isModLoaded("farmersdelight")) {
+            register("rice_block", new EdibleBlock(new Identifier("farmersdelight", "rice_bale"), new Identifier("farmersdelight", "rice_panicle"), true));
+            register("straw_block", new EdibleBlock(new Identifier("farmersdelight", "straw_bale"), new Identifier("farmersdelight", "straw"), true));
+        }
         BlockEntityTypeSupportHelper.of(BlockEntityType.SIGN).addSupportedBlocks(PALM_SIGN, PALM_WALL_SIGN);
         BlockEntityTypeSupportHelper.of(BlockEntityType.HANGING_SIGN).addSupportedBlocks(PALM_HANGING_SIGN, PALM_WALL_HANGING_SIGN);
 
@@ -240,21 +266,24 @@ public interface UBlocks {
         StrippableBlockRegistry.register(PALM_LOG, STRIPPED_PALM_LOG);
         StrippableBlockRegistry.register(ZAP_WOOD, STRIPPED_ZAP_WOOD);
         StrippableBlockRegistry.register(PALM_WOOD, STRIPPED_PALM_WOOD);
-        Collections.addAll(TRANSLUCENT_BLOCKS, WEATHER_VANE, CHITIN_SPIKES, PLUNDER_VINE, PLUNDER_VINE_BUD, CLAM_SHELL, SCALLOP_SHELL, TURRET_SHELL);
+        Collections.addAll(TRANSLUCENT_BLOCKS, WEATHER_VANE, CHITIN_SPIKES, PLUNDER_VINE, PLUNDER_VINE_BUD, CLAM_SHELL, SCALLOP_SHELL, TURRET_SHELL, CURING_JOKE);
         TintedBlock.REGISTRY.add(PALM_LEAVES);
 
         FlammableBlockRegistry.getDefaultInstance().add(GREEN_APPLE_LEAVES, 30, 60);
         FlammableBlockRegistry.getDefaultInstance().add(SWEET_APPLE_LEAVES, 30, 60);
         FlammableBlockRegistry.getDefaultInstance().add(SOUR_APPLE_LEAVES, 30, 60);
+        FlammableBlockRegistry.getDefaultInstance().add(GOLDEN_OAK_LEAVES, 60, 120);
         FlammableBlockRegistry.getDefaultInstance().add(MANGO_LEAVES, 30, 60);
         FlammableBlockRegistry.getDefaultInstance().add(PALM_LEAVES, 30, 60);
         FlammableBlockRegistry.getDefaultInstance().add(PALM_LOG, 5, 5);
         FlammableBlockRegistry.getDefaultInstance().add(PALM_WOOD, 5, 5);
+        FlammableBlockRegistry.getDefaultInstance().add(GOLDEN_OAK_LOG, 15, 15);
         FlammableBlockRegistry.getDefaultInstance().add(STRIPPED_PALM_LOG, 5, 5);
         FlammableBlockRegistry.getDefaultInstance().add(STRIPPED_PALM_WOOD, 5, 5);
         FlammableBlockRegistry.getDefaultInstance().add(PALM_PLANKS, 5, 20);
         FlammableBlockRegistry.getDefaultInstance().add(BANANAS, 5, 20);
 
         UBlockEntities.bootstrap();
+        EdibleBlock.bootstrap();
     }
 }

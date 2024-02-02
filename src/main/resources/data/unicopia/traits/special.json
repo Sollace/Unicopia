@@ -11,6 +11,11 @@
     "unicopia:butterfly": "darkness:4 blood:7",
     "unicopia:spellbook": "power:18 darkness:7",
     "unicopia:pegasus_amulet": "power:18 order:10 power:9",
-    "unicopia:alicorn_amulet": "strength:23 order:-10 power:11 darkness:22"
+    "unicopia:alicorn_amulet": "strength:23 order:-10 power:11 darkness:22",
+    "#unicopia:cools_off_kirins": "water:6",
+    "unicopia:hive": "earth:9 darkness:8 kindness:-3 life:10",
+    "#unicopia:shades": "darkness:3",
+    "unicopia:broken_sunglasses": "darkness:3 chaos:3",
+    "unicopia:salt_cube": "power:3"
   }
 }

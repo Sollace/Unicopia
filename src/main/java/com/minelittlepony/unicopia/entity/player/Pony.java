@@ -21,6 +21,7 @@ import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
+import com.minelittlepony.unicopia.entity.effect.MetamorphosisStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
@@ -239,8 +240,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         gravity.updateFlightState();
         entity.sendAbilitiesUpdate();
-
-        UCriteria.PLAYER_CHANGE_RACE.trigger(entity);
+        recalculateCompositeRace();
     }
 
     public void setSuppressedRace(Race race) {
@@ -363,6 +363,11 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return asEntity();
     }
 
+    @Override
+    public Optional<UUID> getMasterId() {
+        return Optional.of(asEntity().getUuid());
+    }
+
     public void onSpawn() {
         if (entity.getWorld() instanceof ServerWorld sw && sw.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE) {
             boolean mustAvoidSun = getObservedSpecies() == Race.BAT && MeteorlogicalUtil.isPositionExposedToSun(sw, getOrigin());
@@ -377,20 +382,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public boolean beforeUpdate() {
         if (compositeRace.includes(Race.UNSET) || entity.age % 2 == 0) {
-            Race intrinsicRace = getSpecies();
-            Race suppressedRace = getSuppressedRace();
-            compositeRace = getSpellSlot()
-                    .get(SpellPredicate.IS_MIMIC, true)
-                    .map(AbstractDisguiseSpell::getDisguise)
-                    .map(EntityAppearance::getAppearance)
-                    .flatMap(Pony::of)
-                    .map(Pony::getSpecies)
-                    .orElse(intrinsicRace).composite(
-                  AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
-                : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
-                : null,
-                AmuletSelectors.PEARL_NECKLACE.test(entity) ? suppressedRace.or(Race.SEAPONY) : null
-            );
+            recalculateCompositeRace();
         }
 
         if (ticksInvulnerable > 0) {
@@ -480,6 +472,24 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         return super.beforeUpdate();
+    }
+
+    private void recalculateCompositeRace() {
+        Race intrinsicRace = getSpecies();
+        Race suppressedRace = getSuppressedRace();
+        compositeRace = MetamorphosisStatusEffect.getEffectiveRace(entity, getSpellSlot()
+                .get(SpellPredicate.IS_MIMIC, true)
+                .map(AbstractDisguiseSpell::getDisguise)
+                .map(EntityAppearance::getAppearance)
+                .flatMap(Pony::of)
+                .map(Pony::getSpecies)
+                .orElse(intrinsicRace)).composite(
+              AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
+            : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
+            : null,
+            AmuletSelectors.PEARL_NECKLACE.test(entity) ? suppressedRace.or(Race.SEAPONY) : null
+        );
+        UCriteria.PLAYER_CHANGE_RACE.trigger(entity);
     }
 
     @Override

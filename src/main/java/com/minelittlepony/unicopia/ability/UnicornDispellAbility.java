@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -92,7 +93,11 @@ public class UnicornDispellAbility implements Ability<Pos> {
     public boolean apply(Pony player, Pos data) {
         player.setAnimation(Animation.WOLOLO, Animation.Recipient.ANYONE);
         Caster.stream(VecHelper.findInRange(player.asEntity(), player.asWorld(), data.vec(), 3, EquinePredicates.IS_PLACED_SPELL).stream()).forEach(target -> {
-            target.getSpellSlot().clear();
+            target.getSpellSlot().forEach(spell -> {
+                spell.setDead();
+                spell.tickDying(target);
+                return Operation.ofBoolean(!spell.isDead());
+            }, true);
         });
         return true;
     }

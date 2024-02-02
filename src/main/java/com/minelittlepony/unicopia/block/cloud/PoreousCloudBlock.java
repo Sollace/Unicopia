@@ -4,6 +4,8 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.block.state.StateUtil;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -22,7 +24,7 @@ public class PoreousCloudBlock extends CloudBlock implements Soakable {
     @Override
     public BlockState getStateWithMoisture(BlockState state, int moisture) {
         if (moisture <= 0) {
-            return Soakable.copyProperties(state, getDefaultState());
+            return StateUtil.copyState(state, getDefaultState());
         }
         return soggyBlock == null ? null : soggyBlock.get().getStateWithMoisture(state, moisture);
     }

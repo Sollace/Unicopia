@@ -25,7 +25,7 @@ public interface EntityConvertable<E extends Entity> extends WorldConvertable {
      * Gets the center position where this caster is located.
      */
     default Vec3d getOriginVector() {
-        return asEntity().getPos();
+        return asEntity().getPos().add(0, asEntity().getHeight() * 0.5F, 0);
     }
 
     @Override

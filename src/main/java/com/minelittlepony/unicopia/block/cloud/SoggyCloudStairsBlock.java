@@ -4,6 +4,8 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.block.state.StateUtil;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -36,8 +38,8 @@ public class SoggyCloudStairsBlock extends CloudStairsBlock implements Soakable 
     @Override
     public BlockState getStateWithMoisture(BlockState state, int moisture) {
         if (moisture <= 0) {
-            return Soakable.copyProperties(state, dryBlock.get().getDefaultState());
+            return StateUtil.copyState(state, dryBlock.get().getDefaultState());
         }
-        return Soakable.copyProperties(state, getDefaultState()).with(MOISTURE, moisture);
+        return StateUtil.copyState(state, getDefaultState()).with(MOISTURE, moisture);
     }
 }

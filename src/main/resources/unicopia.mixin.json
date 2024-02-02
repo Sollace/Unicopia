@@ -73,6 +73,7 @@
     "client.MixinItemStack",
     "client.MixinKeyboardInput",
     "client.MixinLivingEntityRenderer",
+    "client.MixinMinecraftClient",
     "client.MixinModelPart",
     "client.MixinMouse",
     "client.MixinPlayerEntityRenderer",

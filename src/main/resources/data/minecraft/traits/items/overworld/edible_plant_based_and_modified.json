@@ -5,6 +5,8 @@
     "minecraft:golden_apple",
     "minecraft:enchanted_golden_apple",
     "minecraft:golden_carrot",
-    "minecraft:honey_bottle"
+    "minecraft:honey_bottle",
+    "#c:crops",
+    "#unicopia:food_types/forage_edible_filling"
   ]
 }
