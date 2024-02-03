@@ -45,6 +45,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
 import net.minecraft.client.color.world.FoliageColors;
+import net.minecraft.client.item.ClampedModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.SpriteProvider;
@@ -55,6 +56,8 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.particle.ParticleEffect;
@@ -116,7 +119,32 @@ public interface URenderers {
         PolearmRenderer.register(UItems.WOODEN_POLEARM, UItems.STONE_POLEARM, UItems.IRON_POLEARM, UItems.GOLDEN_POLEARM, UItems.DIAMOND_POLEARM, UItems.NETHERITE_POLEARM);
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity, seed) -> EnchantableItem.isEnchanted(stack) ? EnchantableItem.getSpellKey(stack).getAffinity().getAlignment() : 0);
         ModelPredicateProviderRegistry.register(UItems.ROCK_CANDY, new Identifier("count"), (stack, world, entity, seed) -> stack.getCount() / (float)stack.getMaxCount());
-        ModelPredicateProviderRegistry.register(Unicopia.id("zap_cycle"), (stack, world, entity, seed) -> UnicopiaClient.getInstance().getZapStageDelta());
+        ModelPredicateProviderRegistry.register(Unicopia.id("zap_cycle"), new ClampedModelPredicateProvider() {
+            private double targetAngle;
+            private double lastAngle;
+            private long lastTick;
+
+            @Override
+            public float unclampedCall(ItemStack stack, ClientWorld world, LivingEntity e, int var4) {
+                Entity entity = e != null ? e : stack.getHolder();
+                if (entity == null) {
+                    return 0;
+                }
+                if (world == null && entity.getWorld() instanceof ClientWorld) {
+                    world = (ClientWorld)entity.getWorld();
+                }
+
+                if (world == null) {
+                    return 0;
+                }
+                if (world.getTime() != lastTick) {
+                    targetAngle = world.getDimension().natural() ? UnicopiaClient.getInstance().getZapAppleStage().getCycleProgress(world) : Math.random();
+                    lastAngle = lastAngle + (targetAngle - lastAngle) * 0.1;
+                }
+
+                return (float)lastAngle;
+            }
+        });
 
         ColorProviderRegistry.BLOCK.register(URenderers::getTintedBlockColor, TintedBlock.REGISTRY.stream().toArray(Block[]::new));
         ColorProviderRegistry.ITEM.register((stack, i) -> getTintedBlockColor(Block.getBlockFromItem(stack.getItem()).getDefaultState(), null, null, i), TintedBlock.REGISTRY.stream().map(Block::asItem).filter(i -> i != Items.AIR).toArray(Item[]::new));
