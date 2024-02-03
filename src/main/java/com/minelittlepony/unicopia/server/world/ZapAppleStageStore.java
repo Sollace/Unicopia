@@ -3,12 +3,15 @@ package com.minelittlepony.unicopia.server.world;
 import java.util.Locale;
 import java.util.stream.StreamSupport;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgZapAppleStage;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.entity.EntityType;
@@ -37,17 +40,15 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
     private final World world;
 
     private Stage lastStage = Stage.HIBERNATING;
-    private long stageDelta;
-    private long lastTime;
 
     private boolean stageChanged;
     private boolean playedMoonEffect;
     private int nextLightningEvent = 1200;
+    private float prevSkyAngle;
 
     ZapAppleStageStore(World world, NbtCompound compound) {
         this(world);
         lastStage = Stage.VALUES[Math.max(0, compound.getInt("stage")) % Stage.VALUES.length];
-        stageDelta = compound.getLong("stageDelta");
         stageChanged = compound.getBoolean("stageChanged");
         playedMoonEffect = compound.getBoolean("playedMoonEffect");
         nextLightningEvent = compound.getInt("nextLightningEvent");
@@ -59,41 +60,36 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
 
     @Override
     public void tick() {
-        if (!world.isDay()) {
+        float skyAngle = MeteorlogicalUtil.getSkyAngle(world);
+
+        if (skyAngle > MeteorlogicalUtil.SUNSET) {
             if (nextLightningEvent > 0) {
                 nextLightningEvent--;
+                markDirty();
             }
 
-            if (!stageChanged && (lastStage != Stage.HIBERNATING || (world.getMoonPhase() == 0))) {
+            if (!stageChanged && MathHelper.approximatelyEquals(skyAngle, MeteorlogicalUtil.MIDNIGHT) || (
+                    MeteorlogicalUtil.isBetween(skyAngle, MeteorlogicalUtil.MIDNIGHT, MeteorlogicalUtil.MOONSET)
+                && MeteorlogicalUtil.isBetween(prevSkyAngle, MeteorlogicalUtil.SUNSET, MeteorlogicalUtil.MIDNIGHT)
+            )) {
                 stageChanged = true;
-                lastStage = lastStage.getNext();
-                stageDelta = 0;
-                playedMoonEffect = false;
-                sendUpdate();
+                if (lastStage != Stage.HIBERNATING || world.getMoonPhase() == 0) {
+                    lastStage = lastStage.getNext();
+                    playedMoonEffect = false;
+                    markDirty();
+                    sendUpdate();
+                }
             }
         } else if (stageChanged) {
             stageChanged = false;
+            markDirty();
         }
 
-        long timeOfDay = world.getTimeOfDay();
-        if (stageDelta != 0 && (timeOfDay < lastTime || timeOfDay > lastTime + 10)) {
-            long timeDifference = timeOfDay - lastTime;
-            Unicopia.LOGGER.info("Times a changing {}!", timeDifference);
-            while (timeDifference < 0) {
-                timeDifference += DAY_LENGTH;
-            }
-            stageDelta += timeDifference;
-            sendUpdate();
-        }
-        lastTime = timeOfDay;
-
-
-        stageDelta++;
-        markDirty();
+        prevSkyAngle = skyAngle;
     }
 
     protected void sendUpdate() {
-        Channel.SERVER_ZAP_STAGE.sendToAllPlayers(new MsgZapAppleStage(getStage(), stageDelta), world);
+        Channel.SERVER_ZAP_STAGE.sendToAllPlayers(new MsgZapAppleStage(getStage()), world);
     }
 
     public void playMoonEffect(BlockPos pos) {
@@ -137,22 +133,9 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
         return lastStage;
     }
 
-    public long getStageDelta() {
-        return stageDelta;
-    }
-
-    public float getStageProgress() {
-        return getStage().getStageProgress(getStageDelta());
-    }
-
-    public float getCycleProgress() {
-        return getStage().getCycleProgress(getStageDelta());
-    }
-
     @Override
     public NbtCompound writeNbt(NbtCompound compound) {
         compound.putInt("stage", lastStage.ordinal());
-        compound.putLong("stageDelta", stageDelta);
         compound.putBoolean("stageChanged", stageChanged);
         compound.putBoolean("playedMoonEffect", playedMoonEffect);
         compound.putInt("nextLightningEvent", nextLightningEvent);
@@ -160,19 +143,16 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
     }
 
     public enum Stage implements StringIdentifiable {
-        HIBERNATING(MOON_PHASES * DAY_LENGTH),
-        GREENING(DAY_LENGTH),
-        FLOWERING(DAY_LENGTH),
-        FRUITING(DAY_LENGTH),
-        RIPE(DAY_LENGTH);
+        HIBERNATING,
+        GREENING,
+        FLOWERING,
+        FRUITING,
+        RIPE;
 
         static final Stage[] VALUES = values();
+        static final float MAX = VALUES.length;
 
-        private final long duration;
-
-        Stage(long duration) {
-            this.duration = duration;
-        }
+        private final float ordinal = ordinal();
 
         public Stage getNext() {
             return byId((ordinal() + 1) % VALUES.length);
@@ -182,13 +162,21 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
             return byId(((ordinal() - 1) + VALUES.length) % VALUES.length);
         }
 
-        public float getStageProgress(long time) {
-            return (time % duration) / (float)duration;
+        public float getStageProgress(@Nullable World world) {
+            if (world == null) {
+                return 0;
+            }
+            float skyAngle = MeteorlogicalUtil.getSkyAngle(world);
+            float dayProgress = ((skyAngle + 1.5F) % 3F) / 3F;
+            if (this == HIBERNATING) {
+                return (world.getMoonPhase() + dayProgress) / MOON_PHASES;
+            }
+
+            return dayProgress;
         }
 
-        public float getCycleProgress(long time) {
-            float ordinal = ordinal();
-            return MathHelper.lerp(getStageProgress(time), ordinal, ordinal + 1) / 5F;
+        public float getCycleProgress(@Nullable World world) {
+            return MathHelper.lerp(getStageProgress(world), ordinal, ordinal + 1) / MAX;
         }
 
         public static Stage byId(int id) {

@@ -55,7 +55,7 @@ public interface Channel {
             sender.sendPacket(SERVER_RESOURCES.id(), new MsgServerResources().toBuffer());
             sender.sendPacket(SERVER_SKY_ANGLE.id(), new MsgSkyAngle(UnicopiaWorldProperties.forWorld(handler.getPlayer().getServerWorld()).getTangentalSkyAngle()).toBuffer());
             ZapAppleStageStore store = ZapAppleStageStore.get(handler.player.getServerWorld());
-            sender.sendPacket(SERVER_ZAP_STAGE.id(), new MsgZapAppleStage(store.getStage(), store.getStageDelta()).toBuffer());
+            sender.sendPacket(SERVER_ZAP_STAGE.id(), new MsgZapAppleStage(store.getStage()).toBuffer());
         });
     }
 }
