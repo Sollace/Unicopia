@@ -344,10 +344,10 @@
   "player.miningSpeed": "挖掘速度",
   "player.gravityModifier": "重力",
 
-  "unicopia.effect.tribe.stage.initial": "It appears to have no effect.",
-  "unicopia.effect.tribe.stage.crawling": "You feel the skin crawling on your back.",
-  "unicopia.effect.tribe.stage.determination": "As your bones realign you are filled by determination.",
-  "unicopia.effect.tribe.stage.resurection": "Knowing you will return to this world as a %s",
+  "unicopia.effect.tribe.stage.initial": "看起來似乎沒有發生什麼。",
+  "unicopia.effect.tribe.stage.crawling": "你感到背上的皮膚在嚅動。",
+  "unicopia.effect.tribe.stage.determination": "在骨骼重組之時，你意志堅定。",
+  "unicopia.effect.tribe.stage.resurection": "知曉在回到這個世界之時，你將會變成%s。",
 
   "effect.unicopia.food_poisoning": "食物中毒",
   "effect.unicopia.sun_blindness": "日光致盲",
