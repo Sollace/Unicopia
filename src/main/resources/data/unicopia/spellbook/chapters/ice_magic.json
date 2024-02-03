@@ -98,22 +98,6 @@
       },
       { },
       {
-        "title": "",
-        "level": 6,
-        "elements": [
-          "gui.unicopia.spellbook.chapter.ice.p7.3.body",
-          "gui.unicopia.spellbook.chapter.ice.p7.4.body",
-          "gui.unicopia.spellbook.recipe.requires",
-          {
-            "ingredients": [
-              { "count": 15, "trait": "unicopia:ice" }
-            ]
-          },
-          { "x": 115, "y": -10, "width": 32, "height": 32, "texture": "minecraft:textures/item/snowball.png" },
-          { "x": 115, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/ice.png" }
-        ]
-      },
-      {
         "title": "gui.unicopia.spellbook.chapter.ice.p8.title",
         "level": 4,
         "elements": [
@@ -123,6 +107,7 @@
           "gui.unicopia.spellbook.author1.name"
         ]
       },
+      { },
       {
         "title": "spell.unicopia.light",
         "level": 5,
