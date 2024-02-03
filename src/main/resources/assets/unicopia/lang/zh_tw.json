@@ -126,7 +126,7 @@
   "item.unicopia.acorn": "橡實",
   "item.unicopia.green_apple_seeds": "婆婆蘋果種子",
   "item.unicopia.sweet_apple_seeds": "香甜蘋果種子",
-  "item.unicopia.sour_apple_seeds": "算蘋果種子",
+  "item.unicopia.sour_apple_seeds": "酸蘋果種子",
   "item.unicopia.golden_oak_seeds": "金橡樹種子",
   "item.unicopia.apple_pie_hoof": "帶蹄印的蘋果餡餅",
   "item.unicopia.apple_pie_slice": "蘋果餡餅塊",
@@ -1152,8 +1152,8 @@
   "gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.2.body": "The alicorn amulet is a powerful force of dark magic created created by an unknown mage as their attempt to create the perfect being.",
   "gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.3.body": "It combines the traits of all races into one powerful form, but it hard to control and addictive in nature. Anyone who uses it quickly becomes reliant on it and few attempt to remove it survive the ordeal.",
 
-  "gui.unicopia.action.spells_cleared": "Removed all spells",
-  "gui.unicopia.action.no_spells_cleared": "You have no active spells",
+  "gui.unicopia.action.spells_cleared": "已移除所有魔咒",
+  "gui.unicopia.action.no_spells_cleared": "您沒有活躍的魔咒",
 
   "chapter.unicopia.crafting": "Spell Crafting",
   "chapter.unicopia.profile": "Profile",
@@ -1264,15 +1264,15 @@
   "experience.unicopia.corrupt.faustian_legend": "The Old God",
   "experience.unicopia.monstrous.faustian_legend": "Otherworldly Terror",
 
-  "unicopia.category.name": "Pony Abilities",
+  "unicopia.category.name": "小馬能力",
 
-  "key.unicopia.primary": "Primary Ability",
-  "key.unicopia.secondary": "Secondary Ability",
-  "key.unicopia.tertiary": "Tertiary Ability",
-  "key.unicopia.passive": "Passive Ability",
+  "key.unicopia.primary": "主要能力",
+  "key.unicopia.secondary": "次要能力",
+  "key.unicopia.tertiary": "第三能力",
+  "key.unicopia.passive": "被動能力",
 
-  "key.unicopia.hud_page_dn": "Hud Previous Page",
-  "key.unicopia.hud_page_up": "Hud Next Page",
+  "key.unicopia.hud_page_dn": "介面上一頁",
+  "key.unicopia.hud_page_up": "介面下一頁",
 
   "enchantment.unicopia.gem_finder": "尋礦",
   "enchantment.unicopia.padded": "衝擊保護",
@@ -1614,11 +1614,11 @@
   "advancements.unicopia.sky_route.title": "飛馬之路",
   "advancements.unicopia.sky_route.description": "加入雲中城的飛馬",
   "advancements.unicopia.molting_season_1.title": "落羽時節",
-  "advancements.unicopia.molting_season_1.description": "Drop a feather whilst flying",
+  "advancements.unicopia.molting_season_1.description": "飛行時掉一根羽毛",
   "advancements.unicopia.molting_season_2.title": "落羽時節2",
-  "advancements.unicopia.molting_season_2.description": "Drop 5 feathers whilst flying",
+  "advancements.unicopia.molting_season_2.description": "飛行時掉五根羽毛",
   "advancements.unicopia.molting_season_3.title": "落羽時節3",
-  "advancements.unicopia.molting_season_3.description": "Drop 15 feathers whilst flying",
+  "advancements.unicopia.molting_season_3.description": "飛行時掉十五根羽毛",
   "advancements.unicopia.rainbow_crash.title": "去你的，雲寶",
   "advancements.unicopia.rainbow_crash.description": "向邪惡的玻璃窗發動戰爭",
   "advancements.unicopia.second_wind.title": "乘風喘息",
@@ -1630,7 +1630,7 @@
   "advancements.unicopia.magical_route.description": "深入探索彩虹的世界",
   
   "advancements.unicopia.books.title": "書啊，是書啊！",
-  "advancements.unicopia.books.description": "這是我的魔法書，誰也阻擋不了我去讀它！",
+  "advancements.unicopia.books.description": "這是我的咒語書，誰也阻擋不了我去讀它！",
   "advancements.unicopia.tempted.title": "想啊，很想啊……",
   "advancements.unicopia.tempted.description": "帶上天角護符",
   "advancements.unicopia.hello_darkness_my_old_friend.title": "黑暗，我的老朋友……",
@@ -1654,5 +1654,5 @@
   "advancements.unicopia.love_is_power.description": "用水晶之心放逐黑晶王",
 
   "unicopia.toast.discoveries.title": "有新發現！",
-  "unicopia.toast.discoveries.description": "快看看你的魔法書"
+  "unicopia.toast.discoveries.description": "快看看你的咒語書"
 }
