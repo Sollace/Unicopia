@@ -172,7 +172,7 @@
   "item.unicopia.grogars_bell": "格羅迦之鈴",
   "item.unicopia.grogars_bell.charges": "能量：%d / %d",
   "item.unicopia.magic_staff": "魔杖",
-  "item.unicopia.magic_staff.enchanted": "%s之%s",
+  "item.unicopia.magic_staff.enchanted": "%2$s%1$s",
   "item.unicopia.magic_staff.charges": "能量：%d / %d",
   "item.unicopia.meadowbrooks_staff": "草甸青溪的魔杖",
   "item.unicopia.meadowbrooks_staff.lore": "一根很重的魔杖",
