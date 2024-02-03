@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.client.gui;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.*;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;

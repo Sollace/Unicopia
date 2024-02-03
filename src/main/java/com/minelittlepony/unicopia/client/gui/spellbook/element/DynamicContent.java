@@ -93,6 +93,7 @@ public class DynamicContent implements Content {
     class Page implements Drawable {
         private final Text title;
         private final int level;
+        private final int color;
 
         private final List<PageElement> elements;
 
@@ -103,6 +104,7 @@ public class DynamicContent implements Content {
         public Page(PacketByteBuf buffer) {
             title = buffer.readText();
             level = buffer.readInt();
+            color = buffer.readInt();
             elements = buffer.readList(r -> PageElement.read(this, r));
         }
 
@@ -130,6 +132,10 @@ public class DynamicContent implements Content {
 
         protected Bounds getBounds() {
             return bounds;
+        }
+
+        public int getColor() {
+            return color == 0 ? MagicText.getColor() : color;
         }
 
         public void reset() {
