@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
-import com.minelittlepony.unicopia.client.gui.MagicText;
 import com.minelittlepony.unicopia.client.gui.ParagraphWrappingVisitor;
 import com.minelittlepony.unicopia.container.SpellbookChapterLoader.Flow;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -53,7 +52,7 @@ class TextBlock implements PageElement {
         MatrixStack matrices = context.getMatrices();
         matrices.push();
         wrappedText.forEach(line -> {
-            context.drawText(font, needsMoreXp ? line.text().copy().formatted(Formatting.OBFUSCATED) : line.text().copy(), line.x(), 0, MagicText.getColor(), false);
+            context.drawText(font, needsMoreXp ? line.text().copy().formatted(Formatting.OBFUSCATED) : line.text().copy(), line.x(), 0, page.getColor(), false);
             matrices.translate(0, font.fontHeight, 0);
         });
         matrices.pop();
