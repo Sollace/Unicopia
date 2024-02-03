@@ -95,7 +95,7 @@ public class ClientNetworkHandlerImpl {
     }
 
     private void handleZapStage(PlayerEntity sender, MsgZapAppleStage packet) {
-        UnicopiaClient.getInstance().setZapAppleStage(packet.stage(), packet.delta());
+        UnicopiaClient.getInstance().setZapAppleStage(packet.stage());
     }
 
     @SuppressWarnings("unchecked")

@@ -12,6 +12,15 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
 public interface MeteorlogicalUtil {
+    float SUNRISE = 0;
+    float NOON = 0.5F;
+    float SUNSET = 1;
+    float MIDNIGHT = 1.5F;
+    float MOONSET = 2;
+
+    static boolean isBetween(float skyAngle, float start, float end) {
+        return skyAngle >= start && skyAngle <= end;
+    }
 
     static boolean isLookingIntoSun(World world, Entity entity) {
 
@@ -52,7 +61,7 @@ public interface MeteorlogicalUtil {
 
     static float getSunIntensity(World world) {
         float skyAngle = getSkyAngle(world);
-        if (skyAngle > 1) {
+        if (skyAngle > SUNSET) {
             return 0;
         }
 
@@ -69,7 +78,21 @@ public interface MeteorlogicalUtil {
         return intensity;
     }
 
-    // we translate sun angle to a scale of 0-1 (0=sunrise, 1=sunset, >1 nighttime)
+    /**
+     * Gets the sun angle on a scale of 0-2 where 0=sunrise, 1=sunset, and >1 is night
+     *
+     * 0 = sunrisde
+     * 0-0.5 = morning
+     * 0.5 = noon
+     * 0.5-1 = evening
+     * 1 = sunset
+     * 1-1.5 = night
+     * 1.5 = midnight
+     * 1.5-0 = night
+     *
+     * @param world
+     * @return The sun angle
+     */
     static float getSkyAngle(World world) {
         return ((world.getSkyAngle(1) + 0.25F) % 1F) * 2;
     }
