@@ -59,6 +59,7 @@ public interface PageElement extends Drawable {
                     default -> throw new IllegalArgumentException("Unexpected value: " + t);
                 };
             }));
+            case 5 -> new Structure.Builder().fromBuffer(buffer).build();
             default -> throw new IllegalArgumentException("Unexpected value: " + type);
         };
     }

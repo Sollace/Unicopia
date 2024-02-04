@@ -13,18 +13,21 @@ import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.block.state.StateUtil;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgServerResources;
 import com.minelittlepony.unicopia.util.Resources;
 import com.mojang.logging.LogUtils;
-
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
 import net.minecraft.util.*;
 import net.minecraft.util.profiler.Profiler;
 
@@ -128,9 +131,10 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
     private record Page (
             Text title,
             int level,
+            int color,
             List<Element> elements
         ) {
-        private static final Page EMPTY = new Page(Text.empty(), 0, List.of());
+        private static final Page EMPTY = new Page(Text.empty(), 0, 0, List.of());
 
         public static Page of(JsonElement json) {
             return json.isJsonObject() && json.getAsJsonObject().keySet().isEmpty() ? EMPTY : new Page(json);
@@ -144,6 +148,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             this(
                 readText(json.get("title")),
                 JsonHelper.getInt(json, "level", 0),
+                Optional.ofNullable(TextColor.parse(JsonHelper.getString(json, "color", ""))).map(TextColor::getRgb).orElse(0),
                 new ArrayList<>()
             );
             JsonHelper.getArray(json, "elements", new JsonArray()).forEach(element -> {
@@ -154,6 +159,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
         public void toBuffer(PacketByteBuf buffer) {
             buffer.writeText(title);
             buffer.writeInt(level);
+            buffer.writeInt(color);
             buffer.writeCollection(elements, Element::write);
         }
 
@@ -205,6 +211,59 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             public void toBuffer(PacketByteBuf buffer) {
                 buffer.writeByte(3);
                 buffer.writeText(text);
+            }
+        }
+
+        record Structure(List<Element> commands) implements Element {
+            static Element loadCommand(JsonObject json) {
+
+                if (json.has("pos")) {
+                    var pos = JsonHelper.getArray(json, "pos");
+                    return new Set(
+                            pos.get(0).getAsInt(), pos.get(1).getAsInt(), pos.get(2).getAsInt(),
+                            StateUtil.stateFromString(json.get("state").getAsString())
+                    );
+                }
+
+                var min = JsonHelper.getArray(json, "min");
+                var max = JsonHelper.getArray(json, "max");
+                return new Fill(
+                        min.get(0).getAsInt(), min.get(1).getAsInt(), min.get(2).getAsInt(),
+                        max.get(0).getAsInt(), max.get(1).getAsInt(), max.get(2).getAsInt(),
+                        StateUtil.stateFromString(json.get("state").getAsString())
+                );
+            }
+
+            @Override
+            public void toBuffer(PacketByteBuf buffer) {
+                buffer.writeByte(5);
+                buffer.writeCollection(commands, (b, c) -> c.toBuffer(b));
+            }
+
+            record Set(int x, int y, int z, BlockState state) implements Element {
+                @Override
+                public void toBuffer(PacketByteBuf buffer) {
+                    buffer.writeByte(1);
+                    buffer.writeInt(x);
+                    buffer.writeInt(y);
+                    buffer.writeInt(z);
+                    buffer.writeInt(Block.getRawIdFromState(state));
+                }
+
+            }
+            record Fill(int x1, int y1, int z1, int x2, int y2, int z2, BlockState state) implements Element {
+                @Override
+                public void toBuffer(PacketByteBuf buffer) {
+                    buffer.writeByte(2);
+                    buffer.writeInt(x1);
+                    buffer.writeInt(y1);
+                    buffer.writeInt(z1);
+                    buffer.writeInt(x2);
+                    buffer.writeInt(y2);
+                    buffer.writeInt(z2);
+                    buffer.writeInt(Block.getRawIdFromState(state));
+                }
+
             }
         }
 
@@ -260,6 +319,14 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
                     return new Ingredients(JsonHelper.getArray(el, "ingredients").asList().stream()
                             .map(JsonElement::getAsJsonObject)
                             .map(Ingredients::loadIngredient)
+                            .toList()
+                    );
+                }
+
+                if (el.has("structure")) {
+                    return new Structure(JsonHelper.getArray(el, "structure").asList().stream()
+                            .map(JsonElement::getAsJsonObject)
+                            .map(Structure::loadCommand)
                             .toList()
                     );
                 }

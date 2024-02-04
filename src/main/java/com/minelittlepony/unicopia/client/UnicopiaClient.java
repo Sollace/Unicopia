@@ -55,7 +55,6 @@ public class UnicopiaClient implements ClientModInitializer {
     public final Lerp skyAngle = new Lerp(0, true);
 
     private ZapAppleStageStore.Stage zapAppleStage = ZapAppleStageStore.Stage.HIBERNATING;
-    private long zapStageTime;
 
     public static Optional<PlayerCamera> getCamera() {
         PlayerEntity player = MinecraftClient.getInstance().player;
@@ -88,13 +87,12 @@ public class UnicopiaClient implements ClientModInitializer {
         instance = this;
     }
 
-    public void setZapAppleStage(ZapAppleStageStore.Stage stage, long delta) {
+    public void setZapAppleStage(ZapAppleStageStore.Stage stage) {
         zapAppleStage = stage;
-        zapStageTime = delta;
     }
 
-    public float getZapStageDelta() {
-        return zapAppleStage.getCycleProgress(zapStageTime);
+    public ZapAppleStageStore.Stage getZapAppleStage() {
+        return zapAppleStage;
     }
 
     public float getSkyAngleDelta(float tickDelta) {
@@ -148,8 +146,6 @@ public class UnicopiaClient implements ClientModInitializer {
             world.setRainGradient(gradient);
             world.setThunderGradient(gradient);
         }
-
-        zapStageTime++;
     }
 
     private Float getTargetRainGradient(ClientWorld world, BlockPos pos, float tickDelta) {

@@ -6,9 +6,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.PortalSpell;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.entity.EntityReference;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Frustum;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -79,11 +77,5 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
         });
 
         matrices.pop();
-    }
-
-    public interface WorldRendererDuck {
-        ObjectArrayList<?> unicopia_getChunkInfos();
-
-        Frustum unicopia_getFrustum();
     }
 }
