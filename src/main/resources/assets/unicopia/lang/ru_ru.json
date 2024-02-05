@@ -48,7 +48,10 @@
 
   "emi.category.unicopia.spellbook": "Книга заклинаний",
   "emi.category.unicopia.cloud_shaping": "Формоизменение",
-  "emi.category.unicopia.growing": "Рост",
+  "emi.category.unicopia.growing": "Выращивание",
+  "emi.category.unicopia.altar": "Тёмный ритуал",
+  "recipe.unicopia.altar.instruction": "Бросить предмет в огонь",
+  "recipe.unicopia.growing.instruction": "Сфокусировать магию земного пони",
 
   "item.unicopia.alicorn_badge": "Эмблема аликорна",
   "item.unicopia.unicorn_badge": "Эмблема единорога",
@@ -222,6 +225,7 @@
   "block.unicopia.rocks": "Камни",
   "block.unicopia.plunder_vine": "Чёрная лоза",
   "block.unicopia.plunder_vine_bud": "Бутон чёрной лозы",
+  "block.unicopia.spectral_fire": "Спектральный огонь",
   "block.unicopia.bananas": "Бананы",
   "block.unicopia.zapling": "Саженец зап-яблони",
   "block.unicopia.zap_log": "Бревно зап-яблони",
