@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.mob.FloatingArtefactEntity;
 import com.minelittlepony.unicopia.entity.mob.SpellbookEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
@@ -133,7 +134,7 @@ public record Altar(BlockPos origin, Set<BlockPos> pillars) {
     }
 
     public void generateDecorations(World world) {
-        world.setBlockState(origin, Blocks.SOUL_FIRE.getDefaultState(), Block.FORCE_STATE | Block.NOTIFY_ALL);
+        world.setBlockState(origin, UBlocks.SPECTRAL_FIRE.getDefaultState(), Block.FORCE_STATE | Block.NOTIFY_ALL);
         pillars.forEach(pillar -> {
             FloatingArtefactEntity artefact = UEntities.FLOATING_ARTEFACT.create(world);
             artefact.setStack(UItems.ALICORN_BADGE.getDefaultStack());
@@ -160,7 +161,7 @@ public record Altar(BlockPos origin, Set<BlockPos> pillars) {
     }
 
     public boolean isValid(World world) {
-        return checkState(world, origin, Blocks.SOUL_FIRE)
+        return checkState(world, origin, UBlocks.SPECTRAL_FIRE)
                 && checkState(world, origin.down(), Blocks.SOUL_SAND)
                 && checkSlab(world, origin.down())
                 && pillars.stream().allMatch(pillar ->

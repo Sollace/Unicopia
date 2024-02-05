@@ -9,6 +9,19 @@ import net.minecraft.block.Blocks;
 import net.minecraft.network.PacketByteBuf;
 
 public record Schematic(int dx, int dy, int dz, Entry[] states) {
+    public static final Schematic ALTAR = new Schematic.Builder()
+            .fill(0, 0, 0, 8, 0, 8, Blocks.SOUL_SAND.getDefaultState())
+            .fill(3, 1, 3, 5, 1, 5, Blocks.OBSIDIAN.getDefaultState())
+            .set(4, 1, 4, Blocks.SOUL_SAND.getDefaultState())
+            .set(4, 2, 4, Blocks.SOUL_FIRE.getDefaultState())
+            .set(4, 1, 6, Blocks.LODESTONE.getDefaultState())
+            .fill(0, 1, 2, 0, 4, 2, Blocks.OBSIDIAN.getDefaultState()).fill(0, 1, 6, 0, 4, 6, Blocks.OBSIDIAN.getDefaultState())
+            .fill(2, 1, 0, 2, 4, 0, Blocks.OBSIDIAN.getDefaultState()).fill(6, 1, 0, 6, 4, 0, Blocks.OBSIDIAN.getDefaultState())
+            .fill(8, 1, 2, 8, 4, 2, Blocks.OBSIDIAN.getDefaultState()).fill(8, 1, 6, 8, 4, 6, Blocks.OBSIDIAN.getDefaultState())
+            .fill(2, 1, 8, 2, 4, 8, Blocks.OBSIDIAN.getDefaultState()).fill(6, 1, 8, 6, 4, 8, Blocks.OBSIDIAN.getDefaultState())
+            .build();
+
+
     public static Schematic fromPacket(PacketByteBuf buffer) {
         Builder builder = new Builder();
         buffer.readCollection(ArrayList::new, buf -> {

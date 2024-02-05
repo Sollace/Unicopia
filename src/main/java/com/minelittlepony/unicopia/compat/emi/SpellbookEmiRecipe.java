@@ -57,36 +57,38 @@ class SpellbookEmiRecipe implements EmiRecipe, SpellbookRecipe.CraftingTreeBuild
 
     @Override
     public int getDisplayWidth() {
-        return 220;
+        return 150;
     }
 
     @Override
     public int getDisplayHeight() {
-        return 145;
+        return 75;
     }
 
     @Override
     public void addWidgets(WidgetHolder widgets) {
         widgets.addTexture(SpellbookScreen.TEXTURE, 0, 0, getDisplayWidth(), getDisplayHeight(), 50, 50, 128, 128, 512, 256);
-        widgets.addTexture(Main.EMPTY_ARROW, 160, 65);
+        widgets.addTexture(Main.EMPTY_ARROW, 85, 30);
 
         List<HexagonalCraftingGrid.Slot> grid = new ArrayList<>();
         List<HexagonalCraftingGrid.Slot> gem = new ArrayList<>();
-        HexagonalCraftingGrid.create(4, 35, 3, grid, gem);
+        HexagonalCraftingGrid.create(-34, -5, 3, grid, gem);
 
         int currentInput = 1;
 
         for (int i = 0; i < grid.size(); i++) {
-            widgets.add(new SlotTexture(grid.get(i)));
+            var slot = grid.get(i);
 
-            if (currentInput < inputs.size() && grid.get(i).weight() == 1) {
-                widgets.addSlot(inputs.get(currentInput++), grid.get(i).left(), grid.get(i).top()).drawBack(false);
-            } else {
-                widgets.addSlot(grid.get(i).left(), grid.get(i).top()).drawBack(false);
+            if (currentInput < inputs.size() && slot.weight() == 1) {
+                widgets.add(new SlotTexture(slot));
+                widgets.addSlot(inputs.get(currentInput++), slot.left(), slot.top()).drawBack(false);
+            } else if (slot.weight() == 1) {
+                widgets.add(new SlotTexture(slot));
+                widgets.addSlot(slot.left(), slot.top()).drawBack(false);
             }
         }
         widgets.addSlot(inputs.get(0), gem.get(0).left(), gem.get(0).top()).drawBack(false);
-        widgets.addSlot(getOutput(), 190, 60).large(true).recipeContext(this);
+        widgets.addSlot(getOutput(), 120, 25).large(true).recipeContext(this);
     }
 
     protected EmiIngredient getOutput() {
