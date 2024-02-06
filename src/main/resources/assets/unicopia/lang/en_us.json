@@ -1447,6 +1447,8 @@
   "death.attack.unicopia.horseshoe.self": "%1$s dinged himself",
   "death.attack.unicopia.horseshoe.item": "%1$s was dinged by %2$s using %3$s",
   "death.attack.unicopia.horseshoe.player": "%1$s was dinged by %2$s",
+  "death.attack.unicopia.spikes": "%1$s was pricked to death",
+  "death.attack.unicopia.spikes.player": "%1$s fell into some spikes whilst trying to escape %2$s",
 
   "death.fell.accident.ladder.pegasus": "%1$s forgot they could fly and fell off a ladder",
   "death.fell.accident.vines.pegasus": "%1$s forgot they could fly and fell off some vines",
