@@ -81,6 +81,7 @@ public interface Spell extends NbtSerialisable, Affine {
      * Gets the default form of this spell used to apply to a caster.
      * @param caster    The caster currently fueling this spell
      */
+    @Nullable
     default Spell prepareForCast(Caster<?> caster, CastingMethod method) {
         return this;
     }

@@ -59,21 +59,26 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
 
         caster.playSound(USounds.SPELL_CAST_SHOOT, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
-        if (!caster.isClient()) {
-            MagicProjectileEntity projectile = UEntities.MAGIC_BEAM.create(world);
-            projectile.setPosition(entity.getX(), entity.getEyeY() - 0.1F, entity.getZ());
-            projectile.setOwner(entity);
-            projectile.setItem(UItems.GEMSTONE.getDefaultStack(spell.getType()));
-            spell.prepareForCast(caster, CastingMethod.STORED).apply(projectile);
-            projectile.setVelocity(entity, entity.getPitch(), entity.getYaw(), 0, 1.5F, divergance);
-            projectile.setNoGravity(true);
-            configureProjectile(projectile, caster);
-            world.spawnEntity(projectile);
-
-            return Optional.of(projectile);
+        if (caster.isClient()) {
+            return Optional.empty();
         }
 
-        return Optional.empty();
+        Spell s = spell.prepareForCast(caster, CastingMethod.STORED);
+        if (s == null) {
+            return Optional.empty();
+        }
+
+        MagicProjectileEntity projectile = UEntities.MAGIC_BEAM.create(world);
+        projectile.setPosition(entity.getX(), entity.getEyeY() - 0.1F, entity.getZ());
+        projectile.setOwner(entity);
+        projectile.setItem(UItems.GEMSTONE.getDefaultStack(spell.getType()));
+        s.apply(projectile);
+        projectile.setVelocity(entity, entity.getPitch(), entity.getYaw(), 0, 1.5F, divergance);
+        projectile.setNoGravity(true);
+        configureProjectile(projectile, caster);
+        world.spawnEntity(projectile);
+
+        return Optional.of(projectile);
     }
 
     @Override

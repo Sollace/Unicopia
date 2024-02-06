@@ -169,8 +169,12 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
             wearer.updateVelocity();
         }
 
-        EFFECT_SCALES.keySet().forEach(attribute -> {
-            wearer.updateAttributeModifier(EFFECT_UUID, attribute, 0F, EFFECT_FACTORY, false);
+        updateAttributes(wearer, 0);
+    }
+
+    public static void updateAttributes(Living<?> wearer, float effectScale) {
+        EFFECT_SCALES.entrySet().forEach(attribute -> {
+            wearer.updateAttributeModifier(EFFECT_UUID, attribute.getKey(), attribute.getValue() * effectScale, EFFECT_FACTORY, false);
         });
     }
 
@@ -291,10 +295,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
         // every 1 second, update modifiers
         if (fullSecond) {
-            EFFECT_SCALES.entrySet().forEach(attribute -> {
-                float seconds = (float)attachedTicks / ItemTracker.SECONDS;
-                living.updateAttributeModifier(EFFECT_UUID, attribute.getKey(), attribute.getValue() * seconds, EFFECT_FACTORY, false);
-            });
+            updateAttributes(living, (float)attachedTicks / ItemTracker.SECONDS);
         }
     }
 
