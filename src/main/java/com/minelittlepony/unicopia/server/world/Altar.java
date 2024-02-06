@@ -31,7 +31,16 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
-public record Altar(BlockPos origin, Set<BlockPos> pillars) {
+public record Altar(
+        /**
+         * The position of the central spectral fire of this altar
+         */
+        BlockPos origin,
+        /**
+         * Pillar top positions
+         */
+        Set<BlockPos> pillars
+) {
     private static final Direction[] HORIZONTALS = { Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST };
     private static final Predicate<Entity> IS_PARTICIPANT = EntityPredicates.VALID_ENTITY.and(e -> e instanceof FloatingArtefactEntity || e instanceof SpellbookEntity);
     public static final NbtSerialisable.Serializer<Altar> SERIALIZER = NbtSerialisable.Serializer.of(nbt -> {

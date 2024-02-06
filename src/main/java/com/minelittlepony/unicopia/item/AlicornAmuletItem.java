@@ -8,6 +8,7 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableMultimap;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
@@ -25,7 +26,6 @@ import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -198,9 +198,8 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
         }
 
         if (entity instanceof PlayerEntity) {
-            if (entity.isOnFire() && world.getBlockState(entity.getBlockPos().up()).isOf(Blocks.SOUL_FIRE)) {
-                if (UnicopiaWorldProperties.forWorld((ServerWorld)world).isActiveAltar(entity.getBlockPos())
-                    || UnicopiaWorldProperties.forWorld((ServerWorld)world).isActiveAltar(entity.getBlockPos().up())) {
+            if (entity.isOnFire() && world.getBlockState(entity.getBlockPos().up()).isOf(UBlocks.SPECTRAL_FIRE)) {
+                if (UnicopiaWorldProperties.forWorld((ServerWorld)world).isActiveAltar(entity)) {
                     if (living.asEntity().getHealth() < 2) {
                         entity.setFireTicks(0);
                         world.removeBlock(entity.getBlockPos().up(), false);

@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSkyAngle;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
@@ -67,6 +68,15 @@ public class UnicopiaWorldProperties extends PersistentState {
 
     public boolean isActiveAltar(BlockPos center) {
         return activeAltarPositions.contains(center);
+    }
+
+    public boolean isActiveAltar(Entity entity) {
+        for (int i = 0; i < entity.getHeight(); i++) {
+            if (isActiveAltar(entity.getBlockPos().up(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
