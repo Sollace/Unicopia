@@ -69,7 +69,7 @@ public class RageAbilitySpell extends AbstractSpell {
 
         if (!source.isClient()) {
             if (age == 0) {
-                source.asWorld().createExplosion(source.asEntity(), source.damageOf(DamageTypes.FIREBALL), new ExplosionBehavior(){
+                source.asWorld().createExplosion(source.asEntity(), source.asWorld().getDamageSources().create(DamageTypes.FIREBALL, source.asEntity()), new ExplosionBehavior(){
                     @Override
                     public boolean canDestroyBlock(Explosion explosion, BlockView world, BlockPos pos, BlockState state, float power) {
                         return false;
