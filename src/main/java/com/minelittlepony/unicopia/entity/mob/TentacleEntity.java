@@ -35,6 +35,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class TentacleEntity extends AbstractDecorationEntity {
     static final byte ATTACK_STATUS = 54;
@@ -152,6 +153,7 @@ public class TentacleEntity extends AbstractDecorationEntity {
         }
         addActiveTicks(20 + getWorld().random.nextInt(30));
         playSound(USounds.ENTITY_TENTACLE_ROAR, 5, 1);
+        emitGameEvent(GameEvent.ENTITY_ROAR);
         return true;
     }
 
@@ -208,6 +210,7 @@ public class TentacleEntity extends AbstractDecorationEntity {
 
                 if (growth == 0) {
                     playSound(USounds.ENTITY_TENTACLE_DIG, 1, 1);
+                    emitGameEvent(GameEvent.RESONATE_1);
                 }
             }
 

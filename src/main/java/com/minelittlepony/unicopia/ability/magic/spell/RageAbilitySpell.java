@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import com.minelittlepony.unicopia.InteractionManager;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
@@ -13,11 +14,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World.ExplosionSourceType;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 
@@ -50,7 +51,7 @@ public class RageAbilitySpell extends AbstractSpell {
 
         if (source.asEntity().isInsideWaterOrBubbleColumn() || source.asEntity().isFrozen() || ticksToExtenguish > 0) {
             ticksExtenguishing++;
-            source.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 1);
+            source.playSound(USounds.Vanilla.ENTITY_GENERIC_EXTINGUISH_FIRE, 1);
             source.spawnParticles(ParticleTypes.CLOUD, 12);
             setDirty();
         } else {
@@ -79,7 +80,8 @@ public class RageAbilitySpell extends AbstractSpell {
                 if (source instanceof Pony pony) {
                     pony.setAnimation(Animation.ARMS_UP, Recipient.ANYONE, 12);
                 }
-                source.playSound(SoundEvents.ENTITY_POLAR_BEAR_WARNING, 2F, 0.1F);
+                source.playSound(USounds.ENTITY_PLAYER_KIRIN_RAGE, 2F, 0.1F);
+                source.asEntity().emitGameEvent(GameEvent.EXPLODE);
             }
 
             if (source.asEntity().isOnGround() && source.asWorld().isAir(pos) && age % 10 == 0) {
@@ -118,7 +120,7 @@ public class RageAbilitySpell extends AbstractSpell {
         }
 
         if (source.asWorld().hasRain(pos.up()) && source.asWorld().random.nextInt(15) == 0) {
-            source.playSound(SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.3F);
+            source.playSound(USounds.Vanilla.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.3F);
             source.spawnParticles(ParticleTypes.CLOUD, 3);
         }
 
