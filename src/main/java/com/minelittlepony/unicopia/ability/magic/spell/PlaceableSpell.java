@@ -160,7 +160,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     private void spawnPlacedEntity(Caster<?> source) {
         CastSpellEntity entity = UEntities.CAST_SPELL.create(source.asWorld());
-        Vec3d pos = getPosition().orElse(position.orElse(source.getOriginVector()));
+        Vec3d pos = getPosition().orElse(position.orElse(source.asEntity().getPos()));
         entity.updatePositionAndAngles(pos.x, pos.y, pos.z, source.asEntity().getYaw(), source.asEntity().getPitch());
         PlaceableSpell copy = spell.toPlaceable();
         if (spell instanceof PlacementDelegate delegate) {

@@ -46,12 +46,11 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
             .with(Trait.DARKNESS, 100)
             .build();
 
-    private static final Vec3d SPHERE_OFFSET = new Vec3d(0, 2, 0);
-
     private float accumulatedMass = 0;
 
     protected DarkVortexSpell(CustomisedSpellType<?> type) {
         super(type);
+        targetSelecter.setTargetowner(true).setTargetAllies(true);
     }
 
     @Override
@@ -87,7 +86,8 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
             ParticleUtils.spawnParticle(source.asWorld(), LightningBoltParticleEffect.DEFAULT, getOrigin(source), Vec3d.ZERO);
         }
 
-        return super.tick(source, situation);
+        super.tick(source, situation);
+        return true;
     }
 
     @Override
@@ -134,7 +134,7 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
 
     @Override
     protected Vec3d getOrigin(Caster<?> source) {
-        return source.getOriginVector().add(SPHERE_OFFSET);
+        return source.getOriginVector().add(0, getEventHorizonRadius() / 2D, 0);
     }
 
     @Override
@@ -182,7 +182,7 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
     }
 
     private double getMass() {
-        return Math.min(15, 0.1F + accumulatedMass / 10F);
+        return 0.1F + accumulatedMass / 10F;
     }
 
     @Override
