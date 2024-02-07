@@ -78,6 +78,7 @@ public class ShieldSpell extends AbstractSpell {
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
+        rangeMultiplier.update(source instanceof Pony pony && pony.asEntity().isSneaking() ? 1 : 2, 500L);
         radius.update((float)getDrawDropOffRange(source), 200L);
 
         if (source.isClient()) {
@@ -104,6 +105,8 @@ public class ShieldSpell extends AbstractSpell {
 
     @Override
     public void tickDying(Caster<?> caster) {
+        rangeMultiplier.update(caster instanceof Pony pony && pony.asEntity().isSneaking() ? 1 : 2, 10L);
+        radius.update((float)getDrawDropOffRange(caster), 10L);
         prevTicksDying = ticksDying;
         if (ticksDying++ > 25) {
             super.tickDying(caster);
@@ -124,7 +127,7 @@ public class ShieldSpell extends AbstractSpell {
 
     public float getRadius(float tickDelta) {
         float base = radius.getValue();
-        float scale = 1 - MathHelper.clamp(MathHelper.lerp(tickDelta, (float)prevTicksDying, ticksDying), 0, 1);
+        float scale = 1 - MathHelper.clamp(MathHelper.lerp(tickDelta, (float)prevTicksDying, ticksDying) / 25F, 0, 1);
         return base * scale;
     }
 
@@ -132,8 +135,6 @@ public class ShieldSpell extends AbstractSpell {
      * Calculates the maximum radius of the shield. aka The area of effect.
      */
     public double getDrawDropOffRange(Caster<?> source) {
-        rangeMultiplier.update(source instanceof Pony pony && pony.asEntity().isSneaking() ? 1 : 2, 500L);
-
         float min = (source instanceof Pony ? 4 : 6) + getTraits().get(Trait.POWER);
         double range = (min + (source.getLevel().getScaled(source instanceof Pony ? 4 : 40) * (source instanceof Pony ? 2 : 10))) / rangeMultiplier.getValue();
 

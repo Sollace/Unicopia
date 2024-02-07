@@ -36,6 +36,7 @@ public class ShieldSpellRenderer extends SpellRenderer<ShieldSpell> {
 
         float thickness = 0.02F * MathHelper.sin(animationProgress / 30F);
         float alpha = 1 - Math.abs(MathHelper.sin(animationProgress / 20F)) * 0.2F;
+        alpha *= MathHelper.clamp(radius - 1, 0, 1);
 
         if (firstPerson) {
             matrices.translate(0, -1.75F, 0);

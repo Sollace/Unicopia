@@ -17,20 +17,20 @@ import net.minecraft.world.World;
 
 public final class ThrowableSpell extends AbstractDelegatingSpell {
 
-    private Spell spell;
+    private final SpellReference<Spell> spell = new SpellReference<>();
 
     public ThrowableSpell(CustomisedSpellType<?> type) {
         super(type);
     }
 
     public ThrowableSpell setSpell(Spell spell) {
-        this.spell = spell;
+        this.spell.set(spell);
         return this;
     }
 
     @Override
     public Collection<Spell> getDelegates() {
-        return List.of(spell);
+        return List.of(spell.get());
     }
 
     @Override
@@ -63,7 +63,7 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
             return Optional.empty();
         }
 
-        Spell s = spell.prepareForCast(caster, CastingMethod.STORED);
+        Spell s = spell.get().prepareForCast(caster, CastingMethod.STORED);
         if (s == null) {
             return Optional.empty();
         }
@@ -71,7 +71,7 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
         MagicProjectileEntity projectile = UEntities.MAGIC_BEAM.create(world);
         projectile.setPosition(entity.getX(), entity.getEyeY() - 0.1F, entity.getZ());
         projectile.setOwner(entity);
-        projectile.setItem(UItems.GEMSTONE.getDefaultStack(spell.getType()));
+        projectile.setItem(UItems.GEMSTONE.getDefaultStack(spell.get().getType()));
         s.apply(projectile);
         projectile.setVelocity(entity, entity.getPitch(), entity.getYaw(), 0, 1.5F, divergance);
         projectile.setNoGravity(true);
@@ -83,12 +83,12 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
 
     @Override
     protected void loadDelegates(NbtCompound compound) {
-        spell = Spell.SERIALIZER.read(compound.getCompound("spell"));
+        spell.fromNBT(compound.getCompound("spell"));
     }
 
     @Override
     protected void saveDelegates(NbtCompound compound) {
-        compound.put("spell", Spell.SERIALIZER.write(spell));
+        compound.put("spell", spell.toNBT());
     }
 
     @Override
