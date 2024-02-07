@@ -31,4 +31,8 @@ public class MineLPDelegate {
     public Race getRace(Entity entity) {
         return Race.HUMAN;
     }
+
+    public int getMagicColor(Entity entity) {
+        return 0;
+    }
 }

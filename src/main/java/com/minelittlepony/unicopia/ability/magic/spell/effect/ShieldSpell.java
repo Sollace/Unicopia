@@ -11,11 +11,13 @@ import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
+import com.minelittlepony.unicopia.util.ColorHelper;
 import com.minelittlepony.unicopia.util.Lerp;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -67,13 +69,18 @@ public class ShieldSpell extends AbstractSpell {
     protected void generateParticles(Caster<?> source) {
         Vec3d origin = getOrigin(source);
 
-        source.spawnParticles(origin, new Sphere(true, radius.getValue()), (int)(radius.getValue() * 6), pos -> {
-            source.addParticle(new MagicParticleEffect(getType().getColor()), pos, Vec3d.ZERO);
+        source.spawnParticles(origin, new Sphere(true, radius.getValue()), (int)(radius.getValue() * 2), pos -> {
+            int hornColor = MineLPDelegate.getInstance().getMagicColor(source.getOriginatingCaster().asEntity());
+            source.addParticle(new MagicParticleEffect(ColorHelper.lerp(0.6F, getType().getColor(), hornColor)), pos, Vec3d.ZERO);
 
             if (source.asWorld().random.nextInt(10) == 0 && source.asWorld().random.nextFloat() < source.getCorruption().getScaled(1)) {
                 ParticleUtils.spawnParticle(source.asWorld(), new LightningBoltParticleEffect(true, 3, 2, 0.1F, Optional.empty()), pos, Vec3d.ZERO);
             }
         });
+
+        if (source.asWorld().random.nextInt(20) == 0 || !rangeMultiplier.isFinished() || !radius.isFinished()) {
+            source.asEntity().playSound(USounds.SPELL_CAST_SUCCESS, 0.05F, 1.5F);
+        }
     }
 
     @Override
