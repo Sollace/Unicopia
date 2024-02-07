@@ -1447,6 +1447,8 @@
   "death.attack.unicopia.horseshoe.self": "%1$s зарядил подковой в себя",
   "death.attack.unicopia.horseshoe.item": "%2$s зарядил подковой в %1$s используя %3$s",
   "death.attack.unicopia.horseshoe.player": "%2$s зарядил подковой в %1$s",
+  "death.attack.unicopia.spikes": "%1$s был заколот до смерти",
+  "death.attack.unicopia.spikes.player": "%1$s упал на шипы, пытаясь спастись от %2$s",
 
   "death.fell.accident.ladder.pegasus": "%1$s забыл, что умеет летать, и упал с лестницы",
   "death.fell.accident.vines.pegasus": "%1$s забыл, что умеет летать, и упал с лозы",
