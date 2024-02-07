@@ -171,17 +171,21 @@ public class TentacleEntity extends AbstractDecorationEntity {
         if (isAttacking()) {
             if (--attackingTicks == 12) {
                 if (target != null) {
-                    target.damage(getDamageSources().create(DamageTypes.MOB_ATTACK, this), 15);
-                    Vec3d diff = target.getPos().subtract(getPos());
-                    target.takeKnockback(1, diff.x, diff.z);
+                    if (!canTarget(target)) {
+                        target = null;
+                    } else {
+                        target.damage(getDamageSources().create(DamageTypes.MOB_ATTACK, this), 15);
+                        Vec3d diff = target.getPos().subtract(getPos());
+                        target.takeKnockback(1, diff.x, diff.z);
 
-                    ParticleUtils.spawnParticles(ParticleTypes.CLOUD, target, 10);
+                        ParticleUtils.spawnParticles(ParticleTypes.CLOUD, target, 10);
 
-                    for (Entity bystander : getWorld().getOtherEntities(target, target.getBoundingBox().expand(3))) {
-                        if (bystander instanceof LivingEntity l) {
-                            diff = l.getPos().subtract(getPos());
-                            l.takeKnockback(1, diff.x, diff.z);
-                            ParticleUtils.spawnParticles(ParticleTypes.CLOUD, target, 10);
+                        for (Entity bystander : getWorld().getOtherEntities(target, target.getBoundingBox().expand(3))) {
+                            if (bystander instanceof LivingEntity l) {
+                                diff = l.getPos().subtract(getPos());
+                                l.takeKnockback(1, diff.x, diff.z);
+                                ParticleUtils.spawnParticles(ParticleTypes.CLOUD, target, 10);
+                            }
                         }
                     }
 
@@ -258,9 +262,9 @@ public class TentacleEntity extends AbstractDecorationEntity {
 
     protected boolean canTarget(LivingEntity target) {
         return target != null
-            && !target.isRemoved()
+            && target.isPartOfGame()
+            && target.canTakeDamage()
             && !target.isSneaky()
-            && !(target instanceof PlayerEntity player && (player.isCreative() || player.isSpectator()))
             && canSee(target);
     }
 
