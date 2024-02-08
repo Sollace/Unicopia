@@ -28,6 +28,7 @@ import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.server.world.UTreeGen;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
+import net.fabricmc.fabric.api.registry.OxidizableBlocksRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
@@ -64,6 +65,12 @@ public interface UBlocks {
 
     Block STRIPPED_ZAP_LOG = register("stripped_zap_log", new ZapAppleLogBlock(Blocks.STRIPPED_OAK_LOG, MapColor.LIGHT_GRAY, MapColor.GRAY), ItemGroups.BUILDING_BLOCKS);
     Block STRIPPED_ZAP_WOOD = register("stripped_zap_wood", new ZapAppleLogBlock(Blocks.STRIPPED_OAK_WOOD, MapColor.GRAY, MapColor.GRAY), ItemGroups.BUILDING_BLOCKS);
+
+    Block WAXED_ZAP_LOG = register("waxed_zap_log", BlockConstructionUtils.createLogBlock(MapColor.GRAY, MapColor.DEEPSLATE_GRAY), ItemGroups.BUILDING_BLOCKS);
+    Block WAXED_ZAP_WOOD = register("waxed_zap_wood", BlockConstructionUtils.createLogBlock(MapColor.DEEPSLATE_GRAY, MapColor.DEEPSLATE_GRAY), ItemGroups.BUILDING_BLOCKS);
+
+    Block WAXED_STRIPPED_ZAP_LOG = register("waxed_stripped_zap_log", BlockConstructionUtils.createLogBlock(MapColor.LIGHT_GRAY, MapColor.GRAY), ItemGroups.BUILDING_BLOCKS);
+    Block WAXED_STRIPPED_ZAP_WOOD = register("waxed_stripped_zap_wood", BlockConstructionUtils.createLogBlock(MapColor.GRAY, MapColor.GRAY), ItemGroups.BUILDING_BLOCKS);
 
     Block ZAP_LEAVES = register("zap_leaves", new ZapAppleLeavesBlock(), ItemGroups.NATURAL);
     Block FLOWERING_ZAP_LEAVES = register("flowering_zap_leaves", new BaseZapAppleLeavesBlock(), ItemGroups.NATURAL);
@@ -268,6 +275,10 @@ public interface UBlocks {
         StrippableBlockRegistry.register(PALM_LOG, STRIPPED_PALM_LOG);
         StrippableBlockRegistry.register(ZAP_WOOD, STRIPPED_ZAP_WOOD);
         StrippableBlockRegistry.register(PALM_WOOD, STRIPPED_PALM_WOOD);
+        OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_LOG, WAXED_ZAP_LOG);
+        OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_WOOD, WAXED_ZAP_WOOD);
+        OxidizableBlocksRegistry.registerWaxableBlockPair(STRIPPED_ZAP_LOG, WAXED_STRIPPED_ZAP_LOG);
+        OxidizableBlocksRegistry.registerWaxableBlockPair(STRIPPED_ZAP_WOOD, WAXED_STRIPPED_ZAP_WOOD);
         Collections.addAll(TRANSLUCENT_BLOCKS, WEATHER_VANE, CHITIN_SPIKES, PLUNDER_VINE, PLUNDER_VINE_BUD, CLAM_SHELL, SCALLOP_SHELL, TURRET_SHELL, CURING_JOKE, SPECTRAL_FIRE);
         TintedBlock.REGISTRY.add(PALM_LEAVES);
 
