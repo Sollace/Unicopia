@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.block.zap;
 
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 
@@ -10,7 +10,7 @@ import net.minecraft.state.property.*;
 public class ZapAppleLeavesBlock extends BaseZapAppleLeavesBlock {
     public static final EnumProperty<ZapAppleStageStore.Stage> STAGE = EnumProperty.of("stage", ZapAppleStageStore.Stage.class);
 
-    ZapAppleLeavesBlock() {
+    public ZapAppleLeavesBlock() {
         setDefaultState(getDefaultState().with(STAGE, ZapAppleStageStore.Stage.GREENING));
     }
 

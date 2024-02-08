@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "unicopia:palm_stairs"
+    "unicopia:palm_stairs",
+    "unicopia:zap_stairs",
+    "unicopia:waxed_zap_stairs"
   ]
 }

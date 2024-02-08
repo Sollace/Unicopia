@@ -1,7 +1,10 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.block.zap;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.block.BlockConstructionUtils;
+import com.minelittlepony.unicopia.block.TintedBlock;
+import com.minelittlepony.unicopia.block.UMapColors;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 
@@ -15,9 +18,9 @@ import net.minecraft.world.*;
 
 public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock, ZapStagedBlock {
 
-    BaseZapAppleLeavesBlock() {
+    public BaseZapAppleLeavesBlock() {
         super(Settings.create()
-                .mapColor(MapColor.PURPLE)
+                .mapColor(UMapColors.ZAP_LEAVES)
                 .strength(500, 1200)
                 .ticksRandomly()
                 .sounds(BlockSoundGroup.AZALEA_LEAVES)

@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.block.zap;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
@@ -8,35 +8,15 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.*;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class ZapBlock extends Block {
-    public static final BooleanProperty NATURAL = BooleanProperty.of("natural");
-
-    private final Block artificialModelBlock;
-
-    ZapBlock(Settings settings, Block artificialModelBlock) {
-        super(settings.strength(500, 1200));
-        setDefaultState(getDefaultState().with(NATURAL, true));
-        this.artificialModelBlock = artificialModelBlock;
-    }
-
-    @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        super.appendProperties(builder);
-        builder.add(NATURAL);
-    }
-
-    @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return getDefaultState().with(NATURAL, false);
+    public ZapBlock(Settings settings) {
+        super(settings);
     }
 
     @Deprecated
@@ -48,19 +28,16 @@ public class ZapBlock extends Block {
     @Deprecated
     @Override
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
-        if (!state.get(NATURAL)) {
-            return artificialModelBlock.calcBlockBreakingDelta(artificialModelBlock.getDefaultState(), player, world, pos);
-        }
+        return getBlockBreakingDelta(super.calcBlockBreakingDelta(state, player, world, pos), player);
+    }
 
-        float delta = super.calcBlockBreakingDelta(state, player, world, pos);
-
+    public static float getBlockBreakingDelta(float delta, PlayerEntity player) {
         if (Pony.of(player).getCompositeRace().canUseEarth()) {
             delta *= 50;
         }
 
         return MathHelper.clamp(delta, 0, 0.9F);
     }
-
 
     public static void triggerLightning(BlockState state, World world, BlockPos pos, PlayerEntity player) {
         if (world instanceof ServerWorld serverWorld) {

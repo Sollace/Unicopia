@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.block.zap;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -14,11 +14,11 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class ZapAppleLogBlock extends PillarBlock {
-    public static final BooleanProperty NATURAL = ZapBlock.NATURAL;
+    public static final BooleanProperty NATURAL = BooleanProperty.of("natural");
 
     private final Block artifialModelBlock;
 
-    ZapAppleLogBlock(Block artifialModelBlock, MapColor topMapColor, MapColor sideMapColor) {
+    public ZapAppleLogBlock(Block artifialModelBlock, MapColor topMapColor, MapColor sideMapColor) {
         super(AbstractBlock.Settings.create().mapColor(
                     state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor
                 )

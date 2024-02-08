@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "unicopia:zap_log",
+    "unicopia:zap_wood",
+    "unicopia:stripped_zap_log",
+    "unicopia:stripped_zap_wood"
+  ]
+}
