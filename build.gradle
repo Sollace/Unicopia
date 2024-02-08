@@ -44,6 +44,8 @@ repositories {
     maven { name 'minelp-snapshot'; url 'https://repo.minelittlepony-mod.com/maven/snapshot' }
     maven { name 'minelp-releases'; url 'https://repo.minelittlepony-mod.com/maven/release' }
     maven { name 'TerraformersMC'; url 'https://maven.terraformersmc.com/' }
+    maven { name 'Modrinth'; url 'https://api.modrinth.com/maven' }
+    maven { name 'JitPack'; url 'https://jitpack.io'; content { includeGroup "com.github.Virtuoel" } }
 }
 
 dependencies {
@@ -72,16 +74,16 @@ dependencies {
     modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
     include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
 
+    modCompileOnly "maven.modrinth:farmers-delight-fabric:${project.farmers_delight_version}", { exclude group: "net.fabricmc.fabric-api" }
+    modCompileOnly "maven.modrinth:iris:${project.iris_version}", { exclude group: "net.fabricmc.fabric-api" }
+    modCompileOnly "maven.modrinth:sodium:${project.sodium_version}", { exclude group: "net.fabricmc.fabric-api" }
+    modCompileOnly "maven.modrinth:pehkui:${project.pehkui_version}", { exclude group: "net.fabricmc.fabric-api" }
+    modCompileOnly "com.github.Virtuoel:KanosConfig:0.4.1", { exclude group: "net.fabricmc.fabric-api" }
+
     if (project.tmi_type == 'emi') {
       modCompileOnly "dev.emi:emi-fabric:${project.emi_version}"
     } else {
       modCompileOnly "dev.emi:emi-fabric-dummy:${project.emi_version}"
-    }
-
-    if (project.tmi_type == 'rei') {
-      // TODO:
-    } else {
-      // TODO:
     }
 }
 
