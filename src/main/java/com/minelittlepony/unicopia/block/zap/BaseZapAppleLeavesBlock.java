@@ -16,7 +16,7 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 
-public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock, ZapStagedBlock {
+public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock, ZapStagedBlock, ElectrifiedBlock {
 
     public BaseZapAppleLeavesBlock() {
         super(Settings.create()
@@ -80,7 +80,7 @@ public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock,
 
     @Override
     public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-        ZapBlock.triggerLightning(state, world, pos, player);
+        triggerLightning(state, world, pos);
     }
 
     @Override

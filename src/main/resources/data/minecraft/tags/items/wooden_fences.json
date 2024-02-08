@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "unicopia:palm_fence"
+    "unicopia:palm_fence",
+    "unicopia:zap_fence",
+    "unicopia:waxed_zap_fence"
   ]
 }

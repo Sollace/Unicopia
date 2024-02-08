@@ -7,7 +7,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class ZapSlabBlock extends SlabBlock {
+public class ZapSlabBlock extends SlabBlock implements ElectrifiedBlock {
     public ZapSlabBlock(Settings settings) {
         super(settings);
     }
@@ -15,12 +15,12 @@ public class ZapSlabBlock extends SlabBlock {
     @Deprecated
     @Override
     public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-        ZapBlock.triggerLightning(state, world, pos, player);
+        triggerLightning(state, world, pos);
     }
 
     @Deprecated
     @Override
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
-        return ZapBlock.getBlockBreakingDelta(super.calcBlockBreakingDelta(state, player, world, pos), player);
+        return getBlockBreakingDelta(super.calcBlockBreakingDelta(state, player, world, pos), player);
     }
 }
