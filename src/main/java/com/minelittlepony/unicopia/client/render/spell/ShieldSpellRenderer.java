@@ -4,6 +4,7 @@ import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.ShieldSpell;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.util.ColorHelper;
@@ -26,8 +27,14 @@ public class ShieldSpellRenderer extends SpellRenderer<ShieldSpell> {
         double height = caster.asEntity().getEyeY() - caster.getOriginVector().y;
         matrices.translate(0, height, 0);
 
-        int color = ColorHelper.lerp(caster.getCorruption().getScaled(1) * (tickDelta / (1 + caster.asWorld().random.nextFloat())), spell.getType().getColor(), 0xFF000);
-        float[] colors = ColorHelper.changeSaturation(Color.r(color), Color.g(color), Color.b(color), 4);
+        int typeColor = spell.getType().getColor();
+        int ponyColor = MineLPDelegate.getInstance().getMagicColor(caster.getOriginatingCaster().asEntity());
+
+        int color = ColorHelper.lerp(caster.getCorruption().getScaled(1) * (tickDelta / (1 + caster.asWorld().random.nextFloat())),
+                ponyColor == 0 ? typeColor : ColorHelper.lerp(0.6F, ponyColor, typeColor),
+                0xFF000
+        );
+        float[] colors = ColorHelper.changeSaturation(Color.r(color), Color.g(color), Color.b(color), 2);
         float radius = 0.35F + spell.getRadius(tickDelta) + MathHelper.sin(animationProgress / 30F) * 0.01F;
 
         VertexConsumer buffer = vertices.getBuffer(RenderLayers.getMagicShield());
@@ -35,7 +42,8 @@ public class ShieldSpellRenderer extends SpellRenderer<ShieldSpell> {
         boolean firstPerson = caster.asEntity() == client.player && client.options.getPerspective() == Perspective.FIRST_PERSON;
 
         float thickness = 0.02F * MathHelper.sin(animationProgress / 30F);
-        float alpha = 1 - Math.abs(MathHelper.sin(animationProgress / 20F)) * 0.2F;
+        float alpha = 1 - Math.abs(MathHelper.sin(animationProgress / 20F)) * 0.1F;
+        alpha *= MathHelper.clamp(radius - 1, 0, 1);
 
         if (firstPerson) {
             matrices.translate(0, -1.75F, 0);
@@ -43,9 +51,10 @@ public class ShieldSpellRenderer extends SpellRenderer<ShieldSpell> {
             model.render(matrices, buffer, light, 1, radius, colors[0], colors[1], colors[2], alpha * 0.2F);
         } else {
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
-            model.render(matrices, buffer, light, 1, radius + thickness, colors[0], colors[1], colors[2], alpha * 0.08F);
-            model.render(matrices, buffer, light, 1, radius - thickness, colors[0], colors[1], colors[2], alpha * 0.05F);
-            model.render(matrices, buffer, light, 1, radius + thickness * 2, colors[0], colors[1], colors[2], alpha * 0.05F);
+            matrices.scale(1, radius == 0 ? 1 : 2.6F / radius, 1);
+            SphereModel.SPHERE.render(matrices, buffer, light, 1, radius + thickness, colors[0], colors[1], colors[2], alpha * 0.08F);
+            SphereModel.SPHERE.render(matrices, buffer, light, 1, radius - thickness, colors[0], colors[1], colors[2], alpha * 0.05F);
+            SphereModel.SPHERE.render(matrices, buffer, light, 1, radius + thickness * 2, colors[0], colors[1], colors[2], alpha * 0.05F);
         }
 
         matrices.pop();

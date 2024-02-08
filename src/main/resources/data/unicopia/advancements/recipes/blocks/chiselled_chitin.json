@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "unicopia:blocks/chiselled_chitin"
+      "unicopia:chiselled_chitin"
     ]
   },
   "criteria": {
@@ -17,7 +17,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "unicopia:blocks/chiselled_chitin"
+        "recipe": "unicopia:chiselled_chitin"
       }
     }
   },

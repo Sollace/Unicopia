@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "unicopia:stripped_zap_log" },
+    { "item": "minecraft:honeycomb" }
+  ],
+  "result": { "item": "unicopia:waxed_stripped_zap_log" }
+}

@@ -12,12 +12,14 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.SideShapeType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -62,7 +64,8 @@ public class Acrobatics implements Tickable, NbtSerialisable {
 
         if (!pony.getPhysics().isFlying() && !entity.getAbilities().flying
                 && climbingPos != null
-                && pony.getObservedSpecies() == Race.CHANGELING) {
+                && pony.getObservedSpecies() == Race.CHANGELING
+                && !entity.getBlockStateAtPos().isIn(BlockTags.CLIMBABLE)) {
             Vec3d vel = entity.getVelocity();
             if (entity.isSneaking()) {
                 entity.setVelocity(vel.x, 0, vel.z);
@@ -138,7 +141,8 @@ public class Acrobatics implements Tickable, NbtSerialisable {
 
     boolean isFaceClimbable(World world, BlockPos pos, Direction direction) {
         pos = pos.offset(direction);
-        return world.getBlockState(pos).isSideSolid(world, pos, direction, SideShapeType.CENTER);
+        BlockState state = world.getBlockState(pos);
+        return !state.isOf(Blocks.SCAFFOLDING) && state.isSideSolid(world, pos, direction, SideShapeType.CENTER);
     }
 
     public Optional<BlockPos> getHangingPosition() {

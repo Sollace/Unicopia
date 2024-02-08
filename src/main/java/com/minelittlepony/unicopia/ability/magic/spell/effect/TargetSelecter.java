@@ -21,6 +21,9 @@ public class TargetSelecter {
 
     private BiPredicate<Caster<?>, Entity> filter = (a, b) -> true;
 
+    private boolean targetOwner;
+    private boolean targetAllies;
+
     public TargetSelecter(Spell spell) {
         this.spell = spell;
     }
@@ -30,16 +33,32 @@ public class TargetSelecter {
         return this;
     }
 
+    public TargetSelecter setTargetowner(boolean targetOwner) {
+        this.targetOwner = targetOwner;
+        return this;
+    }
+
+    public TargetSelecter setTargetAllies(boolean targetAllies) {
+        this.targetAllies = targetAllies;
+        return this;
+    }
+
     public Stream<Entity> getEntities(Caster<?> source, double radius) {
         targets.values().removeIf(Target::tick);
         return source.findAllEntitiesInRange(radius)
             .filter(EntityPredicates.VALID_ENTITY)
             .filter(EquinePredicates.EXCEPT_MAGIC_IMMUNE)
-            .filter(entity -> entity != source.asEntity() && validTarget(spell, source, entity) && filter.test(source, entity))
+            .filter(entity -> entity != source.asEntity() && checkAlliegance(spell, source, entity) && filter.test(source, entity))
             .map(i -> {
                 targets.computeIfAbsent(i.getUuid(), Target::new);
                 return i;
             });
+    }
+
+    private boolean checkAlliegance(Affine affine, Caster<?> source, Entity target) {
+        boolean isOwner = !targetOwner && source.isOwnerOrVehicle(target);
+        boolean isFriend = !targetAllies && affine.applyInversion(source, source.isFriend(target));
+        return !(isOwner || isFriend);
     }
 
     public long getTotalDamaged() {

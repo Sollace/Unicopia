@@ -32,7 +32,11 @@ public interface Owned<E extends Entity> {
     Optional<UUID> getMasterId();
 
     default boolean isOwnerOrFriend(Entity target) {
-        return FriendshipBraceletItem.isComrade(this, target) || isOwnerOrVehicle(target);
+        return isFriend(target) || isOwnerOrVehicle(target);
+    }
+
+    default boolean isFriend(Entity target) {
+        return FriendshipBraceletItem.isComrade(this, target);
     }
 
     default boolean isOwnerOrVehicle(@Nullable Entity target) {

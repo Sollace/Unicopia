@@ -11,11 +11,14 @@ import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
+import com.minelittlepony.unicopia.util.ColorHelper;
+import com.minelittlepony.unicopia.util.Lerp;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
@@ -41,13 +44,10 @@ public class ShieldSpell extends AbstractSpell {
             .with(Trait.AIR, 9)
             .build();
 
-    private final TargetSelecter targetSelecter = new TargetSelecter(this).setFilter(this::isValidTarget);
+    protected final TargetSelecter targetSelecter = new TargetSelecter(this).setFilter(this::isValidTarget);
 
-    private float prevRadius;
-    private float radius;
-
-    private float rangeMultiplier;
-    private float targetRangeMultiplier;
+    private final Lerp radius = new Lerp(0);
+    private final Lerp rangeMultiplier = new Lerp(1);
 
     private int prevTicksDying;
     private int ticksDying;
@@ -69,19 +69,24 @@ public class ShieldSpell extends AbstractSpell {
     protected void generateParticles(Caster<?> source) {
         Vec3d origin = getOrigin(source);
 
-        source.spawnParticles(origin, new Sphere(true, radius), (int)(radius * 6), pos -> {
-            source.addParticle(new MagicParticleEffect(getType().getColor()), pos, Vec3d.ZERO);
+        source.spawnParticles(origin, new Sphere(true, radius.getValue()), (int)(radius.getValue() * 2), pos -> {
+            int hornColor = MineLPDelegate.getInstance().getMagicColor(source.getOriginatingCaster().asEntity());
+            source.addParticle(new MagicParticleEffect(ColorHelper.lerp(0.6F, getType().getColor(), hornColor)), pos, Vec3d.ZERO);
 
             if (source.asWorld().random.nextInt(10) == 0 && source.asWorld().random.nextFloat() < source.getCorruption().getScaled(1)) {
                 ParticleUtils.spawnParticle(source.asWorld(), new LightningBoltParticleEffect(true, 3, 2, 0.1F, Optional.empty()), pos, Vec3d.ZERO);
             }
         });
+
+        if (source.asWorld().random.nextInt(20) == 0 || !rangeMultiplier.isFinished() || !radius.isFinished()) {
+            source.asEntity().playSound(USounds.SPELL_CAST_SUCCESS, 0.05F, 1.5F);
+        }
     }
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        prevRadius = radius;
-        radius = (float)getDrawDropOffRange(source);
+        rangeMultiplier.update(source instanceof Pony pony && pony.asEntity().isSneaking() ? 1 : 2, 500L);
+        radius.update((float)getDrawDropOffRange(source), 200L);
 
         if (source.isClient()) {
             generateParticles(source);
@@ -107,6 +112,8 @@ public class ShieldSpell extends AbstractSpell {
 
     @Override
     public void tickDying(Caster<?> caster) {
+        rangeMultiplier.update(caster instanceof Pony pony && pony.asEntity().isSneaking() ? 1 : 2, 10L);
+        radius.update((float)getDrawDropOffRange(caster), 10L);
         prevTicksDying = ticksDying;
         if (ticksDying++ > 25) {
             super.tickDying(caster);
@@ -118,7 +125,7 @@ public class ShieldSpell extends AbstractSpell {
 
         cost *= costMultiplier / ((1 + source.getLevel().get()) * 3F);
         cost /= knowledge;
-        cost += radius / 10F;
+        cost += radius.getValue() / 10F;
 
         if (!source.subtractEnergyCost(cost)) {
             setDead();
@@ -126,8 +133,8 @@ public class ShieldSpell extends AbstractSpell {
     }
 
     public float getRadius(float tickDelta) {
-        float base = MathHelper.lerp(tickDelta, prevRadius, radius);
-        float scale = MathHelper.clamp(MathHelper.lerp(tickDelta, prevTicksDying, ticksDying), 0, 1);
+        float base = radius.getValue();
+        float scale = 1 - MathHelper.clamp(MathHelper.lerp(tickDelta, (float)prevTicksDying, ticksDying) / 25F, 0, 1);
         return base * scale;
     }
 
@@ -135,17 +142,8 @@ public class ShieldSpell extends AbstractSpell {
      * Calculates the maximum radius of the shield. aka The area of effect.
      */
     public double getDrawDropOffRange(Caster<?> source) {
-        targetRangeMultiplier = source instanceof Pony pony && pony.asEntity().isSneaking() ? 1 : 2;
-        if (rangeMultiplier < targetRangeMultiplier - 0.1F) {
-            rangeMultiplier += 0.1F;
-        } else if (rangeMultiplier > targetRangeMultiplier + 0.1) {
-            rangeMultiplier -= 0.1F;
-        } else {
-            rangeMultiplier = targetRangeMultiplier;
-        }
-
         float min = (source instanceof Pony ? 4 : 6) + getTraits().get(Trait.POWER);
-        double range = (min + (source.getLevel().getScaled(source instanceof Pony ? 4 : 40) * (source instanceof Pony ? 2 : 10))) / rangeMultiplier;
+        double range = (min + (source.getLevel().getScaled(source instanceof Pony ? 4 : 40) * (source instanceof Pony ? 2 : 10))) / rangeMultiplier.getValue();
 
         return range;
     }
@@ -175,9 +173,9 @@ public class ShieldSpell extends AbstractSpell {
 
     protected long applyEntities(Caster<?> source) {
         Vec3d origin = getOrigin(source);
-        targetSelecter.getEntities(source, radius).forEach(i -> {
+        targetSelecter.getEntities(source, radius.getValue()).forEach(i -> {
             try {
-                applyRadialEffect(source, i, i.getPos().distanceTo(origin), radius);
+                applyRadialEffect(source, i, i.getPos().distanceTo(origin), radius.getValue());
             } catch (Throwable e) {
                 Unicopia.LOGGER.error("Error updating radial effect", e);
             }

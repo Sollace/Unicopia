@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Util;
 
 /**
  * Interface for a magic spells
@@ -81,6 +82,7 @@ public interface Spell extends NbtSerialisable, Affine {
      * Gets the default form of this spell used to apply to a caster.
      * @param caster    The caster currently fueling this spell
      */
+    @Nullable
     default Spell prepareForCast(Caster<?> caster, CastingMethod method) {
         return this;
     }
@@ -128,10 +130,11 @@ public interface Spell extends NbtSerialisable, Affine {
     }
 
     @Nullable
-    static Spell readNbt(@Nullable NbtCompound compound) {
+    static <T extends Spell> T readNbt(@Nullable NbtCompound compound) {
         try {
             if (compound != null && compound.contains("effect_id")) {
-                Spell effect = SpellType.getKey(compound).withTraits().create();
+                @SuppressWarnings("unchecked")
+                T effect = (T)SpellType.getKey(compound).withTraits().create();
 
                 if (effect != null) {
                     effect.fromNBT(compound);
@@ -144,6 +147,10 @@ public interface Spell extends NbtSerialisable, Affine {
         }
 
         return null;
+    }
+
+    static UUID getUuid(@Nullable NbtCompound compound) {
+        return compound == null || !compound.containsUuid("uuid") ? Util.NIL_UUID :  compound.getUuid("uuid");
     }
 
     static NbtCompound writeNbt(Spell effect) {

@@ -41,7 +41,15 @@ public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.Placeme
         this.catalyst = catalyst;
     }
 
-    public ItemStack getTargetAsItem() {
+    public BlockState getCatalystState() {
+        return catalyst;
+    }
+
+    public BlockState getTargetState() {
+        return target.getDefaultState();
+    }
+
+    public ItemStack getTarget() {
         return target.asItem().getDefaultStack();
     }
 

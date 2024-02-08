@@ -181,6 +181,10 @@ public class IgnominiousBulbEntity extends MobEntity {
                 }
             }
             LivingEntity target = getAttacker();
+            if (!canTarget(target)) {
+                target = null;
+                setAttacker(null);
+            }
 
             if (angryTicks > 0) {
                 angryTicks--;
@@ -194,13 +198,14 @@ public class IgnominiousBulbEntity extends MobEntity {
                     Pony.of(player).getMagicalReserves().getEnergy().add(6);
                 }
 
+                final LivingEntity t = target;
                 tentacles.values()
                         .stream()
                         .flatMap(tentacle -> tentacle.getOrEmpty(getWorld()).stream())
-                        .sorted(Comparator.comparing(a -> a.distanceTo(target)))
+                        .sorted(Comparator.comparing(a -> a.distanceTo(t)))
                         .limit(2)
                         .forEach(tentacle -> {
-                    tentacle.setTarget(target);
+                    tentacle.setTarget(t);
                 });
             }
 

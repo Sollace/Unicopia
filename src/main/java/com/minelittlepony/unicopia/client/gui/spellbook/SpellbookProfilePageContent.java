@@ -19,6 +19,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 public class SpellbookProfilePageContent implements SpellbookChapterList.Content {
+    private static final Text MANA_LABEL = Text.translatable("gui.unicopia.spellbook.page.mana");
     private final MinecraftClient client = MinecraftClient.getInstance();
     private final Pony pony = Pony.of(client.player);
     private final TextRenderer font = client.textRenderer;
@@ -140,8 +141,8 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
         String manaString = (int)reserves.getMana().get() + "/" + (int)reserves.getMana().getMax();
 
         y = 15;
-        Text manaLabel = Text.translatable("gui.unicopia.spellbook.page.mana");
-        context.drawText(font, manaLabel, -font.getWidth(manaLabel) / 2, y, SpellbookScreen.TITLE_COLOR, false);
+
+        context.drawText(font, MANA_LABEL, -font.getWidth(MANA_LABEL) / 2, y, SpellbookScreen.TITLE_COLOR, false);
         context.drawText(font, manaString, -font.getWidth(manaString) / 2, y += font.fontHeight, SpellbookScreen.TITLE_COLOR, false);
 
         Text levelString = Text.literal(Romanizer.romanize(currentLevel + 1));

@@ -35,6 +35,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class TentacleEntity extends AbstractDecorationEntity {
     static final byte ATTACK_STATUS = 54;
@@ -152,6 +153,7 @@ public class TentacleEntity extends AbstractDecorationEntity {
         }
         addActiveTicks(20 + getWorld().random.nextInt(30));
         playSound(USounds.ENTITY_TENTACLE_ROAR, 5, 1);
+        emitGameEvent(GameEvent.RESONATE_15);
         return true;
     }
 
@@ -169,17 +171,21 @@ public class TentacleEntity extends AbstractDecorationEntity {
         if (isAttacking()) {
             if (--attackingTicks == 12) {
                 if (target != null) {
-                    target.damage(getDamageSources().create(DamageTypes.MOB_ATTACK, this), 15);
-                    Vec3d diff = target.getPos().subtract(getPos());
-                    target.takeKnockback(1, diff.x, diff.z);
+                    if (!canTarget(target)) {
+                        target = null;
+                    } else {
+                        target.damage(getDamageSources().create(DamageTypes.MOB_ATTACK, this), 15);
+                        Vec3d diff = target.getPos().subtract(getPos());
+                        target.takeKnockback(1, diff.x, diff.z);
 
-                    ParticleUtils.spawnParticles(ParticleTypes.CLOUD, target, 10);
+                        ParticleUtils.spawnParticles(ParticleTypes.CLOUD, target, 10);
 
-                    for (Entity bystander : getWorld().getOtherEntities(target, target.getBoundingBox().expand(3))) {
-                        if (bystander instanceof LivingEntity l) {
-                            diff = l.getPos().subtract(getPos());
-                            l.takeKnockback(1, diff.x, diff.z);
-                            ParticleUtils.spawnParticles(ParticleTypes.CLOUD, target, 10);
+                        for (Entity bystander : getWorld().getOtherEntities(target, target.getBoundingBox().expand(3))) {
+                            if (bystander instanceof LivingEntity l) {
+                                diff = l.getPos().subtract(getPos());
+                                l.takeKnockback(1, diff.x, diff.z);
+                                ParticleUtils.spawnParticles(ParticleTypes.CLOUD, target, 10);
+                            }
                         }
                     }
 
@@ -208,6 +214,7 @@ public class TentacleEntity extends AbstractDecorationEntity {
 
                 if (growth == 0) {
                     playSound(USounds.ENTITY_TENTACLE_DIG, 1, 1);
+                    emitGameEvent(GameEvent.RESONATE_1);
                 }
             }
 
@@ -255,9 +262,9 @@ public class TentacleEntity extends AbstractDecorationEntity {
 
     protected boolean canTarget(LivingEntity target) {
         return target != null
-            && !target.isRemoved()
+            && target.isPartOfGame()
+            && target.canTakeDamage()
             && !target.isSneaky()
-            && !(target instanceof PlayerEntity player && (player.isCreative() || player.isSpectator()))
             && canSee(target);
     }
 

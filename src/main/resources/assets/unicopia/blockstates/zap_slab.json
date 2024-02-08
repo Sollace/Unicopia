@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "unicopia:block/zap_slab"
+    },
+    "type=double": {
+      "model": "unicopia:block/zap_planks"
+    },
+    "type=top": {
+      "model": "unicopia:block/zap_slab_top"
+    }
+  }
+}

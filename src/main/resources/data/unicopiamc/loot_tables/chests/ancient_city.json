@@ -3,14 +3,14 @@
   "pools": [
     {
       "rolls": {
-        "min": 2.0,
-        "max": 4.0,
+        "min": 0.0,
+        "max": 1.0,
         "type": "minecraft:uniform"
       },
       "entries": [
         {
           "type": "minecraft:item",
-          "weight": 2,
+          "weight": 1,
           "name": "unicopia:grogars_bell"
         }
       ]

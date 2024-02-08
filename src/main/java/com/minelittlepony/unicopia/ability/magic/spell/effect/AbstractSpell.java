@@ -115,7 +115,7 @@ public abstract class AbstractSpell implements Spell {
     @Override
     public void fromNBT(NbtCompound compound) {
         dirty = false;
-        if (compound.contains("uuid")) {
+        if (compound.containsUuid("uuid")) {
             uuid = compound.getUuid("uuid");
         }
         dying = compound.getBoolean("dying");

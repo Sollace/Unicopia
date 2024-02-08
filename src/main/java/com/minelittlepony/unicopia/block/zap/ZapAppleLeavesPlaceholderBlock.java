@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.block.zap;
 
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore.Stage;
@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 
 public class ZapAppleLeavesPlaceholderBlock extends AirBlock implements ZapStagedBlock {
 
-    ZapAppleLeavesPlaceholderBlock() {
+    public ZapAppleLeavesPlaceholderBlock() {
         super(Settings.create().replaceable().noCollision().dropsNothing().air());
     }
 

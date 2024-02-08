@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "unicopia:blocks/cloud_slab"
+      "unicopia:cloud_slab"
     ]
   },
   "criteria": {
@@ -17,7 +17,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "unicopia:blocks/cloud_slab"
+        "recipe": "unicopia:cloud_slab"
       }
     }
   },

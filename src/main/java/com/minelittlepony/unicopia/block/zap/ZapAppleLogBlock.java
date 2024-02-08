@@ -1,6 +1,4 @@
-package com.minelittlepony.unicopia.block;
-
-import com.minelittlepony.unicopia.entity.player.Pony;
+package com.minelittlepony.unicopia.block.zap;
 
 import net.minecraft.block.*;
 import net.minecraft.block.enums.Instrument;
@@ -13,12 +11,12 @@ import net.minecraft.util.math.*;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class ZapAppleLogBlock extends PillarBlock {
-    public static final BooleanProperty NATURAL = ZapBlock.NATURAL;
+public class ZapAppleLogBlock extends PillarBlock implements ElectrifiedBlock {
+    public static final BooleanProperty NATURAL = BooleanProperty.of("natural");
 
-    private final Block artifialModelBlock;
+    private final BlockState artifialModelBlock;
 
-    ZapAppleLogBlock(Block artifialModelBlock, MapColor topMapColor, MapColor sideMapColor) {
+    public ZapAppleLogBlock(BlockState artifialModelBlock, MapColor topMapColor, MapColor sideMapColor) {
         super(AbstractBlock.Settings.create().mapColor(
                     state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor
                 )
@@ -38,28 +36,22 @@ public class ZapAppleLogBlock extends PillarBlock {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return getDefaultState().with(NATURAL, false);
+        return super.getPlacementState(ctx).with(NATURAL, false);
     }
 
     @Deprecated
     @Override
     public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-        ZapBlock.triggerLightning(state, world, pos, player);
+        triggerLightning(state, world, pos);
     }
 
     @Deprecated
     @Override
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
         if (!state.get(NATURAL)) {
-            return artifialModelBlock.calcBlockBreakingDelta(artifialModelBlock.getDefaultState(), player, world, pos);
+            return artifialModelBlock.calcBlockBreakingDelta(player, world, pos);
         }
 
-        float delta = super.calcBlockBreakingDelta(state, player, world, pos);
-
-        if (Pony.of(player).getCompositeRace().canUseEarth()) {
-            delta *= 50;
-        }
-
-        return MathHelper.clamp(delta, 0, 0.9F);
+        return getBlockBreakingDelta(super.calcBlockBreakingDelta(state, player, world, pos), player);
     }
 }

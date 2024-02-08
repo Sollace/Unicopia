@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "unicopia:blocks/cloud_brick_stairs"
+      "unicopia:cloud_brick_stairs"
     ]
   },
   "criteria": {
@@ -17,7 +17,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "unicopia:blocks/cloud_brick_stairs"
+        "recipe": "unicopia:cloud_brick_stairs"
       }
     }
   },

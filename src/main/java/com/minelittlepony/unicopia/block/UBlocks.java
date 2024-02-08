@@ -21,6 +21,15 @@ import com.minelittlepony.unicopia.block.cloud.SoggyCloudBlock;
 import com.minelittlepony.unicopia.block.cloud.SoggyCloudSlabBlock;
 import com.minelittlepony.unicopia.block.cloud.SoggyCloudStairsBlock;
 import com.minelittlepony.unicopia.block.cloud.UnstableCloudBlock;
+import com.minelittlepony.unicopia.block.zap.BaseZapAppleLeavesBlock;
+import com.minelittlepony.unicopia.block.zap.ElectrifiedFenceBlock;
+import com.minelittlepony.unicopia.block.zap.ElectrifiedFenceGateBlock;
+import com.minelittlepony.unicopia.block.zap.ZapAppleLeavesBlock;
+import com.minelittlepony.unicopia.block.zap.ZapAppleLeavesPlaceholderBlock;
+import com.minelittlepony.unicopia.block.zap.ZapAppleLogBlock;
+import com.minelittlepony.unicopia.block.zap.ZapBlock;
+import com.minelittlepony.unicopia.block.zap.ZapSlabBlock;
+import com.minelittlepony.unicopia.block.zap.ZapStairsBlock;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.cloud.CloudBlockItem;
@@ -28,6 +37,7 @@ import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.server.world.UTreeGen;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
+import net.fabricmc.fabric.api.registry.OxidizableBlocksRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.*;
@@ -59,31 +69,47 @@ public interface UBlocks {
 
     Block FROSTED_OBSIDIAN = register("frosted_obsidian", new FrostedObsidianBlock(FabricBlockSettings.copy(Blocks.OBSIDIAN).ticksRandomly()));
 
-    Block ZAP_LOG = register("zap_log", new ZapAppleLogBlock(Blocks.OAK_LOG, MapColor.GRAY, MapColor.DEEPSLATE_GRAY), ItemGroups.BUILDING_BLOCKS);
-    Block ZAP_WOOD = register("zap_wood", new ZapAppleLogBlock(Blocks.OAK_WOOD, MapColor.DEEPSLATE_GRAY, MapColor.DEEPSLATE_GRAY), ItemGroups.BUILDING_BLOCKS);
+    Block ZAP_LOG = register("zap_log", new ZapAppleLogBlock(Blocks.OAK_LOG.getDefaultState(), UMapColors.ZAP_LOG_END, UMapColors.ZAP_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
+    Block ZAP_WOOD = register("zap_wood", new ZapAppleLogBlock(Blocks.OAK_WOOD.getDefaultState(), UMapColors.ZAP_LOG_SIDE, UMapColors.ZAP_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
+    Block STRIPPED_ZAP_LOG = register("stripped_zap_log", new ZapAppleLogBlock(Blocks.STRIPPED_OAK_LOG.getDefaultState(), UMapColors.ZAP_LOG_END, UMapColors.STRIPPED_ZAP_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
+    Block STRIPPED_ZAP_WOOD = register("stripped_zap_wood", new ZapAppleLogBlock(Blocks.STRIPPED_OAK_WOOD.getDefaultState(), UMapColors.STRIPPED_ZAP_LOG_SIDE, UMapColors.STRIPPED_ZAP_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
 
-    Block STRIPPED_ZAP_LOG = register("stripped_zap_log", new ZapAppleLogBlock(Blocks.STRIPPED_OAK_LOG, MapColor.LIGHT_GRAY, MapColor.GRAY), ItemGroups.BUILDING_BLOCKS);
-    Block STRIPPED_ZAP_WOOD = register("stripped_zap_wood", new ZapAppleLogBlock(Blocks.STRIPPED_OAK_WOOD, MapColor.GRAY, MapColor.GRAY), ItemGroups.BUILDING_BLOCKS);
+    Block WAXED_ZAP_LOG = register("waxed_zap_log", BlockConstructionUtils.createLogBlock(UMapColors.ZAP_LOG_END, UMapColors.ZAP_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
+    Block WAXED_ZAP_WOOD = register("waxed_zap_wood", BlockConstructionUtils.createLogBlock(UMapColors.ZAP_LOG_SIDE, UMapColors.ZAP_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
+    Block WAXED_STRIPPED_ZAP_LOG = register("waxed_stripped_zap_log", BlockConstructionUtils.createLogBlock(UMapColors.ZAP_LOG_END, UMapColors.STRIPPED_ZAP_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
+    Block WAXED_STRIPPED_ZAP_WOOD = register("waxed_stripped_zap_wood", BlockConstructionUtils.createLogBlock(UMapColors.STRIPPED_ZAP_LOG_SIDE, UMapColors.STRIPPED_ZAP_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
+
+    Block ZAP_PLANKS = register("zap_planks", new ZapBlock(Settings.create().mapColor(UMapColors.ZAP_PLANKS).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block ZAP_STAIRS = register("zap_stairs", new ZapStairsBlock(ZAP_PLANKS.getDefaultState(), Settings.copy(ZAP_PLANKS).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block ZAP_SLAB = register("zap_slab", new ZapSlabBlock(Settings.create().mapColor(ZAP_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block ZAP_FENCE = register("zap_fence", new ElectrifiedFenceBlock(Settings.create().mapColor(ZAP_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block ZAP_FENCE_GATE = register("zap_fence_gate", new ElectrifiedFenceGateBlock(Settings.create().mapColor(ZAP_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL), UWoodTypes.ZAP), ItemGroups.BUILDING_BLOCKS);
+
+    Block WAXED_ZAP_PLANKS = register("waxed_zap_planks", new Block(Settings.create().mapColor(UMapColors.ZAP_PLANKS).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block WAXED_ZAP_STAIRS = register("waxed_zap_stairs", new StairsBlock(WAXED_ZAP_PLANKS.getDefaultState(), Settings.copy(WAXED_ZAP_PLANKS).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block WAXED_ZAP_SLAB = register("waxed_zap_slab", new SlabBlock(Settings.create().mapColor(WAXED_ZAP_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block WAXED_ZAP_FENCE = register("waxed_zap_fence", new FenceBlock(Settings.create().mapColor(WAXED_ZAP_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block WAXED_ZAP_FENCE_GATE = register("waxed_zap_fence_gate", new FenceGateBlock(Settings.create().mapColor(WAXED_ZAP_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL), UWoodTypes.ZAP), ItemGroups.BUILDING_BLOCKS);
 
     Block ZAP_LEAVES = register("zap_leaves", new ZapAppleLeavesBlock(), ItemGroups.NATURAL);
     Block FLOWERING_ZAP_LEAVES = register("flowering_zap_leaves", new BaseZapAppleLeavesBlock(), ItemGroups.NATURAL);
     Block ZAP_LEAVES_PLACEHOLDER = register("zap_leaves_placeholder", new ZapAppleLeavesPlaceholderBlock());
     Block ZAP_BULB = register("zap_bulb", new FruitBlock(Settings.create().mapColor(MapColor.GRAY).strength(500, 1200).sounds(BlockSoundGroup.AZALEA_LEAVES), Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE, false));
-    Block ZAP_APPLE = register("zap_apple", new FruitBlock(Settings.create().mapColor(MapColor.GRAY).sounds(BlockSoundGroup.AZALEA_LEAVES), Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE, false));
+    Block ZAP_APPLE = register("zap_apple", new FruitBlock(Settings.create().mapColor(MapColor.YELLOW).sounds(BlockSoundGroup.AZALEA_LEAVES), Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE, false));
 
-    Block PALM_LOG = register("palm_log", BlockConstructionUtils.createLogBlock(MapColor.OFF_WHITE, MapColor.SPRUCE_BROWN), ItemGroups.BUILDING_BLOCKS);
-    Block PALM_WOOD = register("palm_wood", BlockConstructionUtils.createWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
-    Block STRIPPED_PALM_LOG = register("stripped_palm_log", BlockConstructionUtils.createLogBlock(MapColor.OFF_WHITE, MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
-    Block STRIPPED_PALM_WOOD = register("stripped_palm_wood", BlockConstructionUtils.createWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_LOG = register("palm_log", BlockConstructionUtils.createLogBlock(UMapColors.PALM_LOG_END, UMapColors.PALM_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_WOOD = register("palm_wood", BlockConstructionUtils.createWoodBlock(UMapColors.PALM_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
+    Block STRIPPED_PALM_LOG = register("stripped_palm_log", BlockConstructionUtils.createLogBlock(UMapColors.PALM_LOG_END, UMapColors.STRIPPED_PALM_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
+    Block STRIPPED_PALM_WOOD = register("stripped_palm_wood", BlockConstructionUtils.createWoodBlock(UMapColors.STRIPPED_PALM_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
 
-    Block PALM_PLANKS = register("palm_planks", new Block(Settings.create().mapColor(MapColor.OFF_WHITE).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_PLANKS = register("palm_planks", new Block(Settings.create().mapColor(UMapColors.PALM_PLANKS).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
     Block PALM_STAIRS = register("palm_stairs", new StairsBlock(PALM_PLANKS.getDefaultState(), Settings.copy(PALM_PLANKS).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
     Block PALM_SLAB = register("palm_slab", new SlabBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
     Block PALM_FENCE = register("palm_fence", new FenceBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
     Block PALM_FENCE_GATE = register("palm_fence_gate", new FenceGateBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.NORMAL), UWoodTypes.PALM), ItemGroups.BUILDING_BLOCKS);
     Block PALM_DOOR = register("palm_door", new DoorBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).instrument(Instrument.BASS).strength(3.0f).nonOpaque().burnable().pistonBehavior(PistonBehavior.DESTROY), UWoodTypes.PALM.setType()), ItemGroups.FUNCTIONAL);
     Block PALM_TRAPDOOR = register("palm_trapdoor", new TrapdoorBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).instrument(Instrument.BASS).strength(3).nonOpaque().allowsSpawning(BlockConstructionUtils::never).burnable(), UWoodTypes.PALM.setType()), ItemGroups.FUNCTIONAL);
-    Block PALM_PRESSURE_PLATE = register("palm_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY), BlockSetType.OAK), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_PRESSURE_PLATE = register("palm_pressure_plate", new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).noCollision().strength(0.5f).sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY), UWoodTypes.PALM.setType()), ItemGroups.BUILDING_BLOCKS);
     Block PALM_BUTTON = register("palm_button", BlockConstructionUtils.woodenButton(), ItemGroups.BUILDING_BLOCKS);
     Block PALM_SIGN = register("palm_sign", new SignBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).solid().instrument(Instrument.BASS).noCollision().strength(1).burnable().sounds(BlockSoundGroup.WOOD), UWoodTypes.PALM), ItemGroups.FUNCTIONAL);
     Block PALM_WALL_SIGN = register("palm_wall_sign", new WallSignBlock(Settings.create().mapColor(PALM_PLANKS.getDefaultMapColor()).solid().instrument(Instrument.BASS).noCollision().strength(1).dropsLike(PALM_SIGN).burnable(), UWoodTypes.PALM));
@@ -225,6 +251,8 @@ public interface UBlocks {
     Block CRYSTAL_DOOR = register("crystal_door", new CrystalDoorBlock(Settings.copy(Blocks.IRON_DOOR), UWoodTypes.CRYSTAL), ItemGroups.FUNCTIONAL);
     Block CLOUD_DOOR = register("cloud_door", new CloudDoorBlock(Settings.copy(CLOUD), CLOUD.getDefaultState(), UWoodTypes.CLOUD), ItemGroups.FUNCTIONAL);
 
+    Block SPECTRAL_FIRE = register("spectral_fire", new SpectralFireBlock(Settings.copy(Blocks.SOUL_FIRE)));
+
     EdibleBlock HAY_BLOCK = register("hay_block", new EdibleBlock(new Identifier("hay_block"), new Identifier("wheat"), true));
 
     private static <T extends Block> T register(String name, T item) {
@@ -266,7 +294,16 @@ public interface UBlocks {
         StrippableBlockRegistry.register(PALM_LOG, STRIPPED_PALM_LOG);
         StrippableBlockRegistry.register(ZAP_WOOD, STRIPPED_ZAP_WOOD);
         StrippableBlockRegistry.register(PALM_WOOD, STRIPPED_PALM_WOOD);
-        Collections.addAll(TRANSLUCENT_BLOCKS, WEATHER_VANE, CHITIN_SPIKES, PLUNDER_VINE, PLUNDER_VINE_BUD, CLAM_SHELL, SCALLOP_SHELL, TURRET_SHELL, CURING_JOKE);
+        OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_LOG, WAXED_ZAP_LOG);
+        OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_WOOD, WAXED_ZAP_WOOD);
+        OxidizableBlocksRegistry.registerWaxableBlockPair(STRIPPED_ZAP_LOG, WAXED_STRIPPED_ZAP_LOG);
+        OxidizableBlocksRegistry.registerWaxableBlockPair(STRIPPED_ZAP_WOOD, WAXED_STRIPPED_ZAP_WOOD);
+        OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_PLANKS, WAXED_ZAP_PLANKS);
+        OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_STAIRS, WAXED_ZAP_STAIRS);
+        OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_SLAB, WAXED_ZAP_SLAB);
+        OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_FENCE, WAXED_ZAP_FENCE);
+        OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_FENCE_GATE, WAXED_ZAP_FENCE_GATE);
+        Collections.addAll(TRANSLUCENT_BLOCKS, WEATHER_VANE, CHITIN_SPIKES, PLUNDER_VINE, PLUNDER_VINE_BUD, CLAM_SHELL, SCALLOP_SHELL, TURRET_SHELL, CURING_JOKE, SPECTRAL_FIRE);
         TintedBlock.REGISTRY.add(PALM_LEAVES);
 
         FlammableBlockRegistry.getDefaultInstance().add(GREEN_APPLE_LEAVES, 30, 60);
@@ -274,14 +311,22 @@ public interface UBlocks {
         FlammableBlockRegistry.getDefaultInstance().add(SOUR_APPLE_LEAVES, 30, 60);
         FlammableBlockRegistry.getDefaultInstance().add(GOLDEN_OAK_LEAVES, 60, 120);
         FlammableBlockRegistry.getDefaultInstance().add(MANGO_LEAVES, 30, 60);
-        FlammableBlockRegistry.getDefaultInstance().add(PALM_LEAVES, 30, 60);
-        FlammableBlockRegistry.getDefaultInstance().add(PALM_LOG, 5, 5);
-        FlammableBlockRegistry.getDefaultInstance().add(PALM_WOOD, 5, 5);
+
         FlammableBlockRegistry.getDefaultInstance().add(GOLDEN_OAK_LOG, 15, 15);
+
+        FlammableBlockRegistry.getDefaultInstance().add(PALM_PLANKS, 5, 20);
+        FlammableBlockRegistry.getDefaultInstance().add(PALM_SLAB, 5, 20);
+        FlammableBlockRegistry.getDefaultInstance().add(PALM_FENCE_GATE, 5, 20);
+        FlammableBlockRegistry.getDefaultInstance().add(PALM_FENCE, 5, 20);
+        FlammableBlockRegistry.getDefaultInstance().add(PALM_STAIRS, 5, 20);
+        FlammableBlockRegistry.getDefaultInstance().add(PALM_LOG, 5, 5);
         FlammableBlockRegistry.getDefaultInstance().add(STRIPPED_PALM_LOG, 5, 5);
         FlammableBlockRegistry.getDefaultInstance().add(STRIPPED_PALM_WOOD, 5, 5);
-        FlammableBlockRegistry.getDefaultInstance().add(PALM_PLANKS, 5, 20);
+        FlammableBlockRegistry.getDefaultInstance().add(PALM_WOOD, 5, 5);
+        FlammableBlockRegistry.getDefaultInstance().add(PALM_LEAVES, 30, 60);
+
         FlammableBlockRegistry.getDefaultInstance().add(BANANAS, 5, 20);
+        FlammableBlockRegistry.getDefaultInstance().add(CURING_JOKE, 60, 100);
 
         UBlockEntities.bootstrap();
         EdibleBlock.bootstrap();

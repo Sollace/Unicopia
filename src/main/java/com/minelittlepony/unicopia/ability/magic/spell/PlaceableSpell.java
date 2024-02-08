@@ -51,7 +51,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     /**
      * The spell being cast
      */
-    private Spell spell;
+    private final SpellReference<Spell> spell = new SpellReference<>();
 
     public float pitch;
     public float yaw;
@@ -70,7 +70,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     }
 
     public PlaceableSpell setSpell(Spell spell) {
-        this.spell = spell;
+        this.spell.set(spell);
         return this;
     }
 
@@ -103,7 +103,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     @Override
     public Collection<Spell> getDelegates() {
-        return List.of(spell);
+        return List.of(spell.get());
     }
 
     @Override
@@ -160,10 +160,10 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     private void spawnPlacedEntity(Caster<?> source) {
         CastSpellEntity entity = UEntities.CAST_SPELL.create(source.asWorld());
-        Vec3d pos = getPosition().orElse(position.orElse(source.getOriginVector()));
+        Vec3d pos = getPosition().orElse(position.orElse(source.asEntity().getPos()));
         entity.updatePositionAndAngles(pos.x, pos.y, pos.z, source.asEntity().getYaw(), source.asEntity().getPitch());
-        PlaceableSpell copy = spell.toPlaceable();
-        if (spell instanceof PlacementDelegate delegate) {
+        PlaceableSpell copy = spell.get().toPlaceable();
+        if (spell.get() instanceof PlacementDelegate delegate) {
             delegate.onPlaced(source, copy, entity);
         }
         entity.getSpellSlot().put(copy);
@@ -272,13 +272,12 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     @Override
     protected void loadDelegates(NbtCompound compound) {
-        spell = Spell.SERIALIZER.read(compound.getCompound("spell"));
+        spell.fromNBT(compound.getCompound("spell"));
     }
 
     @Override
     protected void saveDelegates(NbtCompound compound) {
-        compound.put("spell", Spell.SERIALIZER.write(spell));
-
+        compound.put("spell", spell.toNBT());
     }
 
     @Override

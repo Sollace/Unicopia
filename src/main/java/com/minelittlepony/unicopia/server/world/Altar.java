@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.mob.FloatingArtefactEntity;
 import com.minelittlepony.unicopia.entity.mob.SpellbookEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
@@ -30,7 +31,16 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
-public record Altar(BlockPos origin, Set<BlockPos> pillars) {
+public record Altar(
+        /**
+         * The position of the central spectral fire of this altar
+         */
+        BlockPos origin,
+        /**
+         * Pillar top positions
+         */
+        Set<BlockPos> pillars
+) {
     private static final Direction[] HORIZONTALS = { Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST };
     private static final Predicate<Entity> IS_PARTICIPANT = EntityPredicates.VALID_ENTITY.and(e -> e instanceof FloatingArtefactEntity || e instanceof SpellbookEntity);
     public static final NbtSerialisable.Serializer<Altar> SERIALIZER = NbtSerialisable.Serializer.of(nbt -> {
@@ -133,7 +143,7 @@ public record Altar(BlockPos origin, Set<BlockPos> pillars) {
     }
 
     public void generateDecorations(World world) {
-        world.setBlockState(origin, Blocks.SOUL_FIRE.getDefaultState(), Block.FORCE_STATE | Block.NOTIFY_ALL);
+        world.setBlockState(origin, UBlocks.SPECTRAL_FIRE.getDefaultState(), Block.FORCE_STATE | Block.NOTIFY_ALL);
         pillars.forEach(pillar -> {
             FloatingArtefactEntity artefact = UEntities.FLOATING_ARTEFACT.create(world);
             artefact.setStack(UItems.ALICORN_BADGE.getDefaultStack());
@@ -160,7 +170,7 @@ public record Altar(BlockPos origin, Set<BlockPos> pillars) {
     }
 
     public boolean isValid(World world) {
-        return checkState(world, origin, Blocks.SOUL_FIRE)
+        return checkState(world, origin, UBlocks.SPECTRAL_FIRE)
                 && checkState(world, origin.down(), Blocks.SOUL_SAND)
                 && checkSlab(world, origin.down())
                 && pillars.stream().allMatch(pillar ->
