@@ -38,7 +38,7 @@ public class ZapAppleLogBlock extends PillarBlock {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return getDefaultState().with(NATURAL, false);
+        return super.getPlacementState(ctx).with(NATURAL, false);
     }
 
     @Deprecated
