@@ -1,5 +1,13 @@
 {
   "type": "minecraft:block",
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "farmersdelight"
+      ]
+    }
+  ],
   "pools": [
     {
       "bonus_rolls": 0.0,
