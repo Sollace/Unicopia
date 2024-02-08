@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.block.zap;
 
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore.Stage;
@@ -11,9 +11,9 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class ZapAppleLeavesPlaceholderBlock extends AirBlock implements ZapStagedBlock {
-    public static final MapCodec<ZapAppleLeavesPlaceholderBlock> CODEC = createCodec(ZapAppleLeavesPlaceholderBlock::new);
+    private static final MapCodec<ZapAppleLeavesPlaceholderBlock> CODEC = createCodec(ZapAppleLeavesPlaceholderBlock::new);
 
-    ZapAppleLeavesPlaceholderBlock(Settings settings) {
+    public ZapAppleLeavesPlaceholderBlock(Settings settings) {
         super(settings);
     }
 

@@ -6,9 +6,7 @@ import com.mojang.serialization.DataResult;
 import com.minelittlepony.unicopia.item.cloud.CloudShapingRecipe;
 
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
-import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.recipe.CuttingRecipe;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
@@ -55,15 +53,11 @@ public interface URecipes {
             LootTable table = manager.getLootTable(modId);
 
             if (table != LootTable.EMPTY) {
-                if (table.getType() == LootContextTypes.ARCHAEOLOGY) {
-                    supplier.modifyPools(poolBuilder -> {
-                        for (LootPool pool : table.pools) {
-                            poolBuilder.with(pool.entries);
-                        }
-                    });
-                } else {
-                    supplier.pools(table.pools);
-                }
+                supplier.modifyPools(poolBuilder -> {
+                    for (var pool : table.pools) {
+                        poolBuilder.with(pool.entries);
+                    }
+                });
             }
         });
     }

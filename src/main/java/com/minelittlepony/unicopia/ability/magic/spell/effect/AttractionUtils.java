@@ -1,11 +1,15 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 
+import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -17,7 +21,16 @@ public interface AttractionUtils {
     }
 
     static double getMass(Entity entity) {
-        return entity.getWidth() * entity.getHeight();
+        double baseMass = entity.getWidth() * entity.getHeight();
+        if (entity instanceof ItemEntity item) {
+            baseMass *= item.getStack().getCount();
+            @Nullable
+            Block block = Block.getBlockFromItem(item.getStack().getItem());
+            if (block != null) {
+                baseMass *= MathHelper.clamp(1 + block.getHardness(), 1, 5);
+            }
+        }
+        return baseMass;
     }
 
     /**

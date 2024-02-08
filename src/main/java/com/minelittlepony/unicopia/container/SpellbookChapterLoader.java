@@ -154,7 +154,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             this(
                 readText(json.get("title")),
                 JsonHelper.getInt(json, "level", 0),
-                Optional.ofNullable(TextColor.parse(JsonHelper.getString(json, "color", ""))).map(TextColor::getRgb).orElse(0),
+                TextColor.parse(JsonHelper.getString(json, "color", "")).result().map(TextColor::getRgb).orElse(0),
                 new ArrayList<>()
             );
             JsonHelper.getArray(json, "elements", new JsonArray()).forEach(element -> {

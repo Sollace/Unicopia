@@ -3,6 +3,8 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
@@ -13,6 +15,8 @@ import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.EntitySwap;
 import com.minelittlepony.unicopia.entity.behaviour.Inventory;
+import com.minelittlepony.unicopia.item.AlicornAmuletItem;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
@@ -38,8 +42,12 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
         super(type);
     }
 
+    @Nullable
     @Override
     public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
+        if (caster.asEntity() instanceof LivingEntity living && isValidTarget(living)) {
+            return null;
+        }
         return method == CastingMethod.STAFF ? toThrowable() : this;
     }
 
@@ -50,21 +58,28 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
             counterpart.ifPresent(caster.asWorld(), e -> {
                 initialized = false;
                 LivingEntity master = caster.getMaster();
-
                 Caster<?> other = Caster.of(e).get();
+
                 other.getSpellSlot().removeIf(SpellType.MIMIC, true);
                 caster.getSpellSlot().removeIf(getType(), true);
 
-                if (master instanceof ServerPlayerEntity sMaster && e instanceof ServerPlayerEntity sE) {
-                    swapPlayerData(sMaster, sE);
+                if (!isValidTarget(master) || !isValidTarget(e)) {
+                    master.damage(caster.asWorld().getDamageSources().magic(), Float.MAX_VALUE);
+                    master.setHealth(0);
+                    e.damage(caster.asWorld().getDamageSources().magic(), Float.MAX_VALUE);
+                    e.setHealth(0);
                 } else {
-                    EntitySwap.ALL.accept(e, master);
-                    Inventory.swapInventories(
-                            e, myStoredInventory.or(() -> Inventory.of(e)),
-                            master, theirStoredInventory.or(() -> Inventory.of(master)),
-                            a -> {},
-                            a -> {}
-                    );
+                    if (master instanceof ServerPlayerEntity sMaster && e instanceof ServerPlayerEntity sE) {
+                        swapPlayerData(sMaster, sE);
+                    } else {
+                        EntitySwap.ALL.accept(e, master);
+                        Inventory.swapInventories(
+                                e, myStoredInventory.or(() -> Inventory.of(e)),
+                                master, theirStoredInventory.or(() -> Inventory.of(master)),
+                                a -> {},
+                                a -> {}
+                        );
+                    }
                 }
 
                 other.playSound(USounds.SPELL_MINDSWAP_UNSWAP, 0.2F);
@@ -84,7 +99,19 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
         if (!caster.isClient()) {
             if (!initialized) {
                 counterpart.ifPresent(caster.asWorld(), e -> {
+                    if (!isValidTarget(e)) {
+                        counterpart.set(null);
+                        setDead();
+                        return;
+                    }
+
                     LivingEntity master = caster.getMaster();
+
+                    if (!isValidTarget(master)) {
+                        counterpart.set(null);
+                        setDead();
+                        return;
+                    }
 
                     setDisguise(e);
                     Caster<?> other = Caster.of(e).get();
@@ -144,7 +171,9 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
     @Override
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
         Caster.of(projectile.getMaster()).ifPresent(master -> {
-            if (getTypeAndTraits().apply(master, CastingMethod.DIRECT) instanceof HomingSpell homing) {
+            if (hit.getEntity() instanceof LivingEntity living
+                    && isValidTarget(living)
+                    && getTypeAndTraits().apply(master, CastingMethod.DIRECT) instanceof HomingSpell homing) {
                 homing.setTarget(hit.getEntity());
             }
         });
@@ -152,11 +181,17 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
 
     @Override
     public boolean setTarget(Entity target) {
-        if (target instanceof LivingEntity living && Caster.of(target).isPresent()) {
+        if (target instanceof LivingEntity living) {
             counterpart.set(living);
         }
 
         return false;
+    }
+
+    protected boolean isValidTarget(LivingEntity entity) {
+        return Caster.of(entity).isPresent()
+                //&& !UItems.ALICORN_AMULET.isApplicable(entity)
+                && !UItems.PEARL_NECKLACE.isApplicable(entity);
     }
 
     @Override
@@ -178,6 +213,8 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
     }
 
     private static void swapPlayerData(ServerPlayerEntity a, ServerPlayerEntity b) {
+        AlicornAmuletItem.updateAttributes(Living.living(a), 0);
+        AlicornAmuletItem.updateAttributes(Living.living(b), 0);
 
         final GameMode aMode = a.interactionManager.getGameMode();
         final GameMode bMode = b.interactionManager.getGameMode();

@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.block;
 import org.joml.Vector3f;
 
 import com.mojang.serialization.MapCodec;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -46,7 +47,7 @@ public class SpikesBlock extends OrientedBlock {
 
             if ((normVel.x + normVel.y + normVel.z) < -0.08F) {
                 float damage = (float)vel.lengthSquared() * 26;
-                entity.damage(world.getDamageSources().cactus(), damage);
+                entity.damage(world.getDamageSources().create(UDamageTypes.SPIKES), damage);
             }
         }
     }
@@ -59,7 +60,7 @@ public class SpikesBlock extends OrientedBlock {
                 if (!(e instanceof LivingEntity) || e.getType() == EntityType.FOX || e.getType() == EntityType.BEE) {
                     continue;
                 }
-                e.damage(world.getDamageSources().cactus(), 6);
+                e.damage(world.getDamageSources().create(UDamageTypes.SPIKES), 6);
             }
         }
     }

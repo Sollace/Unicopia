@@ -1,6 +1,5 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.block.zap;
 
-import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -15,12 +14,12 @@ import net.minecraft.util.math.*;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class ZapAppleLogBlock extends PillarBlock {
-    public static final MapCodec<ZapAppleLogBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+public class ZapAppleLogBlock extends PillarBlock implements ElectrifiedBlock {
+    private static final MapCodec<ZapAppleLogBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             BlockState.CODEC.fieldOf("model_block").forGetter(b -> b.artifialModelBlock),
             BedBlock.createSettingsCodec()
     ).apply(instance, ZapAppleLogBlock::new));
-    public static final BooleanProperty NATURAL = ZapBlock.NATURAL;
+    public static final BooleanProperty NATURAL = BooleanProperty.of("natural");
 
     public static Settings settings(MapColor topMapColor, MapColor sideMapColor) {
         return Settings.create()
@@ -33,7 +32,7 @@ public class ZapAppleLogBlock extends PillarBlock {
 
     private final BlockState artifialModelBlock;
 
-    ZapAppleLogBlock(BlockState artifialModelBlock, Settings settings) {
+    public ZapAppleLogBlock(BlockState artifialModelBlock, Settings settings) {
         super(settings);
         setDefaultState(getDefaultState().with(NATURAL, true));
         this.artifialModelBlock = artifialModelBlock;
@@ -52,13 +51,13 @@ public class ZapAppleLogBlock extends PillarBlock {
 
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return getDefaultState().with(NATURAL, false);
+        return super.getPlacementState(ctx).with(NATURAL, false);
     }
 
     @Deprecated
     @Override
     public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-        ZapBlock.triggerLightning(state, world, pos, player);
+        triggerLightning(state, world, pos);
     }
 
     @Deprecated
@@ -68,12 +67,6 @@ public class ZapAppleLogBlock extends PillarBlock {
             return artifialModelBlock.calcBlockBreakingDelta(player, world, pos);
         }
 
-        float delta = super.calcBlockBreakingDelta(state, player, world, pos);
-
-        if (Pony.of(player).getCompositeRace().canUseEarth()) {
-            delta *= 50;
-        }
-
-        return MathHelper.clamp(delta, 0, 0.9F);
+        return getBlockBreakingDelta(super.calcBlockBreakingDelta(state, player, world, pos), player);
     }
 }

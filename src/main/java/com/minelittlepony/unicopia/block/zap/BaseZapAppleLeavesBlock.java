@@ -1,7 +1,10 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.block.zap;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.block.BlockConstructionUtils;
+import com.minelittlepony.unicopia.block.TintedBlock;
+import com.minelittlepony.unicopia.block.UMapColors;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 import com.mojang.serialization.MapCodec;
@@ -14,12 +17,12 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 
-public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock, ZapStagedBlock {
-    public static final MapCodec<BaseZapAppleLeavesBlock> CODEC = LeavesBlock.createCodec(BaseZapAppleLeavesBlock::new);
+public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock, ZapStagedBlock, ElectrifiedBlock {
+    private static final MapCodec<BaseZapAppleLeavesBlock> CODEC = createCodec(BaseZapAppleLeavesBlock::new);
 
     public static Settings settings() {
         return Settings.create()
-                .mapColor(MapColor.PURPLE)
+                .mapColor(UMapColors.ZAP_LEAVES)
                 .strength(500, 1200)
                 .ticksRandomly()
                 .sounds(BlockSoundGroup.AZALEA_LEAVES)
@@ -29,7 +32,7 @@ public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock,
                 .blockVision(BlockConstructionUtils::never);
     }
 
-    BaseZapAppleLeavesBlock(Settings settings) {
+    public BaseZapAppleLeavesBlock(Settings settings) {
         super(settings);
     }
 
@@ -87,7 +90,7 @@ public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock,
 
     @Override
     public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
-        ZapBlock.triggerLightning(state, world, pos, player);
+        triggerLightning(state, world, pos);
     }
 
     @Override

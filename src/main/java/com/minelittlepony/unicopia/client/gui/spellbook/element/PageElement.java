@@ -10,6 +10,7 @@ import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.block.state.Schematic;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Drawable;
 import com.minelittlepony.unicopia.container.SpellbookChapterLoader.Flow;
 import net.minecraft.client.gui.DrawContext;
@@ -59,7 +60,7 @@ public interface PageElement extends Drawable {
                     default -> throw new IllegalArgumentException("Unexpected value: " + t);
                 };
             }));
-            case 5 -> new Structure.Builder().fromBuffer(buffer).build();
+            case 5 -> new Structure(Bounds.empty(), Schematic.fromPacket(buffer));
             default -> throw new IllegalArgumentException("Unexpected value: " + type);
         };
     }

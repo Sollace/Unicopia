@@ -77,7 +77,7 @@ public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell> {
         SphereModel.DISK.render(matrices, vertices.getBuffer(RenderLayers.getEndPortal()), light, 1, radius * 0.5F, 1, 0.5F, 0, 1);
 
         if (radius > 0.3F && absDistance > radius) {
-            radius *= 3 + radius;
+            radius *= Math.min(2, 3 + radius);
 
             matrices.scale(radius, radius, radius);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));

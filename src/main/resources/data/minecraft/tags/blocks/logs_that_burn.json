@@ -5,6 +5,10 @@
     "unicopia:palm_wood",
     "unicopia:golden_oak_log",
     "unicopia:stripped_palm_log",
-    "unicopia:stripped_palm_wood"
+    "unicopia:stripped_palm_wood",
+    "unicopia:waxed_zap_log",
+    "unicopia:waxed_zap_wood",
+    "unicopia:waxed_stripped_zap_log",
+    "unicopia:waxed_stripped_zap_wood"
   ]
 }

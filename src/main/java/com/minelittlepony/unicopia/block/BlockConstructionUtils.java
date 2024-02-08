@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 
-interface BlockConstructionUtils {
+public interface BlockConstructionUtils {
     static ButtonBlock woodenButton(BlockSetType setType) {
         return new ButtonBlock(setType, 30, AbstractBlock.Settings.create().noCollision().strength(0.5f).pistonBehavior(PistonBehavior.DESTROY));
     }

@@ -263,7 +263,7 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
             return;
         }
 
-        //setBeamTicks(0);
+        setBeamTicks(0);
 
         if (activeRecipe == null) {
             return;

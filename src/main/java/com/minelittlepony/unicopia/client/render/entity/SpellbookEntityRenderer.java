@@ -81,7 +81,7 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
 
 
             Altar altar = entity.getAltar().get();
-            Vec3d center = altar.origin().toCenterPos();
+            Vec3d center = altar.origin().toCenterPos().add(0, -1, 0);
 
             float x = (float)MathHelper.lerp(tickDelta, entity.prevX, entity.getX());
             float y = (float)MathHelper.lerp(tickDelta, entity.prevY, entity.getY());

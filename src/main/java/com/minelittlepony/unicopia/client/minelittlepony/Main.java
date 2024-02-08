@@ -9,6 +9,7 @@ import java.util.function.Function;
 import com.minelittlepony.api.events.PonyModelPrepareCallback;
 import com.minelittlepony.api.model.*;
 import com.minelittlepony.api.model.gear.Gear;
+import com.minelittlepony.api.pony.PonyData;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
@@ -91,6 +92,11 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
         }
     }
 
+
+    @Override
+    public int getMagicColor(Entity entity) {
+        return com.minelittlepony.api.pony.Pony.getManager().getPony(entity).map(com.minelittlepony.api.pony.Pony::metadata).map(PonyData::glowColor).orElse(0);
+    }
 
     @Override
     public Race getPlayerPonyRace(PlayerEntity player) {

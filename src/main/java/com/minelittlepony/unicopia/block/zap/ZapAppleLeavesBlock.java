@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.block.zap;
 
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 import com.mojang.serialization.MapCodec;
@@ -9,10 +9,10 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
 
 public class ZapAppleLeavesBlock extends BaseZapAppleLeavesBlock {
-    public static final MapCodec<ZapAppleLeavesBlock> CODEC = createCodec(ZapAppleLeavesBlock::new);
+    private static final MapCodec<ZapAppleLeavesBlock> CODEC = createCodec(ZapAppleLeavesBlock::new);
     public static final EnumProperty<ZapAppleStageStore.Stage> STAGE = EnumProperty.of("stage", ZapAppleStageStore.Stage.class);
 
-    ZapAppleLeavesBlock(Settings settings) {
+    public ZapAppleLeavesBlock(Settings settings) {
         super(settings);
         setDefaultState(getDefaultState().with(STAGE, ZapAppleStageStore.Stage.GREENING));
     }

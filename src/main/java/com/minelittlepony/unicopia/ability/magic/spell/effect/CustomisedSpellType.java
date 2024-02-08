@@ -39,8 +39,11 @@ public record CustomisedSpellType<T extends Spell> (
         }
 
         T spell = create();
-        if (spell != null && spell.prepareForCast(caster, method).apply(caster)) {
-            return spell;
+        if (spell != null) {
+            Spell s = spell.prepareForCast(caster, method);
+            if (s != null && s.apply(caster)) {
+                return spell;
+            }
         }
 
         return null;

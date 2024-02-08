@@ -5,7 +5,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.WorldConvertable;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageType;
