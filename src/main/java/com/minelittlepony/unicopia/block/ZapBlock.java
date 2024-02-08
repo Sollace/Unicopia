@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import net.minecraft.block.*;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -66,6 +67,9 @@ public class ZapBlock extends Block {
             Vec3d center = Vec3d.ofCenter(pos);
             LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world);
             world.getOtherEntities(null, Box.from(center).expand(7)).forEach(other -> {
+                if (other instanceof ItemEntity) {
+                    return;
+                }
                 float dist = (float)other.getPos().distanceTo(center);
                 if (dist < 4) {
                     other.onStruckByLightning(serverWorld, lightning);
