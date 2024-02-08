@@ -69,7 +69,7 @@ record StatusEffectAffliction(Identifier effect, Range seconds, Range amplifier,
                 text = Text.translatable("potion.withAmplifier", text, Text.translatable("potion.potency." + (amplifier.min())));
             }
 
-            float tickRate = MinecraftClient.getInstance().world.getTickManager().getTickRate();
+            float tickRate = MinecraftClient.getInstance().world == null ? 20 : MinecraftClient.getInstance().world.getTickManager().getTickRate();
             text = Text.translatable("potion.withDuration", text, StringHelper.formatTicks(seconds.min() * 20, tickRate));
 
             if (chance > 0) {

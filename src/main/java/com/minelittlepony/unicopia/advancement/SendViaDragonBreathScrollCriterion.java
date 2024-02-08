@@ -63,7 +63,7 @@ public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendVi
                 Codec.STRING.optionalFieldOf("recipient_name").forGetter(Conditions::recipientName),
                 CodecUtils.tristateOf("recipient_present").forGetter(Conditions::recipientPresent),
                 Codec.STRING.optionalFieldOf("counter").forGetter(Conditions::counter),
-                RacePredicate.CODEC.fieldOf("races").forGetter(Conditions::races)
+                RacePredicate.CODEC.optionalFieldOf("races", RacePredicate.EMPTY).forGetter(Conditions::races)
             ).apply(instance, Conditions::new));
 
         public boolean test(ServerPlayerEntity player, ItemStack payload, String recipient, boolean receiving) {

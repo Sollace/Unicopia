@@ -46,7 +46,7 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
         public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(Conditions::player),
                 Codec.STRING.fieldOf("event").forGetter(Conditions::event),
-                RacePredicate.CODEC.fieldOf("races").forGetter(Conditions::races),
+                RacePredicate.CODEC.optionalFieldOf("races", RacePredicate.EMPTY).forGetter(Conditions::races),
                 CodecUtils.tristateOf("flying").forGetter(Conditions::flying),
                 Codec.INT.optionalFieldOf("repeatCount", 0).forGetter(Conditions::repeatCount)
             ).apply(instance, Conditions::new));

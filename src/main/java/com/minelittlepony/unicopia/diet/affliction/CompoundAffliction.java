@@ -9,13 +9,9 @@ import net.minecraft.text.Text;
 
 class CompoundAffliction implements Affliction {
     public final List<Affliction> afflictions;
-    private final Text name;
 
     public CompoundAffliction(List<Affliction> afflictions) {
         this.afflictions = afflictions;
-        name = afflictions.stream().map(Affliction::getName).reduce(null, (a, b) -> {
-            return a == null ? b : a.copy().append(" + ").append(b);
-        });
     }
 
     public CompoundAffliction(PacketByteBuf buffer) {
@@ -44,7 +40,9 @@ class CompoundAffliction implements Affliction {
 
     @Override
     public Text getName() {
-        return name;
+        return afflictions.stream().map(Affliction::getName).reduce(null, (a, b) -> {
+            return a == null ? b : a.copy().append(" + ").append(b);
+        });
     }
 
 

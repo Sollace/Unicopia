@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "minecraft:grass",
+    "minecraft:short_grass",
     "unicopia:cider",
     { "id": "farmersdelight:rotten_tomato", "required": false }
   ]
