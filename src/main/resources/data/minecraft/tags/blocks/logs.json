@@ -9,6 +9,10 @@
     "unicopia:zap_log",
     "unicopia:zap_wood",
     "unicopia:stripped_zap_log",
-    "unicopia:stripped_zap_wood"
+    "unicopia:stripped_zap_wood",
+    "unicopia:waxed_zap_log",
+    "unicopia:waxed_zap_wood",
+    "unicopia:waxed_stripped_zap_log",
+    "unicopia:waxed_stripped_zap_wood"
   ]
 }

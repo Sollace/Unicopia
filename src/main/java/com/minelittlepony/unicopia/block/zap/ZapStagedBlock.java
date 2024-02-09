@@ -1,5 +1,6 @@
-package com.minelittlepony.unicopia.block;
+package com.minelittlepony.unicopia.block.zap;
 
+import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 
 import net.minecraft.block.Block;

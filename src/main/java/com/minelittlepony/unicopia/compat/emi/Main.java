@@ -27,7 +27,6 @@ import dev.emi.emi.api.render.EmiTexture;
 import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.recipe.EmiStonecuttingRecipe;
-import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -121,11 +120,11 @@ public class Main implements EmiPlugin {
                     GROWING_CATEGORY,
                     recipe.getId(),
                     new Schematic.Builder()
-                        .fill(0, 0, 0, 6, 0, 6, Block.getBlockFromItem(recipe.getCatalyst().getItem()).getDefaultState())
+                        .fill(0, 0, 0, 6, 0, 6, recipe.getCatalystState())
                         .set(3, 0, 3, Blocks.FARMLAND.getDefaultState())
-                        .set(3, 1, 3, Block.getBlockFromItem(recipe.getTargetAsItem().getItem()).getDefaultState())
+                        .set(3, 1, 3, recipe.getTargetState())
                         .build(),
-                    List.of(EmiStack.of(recipe.getTargetAsItem()), EmiStack.of(recipe.getCatalyst(), TransformCropsRecipe.AREA)),
+                    List.of(EmiStack.of(recipe.getTarget()), EmiStack.of(recipe.getCatalyst(), TransformCropsRecipe.AREA)),
                     EmiStack.of(recipe.getOutput()),
                     Unicopia.id("textures/gui/ability/grow.png")
             ));
