@@ -48,6 +48,7 @@
     "MixinStateManagerBuilder",
     "MixinBlockState",
     "MixinTargetPredicate",
+    "MixinVanillaBiomeParameters",
     "MixinWardenEntity",
     "MixinWorld",
     "MixinWorldChunk",

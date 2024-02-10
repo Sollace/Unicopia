@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.block.UBlocks;
 
@@ -17,10 +18,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.BiomeTags;
-import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.feature.*;
 import net.minecraft.world.gen.feature.size.TwoLayersFeatureSize;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
+import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.placementmodifier.PlacementModifier;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.trunk.TrunkPlacer;
@@ -29,9 +31,8 @@ public record Tree (
         Identifier id,
         TreeFeatureConfig.Builder config,
         RegistryKey<ConfiguredFeature<?, ?>> configuredFeatureId,
-        Optional<RegistryKey<PlacedFeature>> placedFeatureId,
-        Optional<Block> sapling,
-        Optional<PlacementModifier> placement
+        Set<Placement> placements,
+        Optional<Block> sapling
     ) {
     public static final List<Tree> REGISTRY = new ArrayList<>();
 
@@ -44,20 +45,22 @@ public record Tree (
             });
             registries.getOptional(RegistryKeys.PLACED_FEATURE).ifPresent(registry -> {
                 var reg = registries.asDynamicRegistryManager().createRegistryLookup().getOrThrow(RegistryKeys.CONFIGURED_FEATURE);
-                REGISTRY.stream().filter(tree -> tree.placedFeatureId().isPresent()).forEach(tree -> {
-                    var placedFeature = new PlacedFeature(reg.getOrThrow(tree.configuredFeatureId()),
-                            VegetationPlacedFeatures.treeModifiersWithWouldSurvive(tree.placement().orElseThrow(), tree.sapling().orElse(Blocks.OAK_SAPLING))
-                    );
-
-                    Registry.register(registry, tree.id, placedFeature);
+                REGISTRY.stream().forEach(tree -> {
+                    tree.placements().forEach(placement -> {
+                        Registry.register(registry, placement.id(), new PlacedFeature(reg.getOrThrow(tree.configuredFeatureId()),
+                                VegetationPlacedFeatures.treeModifiersWithWouldSurvive(placement.count(), tree.sapling().orElse(Blocks.OAK_SAPLING))
+                        ));
+                    });
                 });
             });
         });
-
     }
 
     public static class Builder {
         public static final Predicate<BiomeSelectionContext> IS_FOREST = BiomeSelectors.foundInOverworld().and(BiomeSelectors.tag(BiomeTags.IS_FOREST));
+        public static final Predicate<BiomeSelectionContext> IS_OAK_FOREST = IS_FOREST
+                .and(BiomeSelectors.excludeByKey(BiomeKeys.BIRCH_FOREST, BiomeKeys.OLD_GROWTH_BIRCH_FOREST, BiomeKeys.DARK_FOREST))
+                .and(BiomeSelectors.tag(BiomeTags.IS_TAIGA).negate());
 
         public static Builder create(Identifier id, TrunkPlacer trunkPlacer, FoliagePlacer foliagePlacer) {
             return new Builder(id, trunkPlacer, foliagePlacer);
@@ -73,8 +76,7 @@ public record Tree (
 
         private final Identifier id;
 
-        private Optional<Predicate<BiomeSelectionContext>> selector = Optional.empty();
-        private Optional<PlacementModifier> countModifier = Optional.empty();
+        private Map<Identifier, Placement> placements = new HashMap<>();
         private Function<TreeFeatureConfig.Builder, TreeFeatureConfig.Builder> configParameters = Function.identity();
         private Optional<TwoLayersFeatureSize> size = Optional.empty();
 
@@ -104,13 +106,18 @@ public record Tree (
             return this;
         }
 
-        public Builder count(int count, float extraChance, int extraCount) {
-            countModifier = Optional.of(PlacedFeatures.createCountExtraModifier(count, extraChance, extraCount));
-            return this;
+        public Builder placement(int count, float extraChance, int extraCount, Predicate<BiomeSelectionContext> selector) {
+            return placement("", count, extraChance, extraCount, selector);
         }
 
-        public Builder biomes(Predicate<BiomeSelectionContext> selector) {
-            this.selector = Optional.of(selector);
+        public Builder placement(String suffex, int count, float extraChance, int extraCount, Predicate<BiomeSelectionContext> selector) {
+            Identifier id = this.id.withSuffixedPath("/placed" + (suffex.isEmpty() ? "" : "/") + suffex);
+            placements.put(id, new Placement(
+                    id,
+                    PlacedFeatures.createCountExtraModifier(count, extraChance, extraCount),
+                    RegistryKey.of(RegistryKeys.PLACED_FEATURE, id),
+                    selector
+            ));
             return this;
         }
 
@@ -119,7 +126,7 @@ public record Tree (
             return this;
         }
 
-        public Builder farmingCondition(int yLevel, int sizeBelowY, int sizeAboveY) {
+        public Builder dimensions(int yLevel, int sizeBelowY, int sizeAboveY) {
             this.size = Optional.of(new TwoLayersFeatureSize(yLevel, Math.max(0, sizeBelowY), Math.max(0, sizeAboveY)));
             return this;
         }
@@ -132,23 +139,28 @@ public record Tree (
                     BlockStateProvider.of(leavesType),
                     foliagePlacer,
                     size.get()
-                )), configuredFeatureId, selector.map(selector -> {
-                RegistryKey<PlacedFeature> i = RegistryKey.of(RegistryKeys.PLACED_FEATURE, id);
-                BiomeModifications.addFeature(selector, GenerationStep.Feature.VEGETAL_DECORATION, i);
-                return i;
-            }), saplingId.map(id -> UBlocks.register(id, saplingConstructor.apply(new SaplingGenerator() {
+                )), configuredFeatureId, placements.values().stream()
+                    .collect(Collectors.toUnmodifiableSet()),
+                    saplingId.map(id -> UBlocks.register(id, saplingConstructor.apply(new SaplingGenerator() {
                 @Override
                 protected RegistryKey<ConfiguredFeature<?, ?>> getTreeFeature(Random rng, boolean flowersNearby) {
                     return configuredFeatureId;
                 }
-            }, FabricBlockSettings.copy(Blocks.OAK_SAPLING)), ItemGroups.NATURAL)), countModifier);
+            }, FabricBlockSettings.copy(Blocks.OAK_SAPLING)), ItemGroups.NATURAL)));
 
             if (REGISTRY.isEmpty()) {
                 bootstrap();
             }
 
             REGISTRY.add(tree);
+            tree.placements().forEach(placement -> {
+                BiomeModifications.addFeature(placement.selector(), GenerationStep.Feature.VEGETAL_DECORATION, placement.feature());
+            });
             return tree;
         }
+    }
+
+    public record Placement(Identifier id, PlacementModifier count, RegistryKey<PlacedFeature> feature, Predicate<BiomeSelectionContext> selector) {
+
     }
 }

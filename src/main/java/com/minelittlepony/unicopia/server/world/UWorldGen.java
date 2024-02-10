@@ -5,6 +5,7 @@ import java.util.List;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.ShellsBlock;
 import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.server.world.gen.OverworldBiomeSelectionCallback;
 
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
@@ -13,11 +14,13 @@ import net.minecraft.block.Blocks;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
@@ -66,6 +69,8 @@ public interface UWorldGen {
             BiomePlacementModifier.of()
     ));
 
+    RegistryKey<Biome> SWEET_APPLE_ORCHARD = RegistryKey.of(RegistryKeys.BIOME, Unicopia.id("sweet_apple_orchard"));
+
     static void bootstrap() {
         BiomeModifications.addFeature(BiomeSelectors.tag(BiomeTags.IS_JUNGLE), GenerationStep.Feature.VEGETAL_DECORATION, PINEAPPLE_PLANT_PLACED_FEATURE);
         BiomeModifications.addFeature(
@@ -75,5 +80,11 @@ public interface UWorldGen {
                 .or(BiomeSelectors.includeByKey(BiomeKeys.STONY_SHORE))
         ), GenerationStep.Feature.VEGETAL_DECORATION, SHELLS_PLACED_FEATURE);
         UTreeGen.bootstrap();
+
+        OverworldBiomeSelectionCallback.EVENT.register(context -> {
+            if (context.biomeKey() == BiomeKeys.FOREST) {
+                context.addOverride(context.referenceFrame().temperature().splitAbove(0.9F), SWEET_APPLE_ORCHARD);
+            }
+        });
     }
 }
