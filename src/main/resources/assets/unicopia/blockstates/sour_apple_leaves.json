@@ -1,6 +1,15 @@
 {
   "variants": {
-    "": {
+    "stage=flowering": {
+      "model": "unicopia:block/sour_apple_leaves_flowering"
+    },
+    "stage=idle": {
+      "model": "unicopia:block/sour_apple_leaves"
+    },
+    "stage=fruiting": {
+      "model": "unicopia:block/sour_apple_leaves"
+    },
+    "stage=withering": {
       "model": "unicopia:block/sour_apple_leaves"
     }
   }
