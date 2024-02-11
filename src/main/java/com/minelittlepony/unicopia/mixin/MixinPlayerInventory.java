@@ -11,11 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.minelittlepony.unicopia.advancement.UCriteria;
-import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
-import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
-
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
+import com.minelittlepony.unicopia.item.enchantment.HeartboundEnchantmentUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -31,37 +27,21 @@ abstract class MixinPlayerInventory implements Inventory, Nameable {
     private @Final List<DefaultedList<ItemStack>> combinedInventory;
 
     @Nullable
-    private List<DefaultedList<ItemStack>> storedCombinedInventory;
+    private HeartboundEnchantmentUtil.InventorySnapshot inventorySnapshot;
 
     @Inject(method = "dropAll()V", at = @At("HEAD"))
     public void beforeDropAll(CallbackInfo info) {
-        storedCombinedInventory = combinedInventory.stream().map(l -> DefaultedList.ofSize(l.size(), ItemStack.EMPTY)).toList();
-        for (int group = 0; group < combinedInventory.size(); group++) {
-            var original = combinedInventory.get(group);
-            for (int i = 0; i < original.size(); i++) {
-                ItemStack stack = original.get(i);
-                if (EnchantmentHelper.getLevel(Enchantments.BINDING_CURSE, stack) == 0
-                    && EnchantmentUtil.consumeEnchantment(UEnchantments.HEART_BOUND, 1, stack, player.getWorld().random, EnchantmentUtil.getLuck(3, player))) {
-                    original.set(i, ItemStack.EMPTY);
-                    UCriteria.USE_SOULMATE.trigger(player);
-                    storedCombinedInventory.get(group).set(i, stack);
-                }
-            }
+        inventorySnapshot = HeartboundEnchantmentUtil.createSnapshot(combinedInventory);
+        if (!inventorySnapshot.empty()) {
+            UCriteria.USE_SOULMATE.trigger(player);
         }
     }
 
-    @Inject(method = "dropAll()V", at = @At("TAIL"))
+    @Inject(method = "dropAll()V", at = @At("RETURN"))
     public void afterDropAll(CallbackInfo info) {
-        if (storedCombinedInventory != null) {
-            for (int group = 0; group < combinedInventory.size(); group++) {
-                var original = combinedInventory.get(group);
-                for (int i = 0; i < original.size(); i++) {
-                    ItemStack stored = storedCombinedInventory.get(group).get(i);
-                    if (!stored.isEmpty()) {
-                        original.set(i, stored);
-                    }
-                }
-            }
+        if (inventorySnapshot != null) {
+            inventorySnapshot.restoreInto(combinedInventory);
+            inventorySnapshot = null;
         }
     }
 }
