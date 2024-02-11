@@ -30,12 +30,12 @@ public interface UEnchantments {
     /**
      * Protects against wall collisions and earth pony attacks!
      */
-    Enchantment PADDED = register("padded", new SimpleEnchantment(Options.armor().rarity(Rarity.COMMON).maxLevel(3)));
+    Enchantment PADDED = register("padded", new SimpleEnchantment(Options.armor().rarity(Rarity.UNCOMMON).maxLevel(3)));
 
     /**
      * Heavy players move more slowly but are less likely to be flung around wildly.
      */
-    Enchantment HEAVY = register("heavy", new AttributedEnchantment(Options.armor().rarity(Rarity.COMMON).maxLevel(4)))
+    Enchantment HEAVY = register("heavy", new AttributedEnchantment(Options.armor().rarity(Rarity.UNCOMMON).maxLevel(4)))
             .addModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED, (user, level) -> {
                 return new EntityAttributeModifier(UUID.fromString("a3d5a94f-4c40-48f6-a343-558502a13e10"), "Heavyness", (1 - level/(float)10) - 1, Operation.MULTIPLY_TOTAL);
             });
@@ -83,7 +83,7 @@ public interface UEnchantments {
      * Items with loyalty are kept after death.
      * Only works if they don't also have curse of binding.
      */
-    Enchantment HEART_BOUND = register("heart_bound", new SimpleEnchantment(Options.create(EnchantmentTarget.VANISHABLE, UEnchantmentValidSlots.ANY).rarity(Rarity.COMMON).maxLevel(5)));
+    Enchantment HEART_BOUND = register("heart_bound", new SimpleEnchantment(Options.create(EnchantmentTarget.VANISHABLE, UEnchantmentValidSlots.ANY).rarity(Rarity.UNCOMMON).maxLevel(5)));
 
     /**
      * Consumes drops whilst mining and produces experience instead
