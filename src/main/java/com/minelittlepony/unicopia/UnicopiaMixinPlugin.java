@@ -38,6 +38,9 @@ public class UnicopiaMixinPlugin implements IMixinConfigPlugin {
             if (mixinClassName.indexOf("minelp") != -1) {
                 return FabricLoader.getInstance().isModLoaded("minelp");
             }
+            if (mixinClassName.indexOf("forgified") != -1) {
+                return FabricLoader.getInstance().isModLoaded("connectormod");
+            }
         }
         return true;
     }

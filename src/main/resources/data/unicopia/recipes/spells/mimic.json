@@ -4,7 +4,9 @@
   "traits": {
     "knowledge": 19, "life": 10, "chaos": 4
   },
-  "ingredients": [],
+  "ingredients": [
+    { "item": "unicopia:gemstone", "spell": "unicopia:transformation" }
+  ],
   "result": {
     "item": "unicopia:gemstone",
     "spell": "unicopia:mimic"
