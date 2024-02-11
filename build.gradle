@@ -75,10 +75,15 @@ dependencies {
     include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
 
     modCompileOnly "maven.modrinth:farmers-delight-fabric:${project.farmers_delight_version}", { exclude group: "net.fabricmc.fabric-api" }
-    modCompileOnly "maven.modrinth:iris:${project.iris_version}", { exclude group: "net.fabricmc.fabric-api" }
-    modCompileOnly "maven.modrinth:sodium:${project.sodium_version}", { exclude group: "net.fabricmc.fabric-api" }
-    modCompileOnly "maven.modrinth:pehkui:${project.pehkui_version}", { exclude group: "net.fabricmc.fabric-api" }
-    modCompileOnly "com.github.Virtuoel:KanosConfig:0.4.1", { exclude group: "net.fabricmc.fabric-api" }
+    if (project.use_pehkui == '1') {
+      modCompileOnly "maven.modrinth:pehkui:${project.pehkui_version}", { exclude group: "net.fabricmc.fabric-api" }
+      modCompileOnly "com.github.Virtuoel:KanosConfig:0.4.1", { exclude group: "net.fabricmc.fabric-api" }
+    }
+
+    if (project.use_sodium == '1') {
+      modCompileOnly "maven.modrinth:sodium:${project.sodium_version}", { exclude group: "net.fabricmc.fabric-api" }
+      modCompileOnly "maven.modrinth:iris:${project.iris_version}", { exclude group: "net.fabricmc.fabric-api" }
+    }
 
     if (project.tmi_type == 'emi') {
       modCompileOnly "dev.emi:emi-fabric:${project.emi_version}"
