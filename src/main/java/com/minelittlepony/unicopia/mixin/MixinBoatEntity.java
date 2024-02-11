@@ -31,7 +31,12 @@ abstract class MixinBoatEntity extends Entity implements LavaAffine {
                     "fall",
                     "canAddPassenger"
             },
-            at = @At(value = "FIELD", target = "net/minecraft/registry/tag/FluidTags.WATER:Lnet/minecraft/registry/tag/TagKey;", opcode = Opcodes.GETSTATIC)
+            at = @At(
+                    value = "FIELD",
+                    target = "net/minecraft/registry/tag/FluidTags.WATER:Lnet/minecraft/registry/tag/TagKey;",
+                    opcode = Opcodes.GETSTATIC
+            ),
+            require = 0 // Forge
     )
     private TagKey<Fluid> redirectFluidTag() {
         return isLavaAffine() ? FluidTags.LAVA : FluidTags.WATER;

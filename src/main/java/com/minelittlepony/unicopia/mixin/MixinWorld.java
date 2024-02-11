@@ -1,26 +1,17 @@
 package com.minelittlepony.unicopia.mixin;
 
-import java.util.List;
 import java.util.Stack;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
-
-import org.jetbrains.annotations.Nullable;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.duck.RotatedView;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
@@ -45,18 +36,6 @@ abstract class MixinWorld implements WorldAccess, BlockDestructionManager.Source
     @Override
     public BlockDestructionManager getDestructionManager() {
         return destructions.get();
-    }
-
-    @Override
-    public List<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box) {
-        if (box.getAverageSideLength() >= 1.0E-7D) {
-            List<VoxelShape> shapes = EntityCollisions.getColissonShapes(entity, this, box);
-            if (!shapes.isEmpty()) {
-                return Stream.concat(shapes.stream(), WorldAccess.super.getEntityCollisions(entity, box).stream()).toList();
-            }
-         }
-
-        return WorldAccess.super.getEntityCollisions(entity, box);
     }
 
     @ModifyVariable(method = "setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;II)Z", at = @At("HEAD"))

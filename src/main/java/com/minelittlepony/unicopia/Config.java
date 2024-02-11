@@ -48,6 +48,9 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
     public final Setting<Boolean> simplifiedPortals = value("compatibility", "simplifiedPortals", false)
             .addComment("Disables dynamic portal rendering");
 
+    public final Setting<Boolean> disableShaders = value("compatibility", "disableShaders", false)
+            .addComment("Disables post-effect shaders used by the corruption mechanic");
+
     public final Setting<Long> fancyPortalRefreshRate = value("client", "fancyPortalRefreshRate", -1L)
             .addComment("Sets the refresh rate of portals when using fancy portal rendering")
             .addComment("Set to -1 (default) for unlimited");

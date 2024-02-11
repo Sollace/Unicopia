@@ -1,0 +1,7 @@
+{
+  "parent": "unicopia:block/sweet_apple_leaves_flowering",
+  "textures": {
+    "all": "unicopia:block/sour_apple_leaves",
+    "overlay": "unicopia:block/sour_apple_leaves_flowering"
+  }
+}

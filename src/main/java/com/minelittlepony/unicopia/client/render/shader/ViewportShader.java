@@ -42,11 +42,21 @@ public class ViewportShader implements SynchronousResourceReloader, Identifiable
     }
 
     public void loadShader(@Nullable Identifier shaderId) {
+
         if (shader != null) {
-            shader.close();
+            try {
+                shader.close();
+            } catch (Throwable ignored) {
+            } finally {
+                shader = null;
+            }
         }
 
         if (shaderId == null) {
+            return;
+        }
+
+        if (Unicopia.getConfig().disableShaders.get()) {
             return;
         }
 
@@ -66,6 +76,10 @@ public class ViewportShader implements SynchronousResourceReloader, Identifiable
     }
 
     public void render(float tickDelta) {
+        if (Unicopia.getConfig().disableShaders.get()) {
+            return;
+        }
+
         if (shader != null && client.player != null) {
             RenderSystem.disableBlend();
             RenderSystem.disableDepthTest();

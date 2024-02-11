@@ -37,7 +37,7 @@ public class GoldenOakLeavesBlock extends FruitBearingBlock {
     }
 
     @Override
-    protected BlockState getPlacedFruitState(Random random) {
+    public BlockState getPlacedFruitState(Random random) {
         return super.getPlacedFruitState(random).with(EnchantedFruitBlock.ENCHANTED, random.nextInt(1000) == 0);
     }
 }

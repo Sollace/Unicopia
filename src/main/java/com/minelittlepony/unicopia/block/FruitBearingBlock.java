@@ -82,7 +82,7 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
         return true;
     }
 
-    protected BlockState getPlacedFruitState(Random random) {
+    public BlockState getPlacedFruitState(Random random) {
         return fruit.get().getDefaultState();
     }
 
@@ -157,7 +157,7 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
         return TintedBlock.blend(foliageColor, overlay);
     }
 
-    private boolean isPositionValidForFruit(BlockState state, BlockPos pos) {
+    public boolean isPositionValidForFruit(BlockState state, BlockPos pos) {
         return state.getRenderingSeed(pos) % 3 == 1;
     }
 
