@@ -6,7 +6,6 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgTribeSelect;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
@@ -38,13 +37,13 @@ class SpeciesCommand {
                       .executes(context -> get(context.getSource(), EntityArgumentType.getPlayer(context, "target"), false))
                ))
             .then(CommandManager.literal("set")
-               .then(CommandManager.argument("race", Race.argument())
+               .then(CommandManager.argument("race", Race.argument()).suggests(UCommandSuggestion.ALL_RACE_SUGGESTIONS)
                        .executes(context -> set(context.getSource(), context.getSource().getPlayer(), Race.fromArgument(context, "race"), true))
                .then(CommandManager.argument("target", EntityArgumentType.player())
                        .executes(context -> set(context.getSource(), EntityArgumentType.getPlayer(context, "target"), Race.fromArgument(context, "race"), false)))
                ))
             .then(CommandManager.literal("describe")
-               .then(CommandManager.argument("race", Race.argument())
+               .then(CommandManager.argument("race", Race.argument()).suggests(UCommandSuggestion.ALL_RACE_SUGGESTIONS)
                        .executes(context -> describe(context.getSource().getPlayer(), Race.fromArgument(context, "race")))
                ))
             .then(CommandManager.literal("list")
@@ -60,7 +59,7 @@ class SpeciesCommand {
             pony.setDirty();
 
             if (race.isUnset()) {
-                Channel.SERVER_SELECT_TRIBE.sendToPlayer(new MsgTribeSelect(Race.allPermitted(player), "gui.unicopia.tribe_selection.respawn"), (ServerPlayerEntity)player);
+                Channel.SERVER_SELECT_TRIBE.sendToPlayer(new MsgTribeSelect(Race.allPermitted(player), "gui.unicopia.tribe_selection.welcome"), (ServerPlayerEntity)player);
             }
 
             if (player == source.getPlayer()) {

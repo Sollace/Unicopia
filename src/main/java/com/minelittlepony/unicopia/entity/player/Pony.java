@@ -231,7 +231,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public void setSpecies(Race race) {
         race = race.validate(entity);
         Race current = getSpecies();
-        entity.getDataTracker().set(RACE, Race.REGISTRY.getId(race.validate(entity)).toString());
+        entity.getDataTracker().set(RACE, race.getId().toString());
         if (race != current) {
             clearSuppressedRace();
         }
@@ -244,7 +244,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public void setSuppressedRace(Race race) {
-        entity.getDataTracker().set(SUPPRESSED_RACE, Race.REGISTRY.getId(race.validate(entity)).toString());
+        entity.getDataTracker().set(SUPPRESSED_RACE, race.validate(entity).getId().toString());
     }
 
     public void clearSuppressedRace() {

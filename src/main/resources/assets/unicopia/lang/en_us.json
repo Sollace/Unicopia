@@ -699,6 +699,7 @@
   "gui.unicopia.page_num": "%d of %d",
 
   "respawn.reason.joined_new_tribe": "%1$s was reborn as a %2$s",
+  "respawn.reason.illegal_race": "The %s race is not permitted by your server's configuration.",
 
   "gui.unicopia.tribe_selection.respawn": "You have died.",
   "gui.unicopia.tribe_selection.respawn.journey": "But the end is not all, for at the end of every end is another beginning.",
@@ -1327,7 +1328,12 @@
 
   "commands.racelist.illegal": "The default race %s cannot be used with this command.",
   "commands.racelist.allowed": "Added %1$s to the whitelist.",
-  "commands.racelist.allowed.failed": "%1$s is already whitelisted.",
+  "commands.racelist.get.allowed": "Allowed (%s):",
+  "commands.racelist.get.not_allowed": "Not Allowed (%s):",
+  "commands.racelist.get.list_item": "- %s (%s)",
+  "commands.racelist.clear.success": "Disabled Whitelist",
+  "commands.racelist.allowed.failed": "%1$s is already allowed.",
+  "commands.racelist.inactive": "The allowlist is not active. Add races with /unicopia racelist allow <race> to configure it.",
 
   "commands.racelist.disallowed": "Removed %1$s from the whitelist.",
   "commands.racelist.disallowed.failed": "%1$s is not on the whitelist.",
@@ -1335,7 +1341,6 @@
   "commands.worldtribe.success.get": "Default race for all new players is currently set to: %s",
   "commands.worldtribe.success.set": "Set default race for new players is now set to: %s",
 
-  "commands.disguise.usage": "/disguise <player> <entity> [nbt]",
   "commands.disguise.notfound": "The entity id '%s' does not exist.",
   "commands.disguise.removed": "Your disguise has been removed.",
   "commands.disguise.removed.self": "Removed own disguise.",

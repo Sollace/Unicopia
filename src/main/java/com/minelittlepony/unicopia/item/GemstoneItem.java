@@ -10,7 +10,7 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.client.FlowingText;
+import com.minelittlepony.unicopia.client.TextHelper;
 import com.minelittlepony.unicopia.entity.player.PlayerCharmTracker;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.group.MultiItem;
@@ -90,7 +90,7 @@ public class GemstoneItem extends Item implements MultiItem, EnchantableItem {
                 line = line.formatted(Formatting.OBFUSCATED);
             }
 
-            lines.addAll(FlowingText.wrap(line, 180).toList());
+            lines.addAll(TextHelper.wrap(line, 180).toList());
         }
     }
 

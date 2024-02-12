@@ -1,13 +1,16 @@
 package com.minelittlepony.unicopia.command;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Function;
-
 import com.minelittlepony.unicopia.*;
+import com.minelittlepony.unicopia.client.TextHelper;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -15,8 +18,41 @@ class RacelistCommand {
 
     static LiteralArgumentBuilder<ServerCommandSource> create() {
         return CommandManager.literal("racelist").requires(s -> s.hasPermissionLevel(3))
+            .then(CommandManager.literal("show")
+            .executes(context -> {
+                context.getSource().sendFeedback(() -> {
+                    Set<String> whitelist = Unicopia.getConfig().speciesWhiteList.get();
+                    if (whitelist.isEmpty()) {
+                        return Text.translatable("commands.racelist.inactive");
+                    }
+                    Set<MutableText> allowed = new HashSet<>();
+                    Set<MutableText> unallowed = new HashSet<>();
+                    Race.REGISTRY.forEach(race -> {
+                        (race.isPermitted(null) ? allowed : unallowed).add(Text.translatable("commands.racelist.get.list_item",
+                                race.getDisplayName(),
+                                Text.literal(race.getId().toString()).formatted(Formatting.GRAY)
+                        ));
+                    });
+
+                    return Text.translatable("commands.racelist.get.allowed", allowed.size()).formatted(Formatting.YELLOW)
+                            .append("\n").append(TextHelper.join(Text.literal("\n"), allowed))
+                            .append("\n")
+                            .append(Text.translatable("commands.racelist.get.not_allowed", unallowed.size()).formatted(Formatting.YELLOW))
+                            .append("\n").append(TextHelper.join(Text.literal("\n"), unallowed));
+                }, false);
+                return 0;
+            })
+            )
+            .then(CommandManager.literal("reset")
+            .executes(context -> {
+                Unicopia.getConfig().speciesWhiteList.get().clear();
+                Unicopia.getConfig().save();
+                context.getSource().sendFeedback(() -> Text.translatable("commands.racelist.clear.success").formatted(Formatting.GREEN), false);
+                return 0;
+            })
+            )
             .then(CommandManager.literal("allow")
-                .then(CommandManager.argument("race", Race.argument())
+                .then(CommandManager.argument("race", Race.argument()).suggests(UCommandSuggestion.ALL_RACE_SUGGESTIONS)
                 .executes(context -> toggle(context.getSource(), context.getSource().getPlayer(), Race.fromArgument(context, "race"), "allowed", race -> {
 
                     if (race.isUnset()) {
@@ -31,7 +67,7 @@ class RacelistCommand {
                 }))
             ))
             .then(CommandManager.literal("disallow")
-                .then(CommandManager.argument("race", Race.argument())
+                .then(CommandManager.argument("race", Race.argument()).suggests(UCommandSuggestion.ALL_RACE_SUGGESTIONS)
                 .executes(context -> toggle(context.getSource(), context.getSource().getPlayer(), Race.fromArgument(context, "race"), "disallowed", race -> {
                     boolean result = Unicopia.getConfig().speciesWhiteList.get().remove(race.getId().toString());
 
