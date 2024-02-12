@@ -51,7 +51,7 @@ public class ShieldSpellRenderer extends SpellRenderer<ShieldSpell> {
             model.render(matrices, buffer, light, 1, radius, colors[0], colors[1], colors[2], alpha * 0.2F);
         } else {
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
-            matrices.scale(1, radius == 0 ? 1 : MathHelper.clamp(2.6F / radius, 0.7F, 1), 1);
+            matrices.scale(1, radius == 0 ? 1 : MathHelper.clamp(2.6F / radius, 0.7F, 1.8F), 1);
             SphereModel.SPHERE.render(matrices, buffer, light, 1, radius + thickness, colors[0], colors[1], colors[2], alpha * 0.08F);
             SphereModel.SPHERE.render(matrices, buffer, light, 1, radius - thickness, colors[0], colors[1], colors[2], alpha * 0.05F);
             SphereModel.SPHERE.render(matrices, buffer, light, 1, radius + thickness * 2, colors[0], colors[1], colors[2], alpha * 0.05F);
