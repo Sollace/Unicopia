@@ -20,6 +20,7 @@
     "MixinEnchantmentHelper",
     "MixinFallLocation",
     "MixinEntity",
+    "MixinEntityView",
     "MixinEntityShapeContext",
     "MixinFallingBlock",
     "MixinFallingBlockEntity",
@@ -57,7 +58,8 @@
     "trinkets.MixinTrinketInventory",
     "trinkets.MixinScreenHandler",
     "seasons.MixinFertilizableUtil",
-    "ad_astra.MixinOxygenUtils"
+    "ad_astra.MixinOxygenUtils",
+    "forgified.MixinIForgeBoat"
   ],
   "client": [
     "client.MixinAnimalModel",
