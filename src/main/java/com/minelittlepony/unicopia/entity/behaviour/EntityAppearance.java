@@ -211,6 +211,8 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
 
         if (source.isClient()) {
             source.asWorld().spawnEntity(entity);
+        } else {
+            entity.setId(source.asEntity().getId());
         }
     }
 
