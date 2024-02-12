@@ -43,9 +43,10 @@ public class ToggleFlightAbility implements Ability<Hit> {
     @Override
     public Identifier getIcon(Pony player) {
         Identifier id = Abilities.REGISTRY.getId(this);
+        Race race = player.getObservedSpecies();
         return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath()
             + (player.getPhysics().isFlying() ? "_land" : "_takeoff")
-            + "_" + player.getObservedSpecies().getId().getPath()
+            + "_" + (race.isHuman() ? Race.EARTH : race).getId().getPath()
             + ".png");
     }
 
