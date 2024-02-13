@@ -567,7 +567,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (entity.isOnGround() || !force) {
             BlockState steppingState = pony.asEntity().getSteppingBlockState();
             if (steppingState.isIn(UTags.KICKS_UP_DUST)) {
-                pony.addParticle(new BlockStateParticleEffect(UParticles.DUST_CLOUD, steppingState), pony.getOrigin().down().toCenterPos(), Vec3d.ZERO);
+                pony.addParticle(new BlockStateParticleEffect(UParticles.DUST_CLOUD, steppingState), pony.getOrigin().toCenterPos(), Vec3d.ZERO);
             } else {
                 Supplier<Vec3d> pos = VecHelper.sphere(pony.asWorld().getRandom(), 0.5D);
                 Supplier<Vec3d> vel = VecHelper.sphere(pony.asWorld().getRandom(), 0.015D);
