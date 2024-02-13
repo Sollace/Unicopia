@@ -124,12 +124,11 @@ class EntityDisguiseRenderer {
     }
 
     @Nullable
-    private BipedEntityModel<?> getBipedModel(Entity entity) {
-        if (delegate.client.getEntityRenderDispatcher().getRenderer(entity) instanceof LivingEntityRenderer livingRenderer
+    static BipedEntityModel<?> getBipedModel(Entity entity) {
+        if (MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity) instanceof LivingEntityRenderer livingRenderer
               && livingRenderer.getModel() instanceof BipedEntityModel<?> biped) {
             return biped;
         }
         return null;
     }
-
 }

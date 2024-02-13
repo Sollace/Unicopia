@@ -5,6 +5,9 @@ import com.minelittlepony.unicopia.util.TraceHelper;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.item.Items;
+import net.minecraft.util.Hand;
 
 public class MobBehaviour<T extends MobEntity> extends EntityBehaviour<T> {
 
@@ -22,6 +25,13 @@ public class MobBehaviour<T extends MobEntity> extends EntityBehaviour<T> {
             LivingEntity target = findTarget(player, entity);
             entity.tryAttack(target);
             target.setAttacker(player.asEntity());
+        }
+
+        if (entity instanceof IronGolemEntity i) {
+            boolean hasPoppy = player.asEntity().getStackInHand(Hand.MAIN_HAND).isOf(Items.POPPY);
+            if (hasPoppy != i.getLookingAtVillagerTicks() > 0) {
+                i.setLookingAtVillager(hasPoppy);
+            }
         }
     }
 
