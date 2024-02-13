@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client.render;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.client.render.spell.SpellEffectsRenderDispatcher;
 import com.minelittlepony.unicopia.compat.pehkui.PehkUtil;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
@@ -57,6 +58,11 @@ class EntityDisguiseRenderer {
             render(ve, ee, x + difference.x, y + difference.y, z + difference.z, fireTicks, tickDelta, matrices, vertexConsumers, light);
             PehkUtil.clearScale(ee);
         });
+
+        matrices.push();
+        matrices.translate(x, y, z);
+        SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertexConsumers, light, pony, 0, 0, tickDelta, pony.asEntity().age + tickDelta, 0, 0);
+        matrices.pop();
 
         delegate.afterEntityRender(pony, matrices, light);
         PehkUtil.clearScale(e);
