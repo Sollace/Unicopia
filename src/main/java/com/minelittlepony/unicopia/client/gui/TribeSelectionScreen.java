@@ -157,7 +157,9 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_ENTER) {
-            options.get(SELECTION).onPress();
+            if (options.get(SELECTION).active) {
+                options.get(SELECTION).onPress();
+            }
         }
 
         return super.keyPressed(keyCode, scanCode, modifiers);
