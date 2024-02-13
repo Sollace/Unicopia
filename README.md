@@ -41,7 +41,7 @@ Unicorns, Pegasi, Earth Ponies, and even Changelings get their own special abili
   
 ### Manage your diet
 
-  Playing as a pony isn't all just kicking and zapping, though! As herbivores your food options open up to include
+  Playing as a pony isn't all just kicking and zapping, though! As herbivores, your food options open up to include
   a lot of items normal players don't usually get to eat. Feeling peckish? Try for some flowers from the meadow,
   or some hay! I hear the hay burgers of good, if you can find some oats.
 
@@ -55,21 +55,23 @@ Unicorns, Pegasi, Earth Ponies, and even Changelings get their own special abili
 ### Natural Stuff
 
   - Airflow is simulated (badly)
-    Pegasi, beware about flying during storms! It can get dangerous out there!
+
+    Pegasi, beware of flying during storms! It can get dangerous out there!
     If you're playing as a flying species, or just like having nice things, try building a weather vein.
     It shows the actual, totally real and not simulated badly, wind direction of your minecraft world. Just beware
-    that the direction and strength is situational (and bad), and will be different depending where you are and
+    that the direction and strength are situational (and bad), and will be different depending on where you are and
     how high up you are.
 
   - Hot air Rises
+
     No, it's not a bad Star Wars movie, it's an actual mechanic. Sand and lava will give flying species extra lift. Water does the opposite.
     Try it! Actually don't, I don't want you to drown.
 
 ### Magic Items And Artifacts
   
-  - Craft and build s shrine for the Crystal Heart to provide valuable support to your friends
-  - Or give out bangles of comradery to your non-unicorn buddies so they can share in your powers,
-     or just so you can laugh when you teleport and they end up coming witht
+  - Craft and build a shrine for the Crystal Heart to provide valuable support to your friends
+  - Or give out bangles of comradery to your non-unicorn buddies, so they can share in your powers,
+     or just so you can laugh when you teleport and they end up coming with
   - Send and receive items using the Dragon's Breath Scroll
   - Possibly more I'm forgetting about (or am I? OoOoOooOOoo...Spooky surprise mechanics)
 
@@ -86,7 +88,7 @@ View the HOW_TO_PLAY.md file for more details.
 ### 1.19.3 Only
 
 This project uses reach-entity-attributes, which may not be updated at the time of this writing.
-If you building for 1.19.3, you may follow these steps to make sure it's available to git:
+If you're building for 1.19.3, you may follow these steps to make sure it's available to git:
 
 `git clone https://github.com/Sollace/reach-entity-attributes`
 `cd reach-entity-attributes`
