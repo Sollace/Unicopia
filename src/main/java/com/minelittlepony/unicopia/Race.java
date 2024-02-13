@@ -134,12 +134,7 @@ public record Race (Supplier<Composite> compositeSupplier, Availability availabi
     }
 
     public boolean isPermitted(@Nullable PlayerEntity sender) {
-        Set<String> whitelist = Unicopia.getConfig().speciesWhiteList.get();
-
-        return this == HUMAN
-                || isUnset()
-                || whitelist.isEmpty()
-                || whitelist.contains(getId().toString());
+        return AllowList.INSTANCE.permits(this);
     }
 
     public Race validate(PlayerEntity sender) {

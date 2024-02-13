@@ -21,14 +21,13 @@ class RacelistCommand {
             .then(CommandManager.literal("show")
             .executes(context -> {
                 context.getSource().sendFeedback(() -> {
-                    Set<String> whitelist = Unicopia.getConfig().speciesWhiteList.get();
-                    if (whitelist.isEmpty()) {
+                    if (!AllowList.INSTANCE.isEnabled()) {
                         return Text.translatable("commands.racelist.inactive");
                     }
                     Set<MutableText> allowed = new HashSet<>();
                     Set<MutableText> unallowed = new HashSet<>();
                     Race.REGISTRY.forEach(race -> {
-                        (race.isPermitted(null) ? allowed : unallowed).add(Text.translatable("commands.racelist.get.list_item",
+                        (AllowList.INSTANCE.permits(race) ? allowed : unallowed).add(Text.translatable("commands.racelist.get.list_item",
                                 race.getDisplayName(),
                                 Text.literal(race.getId().toString()).formatted(Formatting.GRAY)
                         ));
@@ -45,44 +44,32 @@ class RacelistCommand {
             )
             .then(CommandManager.literal("reset")
             .executes(context -> {
-                Unicopia.getConfig().speciesWhiteList.get().clear();
-                Unicopia.getConfig().save();
-                context.getSource().sendFeedback(() -> Text.translatable("commands.racelist.clear.success").formatted(Formatting.GREEN), false);
+                boolean success = AllowList.INSTANCE.disable();
+                context.getSource().sendFeedback(() -> Text.translatable("commands.racelist.reset." + (success ? "success" : "fail")).formatted(Formatting.YELLOW), false);
                 return 0;
             })
             )
             .then(CommandManager.literal("allow")
                 .then(CommandManager.argument("race", Race.argument()).suggests(UCommandSuggestion.ALL_RACE_SUGGESTIONS)
-                .executes(context -> toggle(context.getSource(), context.getSource().getPlayer(), Race.fromArgument(context, "race"), "allowed", race -> {
-
-                    if (race.isUnset()) {
-                        return false;
-                    }
-
-                    boolean result = Unicopia.getConfig().speciesWhiteList.get().add(race.getId().toString());
-
-                    Unicopia.getConfig().save();
-
-                    return result;
-                }))
+                .executes(context -> toggle(context.getSource(), context.getSource().getPlayer(), Race.fromArgument(context, "race"), "allowed", AllowList.INSTANCE::add))
             ))
             .then(CommandManager.literal("disallow")
                 .then(CommandManager.argument("race", Race.argument()).suggests(UCommandSuggestion.ALL_RACE_SUGGESTIONS)
-                .executes(context -> toggle(context.getSource(), context.getSource().getPlayer(), Race.fromArgument(context, "race"), "disallowed", race -> {
-                    boolean result = Unicopia.getConfig().speciesWhiteList.get().remove(race.getId().toString());
-
-                    Unicopia.getConfig().save();
-
-                    return result;
-                }))
+                .executes(context -> toggle(context.getSource(), context.getSource().getPlayer(), Race.fromArgument(context, "race"), "disallowed", AllowList.INSTANCE::remove))
             ));
     }
 
     static int toggle(ServerCommandSource source, ServerPlayerEntity player, Race race, String action, Function<Race, Boolean> func) {
+        boolean enabled = AllowList.INSTANCE.isEnabled();
+        boolean success = func.apply(race);
+
+        if (enabled != AllowList.INSTANCE.isEnabled()) {
+            source.sendFeedback(() -> Text.translatable("commands.racelist." + (enabled ? "disabled" : "enabled")).formatted(enabled ? Formatting.RED : Formatting.GREEN), false);
+        }
+
         source.sendFeedback(() -> {
             String translationKey = "commands.racelist." + action;
-
-            if (!func.apply(race)) {
+            if (!success) {
                 if (race.isUnset()) {
                     translationKey = "commands.racelist.illegal";
                 } else {
@@ -90,8 +77,7 @@ class RacelistCommand {
                 }
             }
 
-            Text formattedName = race.getDisplayName().copy().formatted(Formatting.GOLD);
-            return Text.translatable(translationKey, formattedName).formatted(Formatting.GREEN);
+            return Text.translatable(translationKey, race.getDisplayName().copy().formatted(Formatting.GOLD)).formatted(success ? Formatting.GREEN : Formatting.RED);
         }, false);
         return 0;
     }

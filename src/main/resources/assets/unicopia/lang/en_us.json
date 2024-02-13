@@ -1327,16 +1327,19 @@
   "commands.race.tell.other.alt": "%s is an ",
 
   "commands.racelist.illegal": "The default race %s cannot be used with this command.",
-  "commands.racelist.allowed": "Added %1$s to the whitelist.",
+  
   "commands.racelist.get.allowed": "Allowed (%s):",
   "commands.racelist.get.not_allowed": "Not Allowed (%s):",
   "commands.racelist.get.list_item": "- %s (%s)",
-  "commands.racelist.clear.success": "Disabled Whitelist",
+  "commands.racelist.reset.success": "Cleared and disabled allow list.",
+  "commands.racelist.reset.fail": "The allow list is not active. Doing nothing.",
+  "commands.racelist.inactive": "The allow list is not active. Add races with /unicopia racelist <allow|disallow> <race> to configure it.",
+  "commands.racelist.enabled": "Enabled allow list",
+  "commands.racelist.disabled": "Disabled allow list",
+  "commands.racelist.allowed": "Added %1$s to the allow list.",
   "commands.racelist.allowed.failed": "%1$s is already allowed.",
-  "commands.racelist.inactive": "The allowlist is not active. Add races with /unicopia racelist allow <race> to configure it.",
-
-  "commands.racelist.disallowed": "Removed %1$s from the whitelist.",
-  "commands.racelist.disallowed.failed": "%1$s is not on the whitelist.",
+  "commands.racelist.disallowed": "Removed %1$s from the allow list.",
+  "commands.racelist.disallowed.failed": "%1$s is already not allowed.",
 
   "commands.worldtribe.success.get": "Default race for all new players is currently set to: %s",
   "commands.worldtribe.success.set": "Set default race for new players is now set to: %s",
