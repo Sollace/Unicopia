@@ -699,6 +699,7 @@
   "gui.unicopia.page_num": "%d из %d",
 
   "respawn.reason.joined_new_tribe": "%1$s был перерождён как %2$s",
+  "respawn.reason.illegal_race": "Раса %s не разрешена конфигурацией вашего сервера.",
 
   "gui.unicopia.tribe_selection.respawn": "Вы умерли.",
   "gui.unicopia.tribe_selection.respawn.journey": "Но конец - это еще не всё, потому что в конце каждого конца есть другое начало.",
@@ -1326,16 +1327,20 @@
   "commands.race.tell.other.alt": "%s - это ",
 
   "commands.racelist.illegal": "Раса %s по умолчанию не может быть использована этой командой.",
-  "commands.racelist.allowed": "Добавлен %1$s в белый список.",
-  "commands.racelist.allowed.failed": "%1$s уже внесён в белый список.",
+  "commands.racelist.allowed": "Раса %1$s добавлена в белый список.",
+  "commands.racelist.get.allowed": "Разрешены (%s):",
+  "commands.racelist.get.not_allowed": "Не разрешены (%s):",
+  "commands.racelist.get.list_item": "- %s (%s)",
+  "commands.racelist.clear.success": "Белый список отключён.",
+  "commands.racelist.allowed.failed": "Раса %1$s уже разрешена.",
+  "commands.racelist.inactive": "Список разрешений не активен. Добавьте расы с помощью /unicopia racelist allow <race>, чтобы настроить его.",
 
-  "commands.racelist.disallowed": "Удален %1$s из белого списка.",
-  "commands.racelist.disallowed.failed": "%1$s отсутствует в белом списке.",
+  "commands.racelist.disallowed": "Раса %1$s удалена из белого списка.",
+  "commands.racelist.disallowed.failed": "Раса %1$s отсутствует в белом списке.",
 
   "commands.worldtribe.success.get": "Раса по умолчанию для всех новых игроков в настоящее время установлена на: %s.",
   "commands.worldtribe.success.set": "Установка расы по умолчанию для новых игроков теперь имеет значение: %s.",
 
-  "commands.disguise.usage": "/disguise <player> <entity> [nbt]",
   "commands.disguise.notfound": "Идентификатор сущности \"%s\" не существует.",
   "commands.disguise.removed": "Ваша маскировка была удалена.",
   "commands.disguise.removed.self": "Удалена собственная маскировка.",
