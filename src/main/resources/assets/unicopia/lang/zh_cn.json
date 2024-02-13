@@ -145,7 +145,7 @@
   "item.unicopia.crispy_hay_fries": "酥脆炸草条",
   "item.unicopia.horse_shoe_fries": "炸蹄铁",
   "item.unicopia.wheat_worms": "小麦虫",
-  "item.unicopia.muffin": "马芬",
+  "item.unicopia.muffin": "玛芬",
   
   "item.unicopia.pegasus_amulet": "伊卡洛斯之翼",
   "item.unicopia.pegasus_amulet.lore": "让穿戴者享受短暂的飞行乐趣",
@@ -699,6 +699,7 @@
   "gui.unicopia.page_num": "第%d页（共%d页）",
   
   "respawn.reason.joined_new_tribe": "%1$s 以一只 %2$s 的身份重生了",
+  "respawn.reason.illegal_race": "%s这个种族目前不被你的服务器配置所允许",
   
   "gui.unicopia.tribe_selection.respawn": "你已经死了。",
   "gui.unicopia.tribe_selection.respawn.journey": "但结束不是全部，因为每个结束的尽头都是另一个开始。",
@@ -1327,15 +1328,19 @@
   
   "commands.racelist.illegal": "默认种族 %s 不适用于本指令。",
   "commands.racelist.allowed": "将 %1$s 加进白名单。",
-  "commands.racelist.allowed.failed": "%1$s 已在白名单中。",
-  
+  "commands.racelist.get.allowed": "允许 （%s）：",
+
+  "commands.racelist.get.not_allowed": "不允许 （%s）：",
+  "commands.racelist.get.list_item": "- %s （%s）",
+  "commands.racelist.clear.success": "停用白名单",
+  "commands.racelist.allowed.failed": "%1$s 已经允许了",
+  "commands.racelist.inactive": "许可列表未激活。使用 /unicopia racelist allow <race> 指令来添加种族和配置种族。",
   "commands.racelist.disallowed": "将 %1$s 从白名单移除。",
   "commands.racelist.disallowed.failed": "%1$s 并不在白名单中。",
   
   "commands.worldtribe.success.get": "目前，新玩家都将以 %s 的身份加入游戏",
   "commands.worldtribe.success.set": "已更改设置，这将使新玩家以 %s 的身份加入游戏",
   
-  "commands.disguise.usage": "/disguise <玩家名> <实体名> [nbt]",
   "commands.disguise.notfound": "实体id '%s' 并不存在。",
   "commands.disguise.removed": "你的伪装被移除了。",
   "commands.disguise.removed.self": "移除了自己的伪装。",
