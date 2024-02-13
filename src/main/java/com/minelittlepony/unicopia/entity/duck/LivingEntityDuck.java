@@ -1,11 +1,13 @@
 package com.minelittlepony.unicopia.entity.duck;
 
+import com.minelittlepony.unicopia.entity.behaviour.Guest;
+
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 
-public interface LivingEntityDuck {
+public interface LivingEntityDuck extends Guest {
     void updateItemUsage(Hand hand, ItemStack stack, int time);
 
     boolean isJumping();

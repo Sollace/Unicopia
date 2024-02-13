@@ -18,6 +18,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
+import com.minelittlepony.unicopia.entity.behaviour.Guest;
 import com.minelittlepony.unicopia.entity.collision.MultiBoundingBoxEntity;
 import com.minelittlepony.unicopia.entity.damage.MagicalDamageSource;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
@@ -36,6 +37,7 @@ import com.minelittlepony.unicopia.server.world.DragonBreathStore;
 import com.minelittlepony.unicopia.util.*;
 
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -44,6 +46,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -92,6 +95,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Nullable
     private Caster<?> attacker;
+    @Nullable
+    private transient Caster<?> host;
 
     private Optional<Living<?>> target = Optional.empty();
 
@@ -478,6 +483,19 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     public Optional<Boolean> onDamage(DamageSource source, float amount) {
 
+        if ((source.getAttacker() instanceof Guest guest && guest.getHost() instanceof Living l && l == this)
+            || (source.getSource() instanceof Guest guest && guest.getHost() instanceof Living l && l == this)) {
+            var type = source.getTypeRegistryEntry();
+            return Optional.of(entity.damage(
+                    type.matchesKey(DamageTypes.FIREBALL) ? entity.getDamageSources().create(DamageTypes.UNATTRIBUTED_FIREBALL) :
+                    type.matchesKey(DamageTypes.PLAYER_EXPLOSION) ? entity.getDamageSources().create(DamageTypes.EXPLOSION) :
+                    new DamageSource(type, entity, entity), amount));
+        }
+
+        if (entity instanceof Guest guest && guest.getHost() instanceof Living l) {
+            l.asEntity().damage(source, amount);
+        }
+
         if (source.isIn(DamageTypeTags.IS_LIGHTNING) && (invinsibilityTicks > 0 || tryCaptureLightning())) {
             return Optional.of(false);
         }
@@ -500,6 +518,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         }
 
         return Optional.empty();
+    }
+
+    public TriState canBeHurtByWater() {
+        return TriState.DEFAULT;
     }
 
     public Optional<BlockPos> chooseClimbingPos() {

@@ -205,8 +205,12 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
             return;
         }
 
-        if (entity instanceof LivingEntity) {
-            ((LivingEntity) entity).getAttributeInstance(UEntityAttributes.ENTITY_GRAVITY_MODIFIER).clearModifiers();
+        if (entity instanceof LivingEntity l) {
+            l.getAttributeInstance(UEntityAttributes.ENTITY_GRAVITY_MODIFIER).clearModifiers();
+        }
+
+        if (entity instanceof Guest guest) {
+            guest.setHost(source);
         }
 
         if (source.isClient()) {
