@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.mixin;
 
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,18 +13,35 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.minelittlepony.unicopia.entity.duck.LavaAffine;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.Entity.PositionUpdater;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.TagKey;
 
 @Mixin(Entity.class)
 abstract class MixinEntity implements EntityDuck {
+    @Nullable
+    private transient Caster<?> host;
+
+    @Override
+    @Nullable
+    public Caster<?> getHost() {
+        return host;
+    }
+
+    @Override
+    public void setHost(Caster<?> host) {
+        this.host = host;
+    }
+
     @Override
     @Accessor("submergedFluidTag")
     public abstract Set<TagKey<Fluid>> getSubmergedFluidTags();
@@ -81,6 +99,13 @@ abstract class MixinEntity implements EntityDuck {
     private void updatePassengerPosition(Entity passenger, PositionUpdater positionUpdater, CallbackInfo info) {
         if (Living.getOrEmpty((Entity)(Object)this).filter(l -> l.onUpdatePassengerPosition(passenger, positionUpdater)).isPresent()) {
             info.cancel();
+        }
+    }
+
+    @Inject(method = "dropStack(Lnet/minecraft/item/ItemStack;F)Lnet/minecraft/entity/ItemEntity;", at = @At("HEAD"), cancellable = true)
+    private void onDropStack(ItemStack stack, float yOffset, CallbackInfoReturnable<ItemEntity> info) {
+        if (getHost() != null) {
+            info.setReturnValue(null);
         }
     }
 }

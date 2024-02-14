@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.entity.behaviour.Guest;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 
@@ -172,9 +173,11 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
             }
         }
 
-        if (isDead() || isInvalid(getWorld(), getBlockPos(), getAttachmentFace())) {
-            kill();
-            ParticleUtils.spawnParticles(ParticleTypes.CLOUD, this, 10);
+        if (!Guest.hasHost(this)) {
+            if (isDead() || isInvalid(getWorld(), getBlockPos(), getAttachmentFace())) {
+                kill();
+                ParticleUtils.spawnParticles(ParticleTypes.CLOUD, this, 10);
+            }
         }
     }
 

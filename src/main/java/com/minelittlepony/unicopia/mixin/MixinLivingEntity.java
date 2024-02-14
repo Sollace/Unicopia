@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.mixin;
 
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
@@ -41,8 +40,6 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
     private Optional<BlockPos> climbingPos;
 
     private Equine<?> caster;
-    @Nullable
-    private transient Caster<?> host;
 
     private MixinLivingEntity() { super(null, null); }
 
@@ -60,17 +57,6 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
             caster = create();
         }
         return (Living<?>)caster;
-    }
-
-    @Override
-    @Nullable
-    public Caster<?> getHost() {
-        return host;
-    }
-
-    @Override
-    public void setHost(Caster<?> host) {
-        this.host = host;
     }
 
     @Override

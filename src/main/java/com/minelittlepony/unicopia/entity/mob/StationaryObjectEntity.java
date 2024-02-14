@@ -59,7 +59,6 @@ public abstract class StationaryObjectEntity extends Entity implements UDamageSo
     }
 
     protected void onHurt() {
-
     }
 
     @Override
