@@ -483,8 +483,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     public Optional<Boolean> onDamage(DamageSource source, float amount) {
 
-        if ((source.getAttacker() instanceof Guest guest && guest.getHost() instanceof Living l && l == this)
-            || (source.getSource() instanceof Guest guest && guest.getHost() instanceof Living l && l == this)) {
+        if (Guest.of(source.getAttacker()).hostIs(this)
+            || Guest.of(source.getSource()).hostIs(this)) {
             var type = source.getTypeRegistryEntry();
             return Optional.of(entity.damage(
                     type.matchesKey(DamageTypes.FIREBALL) ? entity.getDamageSources().create(DamageTypes.UNATTRIBUTED_FIREBALL) :
@@ -492,7 +492,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                     new DamageSource(type, entity, entity), amount));
         }
 
-        if (entity instanceof Guest guest && guest.getHost() instanceof Living l) {
+        if (Guest.of(entity).getHost() instanceof Living l) {
             l.asEntity().damage(source, amount);
         }
 

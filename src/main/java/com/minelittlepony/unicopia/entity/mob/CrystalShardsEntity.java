@@ -173,7 +173,7 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
             }
         }
 
-        if (!Guest.hasHost(this)) {
+        if (!Guest.of(this).hasHost()) {
             if (isDead() || isInvalid(getWorld(), getBlockPos(), getAttachmentFace())) {
                 kill();
                 ParticleUtils.spawnParticles(ParticleTypes.CLOUD, this, 10);
