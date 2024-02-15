@@ -18,6 +18,7 @@ import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.duck.*;
 
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -155,6 +156,14 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
     @Inject(method = "damage(Lnet/minecraft/entity/damage/DamageSource;F)Z", at = @At("HEAD"), cancellable = true)
     private void onDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
         get().onDamage(source, amount).ifPresent(info::setReturnValue);
+    }
+
+    @Inject(method = "hurtByWater()Z", at = @At("HEAD"), cancellable = true)
+    private void onCanBeHurtByWater(CallbackInfoReturnable<Boolean> info) {
+        TriState hurtByWater = get().canBeHurtByWater();
+        if (hurtByWater != TriState.DEFAULT) {
+            info.setReturnValue(hurtByWater.get());
+        }
     }
 
     @Inject(method = "writeCustomDataToNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("HEAD"))

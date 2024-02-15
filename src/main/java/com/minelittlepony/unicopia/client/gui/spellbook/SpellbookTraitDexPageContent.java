@@ -9,7 +9,7 @@ import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.*;
-import com.minelittlepony.unicopia.client.FlowingText;
+import com.minelittlepony.unicopia.client.TextHelper;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Chapter;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen.ImageButton;
 import com.minelittlepony.unicopia.container.SpellbookState;
@@ -191,7 +191,7 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
                     .setTextureSize(16, 16)
                     .setSize(16, 16)
                     .setTexture(trait.getSprite()));
-            getStyle().setTooltip(Tooltip.of(FlowingText.wrap(trait.getTooltip(), 200).toList()));
+            getStyle().setTooltip(Tooltip.of(TextHelper.wrap(trait.getTooltip(), 200).toList()));
 
             onClick(sender -> Pony.of(MinecraftClient.getInstance().player).getDiscoveries().markRead(trait));
         }

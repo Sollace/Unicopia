@@ -28,6 +28,7 @@ import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.*;
 import com.minelittlepony.unicopia.network.*;
@@ -39,7 +40,6 @@ import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -231,7 +231,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public void setSpecies(Race race) {
         race = race.validate(entity);
         Race current = getSpecies();
-        entity.getDataTracker().set(RACE, Race.REGISTRY.getId(race.validate(entity)).toString());
+        entity.getDataTracker().set(RACE, race.getId().toString());
         if (race != current) {
             clearSuppressedRace();
         }
@@ -244,7 +244,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public void setSuppressedRace(Race race) {
-        entity.getDataTracker().set(SUPPRESSED_RACE, Race.REGISTRY.getId(race.validate(entity)).toString());
+        entity.getDataTracker().set(SUPPRESSED_RACE, race.validate(entity).getId().toString());
     }
 
     public void clearSuppressedRace() {
@@ -919,7 +919,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 PlayerInventory inventory = oldPlayer.asEntity().getInventory();
                 for (int i = 0; i < inventory.size(); i++) {
                     ItemStack stack = inventory.getStack(i);
-                    if (EnchantmentHelper.getLevel(UEnchantments.HEART_BOUND, stack) > 0) {
+                    if (EnchantmentUtil.consumeEnchantment(UEnchantments.HEART_BOUND, 1, stack, entity.getWorld().random, EnchantmentUtil.getLuck(3, oldPlayer.asEntity()))) {
                         asEntity().getInventory().setStack(i, stack);
                     }
                 }

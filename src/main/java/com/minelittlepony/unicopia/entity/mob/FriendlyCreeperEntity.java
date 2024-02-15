@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.ai.FleeExplosionGoal;
+import com.minelittlepony.unicopia.entity.behaviour.Guest;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
@@ -200,7 +201,7 @@ public class FriendlyCreeperEntity extends TameableEntity implements SkinOverlay
 
             lastHugTime = hugTime;
 
-            if (!isTamed()) {
+            if (!isTamed() && ((Guest)this).getHost() == null) {
                 if (isConverting()) {
                     if (++hugTime >= 100) {
                         if (!getWorld().isClient) {

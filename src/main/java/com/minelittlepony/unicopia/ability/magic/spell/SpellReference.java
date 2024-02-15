@@ -50,6 +50,10 @@ public final class SpellReference<T extends Spell> implements NbtSerialisable {
 
     @Override
     public void fromNBT(NbtCompound compound) {
+        fromNBT(compound, true);
+    }
+
+    public void fromNBT(NbtCompound compound, boolean force) {
         final int hash = compound.hashCode();
         if (nbtHash == hash) {
             return;
@@ -58,7 +62,7 @@ public final class SpellReference<T extends Spell> implements NbtSerialisable {
 
         if (spell == null || !Objects.equals(Spell.getUuid(compound), spell.getUuid())) {
             spell = Spell.readNbt(compound);
-        } else {
+        } else if (force || !spell.isDirty()) {
             spell.fromNBT(compound);
         }
     }

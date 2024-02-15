@@ -70,8 +70,9 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     @Override
     public Identifier getIcon(Pony player) {
         Identifier id = Abilities.REGISTRY.getId(this);
+        Race race = player.getObservedSpecies();
         return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath()
-            + "_" + player.getObservedSpecies().getId().getPath()
+            + "_" + (race.isHuman() ? Race.EARTH : race).getId().getPath()
             + ".png");
     }
 

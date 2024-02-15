@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 
-public interface LivingEntityDuck {
+public interface LivingEntityDuck extends EntityDuck {
     void updateItemUsage(Hand hand, ItemStack stack, int time);
 
     boolean isJumping();

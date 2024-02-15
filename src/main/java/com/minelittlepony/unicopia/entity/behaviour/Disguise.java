@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
+import com.minelittlepony.unicopia.entity.duck.RotatedView;
 import com.minelittlepony.unicopia.entity.player.PlayerDimensions;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -100,7 +101,14 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
         behaviour.copyBaseAttributes(owner, entity);
 
         if (tick && !getDisguise().skipsUpdate()) {
-            entity.tick();
+            ((RotatedView)entity.getWorld()).setMirrorEntityStatuses(entity.getWorld().isClient);
+            if (entity.getWorld().isClient) {
+                entity.tick();
+            } else {
+                entity.tick();
+            }
+
+            ((RotatedView)entity.getWorld()).setMirrorEntityStatuses(false);
         }
 
         if (!(owner instanceof PlayerEntity) && !((LivingEntityDuck)owner).isJumping()) {

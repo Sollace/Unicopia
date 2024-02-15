@@ -16,6 +16,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
 public interface EnchantmentUtil {
+    String HEART_BOUND_CONSUMED_FLAG = "unicopia:heart_bound_consumed";
 
     static boolean consumeEnchantment(Enchantment enchantment, int levels, ItemStack stack) {
         return consumeEnchantment(enchantment, levels, stack, null, 0);
@@ -33,7 +34,7 @@ public interface EnchantmentUtil {
             if (level == 0) {
                 enchantments.remove(enchantment);
             } else {
-                enchantments.put(enchantment, level - 1);
+                enchantments.put(enchantment, level);
             }
             EnchantmentHelper.set(enchantments, stack);
         }

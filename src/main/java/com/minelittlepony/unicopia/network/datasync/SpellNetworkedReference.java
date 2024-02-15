@@ -31,7 +31,7 @@ public class SpellNetworkedReference<T extends Spell> implements NetworkedRefere
     @Override
     public boolean fromNbt(NbtCompound comp) {
         dirty = false;
-        currentValue.fromNBT(comp);
+        currentValue.fromNBT(comp, owner.isClient());
         return isDirty();
     }
 

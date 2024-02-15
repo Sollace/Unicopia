@@ -10,6 +10,8 @@ public interface RotatedView {
 
     boolean hasTransform();
 
+    void setMirrorEntityStatuses(boolean enable);
+
     default void pushRotation(int y) {
         getRotations().add(y);
     }

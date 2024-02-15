@@ -67,6 +67,7 @@
     "client.MixinBackgroundRenderer",
     "client.MixinCamera",
     "client.MixinClientWorld",
+    "client.MixinClientPlayNetworkHandler",
     "client.MixinEntityRenderDispatcher",
     "client.MixinGameRenderer",
     "client.MixinHeldItemRenderer",
