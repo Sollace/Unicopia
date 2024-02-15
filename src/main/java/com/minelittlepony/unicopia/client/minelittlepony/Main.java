@@ -10,6 +10,7 @@ import com.minelittlepony.api.events.PonyModelPrepareCallback;
 import com.minelittlepony.api.model.*;
 import com.minelittlepony.api.model.gear.Gear;
 import com.minelittlepony.api.pony.PonyData;
+import com.minelittlepony.client.render.MobRenderers;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
@@ -18,6 +19,7 @@ import com.minelittlepony.unicopia.util.AnimationUtil;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -105,6 +107,10 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
 
     @Override
     public Race getRace(Entity entity) {
+        if (entity instanceof AllayEntity) {
+            return MobRenderers.ALLAY.get() ? Race.PEGASUS : Race.HUMAN;
+        }
+
         return com.minelittlepony.api.pony.Pony.getManager().getPony(entity).map(com.minelittlepony.api.pony.Pony::race).map(Main::toUnicopiaRace).orElse(Race.HUMAN);
     }
 

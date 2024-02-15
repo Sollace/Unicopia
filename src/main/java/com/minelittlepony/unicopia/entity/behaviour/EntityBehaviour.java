@@ -276,7 +276,8 @@ public class EntityBehaviour<T extends Entity> {
     static {
         register(PlayerBehaviour::new, EntityType.PLAYER);
         register(FallingBlockBehaviour::new, EntityType.FALLING_BLOCK);
-        register(MobBehaviour::new, EntityType.RAVAGER, EntityType.IRON_GOLEM);
+        register(MobBehaviour::new, EntityType.RAVAGER);
+        register(IronGolemBehaviour::new, EntityType.IRON_GOLEM);
         register(HoppingBehaviour::new, EntityType.RABBIT, EntityType.SLIME, EntityType.MAGMA_CUBE);
         register(TraderBehaviour::new, EntityType.VILLAGER, EntityType.WANDERING_TRADER);
         register(SteedBehaviour::new, EntityType.HORSE, EntityType.DONKEY, EntityType.SKELETON_HORSE, EntityType.ZOMBIE_HORSE);

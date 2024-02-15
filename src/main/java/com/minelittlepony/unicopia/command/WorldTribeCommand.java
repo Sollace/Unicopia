@@ -14,7 +14,7 @@ class WorldTribeCommand {
         return CommandManager.literal("worldtribe").requires(s -> s.hasPermissionLevel(3))
             .then(CommandManager.literal("get").executes(context -> get(context.getSource())))
             .then(CommandManager.literal("set")
-                .then(CommandManager.argument("race", Race.argument())
+                .then(CommandManager.argument("race", Race.argument()).suggests(UCommandSuggestion.ALLOWED_RACE_SUGGESTIONS)
                 .executes(context -> set(context.getSource(), Race.fromArgument(context, "race")))));
     }
 

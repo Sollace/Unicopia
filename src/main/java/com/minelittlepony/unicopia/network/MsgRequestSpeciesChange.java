@@ -36,7 +36,11 @@ public record MsgRequestSpeciesChange (
         Pony player = Pony.of(sender);
 
         if (force || player.getSpecies().isUnset()) {
-            player.setSpecies(newRace.isPermitted(sender) ? newRace : UnicopiaWorldProperties.forWorld((ServerWorld)player.asWorld()).getDefaultRace());
+            boolean permitted = newRace.isPermitted(sender);
+            player.setSpecies(permitted ? newRace : UnicopiaWorldProperties.forWorld((ServerWorld)player.asWorld()).getDefaultRace());
+            if (!permitted) {
+                sender.sendMessageToClient(Text.translatable("respawn.reason.illegal_race", newRace.getDisplayName()), false);
+            }
 
             if (force) {
                 if (sender.getWorld().getGameRules().getBoolean(UGameRules.ANNOUNCE_TRIBE_JOINS)) {

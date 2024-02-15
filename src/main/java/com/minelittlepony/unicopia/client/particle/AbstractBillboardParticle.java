@@ -27,6 +27,7 @@ public abstract class AbstractBillboardParticle extends AbstractGeometryBasedPar
         RenderSystem.disableCull();
         RenderSystem.enableBlend();
         RenderSystem.enableDepthTest();
+        RenderSystem.defaultBlendFunc();
 
         Vec3d cam = camera.getPos();
 

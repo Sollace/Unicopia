@@ -71,10 +71,7 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
             addOption(race, top);
         }
 
-        if (SELECTION == -1) {
-            SELECTION = options.size() / 2;
-        }
-        scroll(SELECTION, false);
+        scroll(SELECTION == -1 ? options.size() / 2 : SELECTION, false);
     }
 
     private void addOption(Race race, int y) {
@@ -159,18 +156,21 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_ENTER) {
-            options.get(SELECTION).onPress();
+            if (options.get(SELECTION).active) {
+                options.get(SELECTION).onPress();
+            }
         }
 
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     private void scroll(int target, boolean animate) {
-        if (target == SELECTION) {
+        SELECTION = target;
+        target *= 4;
+        if (targetScroll == target) {
             return;
         }
-        SELECTION = target;
-        targetScroll = SELECTION * 4;
+        targetScroll = target;
         if (!animate) {
             scrollPosition = targetScroll;
             prevScrollPosition = scrollPosition;

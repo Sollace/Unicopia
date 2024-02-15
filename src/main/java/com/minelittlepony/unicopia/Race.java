@@ -19,6 +19,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registry;
@@ -133,20 +134,16 @@ public record Race (Supplier<Composite> compositeSupplier, Availability availabi
     }
 
     public boolean isPermitted(@Nullable PlayerEntity sender) {
-        Set<String> whitelist = Unicopia.getConfig().speciesWhiteList.get();
-
-        return isUnset()
-                || whitelist.isEmpty()
-                || whitelist.contains(getId().toString());
+        return AllowList.INSTANCE.permits(this);
     }
 
     public Race validate(PlayerEntity sender) {
         if (!isPermitted(sender)) {
-            if (this == EARTH) {
-                return HUMAN;
+            Race alternative = this == EARTH ? HUMAN : EARTH.validate(sender);
+            if (alternative != this && sender instanceof ServerPlayerEntity spe) {
+                spe.sendMessageToClient(Text.translatable("respawn.reason.illegal_race", getDisplayName()), false);
             }
-
-            return EARTH.validate(sender);
+            return alternative;
         }
 
         return this;

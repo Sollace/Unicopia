@@ -28,6 +28,9 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
 
     @Override
     protected void init() {
+        if (parent != null) {
+            parent.init(client, width, height);
+        }
         final int columnHeight = 167;
         final int columnWidth = 310;
         final int padding = 15;
@@ -101,6 +104,13 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        if (parent != null) {
+            context.getMatrices().push();
+            context.getMatrices().translate(0, 0, -100);
+            parent.render(context, 0, 0, delta);
+            context.getMatrices().pop();
+        }
+
         final int columnHeight = 180;
         final int columnWidth = 310;
         final int segmentWidth = 123;

@@ -33,6 +33,11 @@ public class ManaCommand {
                 var bar = type.getBar(pony.getMagicalReserves());
 
                 float value = source.getArgument("value", Float.class);
+                if (type == ManaType.LEVEL) {
+                    pony.getLevel().set((int)value);
+                    value -= (int)value;
+                    type = ManaType.XP;
+                }
                 if (type == ManaType.XP) {
                     int currentLevel = pony.getLevel().get();
                     while (type == ManaType.XP && value > 1) {
@@ -53,7 +58,8 @@ public class ManaCommand {
         EXHAUSTION(MagicReserves::getExhaustion),
         ENERGY(MagicReserves::getEnergy),
         MANA(MagicReserves::getMana),
-        XP(MagicReserves::getXp);
+        XP(MagicReserves::getXp),
+        LEVEL(MagicReserves::getXp);
 
         private final Function<MagicReserves, MagicReserves.Bar> getter;
 

@@ -50,7 +50,7 @@ public class BakedModel {
         textureMatrix.identity();
     }
 
-    public final void render(MatrixStack matrices, VertexConsumer buffer, float scale, float r, float g, float b, float a) {
+    public final void render(MatrixStack matrices, VertexConsumer buffer, int light, float scale, float r, float g, float b, float a) {
         scale = Math.abs(scale);
         if (scale < 0.001F) {
             return;
@@ -62,9 +62,13 @@ public class BakedModel {
         for (RenderUtil.Vertex vertex : vertices) {
             Vector4f pos = vertex.position(positionmatrix);
             Vector4f tex = vertex.texture(textureMatrix);
-            buffer.vertex(pos.x, pos.y, pos.z).texture(tex.x, tex.y).color(r, g, b, a).next();
+            buffer.vertex(pos.x, pos.y, pos.z).texture(tex.x, tex.y).color(r, g, b, a).light(getLightAt(pos, light)).next();
         }
         matrices.pop();
         textureMatrix.identity();
+    }
+
+    protected int getLightAt(Vector4f pos, int light) {
+        return light;
     }
 }

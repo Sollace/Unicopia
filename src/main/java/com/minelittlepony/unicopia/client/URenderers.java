@@ -89,7 +89,7 @@ public interface URenderers {
         AccessoryFeatureRenderer.register(
                 BraceletFeatureRenderer::new, AmuletFeatureRenderer::new, GlassesFeatureRenderer::new,
                 WingsFeatureRenderer::new, HornFeatureRenderer::new, IcarusWingsFeatureRenderer::new, BatWingsFeatureRenderer::new,
-                HeldEntityFeatureRenderer::new
+                HeldEntityFeatureRenderer::new, DisguisedArmsFeatureRenderer::new
         );
 
         EntityRendererRegistry.register(UEntities.THROWN_ITEM, FlyingItemEntityRenderer::new);
