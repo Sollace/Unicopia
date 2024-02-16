@@ -14,6 +14,7 @@ public interface UBlockEntities {
     BlockEntityType<WeatherVaneBlock.WeatherVane> WEATHER_VANE = create("weather_vane", BlockEntityType.Builder.create(WeatherVaneBlock.WeatherVane::new, UBlocks.WEATHER_VANE));
     BlockEntityType<CloudBedBlock.Tile> FANCY_BED = create("fancy_bed", BlockEntityType.Builder.create(CloudBedBlock.Tile::new, UBlocks.CLOTH_BED, UBlocks.CLOUD_BED));
     BlockEntityType<ChestBlockEntity> CLOUD_CHEST = create("cloud_chest", BlockEntityType.Builder.create(CloudChestBlock.TileData::new, UBlocks.CLOUD_CHEST));
+    BlockEntityType<HiveBlock.TileData> HIVE_STORAGE = create("hive_storage", BlockEntityType.Builder.create(HiveBlock.TileData::new, UBlocks.HIVE));
 
     static <T extends BlockEntity> BlockEntityType<T> create(String id, Builder<T> builder) {
         return Registry.register(Registries.BLOCK_ENTITY_TYPE, id, builder.build(null));
