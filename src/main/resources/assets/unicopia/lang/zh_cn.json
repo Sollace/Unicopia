@@ -1327,17 +1327,20 @@
   "commands.race.tell.other.alt": "%s 是只 ",
   
   "commands.racelist.illegal": "默认种族 %s 不适用于本指令。",
-  "commands.racelist.allowed": "将 %1$s 加进白名单。",
+
   "commands.racelist.get.allowed": "允许 （%s）：",
 
   "commands.racelist.get.not_allowed": "不允许 （%s）：",
+  "commands.racelist.reset.success": "清除并停用许可列表。",
+  "commands.racelist.reset.fail": "许可列表未激活。所以无事发生。",
+  "commands.racelist.inactive": "许可列表未激活。使用 /unicopia racelist allow <race> 指令来添加种族和配置种族。",
+  "commands.racelist.enabled": "启用许可列表",
+  "commands.racelist.disabled": "停用许可列表",
+  "commands.racelist.allowed": "将 %1$s 加入到许可列表中。",
   "commands.racelist.get.list_item": "- %s （%s）",
   "commands.racelist.clear.success": "停用白名单",
   "commands.racelist.allowed.failed": "%1$s 已经允许了",
-  "commands.racelist.inactive": "许可列表未激活。使用 /unicopia racelist allow <race> 指令来添加种族和配置种族。",
-  "commands.racelist.disallowed": "将 %1$s 从白名单移除。",
-  "commands.racelist.disallowed.failed": "%1$s 并不在白名单中。",
-  
+
   "commands.worldtribe.success.get": "目前，新玩家都将以 %s 的身份加入游戏",
   "commands.worldtribe.success.set": "已更改设置，这将使新玩家以 %s 的身份加入游戏",
   
