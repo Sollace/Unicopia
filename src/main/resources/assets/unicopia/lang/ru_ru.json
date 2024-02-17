@@ -1327,16 +1327,19 @@
   "commands.race.tell.other.alt": "%s - это ",
 
   "commands.racelist.illegal": "Раса %s по умолчанию не может быть использована этой командой.",
-  "commands.racelist.allowed": "Раса %1$s добавлена в белый список.",
+
   "commands.racelist.get.allowed": "Разрешены (%s):",
   "commands.racelist.get.not_allowed": "Не разрешены (%s):",
   "commands.racelist.get.list_item": "- %s (%s)",
-  "commands.racelist.clear.success": "Белый список отключён.",
+  "commands.racelist.reset.success": "Список разрешений очищен и отключён.",
+  "commands.racelist.reset.fail": "Список разрешений не активен. Ничего не было сделано.",
+  "commands.racelist.inactive": "Список разрешений не активен. Добавьте расы с помощью /unicopia racelist <allow|disallow> <race>, чтобы настроить его.",
+  "commands.racelist.enabled": "Включённый список разрешений",
+  "commands.racelist.disabled": "Выключенный список разрешений",
+  "commands.racelist.allowed": "Раса %1$s добавлена в список разрешений.",
   "commands.racelist.allowed.failed": "Раса %1$s уже разрешена.",
-  "commands.racelist.inactive": "Список разрешений не активен. Добавьте расы с помощью /unicopia racelist allow <race>, чтобы настроить его.",
-
-  "commands.racelist.disallowed": "Раса %1$s удалена из белого списка.",
-  "commands.racelist.disallowed.failed": "Раса %1$s отсутствует в белом списке.",
+  "commands.racelist.disallowed": "Раса %1$s удалена из списка разрешений.",
+  "commands.racelist.disallowed.failed": "Раса %1$s уже не разрешена.",
 
   "commands.worldtribe.success.get": "Раса по умолчанию для всех новых игроков в настоящее время установлена на: %s.",
   "commands.worldtribe.success.set": "Установка расы по умолчанию для новых игроков теперь имеет значение: %s.",
