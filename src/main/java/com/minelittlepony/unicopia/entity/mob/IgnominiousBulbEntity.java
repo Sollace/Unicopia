@@ -180,8 +180,10 @@ public class IgnominiousBulbEntity extends MobEntity {
                     });
                 }
             }
+
+            @Nullable
             LivingEntity target = getAttacker();
-            if (!canTarget(target)) {
+            if (target == null || !canTarget(target)) {
                 target = null;
                 setAttacker(null);
             }
