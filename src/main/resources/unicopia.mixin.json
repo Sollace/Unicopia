@@ -65,7 +65,6 @@
     "client.MixinAnimalModel",
     "client.MixinArmorFeatureRenderer",
     "client.MixinBackgroundRenderer",
-    "client.MixinBlockModels",
     "client.MixinCamera",
     "client.MixinClientWorld",
     "client.MixinClientPlayNetworkHandler",

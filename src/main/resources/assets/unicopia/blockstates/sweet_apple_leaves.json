@@ -1,16 +1,11 @@
 {
-  "variants": {
-    "stage=flowering": {
-      "model": "unicopia:block/sweet_apple_leaves_flowering"
+  "multipart": [
+    {
+      "apply": { "model": "unicopia:block/sweet_apple_leaves" }
     },
-    "stage=idle": {
-      "model": "unicopia:block/sweet_apple_leaves"
-    },
-    "stage=fruiting": {
-      "model": "unicopia:block/sweet_apple_leaves"
-    },
-    "stage=withering": {
-      "model": "unicopia:block/sweet_apple_leaves"
+    {
+      "apply": { "model": "unicopia:block/sweet_apple_leaves_flowering" },
+      "when": { "stage": "flowering" }
     }
-  }
+  ]
 }

@@ -44,6 +44,7 @@ repositories {
     maven { name 'minelp-snapshot'; url 'https://repo.minelittlepony-mod.com/maven/snapshot' }
     maven { name 'minelp-releases'; url 'https://repo.minelittlepony-mod.com/maven/release' }
     maven { name 'TerraformersMC'; url 'https://maven.terraformersmc.com/' }
+    maven { name 'Nodium'; url 'https://maven.cafeteria.dev/releases/' }
     maven { name 'Modrinth'; url 'https://api.modrinth.com/maven' }
     maven { name 'JitPack'; url 'https://jitpack.io'; content { includeGroup "com.github.Virtuoel" } }
 }
@@ -73,6 +74,9 @@ dependencies {
 
     modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
     include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
+    
+    modImplementation "me.luligabi:NoIndium:${project.nodium_version}"
+    include "me.luligabi:NoIndium:${project.nodium_version}"
 
     modCompileOnly "maven.modrinth:farmers-delight-fabric:${project.farmers_delight_version}", { exclude group: "net.fabricmc.fabric-api" }
     if (project.use_pehkui == '1') {
@@ -81,8 +85,9 @@ dependencies {
     }
 
     if (project.use_sodium == '1') {
+      modCompileOnly "maven.modrinth:indium:${project.indium_version}", { exclude group: "net.fabricmc.fabric-api" }
       modCompileOnly "maven.modrinth:sodium:${project.sodium_version}", { exclude group: "net.fabricmc.fabric-api" }
-      modCompileOnly "maven.modrinth:iris:${project.iris_version}", { exclude group: "net.fabricmc.fabric-api" }
+     // modCompileOnly "maven.modrinth:iris:${project.iris_version}", { exclude group: "net.fabricmc.fabric-api" }
     }
 
     if (project.tmi_type == 'emi') {
