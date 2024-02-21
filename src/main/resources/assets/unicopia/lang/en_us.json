@@ -594,7 +594,7 @@
   "unicopia.diet.not_edible": "Item is not edible",
   "unicopia.diet.base_multiplier": "Base Multiplier: %s%%",
   "unicopia.diet.hunger.detailed": "Hunger gained: %s of %s (%s%%)",
-  "unicopia.diet.saturation.detailed": "Saturation gained: %s (%s%%)",
+  "unicopia.diet.saturation.detailed": "Saturation gained: %s of %s (%s%%)",
   "unicopia.diet.hunger": "Hunger Ratio: %s%%",
   "unicopia.diet.saturation": "Saturation Ratio: %s%%",
   

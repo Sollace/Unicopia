@@ -53,7 +53,7 @@ public class PonyDiets implements DietView {
         return Optional.ofNullable(diets.get(pony.getObservedSpecies())).orElse(DietProfile.EMPTY);
     }
 
-    private Effect getEffects(ItemStack stack) {
+    Effect getEffects(ItemStack stack) {
         return effects.stream().filter(effect -> effect.test(stack)).findFirst().orElse(Effect.EMPTY);
     }
 
