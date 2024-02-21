@@ -2,7 +2,6 @@
   "replace": false,
   "values": [
     "minecraft:hay_block",
-    "#minecraft:leaves",
     "#c:foraging/edibles_filling"
   ]
 }
