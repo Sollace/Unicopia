@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.Optional;
 
+import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.IllusionarySpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
@@ -53,6 +54,10 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
             } else if (source.asWorld().random.nextInt(30) == 0) {
                 source.spawnParticles(UParticles.CHANGELING_MAGIC, 2);
             }
+        }
+
+        if (!source.canUse(Abilities.DISGUISE)) {
+            setDead();
         }
 
         Entity owner = source.asEntity();

@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.Abilities;
+import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
@@ -612,6 +613,11 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     public void updateVelocity() {
         updateVelocity(entity);
+    }
+
+    @Override
+    public boolean canUse(Ability<?> ability) {
+        return ability.canUse(getCompositeRace());
     }
 
     public static Optional<Living<?>> getOrEmpty(Entity entity) {
