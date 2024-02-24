@@ -4,6 +4,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 
@@ -11,6 +13,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
@@ -26,11 +29,10 @@ public interface TrinketsDelegate {
 
     TrinketsDelegate EMPTY = new TrinketsDelegate() {};
 
-    static TrinketsDelegate getInstance() {
-        if (!hasTrinkets()) {
+    static TrinketsDelegate getInstance(@Nullable LivingEntity entity) {
+        if (!(entity instanceof PlayerEntity && hasTrinkets())) {
             return EMPTY;
         }
-
         return TrinketsDelegateImpl.INSTANCE;
     }
 
@@ -101,7 +103,7 @@ public interface TrinketsDelegate {
     interface Inventory extends EntityConvertable<LivingEntity> {
 
         default Stream<ItemStack> getEquippedStacks(Identifier slot) {
-            return TrinketsDelegate.getInstance().getEquipped(asEntity(), slot);
+            return TrinketsDelegate.getInstance(asEntity()).getEquipped(asEntity(), slot);
         }
 
         default ItemStack getEquippedStack(Identifier slot) {
@@ -109,7 +111,7 @@ public interface TrinketsDelegate {
         }
 
         default void equipStack(Identifier slot, ItemStack stack) {
-            TrinketsDelegate.getInstance().setEquippedStack(asEntity(), slot, stack);
+            TrinketsDelegate.getInstance(asEntity()).setEquippedStack(asEntity(), slot, stack);
         }
     }
 }

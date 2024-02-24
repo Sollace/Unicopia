@@ -95,7 +95,7 @@ public class AmuletItem extends WearableItem implements ChargeableItem {
     }
 
     public static ItemStack getForEntity(LivingEntity entity) {
-        return TrinketsDelegate.getInstance().getEquipped(entity, TrinketsDelegate.NECKLACE)
+        return TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.NECKLACE)
                 .filter(stack -> stack.getItem() instanceof AmuletItem)
                 .findFirst()
                 .orElse(ItemStack.EMPTY);
