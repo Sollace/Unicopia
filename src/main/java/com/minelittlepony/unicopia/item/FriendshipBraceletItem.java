@@ -126,13 +126,14 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
 
     public static Stream<ItemStack> getWornBangles(LivingEntity entity) {
         return Stream.concat(
-                TrinketsDelegate.getInstance().getEquipped(entity, TrinketsDelegate.MAINHAND),
-                TrinketsDelegate.getInstance().getEquipped(entity, TrinketsDelegate.OFFHAND)
+                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.MAINHAND),
+                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.OFFHAND)
         ).filter(stack -> stack.getItem() == UItems.FRIENDSHIP_BRACELET);
     }
 
     public static Stream<ItemStack> getWornBangles(LivingEntity entity, Identifier slot) {
-        return TrinketsDelegate.getInstance().getEquipped(entity, slot)
+        return TrinketsDelegate.getInstance(entity)
+                .getEquipped(entity, slot)
                 .filter(stack -> stack.getItem() == UItems.FRIENDSHIP_BRACELET);
     }
 }

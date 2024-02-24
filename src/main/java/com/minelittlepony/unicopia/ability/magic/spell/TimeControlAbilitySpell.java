@@ -4,7 +4,6 @@ import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.data.Rot;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
-import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
 
@@ -31,11 +30,7 @@ public class TimeControlAbilitySpell extends AbstractSpell {
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
 
-        if (!source.asWorld().getGameRules().getBoolean(UGameRules.DO_TIME_MAGIC)) {
-            return false;
-        }
-
-        if (situation != Situation.BODY || !(source instanceof Pony pony) || !Abilities.TIME.canUse(pony.getCompositeRace())) {
+        if (!source.asWorld().getGameRules().getBoolean(UGameRules.DO_TIME_MAGIC) || situation != Situation.BODY || !source.canUse(Abilities.TIME)) {
             return false;
         }
 

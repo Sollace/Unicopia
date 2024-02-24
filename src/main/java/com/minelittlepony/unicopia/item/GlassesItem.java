@@ -29,7 +29,7 @@ public class GlassesItem extends WearableItem {
     }
 
     public static ItemStack getForEntity(LivingEntity entity) {
-        return TrinketsDelegate.getInstance().getEquipped(entity, TrinketsDelegate.FACE)
+        return TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE)
                 .filter(stack -> stack.getItem() instanceof GlassesItem)
                 .findFirst()
                 .orElse(ItemStack.EMPTY);

@@ -65,7 +65,7 @@ class BangleGear implements Gear {
 
     @Override
     public void pose(PonyModel<?> model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
-        alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).method_52814().model() == Model.SLIM;
+        alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getSkinTextures().model() == Model.SLIM;
         FriendshipBraceletItem.getWornBangles((LivingEntity)entity, slot).findFirst().ifPresent(bracelet -> {
             color = ((DyeableItem)bracelet.getItem()).getColor(bracelet);
             glowing = ((GlowableItem)bracelet.getItem()).isGlowing(bracelet);

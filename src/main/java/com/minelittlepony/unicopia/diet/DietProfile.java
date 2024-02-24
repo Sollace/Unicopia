@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.ItemDuck;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -104,6 +105,7 @@ public record DietProfile(
 
     public void appendTooltip(ItemStack stack, @Nullable PlayerEntity user, List<Text> tooltip, TooltipContext context) {
         var food = stack.getItem().getFoodComponent();
+
         var ratios = getRatios(stack);
         if (food == null || isInedible(ratios)) {
             if (stack.getUseAction() != UseAction.DRINK) {
@@ -115,13 +117,28 @@ public record DietProfile(
         float baseMultiplier = (isForaged(stack) ? foragingMultiplier() : defaultMultiplier());
 
         if (context.isAdvanced()) {
+            var nonAdjustedFood = getNonAdjustedFoodComponent(stack, user).orElse(food);
             tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.base_multiplier", baseMultiplier).formatted(Formatting.DARK_GRAY)));
-            tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.hunger.detailed", Math.max(1, (int)(ratios.getFirst() * food.getHunger())), food.getHunger(), (int)(ratios.getFirst() * 100))).formatted(Formatting.DARK_GRAY));
-            tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.saturation.detailed", String.format("%.2f", ratios.getSecond() * food.getSaturationModifier()), (int)(ratios.getSecond() * 100))).formatted(Formatting.DARK_GRAY));
+            tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.hunger.detailed", food.getHunger(), nonAdjustedFood.getHunger(), (int)(ratios.getFirst() * 100))).formatted(Formatting.DARK_GRAY));
+            tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.saturation.detailed", food.getSaturationModifier(), nonAdjustedFood.getSaturationModifier(), (int)(ratios.getSecond() * 100))).formatted(Formatting.DARK_GRAY));
         } else {
             tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.hunger", (int)(ratios.getFirst() * 100))).formatted(Formatting.DARK_GRAY));
             tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.saturation", (int)(ratios.getSecond() * 100))).formatted(Formatting.DARK_GRAY));
         }
+    }
+
+    private Optional<FoodComponent> getNonAdjustedFoodComponent(ItemStack stack, @Nullable PlayerEntity user) {
+        @Nullable
+        Pony pony = Pony.of(user);
+        Optional<FoodComponent> food = ((ItemDuck)stack.getItem()).getOriginalFoodComponent();
+
+        if (food.isEmpty() && pony.getObservedSpecies().hasIronGut()) {
+            return findEffect(stack)
+                .flatMap(Effect::foodComponent)
+                .or(() -> PonyDiets.getInstance().getEffects(stack).foodComponent());
+        }
+
+        return food;
     }
 
     public record Multiplier(

@@ -24,7 +24,7 @@ public abstract class WearableItem extends Item implements Equipment {
     public WearableItem(FabricItemSettings settings) {
         super(configureEquipmentSlotSupplier(settings));
         DispenserBlock.registerBehavior(this, DISPENSER_BEHAVIOR);
-        TrinketsDelegate.getInstance().registerTrinket(this);
+        TrinketsDelegate.getInstance(null).registerTrinket(this);
     }
 
     private static FabricItemSettings configureEquipmentSlotSupplier(FabricItemSettings settings) {
@@ -37,8 +37,8 @@ public abstract class WearableItem extends Item implements Equipment {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-        return TrinketsDelegate.getInstance().getAvailableTrinketSlots(player, TrinketsDelegate.ALL).stream()
-                .filter(slotId -> TrinketsDelegate.getInstance().equipStack(player, slotId, stack))
+        return TrinketsDelegate.getInstance(player).getAvailableTrinketSlots(player, TrinketsDelegate.ALL).stream()
+                .filter(slotId -> TrinketsDelegate.getInstance(player).equipStack(player, slotId, stack))
                 .findAny()
                 .map(slotId -> TypedActionResult.success(stack, world.isClient()))
                 .orElseGet(() -> TypedActionResult.fail(stack));
@@ -66,10 +66,10 @@ public abstract class WearableItem extends Item implements Equipment {
                     EntityPredicates.EXCEPT_SPECTATOR
                 )
                 .stream()
-                .flatMap(entity -> TrinketsDelegate.getInstance()
+                .flatMap(entity -> TrinketsDelegate.getInstance(entity)
                         .getAvailableTrinketSlots(entity, TrinketsDelegate.ALL)
                         .stream()
-                        .filter(slotId -> TrinketsDelegate.getInstance().equipStack(entity, slotId, armor)))
+                        .filter(slotId -> TrinketsDelegate.getInstance(entity).equipStack(entity, slotId, armor)))
                 .findFirst()
                 .isPresent();
     }

@@ -1,0 +1,10 @@
+{
+  "tags": [ "minecraft:leaves" ],
+  "food_component": {
+    "hunger": 2,
+    "saturation": 1.5
+  },
+  "ailment": {
+    "effects": []
+  }
+}

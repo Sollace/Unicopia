@@ -29,8 +29,6 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
     public static final int WITHER_AGE = 15;
     public static final EnumProperty<Stage> STAGE = EnumProperty.of("stage", Stage.class);
 
-    public static final List<FruitBearingBlock> REGISTRY = new ArrayList<>();
-
     private final Supplier<Block> fruit;
     private final Supplier<ItemStack> rottenFruitSupplier;
 
@@ -47,7 +45,6 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
         this.overlay = overlay;
         this.fruit = fruit;
         this.rottenFruitSupplier = rottenFruitSupplier;
-        REGISTRY.add(this);
         FlammableBlockRegistry.getDefaultInstance().add(this, 30, 60);
     }
 

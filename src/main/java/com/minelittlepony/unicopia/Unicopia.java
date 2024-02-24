@@ -69,7 +69,7 @@ public class Unicopia implements ModInitializer {
         UCriteria.bootstrap();
         UEntities.bootstrap();
         Commands.bootstrap();
-        TrinketsDelegate.getInstance().bootstrap();
+        TrinketsDelegate.getInstance(null).bootstrap();
 
         ServerTickEvents.END_WORLD_TICK.register(w -> {
             ((BlockDestructionManager.Source)w).getDestructionManager().tick();

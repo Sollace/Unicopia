@@ -103,7 +103,8 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     @Override
     public Collection<Spell> getDelegates() {
-        return List.of(spell.get());
+        Spell spell = this.spell.get();
+        return spell == null ? List.of() : List.of(spell);
     }
 
     @Override

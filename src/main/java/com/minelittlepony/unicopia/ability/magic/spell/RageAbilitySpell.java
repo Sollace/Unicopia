@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
@@ -45,7 +46,7 @@ public class RageAbilitySpell extends AbstractSpell {
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
 
-        if (situation != Situation.BODY || source.asEntity().isRemoved()) {
+        if (situation != Situation.BODY || source.asEntity().isRemoved() || !source.canUse(Abilities.RAGE)) {
             return false;
         }
 
