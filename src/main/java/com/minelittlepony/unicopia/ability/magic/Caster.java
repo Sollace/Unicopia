@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.*;
+import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.damage.UDamageSources;
@@ -101,6 +102,10 @@ public interface Caster<E extends Entity> extends
 
     default boolean canCastAt(Vec3d pos) {
         return !Ether.get(asWorld()).anyMatch(SpellType.ARCANE_PROTECTION, (spell, caster) -> spell.blocksMagicFor(caster, this, pos));
+    }
+
+    default boolean canUse(Ability<?> ability) {
+        return false;
     }
 
     static Stream<Caster<?>> stream(Stream<Entity> entities) {

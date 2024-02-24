@@ -156,6 +156,7 @@ public interface URenderers {
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(), UBlocks.SEMI_TRANSPARENT_BLOCKS.stream().toArray(Block[]::new));
         // for lava boats
         BlockRenderLayerMap.INSTANCE.putFluids(RenderLayer.getTranslucent(), Fluids.LAVA, Fluids.FLOWING_LAVA);
+        LeavesAdditionsModel.bootstrap();
 
         TerraformBoatClientHelper.registerModelLayers(Unicopia.id("palm"), false);
 

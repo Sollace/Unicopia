@@ -234,7 +234,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     public void tick() {
         super.tick();
 
-        if (pony.isClient() && this.isFlying()) {
+        if (pony.isClientPlayer() && isFlying() && (pony.getJumpingHeuristic().hasChanged(Heuristic.ONCE) || pony.sneakingChanged())) {
             Channel.FLIGHT_CONTROLS_INPUT.sendToServer(new MsgPlayerFlightControlsInput(pony));
         }
 

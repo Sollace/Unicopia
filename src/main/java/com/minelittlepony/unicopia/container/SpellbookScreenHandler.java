@@ -150,10 +150,10 @@ public class SpellbookScreenHandler extends ScreenHandler {
             }
         });
 
-        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.FACE, 0, rightHandX, inventoryY + slotSpacing * 6).ifPresent(this::addSlot);
-        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.NECKLACE, 0, leftHandX, equipmentY + slotSpacing).ifPresent(this::addSlot);
-        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.MAINHAND, 0, leftHandX, equipmentY).ifPresent(this::addSlot);
-        TrinketsDelegate.getInstance().createSlot(this, inv.player, TrinketsDelegate.OFFHAND, 0, rightHandX, equipmentY).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance(inv.player).createSlot(this, inv.player, TrinketsDelegate.FACE, 0, rightHandX, inventoryY + slotSpacing * 6).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance(inv.player).createSlot(this, inv.player, TrinketsDelegate.NECKLACE, 0, leftHandX, equipmentY + slotSpacing).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance(inv.player).createSlot(this, inv.player, TrinketsDelegate.MAINHAND, 0, leftHandX, equipmentY).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance(inv.player).createSlot(this, inv.player, TrinketsDelegate.OFFHAND, 0, rightHandX, equipmentY).ifPresent(this::addSlot);
 
         addSlot(outputSlot = new OutputSlot(this, inventory.player, input, result, 0, gemPos.get(0)));
 

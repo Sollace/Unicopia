@@ -1,7 +1,6 @@
 {
-  "parent": "unicopia:block/sweet_apple_leaves_flowering",
+  "parent": "minecraft:block/cube_all",
   "textures": {
-    "all": "unicopia:block/sour_apple_leaves",
-    "overlay": "unicopia:block/sour_apple_leaves_flowering"
+    "all": "unicopia:block/sour_apple_leaves_flowering"
   }
 }

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
@@ -43,7 +44,7 @@ public class RainboomAbilitySpell extends AbstractSpell {
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
 
-        if (situation != Situation.BODY) {
+        if (situation != Situation.BODY || !source.canUse(Abilities.RAINBOOM)) {
             return false;
         }
 

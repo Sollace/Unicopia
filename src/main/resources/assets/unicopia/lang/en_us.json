@@ -594,7 +594,7 @@
   "unicopia.diet.not_edible": "Item is not edible",
   "unicopia.diet.base_multiplier": "Base Multiplier: %s%%",
   "unicopia.diet.hunger.detailed": "Hunger gained: %s of %s (%s%%)",
-  "unicopia.diet.saturation.detailed": "Saturation gained: %s (%s%%)",
+  "unicopia.diet.saturation.detailed": "Saturation gained: %s of %s (%s%%)",
   "unicopia.diet.hunger": "Hunger Ratio: %s%%",
   "unicopia.diet.saturation": "Saturation Ratio: %s%%",
   
@@ -617,6 +617,7 @@
   "tag.unicopia.food_types.desserts": "Desserts",
   "tag.unicopia.food_types.fruits_and_vegetables": "Fruits & Vegetables",
   "tag.unicopia.food_types.drinks": "Drinks",
+  "tag.minecraft.leaves": "Leaves",
 
   "tag.unicopia.food_types.forage_edible_filling": "Bulky Plant Matter",
   "tag.unicopia.food_types.forage_edible": "Plant Matter",

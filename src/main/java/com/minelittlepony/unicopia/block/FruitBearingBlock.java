@@ -58,7 +58,6 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
         this.overlay = overlay;
         this.fruit = fruit;
         this.rottenFruitSupplier = rottenFruitSupplier;
-        REGISTRY.add(this);
         FlammableBlockRegistry.getDefaultInstance().add(this, 30, 60);
     }
 

@@ -38,7 +38,7 @@ abstract class MixinScreenHandler {
     )
     // redirect slot.getMaxItemCount() to stack aware version
     protected int onGetMaxItemCount(Slot sender, ItemStack stack) {
-        return TrinketsDelegate.getInstance().isTrinketSlot(sender) ? sender.getMaxItemCount(stack) : sender.getMaxItemCount();
+        return TrinketsDelegate.getInstance(null).isTrinketSlot(sender) ? sender.getMaxItemCount(stack) : sender.getMaxItemCount();
     }
 
     @Redirect(method = "insertItem",
@@ -50,7 +50,7 @@ abstract class MixinScreenHandler {
     )
     // redirect "if (!itemStack.isEmpty() && ItemStack.canCombine(stack, itemStack))" -> "if (!canNotInsert(itemStack, slot) && ItemStack.canCombine(stack, itemStack))"
     protected boolean canNotInsert(ItemStack sender) {
-        return sender.isEmpty() || (TrinketsDelegate.getInstance().isTrinketSlot(currentSlot) && (currentSlot.getStack().getCount() + sender.getCount()) <= currentSlot.getMaxItemCount(sender));
+        return sender.isEmpty() || (TrinketsDelegate.getInstance(null).isTrinketSlot(currentSlot) && (currentSlot.getStack().getCount() + sender.getCount()) <= currentSlot.getMaxItemCount(sender));
     }
 
     @Redirect(method = "canInsertItemIntoSlot",
@@ -60,6 +60,6 @@ abstract class MixinScreenHandler {
             )
     )
     private static int onGetMaxCount(ItemStack sender, @Nullable Slot slot) {
-        return TrinketsDelegate.getInstance().isTrinketSlot(slot) ? slot.getMaxItemCount(sender) : sender.getMaxCount();
+        return TrinketsDelegate.getInstance(null).isTrinketSlot(slot) ? slot.getMaxItemCount(sender) : sender.getMaxCount();
     }
 }

@@ -13,6 +13,8 @@ import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
+
+import net.minecraft.block.ChestBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.LivingEntity;
@@ -78,8 +80,8 @@ public class SeaponySonarPulseAbility implements Ability<Hit> {
 
         if (player.asWorld() instanceof ServerWorld sw) {
             sw.getPointOfInterestStorage().getNearestPosition(
-                    type -> type.value() == UPOIs.CHESTS,
-                    pos -> player.asWorld().getFluidState(pos).isIn(FluidTags.WATER), player.getOrigin(), 64, OccupationStatus.ANY)
+                    UPOIs::isChest,
+                    pos -> player.asWorld().getFluidState(pos).isIn(FluidTags.WATER) && (player.asWorld().getBlockState(pos).getBlock() instanceof ChestBlock), player.getOrigin(), 64, OccupationStatus.ANY)
                 .ifPresent(chestPos -> {
                     emitPing(player, chestPos.toCenterPos(), 20, 0.5F, 2F);
                 });
