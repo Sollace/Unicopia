@@ -31,6 +31,13 @@ public class Lerp {
         if (MathHelper.approximatelyEquals(end, newTarget)) {
             return false;
         }
+        if (changeDuration == 0) {
+            start = newTarget;
+            end = newTarget;
+            finished = true;
+            return false;
+        }
+
         start = getValue();
         startTime = Util.getMeasuringTimeMs();
         end = newTarget;
@@ -66,6 +73,9 @@ public class Lerp {
     }
 
     private float getDelta() {
+        if (duration == 0) {
+            return 1;
+        }
         return MathHelper.clamp((float)(Util.getMeasuringTimeMs() - startTime) / (float)duration, 0, 1);
     }
 }
