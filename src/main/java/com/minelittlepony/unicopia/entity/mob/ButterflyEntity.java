@@ -1,19 +1,25 @@
 package com.minelittlepony.unicopia.entity.mob;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.item.ButterflyItem;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -23,6 +29,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.AmbientEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
@@ -305,6 +312,11 @@ public class ButterflyEntity extends AmbientEntity {
     }
 
     @Override
+    public ItemEntity dropStack(ItemStack stack, float yOffset) {
+        return super.dropStack(ButterflyItem.setVariant(stack, getVariant()), yOffset);
+    }
+
+    @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         nbt.putInt("ticksResting", ticksResting);
@@ -351,20 +363,24 @@ public class ButterflyEntity extends AmbientEntity {
         WHITE_MONARCH,
         BRIMSTONE;
 
-        private static final Variant[] VALUES = Variant.values();
+        public static final Variant[] VALUES = Variant.values();
+        private static final Map<String, Variant> REGISTRY = Arrays.stream(VALUES).collect(Collectors.toMap(a -> a.name().toLowerCase(Locale.ROOT), Function.identity()));
 
         private final Identifier skin = Unicopia.id("textures/entity/butterfly/" + name().toLowerCase() + ".png");
 
         public Identifier getSkin() {
             return skin;
         }
-
         static Variant byId(int index) {
             return VALUES[Math.max(0, index) % VALUES.length];
         }
 
         static Variant random(Random rand) {
             return VALUES[rand.nextInt(VALUES.length)];
+        }
+
+        public static Variant byName(String name) {
+            return REGISTRY.getOrDefault(name == null ? "" : name, BUTTERFLY);
         }
     }
 }
