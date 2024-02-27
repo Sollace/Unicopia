@@ -34,6 +34,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -151,6 +153,11 @@ public class ButterflyEntity extends AmbientEntity {
         if (e instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity)e;
 
+            if (player.getStackInHand(Hand.MAIN_HAND).isIn(ItemTags.FLOWERS)) {
+                setTarget(player);
+                return false;
+            }
+
             if (player.isCreative() || player.isSpectator()) {
                 return false;
             }
@@ -181,6 +188,7 @@ public class ButterflyEntity extends AmbientEntity {
             if (!flowerPosition.isPresent()) {
                 setResting(false);
                 return;
+
             }
 
             if (getWorld().getBlockState(below).isAir()
@@ -200,20 +208,32 @@ public class ButterflyEntity extends AmbientEntity {
         } else {
             ticksResting = 0;
 
-            updateFlowerPosition().map(flower -> {
-                if (flower.isWithinDistance(getPos(), 1)) {
-                    setResting(true);
-                    visited.put(flower, (long)age);
-                    if (breedingCooldown <= 0) {
-                        breedingCooldown = MAX_BREEDING_COOLDOWN / 10;
-                    }
+            if (getTarget() instanceof PlayerEntity player) {
+                if (player.isRemoved() || !player.getStackInHand(Hand.MAIN_HAND).isIn(ItemTags.FLOWERS)) {
+                    setTarget(null);
                 }
+                if (distanceTo(player) > 3) {
+                    moveTowards(player.getBlockPos());
+                } else {
+                    this.addVelocity(random.nextFloat() * 0.1 - 0.05F, random.nextFloat() * 0.1, random.nextFloat() * 0.1 - 0.05F);
+                }
+            } else {
 
-                return flower;
-            }).or(this::findNextHoverPosition).ifPresent(this::moveTowards);
+                updateFlowerPosition().map(flower -> {
+                    if (flower.isWithinDistance(getPos(), 1)) {
+                        setResting(true);
+                        visited.put(flower, (long)age);
+                        if (breedingCooldown <= 0) {
+                            breedingCooldown = MAX_BREEDING_COOLDOWN / 10;
+                        }
+                    }
 
-            if (random.nextInt(100) == 0 && getWorld().getBlockState(below).isOpaque()) {
-                setResting(true);
+                    return flower;
+                }).or(this::findNextHoverPosition).ifPresent(this::moveTowards);
+
+                if (random.nextInt(100) == 0 && getWorld().getBlockState(below).isOpaque()) {
+                    setResting(true);
+                }
             }
         }
     }
