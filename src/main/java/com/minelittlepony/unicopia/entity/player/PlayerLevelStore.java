@@ -21,7 +21,6 @@ class PlayerLevelStore implements Levelled.LevelStore {
         this.dataEntry = dataEntry;
         this.upgradeMana = upgradeMana;
         this.levelUpSound = levelUpSound;
-        pony.asEntity().getDataTracker().startTracking(dataEntry, 0);
     }
 
     @Override

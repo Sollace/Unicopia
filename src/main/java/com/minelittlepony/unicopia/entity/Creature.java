@@ -70,13 +70,17 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     public Creature(LivingEntity entity) {
         super(entity, EFFECT);
         physics = new EntityPhysics<>(entity, GRAVITY);
+        addTicker(physics);
+        addTicker(this::updateConsumption);
+    }
+
+    @Override
+    public void initDataTracker() {
+        super.initDataTracker();
         entity.getDataTracker().startTracking(MASTER, owner.toNBT());
         entity.getDataTracker().startTracking(EATING, 0);
         entity.getDataTracker().startTracking(DISCORDED, false);
         entity.getDataTracker().startTracking(SMITTEN, false);
-
-        addTicker(physics);
-        addTicker(this::updateConsumption);
     }
 
     @Override

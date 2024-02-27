@@ -67,7 +67,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
 
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
 
-    private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this, GRAVITY, false);
+    private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this, GRAVITY);
 
     private final EntityReference<Entity> homingTarget = new EntityReference<>();
     private EntityReference<LivingEntity> owner;

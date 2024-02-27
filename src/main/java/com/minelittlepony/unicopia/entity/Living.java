@@ -111,12 +111,15 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     protected Living(T entity, TrackedData<NbtCompound> effect) {
         this.entity = entity;
         this.effectDelegate = new EffectSync(this, effect);
-
         this.sneakingHeuristic = addTicker(new Interactable(entity::isSneaking));
         this.landedHeuristic = addTicker(new Interactable(entity::isOnGround));
         this.jumpingHeuristic = addTicker(new Interactable(((LivingEntityDuck)entity)::isJumping));
+    }
 
-        entity.getDataTracker().startTracking(effect, new NbtCompound());
+    @Override
+    public void initDataTracker() {
+        effectDelegate.initDataTracker();
+        entity.getDataTracker().startTracking(Creature.GRAVITY, 1F);
         entity.getDataTracker().startTracking(CARRIER_ID, Optional.empty());
     }
 
