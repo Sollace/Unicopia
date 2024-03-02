@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/flower_pot_cross",
   "textures": {
-    "plant": "unicopia:block/mango_sapling"
+    "plant": "unicopia:item/mango_sapling"
   }
 }

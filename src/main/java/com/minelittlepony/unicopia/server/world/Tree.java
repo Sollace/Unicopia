@@ -149,7 +149,11 @@ public record Tree (
                 )), configuredFeatureId, placements.values().stream()
                     .collect(Collectors.toUnmodifiableSet()),
                     sapling,
-                    sapling.map(saplingBlock -> Registry.register(Registries.BLOCK, saplingId.get().withPrefixedPath("potted_"), Blocks.createFlowerPotBlock(saplingBlock))));
+                    sapling.map(saplingBlock -> {
+                        Block flowerPot = Registry.register(Registries.BLOCK, saplingId.get().withPrefixedPath("potted_"), Blocks.createFlowerPotBlock(saplingBlock));
+                        UBlocks.TRANSLUCENT_BLOCKS.add(flowerPot);
+                        return flowerPot;
+                    }));
 
             if (REGISTRY.isEmpty()) {
                 bootstrap();
