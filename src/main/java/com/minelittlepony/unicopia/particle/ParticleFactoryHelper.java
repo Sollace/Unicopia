@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia.particle;
 
 import java.util.Optional;
+
+import com.minelittlepony.unicopia.util.serialization.PacketCodec;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -12,31 +14,36 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.math.Vec3d;
 
 public interface ParticleFactoryHelper {
+    @SuppressWarnings("deprecation")
+    PacketCodec<ParticleEffect> PARTICLE_EFFECT_CODEC = new PacketCodec<>(
+            buf -> {
+                @SuppressWarnings("unchecked")
+                ParticleType<ParticleEffect> type = (ParticleType<ParticleEffect>)Registries.PARTICLE_TYPE.get(buf.readInt());
+                return type.getParametersFactory().read(type, buf);
+            },
+            (buf, effect) -> {
+                buf.writeInt(Registries.PARTICLE_TYPE.getRawId(effect.getType()));
+                effect.write(buf);
+            }
+    );
+    PacketCodec<Optional<ParticleEffect>> OPTIONAL_PARTICLE_EFFECT_CODEC = PARTICLE_EFFECT_CODEC.asOptional();
+    PacketCodec<Vec3d> VECTOR_CODEC = new PacketCodec<>(
+            buf -> new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble()),
+            (buf, vector) -> {
+                buf.writeDouble(vector.x);
+                buf.writeDouble(vector.y);
+                buf.writeDouble(vector.z);
+            }
+    );
+    PacketCodec<Optional<Vec3d>> OPTIONAL_VECTOR_CODEC = VECTOR_CODEC.asOptional();
 
     @SuppressWarnings("unchecked")
     static <T extends ParticleEffect> T read(StringReader reader) throws CommandSyntaxException {
         return (T)ParticleEffectArgumentType.readParameters(reader, Registries.PARTICLE_TYPE.getReadOnlyWrapper());
     }
 
-    @SuppressWarnings("deprecation")
-    static <T extends ParticleEffect> ParticleEffect readEffect(PacketByteBuf buf) {
-        @SuppressWarnings("unchecked")
-        ParticleType<T> type = (ParticleType<T>)Registries.PARTICLE_TYPE.get(buf.readInt());
-        return type.getParametersFactory().read(type, buf);
-    }
-
     static Vec3d readVector(StringReader reader) throws CommandSyntaxException {
         return new Vec3d(readDouble(reader), readDouble(reader), readDouble(reader));
-    }
-
-    static Vec3d readVector(PacketByteBuf buffer) {
-        return new Vec3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
-    }
-
-    static void writeVector(PacketByteBuf buffer, Vec3d vector) {
-        buffer.writeDouble(vector.x);
-        buffer.writeDouble(vector.y);
-        buffer.writeDouble(vector.z);
     }
 
     static boolean readBoolean(StringReader reader) throws CommandSyntaxException {

@@ -36,7 +36,7 @@ public record FollowingParticleEffect (
         this(type,
             new WeakTarget(buf),
             buf.readFloat(),
-            buf.readOptional(b -> ParticleFactoryHelper.readEffect(b))
+            ParticleFactoryHelper.OPTIONAL_PARTICLE_EFFECT_CODEC.read(buf)
         );
     }
 
@@ -61,11 +61,7 @@ public record FollowingParticleEffect (
     public void write(PacketByteBuf buf) {
         target.write(buf);
         buf.writeFloat(followSpeed);
-        buf.writeOptional(childEffect(), (b, child) -> {
-            b.writeBoolean(true);
-            b.writeInt(Registries.PARTICLE_TYPE.getRawId(child.getType()));
-            child.write(buf);
-        });
+        ParticleFactoryHelper.OPTIONAL_PARTICLE_EFFECT_CODEC.write(buf, childEffect());
     }
 
     @Override
