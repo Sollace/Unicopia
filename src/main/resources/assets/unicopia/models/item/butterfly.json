@@ -2,5 +2,21 @@
     "parent": "unicopia:item/mug",
     "textures": {
         "layer0": "unicopia:item/butterfly"
-    }
+    },
+    "overrides": [
+      { "predicate": { "variant": 0.0666666666}, "model": "unicopia:item/yellow_butterfly" },
+      { "predicate": { "variant": 0.1333333333}, "model": "unicopia:item/lime_butterfly" },
+      { "predicate": { "variant": 0.2}, "model": "unicopia:item/red_butterfly" },
+      { "predicate": { "variant": 0.2666666666}, "model": "unicopia:item/green_butterfly" },
+      { "predicate": { "variant": 0.3333333333}, "model": "unicopia:item/blue_butterfly" },
+      { "predicate": { "variant": 0.4}, "model": "unicopia:item/purple_butterfly" },
+      { "predicate": { "variant": 0.4666666666}, "model": "unicopia:item/magenta_butterfly" },
+      { "predicate": { "variant": 0.5333333333}, "model": "unicopia:item/pink_butterfly" },
+      { "predicate": { "variant": 0.6}, "model": "unicopia:item/hedylidae_butterfly" },
+      { "predicate": { "variant": 0.6666666666}, "model": "unicopia:item/lycaenidae_butterfly" },
+      { "predicate": { "variant": 0.7333333333}, "model": "unicopia:item/nymphalidae_butterfly" },
+      { "predicate": { "variant": 0.8}, "model": "unicopia:item/monarch_butterfly" },
+      { "predicate": { "variant": 0.8666666666}, "model": "unicopia:item/white_monarch_butterfly" },
+      { "predicate": { "variant": 0.9333333333}, "model": "unicopia:item/brimstone_butterfly" }
+    ]
 }

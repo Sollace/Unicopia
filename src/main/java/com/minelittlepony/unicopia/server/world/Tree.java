@@ -30,7 +30,8 @@ public record Tree (
         TreeFeatureConfig.Builder config,
         RegistryKey<ConfiguredFeature<?, ?>> configuredFeatureId,
         Set<Placement> placements,
-        Optional<Block> sapling
+        Optional<Block> sapling,
+        Optional<Block> pot
     ) {
     public static final List<Tree> REGISTRY = new ArrayList<>();
 
@@ -131,6 +132,7 @@ public record Tree (
 
         public Tree build() {
             RegistryKey<ConfiguredFeature<?, ?>> configuredFeatureId = RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, id);
+            Optional<Block> sapling = saplingId.map(id -> UBlocks.register(id, saplingConstructor.apply(new SaplingGenerator(id.toString(), Optional.of(configuredFeatureId), Optional.empty(), Optional.empty()), FabricBlockSettings.copy(Blocks.OAK_SAPLING)), ItemGroups.NATURAL));
             Tree tree = new Tree(id, configParameters.apply(new TreeFeatureConfig.Builder(
                     BlockStateProvider.of(logType),
                     trunkPlacer,
@@ -139,7 +141,12 @@ public record Tree (
                     size.get()
                 )), configuredFeatureId, placements.values().stream()
                     .collect(Collectors.toUnmodifiableSet()),
-                    saplingId.map(id -> UBlocks.register(id, saplingConstructor.apply(new SaplingGenerator(id.toString(), Optional.of(configuredFeatureId), Optional.empty(), Optional.empty()), FabricBlockSettings.copy(Blocks.OAK_SAPLING)), ItemGroups.NATURAL)));
+                    sapling,
+                    sapling.map(saplingBlock -> {
+                        Block flowerPot = Registry.register(Registries.BLOCK, saplingId.get().withPrefixedPath("potted_"), Blocks.createFlowerPotBlock(saplingBlock));
+                        UBlocks.TRANSLUCENT_BLOCKS.add(flowerPot);
+                        return flowerPot;
+                    }));
 
             if (REGISTRY.isEmpty()) {
                 bootstrap();

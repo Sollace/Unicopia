@@ -19,12 +19,14 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.Entity.PositionUpdater;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.world.World;
 
 @Mixin(Entity.class)
 abstract class MixinEntity implements EntityDuck {
@@ -62,6 +64,14 @@ abstract class MixinEntity implements EntityDuck {
     public boolean isLavaAffine() {
         Entity self = (Entity)(Object)this;
         return self.hasVehicle() && self.getVehicle() instanceof LavaAffine affine && affine.isLavaAffine();
+    }
+
+
+    @Inject(method = "<init>", at = @At(value = "INVOKE", target = "net/minecraft/entity/Entity.initDataTracker()V"))
+    private void onInstanceInit(EntityType<?> type, World world, CallbackInfo info) {
+        if (this instanceof Equine.Container c) {
+            c.get().initDataTracker();
+        }
     }
 
     @Inject(method = "isFireImmune", at = @At("HEAD"), cancellable = true)

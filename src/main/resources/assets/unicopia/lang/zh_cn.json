@@ -301,11 +301,11 @@
   "block.unicopia.chitin": "几丁质块",
   "block.unicopia.chitin_spikes": "几丁质尖刺",
   "block.unicopia.chiselled_chitin": "雕纹几丁质块",
-  "block.unicopia.chiselled_chitin_hull": "雕纹几丁质船体",
+  "block.unicopia.chiselled_chitin_hull": "雕纹几丁质壁",
   "block.unicopia.chiselled_chitin_slab": "雕纹几丁质台阶",
   "block.unicopia.chiselled_chitin_stairs": "雕纹几丁质楼梯",
   
-  "block.unicopia.shaping_bench": "塑形长椅",  
+  "block.unicopia.shaping_bench": "塑形台",  
   "block.unicopia.cloud": "浮云",
   "block.unicopia.cloud_slab": "云台阶",
   "block.unicopia.cloud_stairs": "云楼梯",
@@ -382,7 +382,7 @@
   "effect.unicopia.change_race_hippogriff": "转生骏鹰",
 
   "effect.unicopia.morph_race_earth": "变身陆马",
-  "effect.unicopia.morph_race_unicopia": "变身独角兽",
+  "effect.unicopia.morph_race_unicorn": "变身独角兽",
   "effect.unicopia.morph_race_pegasus": "变身天马",
   "effect.unicopia.morph_race_changeling": "变身幻形灵",
   "effect.unicopia.morph_race_bat": "变身夜骐",
@@ -617,6 +617,7 @@
   "tag.unicopia.food_types.desserts": "甜品",
   "tag.unicopia.food_types.fruits_and_vegetables": "水果和蔬菜",
   "tag.unicopia.food_types.drinks": "饮品",
+  "tag.minecraft.leaves": "叶子",
 
   "tag.unicopia.food_types.forage_edible_filling": "大型植物料",
   "tag.unicopia.food_types.forage_edible": "植物料",

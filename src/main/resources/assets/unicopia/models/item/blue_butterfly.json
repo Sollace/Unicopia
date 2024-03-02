@@ -1,0 +1,6 @@
+{
+    "parent": "unicopia:item/mug",
+    "textures": {
+        "layer0": "unicopia:item/blue_butterfly"
+    }
+}

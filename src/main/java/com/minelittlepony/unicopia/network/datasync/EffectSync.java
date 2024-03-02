@@ -43,6 +43,10 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
         this.param = param;
     }
 
+    public void initDataTracker() {
+        owner.asEntity().getDataTracker().startTracking(param, new NbtCompound());
+    }
+
     public boolean tick(Situation situation) {
         return tick(spell -> {
             if (spell.isDying()) {

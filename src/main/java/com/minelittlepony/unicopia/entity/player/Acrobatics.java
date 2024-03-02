@@ -41,10 +41,11 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     public Acrobatics(Pony pony) {
         this.pony = pony;
         this.entity = pony.asEntity();
-
-        entity.getDataTracker().startTracking(HANGING_POSITION, Optional.empty());
-
         pony.addTicker(this::checkDislodge);
+    }
+
+    public void initDataTracker() {
+        entity.getDataTracker().startTracking(HANGING_POSITION, Optional.empty());
     }
 
     public boolean isImmobile() {

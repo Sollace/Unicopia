@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.entity.IItemEntity;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
+import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
 import net.minecraft.block.Block;
@@ -125,8 +127,16 @@ public class FilledJarItem extends JarItem implements ChameleonItem {
     @Override
     public void onImpact(MagicProjectileEntity projectile) {
         ItemStack stack = getAppearanceStack(projectile.getStack());
-        stack.damage(1, projectile.getWorld().random, null);
-        projectile.dropStack(stack);
+
+        if (stack.isOf(UItems.BUTTERFLY)) {
+            ButterflyEntity butterfly = UEntities.BUTTERFLY.create(projectile.getWorld());
+            butterfly.setVariant(ButterflyItem.getVariant(stack));
+            butterfly.updatePosition(projectile.getX(), projectile.getY(), projectile.getZ());
+            projectile.getWorld().spawnEntity(butterfly);
+        } else {
+            stack.damage(1, projectile.getWorld().random, null);
+            projectile.dropStack(stack);
+        }
         projectile.getWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, projectile.getBlockPos(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
     }
 

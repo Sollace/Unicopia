@@ -122,7 +122,7 @@ public class SlimePustuleBlock extends Block {
     @Override
     public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (state.get(SHAPE) == Shape.POD) {
-            world.getOtherEntities(null, new Box(pos).expand(1)).forEach(entity -> {
+            world.getOtherEntities(player.canHarvest(state) ? player : null, new Box(pos).expand(1)).forEach(entity -> {
                 entity.damage(entity.getDamageSources().inFire(), 2);
                 entity.setFireTicks(3);
             });

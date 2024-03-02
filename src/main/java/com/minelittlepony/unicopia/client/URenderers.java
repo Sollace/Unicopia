@@ -26,7 +26,9 @@ import com.minelittlepony.unicopia.client.render.*;
 import com.minelittlepony.unicopia.client.render.entity.*;
 import com.minelittlepony.unicopia.client.render.shader.UShaders;
 import com.minelittlepony.unicopia.client.render.spell.SpellRendererFactory;
+import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
+import com.minelittlepony.unicopia.item.ButterflyItem;
 import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.FancyBedItem;
@@ -119,6 +121,7 @@ public interface URenderers {
         PolearmRenderer.register(UItems.WOODEN_POLEARM, UItems.STONE_POLEARM, UItems.IRON_POLEARM, UItems.GOLDEN_POLEARM, UItems.DIAMOND_POLEARM, UItems.NETHERITE_POLEARM);
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity, seed) -> EnchantableItem.isEnchanted(stack) ? EnchantableItem.getSpellKey(stack).getAffinity().getAlignment() : 0);
         ModelPredicateProviderRegistry.register(UItems.ROCK_CANDY, new Identifier("count"), (stack, world, entity, seed) -> stack.getCount() / (float)stack.getMaxCount());
+        ModelPredicateProviderRegistry.register(UItems.BUTTERFLY, new Identifier("variant"), (stack, world, entity, seed) -> (float)ButterflyItem.getVariant(stack).ordinal() / ButterflyEntity.Variant.VALUES.length);
         ModelPredicateProviderRegistry.register(Unicopia.id("zap_cycle"), new ClampedModelPredicateProvider() {
             private double targetAngle;
             private double lastAngle;

@@ -125,13 +125,21 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         this.corruption = new PlayerLevelStore(this, CORRUPTION, false, USounds.ENTITY_PLAYER_CORRUPTION);
         this.mana = addTicker(new ManaContainer(this));
 
-        player.getDataTracker().startTracking(RACE, Race.DEFAULT_ID);
-        player.getDataTracker().startTracking(SUPPRESSED_RACE, Race.DEFAULT_ID);
-
         addTicker(this::updateAnimations);
         addTicker(this::updateBatPonyAbilities);
         addTicker(this::updateCorruptionDecay);
         addTicker(new PlayerAttributes(this));
+    }
+
+    @Override
+    public void initDataTracker() {
+        super.initDataTracker();
+        acrobatics.initDataTracker();
+        mana.initDataTracker();
+        entity.getDataTracker().startTracking(LEVEL, 0);
+        entity.getDataTracker().startTracking(CORRUPTION, 0);
+        entity.getDataTracker().startTracking(RACE, Race.DEFAULT_ID);
+        entity.getDataTracker().startTracking(SUPPRESSED_RACE, Race.DEFAULT_ID);
     }
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
