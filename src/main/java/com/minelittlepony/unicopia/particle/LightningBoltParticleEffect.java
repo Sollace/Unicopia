@@ -32,7 +32,7 @@ public record LightningBoltParticleEffect (
     }
 
     protected LightningBoltParticleEffect(ParticleType<LightningBoltParticleEffect> particleType, PacketByteBuf buf) {
-        this(buf.readBoolean(), buf.readInt(), buf.readInt(), buf.readFloat(), buf.readOptional(ParticleFactoryHelper::readVector));
+        this(buf.readBoolean(), buf.readInt(), buf.readInt(), buf.readFloat(), ParticleFactoryHelper.OPTIONAL_VECTOR_CODEC.read(buf));
     }
 
     @Override
@@ -46,7 +46,7 @@ public record LightningBoltParticleEffect (
         buffer.writeInt(changeFrequency);
         buffer.writeInt(maxBranches);
         buffer.writeFloat(maxDeviation);
-        buffer.writeOptional(pathEndPoint, ParticleFactoryHelper::writeVector);
+        ParticleFactoryHelper.OPTIONAL_VECTOR_CODEC.write(buffer, pathEndPoint);
     }
 
     @Override

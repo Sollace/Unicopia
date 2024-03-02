@@ -20,7 +20,7 @@ public class WeakTarget {
     }
 
     public WeakTarget(PacketByteBuf buf) {
-        fixedPosition = ParticleFactoryHelper.readVector(buf);
+        fixedPosition = ParticleFactoryHelper.VECTOR_CODEC.read(buf);
         targetId = buf.readInt();
     }
 
@@ -49,7 +49,7 @@ public class WeakTarget {
     }
 
     public void write(PacketByteBuf buf) {
-        ParticleFactoryHelper.writeVector(buf, fixedPosition);
+        ParticleFactoryHelper.VECTOR_CODEC.write(buf, fixedPosition);
         buf.writeInt(targetId);
     }
 }
