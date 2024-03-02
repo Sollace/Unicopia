@@ -32,7 +32,7 @@ public record SphereParticleEffect (
     }
 
     protected SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, PacketByteBuf buf) {
-        this(type, buf.readVector3f(), buf.readFloat(), buf.readFloat(), ParticleFactoryHelper.readVector(buf));
+        this(type, buf.readVector3f(), buf.readFloat(), buf.readFloat(), ParticleFactoryHelper.VECTOR_CODEC.read(buf));
     }
 
     public SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, int tint, float alpha, float rad) {
@@ -61,7 +61,7 @@ public record SphereParticleEffect (
         buf.writeVector3f(color);
         buf.writeFloat(alpha);
         buf.writeFloat(radius);
-        ParticleFactoryHelper.writeVector(buf, offset);
+        ParticleFactoryHelper.VECTOR_CODEC.write(buf, offset);
     }
 
     @Override
