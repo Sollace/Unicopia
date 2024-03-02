@@ -48,7 +48,7 @@ public interface UTreeGen {
     Tree SWEET_APPLE_TREE = createAppleTree("sweet_apple", UBlocks.SWEET_APPLE_LEAVES, 3, 0.1F)
             .placement("orchard", 6, 0.1F, 3, BiomeSelectors.includeByKey(UWorldGen.SWEET_APPLE_ORCHARD))
             .build();
-    Tree SOUR_APPLE_TREE = createAppleTree("sour_apple", UBlocks.SOUR_APPLE_LEAVES, 5, 0.2F).build();
+    Tree SOUR_APPLE_TREE = createAppleTree("sour_apple", UBlocks.SOUR_APPLE_LEAVES, 3, 0.2F).build();
     Tree GOLDEN_APPLE_TREE = Tree.Builder.create(Unicopia.id("golden_oak_tree"),
             new StraightTrunkPlacer(6, 1, 3),
             new BlobFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), 3)

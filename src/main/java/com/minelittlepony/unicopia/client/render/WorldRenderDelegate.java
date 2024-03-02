@@ -31,6 +31,7 @@ import net.minecraft.util.math.*;
 public class WorldRenderDelegate {
     public static final WorldRenderDelegate INSTANCE = new WorldRenderDelegate();
     private static final Optional<Vec3d> RED_SKY_COLOR = Optional.of(new Vec3d(1, 0, 0));
+    private static final Identifier SHADOW_TEXTURE = new Identifier("textures/misc/shadow.png");
 
     private final EntityReplacementManager disguiseLookup = new EntityReplacementManager();
     private final EntityDisguiseRenderer disguiseRenderer = new EntityDisguiseRenderer(this);
@@ -71,13 +72,23 @@ public class WorldRenderDelegate {
 
             if (MinecraftClient.getInstance().getResourceManager().getResource(frostingTexture).isPresent()) {
                 recurseFrosting = true;
+
+                Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEffectVertexConsumers();
+
                 client.getEntityRenderDispatcher().render(entity, x, y, z, yaw, tickDelta, matrices, layer -> {
-                    if (RenderLayerUtil.getTexture(layer).orElse(null) == null) {
+
+                    Identifier texture = RenderLayerUtil.getTexture(layer).orElse(null);
+
+                    if (texture == null || texture.equals(SHADOW_TEXTURE)) {
                         return vertices.getBuffer(layer);
                     }
-                    return VertexConsumers.union(vertices.getBuffer(layer), vertices.getBuffer(RenderLayers.getEntityTranslucent(frostingTexture)));
+                    return VertexConsumers.union(
+                            vertices.getBuffer(layer),
+                            immediate.getBuffer(RenderLayers.getEntityTranslucent(frostingTexture))
+                    );
                 }, light);
                 recurseFrosting = false;
+                immediate.draw();
                 return true;
             }
         }
@@ -89,14 +100,13 @@ public class WorldRenderDelegate {
         return Equine.of(entity).filter(eq -> onEntityRender(eq, x, y, z, yaw, tickDelta, matrices, vertices, light)).isPresent();
     }
 
-    public void afterEntityRender(Equine<?> pony, MatrixStack matrices, int light) {
+    public void afterEntityRender(Equine<?> pony, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
         if (recurseFrosting) {
             return;
         }
 
         if (pony instanceof Creature creature && smittenEyesRenderer.isSmitten(creature)) {
-            Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-            smittenEyesRenderer.render(creature, matrices, immediate, light, 0);
+            smittenEyesRenderer.render(creature, matrices, vertices, light, 0);
         }
 
         if (pony instanceof Pony p) {

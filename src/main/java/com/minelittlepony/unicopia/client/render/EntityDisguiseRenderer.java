@@ -34,7 +34,7 @@ class EntityDisguiseRenderer {
 
     public boolean render(Living<?> pony, Disguise disguise,
             double x, double y, double z,
-            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
         int fireTicks = pony.asEntity().doesRenderOnFire() ? 1 : 0;
         disguise.update(pony, false);
 
@@ -51,20 +51,20 @@ class EntityDisguiseRenderer {
             e.setBoundingBox(pony.asEntity().getBoundingBox());
         }
 
-        render(ve, e, x, y, z, fireTicks, tickDelta, matrices, vertexConsumers, light);
+        render(ve, e, x, y, z, fireTicks, tickDelta, matrices, vertices, light);
         ve.getAttachments().forEach(ee -> {
             PehkUtil.copyScale(pony.asEntity(), ee);
             Vec3d difference = ee.getPos().subtract(e.getPos());
-            render(ve, ee, x + difference.x, y + difference.y, z + difference.z, fireTicks, tickDelta, matrices, vertexConsumers, light);
+            render(ve, ee, x + difference.x, y + difference.y, z + difference.z, fireTicks, tickDelta, matrices, vertices, light);
             PehkUtil.clearScale(ee);
         });
 
         matrices.push();
         matrices.translate(x, y, z);
-        SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertexConsumers, light, pony, 0, 0, tickDelta, pony.asEntity().age + tickDelta, 0, 0);
+        SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertices, light, pony, 0, 0, tickDelta, pony.asEntity().age + tickDelta, 0, 0);
         matrices.pop();
 
-        delegate.afterEntityRender(pony, matrices, light);
+        delegate.afterEntityRender(pony, matrices, vertices, light);
         PehkUtil.clearScale(e);
         return true;
     }

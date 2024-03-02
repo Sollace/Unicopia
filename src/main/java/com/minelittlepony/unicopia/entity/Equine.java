@@ -19,6 +19,8 @@ public interface Equine<T extends Entity> extends NbtSerialisable, Tickable, Pro
 
     void setSpecies(Race race);
 
+    void initDataTracker();
+
     /**
      * Called at the beginning of an update cycle.
      */

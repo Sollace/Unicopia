@@ -28,16 +28,8 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
     private float lastGravity = 1;
 
     public EntityPhysics(T entity, TrackedData<Float> gravity) {
-        this(entity, gravity, true);
-    }
-
-    public EntityPhysics(T entity, TrackedData<Float> gravity, boolean register) {
         this.entity = entity;
         this.gravity = gravity;
-
-        if (register) {
-            this.entity.getDataTracker().startTracking(gravity, 1F);
-        }
     }
 
     @Override

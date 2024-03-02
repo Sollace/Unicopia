@@ -79,6 +79,10 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
     }
 
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, Caster<?> caster, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+        if (!((RenderDispatcherAccessor)client.getEntityRenderDispatcher()).shouldRenderShadows()) {
+            return;
+        }
+
         caster.getSpellSlot().forEach(spell -> {
             render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
             return Operation.SKIP;
@@ -155,5 +159,9 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
             WorldRenderer.drawBox(matrices, buffer, boundingBox.offset(x, y, z), 1, 0, 0, 1);
             matrices.pop();
         }
+    }
+
+    public interface RenderDispatcherAccessor {
+        boolean shouldRenderShadows();
     }
 }

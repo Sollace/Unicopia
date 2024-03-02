@@ -38,6 +38,10 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
         });
     }
 
+    public void initDataTracker() {
+        bars.values().forEach(BarInst::initDataTracker);
+    }
+
     protected BarInst addBar(String name, BarInst bar) {
         bars.put(name, bar);
         return bar;
@@ -164,7 +168,12 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
             this.marker = marker;
             this.max = max;
             this.trailingValue = initial;
-            pony.asEntity().getDataTracker().startTracking(marker, getMax() * initial);
+            this.prevTrailingValue = initial;
+            this.prevValue = initial;
+        }
+
+        public void initDataTracker() {
+            pony.asEntity().getDataTracker().startTracking(marker, max * trailingValue);
         }
 
         @Override

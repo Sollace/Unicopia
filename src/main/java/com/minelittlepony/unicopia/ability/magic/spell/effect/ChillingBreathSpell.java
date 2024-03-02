@@ -30,6 +30,7 @@ public class ChillingBreathSpell extends AbstractSpell implements HomingSpell {
     public boolean setTarget(Entity target) {
         if (target instanceof LavaAffine affine) {
             affine.setLavaAffine(!affine.isLavaAffine());
+            setDead();
         }
         return true;
     }

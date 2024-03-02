@@ -41,8 +41,12 @@ public class ItemImpl implements Equine<ItemEntity> {
     public ItemImpl(ItemEntity owner) {
         this.entity = owner;
         this.physics = new ItemPhysics(owner);
-        owner.getDataTracker().startTracking(ITEM_GRAVITY, 1F);
-        owner.getDataTracker().startTracking(ITEM_RACE, Race.REGISTRY.getId(Race.HUMAN).toString());
+    }
+
+    @Override
+    public void initDataTracker() {
+        entity.getDataTracker().startTracking(ITEM_GRAVITY, 1F);
+        entity.getDataTracker().startTracking(ITEM_RACE, Race.REGISTRY.getId(Race.HUMAN).toString());
     }
 
     @Override
