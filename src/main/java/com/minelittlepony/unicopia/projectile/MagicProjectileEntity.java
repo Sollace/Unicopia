@@ -27,7 +27,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -208,7 +207,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
     protected void onEntityHit(EntityHitResult hit) {
         Entity entity = hit.getEntity();
 
-        if (EquinePredicates.IS_MAGIC_IMMUNE.test(entity) || !EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity)) {
+        if (EquinePredicates.IS_MAGIC_IMMUNE.test(entity)) {
             return;
         }
 
