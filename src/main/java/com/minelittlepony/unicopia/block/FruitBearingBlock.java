@@ -24,9 +24,9 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 import net.minecraft.world.event.GameEvent;
 
-public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Buckable {
+public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Buckable, Fertilizable {
     public static final IntProperty AGE = Properties.AGE_25;
-    public static final int WITHER_AGE = 15;
+    public static final int MAX_AGE = 25;
     public static final EnumProperty<Stage> STAGE = EnumProperty.of("stage", Stage.class);
 
     private final Supplier<Block> fruit;
@@ -41,7 +41,7 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
                 .allowsSpawning(BlockConstructionUtils::canSpawnOnLeaves)
                 .suffocates(BlockConstructionUtils::never)
                 .blockVision(BlockConstructionUtils::never));
-        setDefaultState(getDefaultState().with(STAGE, Stage.IDLE));
+        setDefaultState(getDefaultState().with(AGE, 0).with(STAGE, Stage.IDLE));
         this.overlay = overlay;
         this.fruit = fruit;
         this.rottenFruitSupplier = rottenFruitSupplier;
@@ -76,48 +76,78 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
         }
 
         if (world.getBaseLightLevel(pos, 0) > 8) {
-            BlockSoundGroup group = getSoundGroup(state);
             int steps = FertilizableUtil.getGrowthSteps(world, pos, state, random);
             while (steps-- > 0) {
                 if (!shouldAdvance(random)) {
                     continue;
                 }
 
-                if (state.get(STAGE) == Stage.FRUITING) {
-                    state = state.cycle(AGE);
-                    if (state.get(AGE) > 20) {
-                        state = state.with(AGE, 0).cycle(STAGE);
-                    }
-                } else {
-                    state = state.with(AGE, 0).cycle(STAGE);
-                }
-                world.setBlockState(pos, state, Block.NOTIFY_ALL);
+                state = cycleStage(state);
                 BlockPos fruitPosition = pos.down();
-
-                Stage stage = state.get(STAGE);
-
-                if (stage == Stage.FRUITING && isPositionValidForFruit(state, pos)) {
-                    if (world.isAir(fruitPosition)) {
-                        world.setBlockState(fruitPosition, getPlacedFruitState(random), Block.NOTIFY_ALL);
-                    }
-                }
-
                 BlockState fruitState = world.getBlockState(fruitPosition);
 
-                if (stage == Stage.WITHERING && fruitState.isOf(fruit.get())) {
-                    if (world.random.nextInt(2) == 0) {
-                        Block.dropStack(world, fruitPosition, rottenFruitSupplier.get());
-                    } else {
-                        Block.dropStacks(fruitState, world, fruitPosition, fruitState.hasBlockEntity() ? world.getBlockEntity(fruitPosition) : null, null, ItemStack.EMPTY);
+                switch (state.get(STAGE)) {
+                    case WITHERING:
+                        wither(state, world, pos, fruitPosition, world.getBlockState(fruitPosition));
+                    case BEARING:
+                        if (!fruitState.isOf(fruit.get())) {
+                            state = withStage(state, Stage.IDLE);
+                        }
+                        break;
+                    case FRUITING: {
+                        if (!isPositionValidForFruit(state, pos)) {
+                            state = withStage(state, Stage.IDLE);
+                        } else {
+                            state = grow(state, world, pos, fruitPosition, fruitState, random);
+                        }
+                        break;
                     }
-
-                    if (world.removeBlock(fruitPosition, false)) {
-                        world.emitGameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Emitter.of(fruitState));
-                    }
-
-                    world.playSound(null, pos, USounds.ITEM_APPLE_ROT, SoundCategory.BLOCKS, group.getVolume(), group.getPitch());
+                    default:
                 }
+
+                world.setBlockState(pos, state, Block.NOTIFY_ALL);
             }
+        }
+    }
+
+    protected BlockState withStage(BlockState state, Stage stage) {
+        return state.with(AGE, 0).with(STAGE, stage);
+    }
+
+    private BlockState cycleStage(BlockState state) {
+        state = state.cycle(AGE);
+        if (state.get(AGE) == 0) {
+            state = state.cycle(STAGE);
+        }
+        return state;
+    }
+
+    protected BlockState grow(BlockState state, World world, BlockPos pos, BlockPos fruitPosition, BlockState fruitState, Random random) {
+        if (world.isAir(fruitPosition)) {
+            world.setBlockState(fruitPosition, getPlacedFruitState(random), Block.NOTIFY_ALL);
+            return withStage(state, Stage.BEARING);
+        }
+
+        if (!fruitState.isOf(fruit.get())) {
+            return withStage(state, Stage.IDLE);
+        }
+        return state;
+    }
+
+    protected void wither(BlockState state, World world, BlockPos pos, BlockPos fruitPosition, BlockState fruitState) {
+        if (!fruitState.isOf(fruit.get())) {
+            if (world.random.nextInt(2) == 0) {
+                Block.dropStack(world, fruitPosition, rottenFruitSupplier.get());
+            } else {
+                Block.dropStacks(fruitState, world, fruitPosition, fruitState.hasBlockEntity() ? world.getBlockEntity(fruitPosition) : null, null, ItemStack.EMPTY);
+            }
+
+            if (world.removeBlock(fruitPosition, false)) {
+                world.emitGameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Emitter.of(fruitState));
+            }
+
+            BlockSoundGroup group = getSoundGroup(state);
+            world.playSound(null, pos, USounds.ITEM_APPLE_ROT, SoundCategory.BLOCKS, group.getVolume(), group.getPitch());
         }
     }
 
@@ -142,21 +172,46 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
         return state.getRenderingSeed(pos) % 3 == 1;
     }
 
+    @Override
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
+        return switch (state.get(STAGE)) {
+            case FLOWERING -> world.isAir(pos.down());
+            default -> !world.getBlockState(pos.down()).isOf(fruit.get());
+        };
+    }
+
+    @Override
+    public boolean canGrow(World world, Random random, BlockPos pos, BlockState state) {
+        return isFertilizable(world, pos, state, false);
+    }
+
+    @Override
+    public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
+        state = state.cycle(AGE);
+        if (state.get(AGE) == 0) {
+            state = state.with(STAGE, switch (state.get(STAGE)) {
+                case IDLE -> Stage.FLOWERING;
+                case FLOWERING -> Stage.FRUITING;
+                default -> Stage.FLOWERING;
+            });
+        }
+        if (state.get(STAGE) == Stage.FRUITING && state.get(AGE) == 0) {
+            state = grow(state, world, pos, pos.down(), world.getBlockState(pos.down()), random);
+        }
+        world.setBlockState(pos, state);
+    }
+
     public enum Stage implements StringIdentifiable {
         IDLE,
         FLOWERING,
         FRUITING,
+        BEARING,
         WITHERING;
-
-        private static final Stage[] VALUES = values();
-
-        public Stage getNext() {
-            return VALUES[(ordinal() + 1) % VALUES.length];
-        }
 
         @Override
         public String asString() {
             return name().toLowerCase(Locale.ROOT);
         }
     }
+
 }
