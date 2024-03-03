@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
+import com.minelittlepony.unicopia.projectile.MagicBeamEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
@@ -48,6 +49,8 @@ public class DispellEvilSpell extends AbstractSpell implements ProjectileDelegat
 
     @Override
     public void onImpact(MagicProjectileEntity projectile) {
-        tick(projectile, Situation.GROUND);
+        if (projectile instanceof MagicBeamEntity source) {
+            tick(source, Situation.GROUND);
+        }
     }
 }
