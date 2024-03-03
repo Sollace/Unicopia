@@ -1,5 +1,5 @@
 {
-  "default_multiplier": 0.3,
+  "default_multiplier": 0.5,
   "foraging_multiplier": 0.8,
   "multipliers": [
     {
@@ -9,6 +9,13 @@
        ],
       "hunger": 1.6,
       "saturation": 1.6
+    },
+    {
+      "tags": [
+        "unicopia:food_types/baked_goods"
+      ],
+      "hunger": 1,
+      "saturation": 1
     },
     {
       "tags": [

@@ -1,6 +1,6 @@
 {
-  "default_multiplier": 0.8,
-  "foraging_multiplier": 1,
+  "default_multiplier": 1.4,
+  "foraging_multiplier": 0.9,
   "multipliers": [
     {
       "tags": [ "unicopia:food_types/cooked_fish" ],
@@ -11,6 +11,13 @@
       "tags": [ "unicopia:food_types/raw_fish" ],
       "hunger": 0.5,
       "saturation": 0.6
+    },
+    {
+      "tags": [
+        "unicopia:food_types/baked_goods"
+      ],
+      "hunger": 1,
+      "saturation": 1
     },
     {
       "tags": [

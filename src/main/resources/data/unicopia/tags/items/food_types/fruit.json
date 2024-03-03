@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "#c:fruits",
+    "unicopia:zap_apple",
+    "unicopia:zap_bulb",
+    "unicopia:rotten_apple",
+    "minecraft:melon_slice",
+    "minecraft:sweet_berries",
+    "minecraft:glow_berries",
+    "minecraft:chorus_fruit",
+    "unicopia:juice",
+    { "id": "farmersdelight:pumpkin_slice", "required": false },
+    { "id": "farmersdelight:tomato", "required": false },
+    { "id": "farmersdelight:melon_juice", "required": false },
+    { "id": "farmersdelight:fruit_salad", "required": false }
+  ]
+}

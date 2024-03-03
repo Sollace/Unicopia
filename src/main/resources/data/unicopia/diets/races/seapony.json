@@ -1,5 +1,5 @@
 {
-  "default_multiplier": 0.5,
+  "default_multiplier": 0.4,
   "foraging_multiplier": 0.7,
   "multipliers": [
     {

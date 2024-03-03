@@ -2,7 +2,11 @@
   "replace": false,
   "values": [
     "minecraft:cake",
-    "#unicopia:pies",
-    { "id": "bakersdelight:sweet_berry_cheesecake", "required": false }
+    { "id": "farmersdelight:sweet_berry_cheesecake", "required": false },
+    { "id": "farmersdelight:sweet_berry_cheesecake_slice", "required": false },
+    { "id": "farmersdelight:chocolate_pie_slice", "required": false },
+    { "id": "farmersdelight:cake_slice", "required": false },
+    { "id": "farmersdelight:apple_pie_slice", "required": false },
+    { "id": "farmersdelight:glow_berry_custard", "required": false }
   ]
 }

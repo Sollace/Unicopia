@@ -82,6 +82,15 @@ public class PonyDiets implements DietView {
 
             tooltip.add(Text.translatable("unicopia.diet.information").formatted(Formatting.DARK_PURPLE));
             getEffects(stack, pony).appendTooltip(stack, tooltip, context);
+
+            /*for (Race race : Race.REGISTRY) {
+                var diet = diets.get(race);
+                if (diet != null) {
+                    tooltip.add(race.getDisplayName());
+                    diet.appendTooltip(stack, user, tooltip, context);
+                }
+            }*/
+
             getDiet(pony).appendTooltip(stack, user, tooltip, context);
         }
     }

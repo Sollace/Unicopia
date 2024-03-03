@@ -2,7 +2,8 @@
   "replace": false,
   "values": [
     "unicopia:mango",
-    "unicopia:banana",
-    "unicopia:pineapple"
+    "#c:pineapples",
+    "#c:apples",
+    "#c:bananas"
   ]
 }
