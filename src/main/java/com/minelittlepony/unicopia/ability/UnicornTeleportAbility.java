@@ -51,12 +51,12 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
     @Override
     public int getWarmupTime(Pony player) {
-        return 20;
+        return (int)(20 - Math.min(17F, player.getLevel().get() * 0.75F));
     }
 
     @Override
     public int getCooldownTime(Pony player) {
-        return 50;
+        return (int)(50 - Math.min(45F, player.getLevel().get() * 0.75F));
     }
 
     @Override
