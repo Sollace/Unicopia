@@ -584,11 +584,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                     setDirty();
                 }
             }
-
-            if (entity.hurtTime == 1 && getCompositeRace().physical().canCast()) {
-                corruption.add(1);
-                setDirty();
-            }
         }
     }
 
