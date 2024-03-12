@@ -1,6 +1,6 @@
 {
     "parent": "minecraft:item/template_bed",
     "textures": {
-        "particle": "minecraft:item/white_wool"
+        "particle": "unicopia:block/cloud"
     }
 }

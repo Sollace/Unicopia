@@ -28,7 +28,18 @@ archivesBaseName = project.name
 loom {
     mixin.defaultRefmapName = 'unicopia.mixin.refmap.json'
     accessWidenerPath = file('src/main/resources/unicopia.aw')
+    runs {
+        datagen {
+            server()
+            name "Data Generation"
+            vmArg "-Dfabric-api.datagen"
+            vmArg "-Dfabric-api.datagen.modid=unicopia"
+            vmArg "-Dfabric-api.datagen.output-dir=${file("src/main/generated")}"
+            runDir "build/datagen"
+        }
+    }
 }
+//assemble.dependsOn(runDatagen)
 
 reckon {
     scopeFromProp()
@@ -95,6 +106,14 @@ dependencies {
     } else {
       modCompileOnly "dev.emi:emi-fabric-dummy:${project.emi_version}"
     }
+}
+
+sourceSets {
+  main {
+    resources {
+      srcDirs += [ "src/main/generated" ]
+    }
+  }
 }
 
 processResources {
