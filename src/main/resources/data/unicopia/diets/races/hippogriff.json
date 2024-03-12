@@ -12,6 +12,13 @@
     },
     {
       "tags": [
+        "unicopia:food_types/nuts_and_seeds"
+       ],
+      "hunger": 1.4,
+      "saturation": 1.4
+    },
+    {
+      "tags": [
         "unicopia:food_types/baked_goods"
       ],
       "hunger": 1,

@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "#c:seeds",
+    "#c:acorns",
+    "#c:nuts",
+    { "id": "#garnished:nuts", "require": false },
+    { "id": "#garnished:nut_mix", "require": false },
+    { "id": "#garnished:neverable_delecacies", "require": false }
+  ]
+}

@@ -80,8 +80,11 @@ public record DietProfile(
             return null;
         }
 
+        float hunger = food.getHunger() * ratios.getFirst();
+        int baseline = (int)hunger;
+
         return FoodAttributes.copy(food)
-            .hunger(Math.max(1, (int)(food.getHunger() * ratios.getFirst())))
+            .hunger(Math.max(1, (hunger - baseline) >= 0.5F ? baseline + 1 : baseline))
             .saturationModifier(food.getSaturationModifier() * ratios.getSecond())
             .build();
     }

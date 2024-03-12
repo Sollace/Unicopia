@@ -13,6 +13,7 @@
     { "id": "farmersdelight:pumpkin_slice", "required": false },
     { "id": "farmersdelight:tomato", "required": false },
     { "id": "farmersdelight:melon_juice", "required": false },
-    { "id": "farmersdelight:fruit_salad", "required": false }
+    { "id": "farmersdelight:fruit_salad", "required": false },
+    { "id": "#garnished:berries", "require": false }
   ]
 }
