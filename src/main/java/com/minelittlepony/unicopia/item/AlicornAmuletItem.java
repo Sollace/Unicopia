@@ -234,7 +234,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
             // butterfingers effects
             if (daysAttached >= 2) {
                 if (pony.asWorld().random.nextInt(200) == 0 && !pony.asEntity().hasStatusEffect(UEffects.BUTTER_FINGERS)) {
-                    pony.asEntity().addStatusEffect(new StatusEffectInstance(UEffects.CORRUPT_INFLUENCE, 2100, 1));
+                    pony.asEntity().addStatusEffect(new StatusEffectInstance(UEffects.BUTTER_FINGERS, 2100, 1));
                 }
 
                 pony.findAllEntitiesInRange(10, e -> e instanceof LivingEntity && !((LivingEntity)e).hasStatusEffect(UEffects.CORRUPT_INFLUENCE)).forEach(e -> {

@@ -92,6 +92,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private final PlayerCamera camera = new PlayerCamera(this);
     private final TraitDiscovery discoveries = new TraitDiscovery(this);
     private final Acrobatics acrobatics = new Acrobatics(this);
+    private final CorruptionHandler corruptionHandler = new CorruptionHandler(this);
 
     private final Map<String, Integer> advancementProgress = new HashMap<>();
 
@@ -129,6 +130,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         addTicker(this::updateBatPonyAbilities);
         addTicker(this::updateCorruptionDecay);
         addTicker(new PlayerAttributes(this));
+        addTicker(corruptionHandler);
     }
 
     @Override
@@ -287,6 +289,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public LevelStore getCorruption() {
         return corruption;
+    }
+
+    public CorruptionHandler getCorruptionhandler() {
+        return corruptionHandler;
     }
 
     public boolean canUseSuperMove() {
@@ -572,19 +578,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     private void updateCorruptionDecay() {
-        if (!isClient() && !UItems.ALICORN_AMULET.isApplicable(entity)) {
-            if (entity.age % (10 * ItemTracker.SECONDS) == 0) {
-                if (entity.getWorld().random.nextInt(100) == 0) {
-                    corruption.add(-1);
-                    setDirty();
-                }
 
-                if (entity.getHealth() >= entity.getMaxHealth() - 1 && !entity.getHungerManager().isNotFull()) {
-                    corruption.add(-entity.getWorld().random.nextInt(4));
-                    setDirty();
-                }
-            }
-        }
     }
 
     @Override
@@ -784,6 +778,12 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public boolean subtractEnergyCost(double foodSubtract) {
 
+        if (getSpellSlot().get(SpellPredicate.IS_CORRUPTING, false).isPresent()) {
+            int corruptionTaken = (int)(foodSubtract * (AmuletSelectors.ALICORN_AMULET.test(entity) ? 0.9F : 0.5F));
+            foodSubtract -= corruptionTaken;
+            getCorruption().add(corruptionTaken);
+        }
+
         List<Pony> partyMembers = FriendshipBraceletItem.getPartyMembers(this, 10).toList();
 
         if (!partyMembers.isEmpty()) {
@@ -951,10 +951,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void onSpellSet(@Nullable Spell spell) {
         if (spell != null) {
-            if (spell.getAffinity() == Affinity.BAD && entity.getWorld().random.nextInt(120) == 0) {
-                getCorruption().add(1);
+            if (spell.getAffinity() == Affinity.BAD && entity.getWorld().random.nextInt(20) == 0) {
+                getCorruption().add(entity.getRandom().nextBetween(1, 10));
             }
-            getCorruption().add((int)spell.getTraits().getCorruption());
+            getCorruption().add((int)spell.getTraits().getCorruption() * 10);
             setDirty();
         }
     }
