@@ -16,6 +16,9 @@ import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.Trace;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.LeavesBlock;
+import net.minecraft.block.PowderSnowBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -78,8 +81,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
             return Optional.empty();
         }
 
-        int maxDistance = player.asEntity().isCreative() ? 1000 : 100;
-
+        int maxDistance = (int)((player.asEntity().isCreative() ? 1000 : 100) + (player.getLevel().get() * 0.25F));
 
         World w = player.asWorld();
 
@@ -87,10 +89,16 @@ public class UnicornTeleportAbility implements Ability<Pos> {
         return trace.getBlockOrEntityPos().map(pos -> {
             final BlockPos originalPos = pos;
 
-            boolean airAbove = enterable(w, pos.up()) && enterable(w, pos.up(2));
+            boolean originalPosHasSupport = exception(w, pos, player.asEntity());
+            boolean originalPosValid = enterable(w, pos.up()) && enterable(w, pos.up(2));
 
-            if (exception(w, pos, player.asEntity())) {
+            if (w.getBlockState(pos).isOf(Blocks.POWDER_SNOW) && !PowderSnowBlock.canWalkOnPowderSnow(player.asEntity())) {
+                return null;
+            }
+
+            if (originalPosHasSupport) {
                 final BlockPos p = pos;
+                // offset to adjacent
                 pos = trace.getSide().map(sideHit -> {
                     if (player.asEntity().isSneaking()) {
                         sideHit = sideHit.getOpposite();
@@ -100,15 +108,19 @@ public class UnicornTeleportAbility implements Ability<Pos> {
                 }).orElse(pos);
             }
 
-            if (enterable(w, pos.down())) {
-                pos = pos.down();
-
-                if (enterable(w, pos.down())) {
-                    if (!airAbove) {
-                        return null;
+            if (pos.getX() != originalPos.getX() || pos.getZ() != originalPos.getZ()) {
+                // check support
+                int steps = 0;
+                while (enterable(w, pos.down())) {
+                    pos = pos.down();
+                    if (++steps > 2) {
+                        if (originalPosValid) {
+                            pos = originalPos.up();
+                            break;
+                        } else {
+                            return null;
+                        }
                     }
-
-                    pos = originalPos.up(2);
                 }
             }
 
@@ -162,11 +174,17 @@ public class UnicornTeleportAbility implements Ability<Pos> {
                     participant.getZ() - Math.floor(participant.getZ())
                 );
 
-        Vec3d dest = destination.vec().add(offset);
-
-        dest = new Vec3d(dest.x, getTargetYPosition(participant.getEntityWorld(), BlockPos.ofFloored(dest), ShapeContext.of(participant)), dest.z);
-
+        double yPos = getTargetYPosition(participant.getEntityWorld(), destination.pos(), ShapeContext.of(participant));
+        Vec3d dest = new Vec3d(
+                destination.x() + offset.getX(),
+                yPos,
+                destination.z() + offset.getZ()
+        );
         participant.teleport(dest.x, dest.y, dest.z);
+        if (participant.getWorld().getBlockCollisions(participant, participant.getBoundingBox()).iterator().hasNext()) {
+            dest = destination.vec();
+            participant.teleport(dest.x, participant.getY(), dest.z);
+        }
         teleporter.subtractEnergyCost(distance);
 
         participant.fallDistance /= distance;
@@ -183,7 +201,10 @@ public class UnicornTeleportAbility implements Ability<Pos> {
 
     private boolean enterable(World w, BlockPos pos) {
         BlockState state = w.getBlockState(pos);
-        return w.isAir(pos) || !state.isOpaque();
+        if (StatePredicate.isFluid(state) || state.getBlock() instanceof LeavesBlock) {
+            return false;
+        }
+        return w.isAir(pos) || !state.isOpaque() || !state.shouldSuffocate(w, pos);
     }
 
     private boolean exception(World w, BlockPos pos, PlayerEntity player) {
