@@ -1,8 +1,0 @@
-{
-    "parent": "minecraft:block/slab_top",
-    "textures": {
-        "bottom": "unicopia:block/dense_cloud",
-        "side": "unicopia:block/dense_cloud",
-        "top": "unicopia:block/dense_cloud"
-    }
-}

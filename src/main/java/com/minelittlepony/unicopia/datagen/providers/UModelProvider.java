@@ -1,11 +1,13 @@
 package com.minelittlepony.unicopia.datagen.providers;
 
+import java.util.List;
+import java.util.Map;
+
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.item.BedsheetsItem;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.server.world.UTreeGen;
-
+import com.minelittlepony.unicopia.server.world.Tree;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.block.Block;
@@ -13,10 +15,13 @@ import net.minecraft.data.client.BlockStateModelGenerator;
 import net.minecraft.data.client.BlockStateModelGenerator.TintType;
 import net.minecraft.data.family.BlockFamily;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.data.client.ModelIds;
+import net.minecraft.data.client.TextureKey;
+import net.minecraft.data.client.TextureMap;
 
 public class UModelProvider extends FabricModelProvider {
     public UModelProvider(FabricDataOutput output) {
@@ -25,6 +30,20 @@ public class UModelProvider extends FabricModelProvider {
 
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator modelGenerator) {
+
+        // cloud blocks
+        modelGenerator.registerCubeAllModelTexturePool(UBlocks.CLOUD).slab(UBlocks.CLOUD_SLAB);//.stairs(UBlocks.CLOUD_STAIRS);
+        modelGenerator.registerCubeAllModelTexturePool(UBlocks.ETCHED_CLOUD).slab(UBlocks.ETCHED_CLOUD_SLAB);//.stairs(UBlocks.ETCHED_CLOUD_STAIRS);
+        modelGenerator.registerCubeAllModelTexturePool(UBlocks.DENSE_CLOUD).slab(UBlocks.DENSE_CLOUD_SLAB);//.stairs(UBlocks.DENSE_CLOUD_STAIRS);
+        modelGenerator.registerCubeAllModelTexturePool(UBlocks.CLOUD_PLANKS).slab(UBlocks.CLOUD_PLANK_SLAB);//.stairs(UBlocks.CLOUD_PLANK_STAIRS);
+        modelGenerator.registerCubeAllModelTexturePool(UBlocks.CLOUD_BRICKS).slab(UBlocks.CLOUD_BRICK_SLAB);//.stairs(UBlocks.CLOUD_PLANK_STAIRS);
+
+        // doors
+        List.of(UBlocks.STABLE_DOOR, UBlocks.DARK_OAK_DOOR, UBlocks.CRYSTAL_DOOR, UBlocks.CLOUD_DOOR).forEach(modelGenerator::registerDoor);
+
+        // chitin blocks
+        modelGenerator.registerCubeAllModelTexturePool(UBlocks.CHISELLED_CHITIN).stairs(UBlocks.CHISELLED_CHITIN_STAIRS).slab(UBlocks.CHISELLED_CHITIN_SLAB);
+
         // palm wood
         registerLogSet(modelGenerator, UBlocks.PALM_LOG, UBlocks.PALM_WOOD);
         registerLogSet(modelGenerator, UBlocks.STRIPPED_PALM_LOG, UBlocks.STRIPPED_PALM_WOOD);
@@ -36,7 +55,6 @@ public class UModelProvider extends FabricModelProvider {
                 .build());
         modelGenerator.registerHangingSign(UBlocks.STRIPPED_PALM_LOG, UBlocks.PALM_HANGING_SIGN, UBlocks.PALM_WALL_HANGING_SIGN);
         modelGenerator.registerSimpleCubeAll(UBlocks.PALM_LEAVES);
-        modelGenerator.registerFlowerPotPlant(UTreeGen.BANANA_TREE.sapling().get(), UTreeGen.BANANA_TREE.pot().get(), TintType.NOT_TINTED);
 
         // zap wood
         modelGenerator.registerLog(UBlocks.ZAP_LOG)
@@ -54,7 +72,31 @@ public class UModelProvider extends FabricModelProvider {
                 .slab(UBlocks.WAXED_ZAP_SLAB).stairs(UBlocks.WAXED_ZAP_STAIRS).fence(UBlocks.WAXED_ZAP_FENCE).fenceGate(UBlocks.WAXED_ZAP_FENCE_GATE)
                 .group("wooden").unlockCriterionName("has_planks")
                 .build());
-        modelGenerator.registerFlowerPotPlant(UTreeGen.ZAP_APPLE_TREE.sapling().get(), UTreeGen.ZAP_APPLE_TREE.pot().get(), TintType.NOT_TINTED);
+
+        // golden oak wood
+        modelGenerator.registerSimpleCubeAll(UBlocks.GOLDEN_OAK_LEAVES);
+        modelGenerator.registerLog(UBlocks.GOLDEN_OAK_LOG)
+            .log(UBlocks.GOLDEN_OAK_LOG);
+
+
+
+        // plants
+        Tree.REGISTRY.stream().filter(tree -> tree.sapling().isPresent()).forEach(tree -> {
+            modelGenerator.registerFlowerPotPlant(tree.sapling().get(), tree.pot().get(), TintType.NOT_TINTED);
+        });
+        modelGenerator.registerTintableCross(UBlocks.CURING_JOKE, TintType.NOT_TINTED);
+
+        // fruit
+        Map.of(UBlocks.GREEN_APPLE, UItems.GREEN_APPLE,
+                UBlocks.GOLDEN_APPLE, Items.GOLDEN_APPLE,
+                UBlocks.MANGO, UItems.MANGO,
+                UBlocks.SOUR_APPLE, UItems.SOUR_APPLE,
+                UBlocks.SWEET_APPLE, UItems.SWEET_APPLE,
+                UBlocks.ZAP_APPLE, UItems.ZAP_APPLE,
+                UBlocks.ZAP_BULB, UItems.ZAP_BULB
+        ).forEach((block, item) -> {
+            modelGenerator.registerSingleton(block, TextureMap.cross(Registries.ITEM.getId(item).withPrefixedPath("item/")), BlockModels.FRUIT);
+        });
     }
 
     @Override
@@ -62,7 +104,7 @@ public class UModelProvider extends FabricModelProvider {
         ItemModels.register(itemModelGenerator,
                 UItems.ACORN, UItems.APPLE_PIE_HOOF, UItems.APPLE_PIE_SLICE, UItems.APPLE_PIE,
                 UItems.BANANA, UItems.BOTCHED_GEM, UItems.BROKEN_SUNGLASSES, UItems.BURNED_JUICE, UItems.BURNED_TOAST,
-                UItems.CARAPACE, UItems.CLAM_SHELL, UItems.COOKED_ZAP_APPLE, UItems.CRISPY_HAY_FRIES, UItems.CRYSTAL_HEART, UItems.CRYSTAL_SHARD, UItems.CURING_JOKE,
+                UItems.CARAPACE, UItems.CLAM_SHELL, UItems.COOKED_ZAP_APPLE, UItems.CRISPY_HAY_FRIES, UItems.CRYSTAL_HEART, UItems.CRYSTAL_SHARD,
                 UItems.DAFFODIL_DAISY_SANDWICH, UItems.DRAGON_BREATH_SCROLL,
                 UItems.EMPTY_JAR,
                 UItems.FRIENDSHIP_BRACELET,
@@ -74,7 +116,7 @@ public class UModelProvider extends FabricModelProvider {
                 UItems.LIGHTNING_JAR,
                 UItems.MANGO, UItems.MUFFIN,
                 UItems.OAT_SEEDS, UItems.OATMEAL, UItems.OATS,
-                UItems.PEBBLES, UItems.PEGASUS_FEATHER, UItems.PINECONE,
+                UItems.PEBBLES, UItems.PEGASUS_FEATHER, UItems.PINECONE, UItems.PINEAPPLE_CROWN,
                 UItems.RAIN_CLOUD_JAR, UItems.ROCK_STEW, UItems.ROCK, UItems.ROTTEN_APPLE,
                 UItems.SALT_CUBE, UItems.SCALLOP_SHELL, UItems.SHELLY, UItems.SOUR_APPLE_SEEDS, UItems.SOUR_APPLE, UItems.SPELLBOOK, UItems.STORM_CLOUD_JAR,
                     UItems.SWEET_APPLE_SEEDS, UItems.SWEET_APPLE,
@@ -116,13 +158,14 @@ public class UModelProvider extends FabricModelProvider {
         ItemModels.register(itemModelGenerator, ItemModels.HANDHELD_STAFF,
                 UItems.MEADOWBROOKS_STAFF
         );
+        ItemModels.item("handheld_staff", TextureKey.LAYER0, TextureKey.LAYER1).upload(ModelIds.getItemModelId(UItems.MAGIC_STAFF), new TextureMap()
+                .put(TextureKey.LAYER0, ModelIds.getItemSubModelId(UItems.MAGIC_STAFF, "_base"))
+                .put(TextureKey.LAYER1, ModelIds.getItemSubModelId(UItems.MAGIC_STAFF, "_magic")), itemModelGenerator.writer);
 
         // polearms
-        for (Item item : new Item[] {
-                UItems.DIAMOND_POLEARM, UItems.GOLDEN_POLEARM, UItems.NETHERITE_POLEARM, UItems.STONE_POLEARM, UItems.WOODEN_POLEARM, UItems.IRON_POLEARM
-        }) {
+        List.of(UItems.DIAMOND_POLEARM, UItems.GOLDEN_POLEARM, UItems.NETHERITE_POLEARM, UItems.STONE_POLEARM, UItems.WOODEN_POLEARM, UItems.IRON_POLEARM).forEach(item -> {
             ItemModels.registerPolearm(itemModelGenerator, item);
-        }
+        });
 
         // sheets
         ItemModels.register(itemModelGenerator, BedsheetsItem.ITEMS.values().stream().toArray(Item[]::new));
@@ -131,6 +174,19 @@ public class UModelProvider extends FabricModelProvider {
                 .map(race -> race.getId().withPath(p -> p + "_badge"))
                 .flatMap(id -> Registries.ITEM.getOrEmpty(id).stream())
                 .toArray(Item[]::new));
+
+        ItemModels.registerButterfly(itemModelGenerator, UItems.BUTTERFLY);
+        ItemModels.registerSpectralBlock(itemModelGenerator, UItems.SPECTRAL_CLOCK);
+        ModelOverrides.of(ItemModels.GENERATED)
+            .addUniform("count", 2, 16, ModelIds.getItemModelId(UItems.ROCK_CANDY))
+            .upload(UItems.ROCK_CANDY, itemModelGenerator);
+
+        List.of(UItems.PINEAPPLE, UItems.CANDIED_APPLE).forEach(item -> {
+            ModelOverrides.of(ItemModels.GENERATED)
+                .addOverride(ModelIds.getItemSubModelId(item, "_bite1"), "damage", 0.3F)
+                .addOverride(ModelIds.getItemSubModelId(item, "_bite2"), "damage", 0.6F)
+                .upload(item, itemModelGenerator);
+        });
     }
 
     private void registerLogSet(BlockStateModelGenerator modelGenerator, Block log, Block wood) {

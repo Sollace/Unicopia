@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cross",
-  "textures": {
-    "cross": "unicopia:item/green_apple_sapling"
-  }
-}

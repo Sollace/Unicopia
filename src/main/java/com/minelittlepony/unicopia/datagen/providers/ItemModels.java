@@ -1,19 +1,20 @@
 package com.minelittlepony.unicopia.datagen.providers;
 
+import java.util.Locale;
 import java.util.Optional;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.Unicopia;
+import com.google.common.base.Strings;
 
+import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.data.client.Model;
 import net.minecraft.data.client.ModelIds;
 import net.minecraft.data.client.TextureKey;
 import net.minecraft.data.client.TextureMap;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 
 interface ItemModels {
     Model GENERATED = net.minecraft.data.client.Models.GENERATED;
@@ -44,20 +45,30 @@ interface ItemModels {
 
     static void registerPolearm(ItemModelGenerator itemModelGenerator, Item item) {
         TextureMap textures = TextureMap.layer0(TextureMap.getId(item));
-        Identifier throwingId = ModelIds.getItemSubModelId(item, "_throwing");
         GENERATED.upload(ModelIds.getItemSubModelId(item, "_in_inventory"), textures, itemModelGenerator.writer);
-        TRIDENT_THROWING.upload(throwingId, textures, itemModelGenerator.writer);
-        TRIDENT_IN_HAND.upload(ModelIds.getItemModelId(item), textures, (id, jsonSupplier) -> {
-            itemModelGenerator.writer.accept(id, () -> Util.make(jsonSupplier.get(), json -> {
-                json.getAsJsonObject().add("overrides", Util.make(new JsonArray(), overrides -> {
-                    overrides.add(Util.make(new JsonObject(), override -> {
-                        override.addProperty("model", throwingId.toString());
-                        override.add("predicate", Util.make(new JsonObject(), predicate -> {
-                            predicate.addProperty("throwing", 1);
-                        }));
-                    }));
-                }));
-            }));
-        });
+        ModelOverrides.of(TRIDENT_IN_HAND)
+            .addOverride("throwing", 1, generator -> TRIDENT_THROWING.upload(ModelIds.getItemSubModelId(item, "_throwing"), textures, itemModelGenerator.writer))
+            .upload(ModelIds.getItemModelId(item), textures, itemModelGenerator);
+    }
+
+    static void registerButterfly(ItemModelGenerator itemModelGenerator, Item item) {
+        float step = 1F / ButterflyEntity.Variant.VALUES.length;
+        ModelOverrides.of(GENERATED).addUniform("variant", step, 1 - step, step, (i, value) -> {
+            String name = ButterflyEntity.Variant.byId(i + 1).name().toLowerCase(Locale.ROOT);
+            Identifier subModelId = Registries.ITEM.getId(item).withPath(p -> "item/" + name + "_" + p);
+            return GENERATED.upload(subModelId, TextureMap.layer0(subModelId), itemModelGenerator.writer);
+        }).upload(item, itemModelGenerator);
+    }
+
+    static void registerSpectralBlock(ItemModelGenerator itemModelGenerator, Item item) {
+        final float step = 0.025F;
+        String[] suffexes = { "", "_greening", "_flowering", "_fruiting", "_ripe", "" };
+        ModelOverrides.of(GENERATED).addUniform("unicopia:zap_cycle", 0, 1, step, (index, value) -> {
+            if (value < 0.0001 || value > 0.999F) {
+                return ModelIds.getItemModelId(item);
+            }
+            Identifier subModelId = ModelIds.getItemSubModelId(item, suffexes[index / 8] + "_" + Strings.padStart((index % 8) * 5 + "", 2, '0'));
+            return GENERATED.upload(subModelId, TextureMap.layer0(subModelId), itemModelGenerator.writer);
+        }).upload(item, "_00", itemModelGenerator);
     }
 }
