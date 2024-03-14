@@ -38,6 +38,10 @@ public class UModelProvider extends FabricModelProvider {
         modelGenerator.registerCubeAllModelTexturePool(UBlocks.CLOUD_PLANKS).slab(UBlocks.CLOUD_PLANK_SLAB);//.stairs(UBlocks.CLOUD_PLANK_STAIRS);
         modelGenerator.registerCubeAllModelTexturePool(UBlocks.CLOUD_BRICKS).slab(UBlocks.CLOUD_BRICK_SLAB);//.stairs(UBlocks.CLOUD_PLANK_STAIRS);
 
+        List.of(UBlocks.COMPACTED_CLOUD, UBlocks.COMPACTED_CLOUD_BRICKS, UBlocks.COMPACTED_CLOUD_PLANKS, UBlocks.COMPACTED_DENSE_CLOUD, UBlocks.COMPACTED_ETCHED_CLOUD).forEach(block -> {
+            BlockModels.registerCompactedBlock(modelGenerator, block);
+        });
+
         // doors
         List.of(UBlocks.STABLE_DOOR, UBlocks.DARK_OAK_DOOR, UBlocks.CRYSTAL_DOOR, UBlocks.CLOUD_DOOR).forEach(modelGenerator::registerDoor);
 
