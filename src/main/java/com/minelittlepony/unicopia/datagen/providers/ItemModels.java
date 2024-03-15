@@ -18,6 +18,7 @@ import net.minecraft.util.Identifier;
 
 interface ItemModels {
     Model GENERATED = net.minecraft.data.client.Models.GENERATED;
+    Model CHEST = item(new Identifier("chest"), TextureKey.PARTICLE);
     Model TEMPLATE_AMULET = item("template_amulet", TextureKey.LAYER0);
     Model TEMPLATE_SPAWN_EGG = item(new Identifier("template_spawn_egg"));
     Model TEMPLATE_MUG = item("template_mug", TextureKey.LAYER0);

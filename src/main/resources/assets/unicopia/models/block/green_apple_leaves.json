@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/leaves",
-  "textures": {
-    "all": "unicopia:block/green_apple_leaves"
-  }
-}

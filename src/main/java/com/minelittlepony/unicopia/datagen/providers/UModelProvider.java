@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.item.BedsheetsItem;
 import com.minelittlepony.unicopia.item.UItems;
@@ -11,17 +12,21 @@ import com.minelittlepony.unicopia.server.world.Tree;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.data.client.BlockStateModelGenerator;
 import net.minecraft.data.client.BlockStateModelGenerator.TintType;
 import net.minecraft.data.family.BlockFamily;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.data.client.ModelIds;
 import net.minecraft.data.client.TextureKey;
 import net.minecraft.data.client.TextureMap;
+import net.minecraft.data.client.TexturedModel;
 
 public class UModelProvider extends FabricModelProvider {
     public UModelProvider(FabricDataOutput output) {
@@ -30,7 +35,6 @@ public class UModelProvider extends FabricModelProvider {
 
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator modelGenerator) {
-
         // cloud blocks
         modelGenerator.registerCubeAllModelTexturePool(UBlocks.CLOUD).slab(UBlocks.CLOUD_SLAB);//.stairs(UBlocks.CLOUD_STAIRS);
         modelGenerator.registerCubeAllModelTexturePool(UBlocks.ETCHED_CLOUD).slab(UBlocks.ETCHED_CLOUD_SLAB);//.stairs(UBlocks.ETCHED_CLOUD_STAIRS);
@@ -41,6 +45,9 @@ public class UModelProvider extends FabricModelProvider {
         List.of(UBlocks.COMPACTED_CLOUD, UBlocks.COMPACTED_CLOUD_BRICKS, UBlocks.COMPACTED_CLOUD_PLANKS, UBlocks.COMPACTED_DENSE_CLOUD, UBlocks.COMPACTED_ETCHED_CLOUD).forEach(block -> {
             BlockModels.registerCompactedBlock(modelGenerator, block);
         });
+        BlockModels.registerChest(modelGenerator, UBlocks.CLOUD_CHEST, UBlocks.CLOUD);
+        BlockModels.registerBed(modelGenerator, UBlocks.CLOUD_BED, UBlocks.CLOUD);
+        BlockModels.registerBed(modelGenerator, UBlocks.CLOTH_BED, Blocks.SPRUCE_PLANKS);
 
         // doors
         List.of(UBlocks.STABLE_DOOR, UBlocks.DARK_OAK_DOOR, UBlocks.CRYSTAL_DOOR, UBlocks.CLOUD_DOOR).forEach(modelGenerator::registerDoor);
@@ -76,19 +83,36 @@ public class UModelProvider extends FabricModelProvider {
                 .slab(UBlocks.WAXED_ZAP_SLAB).stairs(UBlocks.WAXED_ZAP_STAIRS).fence(UBlocks.WAXED_ZAP_FENCE).fenceGate(UBlocks.WAXED_ZAP_FENCE_GATE)
                 .group("wooden").unlockCriterionName("has_planks")
                 .build());
+        BlockModels.registerZapLeaves(modelGenerator, UBlocks.ZAP_LEAVES);
+        modelGenerator.registerSingleton(UBlocks.FLOWERING_ZAP_LEAVES, TexturedModel.LEAVES);
 
         // golden oak wood
         modelGenerator.registerSimpleCubeAll(UBlocks.GOLDEN_OAK_LEAVES);
         modelGenerator.registerLog(UBlocks.GOLDEN_OAK_LOG)
             .log(UBlocks.GOLDEN_OAK_LOG);
 
-
-
         // plants
         Tree.REGISTRY.stream().filter(tree -> tree.sapling().isPresent()).forEach(tree -> {
             modelGenerator.registerFlowerPotPlant(tree.sapling().get(), tree.pot().get(), TintType.NOT_TINTED);
         });
         modelGenerator.registerTintableCross(UBlocks.CURING_JOKE, TintType.NOT_TINTED);
+        modelGenerator.registerCrop(UBlocks.GOLD_ROOT, Properties.AGE_7, 0, 0, 1, 1, 2, 2, 2, 3);
+        BlockModels.registerCropWithoutItem(modelGenerator, UBlocks.OATS, UBlocks.OATS.getAgeProperty(), 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+        BlockModels.registerCropWithoutItem(modelGenerator, UBlocks.OATS_STEM, UBlocks.OATS_STEM.getAgeProperty(), 0, 1, 2, 3, 4, 5, 6);
+        BlockModels.registerCropWithoutItem(modelGenerator, UBlocks.OATS_CROWN, UBlocks.OATS_CROWN.getAgeProperty(), 0, 1);
+        BlockModels.registerTallCrop(modelGenerator, UBlocks.PINEAPPLE, Properties.AGE_7, Properties.BLOCK_HALF,
+                new int[] { 0, 1, 2, 3, 4, 5, 5, 6 },
+                new int[] { 0, 0, 1, 2, 3, 4, 5, 6 }
+        );
+
+        // leaves
+        List.of(UBlocks.GREEN_APPLE_LEAVES, UBlocks.SOUR_APPLE_LEAVES, UBlocks.SWEET_APPLE_LEAVES).forEach(block -> {
+            BlockModels.registerFloweringLeaves(modelGenerator, block);
+        });
+        BlockModels.createSproutStages(modelGenerator);
+        List.of(UBlocks.GREEN_APPLE_SPROUT, UBlocks.SOUR_APPLE_SPROUT, UBlocks.SWEET_APPLE_SPROUT, UBlocks.GOLDEN_OAK_SPROUT).forEach(block -> {
+            BlockModels.registerSprout(modelGenerator, block);
+        });
 
         // fruit
         Map.of(UBlocks.GREEN_APPLE, UItems.GREEN_APPLE,
@@ -100,6 +124,15 @@ public class UModelProvider extends FabricModelProvider {
                 UBlocks.ZAP_BULB, UItems.ZAP_BULB
         ).forEach((block, item) -> {
             modelGenerator.registerSingleton(block, TextureMap.cross(Registries.ITEM.getId(item).withPrefixedPath("item/")), BlockModels.FRUIT);
+        });
+
+        // bales
+        List.of(
+                new Pair<>(new Identifier("hay_block"), "_top"),
+                new Pair<>(new Identifier("farmersdelight", "rice_bale"), "_top"),
+                new Pair<>(new Identifier("farmersdelight", "straw_bale"), "_end")
+        ).forEach(block -> {
+            BlockModels.registerBale(modelGenerator, Unicopia.id(block.getLeft().getPath().replace("bale", "block")), block.getLeft(), block.getRight());
         });
     }
 
