@@ -30,6 +30,8 @@ public interface BlockModels {
     Model STRAIGHT_STAIRS = block("seethrough_stairs", TextureKey.BOTTOM, TextureKey.TOP, TextureKey.SIDE, STEP);
     Model INNER_STAIRS = block("inner_seethrough_stairs", "_inner", TextureKey.BOTTOM, TextureKey.TOP, TextureKey.SIDE, STEP);
     Model OUTER_STAIRS = block("outer_seethrough_stairs", "_outer", TextureKey.BOTTOM, TextureKey.TOP, TextureKey.SIDE, STEP);
+    Model DOOR_LEFT = block("door_left", TextureKey.BOTTOM, TextureKey.TOP);
+    Model DOOR_RIGHT = block("door_right", TextureKey.BOTTOM, TextureKey.TOP);
 
     Factory CROP = Factory.of(TextureMap::crop, Models.CROP);
     Factory CUBE_ALL = Factory.of(TextureMap::all, Models.CUBE_ALL);

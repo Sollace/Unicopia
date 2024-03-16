@@ -18,7 +18,10 @@ import com.minelittlepony.unicopia.server.world.Tree;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.enums.DoorHinge;
+import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.data.client.BlockStateModelGenerator;
+import net.minecraft.data.client.BlockStateSupplier;
 import net.minecraft.data.client.BlockStateVariant;
 import net.minecraft.data.client.BlockStateVariantMap;
 import net.minecraft.data.client.Model;
@@ -75,7 +78,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerAll((g, block) -> g.registerParentedItemModel(block, ModelIds.getBlockModelId(block)), UBlocks.SHAPING_BENCH, UBlocks.SURFACE_CHITIN);
         registerAll(UBlockStateModelGenerator::registerSimpleState, UBlocks.SHAPING_BENCH, UBlocks.BANANAS);
         // doors
-        registerAll(UBlockStateModelGenerator::registerDoor, UBlocks.STABLE_DOOR, UBlocks.DARK_OAK_DOOR, UBlocks.CRYSTAL_DOOR, UBlocks.CLOUD_DOOR);
+        registerAll(UBlockStateModelGenerator::registerStableDoor, UBlocks.STABLE_DOOR, UBlocks.DARK_OAK_DOOR, UBlocks.CRYSTAL_DOOR, UBlocks.CLOUD_DOOR);
 
         // cloud blocks
         createCustomTexturePool(UBlocks.CLOUD, TexturedModel.CUBE_ALL).same(UBlocks.UNSTABLE_CLOUD).slab(UBlocks.CLOUD_SLAB).stairs(UBlocks.CLOUD_STAIRS);
@@ -309,6 +312,78 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
     public void registerFancyBed(Block bed, Block particleSource) {
         registerBuiltinWithParticle(bed, ModelIds.getBlockModelId(particleSource));
         super.registerBed(bed, particleSource);
+    }
+
+    public void registerStableDoor(Block door) {
+        TextureMap topTextures = TextureMap.topBottom(door);
+        TextureMap bottomTextures = topTextures.copyAndAdd(TextureKey.TOP, topTextures.getTexture(TextureKey.BOTTOM));
+        registerItemModel(door.asItem());
+        blockStateCollector.accept(createStableDoorBlockState(door,
+                BlockModels.DOOR_LEFT.upload(door, "_bottom_left", bottomTextures, modelCollector),
+                BlockModels.DOOR_RIGHT.upload(door, "_bottom_right", bottomTextures, modelCollector),
+                BlockModels.DOOR_LEFT.upload(door, "_top_left", topTextures, modelCollector),
+                BlockModels.DOOR_RIGHT.upload(door, "_top_right", topTextures, modelCollector)
+        ));
+    }
+
+    public static BlockStateSupplier createStableDoorBlockState(Block doorBlock, Identifier bottomLeftHingeClosedModelId, Identifier bottomRightHingeClosedModelId, Identifier topLeftHingeClosedModelId, Identifier topRightHingeClosedModelId) {
+        var variants = BlockStateVariantMap.create(Properties.HORIZONTAL_FACING, Properties.DOUBLE_BLOCK_HALF, Properties.DOOR_HINGE, Properties.OPEN);
+        fillStableDoorVariantMap(variants, DoubleBlockHalf.LOWER, bottomLeftHingeClosedModelId, bottomRightHingeClosedModelId);
+        fillStableDoorVariantMap(variants, DoubleBlockHalf.UPPER, topLeftHingeClosedModelId, topRightHingeClosedModelId);
+        return VariantsBlockStateSupplier.create(doorBlock).coordinate(variants);
+    }
+
+    public static BlockStateVariantMap.QuadrupleProperty<Direction, DoubleBlockHalf, DoorHinge, Boolean> fillStableDoorVariantMap(
+            BlockStateVariantMap.QuadrupleProperty<Direction, DoubleBlockHalf, DoorHinge, Boolean> variantMap,
+            DoubleBlockHalf targetHalf, Identifier leftModelId, Identifier rightModelId) {
+        return variantMap
+                .register(Direction.EAST, targetHalf, DoorHinge.LEFT, false, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, leftModelId))
+                .register(Direction.SOUTH, targetHalf, DoorHinge.LEFT, false, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, leftModelId)
+                        .put(VariantSettings.Y, VariantSettings.Rotation.R90))
+                .register(Direction.WEST, targetHalf, DoorHinge.LEFT, false, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, leftModelId)
+                        .put(VariantSettings.Y, VariantSettings.Rotation.R180))
+                .register(Direction.NORTH, targetHalf, DoorHinge.LEFT, false, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, leftModelId)
+                        .put(VariantSettings.Y, VariantSettings.Rotation.R270))
+
+                .register(Direction.EAST, targetHalf, DoorHinge.RIGHT, false, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, rightModelId))
+                .register(Direction.SOUTH, targetHalf, DoorHinge.RIGHT, false, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, rightModelId)
+                        .put(VariantSettings.Y, VariantSettings.Rotation.R90))
+                .register(Direction.WEST, targetHalf, DoorHinge.RIGHT, false, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, rightModelId)
+                        .put(VariantSettings.Y, VariantSettings.Rotation.R180))
+                .register(Direction.NORTH, targetHalf, DoorHinge.RIGHT, false, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, rightModelId)
+                        .put(VariantSettings.Y, VariantSettings.Rotation.R270))
+
+                .register(Direction.EAST, targetHalf, DoorHinge.LEFT, true, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, rightModelId)
+                        .put(VariantSettings.Y, VariantSettings.Rotation.R90))
+                .register(Direction.SOUTH, targetHalf, DoorHinge.LEFT, true, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, rightModelId)
+                        .put(VariantSettings.Y, VariantSettings.Rotation.R180))
+                .register(Direction.WEST, targetHalf, DoorHinge.LEFT, true, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, rightModelId)
+                        .put(VariantSettings.Y, VariantSettings.Rotation.R270))
+                .register(Direction.NORTH, targetHalf, DoorHinge.LEFT, true, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, rightModelId))
+
+                .register(Direction.EAST, targetHalf, DoorHinge.RIGHT, true, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, leftModelId)
+                        .put(VariantSettings.Y, VariantSettings.Rotation.R270))
+                .register(Direction.SOUTH, targetHalf, DoorHinge.RIGHT, true, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, leftModelId))
+                .register(Direction.WEST, targetHalf, DoorHinge.RIGHT, true, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, leftModelId)
+                        .put(VariantSettings.Y, VariantSettings.Rotation.R90))
+                .register(Direction.NORTH, targetHalf, DoorHinge.RIGHT, true, BlockStateVariant.create()
+                        .put(VariantSettings.MODEL, leftModelId)
+                        .put(VariantSettings.Y, VariantSettings.Rotation.R180));
     }
 
     public void registerHiveBlock(Block hive) {
