@@ -1,8 +1,5 @@
 {
     "parent": "item/handheld",
-    "textures": {
-        "layer0": "unicopia:item/mug"
-    },
     "display": {
         "thirdperson_righthand": {
             "rotation": [ 0, -90, -55 ],

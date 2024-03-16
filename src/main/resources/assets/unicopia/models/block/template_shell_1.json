@@ -1,7 +1,6 @@
 {
 	"textures": {
-		"particle": "#shell",
-		"shell": "unicopia:item/clam_shell"
+		"particle": "#shell"
 	},
 	"elements": [
 		{

@@ -4,7 +4,7 @@
 		"top": "unicopia:block/cloud_pillar_top",
 		"side": "unicopia:block/cloud_pillar_side",
 		"side_end": "unicopia:block/cloud_pillar_side_end",
-		"particle": "unicopia:block/cloud_pillar_side"
+		"particle": "#side"
 	},
 	"elements": [
 		{

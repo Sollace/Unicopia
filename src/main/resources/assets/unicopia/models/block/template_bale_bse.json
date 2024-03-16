@@ -1,8 +1,6 @@
 {
 	"textures": {
-		"top": "block/hay_block_top",
-		"particle": "block/hay_block_side",
-		"side": "block/hay_block_side"
+		"particle": "#side"
 	},
 	"elements": [
 		{

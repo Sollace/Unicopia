@@ -1,5 +1,5 @@
 {
-    "parent": "unicopia:block/mysterious_egg_1",
+    "parent": "unicopia:block/mysterious_egg_stage1",
     "gui_light": "side",
     "display": {
         "gui": {

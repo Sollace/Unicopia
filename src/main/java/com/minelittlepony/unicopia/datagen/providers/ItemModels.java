@@ -19,7 +19,9 @@ import net.minecraft.util.Identifier;
 interface ItemModels {
     Model GENERATED = net.minecraft.data.client.Models.GENERATED;
     Model CHEST = item(new Identifier("chest"), TextureKey.PARTICLE);
+    Model BUILTIN_ENTITY = new Model(Optional.of(new Identifier("builtin/entity")), Optional.empty());
     Model TEMPLATE_AMULET = item("template_amulet", TextureKey.LAYER0);
+    Model TEMPLATE_EYEWEAR = item("template_eyewear", TextureKey.LAYER0);
     Model TEMPLATE_SPAWN_EGG = item(new Identifier("template_spawn_egg"));
     Model TEMPLATE_MUG = item("template_mug", TextureKey.LAYER0);
     Model HANDHELD_STAFF = item("handheld_staff", TextureKey.LAYER0);

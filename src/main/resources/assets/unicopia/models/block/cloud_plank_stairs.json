@@ -1,8 +1,0 @@
-{
-  "parent": "unicopia:block/cloud_stairs",
-  "textures": {
-    "bottom": "unicopia:block/cloud_planks",
-    "side": "unicopia:block/cloud_planks",
-    "top": "unicopia:block/cloud_planks"
-  }
-}

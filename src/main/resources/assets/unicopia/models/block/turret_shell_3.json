@@ -1,6 +1,0 @@
-{
-  "parent": "unicopia:block/clam_shell_3",
-  "textures": {
-    "shell": "unicopia:item/turret_shell"
-  }
-}

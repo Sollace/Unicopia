@@ -1,6 +1,5 @@
 {
   "textures": {
-    "all": "unicopia:block/cloud",
     "particle": "#all"
   },
 	"elements": [
