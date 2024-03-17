@@ -41,7 +41,7 @@ public class UModelProvider extends FabricModelProvider {
                 UItems.JAM_TOAST, UItems.JUICE,
                 UItems.LIGHTNING_JAR,
                 UItems.MANGO, UItems.MUFFIN,
-                UItems.OAT_SEEDS, UItems.OATMEAL, UItems.OATS,
+                UItems.OATMEAL,
                 UItems.PEBBLES, UItems.PEGASUS_FEATHER, UItems.PINECONE, UItems.PINEAPPLE_CROWN,
                 UItems.RAIN_CLOUD_JAR, UItems.ROCK_STEW, UItems.ROCK, UItems.ROTTEN_APPLE,
                 UItems.SALT_CUBE, UItems.SCALLOP_SHELL, UItems.SHELLY, UItems.SOUR_APPLE_SEEDS, UItems.SOUR_APPLE, UItems.SPELLBOOK, UItems.STORM_CLOUD_JAR,

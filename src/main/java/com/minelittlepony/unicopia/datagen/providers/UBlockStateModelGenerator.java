@@ -3,6 +3,10 @@ package com.minelittlepony.unicopia.datagen.providers;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import com.google.gson.JsonElement;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.EdibleBlock;
 import com.minelittlepony.unicopia.block.FruitBearingBlock;
@@ -22,6 +26,7 @@ import net.minecraft.block.ConnectingBlock;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.data.client.BlockStateModelGenerator;
+import net.minecraft.data.client.BlockStateSupplier;
 import net.minecraft.data.client.BlockStateVariant;
 import net.minecraft.data.client.BlockStateVariantMap;
 import net.minecraft.data.client.Model;
@@ -55,27 +60,33 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
     static final Identifier AIR_ITEM_ID = new Identifier("item/air");
 
     static UBlockStateModelGenerator create(BlockStateModelGenerator modelGenerator) {
-        return new UBlockStateModelGenerator(modelGenerator);
+        return new UBlockStateModelGenerator(modelGenerator.blockStateCollector, modelGenerator.modelCollector, modelGenerator::excludeFromSimpleItemModelGeneration);
     }
 
-    private UBlockStateModelGenerator(BlockStateModelGenerator modelGenerator) {
-        super(modelGenerator.blockStateCollector,
-                (id, jsonSupplier) -> {
-                    if (AIR_BLOCK_ID.equals(id) || AIR_ITEM_ID.equals(id)) {
-                        throw new IllegalStateException("Registered air id for block model: " + jsonSupplier.get().toString());
-                    }
-                    modelGenerator.modelCollector.accept(id, jsonSupplier);
-                },
-                item -> modelGenerator.excludeFromSimpleItemModelGeneration(Block.getBlockFromItem(item))
-        );
+    protected UBlockStateModelGenerator(BlockStateModelGenerator modelGenerator) {
+        this(modelGenerator.blockStateCollector, modelGenerator.modelCollector, modelGenerator::excludeFromSimpleItemModelGeneration);
+    }
 
-        for (int i = 0; i < Models.STEM_GROWTH_STAGES.length; i++) {
-            Models.STEM_GROWTH_STAGES[i].upload(Unicopia.id("block/apple_sprout_stage" + i), TextureMap.stem(Blocks.MELON_STEM), modelCollector);
-        }
+    public UBlockStateModelGenerator(
+            Consumer<BlockStateSupplier> blockStateCollector,
+            BiConsumer<Identifier, Supplier<JsonElement>> modelCollector,
+            Consumer<Block> simpleItemModelExemptionCollector) {
+        super(blockStateCollector, (id, jsonSupplier) -> {
+            if (AIR_BLOCK_ID.equals(id) || AIR_ITEM_ID.equals(id)) {
+                throw new IllegalStateException("Registered air id for block model: " + jsonSupplier.get().toString());
+            }
+            modelCollector.accept(id, jsonSupplier);
+        }, item -> simpleItemModelExemptionCollector.accept(Block.getBlockFromItem(item)));
     }
 
     @Override
     public void register() {
+        UBlockStateModelGenerator seasonsModelGenerator = SeasonsModelGenerator.create(this);
+
+        for (int i = 0; i < Models.STEM_GROWTH_STAGES.length; i++) {
+            Models.STEM_GROWTH_STAGES[i].upload(Unicopia.id("block/apple_sprout_stage" + i), TextureMap.stem(Blocks.MELON_STEM), modelCollector);
+        }
+
         // handmade
         registerAll((g, block) -> g.registerParentedItemModel(block, ModelIds.getBlockModelId(block)), UBlocks.SHAPING_BENCH, UBlocks.SURFACE_CHITIN);
         registerAll(UBlockStateModelGenerator::registerSimpleState, UBlocks.SHAPING_BENCH, UBlocks.BANANAS);
@@ -150,9 +161,13 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         Tree.REGISTRY.stream().filter(tree -> tree.sapling().isPresent()).forEach(tree -> registerFlowerPotPlant(tree.sapling().get(), tree.pot().get(), TintType.NOT_TINTED));
         registerTintableCross(UBlocks.CURING_JOKE, TintType.NOT_TINTED);
         registerWithStages(UBlocks.GOLD_ROOT, Properties.AGE_7, BlockModels.CROP, 0, 0, 1, 1, 2, 2, 2, 3);
-        registerWithStages(UBlocks.OATS, UBlocks.OATS.getAgeProperty(), BlockModels.CROP, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
-        registerWithStages(UBlocks.OATS_STEM, UBlocks.OATS_STEM.getAgeProperty(), BlockModels.CROP, 0, 1, 2, 3, 4, 5, 6);
-        registerWithStages(UBlocks.OATS_CROWN, UBlocks.OATS_CROWN.getAgeProperty(), BlockModels.CROP, 0, 1);
+        seasonsModelGenerator.registerWithStages(UBlocks.OATS, UBlocks.OATS.getAgeProperty(), BlockModels.CROP, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
+        seasonsModelGenerator.registerWithStages(UBlocks.OATS_STEM, UBlocks.OATS_STEM.getAgeProperty(), BlockModels.CROP, 0, 1, 2, 3, 4, 5, 6);
+        seasonsModelGenerator.registerWithStages(UBlocks.OATS_CROWN, UBlocks.OATS_CROWN.getAgeProperty(), BlockModels.CROP, 0, 1);
+
+        seasonsModelGenerator.registerItemModel(UItems.OATS);
+        seasonsModelGenerator.registerItemModel(UItems.OAT_SEEDS);
+
         registerTallCrop(UBlocks.PINEAPPLE, Properties.AGE_7, Properties.BLOCK_HALF,
                 new int[] { 0, 1, 2, 3, 4, 5, 5, 6 },
                 new int[] { 0, 0, 1, 2, 3, 4, 5, 6 }
