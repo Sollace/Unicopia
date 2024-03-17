@@ -32,9 +32,9 @@ public class ThornBlock extends ConnectingBlock implements EarthPonyGrowAbility.
     static final Collection<BooleanProperty> PROPERTIES = FACING_PROPERTIES.values();
     static final DirectionProperty FACING = Properties.FACING;
     static final int MAX_DISTANCE = 25;
-    static final int MAX_AGE = 4;
+    static final int MAX_AGE = Properties.AGE_4_MAX;
     static final IntProperty DISTANCE = IntProperty.of("distance", 0, MAX_DISTANCE);
-    static final IntProperty AGE = IntProperty.of("age", 0, MAX_AGE);
+    static final IntProperty AGE = Properties.AGE_4;
 
     private final Supplier<Block> bud;
 

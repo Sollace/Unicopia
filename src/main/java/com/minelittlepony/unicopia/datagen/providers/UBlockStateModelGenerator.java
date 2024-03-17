@@ -18,6 +18,7 @@ import com.minelittlepony.unicopia.server.world.Tree;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ConnectingBlock;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.data.client.BlockStateModelGenerator;
@@ -27,10 +28,8 @@ import net.minecraft.data.client.Model;
 import net.minecraft.data.client.ModelIds;
 import net.minecraft.data.client.Models;
 import net.minecraft.data.client.MultipartBlockStateSupplier;
-import net.minecraft.data.client.TextureKey;
 import net.minecraft.data.client.TextureMap;
 import net.minecraft.data.client.TexturedModel;
-import net.minecraft.data.client.VariantSettings;
 import net.minecraft.data.client.VariantsBlockStateSupplier;
 import net.minecraft.data.client.When;
 import net.minecraft.data.family.BlockFamily;
@@ -46,6 +45,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.Direction;
+
+import static net.minecraft.data.client.TextureKey.*;
+import static net.minecraft.data.client.VariantSettings.*;
+import static net.minecraft.data.client.VariantSettings.Rotation.*;
 
 public class UBlockStateModelGenerator extends BlockStateModelGenerator {
     static final Identifier AIR_BLOCK_ID = new Identifier("block/air");
@@ -85,8 +88,9 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         createCustomTexturePool(UBlocks.DENSE_CLOUD, TexturedModel.CUBE_ALL).slab(UBlocks.DENSE_CLOUD_SLAB).stairs(UBlocks.DENSE_CLOUD_STAIRS);
         createCustomTexturePool(UBlocks.CLOUD_PLANKS, TexturedModel.CUBE_ALL).slab(UBlocks.CLOUD_PLANK_SLAB).stairs(UBlocks.CLOUD_PLANK_STAIRS);
         createCustomTexturePool(UBlocks.CLOUD_BRICKS, TexturedModel.CUBE_ALL).slab(UBlocks.CLOUD_BRICK_SLAB).stairs(UBlocks.CLOUD_BRICK_STAIRS);
-        createTwoStepTexturePool(UBlocks.SOGGY_CLOUD, TexturedModel.CUBE_BOTTOM_TOP.andThen(textures -> textures.put(TextureKey.BOTTOM, ModelIds.getBlockModelId(UBlocks.CLOUD)))).slab(UBlocks.SOGGY_CLOUD_SLAB).stairs(UBlocks.SOGGY_CLOUD_STAIRS);
+        createTwoStepTexturePool(UBlocks.SOGGY_CLOUD, TexturedModel.CUBE_BOTTOM_TOP.andThen(textures -> textures.put(BOTTOM, ModelIds.getBlockModelId(UBlocks.CLOUD)))).slab(UBlocks.SOGGY_CLOUD_SLAB).stairs(UBlocks.SOGGY_CLOUD_STAIRS);
         registerRotated(UBlocks.CARVED_CLOUD, TexturedModel.CUBE_COLUMN);
+        registerPillar(UBlocks.CLOUD_PILLAR);
 
         registerAll(UBlockStateModelGenerator::registerCompactedBlock, UBlocks.COMPACTED_CLOUD, UBlocks.COMPACTED_CLOUD_BRICKS, UBlocks.COMPACTED_CLOUD_PLANKS, UBlocks.COMPACTED_DENSE_CLOUD, UBlocks.COMPACTED_ETCHED_CLOUD);
         registerChest(UBlocks.CLOUD_CHEST, UBlocks.CLOUD);
@@ -103,7 +107,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerParentedItemModel(UBlocks.SLIME_PUSTULE, ModelIds.getBlockSubModelId(UBlocks.SLIME_PUSTULE, "_pod"));
         blockStateCollector.accept(VariantsBlockStateSupplier.create(UBlocks.SLIME_PUSTULE)
                 .coordinate(BlockStateVariantMap.create(SlimePustuleBlock.SHAPE)
-                .register(state -> BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(UBlocks.SLIME_PUSTULE, "_" + state.asString())))));
+                .register(state -> BlockStateVariant.create().put(MODEL, ModelIds.getBlockSubModelId(UBlocks.SLIME_PUSTULE, "_" + state.asString())))));
         registerPie(UBlocks.APPLE_PIE);
 
         // palm wood
@@ -153,7 +157,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
                 new int[] { 0, 1, 2, 3, 4, 5, 5, 6 },
                 new int[] { 0, 0, 1, 2, 3, 4, 5, 6 }
         );
-        registerParentedItemModel(UBlocks.PLUNDER_VINE_BUD, ModelIds.getBlockModelId(UBlocks.PLUNDER_VINE_BUD));
+        registerPlunderVine(UBlocks.PLUNDER_VINE, UBlocks.PLUNDER_VINE_BUD);
 
         // leaves
         registerAll(UBlockStateModelGenerator::registerFloweringLeaves, UBlocks.GREEN_APPLE_LEAVES, UBlocks.SOUR_APPLE_LEAVES, UBlocks.SWEET_APPLE_LEAVES);
@@ -210,7 +214,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         return (new BlockTexturePool(textures) {
             @Override
             public BlockTexturePool stairs(Block block) {
-                TextureMap textMap = textures.copyAndAdd(BlockModels.STEP, textures.getTexture(TextureKey.SIDE));
+                TextureMap textMap = textures.copyAndAdd(BlockModels.STEP, textures.getTexture(SIDE));
                 Identifier inner = BlockModels.INNER_STAIRS.upload(block, textMap, modelCollector);
                 Identifier straight = BlockModels.STRAIGHT_STAIRS.upload(block, textMap, modelCollector);
                 Identifier outer = BlockModels.OUTER_STAIRS.upload(block, textMap, modelCollector);
@@ -240,7 +244,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
 
             @Override
             public BlockTexturePool slab(Block block) {
-                TextureMap textMap = textures.copyAndAdd(TextureKey.SIDE, twoStepTexture);
+                TextureMap textMap = textures.copyAndAdd(SIDE, twoStepTexture);
                 Identifier lower = Models.SLAB.upload(block, textMap, modelCollector);
                 Identifier upper = Models.SLAB_TOP.upload(block, textMap, modelCollector);
                 blockStateCollector.accept(BlockStateModelGenerator.createSlabBlockState(block, lower, upper, baseModelId));
@@ -254,8 +258,8 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         TexturedModel model = TexturedModel.CUBE_BOTTOM_TOP.get(dirt);
         registerTopSoil(block,
                 model.upload(block, modelCollector),
-                BlockStateVariant.create().put(VariantSettings.MODEL, Models.CUBE_BOTTOM_TOP.upload(dirt, "_snow", model.getTextures()
-                        .copyAndAdd(TextureKey.SIDE, ModelIds.getBlockSubModelId(dirt, "_side_snow_covered")
+                BlockStateVariant.create().put(MODEL, Models.CUBE_BOTTOM_TOP.upload(dirt, "_snow", model.getTextures()
+                        .copyAndAdd(SIDE, ModelIds.getBlockSubModelId(dirt, "_side_snow_covered")
                 ), modelCollector))
         );
     }
@@ -264,16 +268,45 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         Identifier outside = ModelIds.getBlockModelId(UBlocks.CHITIN);
         Identifier inside = ModelIds.getBlockSubModelId(UBlocks.CHITIN, "_bottom");
         registerSingleton(UBlocks.CHITIN, new TextureMap()
-                .put(TextureKey.SIDE, outside)
-                .put(TextureKey.TOP, outside)
-                .put(TextureKey.BOTTOM, inside), Models.CUBE_BOTTOM_TOP);
+                .put(SIDE, outside)
+                .put(TOP, outside)
+                .put(BOTTOM, inside), Models.CUBE_BOTTOM_TOP);
     }
 
     public void registerRotated(Block block, TexturedModel.Factory modelFactory) {
         Identifier modelId = modelFactory.get(block).upload(block, modelCollector);
         blockStateCollector.accept(VariantsBlockStateSupplier.create(block, BlockStateVariant.create()
-                .put(VariantSettings.MODEL, modelId))
+                .put(MODEL, modelId))
                 .coordinate(createUpDefaultFacingVariantMap()));
+    }
+
+    public void registerPlunderVine(Block plant, Block bud) {
+        var rotationVariants = BlockStateVariantMap.create(Properties.FACING);
+        createDownDefaultFacingVariantMap(rotationVariants::register);
+        blockStateCollector.accept(VariantsBlockStateSupplier.create(bud, BlockStateVariant.create()
+                .put(MODEL, ModelIds.getBlockModelId(bud)))
+                .coordinate(rotationVariants));
+
+        var supplier = MultipartBlockStateSupplier.create(plant);
+        String[] stages = { "", "_2", "_3", "_4", "_4"};
+        Properties.AGE_4.getValues().forEach(age -> {
+            Identifier modelId = ModelIds.getBlockSubModelId(plant, "_branch" + stages[age]);
+            createDownDefaultFacingVariantMap((direction, variant) -> {
+                supplier.with(When.create().set(Properties.AGE_4, age).set(ConnectingBlock.FACING_PROPERTIES.get(direction), true), variant.put(MODEL, modelId));
+            });
+        });
+
+        blockStateCollector.accept(supplier);
+        registerParentedItemModel(bud, ModelIds.getBlockModelId(bud));
+    }
+
+    public final void createDownDefaultFacingVariantMap(BiConsumer<Direction, BlockStateVariant> builder) {
+        builder.accept(Direction.DOWN, BlockStateVariant.create());
+        builder.accept(Direction.UP, BlockStateVariant.create().put(X, R180));
+        builder.accept(Direction.SOUTH, BlockStateVariant.create().put(X, R90));
+        builder.accept(Direction.NORTH, BlockStateVariant.create().put(X, R90).put(Y, R180));
+        builder.accept(Direction.EAST, BlockStateVariant.create().put(X, R90).put(Y, R270));
+        builder.accept(Direction.WEST, BlockStateVariant.create().put(X, R90).put(Y, R90));
     }
 
     public void registerCompactedBlock(Block block) {
@@ -285,18 +318,18 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
             final BooleanProperty yAxis = (i & 0b100) == 0 ? Properties.DOWN : Properties.UP;
             final BooleanProperty xAxis = (i & 0b010) == 0 ? Properties.NORTH: Properties.SOUTH;
             final BooleanProperty zAxis = (i & 0b001) == 0 ? Properties.EAST : Properties.WEST;
-            final VariantSettings.Rotation xRot = yAxis == Properties.DOWN ? VariantSettings.Rotation.R0 : VariantSettings.Rotation.R180;
-            final VariantSettings.Rotation yRot = BlockModels.FLATTENED_MODEL_ROTATIONS[i];
+            final Rotation xRot = yAxis == Properties.DOWN ? R0 : R180;
+            final Rotation yRot = BlockModels.FLATTENED_MODEL_ROTATIONS[i];
             final String[] suffexes = yRot.ordinal() % 2 == 0 ? BlockModels.FLATTENED_MODEL_SUFFEXES : BlockModels.FLATTENED_MODEL_SUFFEXES_ROT;
             for (byte v = 0; v < suffexes.length; v++) {
                 supplier.with(When.create()
                             .set(yAxis, (v & 0b100) != 0)
                             .set(xAxis, (v & 0b010) != 0)
                             .set(zAxis, (v & 0b001) != 0), BlockStateVariant.create()
-                        .put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(block, "_corner_" + suffexes[v]))
-                        .put(VariantSettings.UVLOCK, true)
-                        .put(VariantSettings.X, xRot)
-                        .put(VariantSettings.Y, yRot)
+                        .put(MODEL, ModelIds.getBlockSubModelId(block, "_corner_" + suffexes[v]))
+                        .put(UVLOCK, true)
+                        .put(X, xRot)
+                        .put(Y, yRot)
                 );
             }
         }
@@ -315,7 +348,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
 
     public void registerStableDoor(Block door) {
         TextureMap topTextures = TextureMap.topBottom(door);
-        TextureMap bottomTextures = topTextures.copyAndAdd(TextureKey.TOP, topTextures.getTexture(TextureKey.BOTTOM));
+        TextureMap bottomTextures = topTextures.copyAndAdd(TOP, topTextures.getTexture(BOTTOM));
         registerItemModel(door.asItem());
         var variants = BlockStateVariantMap.create(Properties.HORIZONTAL_FACING, Properties.DOUBLE_BLOCK_HALF, Properties.DOOR_HINGE, Properties.OPEN);
         fillStableDoorVariantMap(variants, DoubleBlockHalf.LOWER,
@@ -332,45 +365,61 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
     public static void fillStableDoorVariantMap(
             BlockStateVariantMap.QuadrupleProperty<Direction, DoubleBlockHalf, DoorHinge, Boolean> variantMap,
             DoubleBlockHalf targetHalf, Identifier leftModelId, Identifier rightModelId) {
-        fillStableDoorVariantMap(variantMap, targetHalf, DoorHinge.LEFT, false, VariantSettings.Rotation.R0, leftModelId);
-        fillStableDoorVariantMap(variantMap, targetHalf, DoorHinge.RIGHT, false, VariantSettings.Rotation.R0, rightModelId);
+        fillStableDoorVariantMap(variantMap, targetHalf, DoorHinge.LEFT, false, R0, leftModelId);
+        fillStableDoorVariantMap(variantMap, targetHalf, DoorHinge.RIGHT, false, R0, rightModelId);
 
-        fillStableDoorVariantMap(variantMap, targetHalf, DoorHinge.LEFT, true, VariantSettings.Rotation.R90, rightModelId);
-        fillStableDoorVariantMap(variantMap, targetHalf, DoorHinge.RIGHT, true, VariantSettings.Rotation.R270, leftModelId);
+        fillStableDoorVariantMap(variantMap, targetHalf, DoorHinge.LEFT, true, R90, rightModelId);
+        fillStableDoorVariantMap(variantMap, targetHalf, DoorHinge.RIGHT, true, R270, leftModelId);
     }
 
     public static void fillStableDoorVariantMap(
             BlockStateVariantMap.QuadrupleProperty<Direction, DoubleBlockHalf, DoorHinge, Boolean> variantMap,
             DoubleBlockHalf targetHalf,
-            DoorHinge hinge, boolean open, VariantSettings.Rotation rotation,
+            DoorHinge hinge, boolean open, Rotation rotation,
             Identifier modelId) {
 
         for (int i = 0; i < BlockRotation.DIRECTIONS.length; i++) {
             variantMap.register(BlockRotation.DIRECTIONS[i], targetHalf, hinge, open, BlockStateVariant.create()
-                    .put(VariantSettings.MODEL, modelId)
-                    .put(VariantSettings.Y, BlockRotation.cycle(rotation, i))
+                    .put(MODEL, modelId)
+                    .put(Y, BlockRotation.cycle(rotation, i))
             );
         }
+    }
+
+    public void registerPillar(Block pillar) {
+        TextureMap textures = new TextureMap()
+                .put(SIDE, ModelIds.getBlockSubModelId(pillar, "_side"))
+                .put(TOP, ModelIds.getBlockSubModelId(pillar, "_lip"))
+                .put(BOTTOM, ModelIds.getBlockSubModelId(pillar, "_end"))
+                .put(END, ModelIds.getBlockSubModelId(pillar, "_side_end"));
+        Identifier middle = BlockModels.TEMPLATE_PILLAR.upload(pillar, textures, modelCollector);
+        Identifier end = BlockModels.TEMPLATE_PILLAR_END.upload(pillar, textures, modelCollector);
+        blockStateCollector.accept(MultipartBlockStateSupplier.create(pillar)
+                .with(BlockStateVariant.create().put(MODEL, middle))
+                .with(When.create().set(Properties.NORTH, false), BlockStateVariant.create().put(MODEL, end).put(UVLOCK, true).put(X, R180))
+                .with(When.create().set(Properties.SOUTH, false), BlockStateVariant.create().put(MODEL, end))
+        );
+        ItemModels.TEMPLATE_PILLAR.upload(ModelIds.getItemModelId(pillar.asItem()), textures, modelCollector);
     }
 
     public void registerHiveBlock(Block hive) {
         Identifier core = ModelIds.getBlockSubModelId(hive, "_core");
         Identifier side = ModelIds.getBlockSubModelId(hive, "_side");
         blockStateCollector.accept(MultipartBlockStateSupplier.create(hive)
-                .with(BlockStateVariant.create().put(VariantSettings.MODEL, core))
-                .with(When.create().set(Properties.NORTH, true), BlockStateVariant.create().put(VariantSettings.MODEL, side).put(VariantSettings.UVLOCK, true))
-                .with(When.create().set(Properties.EAST, true), BlockStateVariant.create().put(VariantSettings.MODEL, side).put(VariantSettings.UVLOCK, true).put(VariantSettings.Y, VariantSettings.Rotation.R90))
-                .with(When.create().set(Properties.SOUTH, true), BlockStateVariant.create().put(VariantSettings.MODEL, side).put(VariantSettings.UVLOCK, true).put(VariantSettings.Y, VariantSettings.Rotation.R180))
-                .with(When.create().set(Properties.WEST, true), BlockStateVariant.create().put(VariantSettings.MODEL, side).put(VariantSettings.UVLOCK, true).put(VariantSettings.Y, VariantSettings.Rotation.R270))
-                .with(When.create().set(Properties.DOWN, true), BlockStateVariant.create().put(VariantSettings.MODEL, side).put(VariantSettings.UVLOCK, true).put(VariantSettings.X, VariantSettings.Rotation.R90))
-                .with(When.create().set(Properties.UP, true), BlockStateVariant.create().put(VariantSettings.MODEL, side).put(VariantSettings.UVLOCK, true).put(VariantSettings.X, VariantSettings.Rotation.R270)));
+                .with(BlockStateVariant.create().put(MODEL, core))
+                .with(When.create().set(Properties.NORTH, true), BlockStateVariant.create().put(MODEL, side).put(UVLOCK, true))
+                .with(When.create().set(Properties.EAST, true), BlockStateVariant.create().put(MODEL, side).put(UVLOCK, true).put(Y, R90))
+                .with(When.create().set(Properties.SOUTH, true), BlockStateVariant.create().put(MODEL, side).put(UVLOCK, true).put(Y, R180))
+                .with(When.create().set(Properties.WEST, true), BlockStateVariant.create().put(MODEL, side).put(UVLOCK, true).put(Y, R270))
+                .with(When.create().set(Properties.DOWN, true), BlockStateVariant.create().put(MODEL, side).put(UVLOCK, true).put(X, R90))
+                .with(When.create().set(Properties.UP, true), BlockStateVariant.create().put(MODEL, side).put(UVLOCK, true).put(X, R270)));
         Models.CUBE_ALL.upload(ModelIds.getItemModelId(hive.asItem()), TextureMap.all(ModelIds.getBlockSubModelId(hive, "_side")), modelCollector);
     }
 
     public void registerBale(Identifier blockId, Identifier baseBlockId, String endSuffex) {
         Identifier top = baseBlockId.withPath(p -> "block/" + p + endSuffex);
         Identifier side = baseBlockId.withPath(p -> "block/" + p + "_side");
-        TextureMap textures = new TextureMap().put(TextureKey.TOP, top).put(TextureKey.SIDE, side);
+        TextureMap textures = new TextureMap().put(TOP, top).put(SIDE, side);
 
         MultipartBlockStateSupplier supplier = MultipartBlockStateSupplier.create(Registries.BLOCK.getOrEmpty(blockId).orElseGet(() -> {
             return Registry.register(Registries.BLOCK, blockId, new EdibleBlock(blockId, blockId, false));
@@ -382,11 +431,11 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
                 BooleanProperty segment = EdibleBlock.SEGMENTS[i];
                 segment.getName();
                 supplier.with(When.create().set(EdibleBlock.AXIS, axis).set(segment, true), BlockStateVariant.create()
-                        .put(VariantSettings.MODEL, uploadedModels.computeIfAbsent(i, ii -> {
+                        .put(MODEL, uploadedModels.computeIfAbsent(i, ii -> {
                             return BlockModels.BALE_MODELS[ii].getLeft().upload(blockId.withPath(p -> "block/" + p + BlockModels.BALE_MODELS[ii].getRight()), textures, modelCollector);
                         }))
-                        .put(VariantSettings.X, axis == Direction.Axis.Y ? VariantSettings.Rotation.R0 : VariantSettings.Rotation.R90)
-                        .put(VariantSettings.Y, axis == Direction.Axis.X ? VariantSettings.Rotation.R90 : VariantSettings.Rotation.R0)
+                        .put(X, axis == Direction.Axis.Y ? R0 : R90)
+                        .put(Y, axis == Direction.Axis.X ? R90 : R0)
                 );
             }
         }
@@ -402,7 +451,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         Int2ObjectOpenHashMap<Identifier> uploadedModels = new Int2ObjectOpenHashMap<>();
         blockStateCollector.accept(VariantsBlockStateSupplier.create(crop)
                 .coordinate(BlockStateVariantMap.create(ageProperty)
-                .register(age -> BlockStateVariant.create().put(VariantSettings.MODEL, uploadedModels.computeIfAbsent(stages[age - offset], stage -> {
+                .register(age -> BlockStateVariant.create().put(MODEL, uploadedModels.computeIfAbsent(stages[age - offset], stage -> {
                     return modelFactory.upload(crop, "_stage" + stage, modelCollector);
                 })))));
     }
@@ -414,7 +463,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         int offset = ageProperty.getValues().iterator().next();
         blockStateCollector.accept(VariantsBlockStateSupplier.create(crop)
                 .coordinate(BlockStateVariantMap.create(ageProperty)
-                .register(age -> BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(crop, "_stage" + stages[age - offset])))));
+                .register(age -> BlockStateVariant.create().put(MODEL, ModelIds.getBlockSubModelId(crop, "_stage" + stages[age - offset])))));
     }
 
     public <T extends Enum<T> & StringIdentifiable> void registerTallCrop(Block crop,
@@ -425,28 +474,28 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         blockStateCollector.accept(VariantsBlockStateSupplier.create(crop).coordinate(BlockStateVariantMap.create(partProperty, ageProperty).register((part, age) -> {
             int i = ageTextureIndices[part.ordinal()][age];
             Identifier identifier = uploadedModels.computeIfAbsent("_" + part.asString() + "_stage" + i, variant -> createSubModel(crop, variant, Models.CROSS, TextureMap::cross));
-            return BlockStateVariant.create().put(VariantSettings.MODEL, identifier);
+            return BlockStateVariant.create().put(MODEL, identifier);
         })));
     }
 
     public void registerPie(Block pie) {
         TextureMap textures = new TextureMap()
-                .put(TextureKey.TOP, ModelIds.getBlockSubModelId(pie, "_top"))
-                .put(TextureKey.BOTTOM, ModelIds.getBlockSubModelId(pie, "_bottom"))
-                .put(TextureKey.SIDE, ModelIds.getBlockSubModelId(pie, "_side"))
-                .put(TextureKey.INSIDE, ModelIds.getBlockSubModelId(pie, "_inside"));
-        TextureMap stompedTextures = textures.copyAndAdd(TextureKey.TOP, ModelIds.getBlockSubModelId(pie, "_top_stomped"));
+                .put(TOP, ModelIds.getBlockSubModelId(pie, "_top"))
+                .put(BOTTOM, ModelIds.getBlockSubModelId(pie, "_bottom"))
+                .put(SIDE, ModelIds.getBlockSubModelId(pie, "_side"))
+                .put(INSIDE, ModelIds.getBlockSubModelId(pie, "_inside"));
+        TextureMap stompedTextures = textures.copyAndAdd(TOP, ModelIds.getBlockSubModelId(pie, "_top_stomped"));
         blockStateCollector.accept(VariantsBlockStateSupplier.create(pie).coordinate(BlockStateVariantMap.create(PieBlock.BITES, PieBlock.STOMPED).register((bites, stomped) -> {
-            return BlockStateVariant.create().put(VariantSettings.MODEL, BlockModels.PIE_MODELS[bites].upload(pie, (stomped ? "_stomped" : ""), stomped ? stompedTextures : textures, modelCollector));
+            return BlockStateVariant.create().put(MODEL, BlockModels.PIE_MODELS[bites].upload(pie, (stomped ? "_stomped" : ""), stomped ? stompedTextures : textures, modelCollector));
         })));
     }
 
     public void registerFloweringLeaves(Block block) {
         Identifier baseModel = TexturedModel.LEAVES.upload(block, modelCollector);
-        Identifier floweringModel = Models.CUBE_ALL.upload(block, "_flowering", TextureMap.of(TextureKey.ALL, ModelIds.getBlockSubModelId(block, "_flowering")), modelCollector);
+        Identifier floweringModel = Models.CUBE_ALL.upload(block, "_flowering", TextureMap.of(ALL, ModelIds.getBlockSubModelId(block, "_flowering")), modelCollector);
         blockStateCollector.accept(MultipartBlockStateSupplier.create(block)
-                .with(BlockStateVariant.create().put(VariantSettings.MODEL, baseModel))
-                .with(When.create().set(FruitBearingBlock.STAGE, FruitBearingBlock.Stage.FLOWERING), BlockStateVariant.create().put(VariantSettings.MODEL, floweringModel)));
+                .with(BlockStateVariant.create().put(MODEL, baseModel))
+                .with(When.create().set(FruitBearingBlock.STAGE, FruitBearingBlock.Stage.FLOWERING), BlockStateVariant.create().put(MODEL, floweringModel)));
     }
 
     public void registerZapLeaves(Block block) {
@@ -456,7 +505,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         blockStateCollector.accept(VariantsBlockStateSupplier.create(block)
                 .coordinate(BlockStateVariantMap.create(ZapAppleLeavesBlock.STAGE)
                 .register(stage -> BlockStateVariant.create()
-                        .put(VariantSettings.MODEL, switch (stage) {
+                        .put(MODEL, switch (stage) {
                             case HIBERNATING -> airModel;
                             case FLOWERING -> floweringModel;
                             default -> baseModel;
@@ -467,23 +516,23 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         blockStateCollector.accept(VariantsBlockStateSupplier.create(sprout)
                 .coordinate(BlockStateVariantMap.create(Properties.AGE_7)
                 .register(age -> BlockStateVariant.create()
-                        .put(VariantSettings.MODEL, Unicopia.id("block/apple_sprout_stage" + age)))));
+                        .put(MODEL, Unicopia.id("block/apple_sprout_stage" + age)))));
     }
 
     public void registerShell(Block shell) {
         blockStateCollector.accept(VariantsBlockStateSupplier.create(shell)
                 .coordinate(BlockStateVariantMap.create(ShellsBlock.COUNT)
                 .register(count -> BlockStateVariant.create()
-                        .put(VariantSettings.MODEL, BlockModels.SHELL_MODELS[count - 1].upload(shell, TextureMap.of(BlockModels.SHELL, Registries.BLOCK.getId(shell).withPrefixedPath("item/")), modelCollector)))));
+                        .put(MODEL, BlockModels.SHELL_MODELS[count - 1].upload(shell, TextureMap.of(BlockModels.SHELL, Registries.BLOCK.getId(shell).withPrefixedPath("item/")), modelCollector)))));
     }
 
     public void registerHull(Block block, Block core, Block shell) {
         blockStateCollector.accept(VariantsBlockStateSupplier.create(
                 block,
-                BlockStateVariant.create().put(VariantSettings.MODEL, Models.CUBE_BOTTOM_TOP.upload(block, new TextureMap()
-                        .put(TextureKey.BOTTOM, ModelIds.getBlockModelId(core))
-                        .put(TextureKey.TOP, ModelIds.getBlockModelId(shell))
-                        .put(TextureKey.SIDE, ModelIds.getBlockSubModelId(shell, "_half")), modelCollector))
+                BlockStateVariant.create().put(MODEL, Models.CUBE_BOTTOM_TOP.upload(block, new TextureMap()
+                        .put(BOTTOM, ModelIds.getBlockModelId(core))
+                        .put(TOP, ModelIds.getBlockModelId(shell))
+                        .put(SIDE, ModelIds.getBlockSubModelId(shell, "_half")), modelCollector))
         ).coordinate(createUpDefaultFacingVariantMap()));
     }
 }

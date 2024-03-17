@@ -12,6 +12,7 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -20,8 +21,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class CloudPillarBlock extends CloudBlock {
-    private static final BooleanProperty NORTH = BooleanProperty.of("north");
-    private static final BooleanProperty SOUTH = BooleanProperty.of("south");
+    private static final BooleanProperty NORTH = Properties.NORTH;
+    private static final BooleanProperty SOUTH = Properties.SOUTH;
     private static final Map<Direction, BooleanProperty> DIRECTION_PROPERTIES = Map.of(
             Direction.UP, NORTH,
             Direction.DOWN, SOUTH

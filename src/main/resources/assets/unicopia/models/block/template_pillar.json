@@ -1,9 +1,5 @@
 {
 	"parent": "minecraft:block/cube_bottom_top",
-	"textures": {
-		"top": "unicopia:block/cloud_pillar_top",
-		"side": "unicopia:block/cloud_pillar_side"
-	},
 	"elements": [
 		{
 			"from": [1, 0, 1],

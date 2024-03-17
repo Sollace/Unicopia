@@ -24,6 +24,7 @@ interface ItemModels {
     Model TEMPLATE_EYEWEAR = item("template_eyewear", TextureKey.LAYER0);
     Model TEMPLATE_SPAWN_EGG = item(new Identifier("template_spawn_egg"));
     Model TEMPLATE_MUG = item("template_mug", TextureKey.LAYER0);
+    Model TEMPLATE_PILLAR = item("template_pillar", TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.END);
     Model HANDHELD_STAFF = item("handheld_staff", TextureKey.LAYER0);
     Model TRIDENT_THROWING = item(new Identifier("trident_throwing"), TextureKey.LAYER0);
     Model TRIDENT_IN_HAND = item(new Identifier("trident_in_hand"), TextureKey.LAYER0);
