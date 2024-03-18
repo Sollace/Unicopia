@@ -181,14 +181,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerParentedItemModel(UBlocks.MANGO_LEAVES, ModelIds.getBlockModelId(Blocks.JUNGLE_LEAVES));
 
         // fruit
-        Map.of(UBlocks.GREEN_APPLE, UItems.GREEN_APPLE,
-                UBlocks.GOLDEN_APPLE, Items.GOLDEN_APPLE,
-                UBlocks.MANGO, UItems.MANGO,
-                UBlocks.SOUR_APPLE, UItems.SOUR_APPLE,
-                UBlocks.SWEET_APPLE, UItems.SWEET_APPLE,
-                UBlocks.ZAP_APPLE, UItems.ZAP_APPLE,
-                UBlocks.ZAP_BULB, UItems.ZAP_BULB
-        ).forEach((block, item) -> registerSingleton(block, TextureMap.cross(ModelIds.getItemModelId(item)), BlockModels.FRUIT));
+        UModelProvider.FRUITS.forEach((block, item) -> registerSingleton(block, TextureMap.cross(ModelIds.getItemModelId(item)), BlockModels.FRUIT));
 
         // bales
         registerAll((g, block) -> g.registerBale(Unicopia.id(block.getLeft().getPath().replace("bale", "block")), block.getLeft(), block.getRight()),

@@ -1,14 +1,18 @@
 package com.minelittlepony.unicopia.datagen.providers;
 
 import java.util.List;
+import java.util.Map;
+
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.item.BedsheetsItem;
 import com.minelittlepony.unicopia.item.UItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
+import net.minecraft.block.Block;
 import net.minecraft.data.client.BlockStateModelGenerator;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.data.client.ModelIds;
@@ -16,6 +20,15 @@ import net.minecraft.data.client.TextureKey;
 import net.minecraft.data.client.TextureMap;
 
 public class UModelProvider extends FabricModelProvider {
+    static final Map<Block, Item> FRUITS = Map.of(UBlocks.GREEN_APPLE, UItems.GREEN_APPLE,
+            UBlocks.GOLDEN_APPLE, Items.GOLDEN_APPLE,
+            UBlocks.MANGO, UItems.MANGO,
+            UBlocks.SOUR_APPLE, UItems.SOUR_APPLE,
+            UBlocks.SWEET_APPLE, UItems.SWEET_APPLE,
+            UBlocks.ZAP_APPLE, UItems.ZAP_APPLE,
+            UBlocks.ZAP_BULB, UItems.ZAP_BULB
+    );
+
     public UModelProvider(FabricDataOutput output) {
         super(output);
     }
