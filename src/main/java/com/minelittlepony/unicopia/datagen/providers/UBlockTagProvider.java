@@ -9,11 +9,15 @@ import com.minelittlepony.unicopia.server.world.Tree;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.Identifier;
 
 public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     public UBlockTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
@@ -45,6 +49,31 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         addChitinBlocksets();
         addHayBlocks();
         addFruitTrees();
+
+        getOrCreateTagBuilder(UTags.CRYSTAL_HEART_BASE).add(
+                Blocks.DIAMOND_BLOCK,
+                Blocks.QUARTZ_BLOCK, Blocks.QUARTZ_BRICKS, Blocks.QUARTZ_SLAB, Blocks.QUARTZ_STAIRS, Blocks.QUARTZ_PILLAR,
+                Blocks.SMOOTH_QUARTZ, Blocks.SMOOTH_QUARTZ_SLAB, Blocks.SMOOTH_QUARTZ_STAIRS, Blocks.CHISELED_QUARTZ_BLOCK,
+                Blocks.AMETHYST_BLOCK, Blocks.NETHERITE_BLOCK, Blocks.EMERALD_BLOCK
+        );
+        getOrCreateTagBuilder(UTags.CRYSTAL_HEART_ORNAMENT).add(Blocks.END_ROD);
+
+        getOrCreateTagBuilder(UTags.FRAGILE)
+            .forceAddTag(ConventionalBlockTags.GLASS_BLOCKS)
+            .forceAddTag(ConventionalBlockTags.GLASS_PANES)
+            .add(Blocks.VINE, Blocks.LILY_PAD);
+
+        getOrCreateTagBuilder(UTags.INTERESTING).add(
+                Blocks.SEA_LANTERN, Blocks.ENDER_CHEST, Blocks.END_PORTAL_FRAME,
+                Blocks.JUKEBOX, Blocks.SPAWNER
+        ).forceAddTag(ConventionalBlockTags.ORES);
+
+        getOrCreateTagBuilder(UTags.KICKS_UP_DUST).forceAddTag(BlockTags.SAND).add(
+                Blocks.SUSPICIOUS_SAND,
+                Blocks.GRAVEL, Blocks.SUSPICIOUS_GRAVEL
+        ).forceAddTag(TagKey.of(RegistryKeys.BLOCK, new Identifier("c", "concrete_powders")));
+
+        getOrCreateTagBuilder(UTags.UNAFFECTED_BY_GROW_ABILITY).add(Blocks.GRASS_BLOCK);
     }
 
     private void addFruitTrees() {
@@ -78,9 +107,13 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 UBlocks.ZAP_STAIRS
         );
 
-        Block[] burnableLogs = { UBlocks.WAXED_ZAP_LOG, UBlocks.WAXED_ZAP_WOOD, UBlocks.WAXED_STRIPPED_ZAP_LOG, UBlocks.WAXED_STRIPPED_ZAP_WOOD };
-        getOrCreateTagBuilder(BlockTags.LOGS).add(burnableLogs).add(UBlocks.ZAP_LOG, UBlocks.ZAP_WOOD, UBlocks.STRIPPED_ZAP_LOG, UBlocks.STRIPPED_ZAP_WOOD);
-        getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN).add(burnableLogs);
+        TagKey<Block> logsTag = UTags.block("zap_logs");
+        TagKey<Block> waxedLogsTag = UTags.block("waxed_zap_logs");
+
+        getOrCreateTagBuilder(logsTag).add(UBlocks.ZAP_LOG, UBlocks.ZAP_WOOD, UBlocks.STRIPPED_ZAP_LOG, UBlocks.STRIPPED_ZAP_WOOD);
+        getOrCreateTagBuilder(waxedLogsTag).add(UBlocks.WAXED_ZAP_LOG, UBlocks.WAXED_ZAP_WOOD, UBlocks.WAXED_STRIPPED_ZAP_LOG, UBlocks.WAXED_STRIPPED_ZAP_WOOD);
+        getOrCreateTagBuilder(BlockTags.LOGS).forceAddTag(logsTag).forceAddTag(waxedLogsTag);
+        getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN).forceAddTag(logsTag);
         getOrCreateTagBuilder(BlockTags.PLANKS).add(UBlocks.ZAP_PLANKS, UBlocks.WAXED_ZAP_PLANKS);
 
         //getOrCreateTagBuilder(BlockTags.WOODEN_BUTTONS).add(UBlocks.ZAP_BUTTON);
@@ -101,9 +134,11 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(BlockTags.LEAVES).add(UBlocks.PALM_LEAVES);
         getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(UBlocks.PALM_LEAVES);
 
-        Block[] logs = { UBlocks.PALM_LOG, UBlocks.PALM_WOOD, UBlocks.STRIPPED_PALM_LOG, UBlocks.STRIPPED_PALM_WOOD };
-        getOrCreateTagBuilder(BlockTags.LOGS).add(logs);
-        getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN).add(logs);
+        TagKey<Block> logsTag = UTags.block("palm_logs");
+
+        getOrCreateTagBuilder(logsTag).add(UBlocks.PALM_LOG, UBlocks.PALM_WOOD, UBlocks.STRIPPED_PALM_LOG, UBlocks.STRIPPED_PALM_WOOD);
+        getOrCreateTagBuilder(BlockTags.LOGS).forceAddTag(logsTag);
+        getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN).forceAddTag(logsTag);
         getOrCreateTagBuilder(BlockTags.PLANKS).add(UBlocks.PALM_PLANKS);
         addSign(UBlocks.PALM_SIGN, UBlocks.PALM_WALL_SIGN, UBlocks.PALM_HANGING_SIGN, UBlocks.PALM_WALL_HANGING_SIGN);
         getOrCreateTagBuilder(BlockTags.WOODEN_BUTTONS).add(UBlocks.PALM_BUTTON);
