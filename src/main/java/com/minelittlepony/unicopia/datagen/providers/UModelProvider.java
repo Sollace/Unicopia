@@ -2,14 +2,17 @@ package com.minelittlepony.unicopia.datagen.providers;
 
 import java.util.List;
 import java.util.Map;
-
+import java.util.concurrent.CompletableFuture;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.datagen.DataCollector;
 import com.minelittlepony.unicopia.item.BedsheetsItem;
 import com.minelittlepony.unicopia.item.UItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.block.Block;
+import net.minecraft.data.DataOutput;
+import net.minecraft.data.DataWriter;
 import net.minecraft.data.client.BlockStateModelGenerator;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -29,13 +32,25 @@ public class UModelProvider extends FabricModelProvider {
             UBlocks.ZAP_BULB, UItems.ZAP_BULB
     );
 
+    private final DataCollector seasonsModels;
+
     public UModelProvider(FabricDataOutput output) {
         super(output);
+        seasonsModels = new DataCollector(output.getResolver(DataOutput.OutputType.RESOURCE_PACK, "seasons/models"));
     }
 
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator modelGenerator0) {
         UBlockStateModelGenerator.create(modelGenerator0).register();
+        new SeasonsModelGenerator(modelGenerator0, seasonsModels.prime()).register();
+    }
+
+    @Override
+    public CompletableFuture<?> run(DataWriter writer) {
+        return CompletableFuture.allOf(
+            super.run(writer),
+            seasonsModels.upload(writer)
+        );
     }
 
     @Override

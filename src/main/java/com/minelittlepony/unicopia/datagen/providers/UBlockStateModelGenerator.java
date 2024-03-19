@@ -16,7 +16,6 @@ import com.minelittlepony.unicopia.block.ShellsBlock;
 import com.minelittlepony.unicopia.block.SlimePustuleBlock;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.zap.ZapAppleLeavesBlock;
-import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.server.world.Tree;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -81,8 +80,6 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
 
     @Override
     public void register() {
-        UBlockStateModelGenerator seasonsModelGenerator = SeasonsModelGenerator.create(this);
-
         for (int i = 0; i < Models.STEM_GROWTH_STAGES.length; i++) {
             Models.STEM_GROWTH_STAGES[i].upload(Unicopia.id("block/apple_sprout_stage" + i), TextureMap.stem(Blocks.MELON_STEM), modelCollector);
         }
@@ -161,12 +158,6 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         Tree.REGISTRY.stream().filter(tree -> tree.sapling().isPresent()).forEach(tree -> registerFlowerPotPlant(tree.sapling().get(), tree.pot().get(), TintType.NOT_TINTED));
         registerTintableCross(UBlocks.CURING_JOKE, TintType.NOT_TINTED);
         registerWithStages(UBlocks.GOLD_ROOT, Properties.AGE_7, BlockModels.CROP, 0, 0, 1, 1, 2, 2, 2, 3);
-        seasonsModelGenerator.registerWithStages(UBlocks.OATS, UBlocks.OATS.getAgeProperty(), BlockModels.CROP, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11);
-        seasonsModelGenerator.registerWithStages(UBlocks.OATS_STEM, UBlocks.OATS_STEM.getAgeProperty(), BlockModels.CROP, 0, 1, 2, 3, 4, 5, 6);
-        seasonsModelGenerator.registerWithStages(UBlocks.OATS_CROWN, UBlocks.OATS_CROWN.getAgeProperty(), BlockModels.CROP, 0, 1);
-
-        seasonsModelGenerator.registerItemModel(UItems.OATS);
-        seasonsModelGenerator.registerItemModel(UItems.OAT_SEEDS);
 
         registerTallCrop(UBlocks.PINEAPPLE, Properties.AGE_7, Properties.BLOCK_HALF,
                 new int[] { 0, 1, 2, 3, 4, 5, 5, 6 },
