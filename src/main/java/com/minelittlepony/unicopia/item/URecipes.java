@@ -58,11 +58,17 @@ public interface URecipes {
             LootTable table = manager.getLootTable(modId);
 
             if (table != LootTable.EMPTY) {
-                supplier.modifyPools(poolBuilder -> {
+                if (id.getPath().startsWith("blocks/")) {
                     for (var pool : table.pools) {
-                        poolBuilder.with(List.of(pool.entries));
+                        supplier.pool(pool);
                     }
-                });
+                } else {
+                    supplier.modifyPools(poolBuilder -> {
+                        for (var pool : table.pools) {
+                            poolBuilder.with(List.of(pool.entries));
+                        }
+                    });
+                }
             }
         });
     }
