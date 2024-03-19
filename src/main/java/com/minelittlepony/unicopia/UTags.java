@@ -28,6 +28,8 @@ public interface UTags {
     TagKey<Item> FLOATS_ON_CLOUDS = item("floats_on_clouds");
     TagKey<Item> COOLS_OFF_KIRINS = item("cools_off_kirins");
 
+    TagKey<Item> SHELLS = item("food_types/shells");
+
     TagKey<Item> POLEARMS = item("polearms");
     TagKey<Item> HORSE_SHOES = item("horse_shoes");
     TagKey<Item> APPLE_SEEDS = item("apple_seeds");

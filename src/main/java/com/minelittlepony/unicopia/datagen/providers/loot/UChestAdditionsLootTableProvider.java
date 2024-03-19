@@ -63,22 +63,22 @@ public class UChestAdditionsLootTableProvider extends SimpleFabricLootTableProvi
         ));
         exporter.accept(LootTables.SHIPWRECK_SUPPLY_CHEST, LootTable.builder().pool(LootPool.builder()
                 .rolls(UniformLootNumberProvider.create(1, 6))
-                .with(TagEntry.expandBuilder(UTags.item("food_types/shells")).weight(3))
+                .with(TagEntry.expandBuilder(UTags.SHELLS).weight(3))
         ));
         exporter.accept(LootTables.SHIPWRECK_TREASURE_CHEST, LootTable.builder().pool(LootPool.builder()
                 .rolls(UniformLootNumberProvider.create(1, 4))
                 .with(ItemEntry.builder(UItems.PEARL_NECKLACE).weight(1))
-                .with(TagEntry.expandBuilder(UTags.item("food_types/shells")).weight(3))
+                .with(TagEntry.expandBuilder(UTags.SHELLS).weight(3))
         ));
         exporter.accept(LootTables.UNDERWATER_RUIN_BIG_CHEST, LootTable.builder().pool(LootPool.builder()
                 .rolls(UniformLootNumberProvider.create(1, 2))
                 .with(ItemEntry.builder(UItems.PEARL_NECKLACE).weight(1))
                 .with(ItemEntry.builder(UItems.SHELLY).weight(4))
-                .with(TagEntry.expandBuilder(UTags.item("food_types/shells")).weight(8))
+                .with(TagEntry.expandBuilder(UTags.SHELLS).weight(8))
         ));
         exporter.accept(LootTables.UNDERWATER_RUIN_SMALL_CHEST, LootTable.builder().pool(LootPool.builder()
                 .rolls(UniformLootNumberProvider.create(1, 4))
-                .with(TagEntry.expandBuilder(UTags.item("food_types/shells")).weight(1))
+                .with(TagEntry.expandBuilder(UTags.SHELLS).weight(1))
         ));
 
         exporter.accept(LootTables.DESERT_WELL_ARCHAEOLOGY, LootTable.builder().pool(LootPool.builder()
@@ -89,7 +89,7 @@ public class UChestAdditionsLootTableProvider extends SimpleFabricLootTableProvi
                 .with(ItemEntry.builder(UItems.ROCK_STEW).weight(1))
                 .with(ItemEntry.builder(UItems.PEBBLES).weight(1))
                 .with(ItemEntry.builder(UItems.SHELLY).weight(1))
-                .with(TagEntry.expandBuilder(UTags.item("food_types/shells")).weight(1))
+                .with(TagEntry.expandBuilder(UTags.SHELLS).weight(1))
                 .with(ItemEntry.builder(UItems.PEARL_NECKLACE).weight(1))
         ));
         exporter.accept(LootTables.TRAIL_RUINS_COMMON_ARCHAEOLOGY, LootTable.builder().pool(LootPool.builder()
@@ -103,6 +103,35 @@ public class UChestAdditionsLootTableProvider extends SimpleFabricLootTableProvi
                 .with(ItemEntry.builder(UItems.BROKEN_SUNGLASSES).weight(2))
                 .with(ItemEntry.builder(UItems.EMPTY_JAR).weight(2))
                 .with(ItemEntry.builder(UItems.MUSIC_DISC_CRUSADE).weight(1))
+        ));
+        exporter.accept(LootTables.OCEAN_RUIN_WARM_ARCHAEOLOGY, LootTable.builder().pool(LootPool.builder()
+                .rolls(UniformLootNumberProvider.create(1, 4))
+                .with(TagEntry.expandBuilder(UTags.SHELLS).weight(1))
+                .with(ItemEntry.builder(UItems.PEARL_NECKLACE).weight(1))
+        ));
+
+        exporter.accept(LootTables.FISHING_GAMEPLAY, LootTable.builder().pool(LootPool.builder()
+                .rolls(UniformLootNumberProvider.create(1, 4))
+                .with(TagEntry.expandBuilder(UTags.SHELLS).weight(2))
+        ));
+
+        exporter.accept(LootTables.FISHING_JUNK_GAMEPLAY, LootTable.builder().pool(LootPool.builder()
+                .rolls(UniformLootNumberProvider.create(1, 4))
+                .with(ItemEntry.builder(UItems.BROKEN_SUNGLASSES).weight(2))
+                .with(ItemEntry.builder(UItems.WHEAT_WORMS).weight(2))
+                .with(ItemEntry.builder(UItems.BOTCHED_GEM).weight(4))
+        ));
+
+        exporter.accept(LootTables.FISHING_TREASURE_GAMEPLAY, LootTable.builder().pool(LootPool.builder()
+                .rolls(UniformLootNumberProvider.create(1, 4))
+                .with(ItemEntry.builder(UItems.PEARL_NECKLACE).weight(1))
+                .with(ItemEntry.builder(UItems.SHELLY).weight(1))
+        ));
+
+        exporter.accept(LootTables.HERO_OF_THE_VILLAGE_FISHERMAN_GIFT_GAMEPLAY, LootTable.builder().pool(LootPool.builder()
+                .rolls(UniformLootNumberProvider.create(1, 4))
+                .with(ItemEntry.builder(UItems.PEARL_NECKLACE).weight(1))
+                .with(ItemEntry.builder(UItems.SHELLY).weight(1))
         ));
     }
 
