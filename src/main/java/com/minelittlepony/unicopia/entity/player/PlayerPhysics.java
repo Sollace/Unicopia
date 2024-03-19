@@ -196,7 +196,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         if ((RegistryUtils.isIn(entity.getWorld(), dimension, RegistryKeys.DIMENSION_TYPE, UTags.HAS_NO_ATMOSPHERE)
                 || Unicopia.getConfig().dimensionsWithoutAtmosphere.get().contains(RegistryUtils.getId(entity.getWorld(), dimension, RegistryKeys.DIMENSION_TYPE).toString()))
-                && !OxygenUtils.entityHasOxygen(entity.getWorld(), entity)) {
+                && !OxygenUtils.API.hasOxygen(entity)) {
             return FlightType.NONE;
         }
 
