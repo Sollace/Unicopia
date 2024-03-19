@@ -20,7 +20,7 @@ import net.minecraft.data.client.TextureKey;
 import net.minecraft.data.client.TextureMap;
 
 public class UModelProvider extends FabricModelProvider {
-    static final Map<Block, Item> FRUITS = Map.of(UBlocks.GREEN_APPLE, UItems.GREEN_APPLE,
+    public static final Map<Block, Item> FRUITS = Map.of(UBlocks.GREEN_APPLE, UItems.GREEN_APPLE,
             UBlocks.GOLDEN_APPLE, Items.GOLDEN_APPLE,
             UBlocks.MANGO, UItems.MANGO,
             UBlocks.SOUR_APPLE, UItems.SOUR_APPLE,

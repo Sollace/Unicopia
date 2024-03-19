@@ -1,10 +1,12 @@
 package com.minelittlepony.unicopia.datagen;
 
-import com.minelittlepony.unicopia.datagen.providers.UBlockLootTableProvider;
 import com.minelittlepony.unicopia.datagen.providers.UBlockTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.UItemTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.UModelProvider;
 import com.minelittlepony.unicopia.datagen.providers.URecipeProvider;
+import com.minelittlepony.unicopia.datagen.providers.loot.UBlockAdditionsLootTableProvider;
+import com.minelittlepony.unicopia.datagen.providers.loot.UBlockLootTableProvider;
+import com.minelittlepony.unicopia.datagen.providers.loot.UChestAdditionsLootTableProvider;
 import com.minelittlepony.unicopia.server.world.UWorldGen;
 
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
@@ -27,6 +29,8 @@ public class Datagen implements DataGeneratorEntrypoint {
         pack.addProvider(UModelProvider::new);
         pack.addProvider(URecipeProvider::new);
         pack.addProvider(UBlockLootTableProvider::new);
+        pack.addProvider(UBlockAdditionsLootTableProvider::new);
+        pack.addProvider(UChestAdditionsLootTableProvider::new);
     }
 
     @Override

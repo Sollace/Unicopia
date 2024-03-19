@@ -1,7 +1,8 @@
-package com.minelittlepony.unicopia.datagen.providers;
+package com.minelittlepony.unicopia.datagen.providers.loot;
 
 import java.util.List;
 import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.datagen.providers.UModelProvider;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.server.world.Tree;
 import com.minelittlepony.unicopia.server.world.UTreeGen;
@@ -30,7 +31,6 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
 
     @Override
     public void generate() {
-
         // simple drops
         List.of(
             UBlocks.CARVED_CLOUD, UBlocks.UNSTABLE_CLOUD,
@@ -111,7 +111,7 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         addDrop(UBlocks.FROSTED_OBSIDIAN, Blocks.OBSIDIAN);
     }
 
-    public LootTable.Builder fruitLeavesDrops(Block leaves) {
+    private LootTable.Builder fruitLeavesDrops(Block leaves) {
         return LootTable.builder()
             .pool(LootPool.builder()
                     .rolls(ConstantLootNumberProvider.create(1))
@@ -128,4 +128,5 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
                     )
             );
     }
+
 }
