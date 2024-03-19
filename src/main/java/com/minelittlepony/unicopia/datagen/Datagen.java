@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.datagen;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.minelittlepony.unicopia.datagen.providers.UBlockTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.UItemTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.UModelProvider;
@@ -19,6 +22,8 @@ import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.PlacedFeature;
 
 public class Datagen implements DataGeneratorEntrypoint {
+    public static final Logger LOGGER = LogManager.getLogger();
+
     @Override
     public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
         final FabricDataGenerator.Pack pack = fabricDataGenerator.createPack();

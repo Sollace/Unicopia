@@ -11,7 +11,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionType;
 
 public interface UTags {
-    TagKey<Item> APPLES = item("apples");
     TagKey<Item> FRESH_APPLES = item("fresh_apples");
 
     TagKey<Item> FALLS_SLOWLY = item("falls_slowly");
@@ -34,11 +33,11 @@ public interface UTags {
     TagKey<Item> HORSE_SHOES = item("horse_shoes");
     TagKey<Item> APPLE_SEEDS = item("apple_seeds");
 
-    TagKey<Item> ACORNS = item("acorns");
     TagKey<Item> BASKETS = item("baskets");
+    TagKey<Item> BADGES = item("badges");
+    TagKey<Item> BED_SHEETS = item("bed_sheets");
+    TagKey<Item> CLOUD_JARS = item("cloud_jars");
 
-    TagKey<Block> GLASS_PANES = block("glass_panes");
-    TagKey<Block> GLASS_BLOCKS = block("glass_blocks");
     TagKey<Block> FRAGILE = block("fragile");
     TagKey<Block> INTERESTING = block("interesting");
     TagKey<Block> CATAPULT_IMMUNE = block("catapult_immune");
@@ -58,6 +57,28 @@ public interface UTags {
     TagKey<DamageType> SPELLBOOK_IMMUNE_TO = damage("spellbook_immune_to");
 
     TagKey<DimensionType> HAS_NO_ATMOSPHERE = dimension("has_no_atmosphere");
+
+    interface Items {
+        TagKey<Item> ZAP_LOGS = item("zap_logs");
+        TagKey<Item> WAXED_ZAP_LOGS = item("waxed_zap_logs");
+        TagKey<Item> PALM_LOGS = item("palm_logs");
+        TagKey<Item> CLOUD_BEDS = item("cloud_beds");
+        TagKey<Item> CLOUD_SLABS = item("cloud_slabs");
+        TagKey<Item> CLOUD_STAIRS = item("cloud_stairs");
+        TagKey<Item> CLOUD_BLOCKS = item("cloud_blocks");
+        TagKey<Item> CHITIN_BLOCKS = item("chitin_blocks");
+    }
+
+    interface Blocks {
+        TagKey<Block> ZAP_LOGS = block("zap_logs");
+        TagKey<Block> WAXED_ZAP_LOGS = block("waxed_zap_logs");
+        TagKey<Block> PALM_LOGS = block("palm_logs");
+        TagKey<Block> CLOUD_BEDS = block("cloud_beds");
+        TagKey<Block> CLOUD_SLABS = block("cloud_slabs");
+        TagKey<Block> CLOUD_STAIRS = block("cloud_stairs");
+        TagKey<Block> CLOUD_BLOCKS = block("cloud_blocks");
+        TagKey<Block> CHITIN_BLOCKS = block("chitin_blocks");
+    }
 
     static TagKey<Item> item(String name) {
         return TagKey.of(RegistryKeys.ITEM, Unicopia.id(name));

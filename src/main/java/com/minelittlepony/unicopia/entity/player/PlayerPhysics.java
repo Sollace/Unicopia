@@ -29,6 +29,7 @@ import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 import com.minelittlepony.unicopia.util.*;
 
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
 import net.minecraft.block.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityPose;
@@ -759,9 +760,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         entity.addVelocity(orientation.x, orientation.y, orientation.z);
 
         boolean isEarthPonySmash = pony.getObservedSpecies().canUseEarth() && !isFlying();
-        int damage = TraceHelper.findBlocks(entity, speed + 4, 1, state -> (isEarthPonySmash && !state.isAir()) || state.isIn(UTags.GLASS_PANES)).stream()
+        int damage = TraceHelper.findBlocks(entity, speed + 4, 1, state -> (isEarthPonySmash && !state.isAir()) || state.isIn(ConventionalBlockTags.GLASS_PANES)).stream()
             .flatMap(pos -> BlockPos.streamOutwards(pos, 2, 2, 2))
-            .filter(pos -> (isEarthPonySmash && !entity.getWorld().isAir(pos)) || entity.getWorld().getBlockState(pos).isIn(UTags.GLASS_PANES))
+            .filter(pos -> (isEarthPonySmash && !entity.getWorld().isAir(pos)) || entity.getWorld().getBlockState(pos).isIn(ConventionalBlockTags.GLASS_PANES))
             .reduce(0, (u, pos) -> {
                 if (pony.canModifyAt(pos, ModificationType.PHYSICAL)) {
                     if (isEarthPonySmash) {

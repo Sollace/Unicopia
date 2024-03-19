@@ -1,7 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "#c:shears",
-    { "id": "#c:tools/knives", "required": false }
-  ]
-}

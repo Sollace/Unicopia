@@ -16,12 +16,18 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.TagBuilder;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     public UBlockTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
         super(output, registriesFuture);
+    }
+
+    @Override
+    protected TagBuilder getTagBuilder(TagKey<Block> tag) {
+        return super.getTagBuilder(tag);
     }
 
     @Override
@@ -47,7 +53,6 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         addPalmWoodset();
         addCloudBlocksets();
         addChitinBlocksets();
-        addHayBlocks();
         addFruitTrees();
 
         getOrCreateTagBuilder(UTags.CRYSTAL_HEART_BASE).add(
@@ -107,13 +112,10 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 UBlocks.ZAP_STAIRS
         );
 
-        TagKey<Block> logsTag = UTags.block("zap_logs");
-        TagKey<Block> waxedLogsTag = UTags.block("waxed_zap_logs");
-
-        getOrCreateTagBuilder(logsTag).add(UBlocks.ZAP_LOG, UBlocks.ZAP_WOOD, UBlocks.STRIPPED_ZAP_LOG, UBlocks.STRIPPED_ZAP_WOOD);
-        getOrCreateTagBuilder(waxedLogsTag).add(UBlocks.WAXED_ZAP_LOG, UBlocks.WAXED_ZAP_WOOD, UBlocks.WAXED_STRIPPED_ZAP_LOG, UBlocks.WAXED_STRIPPED_ZAP_WOOD);
-        getOrCreateTagBuilder(BlockTags.LOGS).forceAddTag(logsTag).forceAddTag(waxedLogsTag);
-        getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN).forceAddTag(logsTag);
+        getOrCreateTagBuilder(UTags.Blocks.ZAP_LOGS).add(UBlocks.ZAP_LOG, UBlocks.ZAP_WOOD, UBlocks.STRIPPED_ZAP_LOG, UBlocks.STRIPPED_ZAP_WOOD);
+        getOrCreateTagBuilder(UTags.Blocks.WAXED_ZAP_LOGS).add(UBlocks.WAXED_ZAP_LOG, UBlocks.WAXED_ZAP_WOOD, UBlocks.WAXED_STRIPPED_ZAP_LOG, UBlocks.WAXED_STRIPPED_ZAP_WOOD);
+        getOrCreateTagBuilder(BlockTags.LOGS).forceAddTag(UTags.Blocks.ZAP_LOGS).forceAddTag(UTags.Blocks.WAXED_ZAP_LOGS);
+        getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN).forceAddTag(UTags.Blocks.ZAP_LOGS);
         getOrCreateTagBuilder(BlockTags.PLANKS).add(UBlocks.ZAP_PLANKS, UBlocks.WAXED_ZAP_PLANKS);
 
         //getOrCreateTagBuilder(BlockTags.WOODEN_BUTTONS).add(UBlocks.ZAP_BUTTON);
@@ -133,12 +135,9 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     private void addPalmWoodset() {
         getOrCreateTagBuilder(BlockTags.LEAVES).add(UBlocks.PALM_LEAVES);
         getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(UBlocks.PALM_LEAVES);
-
-        TagKey<Block> logsTag = UTags.block("palm_logs");
-
-        getOrCreateTagBuilder(logsTag).add(UBlocks.PALM_LOG, UBlocks.PALM_WOOD, UBlocks.STRIPPED_PALM_LOG, UBlocks.STRIPPED_PALM_WOOD);
-        getOrCreateTagBuilder(BlockTags.LOGS).forceAddTag(logsTag);
-        getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN).forceAddTag(logsTag);
+        getOrCreateTagBuilder(UTags.Blocks.PALM_LOGS).add(UBlocks.PALM_LOG, UBlocks.PALM_WOOD, UBlocks.STRIPPED_PALM_LOG, UBlocks.STRIPPED_PALM_WOOD);
+        getOrCreateTagBuilder(BlockTags.LOGS).forceAddTag(UTags.Blocks.PALM_LOGS);
+        getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN).forceAddTag(UTags.Blocks.PALM_LOGS);
         getOrCreateTagBuilder(BlockTags.PLANKS).add(UBlocks.PALM_PLANKS);
         addSign(UBlocks.PALM_SIGN, UBlocks.PALM_WALL_SIGN, UBlocks.PALM_HANGING_SIGN, UBlocks.PALM_WALL_HANGING_SIGN);
         getOrCreateTagBuilder(BlockTags.WOODEN_BUTTONS).add(UBlocks.PALM_BUTTON);
@@ -163,24 +162,31 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 UBlocks.CLOUD_PLANKS, UBlocks.CLOUD_PLANK_SLAB, UBlocks.CLOUD_PLANK_STAIRS, UBlocks.COMPACTED_CLOUD_PLANKS
         );
 
-        getOrCreateTagBuilder(UTags.block("cloud_beds")).add(UBlocks.CLOUD_BED);
-        getOrCreateTagBuilder(UTags.block("cloud_slabs")).add(
+        getOrCreateTagBuilder(UTags.Blocks.CLOUD_BEDS).add(UBlocks.CLOUD_BED);
+        getOrCreateTagBuilder(UTags.Blocks.CLOUD_SLABS).add(
                 UBlocks.CLOUD_SLAB, UBlocks.SOGGY_CLOUD_SLAB, UBlocks.DENSE_CLOUD_SLAB, UBlocks.ETCHED_CLOUD_SLAB,
                 UBlocks.CLOUD_PLANK_SLAB, UBlocks.CLOUD_BRICK_SLAB
         );
-        getOrCreateTagBuilder(UTags.block("cloud_stairs")).add(
+        getOrCreateTagBuilder(UTags.Blocks.CLOUD_STAIRS).add(
                 UBlocks.CLOUD_STAIRS, UBlocks.SOGGY_CLOUD_STAIRS, UBlocks.DENSE_CLOUD_STAIRS, UBlocks.ETCHED_CLOUD_STAIRS,
                 UBlocks.CLOUD_PLANK_STAIRS, UBlocks.CLOUD_BRICK_STAIRS
         );
-        getOrCreateTagBuilder(UTags.block("clouds")).add(
+        getOrCreateTagBuilder(UTags.Blocks.CLOUD_BLOCKS).add(
                 UBlocks.CLOUD, UBlocks.CLOUD_PLANKS, UBlocks.CLOUD_BRICKS, UBlocks.DENSE_CLOUD,
-                UBlocks.ETCHED_CLOUD, UBlocks.CARVED_CLOUD,
+                UBlocks.ETCHED_CLOUD, UBlocks.CARVED_CLOUD, UBlocks.CLOUD_PILLAR,
                 UBlocks.COMPACTED_CLOUD, UBlocks.COMPACTED_CLOUD_PLANKS, UBlocks.COMPACTED_CLOUD_BRICKS,
-                UBlocks.UNSTABLE_CLOUD, UBlocks.SOGGY_CLOUD
+                UBlocks.UNSTABLE_CLOUD, UBlocks.SOGGY_CLOUD, UBlocks.SHAPING_BENCH
         );
     }
 
     private void addChitinBlocksets() {
+        getOrCreateTagBuilder(UTags.Blocks.CHITIN_BLOCKS).add(
+                UBlocks.CHITIN, UBlocks.SURFACE_CHITIN,
+                UBlocks.CHISELLED_CHITIN, UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN_SLAB, UBlocks.CHISELLED_CHITIN_STAIRS,
+                UBlocks.CHITIN_SPIKES
+        );
+
+
         getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(
                 UBlocks.CHITIN_SPIKES,
                 UBlocks.CHISELLED_CHITIN, UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN_SLAB, UBlocks.CHISELLED_CHITIN_STAIRS
@@ -194,9 +200,5 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
 
         getOrCreateTagBuilder(BlockTags.CEILING_HANGING_SIGNS).add(hanging);
         getOrCreateTagBuilder(BlockTags.WALL_HANGING_SIGNS).add(wallHanging);
-    }
-
-    private void addHayBlocks() {
-
     }
 }

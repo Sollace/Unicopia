@@ -1,9 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "minecraft:apple",
-    "minecraft:golden_apple",
-    { "id": "#c:pyrite_apples", "required": false },
-    "#unicopia:fresh_apples"
-  ]
-}

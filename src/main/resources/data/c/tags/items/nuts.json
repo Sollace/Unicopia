@@ -1,6 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    { "id": "#c:crops/peanuts", "require": false }
-  ]
-}
