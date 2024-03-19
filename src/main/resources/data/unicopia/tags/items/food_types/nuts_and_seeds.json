@@ -4,8 +4,8 @@
     "#c:seeds",
     "#c:acorns",
     "#c:nuts",
-    { "id": "#garnished:nuts", "require": false },
-    { "id": "#garnished:nut_mix", "require": false },
-    { "id": "#garnished:neverable_delecacies", "require": false }
+    { "id": "#garnished:nuts", "required": false },
+    { "id": "#garnished:nut_mix", "required": false },
+    { "id": "#garnished:neverable_delecacies", "required": false }
   ]
 }
