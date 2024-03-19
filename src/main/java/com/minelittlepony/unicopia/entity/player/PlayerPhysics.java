@@ -253,6 +253,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         final MutableVector velocity = new MutableVector(entity.getVelocity());
 
+        if (isGravityNegative()) {
+            velocity.y *= -1;
+        }
+
         if (isGravityNegative() && !entity.isSneaking() && entity.isInSneakingPose()) {
             float currentHeight = entity.getDimensions(entity.getPose()).height;
             float sneakingHeight = entity.getDimensions(EntityPose.STANDING).height;
@@ -344,7 +348,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 }
 
                 if (((LivingEntityDuck)entity).isJumping()) {
-                    velocity.y -= 0.2F * getGravitySignum();
+                    velocity.y -= 0.2F;
                     velocity.y /= 2F;
                 }
 
@@ -390,6 +394,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             float heavyness = 1 - EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.015F;
             velocity.x /= heavyness;
             velocity.z /= heavyness;
+        }
+
+        if (isGravityNegative()) {
+            velocity.y *= -1;
         }
 
         entity.setVelocity(velocity.toImmutable());
@@ -449,7 +457,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             }
         }
 
-        velocity.y -= 0.02 * getGravitySignum();
+        velocity.y -= 0.02;
         velocity.x *= 0.9896;
         velocity.z *= 0.9896;
     }
@@ -542,7 +550,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         boolean takeOffCondition =
                    (horMotion > 0.05 || motion > 0.05)
                 && pony.getJumpingHeuristic().hasChanged(Heuristic.TWICE);
-        boolean fallingTakeOffCondition = !entity.isOnGround() && velocity.y < -1.6 * getGravitySignum() && entity.fallDistance > 1;
+        boolean fallingTakeOffCondition = !entity.isOnGround() && velocity.y < -1.6 && entity.fallDistance > 1;
 
         if ((takeOffCondition || fallingTakeOffCondition) && !pony.getAcrobatics().isHanging() && !isCancelled) {
             initiateTakeoff(velocity);
@@ -552,9 +560,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private void initiateTakeoff(MutableVector velocity) {
         startFlying(false);
 
-        if (!isGravityNegative()) {
-            velocity.y += getHorizontalMotion() + 0.3;
-        }
+        velocity.y += getHorizontalMotion() + 0.3;
         applyThrust(velocity);
 
         velocity.x *= 0.2;
@@ -636,6 +642,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         } else {
             float targetUpdraft = (float)WeatherConditions.getUpdraft(new BlockPos.Mutable().set(entity.getBlockPos()), entity.getWorld()) / 3F;
             targetUpdraft *= 1 + motion;
+            if (isGravityNegative()) {
+                targetUpdraft *= -1;
+            }
             this.updraft.update(targetUpdraft, targetUpdraft > this.updraft.getTarget() ? 30_000 : 3000);
             double updraft = this.updraft.getValue();
             velocity.y += updraft;
@@ -648,7 +657,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             descentRate *= 0.8F;
         }
 
-        velocity.y -= descentRate * getGravityModifier();
+        velocity.y -= descentRate;
     }
 
     private void applyThrust(MutableVector velocity) {
@@ -696,7 +705,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         } else {
             velocity.x += direction.x * 1.3F;
             velocity.z += direction.z * 1.3F;
-            velocity.y += ((direction.y * 2.45 + Math.abs(direction.y) * 10)) * getGravitySignum();// - heavyness / 5F
+            velocity.y += ((direction.y * 2.45 + Math.abs(direction.y) * 10));// - heavyness / 5F
         }
 
         if (velocity.y < 0 && hovering) {
