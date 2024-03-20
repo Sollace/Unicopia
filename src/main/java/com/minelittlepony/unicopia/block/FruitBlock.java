@@ -98,6 +98,18 @@ public class FruitBlock extends Block implements Buckable {
         }
     }
 
+    @Deprecated
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        super.onStateReplaced(state, world, pos, newState, moved);
+        if (!newState.isOf(state.getBlock())) {
+            BlockState leaves = world.getBlockState(pos.up());
+            if (leaves.contains(FruitBearingBlock.STAGE)) {
+                world.setBlockState(pos.up(), leaves.withIfExists(FruitBearingBlock.AGE, 0).with(FruitBearingBlock.STAGE, FruitBearingBlock.Stage.IDLE));
+            }
+        }
+    }
+
     protected boolean canAttachTo(BlockState state) {
         return state.isOf(stem);
     }

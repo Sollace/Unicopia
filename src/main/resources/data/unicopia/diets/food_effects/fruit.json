@@ -1,0 +1,11 @@
+{
+  "tags": [ "unicopia:food_types/fruit" ],
+  "food_component": {
+    "hunger": 1,
+    "saturation": 1
+  },
+  "ailment": {
+    "effects": [
+    ]
+  }
+}

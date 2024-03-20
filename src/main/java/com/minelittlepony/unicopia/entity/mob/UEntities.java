@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.behaviour.EntityBehaviour;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.projectile.MagicBeamEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.PhysicsBodyProjectileEntity;
 
@@ -33,7 +34,7 @@ public interface UEntities {
             .trackRangeBlocks(100)
             .trackedUpdateRate(2)
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));
-    EntityType<MagicProjectileEntity> MAGIC_BEAM = register("magic_beam", FabricEntityTypeBuilder.<MagicProjectileEntity>create(SpawnGroup.MISC, MagicProjectileEntity::new)
+    EntityType<MagicBeamEntity> MAGIC_BEAM = register("magic_beam", FabricEntityTypeBuilder.<MagicBeamEntity>create(SpawnGroup.MISC, MagicBeamEntity::new)
             .trackRangeBlocks(100)
             .trackedUpdateRate(2)
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));

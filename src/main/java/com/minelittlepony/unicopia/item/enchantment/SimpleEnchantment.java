@@ -59,7 +59,7 @@ public class SimpleEnchantment extends Enchantment {
 
     @Override
     public final boolean isAvailableForRandomSelection() {
-        return options.looted;
+        return options.table;
     }
 
     public static class Data {
@@ -77,8 +77,8 @@ public class SimpleEnchantment extends Enchantment {
     public static class Options {
         private boolean cursed;
         private boolean treasured;
-        private boolean traded = true;
-        private boolean looted = true;
+        private boolean traded;
+        private boolean table;
         private Rarity rarity;
         private int maxLevel = 1;
         private EquipmentSlot[] slots;
@@ -102,6 +102,9 @@ public class SimpleEnchantment extends Enchantment {
             this.target = target;
         }
 
+        /**
+         * Sets the enchantment to apply to all items.
+         */
         public Options ignoreTarget() {
             allItems = true;
             return this;
@@ -128,8 +131,7 @@ public class SimpleEnchantment extends Enchantment {
         }
 
         /**
-         * Treasure enchantments only generate in loot tables with high-value items or by trading with villagers.
-         * They do not appear in the enchanting table.
+         * Whether this enchantment should be limited to high value trades or leveled up enchanting table offers.
          */
         public Options treasure() {
             treasured = true;
@@ -137,25 +139,24 @@ public class SimpleEnchantment extends Enchantment {
         }
 
         /**
-         * Loot-Only enchantments do not appear in villager trades.
-         * They may still appear in loot table generation and can be found in the enchanting table.
+         * Set whether this enchantment should appear in villager trades.
          */
-        public Options lootedOnly() {
-            traded = false;
-            looted = true;
+        public Options traded() {
+            this.traded = true;
             return this;
         }
 
         /**
-         * Trade-Only enchantments are excluded from loot table generation and do not appear in the enchanting table.
-         * They can only be found by trading with villagers.
+         * Sets whether the enchantment should appear in enchanting table draws.
          */
-        public Options tradedOnly() {
-            looted = false;
-            traded = true;
+        public Options table() {
+            this.table = true;
             return this;
         }
 
+        /**
+         * Sets the maximum level for the enchantment.
+         */
         public Options maxLevel(int level) {
             maxLevel = level;
             return this;

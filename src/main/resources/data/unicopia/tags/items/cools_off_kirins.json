@@ -1,9 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "minecraft:melon_slice",
-    "unicopia:juice",
-    { "id": "farmersdelight:melon_popsicle", "required": false },
-    { "id": "farmersdelight:melon_juice", "required": false }
-  ]
-}

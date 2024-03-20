@@ -35,11 +35,13 @@ public interface EquinePredicates {
     Predicate<Entity> IS_CASTER = e -> !e.isRemoved() && (e instanceof Caster || IS_PLAYER.test(e));
     Predicate<Entity> IS_PLACED_SPELL = e -> e instanceof Caster && !e.isRemoved();
 
-    Predicate<Entity> IS_MAGIC_IMMUNE = e -> (e instanceof MagicImmune || !(e instanceof LivingEntity))
+    Predicate<Entity> IS_MAGIC_IMMUNE = EntityPredicates.VALID_ENTITY.negate()
+            .or(EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.negate()
+            .or(e -> (e instanceof MagicImmune || !(e instanceof LivingEntity))
             && !(e instanceof ItemEntity)
             && !(e instanceof ExperienceOrbEntity)
             && !(e instanceof BoatEntity)
-            && !(e instanceof ProjectileEntity);
+            && !(e instanceof ProjectileEntity)));
     Predicate<Entity> EXCEPT_MAGIC_IMMUNE = IS_MAGIC_IMMUNE.negate();
     Predicate<Entity> VALID_LIVING_AND_NOT_MAGIC_IMMUNE = EntityPredicates.VALID_LIVING_ENTITY.and(EXCEPT_MAGIC_IMMUNE);
 

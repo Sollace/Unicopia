@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BedsheetsItem extends Item {
-    private static final Map<CloudBedBlock.SheetPattern, Item> ITEMS = new HashMap<>();
+    public static final Map<CloudBedBlock.SheetPattern, Item> ITEMS = new HashMap<>();
 
     private final CloudBedBlock.SheetPattern pattern;
 

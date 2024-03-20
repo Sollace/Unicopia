@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.network.handler;
 
 import java.util.Map;
 
-import com.minelittlepony.unicopia.InteractionManager;
-import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Rot;
 import com.minelittlepony.unicopia.ability.data.tree.TreeTypes;
@@ -16,14 +14,11 @@ import com.minelittlepony.unicopia.client.gui.TribeSelectionScreen;
 import com.minelittlepony.unicopia.client.gui.spellbook.ClientChapters;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Chapter;
 import com.minelittlepony.unicopia.diet.PonyDiets;
-import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.*;
 import com.minelittlepony.unicopia.network.MsgCasterLookRequest.Reply;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -32,7 +27,6 @@ public class ClientNetworkHandlerImpl {
 
     public ClientNetworkHandlerImpl() {
         Channel.SERVER_SELECT_TRIBE.receiver().addPersistentListener(this::handleTribeScreen);
-        Channel.SERVER_SPAWN_PROJECTILE.receiver().addPersistentListener(this::handleSpawnProjectile);
         Channel.SERVER_BLOCK_DESTRUCTION.receiver().addPersistentListener(this::handleBlockDestruction);
         Channel.CANCEL_PLAYER_ABILITY.receiver().addPersistentListener(this::handleCancelAbility);
         Channel.UNLOCK_TRAITS.receiver().addPersistentListener(this::handleUnlockTraits);
@@ -45,31 +39,6 @@ public class ClientNetworkHandlerImpl {
 
     private void handleTribeScreen(PlayerEntity sender, MsgTribeSelect packet) {
         client.setScreen(new TribeSelectionScreen(packet.availableRaces(), packet.serverMessage()));
-    }
-
-    @SuppressWarnings("unchecked")
-    private void handleSpawnProjectile(PlayerEntity sender, MsgSpawnProjectile packet) {
-        ClientWorld world = client.world;
-        Entity entity = packet.getEntityType().create(world);
-
-        entity.updateTrackedPosition(packet.getX(), packet.getY(), packet.getZ());
-        entity.refreshPositionAfterTeleport(packet.getX(), packet.getY(), packet.getZ());
-        entity.setVelocity(packet.getVelocityX(), packet.getVelocityY(), packet.getVelocityZ());
-        entity.setPitch(packet.getPitch() * 360 / 256F);
-        entity.setYaw(packet.getYaw() * 360 / 256F);
-        entity.setId(packet.getId());
-        entity.setUuid(packet.getUuid());
-
-        if (entity instanceof Owned.Mutable) {
-            ((Owned.Mutable<Entity>) entity).setMaster(world.getEntityById(packet.getEntityData()));
-        }
-
-        if (entity.getType() == UEntities.MAGIC_BEAM) {
-            InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_MAGIC_BEAM, entity.getId());
-        }
-
-        entity.onSpawnPacket(packet);
-        world.addEntity(entity);
     }
 
     private void handleBlockDestruction(PlayerEntity sender, MsgBlockDestruction packet) {

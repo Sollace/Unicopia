@@ -1,8 +1,0 @@
-{
-  "type": "minecraft:crafting_shapeless",
-  "ingredients": [
-    { "item": "unicopia:zap_wood" },
-    { "item": "minecraft:honeycomb" }
-  ],
-  "result": { "item": "unicopia:waxed_zap_wood" }
-}

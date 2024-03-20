@@ -68,7 +68,7 @@ public class AmuletItem extends WearableItem implements ChargeableItem {
 
     @Override
     public EquipmentSlot getSlotType(ItemStack stack) {
-        return EquipmentSlot.CHEST;
+        return TrinketsDelegate.hasTrinkets() ? EquipmentSlot.OFFHAND : EquipmentSlot.CHEST;
     }
 
     @Override

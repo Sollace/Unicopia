@@ -180,7 +180,7 @@ public interface UBlocks {
     SegmentedCropBlock OATS_CROWN = register("oats_crown", OATS_STEM.createNext(5));
 
     Block PLUNDER_VINE = register("plunder_vine", new ThornBlock(() -> UBlocks.PLUNDER_VINE_BUD, Settings.create().mapColor(MapColor.DARK_CRIMSON).hardness(1).ticksRandomly().sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY)));
-    Block PLUNDER_VINE_BUD = register("plunder_vine_bud", new ThornBudBlock(PLUNDER_VINE.getDefaultState(), Settings.create().mapColor(MapColor.DARK_CRIMSON).hardness(1).nonOpaque().ticksRandomly().sounds(BlockSoundGroup.GRASS).pistonBehavior(PistonBehavior.DESTROY)));
+    Block PLUNDER_VINE_BUD = register("plunder_vine_bud", new ThornBudBlock(PLUNDER_VINE.getDefaultState(), Settings.create().mapColor(MapColor.DARK_CRIMSON).hardness(1).nonOpaque().ticksRandomly().noCollision().sounds(BlockSoundGroup.GRASS).pistonBehavior(PistonBehavior.DESTROY)));
     CuringJokeBlock CURING_JOKE = register("curing_joke", new CuringJokeBlock(UEffects.BUTTER_FINGERS, 7, AbstractBlock.Settings.create().mapColor(MapColor.PALE_PURPLE).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS).offset(AbstractBlock.OffsetType.XZ).pistonBehavior(PistonBehavior.DESTROY)));
     Block GOLD_ROOT = register("gold_root", new CarrotsBlock(AbstractBlock.Settings.create().mapColor(MapColor.GOLD).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP).pistonBehavior(PistonBehavior.DESTROY)) {
         @Override

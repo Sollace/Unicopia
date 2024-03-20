@@ -45,13 +45,11 @@ public class FireBoltSpell extends AbstractSpell implements HomingSpell,
     @Override
     public boolean tick(Caster<?> caster, Situation situation) {
         if (situation == Situation.PROJECTILE) {
-            if (caster instanceof MagicProjectileEntity && getTraits().get(Trait.FOCUS) >= 50) {
+            if (caster instanceof MagicProjectileEntity projectile && getTraits().get(Trait.FOCUS) >= 50) {
                 caster.findAllEntitiesInRange(
                     getTraits().get(Trait.FOCUS) - 49,
                     EntityPredicates.VALID_LIVING_ENTITY.and(TargetSelecter.validTarget(this, caster))
-                ).findFirst().ifPresent(target -> {
-                    ((MagicProjectileEntity)caster).setHomingTarget(target);
-                });
+                ).findFirst().ifPresent(target -> projectile.setHomingTarget(target));
             }
 
             return true;

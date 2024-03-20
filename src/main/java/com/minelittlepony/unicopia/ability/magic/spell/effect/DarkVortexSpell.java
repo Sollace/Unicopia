@@ -16,6 +16,7 @@ import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
+import com.minelittlepony.unicopia.projectile.MagicBeamEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -55,10 +56,10 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
 
     @Override
     public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
-        if (!projectile.isClient()) {
+        if (!projectile.isClient() && projectile instanceof MagicBeamEntity source) {
             BlockPos pos = hit.getBlockPos();
             projectile.getWorld().createExplosion(projectile, pos.getX(), pos.getY(), pos.getZ(), 3, ExplosionSourceType.NONE);
-            toPlaceable().tick(projectile, Situation.BODY);
+            toPlaceable().tick(source, Situation.BODY);
         }
     }
 

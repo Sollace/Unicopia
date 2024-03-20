@@ -42,7 +42,7 @@ import net.minecraft.world.WorldView;
 
 public class SlimePustuleBlock extends Block {
     public static final MapCodec<SlimePustuleBlock> CODEC = createCodec(SlimePustuleBlock::new);
-    private static final EnumProperty<Shape> SHAPE = EnumProperty.of("shape", Shape.class);
+    public static final EnumProperty<Shape> SHAPE = EnumProperty.of("shape", Shape.class);
     private static final BooleanProperty POWERED = Properties.POWERED;
     private static final Direction[] DIRECTIONS = Arrays.stream(Direction.values())
             .filter(direction -> direction != Direction.UP)

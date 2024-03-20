@@ -49,7 +49,7 @@ public record Effect(
         });
         if (tooltip.size() == size) {
             if (stack.isFood()) {
-                tooltip.add(Text.literal(" ").append(Text.translatable("tag.unicopia.food_types.fruits_and_vegetables")).formatted(Formatting.GRAY));
+                tooltip.add(Text.literal(" ").append(Text.translatable("tag.unicopia.food_types.misc")).formatted(Formatting.GRAY));
             } else if (stack.getUseAction() == UseAction.DRINK) {
                 tooltip.add(Text.literal(" ").append(Text.translatable("tag.unicopia.food_types.drinks")).formatted(Formatting.GRAY));
             }

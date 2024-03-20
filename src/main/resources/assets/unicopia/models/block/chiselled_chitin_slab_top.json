@@ -1,8 +1,0 @@
-{
-    "parent": "minecraft:block/slab_top",
-    "textures": {
-        "bottom": "unicopia:block/chiselled_chitin",
-        "side": "unicopia:block/chiselled_chitin",
-        "top": "unicopia:block/chiselled_chitin"
-    }
-}

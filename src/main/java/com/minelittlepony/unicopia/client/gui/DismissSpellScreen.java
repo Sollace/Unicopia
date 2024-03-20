@@ -163,15 +163,15 @@ public class DismissSpellScreen extends GameGui {
         @Override
         public void render(DrawContext context, int mouseX, int mouseY, float tickDelta) {
             MatrixStack matrices = context.getMatrices();
-            copy.set(x, y, z, w);
-            copy.mul(matrices.peek().getPositionMatrix());
 
             var type = actualSpell.getType().withTraits(actualSpell.getTraits());
 
-            DrawableUtil.drawLine(matrices, 0, 0, (int)x, (int)y, 0xFFAAFF99);
+            copy.set(mouseX - width * 0.5F - x * 0.5F, mouseY - height * 0.5F - y * 0.5F, 0, 0);
+
+            DrawableUtil.drawLine(matrices, 0, 0, (int)x, (int)y, actualSpell.getAffinity().getColor().getColorValue());
             DrawableUtil.renderItemIcon(context, actualSpell.isDead() ? UItems.BOTCHED_GEM.getDefaultStack() : type.getDefaultStack(),
-                    copy.x - 8 + copy.z / 20F,
-                    copy.y - 8 + copy.z / 20F,
+                    x - 8 - copy.x * 0.2F,
+                    y - 8 - copy.y * 0.2F,
                     1
             );
 

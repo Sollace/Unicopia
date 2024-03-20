@@ -6,28 +6,12 @@ import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.WeaklyOwned;
-import com.minelittlepony.unicopia.ability.magic.Affine;
-import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.Levelled;
-import com.minelittlepony.unicopia.ability.magic.SpellContainer;
-import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
-import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.Spell;
-import com.minelittlepony.unicopia.block.state.StatePredicate;
-import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.EntityReference;
-import com.minelittlepony.unicopia.entity.MagicImmune;
-import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.network.Channel;
-import com.minelittlepony.unicopia.network.MsgSpawnProjectile;
-import com.minelittlepony.unicopia.network.datasync.EffectSync;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -40,41 +24,28 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
  * A generalised version of Mojang's projectile entity class with added support for a custom appearance and water phobia.
- *
- * Can also carry a spell if needed.
  */
-public class MagicProjectileEntity extends ThrownItemEntity implements Caster<MagicProjectileEntity>, WeaklyOwned.Mutable<LivingEntity>, MagicImmune {
+public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwned.Mutable<LivingEntity> {
     private static final TrackedData<Float> DAMAGE = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<Float> GRAVITY = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 
     public static final byte PROJECTILE_COLLISSION = 3;
-
-    private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
-
-    private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this, GRAVITY);
 
     private final EntityReference<Entity> homingTarget = new EntityReference<>();
     private EntityReference<LivingEntity> owner;
 
     private int maxAge = 90;
 
-    public MagicProjectileEntity(EntityType<MagicProjectileEntity> type, World world) {
+    public MagicProjectileEntity(EntityType<? extends MagicProjectileEntity> type, World world) {
         super(type, world);
     }
 
@@ -86,27 +57,24 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         super(UEntities.THROWN_ITEM, thrower, world);
     }
 
+    protected MagicProjectileEntity(EntityType<? extends MagicProjectileEntity> type, World world, LivingEntity thrower) {
+        super(type, thrower, world);
+    }
+
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        getDataTracker().startTracking(GRAVITY, 1F);
         getDataTracker().startTracking(DAMAGE, 0F);
-        getDataTracker().startTracking(EFFECT, new NbtCompound());
-        getDataTracker().startTracking(HYDROPHOBIC, false);
+    }
+
+    @Override
+    public World asWorld() {
+        return getWorld();
     }
 
     @Override
     protected Item getDefaultItem() {
-        switch (getSpellSlot().get(false).map(Spell::getAffinity).orElse(Affinity.NEUTRAL)) {
-            case GOOD: return Items.SNOWBALL;
-            case BAD: return Items.MAGMA_CREAM;
-            default: return Items.AIR;
-        }
-    }
-
-    @Override
-    public MagicProjectileEntity asEntity() {
-        return this;
+        return Items.AIR;
     }
 
     @Override
@@ -140,36 +108,6 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         homingTarget.set(target);
     }
 
-    @Override
-    public LevelStore getLevel() {
-        return getMasterReference().getTarget().map(target -> target.level()).orElse(Levelled.EMPTY);
-    }
-
-    @Override
-    public LevelStore getCorruption() {
-        return getMasterReference().getTarget().map(target -> target.corruption()).orElse(Levelled.EMPTY);
-    }
-
-    @Override
-    public Physics getPhysics() {
-        return physics;
-    }
-
-    @Override
-    public Affinity getAffinity() {
-        return getSpellSlot().get(true).map(Affine::getAffinity).orElse(Affinity.NEUTRAL);
-    }
-
-    @Override
-    public SpellContainer getSpellSlot() {
-        return effectDelegate;
-    }
-
-    @Override
-    public boolean subtractEnergyCost(double amount) {
-        return Caster.of(getMaster()).filter(c -> c.subtractEnergyCost(amount)).isPresent();
-    }
-
     public void addThrowDamage(float damage) {
         setThrowDamage(getThrowDamage() + damage);
     }
@@ -180,14 +118,6 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
 
     public float getThrowDamage() {
         return getDataTracker().get(DAMAGE);
-    }
-
-    public void setHydrophobic() {
-        getDataTracker().set(HYDROPHOBIC, true);
-    }
-
-    public boolean getHydrophobic() {
-        return getDataTracker().get(HYDROPHOBIC);
     }
 
     public void setMaxAge(int maxAge) {
@@ -201,28 +131,6 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
         }
 
         super.tick();
-
-        if (getOwner() == null) {
-            return;
-        }
-
-        effectDelegate.tick(Situation.PROJECTILE);
-
-        if (getHydrophobic()) {
-            if (StatePredicate.isFluid(getWorld().getBlockState(getBlockPos()))) {
-                Vec3d vel = getVelocity();
-
-                double velY = vel.y;
-
-                velY *= -1;
-
-                if (!hasNoGravity()) {
-                    velY += 0.16;
-                }
-
-                setVelocity(new Vec3d(vel.x, velY, vel.z));
-            }
-        }
 
         homingTarget.ifPresent(getWorld(), e -> {
             setNoGravity(true);
@@ -261,12 +169,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     @Override
     public void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
-        physics.fromNBT(compound);
         homingTarget.fromNBT(compound.getCompound("homingTarget"));
         getMasterReference().fromNBT(compound.getCompound("owner"));
-        if (compound.contains("effect")) {
-            getSpellSlot().put(Spell.readNbt(compound.getCompound("effect")));
-        }
         if (compound.contains("maxAge", NbtElement.INT_TYPE)) {
             maxAge = compound.getInt("maxAge");
         }
@@ -275,13 +179,9 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     @Override
     public void writeCustomDataToNbt(NbtCompound compound) {
         super.writeCustomDataToNbt(compound);
-        physics.toNBT(compound);
         compound.put("homingTarget", homingTarget.toNBT());
         compound.put("owner", getMasterReference().toNBT());
         compound.putInt("maxAge", maxAge);
-        getSpellSlot().get(true).ifPresent(effect -> {
-            compound.put("effect", Spell.writeNbt(effect));
-        });
     }
 
     @Override
@@ -297,12 +197,6 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     }
 
     @Override
-    public void remove(RemovalReason reason) {
-        super.remove(reason);
-        getSpellSlot().clear();
-    }
-
-    @Override
     protected void onBlockHit(BlockHitResult hit) {
         super.onBlockHit(hit);
 
@@ -313,7 +207,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     protected void onEntityHit(EntityHitResult hit) {
         Entity entity = hit.getEntity();
 
-        if (EquinePredicates.IS_MAGIC_IMMUNE.test(entity) || !EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity)) {
+        if (EquinePredicates.IS_MAGIC_IMMUNE.test(entity)) {
             return;
         }
 
@@ -329,20 +223,10 @@ public class MagicProjectileEntity extends ThrownItemEntity implements Caster<Ma
     }
 
     protected <T extends ProjectileDelegate> void forEachDelegates(Consumer<T> consumer, Function<Object, T> predicate) {
-        effectDelegate.tick(spell -> {
-            Optional.ofNullable(predicate.apply(spell)).ifPresent(consumer);
-            return Operation.SKIP;
-        });
         try {
             Optional.ofNullable(predicate.apply(getItem().getItem())).ifPresent(consumer);
         } catch (Throwable t) {
             Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", getMasterReference(), t);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Packet<ClientPlayPacketListener> createSpawnPacket() {
-        return (Packet<ClientPlayPacketListener>)(Object)Channel.SERVER_SPAWN_PROJECTILE.toPacket(new MsgSpawnProjectile(this));
     }
 }
