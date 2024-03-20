@@ -177,7 +177,7 @@ public interface UItems {
     Item GREEN_BED_SHEETS = register(CloudBedBlock.SheetPattern.GREEN);
     Item CYAN_BED_SHEETS = register(CloudBedBlock.SheetPattern.CYAN);
     Item LIGHT_BLUE_BED_SHEETS = register(CloudBedBlock.SheetPattern.LIGHT_BLUE);
-    Item BLUE_SHEETS = register(CloudBedBlock.SheetPattern.BLUE);
+    Item BLUE_BED_SHEETS = register(CloudBedBlock.SheetPattern.BLUE);
     Item PURPLE_BED_SHEETS = register(CloudBedBlock.SheetPattern.PURPLE);
     Item MAGENTA_BED_SHEETS = register(CloudBedBlock.SheetPattern.MAGENTA);
     Item PINK_BED_SHEETS = register(CloudBedBlock.SheetPattern.PINK);

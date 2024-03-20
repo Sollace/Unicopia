@@ -1,0 +1,11 @@
+{
+  "tags": [ "unicopia:food_types/nuts_and_seeds" ],
+  "food_component": {
+    "hunger": 2,
+    "saturation": 2.5
+  },
+  "ailment": {
+    "effects": [
+    ]
+  }
+}

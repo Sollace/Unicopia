@@ -50,7 +50,7 @@ public class EdibleBlock extends HayBlock {
     static final BooleanProperty BOTTOM_SOUTH_WEST = BooleanProperty.of("bottom_south_west");
 
     // [up/down][north/south][west/east]
-    private static final BooleanProperty[] SEGMENTS = {
+    public static final BooleanProperty[] SEGMENTS = {
             BOTTOM_NORTH_WEST,
             BOTTOM_NORTH_EAST,
             BOTTOM_SOUTH_WEST,

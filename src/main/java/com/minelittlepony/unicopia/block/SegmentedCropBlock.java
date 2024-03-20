@@ -65,6 +65,11 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
        this.progressionAge = progressionAge;
     }
 
+    @Override
+    public IntProperty getAgeProperty() {
+        return super.getAgeProperty();
+    }
+
     public SegmentedCropBlock createNext(int progressionAge) {
         SegmentedCropBlock next = create(getMaxAge() - this.progressionAge, progressionAge, Settings.copy(this), seeds, () -> this, null);
         nextSegmentSupplier = () -> next;

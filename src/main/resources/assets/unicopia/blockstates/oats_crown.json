@@ -1,6 +1,0 @@
-{
-    "variants": {
-        "age=0": { "model": "unicopia:block/oats_stage10_upper" },
-        "age=1": { "model": "unicopia:block/oats_stage11_upper" }
-    }
-}

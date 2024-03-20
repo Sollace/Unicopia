@@ -1,8 +1,6 @@
 package com.minelittlepony.unicopia.client.render;
 
 import java.util.Optional;
-
-import com.minelittlepony.client.util.render.RenderLayerUtil;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
@@ -14,6 +12,7 @@ import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.LavaAffine;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.ColorHelper;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
@@ -24,14 +23,13 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 
 public class WorldRenderDelegate {
     public static final WorldRenderDelegate INSTANCE = new WorldRenderDelegate();
     private static final Optional<Vec3d> RED_SKY_COLOR = Optional.of(new Vec3d(1, 0, 0));
-    private static final Identifier SHADOW_TEXTURE = new Identifier("textures/misc/shadow.png");
 
     private final EntityReplacementManager disguiseLookup = new EntityReplacementManager();
     private final EntityDisguiseRenderer disguiseRenderer = new EntityDisguiseRenderer(this);
@@ -72,23 +70,10 @@ public class WorldRenderDelegate {
 
             if (MinecraftClient.getInstance().getResourceManager().getResource(frostingTexture).isPresent()) {
                 recurseFrosting = true;
-
-                Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEffectVertexConsumers();
-
-                client.getEntityRenderDispatcher().render(entity, x, y, z, yaw, tickDelta, matrices, layer -> {
-
-                    Identifier texture = RenderLayerUtil.getTexture(layer).orElse(null);
-
-                    if (texture == null || texture.equals(SHADOW_TEXTURE)) {
-                        return vertices.getBuffer(layer);
-                    }
-                    return VertexConsumers.union(
-                            vertices.getBuffer(layer),
-                            immediate.getBuffer(RenderLayers.getEntityTranslucent(frostingTexture))
-                    );
-                }, light);
+                RenderLayerUtil.createUnionBuffer(c -> {
+                    client.getEntityRenderDispatcher().render(entity, x, y, z, yaw, tickDelta, matrices, c, light);
+                }, vertices, texture -> RenderLayers.getEntityTranslucent(frostingTexture));
                 recurseFrosting = false;
-                immediate.draw();
                 return true;
             }
         }
@@ -146,16 +131,9 @@ public class WorldRenderDelegate {
         if (!recurseMinion && pony instanceof Creature creature && creature.isMinion()) {
             try {
                 recurseMinion = true;
-                client.getEntityRenderDispatcher().render(creature.asEntity(), x, y, z, yaw, tickDelta, matrices, layer -> {
-                    return RenderLayerUtil.getTexture(layer)
-                            .filter(texture -> texture != PlayerScreenHandler.BLOCK_ATLAS_TEXTURE)
-                            .map(texture -> {
-                        return VertexConsumers.union(
-                                vertices.getBuffer(layer),
-                                vertices.getBuffer(RenderLayers.getMagicColored(texture, creature.isDiscorded() ? 0xCCFF0000 : 0xCC0000FF))
-                        );
-                    }).orElseGet(() -> vertices.getBuffer(layer));
-                }, light);
+                RenderLayerUtil.createUnionBuffer(c -> {
+                    client.getEntityRenderDispatcher().render(creature.asEntity(), x, y, z, yaw, tickDelta, matrices, c, light);
+                }, vertices, texture -> RenderLayers.getMagicColored(texture, creature.isDiscorded() ? 0x33FF0000 : ColorHelper.getRainbowColor(creature.asEntity(), 25, 1) )); // 0x8800AA00
                 return true;
             } catch (Throwable t) {
                 Unicopia.LOGGER.error("Error whilst rendering minion", t);

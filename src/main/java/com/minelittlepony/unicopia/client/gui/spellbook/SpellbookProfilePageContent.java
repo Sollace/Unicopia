@@ -5,6 +5,7 @@ import java.util.List;
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.client.gui.*;
 import com.minelittlepony.unicopia.entity.player.*;
 import com.minelittlepony.unicopia.util.ColorHelper;
@@ -43,7 +44,7 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
                 .setTooltip(() -> List.of(
                         Text.literal(String.format("Level %d ", pony.getLevel().get() + 1)).append(pony.getSpecies().getDisplayName()).formatted(pony.getSpecies().getAffinity().getColor()),
                         Text.literal(String.format("Mana: %d%%", (int)(pony.getMagicalReserves().getMana().getPercentFill() * 100))),
-                        Text.literal(String.format("Corruption: %d%%", (int)(pony.getCorruption().getScaled(100)))),
+                        Text.literal(String.format("Corruption: %s%d%%", pony.getCorruptionhandler().hasCorruptingMagic() ? "^" : "", (int)(pony.getCorruption().getScaled(100)))),
                         Text.literal(String.format("Experience: %d", (int)(pony.getMagicalReserves().getXp().getPercentFill() * 100))),
                         Text.literal(String.format("Next level in: %dxp", 100 - (int)(pony.getMagicalReserves().getXp().getPercentFill() * 100)))
                 ));
@@ -108,7 +109,11 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
         int alpha = (int)(alphaF * 0x10) & 0xFF;
         int color = 0x10404000 | alpha;
         int xpColor = 0xAA0040FF | ((int)((0.3F + 0.7F * xpPercentage) * 0xFF) & 0xFF) << 16;
-        int manaColor = 0xFF00F040 | (int)((0.3F + 0.7F * alphaF) * 0x40) << 16;
+        int manaColor = 0xFF00F040;
+        if (pony.getSpellSlot().get(SpellPredicate.IS_CORRUPTING, false).isPresent()) {
+            manaColor = ColorHelper.lerp(Math.abs(MathHelper.sin(pony.asEntity().age / 15F)), manaColor, 0xFF0030F0);
+        }
+        manaColor |= (int)((0.3F + 0.7F * alphaF) * 0x40) << 16;
 
         DrawableUtil.drawArc(matrices, 0, radius + 24, 0, DrawableUtil.TAU, color, false);
         DrawableUtil.drawArc(matrices, radius / 3, radius + 6, 0, DrawableUtil.TAU, color, false);

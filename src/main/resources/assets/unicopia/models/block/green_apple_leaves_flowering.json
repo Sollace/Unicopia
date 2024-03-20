@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "unicopia:block/green_apple_leaves_flowering"
-  }
-}

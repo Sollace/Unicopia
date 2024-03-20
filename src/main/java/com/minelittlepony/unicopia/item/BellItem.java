@@ -57,7 +57,7 @@ public class BellItem extends Item implements ChargeableItem {
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity player, LivingEntity target, Hand hand) {
         player.setCurrentHand(hand);
         Pony pony = Pony.of(player);
-        pony.getCorruption().add(1);
+        pony.getCorruption().add(1 + player.getRandom().nextBetween(1, 10));
         pony.playSound(USounds.ITEM_GROGAR_BELL_USE, 0.4F, 0.2F);
         Living<?> targetLiving = target instanceof MobEntity || target instanceof PlayerEntity ? Living.getOrEmpty(target)
                 .filter(living -> !(living instanceof Creature c && c.isDiscorded()))
@@ -79,7 +79,7 @@ public class BellItem extends Item implements ChargeableItem {
 
         if (hasCharge(stack)) {
             pony.playSound(USounds.ITEM_GROGAR_BELL_CHARGE, 0.6F, 1);
-            pony.getCorruption().add(1);
+            pony.getCorruption().add(player.getRandom().nextBetween(1, 10));
             if (offhandStack.getItem() instanceof ChargeableItem chargeable) {
                 float maxChargeBy = chargeable.getMaxCharge() - ChargeableItem.getEnergy(offhandStack);
                 float energyTransferred = Math.min(ChargeableItem.getEnergy(stack), maxChargeBy);

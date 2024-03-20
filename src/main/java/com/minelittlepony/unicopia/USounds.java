@@ -12,7 +12,7 @@ import static net.minecraft.sound.SoundEvents.*;
 public interface USounds {
     SoundEvent ENTITY_GENERIC_BUTTER_FINGERS = BLOCK_HONEY_BLOCK_SLIDE;
 
-    SoundEvent ENTITY_PLAYER_CORRUPTION = PARTICLE_SOUL_ESCAPE;
+    SoundEvent ENTITY_PLAYER_CORRUPTION = register("entity.player.corrupt");
     SoundEvent ENTITY_PLAYER_BATPONY_SCREECH = register("entity.player.batpony.screech");
     SoundEvent ENTITY_PLAYER_HIPPOGRIFF_SCREECH = register("entity.player.hippogriff.screech");
     SoundEvent ENTITY_PLAYER_HIPPOGRIFF_PECK = ENTITY_CHICKEN_STEP;

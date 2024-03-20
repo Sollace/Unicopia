@@ -52,6 +52,7 @@ import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -210,7 +211,6 @@ public interface URenderers {
                 matrices.translate(0, 0.06, 0);
             }
             // GUI, FIXED, NONE - translate(0, 0, 0)
-            //matrices.scale(0.5F, 0.5F, 0.5F);
 
             float scale = 0.5F;
             matrices.scale(scale, scale, scale);
@@ -219,11 +219,16 @@ public interface URenderers {
             renderer.renderItem(appearance, mode, light, overlay, matrices, immediate, world, 0);
             matrices.pop();
         }
-        renderer.renderItem(item.createAppearanceStack(stack, UItems.EMPTY_JAR), mode, light, OverlayTexture.DEFAULT_UV, matrices, vertices, world, 0);
+        renderer.renderItem(UItems.EMPTY_JAR.getDefaultStack(), mode, light, overlay, matrices, vertices, world, 0);
 
         if (mode == ModelTransformationMode.GUI) {
+            if (vertices instanceof Immediate i) {
+                i.draw();
+            }
+
             DiffuseLighting.enableGuiDepthLighting();
         }
+
         matrices.push();
     }
 

@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.projectile.MagicBeamEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.Weighted;
@@ -231,9 +232,10 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
     }
 
     @Override
-    public void onImpact(MagicProjectileEntity source, BlockHitResult hit) {
-
-       // source.asWorld().createExplosion(source, hit.getPos().x, hit.getPos().y, hit.getPos().z, 3, ExplosionSourceType.MOB);
+    public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
+        if (!(projectile instanceof MagicBeamEntity source)) {
+            return;
+        }
 
         Shape affectRegion = new Sphere(false, 3);
 

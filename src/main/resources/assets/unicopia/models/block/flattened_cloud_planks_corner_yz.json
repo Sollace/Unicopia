@@ -1,6 +1,0 @@
-{
-  "parent": "unicopia:block/flattened_cloud_corner_yz",
-  "textures": {
-    "all": "unicopia:block/cloud_planks"
-  }
-}

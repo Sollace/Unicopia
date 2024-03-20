@@ -1,7 +1,0 @@
-{
-  "variants": {
-    "count=1": { "model": "unicopia:block/mysterious_egg_1" },
-    "count=2": { "model": "unicopia:block/mysterious_egg_2" },
-    "count=3": { "model": "unicopia:block/mysterious_egg_3" }
-  }
-}

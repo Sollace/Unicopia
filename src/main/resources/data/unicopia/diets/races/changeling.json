@@ -28,6 +28,13 @@
       "saturation": 0.6
     },
     {
+      "tags": [
+        "unicopia:food_types/baked_goods"
+      ],
+      "hunger": 0.5,
+      "saturation": 0.9
+    },
+    {
       "tags": [ "unicopia:food_types/love" ],
       "hunger": 1,
       "saturation": 1

@@ -19,7 +19,7 @@ public class TimeChangeAbility implements Ability<Rot> {
 
     @Override
     public boolean canUse(Race.Composite race) {
-        return Ability.super.canUse(race) || race.pseudo() == Race.UNICORN;
+        return canUse(race.physical()) || race.pseudo() == Race.UNICORN;
     }
 
     @Override

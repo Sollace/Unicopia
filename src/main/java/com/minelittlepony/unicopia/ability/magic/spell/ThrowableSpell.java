@@ -7,11 +7,7 @@ import java.util.Optional;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
-import com.minelittlepony.unicopia.entity.mob.UEntities;
-import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
-
-import net.minecraft.entity.Entity;
+import com.minelittlepony.unicopia.projectile.MagicBeamEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.World;
 
@@ -43,7 +39,7 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
      *
      * Returns the resulting projectile entity for customization (or null if on the client).
      */
-    public Optional<MagicProjectileEntity> throwProjectile(Caster<?> caster) {
+    public Optional<MagicBeamEntity> throwProjectile(Caster<?> caster) {
         return throwProjectile(caster, 1);
     }
 
@@ -52,10 +48,8 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
      *
      * Returns the resulting projectile entity for customization (or null if on the client).
      */
-    public Optional<MagicProjectileEntity> throwProjectile(Caster<?> caster, float divergance) {
+    public Optional<MagicBeamEntity> throwProjectile(Caster<?> caster, float divergance) {
         World world = caster.asWorld();
-
-        Entity entity = caster.asEntity();
 
         caster.playSound(USounds.SPELL_CAST_SHOOT, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
@@ -63,22 +57,14 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
             return Optional.empty();
         }
 
-        Spell s = spell.get().prepareForCast(caster, CastingMethod.STORED);
-        if (s == null) {
-            return Optional.empty();
-        }
+        return Optional.ofNullable(spell.get().prepareForCast(caster, CastingMethod.STORED)).map(s -> {
+            MagicBeamEntity projectile = new MagicBeamEntity(world, caster.asEntity(), divergance, s);
 
-        MagicProjectileEntity projectile = UEntities.MAGIC_BEAM.create(world);
-        projectile.setPosition(entity.getX(), entity.getEyeY() - 0.1F, entity.getZ());
-        projectile.setOwner(entity);
-        projectile.setItem(UItems.GEMSTONE.getDefaultStack(spell.get().getType()));
-        s.apply(projectile);
-        projectile.setVelocity(entity, entity.getPitch(), entity.getYaw(), 0, 1.5F, divergance);
-        projectile.setNoGravity(true);
-        configureProjectile(projectile, caster);
-        world.spawnEntity(projectile);
+            configureProjectile(projectile, caster);
+            world.spawnEntity(projectile);
 
-        return Optional.of(projectile);
+            return projectile;
+        });
     }
 
     @Override

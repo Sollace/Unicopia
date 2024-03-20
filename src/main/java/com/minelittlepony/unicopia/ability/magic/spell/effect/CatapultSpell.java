@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
+import com.minelittlepony.unicopia.projectile.MagicBeamEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
@@ -42,15 +43,15 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
 
     @Override
     public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
-        if (!projectile.isClient() && projectile.canModifyAt(hit.getBlockPos())) {
-            createBlockEntity(projectile.getWorld(), hit.getBlockPos(), e -> apply(projectile, e));
+        if (!projectile.isClient() && projectile instanceof MagicBeamEntity source && source.canModifyAt(hit.getBlockPos())) {
+            createBlockEntity(projectile.getWorld(), hit.getBlockPos(), e -> apply(source, e));
         }
     }
 
     @Override
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
-        if (!projectile.isClient()) {
-            apply(projectile, hit.getEntity());
+        if (!projectile.isClient() && projectile instanceof MagicBeamEntity source) {
+            apply(source, hit.getEntity());
         }
     }
 

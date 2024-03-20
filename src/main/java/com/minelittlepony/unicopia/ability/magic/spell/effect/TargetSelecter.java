@@ -12,7 +12,6 @@ import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import net.minecraft.entity.Entity;
-import net.minecraft.predicate.entity.EntityPredicates;
 
 public class TargetSelecter {
     private final Map<UUID, Target> targets = new TreeMap<>();
@@ -46,7 +45,6 @@ public class TargetSelecter {
     public Stream<Entity> getEntities(Caster<?> source, double radius) {
         targets.values().removeIf(Target::tick);
         return source.findAllEntitiesInRange(radius)
-            .filter(EntityPredicates.VALID_ENTITY)
             .filter(EquinePredicates.EXCEPT_MAGIC_IMMUNE)
             .filter(entity -> entity != source.asEntity() && checkAlliegance(spell, source, entity) && filter.test(source, entity))
             .map(i -> {

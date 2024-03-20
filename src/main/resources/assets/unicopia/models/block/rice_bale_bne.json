@@ -1,8 +1,0 @@
-{
-  "parent": "unicopia:block/hay_bale_bne",
-	"textures": {
-		"top": "farmersdelight:block/rice_bale_top",
-		"particle": "farmersdelight:block/rice_bale_side",
-		"side": "farmersdelight:block/rice_bale_side"
-	}
-}

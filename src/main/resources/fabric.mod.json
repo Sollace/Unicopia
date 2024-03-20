@@ -24,6 +24,9 @@
     "client": [
       "com.minelittlepony.unicopia.client.UnicopiaClient"
     ],
+    "fabric-datagen": [
+      "com.minelittlepony.unicopia.datagen.Datagen"
+    ],
     "modmenu": [
       "com.minelittlepony.unicopia.modmenu.UMenuFactory"
     ],

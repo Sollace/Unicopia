@@ -19,7 +19,6 @@ public interface Channel {
     C2SPacketType<MsgPlayerFlightControlsInput> FLIGHT_CONTROLS_INPUT = SimpleNetworking.clientToServer(Unicopia.id("flight_controls"), MsgPlayerFlightControlsInput::new);
 
     S2CPacketType<MsgPlayerCapabilities> SERVER_PLAYER_CAPABILITIES = SimpleNetworking.serverToClient(Unicopia.id("player_capabilities"), MsgPlayerCapabilities::new);
-    S2CPacketType<MsgSpawnProjectile> SERVER_SPAWN_PROJECTILE = SimpleNetworking.serverToClient(Unicopia.id("projectile_entity"), MsgSpawnProjectile::new);
     S2CPacketType<MsgBlockDestruction> SERVER_BLOCK_DESTRUCTION = SimpleNetworking.serverToClient(Unicopia.id("block_destruction"), MsgBlockDestruction::new);
     S2CPacketType<MsgCancelPlayerAbility> CANCEL_PLAYER_ABILITY = SimpleNetworking.serverToClient(Unicopia.id("player_ability_cancel"), MsgCancelPlayerAbility::read);
     S2CPacketType<MsgCasterLookRequest> SERVER_REQUEST_PLAYER_LOOK = SimpleNetworking.serverToClient(Unicopia.id("request_player_look"), MsgCasterLookRequest::new);

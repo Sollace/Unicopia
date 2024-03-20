@@ -1,8 +1,0 @@
-{
-    "parent": "minecraft:block/slab_top",
-    "textures": {
-        "bottom": "unicopia:block/etched_cloud",
-        "side": "unicopia:block/etched_cloud",
-        "top": "unicopia:block/etched_cloud"
-    }
-}

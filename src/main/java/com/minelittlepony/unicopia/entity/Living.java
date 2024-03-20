@@ -23,6 +23,7 @@ import com.minelittlepony.unicopia.entity.behaviour.Guest;
 import com.minelittlepony.unicopia.entity.collision.MultiBoundingBoxEntity;
 import com.minelittlepony.unicopia.entity.damage.MagicalDamageSource;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
+import com.minelittlepony.unicopia.entity.effect.CorruptInfluenceStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -49,6 +50,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.*;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.BlockItem;
@@ -517,6 +519,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                     playSound(USounds.ITEM_SUNGLASSES_SHATTER, 1, 1);
                 }
             }
+        }
+
+        if (entity instanceof HostileEntity mob && mob.hasStatusEffect(UEffects.CORRUPT_INFLUENCE) && mob.getRandom().nextInt(4) == 0) {
+            CorruptInfluenceStatusEffect.reproduce(mob);
         }
 
         return Optional.empty();

@@ -386,12 +386,13 @@ public class ButterflyEntity extends AmbientEntity {
         public static final Variant[] VALUES = Variant.values();
         private static final Map<String, Variant> REGISTRY = Arrays.stream(VALUES).collect(Collectors.toMap(a -> a.name().toLowerCase(Locale.ROOT), Function.identity()));
 
-        private final Identifier skin = Unicopia.id("textures/entity/butterfly/" + name().toLowerCase() + ".png");
+        private final Identifier skin = Unicopia.id("textures/entity/butterfly/" + name().toLowerCase(Locale.ROOT) + ".png");
 
         public Identifier getSkin() {
             return skin;
         }
-        static Variant byId(int index) {
+
+        public static Variant byId(int index) {
             return VALUES[Math.max(0, index) % VALUES.length];
         }
 

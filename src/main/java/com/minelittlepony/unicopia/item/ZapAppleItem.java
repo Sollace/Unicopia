@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.List;
 
-import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.UConventionalTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.Living;
@@ -103,7 +103,7 @@ public class ZapAppleItem extends Item implements ChameleonItem, MultiItem {
     public List<ItemStack> getDefaultStacks() {
         return Unicopia.SIDE.getPony().map(Pony::asWorld)
                 .stream()
-                .flatMap(world -> RegistryUtils.valuesForTag(world, UTags.APPLES))
+                .flatMap(world -> RegistryUtils.valuesForTag(world, UConventionalTags.APPLES))
                 .filter(a -> a != this).map(item -> {
             ItemStack stack = new ItemStack(this);
             stack.getOrCreateNbt().putString("appearance", Registries.ITEM.getId(item).toString());

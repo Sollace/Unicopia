@@ -37,7 +37,7 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
 
     @Override
     public int getWarmupTime(Pony player) {
-        return 20;
+        return (int)(20 - Math.min(17F, player.getLevel().get() * 0.75F));
     }
 
     @Override

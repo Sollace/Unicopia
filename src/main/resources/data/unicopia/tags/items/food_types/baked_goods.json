@@ -1,0 +1,27 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:bread",
+    "minecraft:cookie",
+    "unicopia:muffin",
+    "#c:grain",
+    "unicopia:cooked_zap_apple",
+    "minecraft:pumpkin_pie",
+    "#unicopia:pies",
+    "unicopia:apple_pie_slice",
+    "unicopia:toast",
+    "unicopia:burned_toast",
+    "unicopia:jam_toast",
+    "unicopia:imported_oats",
+    "unicopia:oatmeal",
+    "unicopia:hay_fries",
+    "unicopia:crispy_hay_fries",
+    "unicopia:horse_shoe_fries",
+    { "id": "farmersdelight:wheat_dough", "required": false },
+    { "id": "farmersdelight:raw_pasta", "required": false },
+    { "id": "farmersdelight:pie_crust", "required": false },
+    { "id": "farmersdelight:sweet_berry_cookie", "required": false },
+    { "id": "farmersdelight:honey_cookie", "required": false },
+    { "id": "farmersdelight:egg_sandwich", "required": false }
+  ]
+}

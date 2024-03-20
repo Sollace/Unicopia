@@ -1,0 +1,16 @@
+{
+	"textures": {
+		"particle": "#shell"
+	},
+	"elements": [
+		{
+			"from": [4, 1.1, 3.6],
+			"to": [12, 1.1, 11.6],
+			"rotation": {"angle": -22.5, "axis": "x", "origin": [12, 0.1, 9.6]},
+			"faces": {
+				"up": {"uv": [0, 0, 16, 16], "rotation": 270, "texture": "#shell"},
+				"down": {"uv": [16, 0, 0, 16], "rotation": 270, "texture": "#shell"}
+			}
+		}
+	]
+}
