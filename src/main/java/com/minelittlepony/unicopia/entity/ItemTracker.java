@@ -35,7 +35,6 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tick
     }
 
     private final Map<Trackable, Long> items = new HashMap<>();
-    private final Map<Trackable, Boolean> forced = new HashMap<>();
 
     public static Predicate<LivingEntity> wearing(Trackable charm, Predicate<Long> range) {
         return e -> Living.getOrEmpty(e)
