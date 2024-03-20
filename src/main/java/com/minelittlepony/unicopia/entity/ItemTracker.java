@@ -4,6 +4,8 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.*;
@@ -33,6 +35,7 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tick
     }
 
     private final Map<Trackable, Long> items = new HashMap<>();
+    private final Map<Trackable, Boolean> forced = new HashMap<>();
 
     public static Predicate<LivingEntity> wearing(Trackable charm, Predicate<Long> range) {
         return e -> Living.getOrEmpty(e)
@@ -67,19 +70,23 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tick
 
     @Override
     public void tick() {
-        update(living, living.getArmourStacks());
+        update(living.getArmourStacks());
     }
 
-    private void update(Living<?> living, Stream<ItemStack> stacks) {
+    private void update(Stream<ItemStack> stacks) {
         final Set<Trackable> found = new HashSet<>();
         final Set<ItemStack> foundStacks = new HashSet<>();
+
         stacks.forEach(stack -> {
             if (stack.getItem() instanceof Trackable trackable) {
-                items.compute(trackable, (item, prev) -> prev == null ? 1 : prev + 1);
+                if (items.compute(trackable, (item, prev) -> prev == null ? 1 : prev + 1) == 1) {
+                    trackable.onEquipped(this.living);
+                }
                 found.add(trackable);
                 foundStacks.add(stack);
             }
         });
+
         items.entrySet().removeIf(e -> {
             if (!found.contains(e.getKey())) {
                 e.getKey().onUnequipped(living, e.getValue());
@@ -90,11 +97,14 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tick
 
         if (!(living instanceof Pony)) {
             foundStacks.forEach(stack -> {
-                if (getTicks((Trackable)stack.getItem()) == 1) {
-                    stack.inventoryTick(living.asWorld(), living.asEntity(), 0, false);
-                }
+                stack.inventoryTick(living.asWorld(), living.asEntity(), 0, false);
             });
         }
+    }
+
+    public long forceRemove(Trackable charm) {
+        @Nullable Long time = items.remove(charm);
+        return time == null ? 0 : time;
     }
 
     public long getTicks(Trackable charm) {

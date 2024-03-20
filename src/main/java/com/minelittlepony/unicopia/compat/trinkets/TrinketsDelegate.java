@@ -30,7 +30,7 @@ public interface TrinketsDelegate {
     TrinketsDelegate EMPTY = new TrinketsDelegate() {};
 
     static TrinketsDelegate getInstance(@Nullable LivingEntity entity) {
-        if (!(entity instanceof PlayerEntity && hasTrinkets())) {
+        if (!hasTrinkets() || (entity != null && !(entity instanceof PlayerEntity))) {
             return EMPTY;
         }
         return TrinketsDelegateImpl.INSTANCE;

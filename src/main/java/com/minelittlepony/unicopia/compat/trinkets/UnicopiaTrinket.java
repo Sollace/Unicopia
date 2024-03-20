@@ -3,6 +3,8 @@ package com.minelittlepony.unicopia.compat.trinkets;
 import java.util.UUID;
 
 import com.google.common.collect.Multimap;
+import com.minelittlepony.unicopia.entity.ItemTracker;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.WearableItem;
 
@@ -30,8 +32,19 @@ public class UnicopiaTrinket implements Trinket {
             return;
         }
 
+        if (!(stack.getItem() instanceof ItemTracker.Trackable) && stack.getItem() instanceof Equipment q) {
+            entity.playSound(q.getEquipSound(), 1, 1);
+        }
+    }
+
+    @Override
+    public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        if (stack.getItem() instanceof ItemTracker.Trackable t) {
+            Living<?> l = Living.living(entity);
+            t.onUnequipped(l, l.getArmour().forceRemove(t));
+        }
         if (stack.getItem() instanceof Equipment q) {
-            entity.playSound( q.getEquipSound(), 1, 1);
+            entity.playSound(q.getEquipSound(), 1, 1);
         }
     }
 

@@ -134,7 +134,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
     @Override
     public void onEquipped(Living<?> wearer) {
-        wearer.playSound(USounds.ITEM_ALICORN_AMULET_CURSE, 3, 1);
+        wearer.playSound(USounds.ITEM_ALICORN_AMULET_CURSE, 0.5F, 1);
     }
 
     @Override
