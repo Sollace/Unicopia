@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.UConventionalTags;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.datagen.Datagen;
+import com.minelittlepony.unicopia.datagen.ItemFamilies;
 import com.minelittlepony.unicopia.item.BedsheetsItem;
 import com.minelittlepony.unicopia.item.UItems;
 
@@ -28,6 +29,8 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
+
+
     private final UBlockTagProvider blockTagProvider;
 
     public UItemTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture, UBlockTagProvider blockTagProvider) {
@@ -57,21 +60,18 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
         getOrCreateTagBuilder(ItemTags.CHEST_BOATS).add(UItems.PALM_CHEST_BOAT);
         getOrCreateTagBuilder(ItemTags.BOATS).add(UItems.PALM_BOAT);
-        getOrCreateTagBuilder(ItemTags.MUSIC_DISCS).add(UItems.MUSIC_DISC_CRUSADE, UItems.MUSIC_DISC_FUNK, UItems.MUSIC_DISC_PET, UItems.MUSIC_DISC_POPULAR);
+        getOrCreateTagBuilder(ItemTags.MUSIC_DISCS).add(ItemFamilies.MUSIC_DISCS);
         getOrCreateTagBuilder(ItemTags.CREEPER_DROP_MUSIC_DISCS).add(UItems.MUSIC_DISC_CRUSADE, UItems.MUSIC_DISC_FUNK, UItems.MUSIC_DISC_PET, UItems.MUSIC_DISC_POPULAR);
 
         getOrCreateTagBuilder(ItemTags.SIGNS).add(UBlocks.PALM_SIGN.asItem());
         getOrCreateTagBuilder(ItemTags.HANGING_SIGNS).add(UBlocks.PALM_HANGING_SIGN.asItem());
 
-        getOrCreateTagBuilder(UTags.HORSE_SHOES).add(UItems.IRON_HORSE_SHOE, UItems.GOLDEN_HORSE_SHOE, UItems.COPPER_HORSE_SHOE, UItems.NETHERITE_HORSE_SHOE);
-        getOrCreateTagBuilder(UTags.POLEARMS).add(UItems.WOODEN_POLEARM, UItems.STONE_POLEARM, UItems.IRON_POLEARM, UItems.GOLDEN_POLEARM, UItems.DIAMOND_POLEARM, UItems.NETHERITE_POLEARM);
+        getOrCreateTagBuilder(UTags.HORSE_SHOES).add(ItemFamilies.HORSE_SHOES);
+        getOrCreateTagBuilder(UTags.POLEARMS).add(ItemFamilies.POLEARMS);
 
         getOrCreateTagBuilder(ItemTags.TOOLS).addTag(UTags.HORSE_SHOES).addTag(UTags.POLEARMS);
 
-        getOrCreateTagBuilder(UTags.BASKETS).add(
-                UItems.ACACIA_BASKET, UItems.BAMBOO_BASKET, UItems.BIRCH_BASKET, UItems.CHERRY_BASKET, UItems.DARK_OAK_BASKET,
-                UItems.JUNGLE_BASKET, UItems.MANGROVE_BASKET, UItems.OAK_BASKET, UItems.PALM_BASKET, UItems.SPRUCE_BASKET
-        );
+        getOrCreateTagBuilder(UTags.BASKETS).add(ItemFamilies.BASKETS);
         getOrCreateTagBuilder(UTags.BADGES).add(Race.REGISTRY.stream()
                 .map(race -> race.getId().withPath(p -> p + "_badge"))
                 .flatMap(id -> Registries.ITEM.getOrEmpty(id).stream())

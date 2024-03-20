@@ -16,6 +16,7 @@ import com.minelittlepony.unicopia.block.ShellsBlock;
 import com.minelittlepony.unicopia.block.SlimePustuleBlock;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.zap.ZapAppleLeavesBlock;
+import com.minelittlepony.unicopia.datagen.UBlockFamilies;
 import com.minelittlepony.unicopia.server.world.Tree;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -36,7 +37,6 @@ import net.minecraft.data.client.TextureMap;
 import net.minecraft.data.client.TexturedModel;
 import net.minecraft.data.client.VariantsBlockStateSupplier;
 import net.minecraft.data.client.When;
-import net.minecraft.data.family.BlockFamily;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -121,12 +121,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         // palm wood
         registerLog(UBlocks.PALM_LOG).log(UBlocks.PALM_LOG).wood(UBlocks.PALM_WOOD);
         registerLog(UBlocks.STRIPPED_PALM_LOG).log(UBlocks.STRIPPED_PALM_LOG).wood(UBlocks.STRIPPED_PALM_WOOD);
-        registerCubeAllModelTexturePool(UBlocks.PALM_PLANKS).family(new BlockFamily.Builder(UBlocks.PALM_PLANKS)
-                .slab(UBlocks.PALM_SLAB).stairs(UBlocks.PALM_STAIRS).fence(UBlocks.PALM_FENCE).fenceGate(UBlocks.PALM_FENCE_GATE)
-                .button(UBlocks.PALM_BUTTON).pressurePlate(UBlocks.PALM_PRESSURE_PLATE).sign(UBlocks.PALM_SIGN, UBlocks.PALM_WALL_SIGN)
-                .door(UBlocks.PALM_DOOR).trapdoor(UBlocks.PALM_TRAPDOOR)
-                .group("wooden").unlockCriterionName("has_planks")
-                .build());
+        registerCubeAllModelTexturePool(UBlocks.PALM_PLANKS).family(UBlockFamilies.PALM);
         registerHangingSign(UBlocks.STRIPPED_PALM_LOG, UBlocks.PALM_HANGING_SIGN, UBlocks.PALM_WALL_HANGING_SIGN);
         registerSimpleCubeAll(UBlocks.PALM_LEAVES);
 
@@ -137,15 +132,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerLog(UBlocks.STRIPPED_ZAP_LOG)
             .log(UBlocks.STRIPPED_ZAP_LOG).wood(UBlocks.STRIPPED_ZAP_WOOD)
             .log(UBlocks.WAXED_STRIPPED_ZAP_LOG).wood(UBlocks.WAXED_STRIPPED_ZAP_WOOD);
-        registerCubeAllModelTexturePool(UBlocks.ZAP_PLANKS)
-            .family(new BlockFamily.Builder(UBlocks.ZAP_PLANKS)
-                .slab(UBlocks.ZAP_SLAB).stairs(UBlocks.ZAP_STAIRS).fence(UBlocks.ZAP_FENCE).fenceGate(UBlocks.ZAP_FENCE_GATE)
-                .group("wooden").unlockCriterionName("has_planks")
-                .build())
-            .same(UBlocks.WAXED_ZAP_PLANKS).family(new BlockFamily.Builder(UBlocks.WAXED_ZAP_PLANKS)
-                .slab(UBlocks.WAXED_ZAP_SLAB).stairs(UBlocks.WAXED_ZAP_STAIRS).fence(UBlocks.WAXED_ZAP_FENCE).fenceGate(UBlocks.WAXED_ZAP_FENCE_GATE)
-                .group("wooden").unlockCriterionName("has_planks")
-                .build());
+        registerCubeAllModelTexturePool(UBlocks.ZAP_PLANKS).family(UBlockFamilies.ZAP).same(UBlocks.WAXED_ZAP_PLANKS).family(UBlockFamilies.WAXED_ZAP);
         registerZapLeaves(UBlocks.ZAP_LEAVES);
         registerSingleton(UBlocks.FLOWERING_ZAP_LEAVES, TexturedModel.LEAVES);
         registerStateWithModelReference(UBlocks.ZAP_LEAVES_PLACEHOLDER, Blocks.AIR);
