@@ -26,6 +26,7 @@ public interface UTags {
     TagKey<Item> IS_DELIVERED_AGGRESSIVELY = item("is_delivered_aggressively");
     TagKey<Item> FLOATS_ON_CLOUDS = item("floats_on_clouds");
     TagKey<Item> COOLS_OFF_KIRINS = item("cools_off_kirins");
+    TagKey<Item> LOOT_BUG_HIGH_VALUE_DROPS = item("loot_bug_high_value_drops");
 
     TagKey<Item> SHELLS = item("food_types/shells");
 

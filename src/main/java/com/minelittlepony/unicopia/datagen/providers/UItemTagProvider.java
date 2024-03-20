@@ -90,6 +90,11 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(UTags.FALLS_SLOWLY).add(Items.FEATHER, UItems.CLOUD_LUMP).forceAddTag(UTags.MAGIC_FEATHERS);
         getOrCreateTagBuilder(UTags.IS_DELIVERED_AGGRESSIVELY).forceAddTag(ItemTags.ANVIL);
         getOrCreateTagBuilder(UTags.SPOOKED_MOB_DROPS).add(Items.BRICK);
+        getOrCreateTagBuilder(UTags.SHADES).add(
+                Items.CARVED_PUMPKIN, Items.SKELETON_SKULL, Items.WITHER_SKELETON_SKULL, Items.PLAYER_HEAD,
+                Items.ZOMBIE_HEAD, Items.CREEPER_HEAD, Items.DRAGON_HEAD, Items.PIGLIN_HEAD,
+                UItems.SUNGLASSES
+        );
         getOrCreateTagBuilder(UTags.FLOATS_ON_CLOUDS)
             .forceAddTag(UTags.Items.CLOUD_BEDS)
             .forceAddTag(UTags.Items.CLOUD_SLABS)
@@ -103,6 +108,16 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
                 Items.DEBUG_STICK, Items.COMMAND_BLOCK_MINECART,
                 UItems.PLUNDER_VINE
         ).forceAddTag(UTags.BADGES);
+        getOrCreateTagBuilder(UTags.LOOT_BUG_HIGH_VALUE_DROPS).add(
+                    Items.DIAMOND, Items.GOLDEN_APPLE, Items.GOLDEN_CARROT,
+                    Items.GOLDEN_HELMET, Items.GOLDEN_BOOTS, Items.GOLDEN_LEGGINGS, Items.GOLDEN_CHESTPLATE,
+                    Items.GOLDEN_HORSE_ARMOR,
+                    Items.GOLDEN_PICKAXE, Items.GOLDEN_SHOVEL, Items.GOLDEN_AXE, Items.GOLDEN_SWORD, Items.GOLDEN_HOE,
+                    UItems.GOLDEN_HORSE_SHOE, UItems.GOLDEN_POLEARM, UItems.GOLDEN_FEATHER, UItems.GOLDEN_WING,
+                    UItems.GOLDEN_OAK_SEEDS
+            ).forceAddTag(ConventionalItemTags.NUGGETS)
+            .forceAddTag(ConventionalItemTags.GOLD_INGOTS).forceAddTag(ConventionalItemTags.RAW_GOLD_ORES).forceAddTag(ConventionalItemTags.RAW_GOLD_BLOCKS)
+            .addOptionalTag(new Identifier("farmersdelight:golden_knife"));
 
         exportFarmersDelightItems();
     }
