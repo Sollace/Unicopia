@@ -108,7 +108,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         // chitin blocks
         registerTopsoil(UBlocks.SURFACE_CHITIN, UBlocks.CHITIN);
         registerHollow(UBlocks.CHITIN);
-        registerCubeAllModelTexturePool(UBlocks.CHISELLED_CHITIN).stairs(UBlocks.CHISELLED_CHITIN_STAIRS).slab(UBlocks.CHISELLED_CHITIN_SLAB);
+        registerCubeAllModelTexturePool(UBlocks.CHISELLED_CHITIN).family(UBlockFamilies.CHISELED_CHITIN);
         registerHiveBlock(UBlocks.HIVE);
         registerRotated(UBlocks.CHITIN_SPIKES, BlockModels.SPIKES);
         registerHull(UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHITIN, UBlocks.CHISELLED_CHITIN);

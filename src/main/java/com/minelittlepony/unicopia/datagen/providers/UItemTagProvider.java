@@ -76,7 +76,8 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
                 .map(race -> race.getId().withPath(p -> p + "_badge"))
                 .flatMap(id -> Registries.ITEM.getOrEmpty(id).stream())
                 .toArray(Item[]::new));
-        getOrCreateTagBuilder(UTags.BED_SHEETS).add(BedsheetsItem.ITEMS.values().stream().toArray(Item[]::new));
+        getOrCreateTagBuilder(UTags.WOOL_BED_SHEETS).add(BedsheetsItem.ITEMS.values().stream().filter(sheet -> sheet != UItems.KELP_BED_SHEETS).toArray(Item[]::new));
+        getOrCreateTagBuilder(UTags.BED_SHEETS).forceAddTag(UTags.WOOL_BED_SHEETS).add(UItems.KELP_BED_SHEETS);
         getOrCreateTagBuilder(UTags.APPLE_SEEDS).add(UItems.GREEN_APPLE_SEEDS, UItems.SWEET_APPLE_SEEDS, UItems.SOUR_APPLE_SEEDS);
         getOrCreateTagBuilder(UTags.MAGIC_FEATHERS).add(UItems.PEGASUS_FEATHER, UItems.GRYPHON_FEATHER);
         getOrCreateTagBuilder(UTags.FRESH_APPLES).add(Items.APPLE, UItems.GREEN_APPLE, UItems.SWEET_APPLE, UItems.SOUR_APPLE);

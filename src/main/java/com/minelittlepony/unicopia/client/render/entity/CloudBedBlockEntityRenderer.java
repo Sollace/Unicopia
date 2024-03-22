@@ -100,7 +100,7 @@ public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBed
                 false,
                 false
         );
-        if (pattern != CloudBedBlock.SheetPattern.NONE) {
+        if (pattern != CloudBedBlock.SheetPattern.NONE && pattern != CloudBedBlock.SheetPattern.WHITE) {
             renderModel(matrices, vertices,
                     state.get(BedBlock.PART) == BedPart.HEAD ? bedSheetsHead : bedSheetsFoot,
                     state.get(BedBlock.FACING),

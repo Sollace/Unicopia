@@ -166,6 +166,7 @@ public interface UItems {
     Item GIANT_BALLOON = register("giant_balloon", new HotAirBalloonItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
     Item SPECTRAL_CLOCK = register("spectral_clock", new Item(new Item.Settings()), ItemGroups.TOOLS);
 
+    Item WHITE_BED_SHEETS = register(CloudBedBlock.SheetPattern.WHITE);
     Item LIGHT_GRAY_BED_SHEETS = register(CloudBedBlock.SheetPattern.LIGHT_GRAY);
     Item GRAY_BED_SHEETS = register(CloudBedBlock.SheetPattern.GRAY);
     Item BLACK_BED_SHEETS = register(CloudBedBlock.SheetPattern.BLACK);

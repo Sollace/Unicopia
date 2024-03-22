@@ -36,6 +36,7 @@ public interface UTags {
 
     TagKey<Item> BASKETS = item("baskets");
     TagKey<Item> BADGES = item("badges");
+    TagKey<Item> WOOL_BED_SHEETS = item("wool_bed_sheets");
     TagKey<Item> BED_SHEETS = item("bed_sheets");
     TagKey<Item> CLOUD_JARS = item("cloud_jars");
 

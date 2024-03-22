@@ -127,6 +127,7 @@ public class FancyBedBlock extends BedBlock {
 
     public enum SheetPattern implements StringIdentifiable {
         NONE(DyeColor.WHITE),
+        WHITE(DyeColor.WHITE),
         LIGHT_GRAY(DyeColor.LIGHT_GRAY),
         GRAY(DyeColor.GRAY),
         BLACK(DyeColor.BLACK),
