@@ -62,7 +62,7 @@ public enum Trait implements CommandArgumentEnum<Trait> {
     private static final Map<String, Trait> REGISTRY = Arrays.stream(values()).collect(Collectors.toMap(Trait::name, Function.identity()));
     private static final Map<Identifier, Trait> IDS = Arrays.stream(values()).collect(Collectors.toMap(Trait::getId, Function.identity()));
 
-    public static final com.mojang.serialization.Codec<Trait> CODEC = StringIdentifiable.createCodec(Trait::values, n -> Unicopia.id(n.toLowerCase(Locale.ROOT)).toString());
+    public static final com.mojang.serialization.Codec<Trait> CODEC = StringIdentifiable.createCodec(Trait::values, n -> n.toLowerCase(Locale.ROOT));
     public static final com.mojang.serialization.Codec<Set<Trait>> SET_CODEC = CODEC.listOf().xmap(
             l -> l.stream().distinct().collect(Collectors.toSet()),
             s -> s.stream().toList()
@@ -109,7 +109,7 @@ public enum Trait implements CommandArgumentEnum<Trait> {
 
     @Override
     public String asString() {
-        return name();
+        return getId().getPath();
     }
 
     public TraitGroup getGroup() {
