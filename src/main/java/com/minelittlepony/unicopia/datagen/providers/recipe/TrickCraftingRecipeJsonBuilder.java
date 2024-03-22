@@ -8,6 +8,8 @@ import org.spongepowered.include.com.google.common.base.Preconditions;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.minelittlepony.unicopia.item.URecipes;
+
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriterionMerger;
@@ -106,7 +108,7 @@ public class TrickCraftingRecipeJsonBuilder extends RecipeJsonBuilder implements
 
         @Override
         public RecipeSerializer<?> getSerializer() {
-            return RecipeSerializer.SHAPELESS;
+            return URecipes.ZAP_APPLE_SERIALIZER;
         }
 
         @Override
