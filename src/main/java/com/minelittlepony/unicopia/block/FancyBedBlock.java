@@ -17,8 +17,11 @@ import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.enums.BedPart;
+import net.minecraft.entity.mob.PiglinBrain;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.StringIdentifiable;
@@ -28,6 +31,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 
 public class FancyBedBlock extends BedBlock {
     private static final List<Function<Direction, VoxelShape>> SHAPES = List.of(
@@ -69,6 +74,30 @@ public class FancyBedBlock extends BedBlock {
             });
         }
         super.onStateReplaced(state, world, pos, newState, moved);
+    }
+
+    @Override
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        // MC-269785
+        BedPart part = state.get(PART);
+        BlockPos otherHalfPos = pos.offset(getDirectionTowardsOtherPart(part, state.get(FACING)));
+        BlockState otherHalfState = world.getBlockState(otherHalfPos);
+        if (/*!world.isClient &&*/ player.isCreative() && part == BedPart.FOOT && otherHalfState.isOf(this) && otherHalfState.get(PART) == BedPart.HEAD) {
+            if (!world.isClient) {
+                world.setBlockState(otherHalfPos, otherHalfState.getFluidState().getBlockState(), Block.NOTIFY_ALL | Block.SKIP_DROPS);
+            }
+            spawnBreakParticles(world, player, otherHalfPos, otherHalfState);
+            if (state.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
+                PiglinBrain.onGuardedBlockInteracted(player, false);
+            }
+            world.emitGameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Emitter.of(player, state));
+        } else {
+            spawnBreakParticles(world, player, pos, state);
+            if (state.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
+                PiglinBrain.onGuardedBlockInteracted(player, false);
+            }
+            world.emitGameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Emitter.of(player, state));
+        }
     }
 
     @Override
