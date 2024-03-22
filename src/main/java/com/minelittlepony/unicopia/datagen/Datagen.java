@@ -7,10 +7,10 @@ import com.minelittlepony.unicopia.datagen.providers.SeasonsGrowthRatesProvider;
 import com.minelittlepony.unicopia.datagen.providers.UBlockTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.UItemTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.UModelProvider;
-import com.minelittlepony.unicopia.datagen.providers.URecipeProvider;
 import com.minelittlepony.unicopia.datagen.providers.loot.UBlockAdditionsLootTableProvider;
 import com.minelittlepony.unicopia.datagen.providers.loot.UBlockLootTableProvider;
 import com.minelittlepony.unicopia.datagen.providers.loot.UChestAdditionsLootTableProvider;
+import com.minelittlepony.unicopia.datagen.providers.recipe.URecipeProvider;
 import com.minelittlepony.unicopia.server.world.UWorldGen;
 
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;

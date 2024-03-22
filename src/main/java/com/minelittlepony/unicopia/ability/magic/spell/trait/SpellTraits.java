@@ -17,6 +17,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
@@ -254,6 +255,12 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
 
     public static Optional<SpellTraits> fromJson(JsonObject traits) {
         return fromEntries(streamFromJson(traits));
+    }
+
+    public static JsonElement toJson(SpellTraits traits) {
+        JsonObject json = new JsonObject();
+        traits.forEach(entry -> json.addProperty(entry.getKey().getId().toString(), entry.getValue()));
+        return json;
     }
 
     public static Optional<SpellTraits> fromPacketOrEmpty(PacketByteBuf buf) {

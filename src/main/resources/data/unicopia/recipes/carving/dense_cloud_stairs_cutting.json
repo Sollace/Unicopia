@@ -1,6 +1,0 @@
-{
-  "type": "unicopia:cloud_shaping",
-  "ingredient": { "item": "unicopia:dense_cloud" },
-  "result": "unicopia:dense_cloud_stairs",
-  "count": 1
-}

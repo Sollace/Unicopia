@@ -6,6 +6,7 @@ public interface UCriteria {
     CustomEventCriterion CUSTOM_EVENT = Criteria.register(new CustomEventCriterion());
     RaceChangeCriterion PLAYER_CHANGE_RACE = Criteria.register(new RaceChangeCriterion());
     SendViaDragonBreathScrollCriterion SEND_DRAGON_BREATH = Criteria.register(new SendViaDragonBreathScrollCriterion());
+    TraitDiscoveredCriterion TRAIT_DISCOVERED = Criteria.register(new TraitDiscoveredCriterion());
 
     CustomEventCriterion.Trigger LOOK_INTO_SUN = CUSTOM_EVENT.createTrigger("look_into_sun");
     CustomEventCriterion.Trigger WEAR_SHADES = CUSTOM_EVENT.createTrigger("wear_shades");

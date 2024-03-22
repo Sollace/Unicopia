@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.datagen.providers;
+package com.minelittlepony.unicopia.datagen.providers.recipe;
 
 import java.util.Arrays;
 import java.util.List;
@@ -8,13 +8,16 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.UConventionalTags;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.UBlocks;
-import com.minelittlepony.unicopia.datagen.CraftingMaterialHelper;
 import com.minelittlepony.unicopia.datagen.ItemFamilies;
 import com.minelittlepony.unicopia.datagen.UBlockFamilies;
-import com.minelittlepony.unicopia.datagen.providers.BedSheetPatternRecipeBuilder.PatternTemplate;
+import com.minelittlepony.unicopia.datagen.providers.recipe.BedSheetPatternRecipeBuilder.PatternTemplate;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.server.world.UTreeGen;
 import com.mojang.datafixers.util.Either;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
@@ -25,6 +28,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.server.recipe.ComplexRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
+import net.minecraft.data.server.recipe.RecipeProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.ShapelessRecipeJsonBuilder;
 import net.minecraft.item.Item;
@@ -54,6 +58,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         offerCloudRecipes(exporter);
         offerFoodRecipes(exporter);
         offerGemstoneAndMagicRecipes(exporter);
+        offerMagicSpellRecipes(exporter);
         offerSeaponyRecipes(exporter);
         offerEarthPonyRecipes(exporter);
 
@@ -102,11 +107,33 @@ public class URecipeProvider extends FabricRecipeProvider {
         offer2x2CompactingRecipe(exporter, RecipeCategory.DECORATIONS, UBlocks.SHAPING_BENCH, UBlocks.DENSE_CLOUD);
         generateFamily(exporter, UBlockFamilies.CLOUD_BRICKS);
 
+        offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CARVED_CLOUD, UBlocks.CLOUD);
+        offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.ETCHED_CLOUD, UBlocks.CLOUD);
+        offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CLOUD_BRICKS, UBlocks.CLOUD);
+        offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CLOUD_PLANKS, UBlocks.CLOUD);
+        offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CLOUD_PILLAR, UBlocks.CLOUD);
+
+        // TODO: Cut Cloud, Smooth Cloud, Polished Cloud, Raked Cloud
+
+        offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CLOUD_SLAB, UBlocks.CLOUD, 2);
+        offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CLOUD_STAIRS, UBlocks.CLOUD);
+
+        offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CLOUD_BRICK_SLAB, UBlocks.CLOUD_BRICKS, 2);
+        offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CLOUD_BRICK_STAIRS, UBlocks.CLOUD_BRICKS);
+
+        offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CLOUD_PLANK_SLAB, UBlocks.CLOUD_PLANKS, 2);
+        offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CLOUD_PLANK_STAIRS, UBlocks.CLOUD_PLANKS);
+
+        offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.DENSE_CLOUD_SLAB, UBlocks.DENSE_CLOUD, 2);
+        offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.DENSE_CLOUD_STAIRS, UBlocks.DENSE_CLOUD);
+
+        offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.ETCHED_CLOUD_SLAB, UBlocks.ETCHED_CLOUD, 2);
+        offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.ETCHED_CLOUD_STAIRS, UBlocks.ETCHED_CLOUD);
+
         offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.DENSE_CLOUD, UBlocks.CLOUD, 4);
         generateFamily(exporter, UBlockFamilies.DENSE_CLOUD);
         offer2x3Recipe(exporter, UBlocks.CLOUD_DOOR, UBlocks.DENSE_CLOUD, "door");
 
-        // XXX: Make the unstable cloud recipe shapeless and change output to 8 (to align with making jam toast)
         ShapelessRecipeJsonBuilder.create(RecipeCategory.REDSTONE, UBlocks.UNSTABLE_CLOUD, 8)
             .input(UBlocks.CLOUD, 8)
             .input(Ingredient.ofItems(UItems.LIGHTNING_JAR, UItems.ZAP_APPLE_JAM_JAR))
@@ -129,7 +156,6 @@ public class URecipeProvider extends FabricRecipeProvider {
         generateFamily(exporter, UBlockFamilies.ZAP);
         offerPlanksRecipe(exporter, UBlocks.ZAP_PLANKS, UTags.Items.ZAP_LOGS, 4);
         offerBarkBlockRecipe(exporter, UBlocks.ZAP_WOOD, UBlocks.ZAP_LOG);
-        // XXX: fixed not being able to craft stripped zap wood and waxed stripped zap wood
         offerBarkBlockRecipe(exporter, UBlocks.STRIPPED_ZAP_WOOD, UBlocks.STRIPPED_ZAP_LOG);
 
         // waxed zap wood
@@ -147,12 +173,10 @@ public class URecipeProvider extends FabricRecipeProvider {
     }
 
     private void offerChitinBlocksRecipes(Consumer<RecipeJsonProvider> exporter) {
-        // XXX: Changed chitin recipe to be reversible
         offerReversibleCompactingRecipes(exporter, RecipeCategory.BUILDING_BLOCKS, UItems.CARAPACE, RecipeCategory.BUILDING_BLOCKS, UBlocks.CHITIN);
         generateFamily(exporter, UBlockFamilies.CHISELED_CHITIN);
         offerHiveRecipe(exporter, UBlocks.HIVE, UBlocks.CHITIN, UBlocks.MYSTERIOUS_EGG);
         offerHullRecipe(exporter, UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN, UBlocks.CHITIN);
-        // XXX: Changed spikes recipe to give 8 instead of 1
         offerSpikesRecipe(exporter, UBlocks.CHITIN_SPIKES, UBlocks.CHITIN);
 
         // TODO: polished chitin
@@ -164,9 +188,7 @@ public class URecipeProvider extends FabricRecipeProvider {
     }
 
     private void offerGemstoneAndMagicRecipes(Consumer<RecipeJsonProvider> exporter) {
-        // XXX: Change diamond to shard recipe to give 6 instead of 3
         offerShapelessRecipe(exporter, UItems.CRYSTAL_SHARD, Items.DIAMOND, "crystal_shard", 6);
-        // XXX: Added recipe to get shards from amethyst shards
         offerShapelessRecipe(exporter, UItems.CRYSTAL_SHARD, Items.AMETHYST_SHARD, "crystal_shard", 3);
         offer2x2CompactingRecipe(exporter, RecipeCategory.MISC, UItems.GEMSTONE, UItems.CRYSTAL_SHARD);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.SPELLBOOK)
@@ -206,14 +228,6 @@ public class URecipeProvider extends FabricRecipeProvider {
             .pattern("*#*")
             .offerTo(exporter);
 
-        // unicorn amulet
-        /*ShapelessRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.UNICORN_AMULET)
-            .input(UItems.PEGASUS_AMULET)
-            .input(UItems.CRYSTAL_HEART)
-            .input(UItems.GROGARS_BELL)
-            .input(Items.TOTEM_OF_UNDYING)
-            .offerTo(exporter);*/
-
         // friendship bracelet
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.FRIENDSHIP_BRACELET)
             .input('*', Items.STRING)
@@ -235,12 +249,65 @@ public class URecipeProvider extends FabricRecipeProvider {
         offerShapelessRecipe(exporter, Items.STICK, UItems.MEADOWBROOKS_STAFF, "stick", 2);
     }
 
+    private void offerMagicSpellRecipes(Consumer<RecipeJsonProvider> exporter) {
+        offerSpell(exporter, UItems.GEMSTONE, SpellType.DISPLACEMENT, new SpellTraits.Builder().with(Trait.KNOWLEDGE, 10).with(Trait.CHAOS, 10));
+        offerSpell(exporter, UItems.GEMSTONE, SpellType.FROST, new SpellTraits.Builder().with(Trait.ICE, 10));
+        offerSpell(exporter, UItems.GEMSTONE, SpellType.SCORCH, new SpellTraits.Builder().with(Trait.FIRE, 10));
+        offerSpell(exporter, UItems.GEMSTONE, SpellType.SHIELD, new SpellTraits.Builder().with(Trait.STRENGTH, 10).with(Trait.FOCUS, 6).with(Trait.POWER, 10));
+        offerSpell(exporter, UItems.GEMSTONE, SpellType.TRANSFORMATION, new SpellTraits.Builder().with(Trait.KNOWLEDGE, 10).with(Trait.LIFE, 10).with(Trait.CHAOS, 4));
+
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.ARCANE_PROTECTION, SpellType.SHIELD, new SpellTraits.Builder().with(Trait.STRENGTH, 10).with(Trait.KNOWLEDGE, 18).with(Trait.DARKNESS, 1));
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.BUBBLE, SpellType.CATAPULT, new SpellTraits.Builder().with(Trait.WATER, 9).with(Trait.AIR, 9));
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.CATAPULT, SpellType.FLAME, new SpellTraits.Builder().with(Trait.FOCUS, 9).with(Trait.AIR, 9));
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.CHILLING_BREATH, SpellType.FROST, new SpellTraits.Builder().with(Trait.ICE, 5).with(Trait.KNOWLEDGE, 10));
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.DARK_VORTEX, SpellType.VORTEX, new SpellTraits.Builder().with(Trait.STRENGTH, 10).with(Trait.KNOWLEDGE, 8).with(Trait.DARKNESS, 9).with(Trait.CHAOS, 8));
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.FEATHER_FALL, SpellType.SHIELD, new SpellTraits.Builder().with(Trait.KNOWLEDGE, 20).with(Trait.LIFE, 10).with(Trait.CHAOS, 4).with(Trait.GENEROSITY, 10));
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.FIRE_BOLT, SpellType.FLAME, new SpellTraits.Builder().with(Trait.FOCUS, 9).with(Trait.FIRE, 30));
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.FLAME, SpellType.SCORCH, new SpellTraits.Builder().with(Trait.FIRE, 15));
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.INFERNAL, SpellType.FLAME, new SpellTraits.Builder().with(Trait.FIRE, 50).with(Trait.DARKNESS, 10));
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.LIGHT, SpellType.FIRE_BOLT, new SpellTraits.Builder().with(Trait.ICE, 30).with(Trait.LIFE, 30).with(Trait.FOCUS, 10));
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.MIMIC, SpellType.TRANSFORMATION, new SpellTraits.Builder().with(Trait.KNOWLEDGE, 19).with(Trait.LIFE, 10).with(Trait.CHAOS, 4));
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.MIND_SWAP, SpellType.MIMIC, new SpellTraits.Builder().with(Trait.KNOWLEDGE, 19).with(Trait.LIFE, 10).with(Trait.CHAOS, 40));
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.NECROMANCY, SpellType.SIPHONING, new SpellTraits.Builder().with(Trait.STRENGTH, 10).with(Trait.KNOWLEDGE, 8).with(Trait.DARKNESS, 19).with(Trait.CHAOS, 8).with(Trait.BLOOD, 10).with(Trait.POISON, 9));
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.REVEALING, SpellType.SHIELD, new SpellTraits.Builder().with(Trait.KNOWLEDGE, 18).with(Trait.LIFE, 1).with(Trait.ORDER, 4));
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.SIPHONING, SpellType.INFERNAL, new SpellTraits.Builder().with(Trait.BLOOD, 8).with(Trait.POISON, 10));
+        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.VORTEX, SpellType.SHIELD, new SpellTraits.Builder().with(Trait.STRENGTH, 10).with(Trait.KNOWLEDGE, 8).with(Trait.AIR, 9));
+
+        offerSpellFromTwoSpells(exporter, UItems.GEMSTONE, SpellType.DISPEL_EVIL, SpellType.ARCANE_PROTECTION, SpellType.DISPLACEMENT, new SpellTraits.Builder().with(Trait.KINDNESS, 1).with(Trait.POWER, 1));
+        offerSpellFromTwoSpells(exporter, UItems.GEMSTONE, SpellType.HYDROPHOBIC, SpellType.FROST, SpellType.SHIELD, new SpellTraits.Builder().with(Trait.FOCUS, 6));
+        offerSpellFromTwoSpells(exporter, UItems.GEMSTONE, SpellType.PORTAL, SpellType.DISPLACEMENT, SpellType.DARK_VORTEX, new SpellTraits.Builder().with(Trait.KNOWLEDGE, 18).with(Trait.CHAOS, 20));
+
+        SpellcraftingRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.ALICORN_AMULET, SpellType.EMPTY_KEY)
+            .base(UItems.GEMSTONE, SpellType.DARK_VORTEX)
+            .traits(new SpellTraits.Builder().with(Trait.DARKNESS, 30).with(Trait.POWER, 30).with(Trait.BLOOD, 30))
+            .offerTo(exporter, "alicorn_amulet");
+
+        SpellcraftingRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.UNICORN_AMULET, SpellType.EMPTY_KEY)
+            .base(UItems.BROKEN_ALICORN_AMULET, SpellType.EMPTY_KEY)
+            .input(UItems.PEGASUS_AMULET, SpellType.EMPTY_KEY)
+            .input(UItems.CRYSTAL_HEART, SpellType.EMPTY_KEY)
+            .input(UItems.GROGARS_BELL, SpellType.EMPTY_KEY)
+            .input(Items.TOTEM_OF_UNDYING, SpellType.EMPTY_KEY)
+            .traits(new SpellTraits.Builder())
+            .criterion(hasItem(UItems.BROKEN_ALICORN_AMULET), conditionsFromItem(UItems.BROKEN_ALICORN_AMULET))
+            .offerTo(exporter, "unicorn_amulet");
+
+        SpellcraftingRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.DRAGON_BREATH_SCROLL, SpellType.EMPTY_KEY)
+            .base(Items.PAPER, SpellType.EMPTY_KEY)
+            .input(Items.PAPER, SpellType.EMPTY_KEY)
+            .traits(new SpellTraits.Builder().with(Trait.FIRE, 1))
+            .offerTo(exporter, "dragon_breath_scroll");
+
+        ComplexSpellcraftingRecipeJsonBuilder.create(URecipes.SPELL_DUPLICATING, UItems.BOTCHED_GEM).offerTo(exporter, "spell_duplicating");
+        ComplexSpellcraftingRecipeJsonBuilder.create(URecipes.TRAIT_COMBINING, UItems.BOTCHED_GEM).offerTo(exporter, "trait_combining_botched_gem");
+        ComplexSpellcraftingRecipeJsonBuilder.create(URecipes.TRAIT_COMBINING, UItems.GEMSTONE).offerTo(exporter, "trait_combining_gemstone");
+    }
+
     private void offerFoodRecipes(Consumer<RecipeJsonProvider> exporter) {
         offerShapelessRecipe(exporter, UItems.PINEAPPLE_CROWN, UItems.PINEAPPLE, "seeds", 1);
         offerShapelessRecipe(exporter, UItems.SWEET_APPLE_SEEDS, UItems.SWEET_APPLE, "seeds", 3);
         offerShapelessRecipe(exporter, UItems.SOUR_APPLE_SEEDS, UItems.SOUR_APPLE, "seeds", 3);
         offerShapelessRecipe(exporter, UItems.GREEN_APPLE_SEEDS, UItems.GREEN_APPLE, "seeds", 3);
-        // XXX: Made golden oak seeds obtainable by crafting
         offerShapelessRecipe(exporter, UItems.GOLDEN_OAK_SEEDS, Items.GOLDEN_APPLE, "seeds", 1);
         offerPieRecipe(exporter, UItems.APPLE_PIE, UItems.APPLE_PIE_SLICE, Items.WHEAT, UTags.FRESH_APPLES);
 
@@ -258,7 +325,6 @@ public class URecipeProvider extends FabricRecipeProvider {
             .group("juice")
             .offerTo(exporter);
         appendIngredients(ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.MUFFIN), Items.SUGAR, Items.EGG, Items.POTATO, UItems.JUICE, UItems.WHEAT_WORMS).offerTo(exporter);
-        // XXX: Removed the complex cider recipe
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.MUG)
             .input('*', Items.IRON_NUGGET).criterion(hasItem(Items.IRON_NUGGET), conditionsFromItem(Items.IRON_NUGGET))
             .input('#', UConventionalTags.STICKS).criterion(hasItem(Items.STICK), conditionsFromTag(UConventionalTags.STICKS))
@@ -266,7 +332,6 @@ public class URecipeProvider extends FabricRecipeProvider {
             .pattern("* *")
             .pattern(" # ")
             .offerTo(exporter);
-        // XXX: Changed the simple cider recipe to require apples
         appendIngredients(ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.CIDER), UItems.BURNED_JUICE, UItems.MUG)
             .input(Ingredient.fromTag(UTags.FRESH_APPLES)).criterion(hasItem(Items.APPLE), conditionsFromTag(UTags.FRESH_APPLES))
             .offerTo(exporter);
@@ -308,25 +373,42 @@ public class URecipeProvider extends FabricRecipeProvider {
         offerSmelting(exporter, List.of(UItems.TOAST), RecipeCategory.FOOD, UItems.BURNED_TOAST, 0.2F, 30, "bread");
         offerSmelting(exporter, List.of(UItems.BURNED_JUICE, UItems.BURNED_TOAST), RecipeCategory.FOOD, Items.CHARCOAL, 1, 20, "coal");
         offerSmelting(exporter, List.of(UItems.HAY_FRIES), RecipeCategory.FOOD, UItems.CRISPY_HAY_FRIES, 1F, 25, "hay_fries");
-        // XXX: Increased experience from cooking zap apples
         offerSmelting(exporter, List.of(UItems.ZAP_APPLE), RecipeCategory.FOOD, UItems.COOKED_ZAP_APPLE, 1.2F, 430, "zap_apple");
 
-        // XXX: Make zap apple jam jar recipe shapeless
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.ZAP_APPLE_JAM_JAR)
             .input(UItems.COOKED_ZAP_APPLE, 6).criterion(hasItem(UItems.COOKED_ZAP_APPLE), conditionsFromItem(UItems.COOKED_ZAP_APPLE))
             .input(UItems.EMPTY_JAR)
             .offerTo(exporter);
-        // XXX: Make jam toast recipe shapeless
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.JAM_TOAST, 8)
             .input(UItems.ZAP_APPLE_JAM_JAR).criterion(hasItem(UItems.ZAP_APPLE_JAM_JAR), conditionsFromItem(UItems.ZAP_APPLE_JAM_JAR))
             .input(UItems.TOAST, 8)
             .offerTo(exporter);
-
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.CANDIED_APPLE)
             .input(UConventionalTags.STICKS)
             .input(UTags.FRESH_APPLES).criterion(hasItem(UItems.ZAP_APPLE_JAM_JAR), conditionsFromItem(UItems.ZAP_APPLE_JAM_JAR))
             .input(Items.SUGAR, 4)
             .offerTo(exporter);
+
+        // trick apples
+        offerTrickRecipe(exporter, UItems.GREEN_APPLE, Items.GREEN_DYE);
+        offerTrickRecipe(exporter, Items.APPLE, Items.RED_DYE);
+        offerTrickRecipe(exporter, UItems.SOUR_APPLE, Items.YELLOW_DYE);
+        offerTrickRecipe(exporter, UItems.SWEET_APPLE, Items.ORANGE_DYE);
+        offerTrickRecipe(exporter, UItems.ROTTEN_APPLE, Items.ROTTEN_FLESH);
+        offerTrickRecipe(exporter, UItems.COOKED_ZAP_APPLE, Items.SPIDER_EYE);
+        offerTrickRecipe(exporter, Items.GOLDEN_APPLE, Items.GOLD_NUGGET);
+        offerTrickRecipe(exporter, Items.ENCHANTED_GOLDEN_APPLE, Items.GOLD_INGOT);
+        offerTrickRecipe(exporter, UItems.MANGO, Items.LIME_DYE);
+        offerTrickRecipe(exporter, UItems.PINEAPPLE, UItems.PINEAPPLE_CROWN);
+        offerTrickRecipe(exporter, UItems.HORSE_SHOE_FRIES, UItems.IRON_HORSE_SHOE);
+        offerTrickRecipe(exporter, UItems.MUFFIN, UItems.ROCK);
+    }
+
+    public static void offerTrickRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
+        TrickCraftingRecipeJsonBuilder.create(RecipeCategory.FOOD, output)
+            .input(UItems.ZAP_APPLE).criterion(hasItem(UItems.ZAP_APPLE), conditionsFromItem(UItems.ZAP_APPLE))
+            .input(input)
+            .offerTo(exporter, convertBetween(output, input) + "_trick");
     }
 
     private void offerSeaponyRecipes(Consumer<RecipeJsonProvider> exporter) {
@@ -376,12 +458,15 @@ public class URecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter, convertBetween(Items.DIRT, UItems.WHEAT_WORMS));
 
         offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Items.COBBLESTONE, UItems.ROCK);
-
-        // XXX: Made gravel <-> pebbles conversion reversable
         offerReversibleCompactingRecipesWithReverseRecipeGroup(exporter, RecipeCategory.MISC, UItems.PEBBLES, RecipeCategory.BUILDING_BLOCKS, Blocks.GRAVEL, convertBetween(UItems.PEBBLES, Blocks.GRAVEL), "pebbles");
-        // XXX: Added sus gravel -> pebbles recipe
         offerShapelessRecipe(exporter, UItems.PEBBLES, Blocks.SUSPICIOUS_GRAVEL, "pebbles", 9);
         offerSmelting(exporter, List.of(UItems.GOLDEN_OAK_SEEDS, UItems.GOLDEN_FEATHER), RecipeCategory.MISC, Items.GOLD_NUGGET, 3F, 10, "gold_nugget");
+
+        offerGrowing(exporter, UBlocks.CURING_JOKE, Blocks.LAPIS_BLOCK, Blocks.CORNFLOWER);
+        offerGrowing(exporter, UBlocks.GOLD_ROOT, Blocks.RAW_GOLD_BLOCK, Blocks.CARROTS);
+        offerGrowing(exporter, UTreeGen.GOLDEN_APPLE_TREE.sapling().get(), Blocks.RAW_GOLD_BLOCK, Blocks.OAK_SAPLING);
+        offerGrowing(exporter, UBlocks.PLUNDER_VINE_BUD, Blocks.NETHERRACK, Blocks.WITHER_ROSE);
+        offerGrowing(exporter, UTreeGen.ZAP_APPLE_TREE.sapling().get(), UBlocks.CHITIN, Blocks.DARK_OAK_SAPLING);
     }
 
     private static ShapelessRecipeJsonBuilder appendIngredients(ShapelessRecipeJsonBuilder builder, ItemConvertible...ingredients) {
@@ -522,8 +607,6 @@ public class URecipeProvider extends FabricRecipeProvider {
 
     private void offerBedSheetRecipes(Consumer<RecipeJsonProvider> exporter) {
         PatternTemplate.ONE_COLOR.offerWithoutConversion(exporter, UItems.KELP_BED_SHEETS, Items.KELP);
-        // XXX: Added white bed sheets, and added a recipe to dye white bed sheets any color
-        // XXX: Added recipes to change any bedsheet into any solid color using the right wool
         WOOLS.forEach(wool -> PatternTemplate.ONE_COLOR.offerTo(exporter, CraftingMaterialHelper.getItem(Unicopia.id(Registries.ITEM.getId(wool).getPath().replace("_wool", "_bed_sheets"))), wool));
 
         PatternTemplate.TWO_COLOR.offerTo(exporter, UItems.APPLE_BED_SHEETS, Items.GREEN_WOOL, Items.LIME_WOOL);
@@ -564,5 +647,43 @@ public class URecipeProvider extends FabricRecipeProvider {
             .input(input).criterion(hasItem(input), conditionsFromItem(input))
             .group(getItemPath(output))
             .offerTo(exporter, convertBetween(output, Items.HONEYCOMB));
+    }
+
+    public static void offerCloudShapingRecipe(Consumer<RecipeJsonProvider> exporter, RecipeCategory category, ItemConvertible output, ItemConvertible input) {
+        offerCloudShapingRecipe(exporter, category, output, input, 1);
+    }
+
+    public static void offerCloudShapingRecipe(Consumer<RecipeJsonProvider> exporter, RecipeCategory category, ItemConvertible output, ItemConvertible input, int count) {
+        CraftingMaterialHelper.createCloudShaping(Ingredient.ofItems(input), category, output, count)
+            .criterion(RecipeProvider.hasItem(input), RecipeProvider.conditionsFromItem(input))
+            .offerTo(exporter, RecipeProvider.convertBetween(output, input) + "_cloud_shaping");
+    }
+
+    public static void offerGrowing(Consumer<RecipeJsonProvider> exporter, Block output, Block fuel, Block target) {
+        GrowingRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output.getDefaultState())
+            .fuel(fuel.getDefaultState())
+            .target(target).criterion(hasItem(target), conditionsFromItem(target))
+            .offerTo(exporter);
+    }
+
+    public void offerSpell(Consumer<RecipeJsonProvider> exporter, ItemConvertible gemstone, SpellType<?> output, SpellTraits.Builder traits) {
+        SpellcraftingRecipeJsonBuilder.create(RecipeCategory.MISC, gemstone, output)
+            .traits(traits)
+            .offerTo(exporter);
+    }
+
+    public void offerSpellFromSpell(Consumer<RecipeJsonProvider> exporter, ItemConvertible gemstone, SpellType<?> output, SpellType<?> input, SpellTraits.Builder traits) {
+        SpellcraftingRecipeJsonBuilder.create(RecipeCategory.MISC, gemstone, output)
+            .input(gemstone, input)
+            .traits(traits)
+            .offerTo(exporter);
+    }
+
+    public void offerSpellFromTwoSpells(Consumer<RecipeJsonProvider> exporter, ItemConvertible gemstone, SpellType<?> output, SpellType<?> input1, SpellType<?> input2, SpellTraits.Builder traits) {
+        SpellcraftingRecipeJsonBuilder.create(RecipeCategory.MISC, gemstone, output)
+            .input(gemstone, input1)
+            .input(gemstone, input2)
+            .traits(traits)
+            .offerTo(exporter);
     }
 }

@@ -1,17 +1,24 @@
-package com.minelittlepony.unicopia.datagen;
+package com.minelittlepony.unicopia.datagen.providers.recipe;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.item.URecipes;
 import com.mojang.datafixers.util.Either;
 
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.data.server.recipe.RecipeProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
+import net.minecraft.data.server.recipe.SingleItemRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.VanillaRecipeProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
@@ -61,5 +68,23 @@ public interface CraftingMaterialHelper {
 
     static String hasTag(TagKey<Item> tag) {
         return "has_" + tag.id();
+    }
+
+    static InventoryChangedCriterion.Conditions conditionsFromSpell(ItemConvertible gem, SpellType<?> spell) {
+        NbtCompound nbt = new NbtCompound();
+        nbt.putString("spell", spell.getId().toString());
+        return RecipeProvider.conditionsFromItemPredicates(ItemPredicate.Builder.create()
+                .items(gem)
+                .nbt(nbt)
+                .build()
+        );
+    }
+
+    static String hasSpell(SpellType<?> spell) {
+        return "has_" + spell.getId() + "_gemstone";
+    }
+
+    static SingleItemRecipeJsonBuilder createCloudShaping(Ingredient input, RecipeCategory category, ItemConvertible output, int count) {
+        return new SingleItemRecipeJsonBuilder(category, URecipes.CLOUD_SHAPING_SERIALIZER, input, output, count);
     }
 }

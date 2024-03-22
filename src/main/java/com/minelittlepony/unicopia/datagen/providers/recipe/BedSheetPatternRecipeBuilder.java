@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.datagen.providers;
+package com.minelittlepony.unicopia.datagen.providers.recipe;
 
 import java.util.Arrays;
 import java.util.HashMap;
