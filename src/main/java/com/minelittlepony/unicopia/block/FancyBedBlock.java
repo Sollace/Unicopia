@@ -57,6 +57,20 @@ public class FancyBedBlock extends BedBlock {
         return SHAPES.get(state.get(PART).ordinal()).apply(BedBlock.getOppositePartDirection(state));
     }
 
+    @Deprecated
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (state.hasBlockEntity() && !state.isOf(newState.getBlock()) && state.get(PART) == BedPart.HEAD) {
+            world.getBlockEntity(pos, UBlockEntities.FANCY_BED).ifPresent(tile -> {
+                SheetPattern pattern = tile.getPattern();
+                if (pattern != SheetPattern.NONE) {
+                    dropStack(world, pos, BedsheetsItem.forPattern(pattern).getDefaultStack());
+                }
+            });
+        }
+        super.onStateReplaced(state, world, pos, newState, moved);
+    }
+
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new Tile(pos, state);
