@@ -106,7 +106,8 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         addDrop(UBlocks.ETCHED_CLOUD, drops(UBlocks.ETCHED_CLOUD, UItems.CLOUD_LUMP, ConstantLootNumberProvider.create(9)));
         addDrop(UBlocks.ETCHED_CLOUD_STAIRS, drops(UBlocks.ETCHED_CLOUD_STAIRS, UItems.CLOUD_LUMP, ConstantLootNumberProvider.create(13)));
 
-        addDrop(UBlocks.CLOUD_PILLAR, drops(UBlocks.CLOUD_PILLAR, UBlocks.CLOUD, ConstantLootNumberProvider.create(6)));
+        // recipe produces: 6 blocks -> 3 pillars means: 6/3 = 2
+        addDrop(UBlocks.CLOUD_PILLAR, drops(UBlocks.CLOUD_PILLAR, UBlocks.CLOUD, ConstantLootNumberProvider.create(2)));
 
         addDrop(UBlocks.FROSTED_OBSIDIAN, Blocks.OBSIDIAN);
     }
