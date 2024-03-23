@@ -1,16 +1,16 @@
 {
   "default_multiplier": 0.15,
-  "foraging_multiplier": 0,
+  "foraging_multiplier": 0.1,
   "multipliers": [
     {
       "tags": [ "unicopia:food_types/cooked_insect" ],
-      "hunger": 0.3,
-      "saturation": 0.3
+      "hunger": 2.0,
+      "saturation": 1.3
     },
     {
       "tags": [ "unicopia:food_types/cooked_meat" ],
-      "hunger": 0.1,
-      "saturation": 0.1
+      "hunger": 1.9,
+      "saturation": 1.2
     },
     {
       "tags": [ "unicopia:food_types/raw_insect" ],
@@ -19,8 +19,8 @@
     },
     {
       "tags": [ "unicopia:food_types/raw_meat" ],
-      "hunger": 0.25,
-      "saturation": 0.25
+      "hunger": 1.25,
+      "saturation": 1.25
     },
     {
       "tags": [ "unicopia:food_types/rotten_meat" ],
@@ -36,8 +36,8 @@
     },
     {
       "tags": [ "unicopia:food_types/love" ],
-      "hunger": 1,
-      "saturation": 1
+      "hunger": 5,
+      "saturation": 3
     }
   ],
   "default_effects": {
@@ -104,7 +104,12 @@
         "unicopia:food_types/rotten_meat"
       ],
       "ailment": {
-        "effects": [ ]
+        "effects": [
+          {
+            "name": "Love Consumption",
+            "type": "unicopia:cure_love_sickness"
+          }
+        ]
       }
     },
     {
@@ -120,12 +125,12 @@
         "effects": [
           {
             "effect": "unicopia:food_poisoning",
-            "seconds": 100,
+            "seconds": 10,
             "amplifier": 2
           },
           {
             "effect": "minecraft:weakness",
-            "seconds": 200,
+            "seconds": 2,
             "amplifier": 1
           },
           {
