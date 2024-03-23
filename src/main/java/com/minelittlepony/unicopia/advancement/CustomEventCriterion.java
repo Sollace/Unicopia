@@ -50,6 +50,22 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
         void trigger(@Nullable Entity player);
     }
 
+    public static Conditions create(String name) {
+        return new Conditions(LootContextPredicate.EMPTY, name, RacePredicate.EMPTY, null, 1);
+    }
+
+    public static Conditions create(String name, int count) {
+        return new Conditions(LootContextPredicate.EMPTY, name, RacePredicate.EMPTY, null, count);
+    }
+
+    public static Conditions createFlying(String name) {
+        return new Conditions(LootContextPredicate.EMPTY, name, RacePredicate.EMPTY, true, 1);
+    }
+
+    public static Conditions createFlying(String name, int count) {
+        return new Conditions(LootContextPredicate.EMPTY, name, RacePredicate.EMPTY, true, count);
+    }
+
     public static class Conditions extends AbstractCriterionConditions {
         private final String event;
 

@@ -97,7 +97,10 @@ public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendVi
         public JsonObject toJson(AdvancementEntityPredicateSerializer serializer) {
             JsonObject json = super.toJson(serializer);
             json.add("item", item.toJson());
-            json.add("race", races.toJson());
+            if (!races.isEmpty()) {
+                json.add("race", races.toJson());
+            }
+            json.addProperty("is_receiving_end", isReceivingEnd);
             recipientName.ifPresent(recipient -> json.addProperty("recipient_name", recipient));
             if (recipientPresent != TriState.DEFAULT) {
                 json.addProperty("recipient_present", recipientPresent.getBoxed());

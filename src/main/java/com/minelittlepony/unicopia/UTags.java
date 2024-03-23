@@ -57,6 +57,8 @@ public interface UTags {
 
     TagKey<DamageType> BREAKS_SUNGLASSES = damage("breaks_sunglasses");
     TagKey<DamageType> SPELLBOOK_IMMUNE_TO = damage("spellbook_immune_to");
+    TagKey<DamageType> FROM_ROCKS = damage("from_rocks");
+    TagKey<DamageType> FROM_HORSESHOES = damage("from_horseshoes");
 
     TagKey<DimensionType> HAS_NO_ATMOSPHERE = dimension("has_no_atmosphere");
 
