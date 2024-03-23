@@ -108,7 +108,15 @@ public record Race (Supplier<Composite> compositeSupplier, Availability availabi
     }
 
     public boolean canInteractWithClouds() {
+        return canFly() && this != CHANGELING;
+    }
+
+    public boolean canInfluenceWeather() {
         return canFly() && this != CHANGELING && this != BAT && this != HIPPOGRIFF;
+    }
+
+    public boolean hasPersistentWeatherMagic() {
+        return canInfluenceWeather();
     }
 
     public Identifier getId() {
@@ -223,6 +231,18 @@ public record Race (Supplier<Composite> compositeSupplier, Availability availabi
 
         public boolean canCast() {
             return any(Race::canCast);
+        }
+
+        public boolean canInteractWithClouds() {
+            return any(Race::canInteractWithClouds);
+        }
+
+        public boolean canInfluenceWeather() {
+            return any(Race::canInfluenceWeather);
+        }
+
+        public boolean hasPersistentWeatherMagic() {
+            return any(Race::hasPersistentWeatherMagic);
         }
 
         public FlightType flightType() {

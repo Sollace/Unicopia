@@ -160,7 +160,7 @@ public class ItemImpl implements Equine<ItemEntity> {
 
     @Override
     public boolean collidesWithClouds() {
-        return entity.getStack().isIn(UTags.FLOATS_ON_CLOUDS) || getSpecies().canInteractWithClouds();
+        return entity.getStack().isIn(UTags.FLOATS_ON_CLOUDS) || getSpecies().hasPersistentWeatherMagic();
     }
 
     @Override

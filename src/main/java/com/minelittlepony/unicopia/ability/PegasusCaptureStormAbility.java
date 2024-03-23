@@ -35,7 +35,7 @@ public class PegasusCaptureStormAbility implements Ability<Hit> {
 
     @Override
     public boolean canUse(Race race) {
-        return race.canInteractWithClouds();
+        return race.canInfluenceWeather();
     }
 
     @Nullable

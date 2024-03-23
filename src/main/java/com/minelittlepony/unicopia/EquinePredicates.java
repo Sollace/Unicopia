@@ -20,7 +20,7 @@ public interface EquinePredicates {
     Predicate<Entity> BAT = physicalRaceMatches(Race.BAT::equals);
     Predicate<Entity> CHANGELING = physicalRaceMatches(Race.CHANGELING::equals);
 
-    Predicate<Entity> RACE_INTERACT_WITH_CLOUDS = raceMatches(Race::canInteractWithClouds);
+    Predicate<Entity> RACE_CAN_INFLUENCE_WEATHER = raceMatches(Race::canInfluenceWeather);
     Predicate<Entity> RAGING = IS_PLAYER.and(SpellType.RAGE::isOn);
 
     Predicate<Entity> PLAYER_EARTH = IS_PLAYER.and(ofRace(Race.EARTH));
@@ -28,7 +28,6 @@ public interface EquinePredicates {
     Predicate<Entity> PLAYER_UNICORN = IS_PLAYER.and(raceMatches(Race::canCast));
     Predicate<Entity> PLAYER_CHANGELING = IS_PLAYER.and(ofRace(Race.CHANGELING));
     Predicate<Entity> PLAYER_KIRIN = IS_PLAYER.and(ofRace(Race.KIRIN));
-    Predicate<Entity> PLAYER_PEGASUS = IS_PLAYER.and(e -> ((PlayerEntity)e).getAbilities().creativeMode || RACE_INTERACT_WITH_CLOUDS.test(e));
     Predicate<Entity> PLAYER_SEAPONY = IS_PLAYER.and(raceMatches(Race::isFish));
 
     Predicate<Entity> PLAYER_CAN_USE_EARTH = IS_PLAYER.and(raceMatches(Race::canUseEarth));

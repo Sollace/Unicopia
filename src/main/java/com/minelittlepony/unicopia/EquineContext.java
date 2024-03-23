@@ -22,7 +22,7 @@ public interface EquineContext {
     }
 
     default boolean collidesWithClouds() {
-        return getCompositeRace().any(Race::canInteractWithClouds);
+        return getCompositeRace().canInteractWithClouds();
     }
 
     static EquineContext of(ShapeContext context) {
