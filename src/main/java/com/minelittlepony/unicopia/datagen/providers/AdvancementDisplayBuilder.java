@@ -97,7 +97,7 @@ public class AdvancementDisplayBuilder {
     }
 
     public AdvancementDisplayBuilder parent(Identifier parent) {
-        advancementBuilder.parent(parent);
+        advancementBuilder.parent(Advancement.Builder.createUntelemetered().build(parent));
         return this;
     }
 

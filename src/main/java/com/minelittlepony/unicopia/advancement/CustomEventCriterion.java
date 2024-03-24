@@ -94,11 +94,13 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
         public JsonObject toJson(AdvancementEntityPredicateSerializer serializer) {
             JsonObject json = super.toJson(serializer);
             json.addProperty("event", event);
-            json.add("race", races.toJson());
+            if (!races.isEmpty()) {
+                json.add("race", races.toJson());
+            }
             if (flying != null) {
                 json.addProperty("flying", flying);
             }
-            if (repeatCount > 0) {
+            if (repeatCount > 1) {
                 json.addProperty("repeats", repeatCount);
             }
             return json;
