@@ -6,12 +6,12 @@
   "sleep.not_possible.nocturnal": "您無法跳過這一天",
   "sleep.skipping_day": "這一天將在睡夢中度過",
 
-  "ability.unicopia.empty_hooves": "我需要找到一個罐子",
+  "ability.unicopia.empty_hooves": "我需要一個罐子",
   "ability.unicopia.indoors": "我在這裏看不到天空",
   "ability.unicopia.too_low": "我要飛得更高",
   "ability.unicopia.clear_skies": "天空已經很晴朗了",
-  "ability.unicopia.too_calm.1": "我要更憤怒一點……",
-  "ability.unicopia.too_calm.2": "我並不感到憤怒……",
+  "ability.unicopia.too_calm.1": "我的怒火要更加旺盛一些……",
+  "ability.unicopia.too_calm.2": "我並不怎麼生氣……",
   "ability.unicopia.too_calm.3": "李小龍這麼做看着好輕鬆啊……",
   "ability.unicopia.too_calm.4": "塞蕾斯蒂亞公主，請賜予我力量……",
 
@@ -25,7 +25,7 @@
   "itemGroup.unicopia.changeling": "Unicopia - 幻形峭壁",
 
   "item.unicopia.friendship_bracelet": "友誼手鐲",
-  "item.unicopia.friendship_bracelet.issuer": "由 %s 簽名",
+  "item.unicopia.friendship_bracelet.issuer": "由%s簽名",
   "item.unicopia.friendship_bracelet.glowing": "正在發光",
 
   "item.unicopia.oak_basket": "橡木籃",
@@ -82,9 +82,9 @@
   "item.unicopia.plunder_vine": "掠奪藤蔓",
   "item.unicopia.empty_jar": "玻璃罐",
   "item.unicopia.filled_jar": "%s罐",
-  "item.unicopia.rain_cloud_jar": "雨罐",
+  "item.unicopia.rain_cloud_jar": "雨雲罐",
   "item.unicopia.storm_cloud_jar": "暴雨罐",
-  "item.unicopia.lightning_jar": "雷電罐",
+  "item.unicopia.lightning_jar": "閃電罐",
   "item.unicopia.zap_apple_jam_jar": "彩虹蘋果醬罐",
   
   "item.unicopia.toast": "烤麪包片",
@@ -197,7 +197,7 @@
   "item.unicopia.music_disc_funk.desc": "Death by Glamour",
   
   "item.unicopia.cloud_lump": "雲塊",
-  "item.unicopia.white_bed_sheets": "白被單",
+  "item.unicopia.white_bed_sheets": "白色被單",
   "item.unicopia.light_gray_bed_sheets": "淡灰被單",
   "item.unicopia.gray_bed_sheets": "灰色被單",
   "item.unicopia.black_bed_sheets": "黑色被單",
@@ -1548,7 +1548,7 @@
   "unicopia.subtitle.pegasus.molt": "飛馬：掉落羽毛",
   "unicopia.subtitle.unicorn.teleport": "魔法：傳送",
   "unicopia.subtitle.player.wololo": "喔囉囉！",
-  "unicopia.subtitle.corrupt": "魔法墮落",
+  "unicopia.subtitle.corrupt": "魔法：墮落",
   "unicopia.subtitle.entity.player.whistle": "玩家：吹口哨",
   "unicopia.subtitle.entity.player.kick": "玩家：踢",
   "unicopia.subtitle.magic_aura": "魔法：低鳴",
