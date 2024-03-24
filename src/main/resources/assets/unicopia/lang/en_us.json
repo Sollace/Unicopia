@@ -1618,6 +1618,10 @@
   "advancements.unicopia.eat_trick_apple.description": "Bite into a zap apple",
   "advancements.unicopia.eat_pinecone.title": "Desperation",
   "advancements.unicopia.eat_pinecone.description": "Eat a pinecone",
+  "advancements.unicopia.what_the_hay.title": "What The Hay",
+  "advancements.unicopia.what_the_hay.description": "Eat an entire block of hay",
+  "advancements.unicopia.oats_so_easy.title": "Oats So Easy",
+  "advancements.unicopia.oats_so_easy.description": "Farm some oats",
   "advancements.unicopia.imported_oats.title": "Delicious As They Are Expensive",
   "advancements.unicopia.imported_oats.description": "Send or receive fancy imported oats",
 
@@ -1650,8 +1654,8 @@
   "advancements.unicopia.travelling_in_style.title": "Travelling in Style",
   "advancements.unicopia.travelling_in_style.description": "Ride a hot air balloon",
 
-  "advancements.unicopia.night_route.title": "Children of The Night",
-  "advancements.unicopia.night_route.description": "Walk the path of the night",
+  "advancements.unicopia.bat_route.title": "Children of The Night",
+  "advancements.unicopia.bat_route.description": "Walk the path of the night",
   "advancements.unicopia.screech_twenty_mobs.title": "Terror From The Skies",
   "advancements.unicopia.screech_twenty_mobs.description": "Rain down terror on at least 20 mobs at once",
   "advancements.unicopia.screech_self.title": "Jeepers!",
@@ -1675,8 +1679,8 @@
   "advancements.unicopia.thats_unusual.title": "That's Unusual",
   "advancements.unicopia.thats_unusual.description": "But what does it do?",
 
-  "advancements.unicopia.sky_route.title": "Path of the Pegasus",
-  "advancements.unicopia.sky_route.description": "Join the Clousdale Pegasi",
+  "advancements.unicopia.pegasus_route.title": "Path of the Pegasus",
+  "advancements.unicopia.pegasus_route.description": "Join the Clousdale Pegasi",
   "advancements.unicopia.molting_season_1.title": "Molting Season",
   "advancements.unicopia.molting_season_1.description": "Drop your first feather whilst flying",
   "advancements.unicopia.molting_season_2.title": "Molting Season 2",
@@ -1708,8 +1712,8 @@
   "advancements.unicopia.deter_phantom.title": "What Flies Around",
   "advancements.unicopia.deter_phantom.description": "Get up there and give those phantoms a taste of their own medicine",
 
-  "advancements.unicopia.magical_route.title": "Horn of the Unicorn",
-  "advancements.unicopia.magical_route.description": "Delve into the world of glitter and rainbows",
+  "advancements.unicopia.unicorn_route.title": "Horn of the Unicorn",
+  "advancements.unicopia.unicorn_route.description": "Delve into the world of glitter and rainbows",
   
   "advancements.unicopia.books.title": "Books!",
   "advancements.unicopia.books.description": "This is MY spellbook and I'm going to READ it!",

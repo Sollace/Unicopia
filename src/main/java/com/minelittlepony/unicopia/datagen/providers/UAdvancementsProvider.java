@@ -64,7 +64,8 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
                 p.child(Items.CHIPPED_ANVIL).hidden().frame(AdvancementFrame.CHALLENGE).criterion("ding_sun", dingCelestia(Set.of(), Set.of(Race.BAT))).build(consumer, "blasphemy");
                 p.child(Items.CHIPPED_ANVIL).hidden().frame(AdvancementFrame.CHALLENGE).criterion("ding_sun", dingCelestia(Set.of(Race.BAT), Set.of())).build(consumer, "sweet_sweet_revenge");
             });
-            root.child(UItems.OATS).criterion("has_oats", hasItems(UItems.OATS)).build(consumer, "what_the_hay");
+            root.child(UItems.OATS).criterion("has_oats", hasItems(UItems.OATS)).build(consumer, "oats_so_easy");
+            root.child(Items.HAY_BLOCK).criterion("eat_hay", ConsumeItemCriterion.Conditions.item(Items.HAY_BLOCK)).build(consumer, "what_the_hay");
             root.child(UItems.IRON_HORSE_SHOE).criterion("killed_entity_with_horseshoe", killWithItems(UTags.FROM_HORSESHOES)).build(consumer, "dead_ringer");
             root.child(UItems.PINECONE).frame(AdvancementFrame.CHALLENGE).criterion("eat_pinecone", ConsumeItemCriterion.Conditions.item(UItems.PINECONE)).build(consumer, "eat_pinecone");
             root.child(UItems.GIANT_BALLOON).criterion("ride_balloon", CustomEventCriterion.create("ride_balloon")).build(consumer, "travelling_in_style");
@@ -152,7 +153,7 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
             p.child(UItems.CRYSTAL_SHARD).criterion("has_shard", hasItems(UItems.CRYSTAL_SHARD)).build(consumer, "crystaline").children(pp -> {
                pp.child(UItems.CRYSTAL_HEART).criterion("power_up_heart", CustomEventCriterion.create("power_up_heart")).rewards(AdvancementRewards.Builder.experience(105)).build(consumer, "power_up_heart");
             });
-            p.child(UItems.ALICORN_AMULET).criterion("has_alicorn_amulet", hasItems(UItems.ALICORN_AMULET)).build(consumer, "tempting")
+            p.child(UItems.ALICORN_AMULET).criterion("has_alicorn_amulet", hasItems(UItems.ALICORN_AMULET)).build(consumer, "tempted")
              .child(Items.CRYING_OBSIDIAN).criterion("light_altar", CustomEventCriterion.create("light_altar")).build(consumer, "hello_darkness_my_old_friend")
              .child(UItems.BROKEN_ALICORN_AMULET).frame(AdvancementFrame.GOAL).criterion("defeat_sombra", CustomEventCriterion.create("defeat_sombra")).rewards(AdvancementRewards.Builder.experience(2000)).build(consumer, "save_the_day")
              .children(pp -> {
@@ -177,7 +178,7 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
     }
 
     private void generateEnchantmentsAdvancementsTree(Consumer<Advancement> consumer) {
-        AdvancementDisplayBuilder.create(Items.NETHERITE_SCRAP)
+        AdvancementDisplayBuilder.create(Items.NETHERITE_SCRAP).showToast().announce()
             .criterion("enchant_with_consumption", enchant(UEnchantments.CONSUMPTION))
             .rewards(AdvancementRewards.Builder.experience(120))
             .parent(new Identifier("story/enchant_item"))
@@ -189,9 +190,10 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
                 .group("enchanting")
                 .hidden()
                 .build(consumer, "xp_miner");
-        AdvancementDisplayBuilder.create(Items.GOLDEN_APPLE)
+        AdvancementDisplayBuilder.create(Items.GOLDEN_APPLE).showToast().announce()
             .criterion("enchant_with_heart_bound", enchant(UEnchantments.HEART_BOUND))
             .rewards(AdvancementRewards.Builder.experience(120))
+            .parent(new Identifier("story/enchant_item"))
             .group("enchanting")
             .build(consumer, "hearts_stronger_than_horses")
             .child(Items.GOLDEN_PICKAXE)
