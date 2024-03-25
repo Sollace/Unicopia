@@ -25,7 +25,8 @@ import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.world.Heightmap.Type;
 
 public interface UEntities {
-    EntityType<ButterflyEntity> BUTTERFLY = register("butterfly", FabricEntityTypeBuilder.create(SpawnGroup.AMBIENT, ButterflyEntity::new)
+    EntityType<ButterflyEntity> BUTTERFLY = register("butterfly", FabricEntityTypeBuilder.createMob().spawnGroup(SpawnGroup.AMBIENT).entityFactory(ButterflyEntity::new)
+            .spawnRestriction(Location.NO_RESTRICTIONS, Type.WORLD_SURFACE_WG, ButterflyEntity::canSpawn)
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));
     EntityType<MagicProjectileEntity> THROWN_ITEM = register("thrown_item", FabricEntityTypeBuilder.<MagicProjectileEntity>create(SpawnGroup.MISC, MagicProjectileEntity::new)
             .trackRangeBlocks(100)
