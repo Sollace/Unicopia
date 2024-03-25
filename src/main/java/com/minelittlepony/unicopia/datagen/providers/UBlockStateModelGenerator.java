@@ -381,9 +381,17 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         Identifier middle = BlockModels.TEMPLATE_PILLAR.upload(pillar, textures, modelCollector);
         Identifier end = BlockModels.TEMPLATE_PILLAR_END.upload(pillar, textures, modelCollector);
         blockStateCollector.accept(MultipartBlockStateSupplier.create(pillar)
-                .with(BlockStateVariant.create().put(MODEL, middle))
-                .with(When.create().set(Properties.NORTH, false), BlockStateVariant.create().put(MODEL, end).put(UVLOCK, true).put(X, R180))
-                .with(When.create().set(Properties.SOUTH, false), BlockStateVariant.create().put(MODEL, end))
+                .with(When.create().set(Properties.AXIS, Direction.Axis.X), BlockStateVariant.create().put(MODEL, middle).put(X, R90).put(Y, R90))
+                .with(When.create().set(Properties.AXIS, Direction.Axis.X).set(Properties.NORTH, false), BlockStateVariant.create().put(MODEL, end).put(X, R270).put(Y, R90))
+                .with(When.create().set(Properties.AXIS, Direction.Axis.X).set(Properties.SOUTH, false), BlockStateVariant.create().put(MODEL, end).put(X, R90).put(Y, R90))
+
+                .with(When.create().set(Properties.AXIS, Direction.Axis.Y), BlockStateVariant.create().put(MODEL, middle))
+                .with(When.create().set(Properties.AXIS, Direction.Axis.Y).set(Properties.NORTH, false), BlockStateVariant.create().put(MODEL, end).put(X, R180))
+                .with(When.create().set(Properties.AXIS, Direction.Axis.Y).set(Properties.SOUTH, false), BlockStateVariant.create().put(MODEL, end))
+
+                .with(When.create().set(Properties.AXIS, Direction.Axis.Z), BlockStateVariant.create().put(MODEL, middle).put(X, R90))
+                .with(When.create().set(Properties.AXIS, Direction.Axis.Z).set(Properties.NORTH, false), BlockStateVariant.create().put(MODEL, end).put(X, R90))
+                .with(When.create().set(Properties.AXIS, Direction.Axis.Z).set(Properties.SOUTH, false), BlockStateVariant.create().put(MODEL, end).put(X, R270))
         );
         ItemModels.TEMPLATE_PILLAR.upload(ModelIds.getItemModelId(pillar.asItem()), textures, modelCollector);
     }
