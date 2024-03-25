@@ -36,7 +36,7 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
     @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V",
             at = @At("HEAD"))
     private void beforeRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
-        UnicopiaClient.getCamera().ifPresent(c -> matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(c.calculateRoll())));
+        UnicopiaClient.getCamera().ifPresent(c -> matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(c.calculateFirstPersonRoll())));
         BatEyesApplicator.INSTANCE.enable();
     }
 

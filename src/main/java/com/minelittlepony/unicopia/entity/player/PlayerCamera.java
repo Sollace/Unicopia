@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.client.render.spell.DarkVortexSpellRenderer;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.Vec3d;
 
 public class PlayerCamera extends MotionCompositor {
@@ -18,30 +19,28 @@ public class PlayerCamera extends MotionCompositor {
     }
 
     public float calculateRoll() {
+        return player.getInterpolator().interpolate("roll", (float)applyModifiers(-getMotionRoll()), 15);
+    }
 
-        double roll = 0;
+    public float calculateFirstPersonRoll() {
+        return player.getInterpolator().interpolate("roll_fp", (float)applyModifiers(-getMotionRoll() * getFovScale() * 0.25F), 25);
+    }
 
-        if (player.getMotion().isFlying()) {
-            Vec3d vel = player.asEntity().getVelocity();
-
-            roll -= calculateRoll(player.asEntity(), vel.x, vel.y, vel.z);
+    private double getMotionRoll() {
+        if (!player.getMotion().isFlying() || player.asEntity().hasVehicle() || player.asEntity().isOnGround()) {
+            return 0;
         }
 
-        if (player.getPhysics().isGravityNegative()) {
-           roll *= -1;
-           roll += 180;
-        }
+        Vec3d vel = player.asEntity().getVelocity();
+        return calculateRoll(player.asEntity(), vel.x, vel.y, vel.z);
+    }
 
-        if (player.asEntity().age > 10) {
-            roll = player.getInterpolator().interpolate("roll", (float)roll, 15);
-        }
-
-
+    private double applyModifiers(double motionRoll) {
         if (player.getAcrobatics().isFloppy()) {
-            roll += 90;
+            motionRoll += 90;
         }
 
-        return (float)roll;
+        return player.getPhysics().isGravityNegative() ? 180 - motionRoll : motionRoll;
     }
 
     public float calculatePitch(float pitch) {
@@ -61,11 +60,14 @@ public class PlayerCamera extends MotionCompositor {
     }
 
     public double calculateFieldOfView(double fov) {
-        fov += player.getMagicalReserves().getExertion().get() / 5F;
-        fov += getEnergyAddition();
+        fov += (player.getMagicalReserves().getExertion().get() / 5F) * getFovScale();
+        fov += getEnergyAddition() * getFovScale();
         fov += DarkVortexSpellRenderer.getCameraDistortion() * 2.5F;
-
         return fov;
+    }
+
+    private float getFovScale() {
+        return MinecraftClient.getInstance().options.getFovEffectScale().getValue().floatValue();
     }
 
     protected float getEnergyAddition() {
