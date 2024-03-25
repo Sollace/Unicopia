@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.datagen.providers;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.advancement.CustomEventCriterion;
@@ -155,6 +154,8 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
 
     private void generateUnicornTribeAdvancementsTree(Consumer<Advancement> consumer, AdvancementDisplayBuilder.Parent parent) {
         parent.child(UItems.SPELLBOOK).criterion("has_spellbook", hasItems(UItems.SPELLBOOK)).build(consumer, "books").children(p -> {
+            //ItemPredicate bookPredicate = ItemPredicate.Builder.create().tag(ItemTags.BOOKSHELF_BOOKS).build();
+            //p.child(Items.BOOK).hidden().frame(AdvancementFrame.CHALLENGE).criterion("has_books", InventoryChangedCriterion.Conditions.items(IntStream.range(0, 9 * 4).mapToObj(i -> bookPredicate).toArray(ItemPredicate[]::new))).build(consumer, "books_books_books");
             p.child(UItems.CRYSTAL_SHARD).criterion("has_shard", hasItems(UItems.CRYSTAL_SHARD)).build(consumer, "crystaline").children(pp -> {
                 pp.child(UItems.CRYSTAL_HEART).criterion("power_up_heart", CustomEventCriterion.create("power_up_heart")).rewards(AdvancementRewards.Builder.experience(105)).build(consumer, "power_up_heart");
             });
