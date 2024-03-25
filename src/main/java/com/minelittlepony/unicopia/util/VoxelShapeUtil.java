@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.util;
 
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -14,7 +15,7 @@ public interface VoxelShapeUtil {
     Vec3d CENTER = new Vec3d(0.5, 0, 0.5);
 
     static Function<Direction, VoxelShape> rotator(VoxelShape base) {
-        return d -> rotate(base, d);
+        return Util.memoize(d -> rotate(base, d));
     }
 
     static VoxelShape rotate(VoxelShape shape, Direction direction) {
@@ -27,7 +28,7 @@ public interface VoxelShapeUtil {
         float angle = direction.asRotation() * MathHelper.RADIANS_PER_DEGREE;
         return VoxelShapes.union(VoxelShapes.empty(), shape.getBoundingBoxes().stream()
             .map(box -> {
-              //These first two are enough for orthogonal rotations
+                //These first two are enough for orthogonal rotations
                 Vec3d a = rotate(box.minX, box.minZ, angle);
                 Vec3d b = rotate(box.maxX, box.maxZ, angle);
                 //These cover odd angles
