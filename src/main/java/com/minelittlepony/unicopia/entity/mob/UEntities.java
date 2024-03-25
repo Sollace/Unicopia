@@ -7,7 +7,6 @@ import com.minelittlepony.unicopia.entity.behaviour.EntityBehaviour;
 import com.minelittlepony.unicopia.projectile.MagicBeamEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.PhysicsBodyProjectileEntity;
-
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectionContext;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
@@ -17,10 +16,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.SpawnRestriction.Location;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.mob.FlyingEntity;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.BiomeTags;
+import net.minecraft.world.Heightmap.Type;
 
 public interface UEntities {
     EntityType<ButterflyEntity> BUTTERFLY = register("butterfly", FabricEntityTypeBuilder.create(SpawnGroup.AMBIENT, ButterflyEntity::new)
@@ -74,6 +76,11 @@ public interface UEntities {
     EntityType<IgnominiousBulbEntity> IGNOMINIOUS_BULB = register("ignominious_bulb", FabricEntityTypeBuilder.<IgnominiousBulbEntity>create(SpawnGroup.MISC, IgnominiousBulbEntity::new)
             .trackRangeChunks(8)
             .dimensions(EntityDimensions.fixed(3, 2)));
+    EntityType<SpecterEntity> SPECTER = register("specter", FabricEntityTypeBuilder.createMob().spawnGroup(SpawnGroup.MONSTER).entityFactory(SpecterEntity::new)
+            .spawnRestriction(Location.ON_GROUND, Type.WORLD_SURFACE, HostileEntity::canSpawnInDark)
+            .fireImmune()
+            .spawnableFarFromPlayer()
+            .dimensions(EntityDimensions.fixed(1, 2)));
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         EntityType<T> type = builder.build();
@@ -89,6 +96,7 @@ public interface UEntities {
         FabricDefaultAttributeRegistry.register(FRIENDLY_CREEPER, FriendlyCreeperEntity.createCreeperAttributes());
         FabricDefaultAttributeRegistry.register(LOOT_BUG, LootBugEntity.createSilverfishAttributes());
         FabricDefaultAttributeRegistry.register(IGNOMINIOUS_BULB, IgnominiousBulbEntity.createMobAttributes());
+        FabricDefaultAttributeRegistry.register(SPECTER, SpecterEntity.createAttributes());
 
         if (!Unicopia.getConfig().disableButterflySpawning.get()) {
             final Predicate<BiomeSelectionContext> butterflySpawnable = BiomeSelectors.foundInOverworld()
@@ -104,6 +112,8 @@ public interface UEntities {
                     .or(BiomeSelectors.tag(BiomeTags.IS_MOUNTAIN))
             ), SpawnGroup.AMBIENT, BUTTERFLY, 7, 5, 19);
         }
+
+        BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.ZOMBIE), SpawnGroup.MONSTER, SPECTER, 2, 1, 2);
 
         UTradeOffers.bootstrap();
         EntityBehaviour.bootstrap();

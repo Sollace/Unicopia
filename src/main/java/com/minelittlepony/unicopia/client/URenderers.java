@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.client.particle.CloudsEscapingParticle;
 import com.minelittlepony.unicopia.client.particle.DiskParticle;
 import com.minelittlepony.unicopia.client.particle.DustCloudParticle;
 import com.minelittlepony.unicopia.client.particle.FloatingBubbleParticle;
+import com.minelittlepony.unicopia.client.particle.FootprintParticle;
 import com.minelittlepony.unicopia.client.particle.GroundPoundParticle;
 import com.minelittlepony.unicopia.client.particle.HealthDrainParticle;
 import com.minelittlepony.unicopia.client.particle.LightningBoltParticle;
@@ -19,7 +20,6 @@ import com.minelittlepony.unicopia.client.particle.MagicParticle;
 import com.minelittlepony.unicopia.client.particle.RainboomParticle;
 import com.minelittlepony.unicopia.client.particle.RainbowTrailParticle;
 import com.minelittlepony.unicopia.client.particle.RaindropsParticle;
-import com.minelittlepony.unicopia.client.particle.RunesParticle;
 import com.minelittlepony.unicopia.client.particle.ShockwaveParticle;
 import com.minelittlepony.unicopia.client.particle.SphereParticle;
 import com.minelittlepony.unicopia.client.render.*;
@@ -54,6 +54,7 @@ import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
+import net.minecraft.client.render.entity.EmptyEntityRenderer;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -68,7 +69,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
 
-@SuppressWarnings("deprecation")
 public interface URenderers {
     BlockEntity CHEST_RENDER_ENTITY = new CloudChestBlock.TileData(BlockPos.ORIGIN, UBlocks.CLOUD_CHEST.getDefaultState());
 
@@ -78,10 +78,10 @@ public interface URenderers {
         ParticleFactoryRegistry.getInstance().register(UParticles.BUBBLE, createFactory(FloatingBubbleParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.RAIN_DROPS, createFactory(RaindropsParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.HEALTH_DRAIN, createFactory(HealthDrainParticle::create));
+        ParticleFactoryRegistry.getInstance().register(UParticles.FOOTPRINT, createFactory(FootprintParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.RAINBOOM_RING, RainboomParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.RAINBOOM_TRAIL, RainbowTrailParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.SHOCKWAVE, ShockwaveParticle::new);
-        ParticleFactoryRegistry.getInstance().register(UParticles.MAGIC_RUNES, RunesParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.SPHERE, SphereParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.DISK, DiskParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.GROUND_POUND, GroundPoundParticle::new);
@@ -111,6 +111,7 @@ public interface URenderers {
         EntityRendererRegistry.register(UEntities.LOOT_BUG, LootBugEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.TENTACLE, TentacleEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.IGNOMINIOUS_BULB, IgnominiousBulbEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.SPECTER, EmptyEntityRenderer::new);
 
         BlockEntityRendererFactories.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(UBlockEntities.FANCY_BED, CloudBedBlockEntityRenderer::new);
