@@ -76,6 +76,18 @@
     },
     {
       "tags": [
+        "unicopia:food_types/raw_insect"
+      ],
+      "food_component": {
+        "hunger": 3,
+        "saturation": 2
+      },
+      "ailment": {
+        "effects": [ ]
+      }
+    },
+    {
+      "tags": [
         "unicopia:food_types/cooked_fish",
         "unicopia:food_types/raw_fish"
       ],
@@ -98,11 +110,14 @@
       "tags": [
         "unicopia:food_types/rotten_fish",
         "unicopia:food_types/cooked_insect",
-        "unicopia:food_types/raw_insect",
         "unicopia:food_types/cooked_meat",
         "unicopia:food_types/raw_meat",
         "unicopia:food_types/rotten_meat"
       ],
+      "food_component": {
+        "hunger": 6,
+        "saturation": 9
+      },
       "ailment": {
         "effects": [
           {
