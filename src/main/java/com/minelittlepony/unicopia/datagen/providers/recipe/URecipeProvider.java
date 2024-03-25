@@ -67,6 +67,9 @@ public class URecipeProvider extends FabricRecipeProvider {
         createCustomBedRecipe(UItems.CLOTH_BED, Either.right(ItemTags.WOOL), Either.right(ItemTags.LOGS)).offerTo(exporter);
         offerBedSheetRecipes(exporter);
 
+        // worms
+        offerReversibleCompactingRecipes(exporter, RecipeCategory.BUILDING_BLOCKS, UItems.WHEAT_WORMS, RecipeCategory.BUILDING_BLOCKS, UBlocks.WORM_BLOCK);
+
         // sunglasses
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.SUNGLASSES)
             .input('#', ConventionalItemTags.GLASS_BLOCKS).criterion("has_glass_block", conditionsFromTag(ConventionalItemTags.GLASS_BLOCKS))

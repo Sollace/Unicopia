@@ -2,7 +2,8 @@
   "replace": false,
   "values": [
     "minecraft:spider_eye",
+    "unicopia:butterfly",
     "unicopia:wheat_worms",
-    "unicopia:butterfly"
+    "unicopia:worm_block"
   ]
 }

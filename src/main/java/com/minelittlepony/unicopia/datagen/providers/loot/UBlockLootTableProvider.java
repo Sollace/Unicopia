@@ -54,7 +54,8 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
             UBlocks.WEATHER_VANE,
 
             UBlocks.ZAP_FENCE_GATE, UBlocks.ZAP_FENCE,
-            UBlocks.ZAP_LOG, UBlocks.ZAP_PLANKS, UBlocks.ZAP_STAIRS, UBlocks.ZAP_WOOD
+            UBlocks.ZAP_LOG, UBlocks.ZAP_PLANKS, UBlocks.ZAP_STAIRS, UBlocks.ZAP_WOOD,
+            UBlocks.WORM_BLOCK
         ).forEach(this::addDrop);
 
         // slabs

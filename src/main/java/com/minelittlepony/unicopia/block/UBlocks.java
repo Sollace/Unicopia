@@ -36,6 +36,7 @@ import com.minelittlepony.unicopia.item.cloud.CloudBlockItem;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.server.world.UTreeGen;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.registry.OxidizableBlocksRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
@@ -253,6 +254,7 @@ public interface UBlocks {
 
     Block SPECTRAL_FIRE = register("spectral_fire", new SpectralFireBlock(Settings.copy(Blocks.SOUL_FIRE)));
 
+    Block WORM_BLOCK = register("worm_block", new FallingBlock(Settings.create().hardness(0.1F).resistance(0).requiresTool().sounds(BlockSoundGroup.MUD)), ItemGroups.NATURAL);
     EdibleBlock HAY_BLOCK = register("hay_block", new EdibleBlock(new Identifier("hay_block"), new Identifier("wheat"), true));
 
     private static <T extends Block> T register(String name, T item) {
@@ -327,6 +329,8 @@ public interface UBlocks {
 
         FlammableBlockRegistry.getDefaultInstance().add(BANANAS, 5, 20);
         FlammableBlockRegistry.getDefaultInstance().add(CURING_JOKE, 60, 100);
+
+        CompostingChanceRegistry.INSTANCE.add(WORM_BLOCK, 8F);
 
         UBlockEntities.bootstrap();
         EdibleBlock.bootstrap();

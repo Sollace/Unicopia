@@ -123,7 +123,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerLog(UBlocks.STRIPPED_PALM_LOG).log(UBlocks.STRIPPED_PALM_LOG).wood(UBlocks.STRIPPED_PALM_WOOD);
         registerCubeAllModelTexturePool(UBlocks.PALM_PLANKS).family(UBlockFamilies.PALM);
         registerHangingSign(UBlocks.STRIPPED_PALM_LOG, UBlocks.PALM_HANGING_SIGN, UBlocks.PALM_WALL_HANGING_SIGN);
-        registerSimpleCubeAll(UBlocks.PALM_LEAVES);
+        registerSingleton(UBlocks.PALM_LEAVES, TexturedModel.LEAVES);
 
         // zap wood
         registerLog(UBlocks.ZAP_LOG)
@@ -170,6 +170,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         // shells
         registerAll(UBlockStateModelGenerator::registerShell, UBlocks.CLAM_SHELL, UBlocks.TURRET_SHELL, UBlocks.SCALLOP_SHELL);
         // other
+        registerSimpleCubeAll(UBlocks.WORM_BLOCK);
         registerBuiltinWithParticle(UBlocks.WEATHER_VANE, UBlocks.WEATHER_VANE.asItem());
         registerWithStages(UBlocks.FROSTED_OBSIDIAN, Properties.AGE_3, BlockModels.CUBE_ALL, 0, 1, 2, 3);
         registerWithStagesBuiltinModels(UBlocks.ROCKS, Properties.AGE_7, 0, 1, 2, 3, 4, 5, 6, 7);
