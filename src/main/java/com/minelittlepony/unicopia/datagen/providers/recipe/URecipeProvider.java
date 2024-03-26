@@ -449,6 +449,9 @@ public class URecipeProvider extends FabricRecipeProvider {
             .pattern("---")
             .offerTo(exporter);
 
+        // worms
+        offerReversibleCompactingRecipes(exporter, RecipeCategory.BUILDING_BLOCKS, UItems.WHEAT_WORMS, RecipeCategory.BUILDING_BLOCKS, UBlocks.WORM_BLOCK);
+
         // utility
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, Items.DIRT)
             .input('*', UItems.WHEAT_WORMS).criterion("has_wheat_worms", conditionsFromItem(UItems.WHEAT_WORMS))
@@ -456,6 +459,8 @@ public class URecipeProvider extends FabricRecipeProvider {
             .pattern("*#")
             .pattern("#*")
             .offerTo(exporter, convertBetween(Items.DIRT, UItems.WHEAT_WORMS));
+
+        offerShapelessRecipe(exporter, Items.BONE_MEAL, UTags.SHELLS, "bonemeal", 3);
 
         offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Items.COBBLESTONE, UItems.ROCK);
         offerReversibleCompactingRecipesWithReverseRecipeGroup(exporter, RecipeCategory.MISC, UItems.PEBBLES, RecipeCategory.BUILDING_BLOCKS, Blocks.GRAVEL, convertBetween(UItems.PEBBLES, Blocks.GRAVEL), "pebbles");

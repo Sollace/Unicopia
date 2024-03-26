@@ -80,7 +80,7 @@ public record Race (Supplier<Composite> compositeSupplier, Availability availabi
     }
 
     public boolean hasIronGut() {
-        return !isHuman() && this != CHANGELING;
+        return !isHuman();
     }
 
     public boolean isUnset() {

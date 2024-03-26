@@ -1,8 +1,8 @@
 {
   "tags": [ "unicopia:food_types/raw_insect" ],
   "food_component": {
-    "hunger": 1,
-    "saturation": 0.1
+    "hunger": 6,
+    "saturation": 0.3
   },
   "ailment": {
     "effects": [

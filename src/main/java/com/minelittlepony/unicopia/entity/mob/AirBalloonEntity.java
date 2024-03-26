@@ -380,6 +380,9 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
                 getWorld().emitGameEvent(player, GameEvent.EQUIP, getBlockPos());
             }
             setDesign(HotAirBalloonItem.getDesign(getWorld(), stack));
+            if (hasBurner() && hasBalloon()) {
+                UCriteria.CONSTRUCT_BALLOON.trigger(player);
+            }
             return ActionResult.SUCCESS;
         }
 
@@ -404,6 +407,9 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             playSound(USounds.ENTITY_HOT_AIR_BALLOON_EQUIP_BURNER, 0.2F, 1);
             if (!player.isSneaky()) {
                 getWorld().emitGameEvent(player, GameEvent.EQUIP, getBlockPos());
+            }
+            if (hasBurner() && hasBalloon()) {
+                UCriteria.CONSTRUCT_BALLOON.trigger(player);
             }
             return ActionResult.SUCCESS;
         }

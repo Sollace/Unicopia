@@ -77,21 +77,15 @@ public class PonyDiets implements DietView {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable PlayerEntity user, List<Text> tooltip, TooltipContext context) {
+
         if (initEdibility(stack, user)) {
-            Pony pony = Pony.of(user);
+            if (!((ItemDuck)stack.getItem()).getOriginalFoodComponent().isEmpty() || stack.getItem().getFoodComponent() != null) {
+                Pony pony = Pony.of(user);
 
-            tooltip.add(Text.translatable("unicopia.diet.information").formatted(Formatting.DARK_PURPLE));
-            getEffects(stack, pony).appendTooltip(stack, tooltip, context);
-
-            /*for (Race race : Race.REGISTRY) {
-                var diet = diets.get(race);
-                if (diet != null) {
-                    tooltip.add(race.getDisplayName());
-                    diet.appendTooltip(stack, user, tooltip, context);
-                }
-            }*/
-
-            getDiet(pony).appendTooltip(stack, user, tooltip, context);
+                tooltip.add(Text.translatable("unicopia.diet.information").formatted(Formatting.DARK_PURPLE));
+                getEffects(stack, pony).appendTooltip(stack, tooltip, context);
+                getDiet(pony).appendTooltip(stack, user, tooltip, context);
+            }
         }
     }
 

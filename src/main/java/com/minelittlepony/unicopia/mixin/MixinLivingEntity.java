@@ -5,9 +5,7 @@ import java.util.Optional;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -176,14 +174,6 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
         if (tag.contains("unicopia_caster")) {
             get().fromNBT(tag.getCompound("unicopia_caster"));
         }
-    }
-
-    @ModifyConstant(method = "travel(Lnet/minecraft/util/math/Vec3d;)V", constant = {
-            @Constant(doubleValue = 0.08D),
-            @Constant(doubleValue = 0.01D)
-    })
-    private double modifyGravity(double initial) {
-        return get().getPhysics().calcGravity(initial);
     }
 
     @Override

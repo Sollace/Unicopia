@@ -48,6 +48,7 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(BlockTags.DRAGON_IMMUNE).add(UBlocks.FROSTED_OBSIDIAN, UBlocks.GOLDEN_OAK_LOG, UBlocks.GOLDEN_OAK_LEAVES);
         getOrCreateTagBuilder(BlockTags.FIRE).add(UBlocks.SPECTRAL_FIRE);
         getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(UBlocks.HAY_BLOCK).addOptional(Unicopia.id("rice_block")).addOptional(Unicopia.id("straw_block"));
+        getOrCreateTagBuilder(BlockTags.SHOVEL_MINEABLE).add(UBlocks.WORM_BLOCK);
 
         addZapWoodset();
         addPalmWoodset();
