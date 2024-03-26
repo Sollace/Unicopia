@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.mixin;
+package com.minelittlepony.unicopia.mixin.gravity;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

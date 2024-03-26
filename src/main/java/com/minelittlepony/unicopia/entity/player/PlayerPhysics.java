@@ -32,7 +32,6 @@ import com.minelittlepony.unicopia.util.*;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
 import net.minecraft.block.*;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
@@ -253,18 +252,6 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         final MutableVector velocity = new MutableVector(entity.getVelocity());
 
-        if (isGravityNegative()) {
-            velocity.y *= -1;
-        }
-
-        if (isGravityNegative() && !entity.isSneaking() && entity.isInSneakingPose()) {
-            float currentHeight = entity.getDimensions(entity.getPose()).height;
-            float sneakingHeight = entity.getDimensions(EntityPose.STANDING).height;
-
-            entity.setPos(entity.getX(), entity.getY() + currentHeight - sneakingHeight, entity.getZ());
-            entity.setPose(EntityPose.STANDING);
-        }
-
         FlightType type = recalculateFlightType();
 
         boolean typeChanged = type != lastFlightType;
@@ -394,10 +381,6 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             float heavyness = 1 - EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.015F;
             velocity.x /= heavyness;
             velocity.z /= heavyness;
-        }
-
-        if (isGravityNegative()) {
-            velocity.y *= -1;
         }
 
         entity.setVelocity(velocity.toImmutable());

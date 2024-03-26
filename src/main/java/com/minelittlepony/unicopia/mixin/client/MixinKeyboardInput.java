@@ -28,11 +28,11 @@ abstract class MixinKeyboardInput extends Input {
 
                 movementSideways = -movementSideways;
 
-                if (player.asEntity().getAbilities().flying && !player.getPhysics().isFlying()) {
+                /*if (player.asEntity().getAbilities().flying && !player.getPhysics().isFlying()) {
                     tmp = jumping;
                     jumping = sneaking;
                     sneaking = tmp;
-                }
+                }*/
             }
 
             if (EffectUtils.getAmplifier(MinecraftClient.getInstance().player, UEffects.PARALYSIS) > 1) {

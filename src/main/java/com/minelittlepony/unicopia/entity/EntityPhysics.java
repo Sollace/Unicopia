@@ -8,7 +8,9 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -35,6 +37,14 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
     @Override
     public void tick() {
         if (isGravityNegative()) {
+            if (isGravityNegative() && !entity.isSneaking() && entity.isInSneakingPose()) {
+                float currentHeight = entity.getDimensions(entity.getPose()).height;
+                float sneakingHeight = entity.getDimensions(EntityPose.STANDING).height;
+
+                entity.move(MovementType.SELF, new Vec3d(0, -(currentHeight - sneakingHeight), 0));
+                entity.setPose(EntityPose.STANDING);
+            }
+
             if (entity.getY() > entity.getWorld().getHeight() + 64) {
                 entity.damage(entity.getDamageSources().outOfWorld(), 4.0F);
             }

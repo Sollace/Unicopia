@@ -97,14 +97,6 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
         get().getMotion().getDimensions().calculateActiveEyeHeight(dimensions).ifPresent(info::setReturnValue);
     }
 
-    /*
-    @Inject(method = "getDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;",
-            at = @At("RETURN"),
-            cancellable = true)
-    private void onGetDimensions(EntityPose pose, CallbackInfoReturnable<EntityDimensions> info) {
-        get().getMotion().getDimensions().calculateDimensions().ifPresent(info::setReturnValue);
-    }*/
-
     @Redirect(method = "getDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;",
             at = @At(
                 value = "INVOKE",

@@ -13,7 +13,6 @@
     "MixinBlockEntityType",
     "MixinBlockItem",
     "MixinBoatEntity",
-    "MixinBrain",
     "MixinChunkBlockLightProvider",
     "MutableBlockLightStorage",
     "MixinDamageSource",
@@ -53,8 +52,14 @@
     "MixinVanillaBiomeParameters",
     "MixinWardenEntity",
     "MixinWorld",
-    "MixinWorldChunk",
     "PointOfInterestTypesAccessor",
+    "gravity.MixinBrain",
+    "gravity.MixinEntity",
+    "gravity.MixinLivingEntity",
+    "gravity.MixinMobEntity",
+    "gravity.MixinWorld",
+    "gravity.MixinServerWorld",
+    "gravity.MixinWorldChunk",
     "trinkets.MixinTrinketSurvivalSlot",
     "trinkets.MixinTrinketItem",
     "trinkets.MixinTrinketInventory",
@@ -88,7 +93,9 @@
     "client.MixinWorldRenderer",
     "client.sodium.MixinSodiumWorldRenderer",
     "client.minelp.MixinPonyPosture",
-    "trinkets.MixinTrinketCreativeSlot"
+    "trinkets.MixinTrinketCreativeSlot",
+    "gravity.MixinClientWorld",
+    "gravity.MixinSoundSource"
   ],
   "injectors": {
     "defaultRequire": 1

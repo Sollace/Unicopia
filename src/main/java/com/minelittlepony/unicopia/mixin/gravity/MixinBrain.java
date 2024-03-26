@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.mixin;
+package com.minelittlepony.unicopia.mixin.gravity;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +21,7 @@ abstract class MixinBrain<E extends LivingEntity> {
         Equine<?> eq = Equine.of(entity).orElse(null);
 
         if (eq instanceof Living<?> && eq.getPhysics().isGravityNegative()) {
-            ((RotatedView)world).pushRotation((int)entity.getY());
+            ((RotatedView)world).pushRotation((int)(entity.getY() + entity.getHeight() * 0.5F));
         }
     }
 
