@@ -631,7 +631,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             float max = 0.6F;
             return Optional.of(new Vec3d(
                     MathHelper.clamp(speed.x * factor, -max, max),
-                    speed.y * ((speed.y * getPhysics().getGravitySignum()) > 0 ? 1.2 : 1.101),
+                    speed.y * (speed.y > 0 ? 1.2 : 1.101),
                     MathHelper.clamp(speed.z * factor, -max, max)
             ));
         }
@@ -715,10 +715,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public Optional<Float> onImpact(float distance, float damageMultiplier, DamageSource cause) {
-
         float originalDistance = distance;
-
-        distance *= gravity.getGravityModifier();
 
         boolean extraProtection = getSpellSlot().get(SpellType.SHIELD, false).isPresent();
 

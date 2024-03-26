@@ -301,10 +301,6 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             if (entity.isOnGround() || (!creative && entity.horizontalCollision)) {
                 cancelFlight(false);
             }
-
-            if (entity.isClimbing() && (entity.horizontalCollision || ((LivingEntityDuck)entity).isJumping())) {
-                velocity.y = -0.2F;
-            }
         }
 
         isFlyingSurvival = entity.getAbilities().flying && !creative;

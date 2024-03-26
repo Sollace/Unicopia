@@ -476,12 +476,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return false;
     }
 
-    public void onJump() {
-        if (getPhysics().isGravityNegative()) {
-            entity.setVelocity(entity.getVelocity().multiply(1, -1, 1));
-        }
-    }
-
     @Nullable
     public final Caster<?> getAttacker() {
         return attacker;

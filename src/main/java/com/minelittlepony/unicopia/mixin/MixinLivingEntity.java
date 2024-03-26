@@ -128,11 +128,6 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
         get().adjustMovementSpeedInWater(info.getReturnValue()).ifPresent(info::setReturnValue);
     }
 
-    @Inject(method = "jump()V", at = @At("RETURN"))
-    private void onJump(CallbackInfo info) {
-        get().onJump();
-    }
-
     @Inject(method = "tick()V", at = @At("HEAD"), cancellable = true)
     private void beforeTick(CallbackInfo info) {
         if (get().beforeUpdate()) {
@@ -184,23 +179,6 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
         if (!getWorld().isClient) {
             setLivingFlag(1, !stack.isEmpty());
             setLivingFlag(2, hand == Hand.OFF_HAND);
-        }
-    }
-
-    @Override
-    public BlockPos getBlockPos() {
-        if (get().getPhysics().isGravityNegative()) {
-            return get().getPhysics().getHeadPosition();
-        }
-        return super.getBlockPos();
-    }
-
-    @Override
-    protected void spawnSprintingParticles() {
-        if (get().getPhysics().isGravityNegative()) {
-            get().getPhysics().spawnSprintingParticles();
-        } else {
-            super.spawnSprintingParticles();
         }
     }
 }

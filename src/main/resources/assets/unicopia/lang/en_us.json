@@ -1383,6 +1383,7 @@
   "commands.gravity.set": "Your gravity has been updated to %f",
   "commands.gravity.set.self": "Set own gravity to %f",
   "commands.gravity.set.other": "Set %s's gravity to %f",
+  "commands.gravity.set.multiple": "Updated %s entities",
 
   "unicopia.options.title": "Unicopia Options",
   "unicopia.options.ignore_mine_lp": "Ignore Mine Little Pony",

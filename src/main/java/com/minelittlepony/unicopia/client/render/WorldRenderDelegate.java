@@ -175,43 +175,39 @@ public class WorldRenderDelegate {
 
         boolean negative = pony.getPhysics().isGravityNegative();
 
-        float roll = negative ? 180 : 0;
-
-        roll = pony instanceof Pony ? ((Pony)pony).getInterpolator().interpolate("g_roll", roll, 15) : roll;
-
         matrices.translate(x, y + owner.getHeight() / 2, z);
 
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(roll));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(roll));
-
         if (pony instanceof Pony p) {
-            roll = p.getCamera().calculateRoll();
-            if (negative) {
-                roll -= 180;
-            }
+            float sidewaysRoll = p.getCamera().calculateRoll();
 
             if (p.getAcrobatics().isFloppy()) {
                 matrices.translate(0, -0.5, 0);
                 p.asEntity().setBodyYaw(0);
                 p.asEntity().setYaw(0);
-                matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(90));
+                sidewaysRoll += 90;
             }
 
-            matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(yaw));
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(roll));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(sidewaysRoll));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90));
 
-            float diveAngle = p.getInterpolator().interpolate("g_kdive", p.getMotion().isDiving() ? 80 : 0, 15);
+            float forwardPitch = p.getInterpolator().interpolate("g_kdive", p.getMotion().isDiving() ? 80 : 0, 15);
 
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(diveAngle));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(forwardPitch));
 
             if (p.getCompositeRace().includes(Race.SEAPONY)
                     && pony.asEntity().isSubmergedInWater()
                     && MineLPDelegate.getInstance().getPlayerPonyRace(p.asEntity()) != Race.SEAPONY) {
                 ModelPartHooks.startCollecting();
             }
-        } else if (pony instanceof Creature creature && smittenEyesRenderer.isSmitten(creature)) {
-            ModelPartHooks.startCollecting();
+        } else {
+            float roll = negative ? 180 : 0;
+
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(roll));
+
+            if (pony instanceof Creature creature && smittenEyesRenderer.isSmitten(creature)) {
+                ModelPartHooks.startCollecting();
+            }
         }
 
         matrices.translate(-x, -y - owner.getHeight() / 2, -z);
@@ -224,7 +220,7 @@ public class WorldRenderDelegate {
     }
 
     private void flipAngles(Entity entity) {
-        if (entity instanceof PlayerEntity) {
+        if (entity instanceof PlayerEntity player) {
             entity.prevYaw *= -1;
             entity.setYaw(entity.getYaw() * -1);
 

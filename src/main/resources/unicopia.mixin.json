@@ -59,6 +59,8 @@
     "gravity.MixinMobEntity",
     "gravity.MixinWorld",
     "gravity.MixinServerWorld",
+    "gravity.MixinServerPlayerEntity",
+    "gravity.MixinServerPlayNetworkHandler",
     "gravity.MixinWorldChunk",
     "trinkets.MixinTrinketSurvivalSlot",
     "trinkets.MixinTrinketItem",
