@@ -58,6 +58,7 @@
     "gravity.MixinLivingEntity",
     "gravity.MixinMobEntity",
     "gravity.MixinWorld",
+    "gravity.MixinPlayerEntity",
     "gravity.MixinPistonBlockEntity",
     "gravity.MixinServerWorld",
     "gravity.MixinServerPlayerEntity",
