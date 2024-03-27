@@ -315,6 +315,17 @@ public class URecipeProvider extends FabricRecipeProvider {
             .input(UItems.ROCK, 3).criterion(hasItem(UItems.ROCK), conditionsFromItem(UItems.ROCK))
             .input(Items.BOWL)
             .offerTo(exporter);
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.BOWL_OF_NUTS)
+            .input(UItems.ACORN, 3).criterion(hasItem(UItems.ACORN), conditionsFromItem(UItems.ACORN))
+            .input(Items.BOWL)
+            .offerTo(exporter);
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.OATMEAL_COOKIE)
+            .input(UItems.OATS, 3).criterion(hasItem(UItems.OATS), conditionsFromItem(UItems.OATS))
+            .offerTo(exporter);
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.PINECONE_COOKIE)
+            .input(UItems.PINECONE).criterion(hasItem(UItems.PINECONE), conditionsFromItem(UItems.PINECONE))
+            .input(Items.WHEAT, 2)
+            .offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.ROCK_CANDY, 3)
             .input(Items.SUGAR, 6).criterion(hasItem(Items.SUGAR), conditionsFromItem(Items.SUGAR))
             .input(UItems.PEBBLES, 3)
