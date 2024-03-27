@@ -41,6 +41,8 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
@@ -160,5 +162,10 @@ public class ClientInteractionManager extends InteractionManager {
         if (player instanceof ClientPlayerEntity c) {
             c.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(player.getYaw(), player.getPitch(), player.isOnGround()));
         }
+    }
+
+    @Override
+    public void addBlockBreakingParticles(BlockPos pos, Direction direction) {
+        client.particleManager.addBlockBreakingParticles(pos, direction);
     }
 }
