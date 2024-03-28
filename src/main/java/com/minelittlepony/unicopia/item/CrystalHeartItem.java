@@ -128,9 +128,9 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                     LivingEntity living = (LivingEntity)e;
 
                     if (e instanceof PlayerEntity
-                            || (living instanceof TameableEntity && ((TameableEntity)living).isTamed())
-                            || (living instanceof Saddleable && ((Saddleable)living).isSaddled())
-                            || (living instanceof MerchantEntity)) {
+                            || (e instanceof TameableEntity t && t.isTamed())
+                            || (e instanceof Saddleable s && s.isSaddled())
+                            || (e instanceof MerchantEntity)) {
                         if (living.getHealth() < living.getMaxHealth()) {
                             outputs.add(living);
                         }
@@ -149,19 +149,8 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                     return;
                 }
 
-                float gives;
-                float takes;
-
-                if (supply > demand) {
-                    gives = supply / demand;
-                    takes = 1;
-                } else if (demand > supply) {
-                    takes = demand / supply;
-                    gives = 1;
-                } else {
-                    gives = 1;
-                    takes = 1;
-                }
+                float gives = supply > demand ? supply / demand : 1;
+                float takes = demand > supply ? demand / supply : 1;
 
                 inputs.forEach(input -> {
                     input.damage(entity.damageOf(UDamageTypes.LIFE_DRAINING), takes);
