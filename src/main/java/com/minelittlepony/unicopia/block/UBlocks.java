@@ -330,7 +330,7 @@ public interface UBlocks {
         FlammableBlockRegistry.getDefaultInstance().add(BANANAS, 5, 20);
         FlammableBlockRegistry.getDefaultInstance().add(CURING_JOKE, 60, 100);
 
-        CompostingChanceRegistry.INSTANCE.add(WORM_BLOCK, 8F);
+        CompostingChanceRegistry.INSTANCE.add(WORM_BLOCK, 1F);
 
         UBlockEntities.bootstrap();
         EdibleBlock.bootstrap();

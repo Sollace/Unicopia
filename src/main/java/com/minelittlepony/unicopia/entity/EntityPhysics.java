@@ -4,18 +4,13 @@ import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.Tickable;
 
-import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MovementType;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.BlockStateParticleEffect;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -37,22 +32,12 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
     @Override
     public void tick() {
         if (isGravityNegative()) {
-            if (isGravityNegative() && !entity.isSneaking() && entity.isInSneakingPose()) {
-                float currentHeight = entity.getDimensions(entity.getPose()).height;
-                float sneakingHeight = entity.getDimensions(EntityPose.STANDING).height;
-
-                entity.move(MovementType.SELF, new Vec3d(0, -(currentHeight - sneakingHeight), 0));
-                entity.setPose(EntityPose.STANDING);
-            }
-
             if (entity.getY() > entity.getWorld().getHeight() + 64) {
                 entity.damage(entity.getDamageSources().outOfWorld(), 4.0F);
             }
-
-            entity.setOnGround(entity.verticalCollision && entity.getVelocity().getY() > 0);
         }
 
-        float gravity = this.getGravityModifier();
+        float gravity = getGravityModifier();
         if (gravity != lastGravity) {
             lastGravity = gravity;
 
@@ -87,8 +72,6 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
     @Override
     public BlockPos getHeadPosition() {
 
-        entity.setOnGround(false);
-
         BlockPos pos = new BlockPos(
                 MathHelper.floor(entity.getX()),
                 MathHelper.floor(entity.getY() + entity.getHeight() + 0.20000000298023224D),
@@ -99,27 +82,11 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
             BlockPos below = pos.down();
             BlockState block = entity.getWorld().getBlockState(below);
             if (block.isIn(BlockTags.FENCES) || block.isIn(BlockTags.WALLS) || block.getBlock() instanceof FenceGateBlock) {
-                entity.setOnGround(true);
                 return below;
             }
-        } else {
-            entity.setOnGround(true);
         }
 
         return pos;
-    }
-
-    @Override
-    public void spawnSprintingParticles() {
-        BlockState state = entity.getWorld().getBlockState(getHeadPosition());
-        if (state.getRenderType() != BlockRenderType.INVISIBLE) {
-            Vec3d vel = entity.getVelocity();
-            entity.getWorld().addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, state),
-                    entity.getX() + (entity.getWorld().random.nextFloat() - 0.5D) * entity.getWidth(),
-                    entity.getY() + entity.getHeight() - 0.1D,
-                    entity.getZ() + (entity.getWorld().random.nextFloat() - 0.5D) * entity.getWidth(),
-                    vel.x * -4, -1.5D, vel.z * -4);
-        }
     }
 
     @Override

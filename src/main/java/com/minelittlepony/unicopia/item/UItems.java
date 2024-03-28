@@ -16,6 +16,7 @@ import com.terraformersmc.terraform.boat.api.TerraformBoatType;
 import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
 import com.terraformersmc.terraform.boat.api.item.TerraformBoatItemHelper;
 
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -74,6 +75,10 @@ public interface UItems {
     Item IMPORTED_OATS = register("imported_oats", new Item(new Item.Settings().food(UFoodComponents.IMPORTED_OATS)), ItemGroups.FOOD_AND_DRINK);
     Item OATMEAL = register("oatmeal", new OatmealItem(new Item.Settings().recipeRemainder(Items.BOWL).maxCount(1).food(UFoodComponents.OATMEAL)), ItemGroups.FOOD_AND_DRINK);
 
+    Item OATMEAL_COOKIE = register("oatmeal_cookie", new Item(new Item.Settings().food(FoodComponents.COOKIE)), ItemGroups.FOOD_AND_DRINK);
+    Item PINECONE_COOKIE = register("pinecone_cookie", new Item(new Item.Settings().food(FoodComponents.COOKIE)), ItemGroups.FOOD_AND_DRINK);
+    Item BOWL_OF_NUTS = register("bowl_of_nuts", new StewItem(new Item.Settings().food(FoodComponents.BAKED_POTATO).recipeRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
+
     Item DAFFODIL_DAISY_SANDWICH = register("daffodil_daisy_sandwich", new Item(new Item.Settings().food(UFoodComponents.DAFODIL_DAISY_SANDWICH)), ItemGroups.FOOD_AND_DRINK);
     Item HAY_BURGER = register("hay_burger", new Item(new Item.Settings().maxCount(1).food(UFoodComponents.HAY_BURGER)), ItemGroups.FOOD_AND_DRINK);
     Item HAY_FRIES = register("hay_fries", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.HAY_FRIES)), ItemGroups.FOOD_AND_DRINK);
@@ -85,8 +90,8 @@ public interface UItems {
 
     Item WHEAT_WORMS = register("wheat_worms", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.WORMS)), ItemGroups.NATURAL);
     Item MUFFIN = register("muffin", new MuffinItem(new Item.Settings().maxCount(32).food(FoodComponents.BREAD), 0), ItemGroups.FOOD_AND_DRINK);
-    Item PINECONE = register("pinecone", new Item(new Item.Settings().food(UFoodComponents.PINECONE).maxCount(3)), ItemGroups.FOOD_AND_DRINK);
-    Item ACORN = register("acorn", new Item(new Item.Settings().food(UFoodComponents.ACORN).maxCount(16)), ItemGroups.FOOD_AND_DRINK);
+    Item PINECONE = register("pinecone", new ForageableItem(new Item.Settings().food(UFoodComponents.PINECONE).maxCount(16), () -> Blocks.SPRUCE_LEAVES), ItemGroups.FOOD_AND_DRINK);
+    Item ACORN = register("acorn", new ForageableItem(new Item.Settings().food(UFoodComponents.ACORN).maxCount(16), () -> Blocks.OAK_LEAVES), ItemGroups.FOOD_AND_DRINK);
     Item MANGO = register("mango", new Item(new Item.Settings().food(UFoodComponents.MANGO)), ItemGroups.FOOD_AND_DRINK);
     Item BANANA = register("banana", new Item(new Item.Settings().food(UFoodComponents.BANANA)), ItemGroups.FOOD_AND_DRINK);
     Item CURING_JOKE = register("curing_joke", new CuringJokeItem(UBlocks.CURING_JOKE, new Item.Settings().food(UFoodComponents.POISON_JOKE)), ItemGroups.NATURAL);
@@ -101,7 +106,7 @@ public interface UItems {
     Item TOM = register("tom", new BluntWeaponItem(new Item.Settings(), ImmutableMultimap.of(
             EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, new EntityAttributeModifier(BluntWeaponItem.KNOCKBACK_MODIFIER_ID, "Weapon modifier", 0.9, EntityAttributeModifier.Operation.ADDITION)
     )), ItemGroups.NATURAL);
-    Item ROCK_STEW = register("rock_stew", new Item(new Item.Settings().food(FoodComponents.MUSHROOM_STEW)), ItemGroups.FOOD_AND_DRINK);
+    Item ROCK_STEW = register("rock_stew", new StewItem(new Item.Settings().food(FoodComponents.MUSHROOM_STEW).recipeRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
     Item ROCK_CANDY = register("rock_candy", new Item(new Item.Settings().food(UFoodComponents.CANDY).maxCount(16)), ItemGroups.FOOD_AND_DRINK);
     Item SALT_CUBE = register("salt_cube", new Item(new Item.Settings().food(UFoodComponents.SALT_CUBE)), ItemGroups.FOOD_AND_DRINK);
 

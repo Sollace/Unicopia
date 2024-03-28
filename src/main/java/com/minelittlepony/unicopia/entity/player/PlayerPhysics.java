@@ -60,6 +60,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private int ticksInAir;
     private int ticksToGlide;
     private int ticksDiving;
+    private int ticksFlyingLow;
 
     private float thrustScale = 0;
     private float prevThrustScale;
@@ -301,10 +302,6 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             if (entity.isOnGround() || (!creative && entity.horizontalCollision)) {
                 cancelFlight(false);
             }
-
-            if (entity.isClimbing() && (entity.horizontalCollision || ((LivingEntityDuck)entity).isJumping())) {
-                velocity.y = -0.2F;
-            }
         }
 
         isFlyingSurvival = entity.getAbilities().flying && !creative;
@@ -339,28 +336,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     velocity.y /= 2F;
                 }
 
-                double horizontalSpeed = this.getHorizontalMotion();
-                double verticalSpeed = velocity.y;
-
-                if (Abilities.RAINBOOM.canUse(pony.getCompositeRace()) && horizontalSpeed != 0 && verticalSpeed < -0.3F && (verticalSpeed / horizontalSpeed) < -0.3F) {
-                    ticksDiving++;
-                } else {
-                    ticksDiving = 0;
-                }
-
-                if (ticksDiving > 0 && ticksDiving % 25 == 0) {
-                    pony.getMagicalReserves().getCharge().addPercent(12.5F);
-                }
+                tickStunts(velocity);
             } else {
-                prevStrafe = 0;
-                strafe = 0;
-                ticksInAir = 0;
-                wallHitCooldown = MAX_WALL_HIT_CALLDOWN;
-                soundPlaying = false;
-                descentRate = 0;
-                ticksDiving = 0;
-                updraft.update(0, 100);
-                windStrength.update(0, 100);
+                tickGrounded();
 
                 if (Abilities.RAINBOOM.canUse(pony.getCompositeRace()) && entity.isOnGround()) {
                     pony.getMagicalReserves().getCharge().set(0);
@@ -371,10 +349,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 }
             }
         } else {
-            descentRate = 0;
-            soundPlaying = false;
-            updraft.update(0, 100);
-            windStrength.update(0, 100);
+            tickGrounded();
         }
 
         if (!entity.isOnGround()) {
@@ -383,6 +358,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             velocity.z /= heavyness;
         }
 
+        float maximum = 1.5F;
+        velocity.x = MathHelper.clamp(velocity.x, -maximum, maximum);
+        velocity.y = MathHelper.clamp(velocity.y, -maximum, maximum);
+        velocity.z = MathHelper.clamp(velocity.z, -maximum, maximum);
         entity.setVelocity(velocity.toImmutable());
 
         if (isFlying() && !entity.isFallFlying() && !pony.getAcrobatics().isHanging() && pony.isClient()) {
@@ -398,6 +377,46 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             }
 
             LimbAnimationUtil.resetToZero(entity.limbAnimator);
+        }
+    }
+
+    private void tickGrounded() {
+        prevStrafe = 0;
+        strafe = 0;
+        ticksInAir = 0;
+        wallHitCooldown = MAX_WALL_HIT_CALLDOWN;
+        soundPlaying = false;
+        descentRate = 0;
+        ticksDiving = 0;
+        ticksFlyingLow = 0;
+        updraft.update(0, 0);
+        windStrength.update(0, 0);
+    }
+
+    private void tickStunts(MutableVector velocity) {
+        boolean canPerformStunts = Abilities.RAINBOOM.canUse(pony.getCompositeRace());
+        ticksDiving = canPerformStunts && FlightStuntUtil.isPerformingDive(pony, velocity) ? (ticksDiving + 1) : 0;
+        ticksFlyingLow = canPerformStunts && FlightStuntUtil.isFlyingLow(pony, velocity) ? (ticksFlyingLow + 1) : 0;
+
+        if (ticksDiving > 0) {
+            float horDiveScale = MathHelper.clamp(ticksDiving / 100F, 0, 10);
+            float verDiveScale = MathHelper.clamp(ticksDiving / 90F, 0, 5);
+            velocity.multiply(1 + horDiveScale, 1 + verDiveScale, 1 + horDiveScale);
+        }
+
+        if (ticksFlyingLow > 0) {
+            float horDiveScale = MathHelper.clamp(ticksFlyingLow / 1000F, 0, 0.9F);
+            float verDiveScale = MathHelper.clamp(ticksFlyingLow / 900F, 0, 0.5F);
+            velocity.multiply(1 + horDiveScale, 1 + verDiveScale, 1 + horDiveScale);
+        }
+
+        if (pony.asEntity().age % 2 == 0) {
+            if (ticksDiving > 0) {
+                pony.getMagicalReserves().getCharge().addPercent(1F);
+            }
+            if (ticksFlyingLow > 0) {
+                pony.getMagicalReserves().getCharge().addPercent(ticksFlyingLow / 200F);
+            }
         }
     }
 

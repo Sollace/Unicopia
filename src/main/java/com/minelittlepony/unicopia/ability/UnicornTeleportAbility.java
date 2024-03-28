@@ -27,6 +27,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
@@ -89,8 +90,10 @@ public class UnicornTeleportAbility implements Ability<Pos> {
         return trace.getBlockOrEntityPos().map(pos -> {
             final BlockPos originalPos = pos;
 
+            Direction globalUp = player.getPhysics().isGravityNegative() ? Direction.DOWN : Direction.UP;
+
             boolean originalPosHasSupport = exception(w, pos, player.asEntity());
-            boolean originalPosValid = enterable(w, pos.up()) && enterable(w, pos.up(2));
+            boolean originalPosValid = enterable(w, pos.offset(globalUp)) && enterable(w, pos.offset(globalUp, 2));
 
             if (w.getBlockState(pos).isOf(Blocks.POWDER_SNOW) && !PowderSnowBlock.canWalkOnPowderSnow(player.asEntity())) {
                 return null;
@@ -111,11 +114,11 @@ public class UnicornTeleportAbility implements Ability<Pos> {
             if (pos.getX() != originalPos.getX() || pos.getZ() != originalPos.getZ()) {
                 // check support
                 int steps = 0;
-                while (enterable(w, pos.down())) {
-                    pos = pos.down();
+                while (enterable(w, pos.offset(globalUp.getOpposite()))) {
+                    pos = pos.offset(globalUp.getOpposite());
                     if (++steps > 2) {
                         if (originalPosValid) {
-                            pos = originalPos.up();
+                            pos = originalPos.offset(globalUp);
                             break;
                         } else {
                             return null;
@@ -125,7 +128,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
             }
 
             if ((!enterable(w, pos) && exception(w, pos, player.asEntity()))
-             || (!enterable(w, pos.up()) && exception(w, pos.up(), player.asEntity()))) {
+             || (!enterable(w, pos.offset(globalUp)) && exception(w, pos.offset(globalUp), player.asEntity()))) {
                 return null;
             }
 

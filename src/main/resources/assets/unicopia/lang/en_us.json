@@ -146,6 +146,9 @@
   "item.unicopia.horse_shoe_fries": "Horse Shoe Fries",
   "item.unicopia.wheat_worms": "Wheat Worms",
   "item.unicopia.muffin": "Muffin",
+  "item.unicopia.oatmeal_cookie": "Oatmeal Cookie",
+  "item.unicopia.pinecone_cookie": "Pinecone Cookie",
+  "item.unicopia.bowl_of_nuts": "Bowl of Nuts",
 
   "item.unicopia.pegasus_amulet": "Wings of Icarus",
   "item.unicopia.pegasus_amulet.lore": "Grants temporary flight to whoever wears it",
@@ -1383,6 +1386,7 @@
   "commands.gravity.set": "Your gravity has been updated to %f",
   "commands.gravity.set.self": "Set own gravity to %f",
   "commands.gravity.set.other": "Set %s's gravity to %f",
+  "commands.gravity.set.multiple": "Updated %s entities",
 
   "unicopia.options.title": "Unicopia Options",
   "unicopia.options.ignore_mine_lp": "Ignore Mine Little Pony",

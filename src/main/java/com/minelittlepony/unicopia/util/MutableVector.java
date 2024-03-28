@@ -20,6 +20,12 @@ public class MutableVector {
         z = vec.z;
     }
 
+    public void multiply(double x, double y, double z) {
+        this.x *= x;
+        this.y *= y;
+        this.z *= z;
+    }
+
     public void add(Vec3d vector) {
         add(vector.x, vector.y, vector.z);
     }
@@ -36,6 +42,18 @@ public class MutableVector {
         this.x += x;
         this.y += y;
         this.z += z;
+    }
+
+    public double horizontalLengthSquared() {
+        return x * x + z * z;
+    }
+
+    public double verticalLengthSquared() {
+        return y * y;
+    }
+
+    public double lengthSquared() {
+        return verticalLengthSquared() + horizontalLengthSquared();
     }
 
     public Vec3d toImmutable() {
