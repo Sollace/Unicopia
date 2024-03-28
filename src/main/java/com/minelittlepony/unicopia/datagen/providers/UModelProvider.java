@@ -19,6 +19,7 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.data.client.ModelIds;
+import net.minecraft.data.client.Models;
 import net.minecraft.data.client.TextureKey;
 import net.minecraft.data.client.TextureMap;
 
@@ -133,5 +134,8 @@ public class UModelProvider extends FabricModelProvider {
                 .addOverride(ModelIds.getItemSubModelId(UItems.GEMSTONE, "_pure"), "affinity", 0)
                 .addOverride(ModelIds.getItemSubModelId(UItems.GEMSTONE, "_corrupted"), "affinity", 1)
                 .upload(UItems.GEMSTONE, itemModelGenerator);
+
+        // fishing rod
+        ItemModels.register(itemModelGenerator, Models.HANDHELD_ROD, UItems.BAITED_FISHING_ROD);
     }
 }

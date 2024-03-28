@@ -63,24 +63,7 @@ public class CloudPillarBlock extends CloudBlock {
 
     @Override
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context, EquineContext equineContext) {
-        var axis = state.get(AXIS);
-
-        int[] offsets = { axis.choose(1, 0, 0), axis.choose(0, 1, 0), axis.choose(0, 0, 1) };
-        float capOffset = 11F / 16F;
-        VoxelShape core = Block.createCuboidShape(
-                axis.choose(0, 1, 1), axis.choose(1, 0, 1), axis.choose(1, 1, 0),
-                16 - axis.choose(0, 1, 1), 16 - axis.choose(1, 0, 1), 16 - axis.choose(1, 1, 0)
-            );
-        VoxelShape foot = Block.createCuboidShape(0, 0, 0, 16 - (11 * offsets[0]), 16 - (11 * offsets[1]), 16 - (11 * offsets[2]));
-        VoxelShape cap = foot.offset(capOffset * offsets[0], capOffset * offsets[1], capOffset * offsets[2]);
-        var temp = new VoxelShape[] {
-                core,
-                VoxelShapes.union(core, foot),
-                VoxelShapes.union(core, cap),
-                VoxelShapes.union(core, cap, foot)
-        };
-        return temp[(state.get(TOP) ? 0 : 2) + (state.get(BOTTOM) ? 0 : 1)];
-        //return SHAPES.apply(state.get(AXIS))[(state.get(TOP) ? 0 : 2) + (state.get(BOTTOM) ? 0 : 1)];
+        return SHAPES.apply(state.get(AXIS))[(state.get(TOP) ? 0 : 2) + (state.get(BOTTOM) ? 0 : 1)];
     }
 
     @Override

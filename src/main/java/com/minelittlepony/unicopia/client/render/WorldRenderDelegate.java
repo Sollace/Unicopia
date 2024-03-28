@@ -167,8 +167,6 @@ public class WorldRenderDelegate {
             return true;
         }
 
-        pony.updateSupportingEntity();
-
         matrices.push();
 
         Entity owner = pony.asEntity();

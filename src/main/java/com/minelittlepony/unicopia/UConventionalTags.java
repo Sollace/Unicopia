@@ -19,7 +19,7 @@ public interface UConventionalTags {
     TagKey<Item> MUSHROOMS = item("mushrooms");
     TagKey<Item> MUFFINS = item("muffins");
     TagKey<Item> MANGOES = item("mangoes");
-    TagKey<Item> OEATMEALS = item("oatmeals");
+    TagKey<Item> OATMEALS = item("oatmeals");
 
     TagKey<Item> FRUITS = item("fruits");
 

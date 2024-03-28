@@ -462,6 +462,12 @@ public class URecipeProvider extends FabricRecipeProvider {
 
         // worms
         offerReversibleCompactingRecipes(exporter, RecipeCategory.BUILDING_BLOCKS, UItems.WHEAT_WORMS, RecipeCategory.BUILDING_BLOCKS, UBlocks.WORM_BLOCK);
+        // fishing
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.BAITED_FISHING_ROD)
+            .input(Items.FISHING_ROD).criterion(hasItem(Items.FISHING_ROD), conditionsFromItem(Items.FISHING_ROD))
+            .input(UItems.WHEAT_WORMS)
+            .group("fishing_rod")
+            .offerTo(exporter);
 
         // utility
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, Items.DIRT)
@@ -472,6 +478,15 @@ public class URecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter, convertBetween(Items.DIRT, UItems.WHEAT_WORMS));
 
         offerShapelessRecipe(exporter, Items.BONE_MEAL, UTags.SHELLS, "bonemeal", 3);
+
+        // pegasus feathers for non pegasi
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.PEGASUS_FEATHER)
+            .input('*', Items.GHAST_TEAR).criterion("has_ghast_tear", conditionsFromItem(Items.GHAST_TEAR))
+            .input('#', UItems.GRYPHON_FEATHER).criterion("has_feather", conditionsFromItem(UItems.GRYPHON_FEATHER))
+            .pattern("***")
+            .pattern("*#*")
+            .pattern("***")
+            .offerTo(exporter);
 
         offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Items.COBBLESTONE, UItems.ROCK);
         offerReversibleCompactingRecipesWithReverseRecipeGroup(exporter, RecipeCategory.MISC, UItems.PEBBLES, RecipeCategory.BUILDING_BLOCKS, Blocks.GRAVEL, convertBetween(UItems.PEBBLES, Blocks.GRAVEL), "pebbles");
