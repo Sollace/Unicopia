@@ -145,6 +145,7 @@
   "item.unicopia.crispy_hay_fries": "Crispy Hay Fries",
   "item.unicopia.horse_shoe_fries": "Horse Shoe Fries",
   "item.unicopia.wheat_worms": "Wheat Worms",
+  "item.unicopia.baited_fishing_rod": "Baited Fishing Rod",
   "item.unicopia.muffin": "Muffin",
   "item.unicopia.oatmeal_cookie": "Oatmeal Cookie",
   "item.unicopia.pinecone_cookie": "Pinecone Cookie",
@@ -1338,6 +1339,8 @@
   "enchantment.unicopia.heart_bound.desc": "Causes an item to stay with you after you die",
   "enchantment.unicopia.consumption": "Consumption",
   "enchantment.unicopia.consumption.desc": "Converts drops mined using a tool into raw experience",
+  "enchantment.unicopia.feather_touch": "Feather Touch",
+  "enchantment.unicopia.feather_touch.desc": "Allows breaking and placing cloud blocks when held",
 
   "commands.race.success.self": "Set own race to %1$s",
   "commands.race.success": "%1$s changed race to %2$s",
@@ -1614,6 +1617,8 @@
   "advancements.unicopia.lightning_bug.description": "Attract 10 lightning strikes as a changeling",
   "advancements.unicopia.wonder_bolt.title": "Wonder Bolt",
   "advancements.unicopia.wonder_bolt.description": "Attract 10 lightning strikes",
+  "advancements.unicopia.bait.title": "Is This Bait?",
+  "advancements.unicopia.bait.description": "Put some worms on a hook",
   "advancements.unicopia.jar.title": "Oh wow. What's this?",
   "advancements.unicopia.jar.description": "Find an empty jar",
   "advancements.unicopia.gotcha.title": "Got'cha!",
@@ -1680,7 +1685,7 @@
   "advancements.unicopia.blasphemy.title": "Blasphemy!",
   "advancements.unicopia.blasphemy.description": "Ding Celestia on the noggin. Oops!",
 
-  "advancements.unicopia.earth_route.title": "Path of the Pony",
+  "advancements.unicopia.earth_route.title": "Hearth of the Earth",
   "advancements.unicopia.earth_route.description": "Join the Apple Clan",
   "advancements.unicopia.sticks_and_stones.title": "Sticks and Stones",
   "advancements.unicopia.sticks_and_stones.description": "Kill a mob by throwing rocks at it",
@@ -1760,6 +1765,13 @@
   "advancements.unicopia.power_up_heart.description": "Power up a Crystal Heart",
   "advancements.unicopia.love_is_power.title": "Love is Power",
   "advancements.unicopia.love_is_power.description": "Banish King Sombra with a crystal heart",
+
+  "advancements.unicopia.hippogriff_route.title": "Splash of Seaquestria",
+  "advancements.unicopia.hippogriff_route.description": "Join the Hippogriff's nest",
+  "advancements.unicopia.shoo_be_doo.title": "Shoo Be Doo!",
+  "advancements.unicopia.shoo_be_doo.description": "Use a pearl necklace to turn into a sea creature",
+  "advancements.unicopia.shoo_be_done.title": "Shoo Be Done!",
+  "advancements.unicopia.shoo_be_done.description": "Use a pearl necklace to turn back to normal",
 
   "unicopia.toast.discoveries.title": "New Discoveries!",
   "unicopia.toast.discoveries.description": "Check your spellbook"

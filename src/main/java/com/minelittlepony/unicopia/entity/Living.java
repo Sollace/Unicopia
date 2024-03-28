@@ -20,7 +20,6 @@ import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.behaviour.Guest;
-import com.minelittlepony.unicopia.entity.collision.MultiBoundingBoxEntity;
 import com.minelittlepony.unicopia.entity.damage.MagicalDamageSource;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.effect.CorruptInfluenceStatusEffect;
@@ -31,6 +30,7 @@ import com.minelittlepony.unicopia.input.Heuristic;
 import com.minelittlepony.unicopia.input.Interactable;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.datasync.EffectSync;
 import com.minelittlepony.unicopia.network.datasync.Transmittable;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
@@ -67,7 +67,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -89,14 +88,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     private boolean invisible = false;
 
     @Nullable
-    private Entity supportingEntity;
-
-    @Nullable
-    private Vec3d supportPositionOffset;
-    private int ticksOutsideVehicle;
-    private int ticksInVehicle;
-
-    @Nullable
     private Caster<?> attacker;
     @Nullable
     private transient Caster<?> host;
@@ -109,6 +100,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     private final Enchantments enchants = addTicker(new Enchantments(this));
     private final ItemTracker armour = addTicker(new ItemTracker(this));
+    //private final Transportation<T> transportation = new Transportation<>(this);
+    private final Transportation<T> transportation = new Transportation<>(this);
 
     protected Living(T entity, TrackedData<NbtCompound> effect) {
         this.entity = entity;
@@ -171,6 +164,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return armour;
     }
 
+    public Transportation<T> getTransportation() {
+        return transportation;
+    }
+
     @Override
     public final T asEntity() {
         return entity;
@@ -202,71 +199,9 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return vehicle != null && getCarrierId().filter(vehicle.getUuid()::equals).isPresent();
     }
 
-    public boolean setSupportingEntity(@Nullable Entity supportingEntity) {
-        this.supportingEntity = supportingEntity;
-        if (supportingEntity != null) {
-            ticksOutsideVehicle = 0;
-        }
-        return true;
-    }
-
-    @Nullable
-    public Entity getSupportingEntity() {
-        return supportingEntity;
-    }
-
-    public int getTicksInVehicle() {
-        return ticksInVehicle;
-    }
-
-    public void setPositionOffset(@Nullable Vec3d positionOffset) {
-        this.supportPositionOffset = positionOffset;
-    }
-
-    public void updatePositionOffset() {
-        setPositionOffset(supportingEntity == null ? null : entity.getPos().subtract(supportingEntity.getPos()));
-    }
-
-    public void updateRelativePosition(Box box) {
-        if (supportingEntity == null || supportPositionOffset == null) {
-            return;
-        }
-        if (getPhysics().isFlying()) {
-            return;
-        }
-
-        Vec3d newPos = supportingEntity.getPos().add(supportPositionOffset);
-        Vec3d posChange = entity.getPos().subtract(newPos);
-        entity.setPosition(newPos);
-        if (isClient()) {
-            Vec3d newServerPos = LivingEntityDuck.serverPos(entity);
-            if (newServerPos.lengthSquared() != 0) {
-                newServerPos = newServerPos.subtract(posChange);
-                entity.updateTrackedPositionAndAngles(
-                        newServerPos.x, newServerPos.y, newServerPos.z,
-                        entity.getYaw(), entity.getPitch(), 3, true);
-            }
-        } else {
-            entity.updateTrackedPosition(newPos.x, newPos.y, newPos.z);
-        }
-
-        if (!(entity instanceof PlayerEntity)) {
-            entity.lastRenderX = supportingEntity.lastRenderX + supportPositionOffset.x;
-            entity.lastRenderY = supportingEntity.lastRenderY + supportPositionOffset.y;
-            entity.lastRenderZ = supportingEntity.lastRenderZ + supportPositionOffset.z;
-
-            if (entity.getVelocity().length() < 0.1) {
-                LimbAnimationUtil.resetToZero(entity.limbAnimator);
-            }
-        }
-
-        entity.horizontalSpeed = 0;
-        entity.prevHorizontalSpeed = 0;
-        entity.speed = 0;
-        entity.setOnGround(true);
-        entity.verticalCollision = true;
-        entity.groundCollision = true;
-        entity.fallDistance = 0;
+    @Override
+    public boolean hasFeatherTouch() {
+        return EnchantmentHelper.getEquipmentLevel(UEnchantments.FEATHER_TOUCH, entity) > 0;
     }
 
     @Override
@@ -276,42 +211,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             updateVelocity();
         }
 
-        updateSupportingEntity();
         return false;
-    }
-
-    public void updateSupportingEntity() {
-        if (supportingEntity != null) {
-            Box ownBox = entity.getBoundingBox()
-                    .stretch(entity.getVelocity())
-                    .expand(0.1, 0.5, 0.1)
-                    .stretch(supportingEntity.getVelocity().multiply(-2));
-
-            MultiBoundingBoxEntity.getBoundingBoxes(supportingEntity).stream()
-            .filter(box -> box.stretch(supportingEntity.getVelocity()).expand(0, 0.5, 0).intersects(ownBox))
-            .findFirst()
-            .ifPresentOrElse(box -> {
-                ticksOutsideVehicle = 0;
-                if (supportPositionOffset == null) {
-                    updatePositionOffset();
-                } else {
-                    updateRelativePosition(box);
-                }
-                entity.setOnGround(true);
-                entity.verticalCollision = true;
-                entity.groundCollision = true;
-            }, () -> {
-                // Rubberband passengers to try and prevent players falling out when the velocity changes suddenly
-                if (ticksOutsideVehicle++ > 30) {
-                    supportingEntity = null;
-                    supportPositionOffset = null;
-                    Unicopia.LOGGER.info("Entity left vehicle");
-                } else {
-                    supportPositionOffset = supportPositionOffset.multiply(0.25, 1, 0.25);
-                }
-            });
-        }
-
     }
 
     @Override
@@ -358,13 +258,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
         updateDragonBreath();
 
-        if (ticksOutsideVehicle == 0) {
-            updatePositionOffset();
-
-            ticksInVehicle++;
-        } else {
-            ticksInVehicle = 0;
-        }
+        transportation.tick();
     }
 
     public void updateAttributeModifier(UUID id, EntityAttribute attribute, float desiredValue, Float2ObjectFunction<EntityAttributeModifier> modifierSupplier, boolean permanent) {

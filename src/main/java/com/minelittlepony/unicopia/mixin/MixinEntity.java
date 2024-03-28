@@ -21,11 +21,13 @@ import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.Entity.PositionUpdater;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 @Mixin(Entity.class)
@@ -116,6 +118,22 @@ abstract class MixinEntity implements EntityDuck {
     private void onDropStack(ItemStack stack, float yOffset, CallbackInfoReturnable<ItemEntity> info) {
         if (getHost() != null) {
             info.setReturnValue(null);
+        }
+    }
+
+    @Inject(method = "move", at = @At("HEAD"))
+    private void beforeMove(MovementType movementType, Vec3d movement, CallbackInfo info) {
+        Living<?> living = Living.living((Entity)(Object)this);
+        if (living != null) {
+            living.getTransportation().updatePreviousPosition();
+        }
+    }
+
+    @Inject(method = "move", at = @At("RETURN"))
+    private void afterMove(MovementType movementType, Vec3d movement, CallbackInfo info) {
+        Living<?> living = Living.living((Entity)(Object)this);
+        if (living != null) {
+            living.getTransportation().onMove(movementType);
         }
     }
 }

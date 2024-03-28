@@ -22,54 +22,50 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntity> {
 
     private final List<ModelPart> ropes;
 
-	public AirBalloonEntityModel(ModelPart root) {
-	    this.root = root;
-	    isBurner = root.hasChild("burner");
-	    isBalloon = root.hasChild("canopy");
+    public AirBalloonEntityModel(ModelPart root) {
+        this.root = root;
+        isBurner = root.hasChild("burner");
+        isBalloon = root.hasChild("canopy");
 
-	    if (isBurner || isBalloon) {
-	        ModelPart part = root.getChild(isBalloon ? "canopy" : "burner");
-	        ropes = List.of(
-                    part.getChild("rope_a"),
-                    part.getChild("rope_b"),
-                    part.getChild("rope_c"),
-                    part.getChild("rope_d")
-            );
-	    } else {
-	        ropes = List.of();
-	    }
-	}
+        if (isBurner || isBalloon) {
+            ModelPart part = root.getChild(isBalloon ? "canopy" : "burner");
+            ropes = List.of(part.getChild("rope_a"), part.getChild("rope_b"), part.getChild("rope_c"),
+                    part.getChild("rope_d"));
+        } else {
+            ropes = List.of();
+        }
+    }
 
-	public static TexturedModelData getBasketModelData() {
-		ModelData modelData = new ModelData();
-		ModelPartData root = modelData.getRoot();
-		ModelPartData basket = root.addChild("basket", ModelPartBuilder.create().uv(0, 0).cuboid(-16, -1, -16, 32, 2, 30, Dilation.NONE), ModelTransform.pivot(0, 24, 0));
-		basket.addChild("walls", ModelPartBuilder.create().uv(0, 66).cuboid(-17, -12, -16, 2, 11, 30, Dilation.NONE)
-        		.uv(64, 68).cuboid(15, -12, -16, 2, 11, 30, Dilation.NONE)
-        		.uv(80, 38).cuboid(-16, -12, -17, 32, 11, 2, Dilation.NONE)
-        		.uv(0, 32).cuboid(8, -12, 13, 8, 11, 2, Dilation.NONE)
-        		.uv(0, 6).cuboid(-16, -12, 13, 8, 11, 2, Dilation.NONE), ModelTransform.NONE);
-		basket.addChild("rim", ModelPartBuilder.create().uv(40, 34).cuboid(-18, -13, -17, 4, 2, 32, Dilation.NONE)
-        		.uv(0, 32).cuboid(14, -13, -17, 4, 2, 32, Dilation.NONE)
-        		.uv(80, 32).cuboid(-17, -13, -18, 34, 2, 4, Dilation.NONE)
-        		.uv(0, 19).cuboid(7, -13, 12, 10, 2, 4, Dilation.NONE)
-        		.uv(0, 0).cuboid(-17, -13, 12, 10, 2, 4, Dilation.NONE), ModelTransform.NONE);
-		return TexturedModelData.of(modelData, 256, 128);
-	}
+    public static TexturedModelData getBasketModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData root = modelData.getRoot();
+        ModelPartData basket = root.addChild("basket", ModelPartBuilder.create().uv(0, 0).cuboid(-16, -1, -16, 32, 2, 30, Dilation.NONE), ModelTransform.pivot(0, 24, 0));
+        basket.addChild("walls", ModelPartBuilder.create().uv(0, 66).cuboid(-17, -12, -16, 2, 11, 30, Dilation.NONE)
+                .uv(64, 68).cuboid(15, -12, -16, 2, 11, 30, Dilation.NONE)
+                .uv(80, 38).cuboid(-16, -12, -17, 32, 11, 2, Dilation.NONE)
+                .uv(0, 32).cuboid(8, -12, 13, 8, 11, 2, Dilation.NONE)
+                .uv(0, 6).cuboid(-16, -12, 13, 8, 11, 2, Dilation.NONE), ModelTransform.NONE);
+        basket.addChild("rim", ModelPartBuilder.create().uv(40, 34).cuboid(-18, -13, -17, 4, 2, 32, Dilation.NONE)
+                .uv(0, 32).cuboid(14, -13, -17, 4, 2, 32, Dilation.NONE)
+                .uv(80, 32).cuboid(-17, -13, -18, 34, 2, 4, Dilation.NONE)
+                .uv(0, 19).cuboid(7, -13, 12, 10, 2, 4, Dilation.NONE)
+                .uv(0, 0).cuboid(-17, -13, 12, 10, 2, 4, Dilation.NONE), ModelTransform.NONE);
+        return TexturedModelData.of(modelData, 256, 128);
+    }
 
-	public static TexturedModelData getBurnerModelData() {
+    public static TexturedModelData getBurnerModelData() {
         ModelData modelData = new ModelData();
         ModelPartData root = modelData.getRoot();
 
         ModelPartData burner = root.addChild("burner", ModelPartBuilder.create().uv(8, 0).cuboid(-6, -47, -6, 11, 15, 11, Dilation.NONE), ModelTransform.pivot(0, 24, 0));
-        burner.addChild("rope_d", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(-5, -46, -6,  0.7854F, 0, -0.7854F));
-        burner.addChild("rope_c", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(-4, -44,  3, -0.7854F, 0, -0.7854F));
-        burner.addChild("rope_b", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of( 5, -46,  1, -0.7854F, 0,  0.7854F));
-        burner.addChild("rope_a", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of( 5, -45, -6,  0.7854F, 0,  0.7854F));
+        burner.addChild("rope_d", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(-5, -46, -6, 0.7854F, 0, -0.7854F));
+        burner.addChild("rope_c", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(-4, -44, 3, -0.7854F, 0, -0.7854F));
+        burner.addChild("rope_b", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(5, -46, 1, -0.7854F, 0, 0.7854F));
+        burner.addChild("rope_a", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(5, -45, -6, 0.7854F, 0, 0.7854F));
         return TexturedModelData.of(modelData, 64, 128);
     }
 
-	public static TexturedModelData getCanopyModelData() {
+    public static TexturedModelData getCanopyModelData() {
         ModelData modelData = new ModelData();
         ModelPartData root = modelData.getRoot();
         ModelPartData balloon = root.addChild("canopy", ModelPartBuilder.create().cuboid(-54, -178, -59, 112, 120, 112, Dilation.NONE), ModelTransform.pivot(0, 24, 0));
@@ -80,40 +76,82 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntity> {
         return TexturedModelData.of(modelData, 512, 256);
     }
 
-	@Override
-	public void setAngles(AirBalloonEntity entity, float tickDelta, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-	    inflation = entity.getInflation(tickDelta);
-	    root.roll = MathHelper.sin((float)(entity.getX() - entity.prevX));
-        root.pitch = MathHelper.sin((float)(entity.getZ() - entity.prevZ));
+    @Override
+    public void setAngles(AirBalloonEntity entity, float tickDelta, float limbSwingAmount, float ageInTicks,
+            float netHeadYaw, float headPitch) {
+        inflation = entity.getInflation(tickDelta);
 
-	    if (isBurner) {
-	        boolean lifted = inflation > 0.8F;
-	        root.pivotY = 32 * (1 - inflation);
-	        root.pivotX = inflation * MathHelper.sin(limbSwingAmount + entity.age / 5F) / 4F;
-	        ropes.forEach(rope -> rope.visible = lifted);
-	    }
+        if (isBurner || isBalloon) {
+            root.roll = MathHelper.clamp((float) (entity.getX() - entity.lastRenderX), -0.5F, 0.5F);
+            root.pitch = MathHelper.clamp((float) (entity.getZ() - entity.lastRenderZ), -0.5F, 0.5F);
+            if (entity.isLeashed()) {
+                root.roll *= -1;
+                root.pitch *= -1;
+            }
+        } else {
+            root.pitch = 0;
+            root.roll = 0;
+        }
 
-	    if (isBalloon) {
-	        root.pivotY = 0;
-	        root.pivotX = inflation * MathHelper.cos(limbSwingAmount + entity.age / 5F) / 4F;
-	        if (entity.getBasketType().isOf(BoatEntity.Type.BAMBOO)) {
-	            ropes.forEach(rope -> rope.pivotY = 0);
-	        } else {
-	            ropes.forEach(ModelPart::resetTransform);
-	        }
-	    }
-	}
+        for (ModelPart rope : ropes) {
+            rope.resetTransform();
+        }
 
-	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float r, float g, float b, float a) {
-	    if (isBalloon) {
-	        matrices.push();
-	        matrices.translate(0, 1 * (1 - inflation), 0);
+        if (isBurner) {
+            boolean lifted = inflation > 0.8F;
+            root.pivotY = 32 * (1 - inflation);
+            root.pivotX = inflation * MathHelper.sin(limbSwingAmount + entity.age / 5F) / 4F;
+            ropes.forEach(rope -> {
+                rope.visible = lifted;
+                rope.pitch *= 0.125;
+                rope.roll *= 0.125;
+            });
+        }
+        if (isBalloon) {
+            root.pivotY = 0;
+            root.pivotX = inflation * MathHelper.cos(limbSwingAmount + entity.age / 5F) / 4F;
+            if (entity.getBasketType().isOf(BoatEntity.Type.BAMBOO)) {
+                ropes.forEach(rope -> rope.pivotY = 0);
+            } else {
+                ropes.forEach(ModelPart::resetTransform);
+            }
+        }
+
+        for (int i = 0; i < ropes.size(); i++) {
+            ModelPart rope = ropes.get(i);
+            float rollRatio = root.roll / rope.roll;
+            float pitchRatio = root.pitch / rope.pitch;
+
+            rope.pivotY -= 5F * rollRatio;
+            rope.pivotY -= 5F * pitchRatio;
+
+            if (i == 0 || i == 3) {
+                rope.pivotZ -= 5 * pitchRatio;
+            }
+            if (i == 2 || i == 1) {
+                rope.pivotZ += 5 * pitchRatio;
+            }
+
+            if (i == 2 || i == 3) {
+                rope.pivotX -= 5 * rollRatio;
+            }
+            if (i == 0 || i == 1) {
+                rope.pivotX += 5 * rollRatio;
+            }
+        }
+
+    }
+
+    @Override
+    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float r, float g, float b, float a) {
+        if (isBalloon) {
+            matrices.push();
+            matrices.translate(0, 1 * (1 - inflation), 0);
             matrices.scale(1, MathHelper.lerp(inflation, -0.05F, 1), 1);
             root.render(matrices, vertexConsumer, light, overlay, r, g, b, a);
             matrices.pop();
         } else {
             root.render(matrices, vertexConsumer, light, overlay, r, g, b, a);
         }
-	}
+    }
 }

@@ -388,6 +388,13 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             boolean mustAvoidAir = getCompositeRace().includes(Race.SEAPONY) && !sw.getFluidState(getOrigin()).isIn(FluidTags.WATER);
             if (mustAvoidSun || mustAvoidAir) {
                 SpawnLocator.selectSpawnPosition(sw, entity, mustAvoidAir, mustAvoidSun);
+                if ((mustAvoidAir && !sw.getFluidState(getOrigin()).isIn(FluidTags.WATER))
+                 || (mustAvoidSun && MeteorlogicalUtil.isPositionExposedToSun(sw, getOrigin()))) {
+                    Race suppressedRace = getSuppressedRace();
+                    if (suppressedRace != Race.UNSET) {
+                        setSpecies(suppressedRace);
+                    }
+                }
             }
         }
         ticksSunImmunity = INITIAL_SUN_IMMUNITY;

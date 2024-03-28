@@ -76,6 +76,11 @@ public class AdvancementDisplayBuilder {
         return this;
     }
 
+    public AdvancementDisplayBuilder doNotAnnounce() {
+        this.announce = false;
+        return this;
+    }
+
     public AdvancementDisplayBuilder group(String group) {
         this.group = group;
         return this;

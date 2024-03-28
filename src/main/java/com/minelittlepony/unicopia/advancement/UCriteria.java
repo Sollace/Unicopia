@@ -30,6 +30,7 @@ public interface UCriteria {
     CustomEventCriterion.Trigger RIDE_BALLOON = CUSTOM_EVENT.createTrigger("ride_balloon");
     CustomEventCriterion.Trigger CONSTRUCT_BALLOON = CUSTOM_EVENT.createTrigger("construct_balloon");
     CustomEventCriterion.Trigger TELEPORT_ABOVE_WORLD = CUSTOM_EVENT.createTrigger("teleport_above_world");
+    CustomEventCriterion.Trigger SEAPONY_TRANSITION = CUSTOM_EVENT.createTrigger("seapony_transition");
 
     static void bootstrap() { }
 }

@@ -61,7 +61,9 @@ public class HydrophobicSpell extends AbstractSpell {
 
             storedFluidPositions.removeIf(entry -> {
                if (!area.isPointInside(Vec3d.ofCenter(entry.pos()))) {
-                   entry.restore(world);
+                   if (source.canModifyAt(entry.pos())) {
+                       entry.restore(world);
+                   }
                    return true;
                }
 
@@ -72,7 +74,7 @@ public class HydrophobicSpell extends AbstractSpell {
                 pos = new BlockPos(pos);
                 BlockState state = world.getBlockState(pos);
 
-                if (state.getFluidState().isIn(affectedFluid)) {
+                if (source.canModifyAt(pos) && state.getFluidState().isIn(affectedFluid)) {
                     Block block = state.getBlock();
 
                     if (block instanceof FluidBlock) {
@@ -95,7 +97,7 @@ public class HydrophobicSpell extends AbstractSpell {
 
             source.spawnParticles(new Sphere(true, range), 10, pos -> {
                 BlockPos bp = BlockPos.ofFloored(pos);
-                if (source.asWorld().getFluidState(bp.up()).isIn(affectedFluid)) {
+                if (source.canModifyAt(bp) && source.asWorld().getFluidState(bp.up()).isIn(affectedFluid)) {
                     source.addParticle(UParticles.RAIN_DROPS, pos, Vec3d.ZERO);
                 }
             });
@@ -116,7 +118,9 @@ public class HydrophobicSpell extends AbstractSpell {
     protected void onDestroyed(Caster<?> caster) {
         Ether.get(caster.asWorld()).remove(this, caster);
         storedFluidPositions.removeIf(entry -> {
-            entry.restore(caster.asWorld());
+            if (caster.canModifyAt(entry.pos())) {
+                entry.restore(caster.asWorld());
+            }
             return true;
          });
     }

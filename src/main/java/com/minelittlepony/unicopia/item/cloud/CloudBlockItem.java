@@ -19,8 +19,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class CloudBlockItem
-extends BlockItem {
+public class CloudBlockItem extends BlockItem {
     public CloudBlockItem(Block block, Item.Settings settings) {
         super(block, settings);
     }

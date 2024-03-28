@@ -14,12 +14,14 @@ import com.minelittlepony.unicopia.entity.damage.UDamageSources;
 import com.minelittlepony.unicopia.particle.ParticleSource;
 import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.server.world.ModificationType;
+import com.minelittlepony.unicopia.server.world.OfflinePlayerCache;
 import com.minelittlepony.unicopia.util.SoundEmitter;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -67,10 +69,18 @@ public interface Caster<E extends Entity> extends
             }
 
             if (getMaster() instanceof PlayerEntity player) {
-                if (!asWorld().canPlayerModifyAt(player, pos)) {
+                if (!player.canModifyBlocks() || !asWorld().canPlayerModifyAt(player, pos)) {
                     return false;
                 }
             } else {
+                if (asWorld() instanceof ServerWorld sw) {
+                    @Nullable
+                    PlayerEntity player = OfflinePlayerCache.getOfflinePlayer(sw, getMasterId().orElse(null));
+                    if (player != null && !player.canModifyBlocks() || !sw.canPlayerModifyAt(player, pos)) {
+                        return false;
+                    }
+                }
+
                 if (!asWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                     return false;
                 }

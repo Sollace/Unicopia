@@ -9,15 +9,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.minelittlepony.unicopia.EquineContext;
-import com.minelittlepony.unicopia.Race;
-
 import net.minecraft.block.EntityShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 
 @Mixin(EntityShapeContext.class)
-abstract class MixinEntityShapeContext implements EquineContext {
+abstract class MixinEntityShapeContext implements EquineContext.Container {
     private EquineContext equineContext;
 
     @Inject(method = "<init>", at = @At("TAIL"))
@@ -26,22 +24,7 @@ abstract class MixinEntityShapeContext implements EquineContext {
     }
 
     @Override
-    public Race getSpecies() {
-        return equineContext.getSpecies();
-    }
-
-    @Override
-    public Race.Composite getCompositeRace() {
-        return equineContext.getCompositeRace();
-    }
-
-    @Override
-    public float getCloudWalkingStrength() {
-        return equineContext.getCloudWalkingStrength();
-    }
-
-    @Override
-    public boolean collidesWithClouds() {
-        return equineContext.collidesWithClouds();
+    public EquineContext get() {
+        return equineContext;
     }
 }
