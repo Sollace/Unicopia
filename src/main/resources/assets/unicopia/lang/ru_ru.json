@@ -145,6 +145,7 @@
   "item.unicopia.crispy_hay_fries": "Хрустящий картофель фри",
   "item.unicopia.horse_shoe_fries": "Подкова из картофеля фри",
   "item.unicopia.wheat_worms": "Пшеничные черви",
+  "item.unicopia.baited_fishing_rod": "Удочка с приманкой",
   "item.unicopia.muffin": "Маффин",
   "item.unicopia.oatmeal_cookie": "Овсяное печенье",
   "item.unicopia.pinecone_cookie": "Печенье из шишек",
@@ -1338,6 +1339,8 @@
   "enchantment.unicopia.heart_bound.desc": "Заставляет предмет оставаться с вами после смерти",
   "enchantment.unicopia.consumption": "Потребление",
   "enchantment.unicopia.consumption.desc": "Преобразует предметы, добытые с помощью инструмента, в опыт",
+  "enchantment.unicopia.feather_touch": "Касание пера",
+  "enchantment.unicopia.feather_touch.desc": "Позволяет ломать и размещать облачные блоки при держании",
 
   "commands.race.success.self": "Изменена раса на %1$s.",
   "commands.race.success": "%1$s изменил расу на %2$s.",
@@ -1611,9 +1614,11 @@
   "advancements.unicopia.mid_flight_interruption.title": "Побеспокоили в середине полёта",
   "advancements.unicopia.mid_flight_interruption.description": "Получите удар молнии во время полёта в грозу",
   "advancements.unicopia.lightning_bug.title": "Баг молнии",
-  "advancements.unicopia.lightning_bug.description": "Привлеките 10 ударов молний за чейнджлинга",
+  "advancements.unicopia.lightning_bug.description": "Привлеките 10 ударов молнии за чейнджлинга",
   "advancements.unicopia.wonder_bolt.title": "Вондерболт",
   "advancements.unicopia.wonder_bolt.description": "Привлеките 10 ударов молнии",
+  "advancements.unicopia.bait.title": "Это приманка?",
+  "advancements.unicopia.bait.description": "Насадите несколько червей на крючок",
   "advancements.unicopia.jar.title": "О, ничего себе. Что это?",
   "advancements.unicopia.jar.description": "Найдите пустую банку",
   "advancements.unicopia.gotcha.title": "Попался!",
@@ -1680,7 +1685,7 @@
   "advancements.unicopia.blasphemy.title": "Кощунство!",
   "advancements.unicopia.blasphemy.description": "Ударьте Селестию по башке. Упс!",
 
-  "advancements.unicopia.earth_route.title": "Путь Пони",
+  "advancements.unicopia.earth_route.title": "Очаг Земли",
   "advancements.unicopia.earth_route.description": "Вступить в клан Яблока",
   "advancements.unicopia.sticks_and_stones.title": "Палки и камни",
   "advancements.unicopia.sticks_and_stones.description": "Убейте моба, бросая в него камни",
@@ -1760,6 +1765,13 @@
   "advancements.unicopia.power_up_heart.description": "Увеличьте мощность кристального сердца",
   "advancements.unicopia.love_is_power.title": "Любовь - это сила",
   "advancements.unicopia.love_is_power.description": "Изгоните короля Сомбра с помощью кристального сердца",
+
+  "advancements.unicopia.hippogriff_route.title": "Всплеск Сиквестрии",
+  "advancements.unicopia.hippogriff_route.description": "Присоединитесь к гнезду Гиппогрифов",
+  "advancements.unicopia.shoo_be_doo.title": "Шу-би-ду!",
+  "advancements.unicopia.shoo_be_doo.description": "Используйте жемчужное ожерелье, чтобы превратиться в морское существо",
+  "advancements.unicopia.shoo_be_done.title": "Шу-би-всё!",
+  "advancements.unicopia.shoo_be_done.description": "Используйте жемчужное ожерелье, чтобы стать снова собой",
 
   "unicopia.toast.discoveries.title": "Новые открытия!",
   "unicopia.toast.discoveries.description": "Проверьте свою книгу заклинаний"
