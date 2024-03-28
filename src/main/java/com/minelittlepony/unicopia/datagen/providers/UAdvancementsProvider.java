@@ -63,6 +63,7 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
                 p.child(Items.CHIPPED_ANVIL).hidden().frame(AdvancementFrame.CHALLENGE).criterion("ding_sun", dingCelestia(Set.of(), Set.of(Race.BAT))).build(consumer, "blasphemy");
                 p.child(Items.CHIPPED_ANVIL).hidden().frame(AdvancementFrame.CHALLENGE).criterion("ding_sun", dingCelestia(Set.of(Race.BAT), Set.of())).build(consumer, "sweet_sweet_revenge");
             });
+            root.child(UItems.BAITED_FISHING_ROD).showToast().announce().criterion("has_baited_fishing_rod", hasItems(UItems.BAITED_FISHING_ROD)).build(consumer, "bait");
             root.child(UItems.OATS).showToast().announce().criterion("has_oats", hasItems(UItems.OATS)).build(consumer, "oats_so_easy");
             root.child(Items.HAY_BLOCK).showToast().announce().criterion("eat_hay", ConsumeItemCriterion.Conditions.item(Items.HAY_BLOCK)).build(consumer, "what_the_hay");
             root.child(UItems.COPPER_HORSE_SHOE).showToast().announce().criterion("has_horseshoe", hasItems(UTags.HORSE_SHOES)).build(consumer, "blacksmith").children(p -> {
