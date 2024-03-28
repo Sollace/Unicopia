@@ -76,6 +76,13 @@ public class URecipeProvider extends FabricRecipeProvider {
             .input(ConventionalItemTags.GLASS_BLOCKS)
             .input(UItems.SUNGLASSES).criterion("has_broken_sunglasses", conditionsFromItem(UItems.BROKEN_SUNGLASSES))
             .offerTo(exporter, convertBetween(UItems.SUNGLASSES, UItems.BROKEN_SUNGLASSES));
+
+        // fishing
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.BAITED_FISHING_ROD)
+            .input(Items.FISHING_ROD).criterion(hasItem(Items.FISHING_ROD), conditionsFromItem(Items.FISHING_ROD))
+            .input(UItems.WHEAT_WORMS)
+            .group("fishing_rod")
+            .offerTo(exporter);
     }
 
     private void generateVanillaRecipeExtensions(Consumer<RecipeJsonProvider> exporter) {

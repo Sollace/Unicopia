@@ -30,29 +30,34 @@ public interface UEntities {
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));
     EntityType<MagicProjectileEntity> THROWN_ITEM = register("thrown_item", FabricEntityTypeBuilder.<MagicProjectileEntity>create(SpawnGroup.MISC, MagicProjectileEntity::new)
             .trackRangeBlocks(100)
+            .disableSummon()
             .trackedUpdateRate(2)
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));
     EntityType<PhysicsBodyProjectileEntity> MUFFIN = register("muffin", FabricEntityTypeBuilder.<PhysicsBodyProjectileEntity>create(SpawnGroup.MISC, PhysicsBodyProjectileEntity::new)
             .trackRangeBlocks(100)
+            .disableSummon()
             .trackedUpdateRate(2)
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));
     EntityType<MagicBeamEntity> MAGIC_BEAM = register("magic_beam", FabricEntityTypeBuilder.<MagicBeamEntity>create(SpawnGroup.MISC, MagicBeamEntity::new)
             .trackRangeBlocks(100)
+            .disableSummon()
             .trackedUpdateRate(2)
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));
     EntityType<FloatingArtefactEntity> FLOATING_ARTEFACT = register("floating_artefact", FabricEntityTypeBuilder.create(SpawnGroup.MISC, FloatingArtefactEntity::new)
             .trackRangeBlocks(200)
+            .disableSummon()
             .dimensions(EntityDimensions.fixed(1, 1)));
     EntityType<CastSpellEntity> CAST_SPELL = register("cast_spell", FabricEntityTypeBuilder.create(SpawnGroup.MISC, CastSpellEntity::new)
             .trackRangeBlocks(200)
+            .disableSummon()
             .dimensions(EntityDimensions.changing(4, 4)));
     EntityType<FairyEntity> TWITTERMITE = register("twittermite", FabricEntityTypeBuilder.create(SpawnGroup.MISC, FairyEntity::new)
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(0.1F, 0.1F)));
     EntityType<FriendlyCreeperEntity> FRIENDLY_CREEPER = register("friendly_creeper", FabricEntityTypeBuilder.create(SpawnGroup.MISC, FriendlyCreeperEntity::new)
             .trackRangeChunks(8)
-            .dimensions(EntityDimensions.fixed(0.6f, 1.7f))
-    );
+            .disableSummon()
+            .dimensions(EntityDimensions.fixed(0.6f, 1.7f)));
     EntityType<SpellbookEntity> SPELLBOOK = register("spellbook", FabricEntityTypeBuilder.create(SpawnGroup.MISC, SpellbookEntity::new)
             .trackRangeBlocks(200)
             .dimensions(EntityDimensions.fixed(0.9F, 0.5F)));

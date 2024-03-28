@@ -169,7 +169,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(UConventionalTags.SEEDS).add(Items.BEETROOT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.TORCHFLOWER_SEEDS, Items.WHEAT_SEEDS)
             .add(UItems.OAT_SEEDS)
             .forceAddTag(UTags.APPLE_SEEDS);
-        getOrCreateTagBuilder(UConventionalTags.OEATMEALS).add(UItems.OATMEAL);
+        getOrCreateTagBuilder(UConventionalTags.OATMEALS).add(UItems.OATMEAL);
         getOrCreateTagBuilder(UConventionalTags.GRAIN).add(Items.WHEAT, UItems.OATS);
         getOrCreateTagBuilder(UConventionalTags.NUTS).addOptionalTag(UConventionalTags.CROPS_PEANUTS);
 
