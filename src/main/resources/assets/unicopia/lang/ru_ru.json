@@ -146,6 +146,9 @@
   "item.unicopia.horse_shoe_fries": "Подкова из картофеля фри",
   "item.unicopia.wheat_worms": "Пшеничные черви",
   "item.unicopia.muffin": "Маффин",
+  "item.unicopia.oatmeal_cookie": "Овсяное печенье",
+  "item.unicopia.pinecone_cookie": "Печенье из шишек",
+  "item.unicopia.bowl_of_nuts": "Миска с орехами",
 
   "item.unicopia.pegasus_amulet": "Крылья Икара",
   "item.unicopia.pegasus_amulet.lore": "Дарует временный полёт тому, кто носит его",
@@ -1383,6 +1386,7 @@
   "commands.gravity.set": "Ваша гравитация была обновлена до %f",
   "commands.gravity.set.self": "Установить собственную гравитацию на %f",
   "commands.gravity.set.other": "Установить гравитацию %s на %f",
+  "commands.gravity.set.multiple": "Обновлено %s сущностей",
 
   "unicopia.options.title": "Опции Unicopia",
   "unicopia.options.ignore_mine_lp": "Игнорировать Mine Little Pony",
