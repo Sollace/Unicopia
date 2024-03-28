@@ -51,58 +51,21 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
             createTribeRootAdvancement(consumer, root, Race.EARTH).children(consumer, this::generateEarthTribeAdvancementsTree);
             createTribeRootAdvancement(consumer, root, Race.BAT).children(consumer, this::generateBatTribeAdvancementsTree);
             createTribeRootAdvancement(consumer, root, Race.PEGASUS).children(consumer, this::generatePegasusTribeAdvancementsTree);
-            createTribeRootAdvancement(consumer, root, Race.UNICORN).children(consumer, this::generateUnicornTribeAdvancementsTree);
-
-            root.child(UItems.DRAGON_BREATH_SCROLL).showToast().announce().criterion("has_scroll", hasItems(UItems.DRAGON_BREATH_SCROLL)).build(consumer, "take_a_note").children(p -> {
-                p.child(UItems.DRAGON_BREATH_SCROLL).criterion("send_book", dragonScroll(false, Items.WRITTEN_BOOK)).build(consumer, "dear_princess")
-                 .child(UItems.DRAGON_BREATH_SCROLL).criterion("send_scroll", dragonScroll(false, UItems.DRAGON_BREATH_SCROLL)).build(consumer, "i_await_your_reply");
-                p.child(UItems.IMPORTED_OATS).hidden().frame(AdvancementFrame.CHALLENGE)
-                    .criterion("send_oats", dragonScroll(false, UItems.OATS, UItems.IMPORTED_OATS))
-                    .criterion("receieve_oats", dragonScroll(true, UItems.IMPORTED_OATS))
-                    .criteriaMerger(CriterionMerger.OR).build(consumer, "imported_oats");
-                p.child(Items.CHIPPED_ANVIL).hidden().frame(AdvancementFrame.CHALLENGE).criterion("ding_sun", dingCelestia(Set.of(), Set.of(Race.BAT))).build(consumer, "blasphemy");
-                p.child(Items.CHIPPED_ANVIL).hidden().frame(AdvancementFrame.CHALLENGE).criterion("ding_sun", dingCelestia(Set.of(Race.BAT), Set.of())).build(consumer, "sweet_sweet_revenge");
-            });
-            root.child(UItems.BAITED_FISHING_ROD).showToast().announce().criterion("has_baited_fishing_rod", hasItems(UItems.BAITED_FISHING_ROD)).build(consumer, "bait");
-            root.child(UItems.OATS).showToast().announce().criterion("has_oats", hasItems(UItems.OATS)).build(consumer, "oats_so_easy");
-            root.child(Items.HAY_BLOCK).showToast().announce().criterion("eat_hay", ConsumeItemCriterion.Conditions.item(Items.HAY_BLOCK)).build(consumer, "what_the_hay");
-            root.child(UItems.COPPER_HORSE_SHOE).showToast().announce().criterion("has_horseshoe", hasItems(UTags.HORSE_SHOES)).build(consumer, "blacksmith").children(p -> {
-                p.child(UItems.IRON_HORSE_SHOE).criterion("has_iron_horseshoe", hasItems(UItems.IRON_HORSE_SHOE)).build(consumer, "change_of_shoes")
-                 .child(UItems.GOLDEN_HORSE_SHOE).criterion("has_gold_horseshoe", hasItems(UItems.GOLDEN_HORSE_SHOE)).build(consumer, "fashionably_expensive")
-                 .child(UItems.NETHERITE_HORSE_SHOE).criterion("has_netherite_horseshoe", hasItems(UItems.NETHERITE_HORSE_SHOE)).build(consumer, "overkill");
-                p.child(UItems.IRON_HORSE_SHOE).hidden().frame(AdvancementFrame.CHALLENGE).criterion("killed_entity_with_horseshoe", killWithItems(UTags.FROM_HORSESHOES)).build(consumer, "dead_ringer");
-            });
-            root.child(UItems.PINECONE).showToast().announce().frame(AdvancementFrame.CHALLENGE).criterion("eat_pinecone", ConsumeItemCriterion.Conditions.item(UItems.PINECONE)).build(consumer, "eat_pinecone");
-            root.child(UItems.OAK_BASKET).showToast().criterion("has_basket", hasItems(UTags.BASKETS)).build(consumer, "basket_case")
-                .child(Items.LANTERN).showToast().criterion("construct_balloon", CustomEventCriterion.create("construct_balloon")).build(consumer, "aeronaut")
-                .child(UItems.GIANT_BALLOON).showToast().announce().frame(AdvancementFrame.CHALLENGE).criterion("ride_balloon", CustomEventCriterion.create("ride_balloon")).build(consumer, "travelling_in_style");
-            root.child(UItems.MUFFIN).showToast().announce().hidden().criterion("has_muffin", hasItems(UItems.MUFFIN)).build(consumer, "baked_bads");
-            root.child(UItems.HORSE_SHOE_FRIES).showToast().announce().criterion("has_horse_shoe_fries", hasItems(UItems.HORSE_SHOE_FRIES)).build(consumer, "lucky");
-            root.child(UItems.TOAST).showToast().announce().criterion("has_toast", hasItems(UItems.TOAST)).build(consumer, "toast")
-                .child(UItems.BURNED_TOAST).hidden().criterion("has_burned_toast", hasItems(UItems.BURNED_TOAST)).build(consumer, "burn_toast");
-            root.child(UItems.GREEN_APPLE).showToast().announce().criterion("has_apple", hasItems(UTags.FRESH_APPLES)).build(consumer, "apple_route").children(p -> {
-                p.child(UItems.SWEET_APPLE).criterion("has_all_apples", hasItems(Items.APPLE, UItems.GREEN_APPLE, UItems.SWEET_APPLE, UItems.SOUR_APPLE, UItems.ROTTEN_APPLE, UItems.ZAP_APPLE, UItems.COOKED_ZAP_APPLE, Items.GOLDEN_APPLE)).build(consumer, "sweet_apple_acres");
-                p.child(UItems.ZAP_BULB).criterion("has_zap_apple", hasItems(UItems.ZAP_APPLE)).build(consumer, "trick_apple").children(pp -> {
-                    pp.child(UItems.ZAP_APPLE).hidden().criterion("eat_trick_apple", CustomEventCriterion.createFlying("eat_trick_apple")).build(consumer, "eat_trick_apple");
-                    pp.child(UItems.ZAP_APPLE).hidden().criterion("feed_trick_apple", CustomEventCriterion.createFlying("feed_trick_apple")).build(consumer, "feed_trick_apple");
-                });
-                p.child(UItems.JUICE).criterion("has_juice", hasItems(UItems.JUICE)).build(consumer, "juice")
-                 .child(UItems.BURNED_JUICE).hidden().criterion("has_burned_juice", hasItems(UItems.BURNED_JUICE)).build(consumer, "burn_juice")
-                 .child(UItems.CIDER).visible().criterion("has_cider", hasItems(UItems.CIDER)).rewards(AdvancementRewards.Builder.experience(12)).build(consumer, "brew_cider");
-            });
+            createTribeRootAdvancement(consumer, root, Race.UNICORN, Race.ALICORN).children(consumer, this::generateUnicornTribeAdvancementsTree);
+            createTribeRootAdvancement(consumer, root, Race.HIPPOGRIFF, Race.SEAPONY).children(consumer, this::generateHippogrifTribeAdvancementsTree);
         });
 
         generateEnchantmentsAdvancementsTree(consumer);
     }
 
-    private AdvancementDisplayBuilder.Parent createTribeRootAdvancement(Consumer<Advancement> consumer, AdvancementDisplayBuilder.Parent root, Race race) {
+    private AdvancementDisplayBuilder.Parent createTribeRootAdvancement(Consumer<Advancement> consumer, AdvancementDisplayBuilder.Parent root, Race race, Race...extra) {
         AdvancementDisplayBuilder builder = root.child(Registries.ITEM.get(race.getId().withSuffixedPath("_badge"))).showToast().announce().group(race.getId().getPath())
                 .criterion("be_" + race.getId().getPath(), new RaceChangeCriterion.Conditions(LootContextPredicate.EMPTY, race));
 
-        if (race == Race.UNICORN) {
-            builder
-                .criterion("be_alicorn", new RaceChangeCriterion.Conditions(LootContextPredicate.EMPTY, Race.ALICORN))
-                .criteriaMerger(CriterionMerger.OR);
+        if (extra.length > 0) {
+            for (Race r : extra) {
+                builder.criterion("be_" + r.getId().getPath(), new RaceChangeCriterion.Conditions(LootContextPredicate.EMPTY, r));
+            }
         }
 
         return builder.build(consumer, race.getId().getPath() + "_route");
@@ -112,6 +75,33 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
         parent.child(UItems.ROCK).criterion("has_rock", hasItems(UItems.ROCK)).build(consumer, "born_on_a_rock_farm").children(p -> {
             p.child(UItems.PEBBLES).criterion("killed_entity_with_rock", killWithItems(UTags.FROM_ROCKS)).build(consumer, "sticks_and_stones");
             p.child(UItems.WEIRD_ROCK).hidden().criterion("has_rock", hasItems(UItems.WEIRD_ROCK)).build(consumer, "thats_unusual");
+        });
+
+        parent.child(UItems.OATS).criterion("has_oats", hasItems(UItems.OATS)).build(consumer, "oats_so_easy");
+        parent.child(Items.HAY_BLOCK).criterion("eat_hay", ConsumeItemCriterion.Conditions.item(Items.HAY_BLOCK)).build(consumer, "what_the_hay");
+        parent.child(UItems.COPPER_HORSE_SHOE).criterion("has_horseshoe", hasItems(UTags.HORSE_SHOES)).build(consumer, "blacksmith").children(p -> {
+            p.child(UItems.IRON_HORSE_SHOE).criterion("has_iron_horseshoe", hasItems(UItems.IRON_HORSE_SHOE)).build(consumer, "change_of_shoes")
+             .child(UItems.GOLDEN_HORSE_SHOE).criterion("has_gold_horseshoe", hasItems(UItems.GOLDEN_HORSE_SHOE)).build(consumer, "fashionably_expensive")
+             .child(UItems.NETHERITE_HORSE_SHOE).criterion("has_netherite_horseshoe", hasItems(UItems.NETHERITE_HORSE_SHOE)).build(consumer, "overkill");
+            p.child(UItems.IRON_HORSE_SHOE).hidden().frame(AdvancementFrame.CHALLENGE).criterion("killed_entity_with_horseshoe", killWithItems(UTags.FROM_HORSESHOES)).build(consumer, "dead_ringer");
+        });
+        parent.child(UItems.PINECONE).frame(AdvancementFrame.CHALLENGE).criterion("eat_pinecone", ConsumeItemCriterion.Conditions.item(UItems.PINECONE)).build(consumer, "eat_pinecone");
+        parent.child(UItems.OAK_BASKET).doNotAnnounce().criterion("has_basket", hasItems(UTags.BASKETS)).build(consumer, "basket_case")
+            .child(Items.LANTERN).criterion("construct_balloon", CustomEventCriterion.create("construct_balloon")).build(consumer, "aeronaut")
+            .child(UItems.GIANT_BALLOON).announce().frame(AdvancementFrame.CHALLENGE).criterion("ride_balloon", CustomEventCriterion.create("ride_balloon")).build(consumer, "travelling_in_style");
+        parent.child(UItems.MUFFIN).hidden().criterion("has_muffin", hasItems(UItems.MUFFIN)).build(consumer, "baked_bads");
+        parent.child(UItems.HORSE_SHOE_FRIES).criterion("has_horse_shoe_fries", hasItems(UItems.HORSE_SHOE_FRIES)).build(consumer, "lucky");
+        parent.child(UItems.TOAST).criterion("has_toast", hasItems(UItems.TOAST)).build(consumer, "toast")
+            .child(UItems.BURNED_TOAST).hidden().criterion("has_burned_toast", hasItems(UItems.BURNED_TOAST)).build(consumer, "burn_toast");
+        parent.child(UItems.GREEN_APPLE).criterion("has_apple", hasItems(UTags.FRESH_APPLES)).build(consumer, "apple_route").children(p -> {
+            p.child(UItems.SWEET_APPLE).criterion("has_all_apples", hasItems(Items.APPLE, UItems.GREEN_APPLE, UItems.SWEET_APPLE, UItems.SOUR_APPLE, UItems.ROTTEN_APPLE, UItems.ZAP_APPLE, UItems.COOKED_ZAP_APPLE, Items.GOLDEN_APPLE)).build(consumer, "sweet_apple_acres");
+            p.child(UItems.ZAP_BULB).criterion("has_zap_apple", hasItems(UItems.ZAP_APPLE)).build(consumer, "trick_apple").children(pp -> {
+                pp.child(UItems.ZAP_APPLE).hidden().criterion("eat_trick_apple", CustomEventCriterion.createFlying("eat_trick_apple")).build(consumer, "eat_trick_apple");
+                pp.child(UItems.ZAP_APPLE).hidden().criterion("feed_trick_apple", CustomEventCriterion.createFlying("feed_trick_apple")).build(consumer, "feed_trick_apple");
+            });
+            p.child(UItems.JUICE).criterion("has_juice", hasItems(UItems.JUICE)).build(consumer, "juice")
+             .child(UItems.BURNED_JUICE).hidden().criterion("has_burned_juice", hasItems(UItems.BURNED_JUICE)).build(consumer, "burn_juice")
+             .child(UItems.CIDER).visible().criterion("has_cider", hasItems(UItems.CIDER)).rewards(AdvancementRewards.Builder.experience(12)).build(consumer, "brew_cider");
         });
     }
 
@@ -169,6 +159,17 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
             p.child(Items.WATER_BUCKET).criterion("split_sea", CustomEventCriterion.create("split_sea")).rewards(AdvancementRewards.Builder.experience(105)).build(consumer, "split_the_sea");
         });
 
+        parent.child(UItems.DRAGON_BREATH_SCROLL).showToast().announce().criterion("has_scroll", hasItems(UItems.DRAGON_BREATH_SCROLL)).build(consumer, "take_a_note").children(p -> {
+            p.child(UItems.DRAGON_BREATH_SCROLL).criterion("send_book", dragonScroll(false, Items.WRITTEN_BOOK)).build(consumer, "dear_princess")
+             .child(UItems.DRAGON_BREATH_SCROLL).criterion("send_scroll", dragonScroll(false, UItems.DRAGON_BREATH_SCROLL)).build(consumer, "i_await_your_reply");
+            p.child(UItems.IMPORTED_OATS).hidden().frame(AdvancementFrame.CHALLENGE)
+                .criterion("send_oats", dragonScroll(false, UItems.OATS, UItems.IMPORTED_OATS))
+                .criterion("receieve_oats", dragonScroll(true, UItems.IMPORTED_OATS))
+                .criteriaMerger(CriterionMerger.OR).build(consumer, "imported_oats");
+            p.child(Items.CHIPPED_ANVIL).hidden().frame(AdvancementFrame.CHALLENGE).criterion("ding_sun", dingCelestia(Set.of(), Set.of(Race.BAT))).build(consumer, "blasphemy");
+            p.child(Items.CHIPPED_ANVIL).hidden().frame(AdvancementFrame.CHALLENGE).criterion("ding_sun", dingCelestia(Set.of(Race.BAT), Set.of())).build(consumer, "sweet_sweet_revenge");
+        });
+
         parent.child(UItems.PEGASUS_AMULET).hidden().frame(AdvancementFrame.CHALLENGE).criterion("teleport_above_world", CustomEventCriterion.create("teleport_above_world")).rewards(AdvancementRewards.Builder.experience(100)).build(consumer, "a_falling_wizard");
 
     }
@@ -180,6 +181,12 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
              .child(Items.BRICK).frame(AdvancementFrame.CHALLENGE).criterion("super_scare_entity", CustomEventCriterion.createFlying("super_scare_entity")).build(consumer, "extra_spooky");
             p.child(Items.BLACK_CANDLE).frame(AdvancementFrame.CHALLENGE).criterion("screech_self", CustomEventCriterion.createFlying("screech_self")).build(consumer, "screech_self");
         });
+    }
+
+    private void generateHippogrifTribeAdvancementsTree(Consumer<Advancement> consumer, AdvancementDisplayBuilder.Parent parent) {
+        parent.child(UItems.BAITED_FISHING_ROD).showToast().announce().criterion("has_baited_fishing_rod", hasItems(UItems.BAITED_FISHING_ROD)).build(consumer, "bait");
+        parent.child(UItems.PEARL_NECKLACE).showToast().announce().criterion("seapony_transition",  new CustomEventCriterion.Conditions(LootContextPredicate.EMPTY, "seapony_transition", RacePredicate.of(Set.of(Race.SEAPONY), Set.of()), null, 1)).build(consumer, "shoo_be_doo")
+              .child(UItems.PEARL_NECKLACE).showToast().announce().criterion("seapony_transition", new CustomEventCriterion.Conditions(LootContextPredicate.EMPTY, "seapony_transition", RacePredicate.of(Set.of(), Set.of(Race.SEAPONY)), null, 1)).build(consumer, "shoo_be_done");
     }
 
     private void generateEnchantmentsAdvancementsTree(Consumer<Advancement> consumer) {
