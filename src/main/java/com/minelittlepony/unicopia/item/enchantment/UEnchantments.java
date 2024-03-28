@@ -41,6 +41,15 @@ public interface UEnchantments {
     Enchantment PADDED = register("padded", new SimpleEnchantment(Options.armor().rarity(Rarity.UNCOMMON).maxLevel(3).traded().table()));
 
     /**
+     * Allows non-flying races to mine and interact with cloud blocks
+     *
+     * Appears in:
+     *  - Trades
+     *  - Enchanting Table
+     */
+    Enchantment FEATHER_TOUCH = register("feather_touch", new SimpleEnchantment(Options.create(EnchantmentTarget.BREAKABLE, UEnchantmentValidSlots.HANDS).rarity(Rarity.UNCOMMON).traded().table()));
+
+    /**
      * Heavy players move more slowly but are less likely to be flung around wildly.
      *
      * Appears in:

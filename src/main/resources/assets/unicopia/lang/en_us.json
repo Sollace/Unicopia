@@ -1339,6 +1339,8 @@
   "enchantment.unicopia.heart_bound.desc": "Causes an item to stay with you after you die",
   "enchantment.unicopia.consumption": "Consumption",
   "enchantment.unicopia.consumption.desc": "Converts drops mined using a tool into raw experience",
+  "enchantment.unicopia.feather_touch": "Feather Touch",
+  "enchantment.unicopia.feather_touch.desc": "Allows breaking and placing cloud blocks when held",
 
   "commands.race.success.self": "Set own race to %1$s",
   "commands.race.success": "%1$s changed race to %2$s",
@@ -1615,6 +1617,8 @@
   "advancements.unicopia.lightning_bug.description": "Attract 10 lightning strikes as a changeling",
   "advancements.unicopia.wonder_bolt.title": "Wonder Bolt",
   "advancements.unicopia.wonder_bolt.description": "Attract 10 lightning strikes",
+  "advancements.unicopia.bait.title": "Is This Bait?",
+  "advancements.unicopia.bait.description": "Put some worms on a hook",
   "advancements.unicopia.jar.title": "Oh wow. What's this?",
   "advancements.unicopia.jar.description": "Find an empty jar",
   "advancements.unicopia.gotcha.title": "Got'cha!",
