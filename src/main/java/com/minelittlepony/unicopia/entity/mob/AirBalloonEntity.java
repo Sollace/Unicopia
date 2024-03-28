@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.entity.mob;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.block.entity.FurnaceBlockEntity;
 import net.minecraft.entity.*;
 import net.minecraft.entity.data.*;
 import net.minecraft.entity.mob.MobEntity;
@@ -71,6 +72,9 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     private boolean prevBoosting;
     private int prevInflation;
     private Vec3d manualVelocity = Vec3d.ZERO;
+
+    private int maxFuel = 100;
+    private int fuel;
 
     public AirBalloonEntity(EntityType<? extends AirBalloonEntity> type, World world) {
         super(type, world);
@@ -174,6 +178,14 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
                 }
                 setInflation(inflation);
             }
+
+            if (fuel > -6 && age % 60 == 0) {
+                fuel -= boosting ? 10 : 1;
+                if (fuel <= -6) {
+                    setBoostTicks(0);
+                    setAscending(false);
+                }
+            }
         } else {
             if (inflation < getMaxInflation() && inflation > 0) {
                 setInflation(--inflation);
@@ -196,15 +208,16 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             if (hasBurner() && isAscending()) {
                 Vec3d burnerPos = getPos().add(0, 3, 0);
                 for (int i = 0; i < (boosting ? 6 : 1); i++) {
-                    getWorld().addParticle(
-                                getStackInHand(Hand.MAIN_HAND).isOf(Items.SOUL_LANTERN)
+                    getWorld().addParticle(fuel <= 0
+                                ? ParticleTypes.SMOKE
+                                : getStackInHand(Hand.MAIN_HAND).isOf(Items.SOUL_LANTERN)
                                     ? ParticleTypes.SOUL_FIRE_FLAME
                                     : ParticleTypes.FLAME,
                             rng.nextTriangular(burnerPos.x, 0.25),
                             rng.nextTriangular(burnerPos.y, 1),
                             rng.nextTriangular(burnerPos.z, 0.25),
                             0,
-                            Math.max(0, getVelocity().y + (boosting ? 0.1 : 0)),
+                            (boosting ? 0.1 : 0),
                             0
                     );
                 }
@@ -236,7 +249,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             if (leashPost.distanceTo(pos) >= 5) {
                 Vec3d newVel = leashPost.subtract(pos).multiply(0.01);
                 if (isAirworthy()) {
-                    setVelocity(newVel.lengthSquared() < 0.03 ? Vec3d.ZERO : newVel);
+                    setVelocity(newVel.lengthSquared() < 0.0001 ? Vec3d.ZERO : newVel);
                 } else {
                     setVelocity(getVelocity().multiply(0.9).add(newVel));
                 }
@@ -277,11 +290,20 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
                     if (!getWorld().isClient) {
                         manualVelocity = manualVelocity.add(0.3 * xPush, 0, 0.3 * zPush);
                     }
-                } else if (stack.isEmpty() && isAscending()) {
-                    setBoostTicks(50);
+                    getWorld().playSound(null, getX() + hitPos.getX(), getY() + hitPos.getY(), getZ() + hitPos.getZ(), USounds.Vanilla.ENTITY_LEASH_KNOT_PLACE, getSoundCategory(), 1, 1);
                     if (!player.isSneaky()) {
                         getWorld().emitGameEvent(player, GameEvent.ENTITY_INTERACT, getBlockPos());
                     }
+                    return ActionResult.SUCCESS;
+                }
+
+                if (stack.isEmpty() && isAscending()) {
+                    setBoostTicks(50);
+                    playSound(USounds.ENTITY_HOT_AIR_BALLOON_BOOST, 1, 1);
+                    if (!player.isSneaky()) {
+                        getWorld().emitGameEvent(player, GameEvent.ENTITY_INTERACT, getBlockPos());
+                    }
+                    return ActionResult.SUCCESS;
                 }
             }
         }
@@ -309,9 +331,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         }
 
         if (stack.isIn(ConventionalItemTags.SHEARS) && hasBalloon()) {
-            if (!player.getAbilities().creativeMode) {
-                stack.damage(1, player, p -> p.sendToolBreakStatus(hand));
-            }
+            stack.damage(1, player, p -> p.sendToolBreakStatus(hand));
             setDesign(BalloonDesign.NONE);
             dropItem(UItems.GIANT_BALLOON);
             playSound(USounds.ENTITY_HOT_AIR_BALLOON_EQUIP_CANOPY, 1, 1);
@@ -334,6 +354,25 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
                 UCriteria.CONSTRUCT_BALLOON.trigger(player);
             }
             return ActionResult.SUCCESS;
+        }
+
+        if (hasBurner()) {
+            int fuel = FurnaceBlockEntity.createFuelTimeMap().getOrDefault(stack.getItem(), 0);
+            if (fuel > 0) {
+                if (this.fuel < maxFuel) {
+                    if (this.fuel < 0) {
+                        this.fuel = fuel;
+                    } else {
+                        this.fuel += fuel;
+                    }
+                    if (!player.getAbilities().creativeMode) {
+                        stack.decrement(1);
+                    }
+                    playSound(USounds.Vanilla.ENTITY_VILLAGER_YES, 1, 1);
+                    return ActionResult.SUCCESS;
+                }
+                return ActionResult.FAIL;
+            }
         }
 
         return ActionResult.PASS;
@@ -474,13 +513,15 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     public List<Box> getGravityZoneBoxes() {
         Box balloon = getBalloonBoundingBox().expand(0.001);
         Box interior = getInteriorBoundingBox().expand(0.001);
-        return List.of(
-                // interior - basket to top of balloon
-                interior.withMaxY(balloon.minY).withMinY(interior.maxY),
-                // balloon
-                balloon.withMaxY(balloon.maxY + 0.5).withMinY(balloon.maxY)
-        );
-
+        if (hasBalloon() && getInflation(1) > 0.999F) {
+            return List.of(
+                    // interior - basket to top of balloon
+                    interior.withMaxY(balloon.minY).withMinY(interior.maxY),
+                    // balloon
+                    balloon.withMaxY(balloon.maxY + 0.5).withMinY(balloon.maxY)
+            );
+        }
+        return List.of(interior.withMaxY(balloon.minY).withMinY(interior.maxY));
     }
 
     @Override
@@ -570,6 +611,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         setBoostTicks(compound.getInt("boostTicks"));
         prevInflation = compound.getInt("inflationAmount");
         setInflation(prevInflation);
+        fuel = MathHelper.clamp(compound.getInt("fuel"), 0, maxFuel);
     }
 
     @Override
@@ -580,6 +622,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         compound.putBoolean("burnerActive", isAscending());
         compound.putInt("boostTicks", getBoostTicks());
         compound.putInt("inflationAmount", getInflation());
+        compound.putInt("fuel", fuel);
     }
 
     static boolean isBetween(double value, double min, double max) {
