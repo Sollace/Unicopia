@@ -13,7 +13,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -22,20 +24,22 @@ import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
@@ -47,7 +51,6 @@ import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.collision.MultiBoundingBoxEntity;
 import com.minelittlepony.unicopia.entity.collision.MultiBox;
-import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 import com.minelittlepony.unicopia.item.BasketItem;
 import com.minelittlepony.unicopia.item.HotAirBalloonItem;
 import com.minelittlepony.unicopia.item.UItems;
@@ -61,12 +64,13 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     private static final TrackedData<String> BASKET_TYPE = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.STRING);
     private static final TrackedData<Integer> BALLOON_DESIGN = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
+    private static final Predicate<Entity> RIDER_PREDICATE = EntityPredicates.EXCEPT_SPECTATOR.and(e -> {
+        return !(e instanceof PlayerEntity p && p.getAbilities().flying);
+    });
+
     private boolean prevBoosting;
     private int prevInflation;
-    private Vec3d oldPosition = Vec3d.ZERO;
     private Vec3d manualVelocity = Vec3d.ZERO;
-
-    private int ticksFlying;
 
     public AirBalloonEntity(EntityType<? extends AirBalloonEntity> type, World world) {
         super(type, world);
@@ -80,12 +84,12 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         dataTracker.startTracking(ASCENDING, false);
         dataTracker.startTracking(BOOSTING, 0);
         dataTracker.startTracking(INFLATION, 0);
-        dataTracker.startTracking(BASKET_TYPE, "");
+        dataTracker.startTracking(BASKET_TYPE, BasketType.DEFAULT.id().toString());
         dataTracker.startTracking(BALLOON_DESIGN, 0);
     }
 
     public BasketType getBasketType() {
-        return BasketType.REGISTRY.get(Identifier.tryParse(dataTracker.get(BASKET_TYPE)));
+        return BasketType.of(dataTracker.get(BASKET_TYPE));
     }
 
     public void setBasketType(BasketType type) {
@@ -142,14 +146,6 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
 
     private boolean isAirworthy() {
         return hasBalloon() && hasBurner() && getInflation() >= getMaxInflation();
-    }
-
-    @Override
-    public List<Box> getBoundingBoxes() {
-        if (hasBalloon() && getInflation(1) > 0.999F) {
-            return List.of(getInteriorBoundingBox(), getBalloonBoundingBox());
-        }
-        return List.of(getInteriorBoundingBox());
     }
 
     @Override
@@ -248,86 +244,12 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         }
 
         prevBoosting = boosting;
-        oldPosition = getPos();
 
         if (getFireTicks() > 0) {
             setFireTicks(1);
         }
 
-        if (!isOnGround() && (isAirworthy() || isSubmergedInWater() || isLeashed())) {
-            ticksFlying++;
-        } else {
-            ticksFlying = 0;
-        }
-
-        updatePassengers(false);
         super.tick();
-        setBoundingBox(MultiBox.of(getBoundingBox(), getBoundingBoxes()));
-    }
-
-    private void updatePassengers(boolean move) {
-        Set<Entity> alreadyTicked = new HashSet<>();
-        for (Box box : getBoundingBoxes()) {
-            for (Entity e : getWorld().getOtherEntities(this, box.stretch(getVelocity().multiply(-1)).expand(0, 0.5, 0))) {
-
-                if (e instanceof PlayerEntity p && p.getAbilities().flying) {
-                    continue;
-                }
-
-                if (!alreadyTicked.add(e)) {
-                    continue;
-                }
-
-                updatePassenger(e, box, e.getY() > getY() + 3);
-            }
-        }
-    }
-
-    private void updatePassenger(Entity e, Box box, boolean inBalloon) {
-
-        if (e instanceof AirBalloonEntity) {
-            return;
-        }
-
-        if (ticksFlying > 0) {
-            if (Living.getOrEmpty(e).filter(living -> !living.setSupportingEntity(this)).isPresent()) {
-                return;
-            }
-
-            Vec3d vel = getVelocity();
-
-            double height = box.getYLength();
-
-            if (height < 3 || e.getBoundingBox().minY > box.minY + height / 2D) {
-                if (vel.y > 0 && e.getBoundingBox().minY < box.maxY + 0.02) {
-                    e.setPos(e.getX(), box.maxY, e.getZ());
-                    e.setOnGround(true);
-                }
-                if (vel.y < 0 && e.getBoundingBox().minY > box.maxY) {
-                    e.setPos(e.getX(), box.maxY, e.getZ());
-                    e.setOnGround(true);
-                }
-            }
-
-            Living.getOrEmpty(e).ifPresent(living -> {
-                living.setPositionOffset(e.getPos().subtract(oldPosition));
-                living.updateRelativePosition(box);
-
-                if (ticksFlying > 20 && living.getTicksInVehicle() > 20) {
-                    UCriteria.RIDE_BALLOON.trigger(e);
-                }
-            });
-        }
-
-        if (getWorld().isClient) {
-            if (e.distanceTraveled > ((EntityDuck)e).getNextStepSoundDistance()) {
-                e.distanceTraveled--;
-                e.playSound(inBalloon ? USounds.ENTITY_HOT_AIR_BALLOON_STEP : USounds.ENTITY_HOT_AIR_BALLOON_BASKET_STEP, 0.5F, 1);
-                if (!e.isSneaky()) {
-                    getWorld().emitGameEvent(e, GameEvent.STEP, getBlockPos());
-                }
-            }
-        }
     }
 
     @Override
@@ -459,12 +381,16 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     }
 
     @Override
-    protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
+    public Race getSpecies() {
+        return Race.UNSET;
     }
 
     @Override
-    public Race getSpecies() {
-        return Race.UNSET;
+    public SoundEvent getWalkedOnSound(double y) {
+        if (y >= getBalloonBoundingBox().minY) {
+            return USounds.ENTITY_HOT_AIR_BALLOON_STEP;
+        }
+        return USounds.ENTITY_HOT_AIR_BALLOON_BASKET_STEP;
     }
 
     @Override
@@ -497,6 +423,18 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
                     move(MovementType.SELF, getVelocity());
                     setVelocity(getVelocity().multiply(slipperyness));
                 }
+            } else {
+                Map<Box, List<Entity>> collidingEntities = getCollidingEntities(getBoundingBoxes().stream());
+
+                for (Map.Entry<Box, List<Entity>> passengers : collidingEntities.entrySet()) {
+                    for (Entity passenger : passengers.getValue()) {
+                        Living<?> living = Living.living(passenger);
+                        if (living != null) {
+                            living.getTransportation().setVehicle(this);
+                        }
+
+                    }
+                }
             }
             updateLimbs(false);
         }
@@ -508,16 +446,21 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     }
 
     @Override
+    protected Box calculateBoundingBox() {
+        return MultiBox.of(super.calculateBoundingBox(), getBoundingBoxes());
+    }
+
+    @Override
     public Box getVisibilityBoundingBox() {
         if (hasBalloon()) {
-            return MultiBox.unbox(getBoundingBox()).union(getBalloonBoundingBox());
+            return getBalloonBoundingBox().withMinY(getY());
         }
-        return MultiBox.unbox(getBoundingBox());
+        return getInteriorBoundingBox();
     }
 
     protected Box getInteriorBoundingBox() {
         Box box = MultiBox.unbox(getBoundingBox());
-        return box.withMinY(box.minY - 0.2).contract(0.2, 0, 0.2);
+        return box.withMinY(box.minY - 0.05).contract(0.15, 0, 0.15);
     }
 
     protected Box getBalloonBoundingBox() {
@@ -528,33 +471,95 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     }
 
     @Override
-    public void getCollissionShapes(ShapeContext context, Consumer<VoxelShape> output) {
+    public List<Box> getGravityZoneBoxes() {
+        Box balloon = getBalloonBoundingBox().expand(0.001);
+        Box interior = getInteriorBoundingBox().expand(0.001);
+        return List.of(
+                // interior - basket to top of balloon
+                interior.withMaxY(balloon.minY).withMinY(interior.maxY),
+                // balloon
+                balloon.withMaxY(balloon.maxY + 0.5).withMinY(balloon.maxY)
+        );
 
-        Box box = MultiBox.unbox(getBoundingBox()).expand(0.3, 0, 0.3);
+    }
 
-        double wallheight = box.maxY + 0.7;
-        double wallThickness = 0.7;
+    @Override
+    public List<Box> getBoundingBoxes() {
+        List<Box> boxes = new ArrayList<>();
+        Box box = getInteriorBoundingBox();
+        boxes.add(box);
+
+        double wallheight = box.maxY + 0.72;
+        double wallThickness = 0.2;
 
         if (!getBasketType().isOf(BoatEntity.Type.BAMBOO)) {
             // front left (next to door)
-            output.accept(VoxelShapes.cuboid(new Box(box.minX, box.minY, box.minZ, box.minX + wallThickness + 0.2, wallheight, box.minZ + wallThickness)));
+            boxes.add(new Box(box.minX, box.minY, box.minZ, box.minX + wallThickness + 0.4, wallheight, box.minZ + wallThickness));
             // front right (next to door)
-            output.accept(VoxelShapes.cuboid(new Box(box.maxX - wallThickness - 0.2, box.minY, box.minZ, box.maxX, wallheight, box.minZ + wallThickness)));
+            boxes.add(new Box(box.maxX - wallThickness - 0.4, box.minY, box.minZ, box.maxX, wallheight, box.minZ + wallThickness));
 
             // back
-            output.accept(VoxelShapes.cuboid(new Box(box.minX, box.minY, box.maxZ - wallThickness, box.maxX, wallheight, box.maxZ)));
+            boxes.add(new Box(box.minX, box.minY, box.maxZ - wallThickness, box.maxX, wallheight, box.maxZ));
 
             // left
-            output.accept(VoxelShapes.cuboid(new Box(box.maxX - wallThickness, box.minY, box.minZ, box.maxX, wallheight, box.maxZ)));
+            boxes.add(new Box(box.maxX - wallThickness, box.minY, box.minZ, box.maxX, wallheight, box.maxZ));
             // right
-            output.accept(VoxelShapes.cuboid(new Box(box.minX, box.minY, box.minZ, box.minX + wallThickness, wallheight, box.maxZ)));
+            boxes.add(new Box(box.minX, box.minY, box.minZ, box.minX + wallThickness, wallheight, box.maxZ));
         }
 
-        // top of balloon
-        if (hasBalloon() && getInflation() > 0) {
-            output.accept(VoxelShapes.cuboid(getBalloonBoundingBox()));
+        if (hasBalloon() && getInflation(1) > 0.999F) {
+            boxes.add(getBalloonBoundingBox());
+        }
+        return boxes;
+    }
+
+    @Override
+    public void move(MovementType movementType, Vec3d movement) {
+        Vec3d oldPos = this.getPos();
+        List<Box> boundingBoxes = getGravityZoneBoxes();
+        super.move(movementType, movement);
+        if (movementType == MovementType.SELF) {
+            Vec3d actualMovement = getPos().subtract(oldPos);
+            Map<Box, List<Entity>> collidingEntities = getCollidingEntities(
+                    boundingBoxes.stream().map(box -> box.stretch(actualMovement))
+            );
+
+            for (Map.Entry<Box, List<Entity>> passengers : collidingEntities.entrySet()) {
+                for (Entity passenger : passengers.getValue()) {
+                    movePassenger(passenger, actualMovement);
+                }
+            }
         }
     }
+
+    private void movePassenger(Entity passenger, Vec3d movement) {
+        Living<?> living = Living.living(passenger);
+        if (living != null) {
+            if (living.getPhysics().isGravityNegative()) {
+                movement = movement.multiply(1, -1, 1);
+            }
+            living.getTransportation().setVehicle(this);
+        }
+
+        List<VoxelShape> shapes = new ArrayList<>();
+        getCollissionShapes(ShapeContext.of(passenger), shapes::add);
+        movement = Entity.adjustMovementForCollisions(passenger, movement, passenger.getBoundingBox(), getWorld(), shapes);
+
+        passenger.setPosition(passenger.getPos().add(movement));
+        passenger.updateTrackedPosition(passenger.getX(), passenger.getY(), passenger.getZ());
+    }
+
+    @Override
+    public Map<Box, List<Entity>> getCollidingEntities(Stream<Box> boundingBoxes) {
+        return boundingBoxes.collect(Collectors.toMap(Function.identity(), box -> {
+            return getWorld().getOtherEntities(this, box.expand(0.001).stretch(getVelocity().multiply(1)), RIDER_PREDICATE).stream().distinct().toList();
+        }));
+    }
+
+    @Override
+    protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
+    }
+
 
     @Override
     public void readCustomDataFromNbt(NbtCompound compound) {
@@ -575,6 +580,10 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         compound.putBoolean("burnerActive", isAscending());
         compound.putInt("boostTicks", getBoostTicks());
         compound.putInt("inflationAmount", getInflation());
+    }
+
+    static boolean isBetween(double value, double min, double max) {
+        return value >= min && value <= max;
     }
 
     @SuppressWarnings("deprecation")
@@ -607,6 +616,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
 
     public record BasketType(Identifier id, @Nullable BoatEntity.Type boatType) {
         private static final Map<Identifier, BasketType> REGISTRY = new HashMap<>();
+        public static final BasketType DEFAULT = of(BoatEntity.Type.OAK);
         static {
             Arrays.stream(BoatEntity.Type.values()).forEach(BasketType::of);
         }
@@ -616,7 +626,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         }
 
         public static BasketType of(String name) {
-            Identifier id = Identifier.tryParse(name);
+            Identifier id = name == null || name.isEmpty() ? null : Identifier.tryParse(name);
             if (id == null) {
                 return of(BoatEntity.Type.OAK);
             }
