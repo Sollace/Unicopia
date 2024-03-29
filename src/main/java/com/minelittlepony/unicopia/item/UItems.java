@@ -75,12 +75,14 @@ public interface UItems {
     Item IMPORTED_OATS = register("imported_oats", new Item(new Item.Settings().food(UFoodComponents.IMPORTED_OATS)), ItemGroups.FOOD_AND_DRINK);
     Item OATMEAL = register("oatmeal", new OatmealItem(new Item.Settings().recipeRemainder(Items.BOWL).maxCount(1).food(UFoodComponents.OATMEAL)), ItemGroups.FOOD_AND_DRINK);
 
-    Item OATMEAL_COOKIE = register("oatmeal_cookie", new Item(new Item.Settings().food(FoodComponents.COOKIE)), ItemGroups.FOOD_AND_DRINK);
+    Item OATMEAL_COOKIE = register("oatmeal_cookie", new Item(new Item.Settings().food(UFoodComponents.OATMEAL_COOKIE)), ItemGroups.FOOD_AND_DRINK);
+    Item CHOCOLATE_OATMEAL_COOKIE = register("chocolate_oatmeal_cookie", new Item(new Item.Settings().food(UFoodComponents.CHOCOLATE_OATMEAL_COOKIE)), ItemGroups.FOOD_AND_DRINK);
     Item PINECONE_COOKIE = register("pinecone_cookie", new Item(new Item.Settings().food(FoodComponents.COOKIE)), ItemGroups.FOOD_AND_DRINK);
-    Item BOWL_OF_NUTS = register("bowl_of_nuts", new StewItem(new Item.Settings().food(FoodComponents.BAKED_POTATO).recipeRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
+    Item BOWL_OF_NUTS = register("bowl_of_nuts", new StewItem(new Item.Settings().food(UFoodComponents.NUT_BOWL).recipeRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
+    Item SCONE = register("scone", new MuffinItem(new Item.Settings().maxCount(32).food(UFoodComponents.SCONE), 0), ItemGroups.FOOD_AND_DRINK);
 
     Item DAFFODIL_DAISY_SANDWICH = register("daffodil_daisy_sandwich", new Item(new Item.Settings().food(UFoodComponents.DAFODIL_DAISY_SANDWICH)), ItemGroups.FOOD_AND_DRINK);
-    Item HAY_BURGER = register("hay_burger", new Item(new Item.Settings().maxCount(1).food(UFoodComponents.HAY_BURGER)), ItemGroups.FOOD_AND_DRINK);
+    Item HAY_BURGER = register("hay_burger", new Item(new Item.Settings().maxCount(1).food(UFoodComponents.BURGER)), ItemGroups.FOOD_AND_DRINK);
     Item HAY_FRIES = register("hay_fries", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.HAY_FRIES)), ItemGroups.FOOD_AND_DRINK);
     Item CRISPY_HAY_FRIES = register("crispy_hay_fries", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.CRISPY_HAY_FRIES)), ItemGroups.FOOD_AND_DRINK);
     /**

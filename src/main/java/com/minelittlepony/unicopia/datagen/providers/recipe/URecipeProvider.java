@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.datagen.providers.recipe;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.UConventionalTags;
@@ -320,16 +321,28 @@ public class URecipeProvider extends FabricRecipeProvider {
             .input(Items.BOWL)
             .offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.OATMEAL_COOKIE)
-            .input(UItems.OATS, 3).criterion(hasItem(UItems.OATS), conditionsFromItem(UItems.OATS))
+            .input(UItems.OATS, 2).criterion(hasItem(UItems.OATS), conditionsFromItem(UItems.OATS))
+            .offerTo(exporter);
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.CHOCOLATE_OATMEAL_COOKIE)
+            .input(UItems.OATS, 2)
+            .input(Items.COCOA_BEANS).criterion(hasItem(Items.COCOA_BEANS), conditionsFromItem(Items.COCOA_BEANS))
             .offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.PINECONE_COOKIE)
             .input(UItems.PINECONE).criterion(hasItem(UItems.PINECONE), conditionsFromItem(UItems.PINECONE))
+            .input(Items.WHEAT, 2)
+            .offerTo(exporter);
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.SCONE)
+            .input(UItems.OATS).criterion(hasItem(UItems.OATS), conditionsFromItem(UItems.OATS))
             .input(Items.WHEAT, 2)
             .offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.ROCK_CANDY, 3)
             .input(Items.SUGAR, 6).criterion(hasItem(Items.SUGAR), conditionsFromItem(Items.SUGAR))
             .input(UItems.PEBBLES, 3)
             .offerTo(exporter);
+        ShapedRecipeJsonBuilder.create(RecipeCategory.FOOD, Items.BREAD)
+            .input('#', UItems.OATS).criterion("has_oats", conditionsFromItem(UItems.OATS))
+            .pattern("###")
+            .offerTo(exporter, convertBetween(UItems.OATS, Items.WHEAT));
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.JUICE)
             .input(Ingredient.fromTag(UTags.FRESH_APPLES), 6).criterion(hasItem(Items.APPLE), conditionsFromTag(UTags.FRESH_APPLES))
             .input(Items.GLASS_BOTTLE)
@@ -349,7 +362,9 @@ public class URecipeProvider extends FabricRecipeProvider {
 
         ShapedRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.HAY_FRIES)
             .input('#', UItems.OATS).criterion(hasItem(UItems.OATS), conditionsFromItem(UItems.OATS))
-            .pattern("###")
+            .pattern("#")
+            .pattern("#")
+            .pattern("#")
             .offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.HAY_BURGER)
             .input('~', Items.BREAD).criterion(hasItem(Items.BREAD), conditionsFromItem(Items.BREAD))
@@ -716,5 +731,11 @@ public class URecipeProvider extends FabricRecipeProvider {
             .input(gemstone, input2)
             .traits(traits)
             .offerTo(exporter);
+    }
+
+    public static InventoryChangedCriterion.Conditions conditionsFromMultipleItems(ItemConvertible... items) {
+        return conditionsFromItemPredicates(
+            Stream.of(items).map(item -> ItemPredicate.Builder.create().items(item).build()).toArray(ItemPredicate[]::new)
+        );
     }
 }
