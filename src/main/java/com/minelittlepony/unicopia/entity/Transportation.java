@@ -14,6 +14,7 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -124,6 +125,9 @@ public class Transportation<T extends LivingEntity> implements Tickable {
 
     @Nullable
     private Box getVehicleBox() {
+        if (!EntityPredicates.EXCEPT_SPECTATOR.test(living.asEntity())) {
+            return null;
+        }
         if (vehicle == null) {
             return null;
         }

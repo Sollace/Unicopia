@@ -68,7 +68,7 @@ public class BasketItem extends Item implements Dispensable {
         }
 
         if (hit.getType() == HitResult.Type.BLOCK) {
-            return placeEntity(stack, world, hit.getPos().x, hit.getPos().y, hit.getPos().z, user.getYaw() + 180, user);
+            return placeEntity(stack, world, hit.getPos().x, hit.getPos().y, hit.getPos().z, user.getHorizontalFacing().asRotation(), user);
         }
 
         return TypedActionResult.pass(stack);
@@ -76,9 +76,11 @@ public class BasketItem extends Item implements Dispensable {
 
     private TypedActionResult<ItemStack> placeEntity(ItemStack stack, World world, double x, double y, double z, float yaw, @Nullable PlayerEntity user) {
         AirBalloonEntity entity = UEntities.AIR_BALLOON.create(world);
-        entity.updatePositionAndAngles(x, y, z, 0, 0);
+        yaw += 180;
+        entity.updatePositionAndAngles(x, y, z, yaw, 0);
         entity.setHeadYaw(yaw);
         entity.setBodyYaw(yaw);
+        entity.setYaw(yaw);
         entity.setBasketType(type);
         if (!world.isSpaceEmpty(entity, entity.getBoundingBox())) {
             return TypedActionResult.fail(stack);
@@ -92,7 +94,6 @@ public class BasketItem extends Item implements Dispensable {
                 stack.decrement(1);
             }
         }
-
         return TypedActionResult.success(stack, world.isClient());
     }
 }
