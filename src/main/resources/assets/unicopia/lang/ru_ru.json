@@ -81,11 +81,16 @@
 
   "item.unicopia.plunder_vine": "Чёрная лоза",
   "item.unicopia.empty_jar": "Стеклянная банка",
+  "block.unicopia.jar": "Стеклянная банка",
   "item.unicopia.filled_jar": "%s в банке",
   "item.unicopia.rain_cloud_jar": "Дождь в банке",
+  "item.unicopia.cloud_jar": "Дождь в банке",
   "item.unicopia.storm_cloud_jar": "Буря в банке",
+  "block.unicopia.storm_jar": "Буря в банке",
   "item.unicopia.lightning_jar": "Молния в банке",
+  "block.unicopia.lightning_jar": "Молния в банке",
   "item.unicopia.zap_apple_jam_jar": "Джем из зап-яблока",
+  "block.unicopia.zap_jar": "Банка зап-яблочного джема",
 
   "item.unicopia.toast": "Тост",
   "item.unicopia.burned_toast": "Подгоревший тост",
@@ -147,7 +152,9 @@
   "item.unicopia.wheat_worms": "Пшеничные черви",
   "item.unicopia.baited_fishing_rod": "Удочка с приманкой",
   "item.unicopia.muffin": "Маффин",
+  "item.unicopia.scone": "Булочка",
   "item.unicopia.oatmeal_cookie": "Овсяное печенье",
+  "item.unicopia.chocolate_oatmeal_cookie": "Шоколадное овсяное печенье",
   "item.unicopia.pinecone_cookie": "Печенье из шишек",
   "item.unicopia.bowl_of_nuts": "Миска с орехами",
 
