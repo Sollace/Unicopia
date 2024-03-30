@@ -97,7 +97,7 @@ public interface NbtSerialisable {
             return read((NbtCompound)element);
         }
 
-        default NbtList writeAll(Collection<T> ts) {
+        default NbtList writeAll(Collection<? extends T> ts) {
             NbtList list = new NbtList();
             ts.stream().map(this::write).forEach(list::add);
             return list;

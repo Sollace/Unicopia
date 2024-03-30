@@ -20,6 +20,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.EndRodBlock;
 import net.minecraft.entity.*;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
@@ -34,7 +35,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Artifact {
-    static final Predicate<Entity> TARGET_PREDICATE = EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(EntityPredicates.VALID_ENTITY).and(e -> (e instanceof PlayerEntity || e instanceof MobEntity));
+    static final Predicate<Entity> TARGET_PREDICATE = EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR
+            .and(EntityPredicates.VALID_ENTITY)
+            .and(e -> (e instanceof PlayerEntity || e instanceof MobEntity));
     private static final Supplier<Map<Item, Item>> ITEM_MAP = Suppliers.memoize(() -> {
         return Map.of(
                 Items.BUCKET, UItems.LOVE_BUCKET,
@@ -125,8 +128,9 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                     LivingEntity living = (LivingEntity)e;
 
                     if (e instanceof PlayerEntity
-                            || (living instanceof TameableEntity && ((TameableEntity)living).isTamed())
-                            || (living instanceof Saddleable && ((Saddleable)living).isSaddled())) {
+                            || (e instanceof TameableEntity t && t.isTamed())
+                            || (e instanceof Saddleable s && s.isSaddled())
+                            || (e instanceof MerchantEntity)) {
                         if (living.getHealth() < living.getMaxHealth()) {
                             outputs.add(living);
                         }
@@ -145,19 +149,8 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                     return;
                 }
 
-                float gives;
-                float takes;
-
-                if (supply > demand) {
-                    gives = supply / demand;
-                    takes = 1;
-                } else if (demand > supply) {
-                    takes = demand / supply;
-                    gives = 1;
-                } else {
-                    gives = 1;
-                    takes = 1;
-                }
+                float gives = supply > demand ? supply / demand : 1;
+                float takes = demand > supply ? demand / supply : 1;
 
                 inputs.forEach(input -> {
                     input.damage(entity.damageOf(UDamageTypes.LIFE_DRAINING), takes);

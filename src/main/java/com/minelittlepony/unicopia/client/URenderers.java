@@ -116,6 +116,7 @@ public interface URenderers {
         BlockEntityRendererFactories.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(UBlockEntities.FANCY_BED, CloudBedBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(UBlockEntities.CLOUD_CHEST, CloudChestBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(UBlockEntities.ITEM_JAR, ItemJarBlockEntityRenderer::new);
 
         register(URenderers::renderJarItem, UItems.FILLED_JAR);
         register(URenderers::renderBedItem, UItems.CLOTH_BED, UItems.CLOUD_BED);

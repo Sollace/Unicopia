@@ -35,6 +35,7 @@ import net.minecraft.data.client.Models;
 import net.minecraft.data.client.MultipartBlockStateSupplier;
 import net.minecraft.data.client.TextureMap;
 import net.minecraft.data.client.TexturedModel;
+import net.minecraft.data.client.VariantSettings;
 import net.minecraft.data.client.VariantsBlockStateSupplier;
 import net.minecraft.data.client.When;
 import net.minecraft.item.Item;
@@ -177,6 +178,18 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerWithStagesBuiltinModels(UBlocks.MYSTERIOUS_EGG, PileBlock.COUNT, 1, 2, 3);
         excludeFromSimpleItemModelGeneration(UBlocks.MYSTERIOUS_EGG);
         FireModels.registerSoulFire(this, UBlocks.SPECTRAL_FIRE, Blocks.SOUL_FIRE);
+
+        blockStateCollector.accept(createSingletonBlockState(UBlocks.JAR, BlockModels.TEMPLATE_JAR));
+        registerWeatherJar(UBlocks.CLOUD_JAR);
+        registerWeatherJar(UBlocks.STORM_JAR);
+        registerWeatherJar(UBlocks.ZAP_JAR);
+        registerWeatherJar(UBlocks.LIGHTNING_JAR);
+    }
+
+    public void registerWeatherJar(Block jar) {
+        blockStateCollector.accept(MultipartBlockStateSupplier.create(jar)
+                .with(BlockStateVariant.create().put(VariantSettings.MODEL, BlockModels.TEMPLATE_JAR))
+                .with(BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(jar, "_filling"))));
     }
 
     @SafeVarargs

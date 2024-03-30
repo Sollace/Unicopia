@@ -29,7 +29,7 @@ public class JarInsertRecipe extends ItemCombinationRecipe {
 
     @Override
     protected boolean isInsertItem(ItemStack stack) {
-        return !(stack.getItem() instanceof JarItem);
+        return !(stack.getItem() instanceof EmptyJarItem);
     }
 
     @Override

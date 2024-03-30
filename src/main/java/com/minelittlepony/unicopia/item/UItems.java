@@ -50,12 +50,12 @@ public interface UItems {
     FriendshipBraceletItem FRIENDSHIP_BRACELET = register("friendship_bracelet", new FriendshipBraceletItem(new FabricItemSettings().rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
 
     Item PLUNDER_VINE = register("plunder_vine", new BlockItem(UBlocks.PLUNDER_VINE_BUD, new Item.Settings()));
-    Item EMPTY_JAR = register("empty_jar", new JarItem(new Item.Settings().fireproof(), false, false, false), ItemGroups.FUNCTIONAL);
+    Item EMPTY_JAR = register("empty_jar", new EmptyJarItem(UBlocks.JAR, new Item.Settings().fireproof()), ItemGroups.FUNCTIONAL);
     FilledJarItem FILLED_JAR = register("filled_jar", new FilledJarItem(new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR)));
-    Item RAIN_CLOUD_JAR  = register("rain_cloud_jar", new JarItem(new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), true, false, false), ItemGroups.FUNCTIONAL);
-    Item STORM_CLOUD_JAR  = register("storm_cloud_jar", new JarItem(new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), true, true, false), ItemGroups.FUNCTIONAL);
-    Item LIGHTNING_JAR  = register("lightning_jar", new JarItem(new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), false, false, true), ItemGroups.FUNCTIONAL);
-    Item ZAP_APPLE_JAM_JAR = register("zap_apple_jam_jar", new JarItem(new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), false, false, true), ItemGroups.FUNCTIONAL);
+    Item RAIN_CLOUD_JAR  = register("rain_cloud_jar", new WeatherJarItem(UBlocks.CLOUD_JAR, new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.RAIN), ItemGroups.FUNCTIONAL);
+    Item STORM_CLOUD_JAR  = register("storm_cloud_jar", new WeatherJarItem(UBlocks.STORM_JAR, new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.THUNDER), ItemGroups.FUNCTIONAL);
+    Item LIGHTNING_JAR  = register("lightning_jar", new WeatherJarItem(UBlocks.LIGHTNING_JAR, new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.LIGHTNING), ItemGroups.FUNCTIONAL);
+    Item ZAP_APPLE_JAM_JAR = register("zap_apple_jam_jar", new WeatherJarItem(UBlocks.ZAP_JAR, new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.LIGHTNING), ItemGroups.FUNCTIONAL);
 
     Item TOAST = register("toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.TOAST)), ItemGroups.FOOD_AND_DRINK);
     Item BURNED_TOAST = register("burned_toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.BURNED_TOAST)), ItemGroups.FOOD_AND_DRINK);
@@ -75,12 +75,14 @@ public interface UItems {
     Item IMPORTED_OATS = register("imported_oats", new Item(new Item.Settings().food(UFoodComponents.IMPORTED_OATS)), ItemGroups.FOOD_AND_DRINK);
     Item OATMEAL = register("oatmeal", new OatmealItem(new Item.Settings().recipeRemainder(Items.BOWL).maxCount(1).food(UFoodComponents.OATMEAL)), ItemGroups.FOOD_AND_DRINK);
 
-    Item OATMEAL_COOKIE = register("oatmeal_cookie", new Item(new Item.Settings().food(FoodComponents.COOKIE)), ItemGroups.FOOD_AND_DRINK);
+    Item OATMEAL_COOKIE = register("oatmeal_cookie", new Item(new Item.Settings().food(UFoodComponents.OATMEAL_COOKIE)), ItemGroups.FOOD_AND_DRINK);
+    Item CHOCOLATE_OATMEAL_COOKIE = register("chocolate_oatmeal_cookie", new Item(new Item.Settings().food(UFoodComponents.CHOCOLATE_OATMEAL_COOKIE)), ItemGroups.FOOD_AND_DRINK);
     Item PINECONE_COOKIE = register("pinecone_cookie", new Item(new Item.Settings().food(FoodComponents.COOKIE)), ItemGroups.FOOD_AND_DRINK);
-    Item BOWL_OF_NUTS = register("bowl_of_nuts", new StewItem(new Item.Settings().food(FoodComponents.BAKED_POTATO).recipeRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
+    Item BOWL_OF_NUTS = register("bowl_of_nuts", new StewItem(new Item.Settings().food(UFoodComponents.NUT_BOWL).recipeRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
+    Item SCONE = register("scone", new MuffinItem(new Item.Settings().maxCount(32).food(UFoodComponents.SCONE), 0), ItemGroups.FOOD_AND_DRINK);
 
     Item DAFFODIL_DAISY_SANDWICH = register("daffodil_daisy_sandwich", new Item(new Item.Settings().food(UFoodComponents.DAFODIL_DAISY_SANDWICH)), ItemGroups.FOOD_AND_DRINK);
-    Item HAY_BURGER = register("hay_burger", new Item(new Item.Settings().maxCount(1).food(UFoodComponents.HAY_BURGER)), ItemGroups.FOOD_AND_DRINK);
+    Item HAY_BURGER = register("hay_burger", new Item(new Item.Settings().maxCount(1).food(UFoodComponents.BURGER)), ItemGroups.FOOD_AND_DRINK);
     Item HAY_FRIES = register("hay_fries", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.HAY_FRIES)), ItemGroups.FOOD_AND_DRINK);
     Item CRISPY_HAY_FRIES = register("crispy_hay_fries", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.CRISPY_HAY_FRIES)), ItemGroups.FOOD_AND_DRINK);
     /**

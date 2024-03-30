@@ -40,11 +40,12 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         };
 
         getOrCreateTagBuilder(UTags.CATAPULT_IMMUNE).add(Blocks.BEDROCK).forceAddTag(BlockTags.DOORS).forceAddTag(BlockTags.TRAPDOORS);
+        getOrCreateTagBuilder(UTags.JARS).add(UBlocks.JAR, UBlocks.CLOUD_JAR, UBlocks.STORM_JAR, UBlocks.LIGHTNING_JAR, UBlocks.ZAP_JAR);
         getOrCreateTagBuilder(BlockTags.CROPS).add(crops);
         getOrCreateTagBuilder(BlockTags.BEE_GROWABLES).add(crops);
         getOrCreateTagBuilder(BlockTags.MAINTAINS_FARMLAND).add(crops);
         getOrCreateTagBuilder(BlockTags.NEEDS_DIAMOND_TOOL).add(UBlocks.FROSTED_OBSIDIAN);
-        getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(UBlocks.ROCKS, UBlocks.FROSTED_OBSIDIAN, UBlocks.WEATHER_VANE);
+        getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(UBlocks.ROCKS, UBlocks.FROSTED_OBSIDIAN, UBlocks.WEATHER_VANE).forceAddTag(UTags.JARS);
         getOrCreateTagBuilder(BlockTags.DRAGON_IMMUNE).add(UBlocks.FROSTED_OBSIDIAN, UBlocks.GOLDEN_OAK_LOG, UBlocks.GOLDEN_OAK_LEAVES);
         getOrCreateTagBuilder(BlockTags.FIRE).add(UBlocks.SPECTRAL_FIRE);
         getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(UBlocks.HAY_BLOCK).addOptional(Unicopia.id("rice_block")).addOptional(Unicopia.id("straw_block"));
@@ -67,6 +68,7 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(UTags.FRAGILE)
             .forceAddTag(ConventionalBlockTags.GLASS_BLOCKS)
             .forceAddTag(ConventionalBlockTags.GLASS_PANES)
+            .forceAddTag(UTags.JARS)
             .add(Blocks.VINE, Blocks.LILY_PAD);
 
         getOrCreateTagBuilder(UTags.INTERESTING).add(

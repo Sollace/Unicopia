@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
@@ -14,26 +15,37 @@ import net.minecraft.util.math.MathHelper;
 public class AirBalloonEntityModel extends EntityModel<AirBalloonEntity> {
 
     private final ModelPart root;
+    private ModelPart main;
 
     private float inflation;
 
     private boolean isBurner;
     private boolean isBalloon;
+    private boolean isSandbags;
 
     private final List<ModelPart> ropes;
+    private final List<ModelPart> sandbags;
 
     public AirBalloonEntityModel(ModelPart root) {
         this.root = root;
         isBurner = root.hasChild("burner");
+        isSandbags = root.hasChild("sandbag_ne");
         isBalloon = root.hasChild("canopy");
 
         if (isBurner || isBalloon) {
-            ModelPart part = root.getChild(isBalloon ? "canopy" : "burner");
-            ropes = List.of(part.getChild("rope_a"), part.getChild("rope_b"), part.getChild("rope_c"),
-                    part.getChild("rope_d"));
+            main = root.getChild(isBalloon ? "canopy" : "burner");
+            ropes = List.of(
+                    (isBurner ? root : main).getChild("rope_a"), (isBurner ? root : main).getChild("rope_b"),
+                    (isBurner ? root : main).getChild("rope_c"), (isBurner ? root : main).getChild("rope_d")
+            );
         } else {
             ropes = List.of();
         }
+
+        sandbags = isSandbags ? List.of(
+                root.getChild("sandbag_nw"), root.getChild("sandbag_sw"),
+                root.getChild("sandbag_ne"), root.getChild("sandbag_se")
+        ) : List.of();
     }
 
     public static TexturedModelData getBasketModelData() {
@@ -56,12 +68,34 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntity> {
     public static TexturedModelData getBurnerModelData() {
         ModelData modelData = new ModelData();
         ModelPartData root = modelData.getRoot();
+        root.addChild("burner", ModelPartBuilder.create().uv(8, 0).cuboid(-5.5F, -47, -5.5F, 11, 15, 11, Dilation.NONE), ModelTransform.pivot(0, 24, 0));
+        float angle = 0.37854F;
+        float half = MathHelper.HALF_PI;
+        root.addChild("rope_d", ModelPartBuilder.create().cuboid(0, -68, 0, 2, 66, 2, Dilation.NONE), ModelTransform.of(-0, -20, -0, angle, 0, -angle));
+        root.addChild("rope_c", ModelPartBuilder.create().cuboid(0, -68, 0, 2, 66, 2, Dilation.NONE), ModelTransform.of(-0, -20, -0, -angle, 0, -angle));
+        root.addChild("rope_b", ModelPartBuilder.create().cuboid(0, -68, 0, 2, 66, 2, Dilation.NONE), ModelTransform.of( 0, -20,  0, -angle, 0,  angle));
+        root.addChild("rope_a", ModelPartBuilder.create().cuboid(0, -68, 0, 2, 66, 2, Dilation.NONE), ModelTransform.of( 0, -20,  0,  angle, 0,  angle));
 
-        ModelPartData burner = root.addChild("burner", ModelPartBuilder.create().uv(8, 0).cuboid(-6, -47, -6, 11, 15, 11, Dilation.NONE), ModelTransform.pivot(0, 24, 0));
-        burner.addChild("rope_d", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(-5, -46, -6, 0.7854F, 0, -0.7854F));
-        burner.addChild("rope_c", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(-4, -44, 3, -0.7854F, 0, -0.7854F));
-        burner.addChild("rope_b", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(5, -46, 1, -0.7854F, 0, 0.7854F));
-        burner.addChild("rope_a", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(5, -45, -6, 0.7854F, 0, 0.7854F));
+        root.addChild("strut_a", ModelPartBuilder.create()
+                .cuboid(-27, -40, -30, 2, 40, 2, Dilation.NONE)
+                .cuboid(-27,  0, -30, 2, 40, 2, Dilation.NONE)
+                .cuboid( 27, -40, -30, 2, 40, 2, Dilation.NONE)
+                .cuboid( 27,  0, -30, 2, 40, 2, Dilation.NONE)
+
+                .cuboid(-27, -40, 26, 2, 40, 2, Dilation.NONE)
+                .cuboid(-27,  0, 26, 2, 40, 2, Dilation.NONE)
+                .cuboid( 27, -40, 26, 2, 40, 2, Dilation.NONE)
+                .cuboid( 27,  0, 26, 2, 40, 2, Dilation.NONE), ModelTransform.of(0, -80, 0, half, 0,  0));
+        root.addChild("strut_b", ModelPartBuilder.create()
+                .cuboid(-27, -40, -20, 2, 40, 2, Dilation.NONE)
+                .cuboid(-27,  0, -20, 2, 40, 2, Dilation.NONE)
+                .cuboid( 27, -40, -20, 2, 40, 2, Dilation.NONE)
+                .cuboid( 27,  0, -20, 2, 40, 2, Dilation.NONE)
+
+                .cuboid(-27, -40, 30, 2, 40, 2, Dilation.NONE)
+                .cuboid(-27,  0, 30, 2, 40, 2, Dilation.NONE)
+                .cuboid( 27, -40, 30, 2, 40, 2, Dilation.NONE)
+                .cuboid( 27,  0, 30, 2, 40, 2, Dilation.NONE), ModelTransform.of(0, -80, 0, half, half, 0));
         return TexturedModelData.of(modelData, 64, 128);
     }
 
@@ -76,14 +110,40 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntity> {
         return TexturedModelData.of(modelData, 512, 256);
     }
 
+    public static TexturedModelData getSandbagsModelData() {
+        ModelData modelData = new ModelData();
+        ModelPartData root = modelData.getRoot();
+        float offset = 40;
+        getHangingBagModelData("sandbag_ne", root, -offset, -offset);
+        getHangingBagModelData("sandbag_nw", root, -offset,  offset);
+        getHangingBagModelData("sandbag_se", root,  offset, -offset);
+        getHangingBagModelData("sandbag_sw", root,  offset,  offset);
+        return TexturedModelData.of(modelData, 32, 32);
+    }
+
+    public static void getHangingBagModelData(String name, ModelPartData root, float x, float z) {
+        ModelPartData bag = root.addChild(name, ModelPartBuilder.create()
+                .uv(16, 19).cuboid(-0.5F, 0, -0.5F, 1, 9, 1, Dilation.NONE), ModelTransform.pivot(x, -35, z));
+        ModelPartData knot = bag.addChild("knot", ModelPartBuilder.create()
+                .uv(0, 0).cuboid(-3, 1, -3, 6, 7, 6, Dilation.NONE)
+                .uv(12, 14).cuboid(-2, 0, -2, 4, 1, 4, Dilation.NONE)
+                .uv(0, 13).cuboid(-2, 8, -2, 4, 1, 4, Dilation.NONE), ModelTransform.pivot(0, 9, 0));
+        knot.addChild("cube_r1", ModelPartBuilder.create().uv(8, 14).cuboid(0, 8, -2, 0, 4, 4, Dilation.NONE), ModelTransform.of(0, 1, 0, 0, -0.7854F, 0));
+        knot.addChild("cube_r2", ModelPartBuilder.create().uv(8, 14).cuboid(0, 8, -2, 0, 4, 4, Dilation.NONE), ModelTransform.of(0, 1, 0, 0, 0.7854F, 0));
+    }
+
     @Override
-    public void setAngles(AirBalloonEntity entity, float tickDelta, float limbSwingAmount, float ageInTicks,
-            float netHeadYaw, float headPitch) {
+    public void setAngles(AirBalloonEntity entity, float limbDistance, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        float tickDelta = MinecraftClient.getInstance().getTickDelta();
         inflation = entity.getInflation(tickDelta);
 
-        if (isBurner || isBalloon) {
-            root.roll = MathHelper.clamp((float) (entity.getX() - entity.lastRenderX), -0.5F, 0.5F);
-            root.pitch = MathHelper.clamp((float) (entity.getZ() - entity.lastRenderZ), -0.5F, 0.5F);
+        root.yaw = MathHelper.PI;
+
+        float burnerWiggleProgress = entity.getBurner().getPullProgress(tickDelta);
+
+        if (isBurner || isBalloon || isSandbags) {
+            root.roll = MathHelper.clamp(entity.getXVelocity(tickDelta), -0.5F, 0.5F);
+            root.pitch = MathHelper.clamp(entity.getZVelocity(tickDelta), -0.5F, 0.5F);
             if (entity.isLeashed()) {
                 root.roll *= -1;
                 root.pitch *= -1;
@@ -93,27 +153,44 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntity> {
             root.roll = 0;
         }
 
-        for (ModelPart rope : ropes) {
-            rope.resetTransform();
-        }
+        ropes.forEach(ModelPart::resetTransform);
 
         if (isBurner) {
             boolean lifted = inflation > 0.8F;
-            root.pivotY = 32 * (1 - inflation);
+            root.pivotY = 32 * (1 - inflation) - (9 * inflation);
             root.pivotX = inflation * MathHelper.sin(limbSwingAmount + entity.age / 5F) / 4F;
             ropes.forEach(rope -> {
                 rope.visible = lifted;
-                rope.pitch *= 0.125;
-                rope.roll *= 0.125;
             });
+
+            root.pivotX += burnerWiggleProgress * MathHelper.sin((entity.age + tickDelta)) * 2.5F;
+            root.pivotX += burnerWiggleProgress * MathHelper.cos((entity.age + tickDelta)) * 2.5F;
+            root.pivotY += burnerWiggleProgress * 7;
         }
-        if (isBalloon) {
-            root.pivotY = 0;
+        if (isBalloon || isSandbags) {
+            root.pivotY = burnerWiggleProgress * 3;
             root.pivotX = inflation * MathHelper.cos(limbSwingAmount + entity.age / 5F) / 4F;
             if (entity.getBasketType().isOf(BoatEntity.Type.BAMBOO)) {
                 ropes.forEach(rope -> rope.pivotY = 0);
-            } else {
-                ropes.forEach(ModelPart::resetTransform);
+            }
+        }
+
+        if (isSandbags) {
+            float cosWiggle = MathHelper.cos(limbSwingAmount + entity.age / 5F) / 80F;
+            float sinWiggle = MathHelper.sin(limbSwingAmount + entity.age / 5F) / 80F;
+            for (int i = 0; i < sandbags.size(); i++) {
+                ModelPart bag = sandbags.get(i);
+                float pullProgress = entity.getSandbag(i).getPullProgress(tickDelta);
+                bag.resetTransform();
+                bag.pitch -= root.pitch * 2.5F * (1 + pullProgress) + cosWiggle;
+                bag.roll -= root.roll * 2.5F * (1 + pullProgress) + sinWiggle;
+                if (entity.isLeashed()) {
+                    bag.roll *= -1;
+                    bag.pitch *= -1;
+                }
+                float pullAmount = 2 + (2 * pullProgress);
+                bag.yScale = pullAmount;
+                bag.getChild("knot").yScale = 1/pullAmount;
             }
         }
 
@@ -137,6 +214,16 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntity> {
             }
             if (i == 0 || i == 1) {
                 rope.pivotX += 5 * rollRatio;
+            }
+
+            if (isBalloon) {
+                double speed = Math.abs(entity.getVelocity().getY()) * 3F;
+
+                rope.zScale = MathHelper.clamp((float)speed, 0.25F, 1F);
+                rope.xScale = 0.001F;
+            } else {
+                rope.xScale = 0.3F;
+                rope.zScale = 0.3F;
             }
         }
 

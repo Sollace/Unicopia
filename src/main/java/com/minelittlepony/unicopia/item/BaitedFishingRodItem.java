@@ -30,7 +30,9 @@ public class BaitedFishingRodItem extends FishingRodItem {
 
             if (result.getValue().isOf(this)) {
                 ItemStack stack = Items.FISHING_ROD.getDefaultStack();
-                stack.setDamage(result.getValue().getDamage());
+                if (result.getValue().hasNbt()) {
+                    stack.setNbt(result.getValue().getNbt().copy());
+                }
                 return TypedActionResult.success(stack, world.isClient());
             }
         }

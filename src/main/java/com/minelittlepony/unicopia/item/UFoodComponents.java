@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.item;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.FoodComponent;
+import net.minecraft.item.FoodComponents;
 
 public interface UFoodComponents {
     FoodComponent OATS = builder(1, 0.7F).build();
@@ -12,8 +13,8 @@ public interface UFoodComponents {
             .statusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 1200, 1), 0.3F)
             .statusEffect(new StatusEffectInstance(StatusEffects.SPEED, 1200, 1), 0.2F)
             .build();
-    FoodComponent DAFODIL_DAISY_SANDWICH = builder(3, 2).build();
-    FoodComponent HAY_BURGER = builder(7, 1.4F).build();
+    FoodComponent DAFODIL_DAISY_SANDWICH = builder(3, 1.4F).build();
+    FoodComponent BURGER = builder(7, 1.4F).build();
     FoodComponent HAY_FRIES = builder(4, 2).build();
     FoodComponent CRISPY_HAY_FRIES = builder(6, 7).build();
 
@@ -22,6 +23,12 @@ public interface UFoodComponents {
 
     FoodComponent JUICE = builder(2, 1.8F).alwaysEdible().build();
     FoodComponent BURNED_JUICE = builder(3, 1).build();
+
+    FoodComponent NUT_BOWL = FoodComponents.BAKED_POTATO; //builder(4, 0.6F).build();
+
+    FoodComponent OATMEAL_COOKIE = FoodComponents.COOKIE; //builder(2, 0.1F).build();
+    FoodComponent CHOCOLATE_OATMEAL_COOKIE = builder(3, 0.4F).build();
+    FoodComponent SCONE = builder(2, 0.2F).build();
 
     @Deprecated
     FoodComponent RANDOM_FOLIAGE = builder(2, 1).build();

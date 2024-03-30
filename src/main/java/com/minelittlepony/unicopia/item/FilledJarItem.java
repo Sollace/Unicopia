@@ -1,10 +1,11 @@
 package com.minelittlepony.unicopia.item;
 
-import com.minelittlepony.unicopia.entity.IItemEntity;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -20,16 +21,20 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldEvents;
 
-public class FilledJarItem extends JarItem implements ChameleonItem {
-
+public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.HitListener, ChameleonItem {
     public FilledJarItem(Settings settings) {
-        super(settings, false, false, false);
+        super(settings, 0);
+    }
+
+    @Override
+    public SoundEvent getThrowSound(ItemStack stack) {
+        return USounds.ENTITY_JAR_THROW;
     }
 
     @Override
@@ -43,19 +48,7 @@ public class FilledJarItem extends JarItem implements ChameleonItem {
     }
 
     @Override
-    public ActionResult onGroundTick(IItemEntity item) {
-        return ActionResult.PASS;
-    }
-
-    @Override
-    protected float getProjectileDamage(ItemStack stack) {
-        return 0;
-    }
-
-    @Override
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
-        super.onImpact(projectile, hit);
-
         Entity entity = hit.getEntity();
 
         if (!entity.isAttackable() || !(projectile instanceof FlyingItemEntity)) {
