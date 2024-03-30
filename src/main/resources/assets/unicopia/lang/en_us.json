@@ -81,12 +81,17 @@
 
   "item.unicopia.plunder_vine": "Plunder Vine",
   "item.unicopia.empty_jar": "Glass Jar",
+  "block.unicopia.jar": "Glass Jar",
   "item.unicopia.filled_jar": "%s in a Jar",
   "item.unicopia.rain_cloud_jar": "Rain in a Jar",
+  "item.unicopia.cloud_jar": "Rain in a Jar",
   "item.unicopia.storm_cloud_jar": "Storm in a Jar",
+  "block.unicopia.storm_jar": "Storm in a Jar",
   "item.unicopia.lightning_jar": "Lightning in a Jar",
+  "block.unicopia.lightning_jar": "Lightning in a Jar",
   "item.unicopia.zap_apple_jam_jar": "Zap Apple Jam",
-  
+  "block.unicopia.zap_jar": "Jar of Zap Apple Jam",
+
   "item.unicopia.toast": "Toast",
   "item.unicopia.burned_toast": "Burned Toast",
   "item.unicopia.jam_toast": "Toast with Zap Apple Jam",

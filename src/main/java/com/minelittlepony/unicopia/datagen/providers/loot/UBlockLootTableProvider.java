@@ -81,6 +81,11 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
             tree.pot().ifPresent(this::addPottedPlantDrops);
         });
 
+        // jars
+        List.of(
+                UBlocks.JAR, UBlocks.CLOUD_JAR, UBlocks.STORM_JAR, UBlocks.LIGHTNING_JAR, UBlocks.STORM_JAR
+        ).forEach(jar -> addDrop(jar, UBlockLootTableProvider::dropsWithSilkTouch));
+
         // doors
         List.of(
             UBlocks.CLOUD_DOOR, UBlocks.CRYSTAL_DOOR,

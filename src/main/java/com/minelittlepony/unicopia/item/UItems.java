@@ -50,12 +50,12 @@ public interface UItems {
     FriendshipBraceletItem FRIENDSHIP_BRACELET = register("friendship_bracelet", new FriendshipBraceletItem(new FabricItemSettings().rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
 
     Item PLUNDER_VINE = register("plunder_vine", new BlockItem(UBlocks.PLUNDER_VINE_BUD, new Item.Settings()));
-    Item EMPTY_JAR = register("empty_jar", new JarItem(new Item.Settings().fireproof(), false, false, false), ItemGroups.FUNCTIONAL);
+    Item EMPTY_JAR = register("empty_jar", new EmptyJarItem(UBlocks.JAR, new Item.Settings().fireproof()), ItemGroups.FUNCTIONAL);
     FilledJarItem FILLED_JAR = register("filled_jar", new FilledJarItem(new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR)));
-    Item RAIN_CLOUD_JAR  = register("rain_cloud_jar", new JarItem(new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), true, false, false), ItemGroups.FUNCTIONAL);
-    Item STORM_CLOUD_JAR  = register("storm_cloud_jar", new JarItem(new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), true, true, false), ItemGroups.FUNCTIONAL);
-    Item LIGHTNING_JAR  = register("lightning_jar", new JarItem(new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), false, false, true), ItemGroups.FUNCTIONAL);
-    Item ZAP_APPLE_JAM_JAR = register("zap_apple_jam_jar", new JarItem(new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), false, false, true), ItemGroups.FUNCTIONAL);
+    Item RAIN_CLOUD_JAR  = register("rain_cloud_jar", new WeatherJarItem(UBlocks.CLOUD_JAR, new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.RAIN), ItemGroups.FUNCTIONAL);
+    Item STORM_CLOUD_JAR  = register("storm_cloud_jar", new WeatherJarItem(UBlocks.STORM_JAR, new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.THUNDER), ItemGroups.FUNCTIONAL);
+    Item LIGHTNING_JAR  = register("lightning_jar", new WeatherJarItem(UBlocks.LIGHTNING_JAR, new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.LIGHTNING), ItemGroups.FUNCTIONAL);
+    Item ZAP_APPLE_JAM_JAR = register("zap_apple_jam_jar", new WeatherJarItem(UBlocks.ZAP_JAR, new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.LIGHTNING), ItemGroups.FUNCTIONAL);
 
     Item TOAST = register("toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.TOAST)), ItemGroups.FOOD_AND_DRINK);
     Item BURNED_TOAST = register("burned_toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.BURNED_TOAST)), ItemGroups.FOOD_AND_DRINK);
