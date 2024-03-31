@@ -86,7 +86,7 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
         }
 
         BlockState state = world.getBlockState(bpos);
-        if (state.isIn(UTags.CATAPULT_IMMUNE)) {
+        if (state.isIn(UTags.Blocks.CATAPULT_IMMUNE)) {
             return;
         }
 

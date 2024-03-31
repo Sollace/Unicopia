@@ -272,7 +272,7 @@ public interface UItems {
         FuelRegistry.INSTANCE.add(SPELLBOOK, 9000);
         FuelRegistry.INSTANCE.add(MEADOWBROOKS_STAFF, 800);
         FuelRegistry.INSTANCE.add(BURNED_TOAST, 1600);
-        FuelRegistry.INSTANCE.add(UTags.BASKETS, 1700);
+        FuelRegistry.INSTANCE.add(UTags.Items.BASKETS, 1700);
 
         CompostingChanceRegistry.INSTANCE.add(GREEN_APPLE, 0.65F);
         CompostingChanceRegistry.INSTANCE.add(SWEET_APPLE, 0.65F);

@@ -19,12 +19,12 @@ public class UDamageTypeProvider extends FabricTagProvider<DamageType> {
 
     @Override
     protected void configure(WrapperLookup lookup) {
-        getOrCreateTagBuilder(UTags.SPELLBOOK_IMMUNE_TO).add(
+        getOrCreateTagBuilder(UTags.DamageTypes.SPELLBOOK_IMMUNE_TO).add(
                 UDamageTypes.ZAP_APPLE, UDamageTypes.LOVE_DRAINING, UDamageTypes.LIFE_DRAINING,
                 UDamageTypes.RAINBOOM, UDamageTypes.SUN, UDamageTypes.SUNLIGHT, UDamageTypes.SMASH
         ).forceAddTag(DamageTypeTags.IS_FALL).forceAddTag(DamageTypeTags.IS_FREEZING).forceAddTag(DamageTypeTags.IS_LIGHTNING).forceAddTag(DamageTypeTags.IS_PROJECTILE);
-        getOrCreateTagBuilder(UTags.FROM_ROCKS).add(UDamageTypes.ROCK);
-        getOrCreateTagBuilder(UTags.FROM_HORSESHOES).add(UDamageTypes.HORSESHOE);
-        getOrCreateTagBuilder(UTags.BREAKS_SUNGLASSES).add(UDamageTypes.BAT_SCREECH, UDamageTypes.RAINBOOM);
+        getOrCreateTagBuilder(UTags.DamageTypes.FROM_ROCKS).add(UDamageTypes.ROCK);
+        getOrCreateTagBuilder(UTags.DamageTypes.FROM_HORSESHOES).add(UDamageTypes.HORSESHOE);
+        getOrCreateTagBuilder(UTags.DamageTypes.BREAKS_SUNGLASSES).add(UDamageTypes.BAT_SCREECH, UDamageTypes.RAINBOOM);
     }
 }

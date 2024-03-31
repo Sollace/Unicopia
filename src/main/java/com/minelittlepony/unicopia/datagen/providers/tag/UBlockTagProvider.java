@@ -44,14 +44,14 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 UBlocks.GOLDEN_OAK_SPROUT
         };
 
-        getOrCreateTagBuilder(UTags.CATAPULT_IMMUNE).add(Blocks.BEDROCK).forceAddTag(BlockTags.DOORS).forceAddTag(BlockTags.TRAPDOORS);
+        getOrCreateTagBuilder(UTags.Blocks.CATAPULT_IMMUNE).add(Blocks.BEDROCK).forceAddTag(BlockTags.DOORS).forceAddTag(BlockTags.TRAPDOORS);
         getOrCreateTagBuilder(UTags.Blocks.BUTTERFLIES_SPAWNABLE_ON).forceAddTag(BlockTags.ANIMALS_SPAWNABLE_ON).forceAddTag(BlockTags.LEAVES).forceAddTag(BlockTags.FLOWERS).forceAddTag(BlockTags.FLOWER_POTS);
-        getOrCreateTagBuilder(UTags.JARS).add(UBlocks.JAR, UBlocks.CLOUD_JAR, UBlocks.STORM_JAR, UBlocks.LIGHTNING_JAR, UBlocks.ZAP_JAR);
+        getOrCreateTagBuilder(UTags.Blocks.JARS).add(UBlocks.JAR, UBlocks.CLOUD_JAR, UBlocks.STORM_JAR, UBlocks.LIGHTNING_JAR, UBlocks.ZAP_JAR);
         getOrCreateTagBuilder(BlockTags.CROPS).add(crops);
         getOrCreateTagBuilder(BlockTags.BEE_GROWABLES).add(crops);
         getOrCreateTagBuilder(BlockTags.MAINTAINS_FARMLAND).add(crops);
         getOrCreateTagBuilder(BlockTags.NEEDS_DIAMOND_TOOL).add(UBlocks.FROSTED_OBSIDIAN);
-        getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(UBlocks.ROCKS, UBlocks.FROSTED_OBSIDIAN, UBlocks.WEATHER_VANE).forceAddTag(UTags.JARS);
+        getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(UBlocks.ROCKS, UBlocks.FROSTED_OBSIDIAN, UBlocks.WEATHER_VANE).forceAddTag(UTags.Blocks.JARS);
         getOrCreateTagBuilder(BlockTags.DRAGON_IMMUNE).add(UBlocks.FROSTED_OBSIDIAN, UBlocks.GOLDEN_OAK_LOG, UBlocks.GOLDEN_OAK_LEAVES);
         getOrCreateTagBuilder(BlockTags.FIRE).add(UBlocks.SPECTRAL_FIRE);
         getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(UBlocks.HAY_BLOCK).addOptional(Unicopia.id("rice_block")).addOptional(Unicopia.id("straw_block"));
@@ -63,31 +63,31 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         addChitinBlocksets();
         addFruitTrees();
 
-        getOrCreateTagBuilder(UTags.CRYSTAL_HEART_BASE).add(
+        getOrCreateTagBuilder(UTags.Blocks.CRYSTAL_HEART_BASE).add(
                 Blocks.DIAMOND_BLOCK,
                 Blocks.QUARTZ_BLOCK, Blocks.QUARTZ_BRICKS, Blocks.QUARTZ_SLAB, Blocks.QUARTZ_STAIRS, Blocks.QUARTZ_PILLAR,
                 Blocks.SMOOTH_QUARTZ, Blocks.SMOOTH_QUARTZ_SLAB, Blocks.SMOOTH_QUARTZ_STAIRS, Blocks.CHISELED_QUARTZ_BLOCK,
                 Blocks.AMETHYST_BLOCK, Blocks.NETHERITE_BLOCK, Blocks.EMERALD_BLOCK
         );
-        getOrCreateTagBuilder(UTags.CRYSTAL_HEART_ORNAMENT).add(Blocks.END_ROD);
+        getOrCreateTagBuilder(UTags.Blocks.CRYSTAL_HEART_ORNAMENT).add(Blocks.END_ROD);
 
-        getOrCreateTagBuilder(UTags.FRAGILE)
+        getOrCreateTagBuilder(UTags.Blocks.FRAGILE)
             .forceAddTag(ConventionalBlockTags.GLASS_BLOCKS)
             .forceAddTag(ConventionalBlockTags.GLASS_PANES)
-            .forceAddTag(UTags.JARS)
+            .forceAddTag(UTags.Blocks.JARS)
             .add(Blocks.VINE, Blocks.LILY_PAD);
 
-        getOrCreateTagBuilder(UTags.INTERESTING).add(
+        getOrCreateTagBuilder(UTags.Blocks.INTERESTING).add(
                 Blocks.SEA_LANTERN, Blocks.ENDER_CHEST, Blocks.END_PORTAL_FRAME,
                 Blocks.JUKEBOX, Blocks.SPAWNER
         ).forceAddTag(ConventionalBlockTags.ORES);
 
-        getOrCreateTagBuilder(UTags.KICKS_UP_DUST).forceAddTag(BlockTags.SAND).add(
+        getOrCreateTagBuilder(UTags.Blocks.KICKS_UP_DUST).forceAddTag(BlockTags.SAND).add(
                 Blocks.SUSPICIOUS_SAND,
                 Blocks.GRAVEL, Blocks.SUSPICIOUS_GRAVEL
         ).forceAddTag(TagKey.of(RegistryKeys.BLOCK, new Identifier("c", "concrete_powders")));
 
-        getOrCreateTagBuilder(UTags.UNAFFECTED_BY_GROW_ABILITY).add(Blocks.GRASS_BLOCK);
+        getOrCreateTagBuilder(UTags.Blocks.UNAFFECTED_BY_GROW_ABILITY).add(Blocks.GRASS_BLOCK);
     }
 
     private void addFruitTrees() {
@@ -112,7 +112,7 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
 
     private void addZapWoodset() {
         getOrCreateTagBuilder(BlockTags.LEAVES).add(UBlocks.ZAP_LEAVES, UBlocks.FLOWERING_ZAP_LEAVES);
-        getOrCreateTagBuilder(UTags.POLEARM_MINEABLE).add(
+        getOrCreateTagBuilder(UTags.Blocks.POLEARM_MINEABLE).add(
                 UBlocks.ZAP_LEAVES, UBlocks.FLOWERING_ZAP_LEAVES,
                 UBlocks.ZAP_PLANKS,
                 UBlocks.ZAP_LOG, UBlocks.ZAP_WOOD, UBlocks.STRIPPED_ZAP_LOG, UBlocks.STRIPPED_ZAP_WOOD,

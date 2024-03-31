@@ -103,7 +103,7 @@ public class ZapAppleItem extends Item implements ChameleonItem, MultiItem {
     public List<ItemStack> getDefaultStacks() {
         return Unicopia.SIDE.getPony().map(Pony::asWorld)
                 .stream()
-                .flatMap(world -> RegistryUtils.valuesForTag(world, UConventionalTags.APPLES))
+                .flatMap(world -> RegistryUtils.valuesForTag(world, UConventionalTags.Items.APPLES))
                 .filter(a -> a != this).map(item -> {
             ItemStack stack = new ItemStack(this);
             stack.getOrCreateNbt().putString("appearance", Registries.ITEM.getId(item).toString());

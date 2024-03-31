@@ -41,7 +41,7 @@ public class PolearmItem extends SwordItem {
 
     @Override
     public boolean isSuitableFor(BlockState state) {
-        return state.isIn(UTags.POLEARM_MINEABLE);
+        return state.isIn(UTags.Blocks.POLEARM_MINEABLE);
     }
 
     @Override

@@ -194,7 +194,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private FlightType recalculateFlightType() {
         DimensionType dimension = entity.getWorld().getDimension();
 
-        if ((RegistryUtils.isIn(entity.getWorld(), dimension, RegistryKeys.DIMENSION_TYPE, UTags.HAS_NO_ATMOSPHERE)
+        if ((RegistryUtils.isIn(entity.getWorld(), dimension, RegistryKeys.DIMENSION_TYPE, UTags.DimensionTypes.HAS_NO_ATMOSPHERE)
                 || Unicopia.getConfig().dimensionsWithoutAtmosphere.get().contains(RegistryUtils.getId(entity.getWorld(), dimension, RegistryKeys.DIMENSION_TYPE).toString()))
                 && !OxygenUtils.API.hasOxygen(entity)) {
             return FlightType.NONE;
@@ -582,7 +582,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         if (entity.isOnGround() || !force) {
             BlockState steppingState = pony.asEntity().getSteppingBlockState();
-            if (steppingState.isIn(UTags.KICKS_UP_DUST)) {
+            if (steppingState.isIn(UTags.Blocks.KICKS_UP_DUST)) {
                 pony.addParticle(new BlockStateParticleEffect(UParticles.DUST_CLOUD, steppingState), pony.getOrigin().toCenterPos(), Vec3d.ZERO);
             } else {
                 Supplier<Vec3d> pos = VecHelper.sphere(pony.asWorld().getRandom(), 0.5D);

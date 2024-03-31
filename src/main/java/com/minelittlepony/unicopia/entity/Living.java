@@ -310,7 +310,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                     ItemStack payload = stack.payload();
                     Item item = payload.getItem();
 
-                    boolean deliverAggressively = payload.isIn(UTags.IS_DELIVERED_AGGRESSIVELY);
+                    boolean deliverAggressively = payload.isIn(UTags.Items.IS_DELIVERED_AGGRESSIVELY);
 
                     Vec3d randomPos = deliverAggressively ? targetPos.add(0, 2, 0) : targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
 
@@ -400,7 +400,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                 this.attacker = attacker;
             }
 
-            if (magical.isIn(UTags.BREAKS_SUNGLASSES)) {
+            if (magical.isIn(UTags.DamageTypes.BREAKS_SUNGLASSES)) {
                 ItemStack glasses = GlassesItem.getForEntity(entity);
                 if (glasses.getItem() == UItems.SUNGLASSES) {
                     ItemStack broken = UItems.BROKEN_SUNGLASSES.getDefaultStack();

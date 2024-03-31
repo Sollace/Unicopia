@@ -108,7 +108,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
             }
         }
 
-        if (w.getBlockState(pos).isIn(UTags.UNAFFECTED_BY_GROW_ABILITY)) {
+        if (w.getBlockState(pos).isIn(UTags.Blocks.UNAFFECTED_BY_GROW_ABILITY)) {
             return 0;
         }
 
