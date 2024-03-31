@@ -1,14 +1,24 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
+import java.util.Arrays;
+
+import org.jetbrains.annotations.Nullable;
+
+import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.block.ItemJarBlock;
-import com.minelittlepony.unicopia.block.ItemJarBlock.EntityJarContents;
-import com.minelittlepony.unicopia.block.ItemJarBlock.ItemsJarContents;
-import com.minelittlepony.unicopia.client.render.RenderUtil;
+import com.minelittlepony.unicopia.block.ItemJarBlock.FluidJarContents;
+import com.minelittlepony.unicopia.block.jar.ItemsJarContents;
+import com.minelittlepony.unicopia.block.jar.FakeFluidJarContents;
+import com.minelittlepony.unicopia.block.jar.EntityJarContents;
+import com.minelittlepony.unicopia.client.render.model.CubeModel;
+import com.minelittlepony.unicopia.util.FluidHelper;
 import com.minelittlepony.unicopia.util.PosHelper;
 
-import net.minecraft.block.Blocks;
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandler;
+import net.fabricmc.fabric.api.client.render.fluid.v1.FluidRenderHandlerRegistry;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.color.world.BiomeColors;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -20,8 +30,12 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.command.argument.EntityAnchorArgumentType.EntityAnchor;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
@@ -29,16 +43,13 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class ItemJarBlockEntityRenderer implements BlockEntityRenderer<ItemJarBlock.TileData> {
-
+    private static final Direction[] GLASS_SIDES = Arrays.stream(PosHelper.ALL).filter(i -> i != Direction.UP).toArray(Direction[]::new);
     private final ItemRenderer itemRenderer;
     private final EntityRenderDispatcher dispatcher;
-
-    private final Sprite waterSprite;
 
     public ItemJarBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
         itemRenderer = ctx.getItemRenderer();
         dispatcher = ctx.getEntityRenderDispatcher();
-        waterSprite = MinecraftClient.getInstance().getBakedModelManager().getBlockModels().getModel(Blocks.WATER.getDefaultState()).getParticleSprite();
     }
 
     @Override
@@ -53,6 +64,16 @@ public class ItemJarBlockEntityRenderer implements BlockEntityRenderer<ItemJarBl
         if (entity != null) {
             renderEntity(data, entity, tickDelta, matrices, vertices, light, overlay);
         }
+
+        FluidJarContents fluid = data.getFluid();
+        if (fluid != null) {
+            renderFluid(data, fluid, tickDelta, matrices, vertices, light, overlay);
+        }
+
+        FakeFluidJarContents milk = data.getFakeFluid();
+        if (milk != null) {
+            renderFluid(data, Fluids.WATER.getDefaultState(), milk.color(), FluidConstants.BUCKET, tickDelta, matrices, vertices, light, overlay);
+        }
     }
 
     private void renderItemStacks(ItemJarBlock.TileData data, ItemsJarContents items, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
@@ -66,7 +87,7 @@ public class ItemJarBlockEntityRenderer implements BlockEntityRenderer<ItemJarBl
         Random rng = Random.create(data.getPos().asLong());
 
         float y = 0;
-        for (ItemStack stack : items.getStacks()) {
+        for (ItemStack stack : items.stacks()) {
             matrices.push();
 
             matrices.translate((rng.nextFloat() - 0.5F) * 0.5F, (rng.nextFloat() - 0.5F) * 0.8F, -0.05 + y);
@@ -80,9 +101,8 @@ public class ItemJarBlockEntityRenderer implements BlockEntityRenderer<ItemJarBl
     }
 
     private void renderEntity(ItemJarBlock.TileData data, EntityJarContents entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
-        Entity e = entity.getOrCreateEntity();
+        Entity e = entity.entity().get();
         if (e != null) {
-
 
             PlayerEntity player = MinecraftClient.getInstance().player;
             int age = player == null ? 0 : player.age;
@@ -109,20 +129,57 @@ public class ItemJarBlockEntityRenderer implements BlockEntityRenderer<ItemJarBl
             dispatcher.render(e, 0, 0, 0, yaw * MathHelper.RADIANS_PER_DEGREE, tickDelta, matrices, vertices, light);
             matrices.pop();
         }
-        renderFluid(data.getWorld(), data.getPos(), tickDelta, matrices, vertices, light, overlay);
     }
 
-    private void renderFluid(World world, BlockPos pos, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    private void renderFluid(ItemJarBlock.TileData data, FluidJarContents fluid, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        FluidState state = FluidHelper.getFullFluidState(fluid.fluid());
+        int color = getFluidColor(data.getWorld(), data.getPos(), state);
+        renderFluid(data, state, color, fluid.amount(), tickDelta, matrices, vertices, light, overlay);
+    }
+
+    private void renderFluid(ItemJarBlock.TileData data, FluidState state, int color, long amount, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+        Sprite[] sprite = getFluidSprite(data.getWorld(), data.getPos(), state);
         matrices.push();
-        matrices.translate(0.3F, 0, 0.3F);
-        RenderUtil.renderSpriteCubeFaces(
+        Sprite topSprite = sprite[0];
+        float height = 0.6F * (amount / (float)FluidConstants.BUCKET);
+        boolean opaque = Color.a(color) >= 1;
+        CubeModel.render(
                 matrices,
-                vertices,
-                waterSprite,
-                0.4F, 0.4F, 0.4F,
-                BiomeColors.getWaterColor(world, pos),
-                light, overlay, PosHelper.ALL
+                vertices.getBuffer(opaque ? RenderLayer.getEntitySolid(topSprite.getAtlasId()) : RenderLayer.getEntityTranslucent(topSprite.getAtlasId())),
+                topSprite.getMinU(), topSprite.getMinV(),
+                topSprite.getMaxU(), topSprite.getMaxV(),
+                0.28F, 0.01F, 0.28F,
+                0.73F, 0.01F + height, 0.73F,
+                color,
+                light, overlay, Direction.UP
+        );
+        Sprite sideSprite = sprite[sprite.length - 1];
+        CubeModel.render(
+                matrices,
+                vertices.getBuffer(opaque ? RenderLayer.getEntitySolid(sideSprite.getAtlasId()) : RenderLayer.getEntityTranslucent(sideSprite.getAtlasId())),
+                sideSprite.getMinU(), sideSprite.getMinV(),
+                sideSprite.getMaxU(), sideSprite.getMaxV(),
+                0.28F, 0.01F, 0.28F,
+                0.73F, 0.01F + height, 0.73F,
+                color,
+                light, overlay, GLASS_SIDES
         );
         matrices.pop();
+    }
+
+    private int getFluidColor(World world, BlockPos pos, FluidState state) {
+        return getFluidHandler(state.getFluid()).getFluidColor(world, pos, state);
+    }
+
+    private Sprite[] getFluidSprite(@Nullable World world, BlockPos pos, FluidState state) {
+        return getFluidHandler(state.getFluid()).getFluidSprites(world, pos, state);
+    }
+
+    private FluidRenderHandler getFluidHandler(Fluid fluid) {
+        FluidRenderHandler handler = FluidRenderHandlerRegistry.INSTANCE.get(fluid);
+        if (handler == null) {
+            return FluidRenderHandlerRegistry.INSTANCE.get(Fluids.WATER);
+        }
+        return handler;
     }
 }

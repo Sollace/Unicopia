@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia.datagen.providers.loot;
 
 import java.util.List;
+
+import com.minelittlepony.unicopia.block.PieBlock;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.datagen.providers.UModelProvider;
 import com.minelittlepony.unicopia.item.UItems;
@@ -14,14 +16,21 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
+import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
+import net.minecraft.loot.condition.LootConditionConsumingBuilder;
 import net.minecraft.loot.condition.TableBonusLootCondition;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
+import net.minecraft.predicate.StatePredicate;
+import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.Property;
+import net.minecraft.util.StringIdentifiable;
 
 public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
 
@@ -116,6 +125,7 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         addDrop(UBlocks.CLOUD_PILLAR, drops(UBlocks.CLOUD_PILLAR, UBlocks.CLOUD, ConstantLootNumberProvider.create(2)));
 
         addDrop(UBlocks.FROSTED_OBSIDIAN, Blocks.OBSIDIAN);
+        addDrop(UBlocks.APPLE_PIE, pieDrops(UBlocks.APPLE_PIE, UItems.APPLE_PIE, UItems.APPLE_PIE_HOOF));
     }
 
     private LootTable.Builder fruitLeavesDrops(Block leaves) {
@@ -136,4 +146,23 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
             );
     }
 
+    private LootTable.Builder pieDrops(Block block, Item drop, Item stomped) {
+        return LootTable.builder().pool(LootPool.builder()
+            .rolls(ConstantLootNumberProvider.create(1)).conditionally(WITH_SILK_TOUCH)
+            .with(addStateCondition(block, PieBlock.STOMPED, false, applyExplosionDecay(block, ItemEntry.builder(drop))))
+            .with(addStateCondition(block, PieBlock.STOMPED, true, applyExplosionDecay(block, ItemEntry.builder(stomped))))
+        );
+    }
+
+    public static <T extends LootConditionConsumingBuilder<T>, P extends Comparable<P> & StringIdentifiable> T addStateCondition(Block block,
+            Property<P> property, P value,
+            LootConditionConsumingBuilder<T> builder) {
+        return builder.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(property, value)));
+    }
+
+    public static <T extends LootConditionConsumingBuilder<T>> T addStateCondition(Block block,
+            BooleanProperty property, boolean value,
+            LootConditionConsumingBuilder<T> builder) {
+        return builder.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(property, value)));
+    }
 }
