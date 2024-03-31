@@ -1,7 +1,9 @@
-package com.minelittlepony.unicopia.datagen.providers;
+package com.minelittlepony.unicopia.datagen.providers.tag;
 
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 
+import com.minelittlepony.unicopia.UConventionalTags;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.UBlocks;
@@ -12,12 +14,14 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagBuilder;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 
 public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
@@ -32,6 +36,7 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
 
     @Override
     protected void configure(WrapperLookup registries) {
+        populateConventionalTags();
         Block[] crops = {
                 UBlocks.OATS, UBlocks.OATS_STEM, UBlocks.OATS_CROWN,
                 UBlocks.ROCKS, UBlocks.PINEAPPLE,
@@ -204,5 +209,10 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
 
         getOrCreateTagBuilder(BlockTags.CEILING_HANGING_SIGNS).add(hanging);
         getOrCreateTagBuilder(BlockTags.WALL_HANGING_SIGNS).add(wallHanging);
+    }
+
+    private void populateConventionalTags() {
+        getOrCreateTagBuilder(UConventionalTags.Blocks.CONCRETES).add(Arrays.stream(DyeColor.values()).map(i -> Registries.BLOCK.get(new Identifier(i.getName() + "_concrete"))).toArray(Block[]::new));
+        getOrCreateTagBuilder(UConventionalTags.Blocks.CONCRETE_POWDERS).add(Arrays.stream(DyeColor.values()).map(i -> Registries.BLOCK.get(new Identifier(i.getName() + "_concrete_powder"))).toArray(Block[]::new));
     }
 }

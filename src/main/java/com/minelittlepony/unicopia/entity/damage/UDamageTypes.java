@@ -1,18 +1,14 @@
 package com.minelittlepony.unicopia.entity.damage;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.util.registry.DynamicRegistry;
 
-import net.fabricmc.fabric.api.event.registry.DynamicRegistrySetupCallback;
 import net.minecraft.entity.damage.DamageType;
-import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 
 public interface UDamageTypes {
-    List<RegistryKey<DamageType>> REGISTRY = new ArrayList<>();
+    DynamicRegistry<DamageType> REGISTRY = new DynamicRegistry<>(RegistryKeys.DAMAGE_TYPE, key -> new DamageType(key.getValue().getNamespace() + "." + key.getValue().getPath(), 0));
 
     RegistryKey<DamageType> EXHAUSTION = register("magical_exhaustion");
     RegistryKey<DamageType> ALICORN_AMULET = register("alicorn_amulet");
@@ -34,18 +30,8 @@ public interface UDamageTypes {
     RegistryKey<DamageType> SPIKES = register("spikes");
 
     private static RegistryKey<DamageType> register(String name) {
-        var key = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Unicopia.id(name));
-        REGISTRY.add(key);
-        return key;
+        return REGISTRY.register(Unicopia.id(name));
     }
 
-    static void bootstrap() {
-        DynamicRegistrySetupCallback.EVENT.register(registries -> {
-            registries.getOptional(RegistryKeys.DAMAGE_TYPE).ifPresent(registry -> {
-                REGISTRY.forEach(key -> {
-                    Registry.register(registry, key.getValue(), new DamageType(key.getValue().getNamespace() + "." + key.getValue().getPath(), 0));
-                });
-            });
-        });
-    }
+    static void bootstrap() {}
 }

@@ -35,4 +35,14 @@ public interface UConventionalTags {
     static TagKey<Block> block(String name) {
         return TagKey.of(RegistryKeys.BLOCK, new Identifier("c", name));
     }
+
+    interface Blocks {
+        TagKey<Block> CONCRETE_POWDERS = block("concrete_powders");
+        TagKey<Block> CONCRETES = block("concretes");
+    }
+
+    interface Items {
+        TagKey<Item> CONCRETE_POWDERS = item("concrete_powders");
+        TagKey<Item> CONCRETES = item("concretes");
+    }
 }
