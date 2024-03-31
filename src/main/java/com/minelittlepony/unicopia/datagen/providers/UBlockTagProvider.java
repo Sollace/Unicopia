@@ -40,6 +40,7 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         };
 
         getOrCreateTagBuilder(UTags.CATAPULT_IMMUNE).add(Blocks.BEDROCK).forceAddTag(BlockTags.DOORS).forceAddTag(BlockTags.TRAPDOORS);
+        getOrCreateTagBuilder(UTags.Blocks.BUTTERFLIES_SPAWNABLE_ON).forceAddTag(BlockTags.ANIMALS_SPAWNABLE_ON).forceAddTag(BlockTags.LEAVES).forceAddTag(BlockTags.FLOWERS).forceAddTag(BlockTags.FLOWER_POTS);
         getOrCreateTagBuilder(UTags.JARS).add(UBlocks.JAR, UBlocks.CLOUD_JAR, UBlocks.STORM_JAR, UBlocks.LIGHTNING_JAR, UBlocks.ZAP_JAR);
         getOrCreateTagBuilder(BlockTags.CROPS).add(crops);
         getOrCreateTagBuilder(BlockTags.BEE_GROWABLES).add(crops);

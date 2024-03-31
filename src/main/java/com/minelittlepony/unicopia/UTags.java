@@ -83,6 +83,8 @@ public interface UTags {
         TagKey<Block> CLOUD_STAIRS = block("cloud_stairs");
         TagKey<Block> CLOUD_BLOCKS = block("cloud_blocks");
         TagKey<Block> CHITIN_BLOCKS = block("chitin_blocks");
+
+        TagKey<Block> BUTTERFLIES_SPAWNABLE_ON = block("butterflies_spawn_on");
     }
 
     static TagKey<Item> item(String name) {
