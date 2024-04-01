@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#c:cooked_meats",
+    "#c:cooked_meat",
     { "id": "farmersdelight:chicken_soup", "required": false },
     { "id": "farmersdelight:bacon_and_eggs", "required": false },
     { "id": "farmersdelight:pasta_with_meatballs", "required": false },

@@ -10,6 +10,10 @@ public interface UConventionalTags {
     interface Blocks {
         TagKey<Block> CONCRETE_POWDERS = block("concrete_powders");
         TagKey<Block> CONCRETES = block("concretes");
+        TagKey<Block> GLAZED_TERRACOTTAS = block("glazed_terracottas");
+        TagKey<Block> CORAL_BLOCKS = block("coral_blocks");
+        TagKey<Block> CORAL_FANS = block("coral_fans");
+        TagKey<Block> CORALS = block("corals");
 
         private static TagKey<Block> block(String name) {
             return TagKey.of(RegistryKeys.BLOCK, new Identifier("c", name));
@@ -19,6 +23,10 @@ public interface UConventionalTags {
     interface Items {
         TagKey<Item> CONCRETE_POWDERS = item("concrete_powders");
         TagKey<Item> CONCRETES = item("concretes");
+        TagKey<Item> GLAZED_TERRACOTTAS = item("glazed_terracottas");
+        TagKey<Item> CORAL_BLOCKS = item("coral_blocks");
+        TagKey<Item> CORAL_FANS = item("coral_fans");
+        TagKey<Item> CORALS = item("corals");
 
         TagKey<Item> APPLES = item("apples");
         TagKey<Item> ACORNS = item("acorns");
@@ -35,8 +43,18 @@ public interface UConventionalTags {
         TagKey<Item> OATMEALS = item("oatmeals");
 
         TagKey<Item> FRUITS = item("fruits");
+        TagKey<Item> WORMS = item("worms");
+        TagKey<Item> ROCKS = item("rocks");
 
+        TagKey<Item> RAW_INSECT = item("raw_insect");
+        TagKey<Item> COOKED_INSECT = item("cooked_insect");
+
+        TagKey<Item> RAW_FISH = item("raw_fish");
         TagKey<Item> COOKED_FISH = item("cooked_fish");
+        TagKey<Item> ROTTEN_FISH = item("rotten_fish");
+        TagKey<Item> RAW_MEAT = item("raw_meat");
+        TagKey<Item> COOKED_MEAT = item("cooked_meat");
+        TagKey<Item> ROTTEN_MEAT = item("rotten_meat");
 
         TagKey<Item> CROPS_PEANUTS = item("crops/peanuts");
         TagKey<Item> TOOL_KNIVES = item("tools/knives");

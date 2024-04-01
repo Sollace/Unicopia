@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#c:raw_meats",
+    "#c:raw_meat",
     { "id": "farmersdelight:ham", "required": false }
   ]
 }

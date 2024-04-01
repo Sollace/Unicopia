@@ -8,7 +8,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 
 public class EnchantedFruitBlock extends FruitBlock {
-    static final BooleanProperty ENCHANTED = BooleanProperty.of("enchanted");
+    public static final BooleanProperty ENCHANTED = BooleanProperty.of("enchanted");
 
     public EnchantedFruitBlock(Settings settings, Direction attachmentFace, Block stem, VoxelShape shape) {
         super(settings, attachmentFace, stem, shape);

@@ -3,54 +3,54 @@
   "foraging_multiplier": 0.9,
   "multipliers": [
     {
-      "tags": [ "unicopia:food_types/cooked_fish" ],
+      "tags": [ "unicopia:fish/cooked" ],
       "hunger": 0.75,
       "saturation": 0.75
     },
     {
-      "tags": [ "unicopia:food_types/raw_fish" ],
+      "tags": [ "unicopia:fish/raw" ],
       "hunger": 0.5,
       "saturation": 0.6
     },
     {
-      "tags": [ "unicopia:food_types/cooked_insect" ],
+      "tags": [ "unicopia:insect/cooked" ],
       "hunger": 1.75,
       "saturation": 1.75
     },
     {
-      "tags": [ "unicopia:food_types/cooked_meat" ],
+      "tags": [ "unicopia:meat/cooked" ],
       "hunger": 1.15,
       "saturation": 1.15
     },
     {
-      "tags": [ "unicopia:food_types/raw_insect" ],
+      "tags": [ "unicopia:insect/raw" ],
       "hunger": 1,
       "saturation": 1
     },
     {
-      "tags": [ "unicopia:food_types/raw_meat" ],
+      "tags": [ "unicopia:meat/raw" ],
       "hunger": 0.25,
       "saturation": 0.25
     },
     {
-      "tags": [ "unicopia:food_types/rotten_meat" ],
+      "tags": [ "unicopia:meat/rotten" ],
       "hunger": 0.2,
       "saturation": 0.2
     },
     {
-      "tags": [ "unicopia:food_types/love" ],
+      "tags": [ "unicopia:love" ],
       "hunger": 0,
       "saturation": 0
     },
     {
-      "tags": [ "unicopia:food_types/pinecone" ],
+      "tags": [ "unicopia:pinecone" ],
       "hunger": 0.9,
       "saturation": 0.9
     }
   ],
   "effects": [
     {
-      "tags": [ "unicopia:food_types/rotten_fish" ],
+      "tags": [ "unicopia:fish/rotten" ],
       "ailment": {
         "effects": [
           {
@@ -64,15 +64,15 @@
     },
     {
       "tags": [
-        "unicopia:food_types/cooked_insect",
-        "unicopia:food_types/cooked_meat"
+        "unicopia:insect/cooked",
+        "unicopia:meat/cooked"
       ],
       "ailment": {
         "effects": [ ]
       }
     },
     {
-      "tags": [ "unicopia:food_types/raw_insect" ],
+      "tags": [ "unicopia:insect/raw" ],
       "ailment": {
         "effects": [
           {
@@ -85,8 +85,8 @@
     },
     {
       "tags": [
-        "unicopia:food_types/raw_meat",
-        "unicopia:food_types/rotten_meat"
+        "unicopia:meat/raw",
+        "unicopia:meat/rotten"
       ],
       "ailment": {
         "effects": [
@@ -100,7 +100,7 @@
       }
     },
     {
-      "tags": [ "unicopia:food_types/bat_ponys_delight" ],
+      "tags": [ "unicopia:bat_ponys_delight" ],
       "ailment": {
         "effects": [
           {

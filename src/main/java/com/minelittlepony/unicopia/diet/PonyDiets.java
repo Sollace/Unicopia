@@ -18,35 +18,41 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class PonyDiets implements DietView {
     private final Map<Race, DietProfile> diets;
-    private final List<Effect> effects;
+    private final Map<Identifier, Effect> effects;
 
-    private static PonyDiets INSTANCE = new PonyDiets(Map.of(), List.of());
+    private static PonyDiets INSTANCE = new PonyDiets(Map.of(), Map.of());
 
     public static PonyDiets getInstance() {
         return INSTANCE;
+    }
+
+    @Nullable
+    static Effect getEffect(Identifier id) {
+        return INSTANCE.effects.get(id);
     }
 
     public static void load(PonyDiets diets) {
         INSTANCE = diets;
     }
 
-    PonyDiets(Map<Race, DietProfile> diets, List<Effect> effects) {
+    PonyDiets(Map<Race, DietProfile> diets, Map<Identifier, Effect> effects) {
         this.diets = diets;
         this.effects = effects;
     }
 
     public PonyDiets(PacketByteBuf buffer) {
-        this(buffer.readMap(b -> b.readRegistryValue(Race.REGISTRY), DietProfile::new), buffer.readList(Effect::new));
+        this(buffer.readMap(b -> b.readRegistryValue(Race.REGISTRY), DietProfile::new), buffer.readMap(PacketByteBuf::readIdentifier, b -> new Effect(b, FoodGroupKey.TAG_ID_LOOKUP)));
     }
 
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeMap(diets, (b, r) -> b.writeRegistryValue(Race.REGISTRY, r), (b, e) -> e.toBuffer(b));
-        buffer.writeCollection(effects, (b, e) -> e.toBuffer(b));
+        buffer.writeMap(effects, PacketByteBuf::writeIdentifier, (b, e) -> e.toBuffer(b));
     }
 
     private DietProfile getDiet(Pony pony) {
@@ -54,7 +60,7 @@ public class PonyDiets implements DietView {
     }
 
     Effect getEffects(ItemStack stack) {
-        return effects.stream().filter(effect -> effect.test(stack)).findFirst().orElse(Effect.EMPTY);
+        return effects.values().stream().filter(effect -> effect.test(stack)).findFirst().orElse(Effect.EMPTY);
     }
 
     private Effect getEffects(ItemStack stack, Pony pony) {

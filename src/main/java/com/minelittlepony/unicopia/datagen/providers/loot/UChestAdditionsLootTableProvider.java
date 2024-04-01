@@ -24,6 +24,10 @@ public class UChestAdditionsLootTableProvider extends SimpleFabricLootTableProvi
         super(dataOutput, LootContextTypes.CHEST);
     }
 
+    @Override
+    public String getName() {
+        return super.getName() + " Additions";
+    }
 
     @Override
     public void accept(BiConsumer<Identifier, Builder> exporter) {

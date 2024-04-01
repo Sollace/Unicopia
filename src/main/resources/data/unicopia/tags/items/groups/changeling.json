@@ -12,10 +12,10 @@
     "unicopia:mysterious_egg",
     "unicopia:hive",
     "unicopia:dark_oak_stable_door",
-    "#unicopia:food_types/cooked_meat",
+    "#c:cooked_meat",
     "#unicopia:food_types/raw_meat",
-    "#unicopia:food_types/raw_insect",
-    "#unicopia:food_types/rotten_meat",
-    "#unicopia:food_types/love"
+    "#c:raw_insect",
+    "#c:rotten_meat",
+    "#unicopia:container_with_love"
   ]
 }

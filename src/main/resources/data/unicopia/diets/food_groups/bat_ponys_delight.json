@@ -1,0 +1,10 @@
+{
+  "tags": [ "unicopia:food_types/bat_ponys_delight" ],
+  "food_component": {
+    "hunger": 1,
+    "saturation": 0.1
+  },
+  "ailment": {
+    "effects": []
+  }
+}

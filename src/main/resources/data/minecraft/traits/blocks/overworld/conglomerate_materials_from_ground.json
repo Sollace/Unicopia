@@ -3,7 +3,7 @@
   "traits": "earth:1 order:1 knowledge:4",
   "items": [
     "#minecraft:terracotta",
-    "#c:concrete",
-    "#c:glazed_terracotta"
+    "#c:concretes",
+    "#c:glazed_terracottas"
   ]
 }

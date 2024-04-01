@@ -204,4 +204,8 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
         return state.getBlock() == this || (nextSegmentSupplier != null && nextSegmentSupplier.get().isNext(state));
     }
 
+    @Nullable
+    public SegmentedCropBlock getNext() {
+        return nextSegmentSupplier == null ? null : nextSegmentSupplier.get();
+    }
 }

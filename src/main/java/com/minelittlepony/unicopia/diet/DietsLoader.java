@@ -1,12 +1,9 @@
 package com.minelittlepony.unicopia.diet;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-
 import org.slf4j.Logger;
 
 import com.google.gson.JsonElement;
@@ -36,9 +33,24 @@ public class DietsLoader implements IdentifiableResourceReloadListener {
             Profiler prepareProfiler, Profiler applyProfiler,
             Executor prepareExecutor, Executor applyExecutor) {
 
-        var dietsLoadTask = loadData(manager, prepareExecutor, "diets/races").thenApplyAsync(data -> {
+        CompletableFuture<Map<Identifier, Effect>> foodGroupsFuture = CompletableFuture.supplyAsync(() -> {
+            Map<Identifier, Effect> foodGroups = new HashMap<>();
+            for (var group : loadData(manager, prepareExecutor, "diets/food_groups").entrySet()) {
+                try {
+                    Effect.CODEC.parse(JsonOps.INSTANCE, group.getValue())
+                        .resultOrPartial(error -> LOGGER.error("Could not load food group {}: {}", group.getKey(), error))
+                        .ifPresent(value -> {
+                            foodGroups.put(group.getKey(), value);
+                        });
+                } catch (Throwable t) {
+                    LOGGER.error("Could not load food effects {}", group.getKey(), t);
+                }
+            }
+            return foodGroups;
+        }, prepareExecutor);
+        CompletableFuture<Map<Race, DietProfile>> profilesFuture = CompletableFuture.supplyAsync(() -> {
             Map<Race, DietProfile> profiles = new HashMap<>();
-            for (var entry : data.entrySet()) {
+            for (var entry : loadData(manager, prepareExecutor, "diets/races").entrySet()) {
                 Identifier id = entry.getKey();
                 try {
                     Race.REGISTRY.getOrEmpty(id).ifPresentOrElse(race -> {
@@ -53,33 +65,26 @@ public class DietsLoader implements IdentifiableResourceReloadListener {
             return profiles;
         }, prepareExecutor);
 
-        var effectsLoadTask = loadData(manager, prepareExecutor, "diets/food_effects").thenApplyAsync(data -> data.entrySet().stream()
-                    .map(entry -> {
-                        try {
-                        return Effect.CODEC.parse(JsonOps.INSTANCE, entry.getValue())
-                                .resultOrPartial(error -> LOGGER.error("Could not load food effect {}: {}", entry.getKey(), error));
-                        } catch (Throwable t) {
-                            LOGGER.error("Could not load food effects {}", entry.getKey(), t);
-                        }
-                        return Optional.<Effect>empty();
-                    })
-                            .filter(Optional::isPresent)
-                            .map(Optional::get)
-                            .toList(), prepareExecutor);
-
-        return CompletableFuture.allOf(dietsLoadTask, effectsLoadTask).thenCompose(sync::whenPrepared).thenRunAsync(() -> {
-            PonyDiets.load(new PonyDiets(
-                    dietsLoadTask.getNow(Map.of()),
-                    effectsLoadTask.getNow(List.of())
-            ));
+        return CompletableFuture.allOf(foodGroupsFuture, profilesFuture).thenCompose(sync::whenPrepared).thenAcceptAsync(v -> {
+            var profiles = profilesFuture.getNow(Map.of());
+            var foodGroups = foodGroupsFuture.getNow(Map.of());
+            profiles.entrySet().removeIf(entry -> {
+                StringBuilder issueList = new StringBuilder();
+                entry.getValue().validate(issue -> {
+                    issueList.append(System.lineSeparator()).append(issue);
+                }, foodGroups::containsKey);
+                if (!issueList.isEmpty()) {
+                    LOGGER.error("Could not load diet profile {}. Caused by {}", entry.getKey(), issueList.toString());
+                }
+                return issueList.isEmpty();
+            });
+            PonyDiets.load(new PonyDiets(profiles, foodGroups));
         }, applyExecutor);
     }
 
-    private static CompletableFuture<Map<Identifier, JsonElement>> loadData(ResourceManager manager, Executor prepareExecutor, String path) {
-        return CompletableFuture.supplyAsync(() -> {
-            Map<Identifier, JsonElement> results = new HashMap<>();
-            JsonDataLoader.load(manager, path, Resources.GSON, results);
-            return results;
-        });
+    private static Map<Identifier, JsonElement> loadData(ResourceManager manager, Executor prepareExecutor, String path) {
+        Map<Identifier, JsonElement> results = new HashMap<>();
+        JsonDataLoader.load(manager, path, Resources.GSON, results);
+        return results;
     }
 }

@@ -4,33 +4,33 @@
   "multipliers": [
     {
       "tags": [
-        "unicopia:food_types/cooked_insect",
-        "unicopia:food_types/cooked_meat",
-        "unicopia:food_types/cooked_fish"
+        "unicopia:insect/cooked",
+        "unicopia:meat/cooked",
+        "unicopia:fish/cooked"
       ],
       "hunger": 0.1,
       "saturation": 0.1
     },
     {
       "tags": [
-        "unicopia:food_types/baked_goods"
+        "unicopia:baked_goods"
       ],
       "hunger": 1,
       "saturation": 1
     },
     {
       "tags": [
-        "unicopia:food_types/love",
-        "unicopia:food_types/raw_insect",
-        "unicopia:food_types/raw_meat",
-        "unicopia:food_types/raw_fish",
-        "unicopia:food_types/rotten_meat"
+        "unicopia:love",
+        "unicopia:insect/raw",
+        "unicopia:meat/raw",
+        "unicopia:fish/raw",
+        "unicopia:meat/rotten"
       ],
       "hunger": 0,
       "saturation": 0
     },
     {
-      "tags": [ "unicopia:food_types/pinecone" ],
+      "tags": [ "unicopia:pinecone" ],
       "hunger": 0.9,
       "saturation": 0.9
     }

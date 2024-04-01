@@ -1,0 +1,11 @@
+{
+  "tags": [ "unicopia:food_types/raw_sea_vegitable" ],
+  "food_component": {
+    "hunger": 0,
+    "saturation": 0
+  },
+  "ailment": {
+    "effects": [
+    ]
+  }
+}

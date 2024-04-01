@@ -3,14 +3,13 @@
   "foraging_multiplier": 0.7,
   "multipliers": [
     {
-      "tags": [ "unicopia:food_types/raw_sea_vegitable" ],
+      "tags": [ "unicopia:sea_vegetable/raw" ],
       "hunger": 1,
       "saturation": 1
     },
     {
       "tags": [
-        "unicopia:food_types/shells",
-        "unicopia:food_types/shelly"
+        "unicopia:shells", "unicopia:shelly"
       ],
       "hunger": 1,
       "saturation": 1
@@ -27,21 +26,21 @@
   },
   "effects": [
     {
-      "tags": [ "unicopia:food_types/cooked_fish" ],
+      "tags": [ "unicopia:fish/cooked" ],
       "ailment": {
         "effects": [ ]
       }
     },
     {
-      "tags": [ "unicopia:food_types/raw_fish" ],
+      "tags": [ "unicopia:fish/raw" ],
       "ailment": {
         "effects": [ ]
       }
     },
     {
       "tags": [
-        "unicopia:food_types/forage_edible",
-        "unicopia:food_types/forage_edible_filling"
+        "unicopia:foraging/edible",
+        "unicopia:foraging/edible_filling"
       ],
       "food_component": {
         "hunger": 18,
@@ -58,7 +57,7 @@
       }
     },
     {
-      "tags": [ "unicopia:food_types/raw_sea_vegitable" ],
+      "tags": [ "unicopia:sea_vegetable/raw" ],
       "food_component": {
         "hunger": 2,
         "saturation": 1
@@ -68,7 +67,7 @@
       }
     },
     {
-      "tags": [ "unicopia:food_types/cooked_sea_vegitable" ],
+      "tags": [ "unicopia:sea_vegetable/cooked" ],
       "food_component": {
         "hunger": 6,
         "saturation": 2
@@ -78,7 +77,7 @@
       }
     },
     {
-      "tags": [ "unicopia:food_types/shells" ],
+      "tags": [ "unicopia:shells" ],
       "food_component": {
         "hunger": 3,
         "saturation": 5
@@ -88,7 +87,7 @@
       }
     },
     {
-      "tags": [ "unicopia:food_types/shelly" ],
+      "tags": [ "unicopia:shelly" ],
       "food_component": {
         "hunger": 6,
         "saturation": 7

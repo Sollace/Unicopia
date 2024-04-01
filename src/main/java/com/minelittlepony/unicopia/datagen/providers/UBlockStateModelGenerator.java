@@ -16,6 +16,7 @@ import com.minelittlepony.unicopia.block.ShellsBlock;
 import com.minelittlepony.unicopia.block.SlimePustuleBlock;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.zap.ZapAppleLeavesBlock;
+import com.minelittlepony.unicopia.datagen.Datagen;
 import com.minelittlepony.unicopia.datagen.UBlockFamilies;
 import com.minelittlepony.unicopia.server.world.Tree;
 
@@ -41,7 +42,6 @@ import net.minecraft.data.client.When;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
@@ -429,9 +429,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         Identifier side = baseBlockId.withPath(p -> "block/" + p + "_side");
         TextureMap textures = new TextureMap().put(TOP, top).put(SIDE, side);
 
-        MultipartBlockStateSupplier supplier = MultipartBlockStateSupplier.create(Registries.BLOCK.getOrEmpty(blockId).orElseGet(() -> {
-            return Registry.register(Registries.BLOCK, blockId, new EdibleBlock(blockId, blockId, false));
-        }));
+        MultipartBlockStateSupplier supplier = MultipartBlockStateSupplier.create(Datagen.getOrCreateBaleBlock(blockId));
         Map<Integer, Identifier> uploadedModels = new HashMap<>();
 
         for (Direction.Axis axis : Direction.Axis.VALUES) {

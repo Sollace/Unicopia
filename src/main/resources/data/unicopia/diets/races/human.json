@@ -5,13 +5,13 @@
   "effects": [
     {
       "tags": [
-        "unicopia:food_types/cooked_fish",
-        "unicopia:food_types/raw_fish",
-        "unicopia:food_types/rotten_fish",
-        "unicopia:food_types/cooked_meat",
-        "unicopia:food_types/raw_meat",
-        "unicopia:food_types/rotten_meat",
-        "unicopia:food_types/pinecone"
+        "unicopia:fish/cooked",
+        "unicopia:fish/raw",
+        "unicopia:fish/rotten",
+        "unicopia:meat/cooked",
+        "unicopia:meat/raw",
+        "unicopia:meat/rotten",
+        "unicopia:pinecone"
       ],
       "ailment": {
         "effects": [ ]

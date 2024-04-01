@@ -4,57 +4,57 @@
   "multipliers": [
     {
       "tags": [
-        "unicopia:food_types/cooked_meat",
-        "unicopia:food_types/cooked_fish"
+        "unicopia:meat/cooked",
+        "unicopia:fish/cooked"
        ],
       "hunger": 1.6,
       "saturation": 1.6
     },
     {
       "tags": [
-        "unicopia:food_types/nuts_and_seeds"
+        "unicopia:nuts_and_seeds"
        ],
       "hunger": 1.4,
       "saturation": 1.4
     },
     {
       "tags": [
-        "unicopia:food_types/baked_goods"
+        "unicopia:baked_goods"
       ],
       "hunger": 1,
       "saturation": 1
     },
     {
       "tags": [
-        "unicopia:food_types/raw_meat",
-        "unicopia:food_types/raw_fish"
+        "unicopia:meat/raw",
+        "unicopia:fish/raw"
       ],
       "hunger": 0.6,
       "saturation": 0.6
     },
     {
-      "tags": [ "unicopia:food_types/rotten_meat" ],
+      "tags": [ "unicopia:meat/rotten" ],
       "hunger": 0.3,
       "saturation": 0.3
     },
     {
       "tags": [
-        "unicopia:food_types/love",
-        "unicopia:food_types/raw_insect",
-        "unicopia:food_types/cooked_insect"
+        "unicopia:love",
+        "unicopia:insect/raw",
+        "unicopia:insect/cooked"
       ],
       "hunger": 0,
       "saturation": 0
     },
     {
-      "tags": [ "unicopia:food_types/pinecone" ],
+      "tags": [ "unicopia:pinecone" ],
       "hunger": 1,
       "saturation": 1
     }
   ],
   "effects": [
     {
-      "tags": [ "unicopia:food_types/cooked_fish" ],
+      "tags": [ "unicopia:fish/cooked" ],
       "food_component": {
         "hunger": 2,
         "saturation": 1
@@ -64,15 +64,15 @@
       }
     },
     {
-      "tags": [ "unicopia:food_types/raw_fish" ],
+      "tags": [ "unicopia:fish/raw" ],
       "ailment": {
         "effects": [ ]
       }
     },
     {
       "tags": [
-        "unicopia:food_types/forage_prickly",
-        "unicopia:food_types/forage_severely_prickly"
+        "unicopia:foraging/prickly",
+        "unicopia:foraging/severely_prickly"
       ],
       "food_component": {
         "hunger": 2,
@@ -83,7 +83,7 @@
       }
     },
     {
-      "tags": [ "unicopia:food_types/pinecone" ],
+      "tags": [ "unicopia:pinecone" ],
       "ailment": {
         "effects": [
           {

@@ -1,0 +1,10 @@
+{
+  "tags": [ "unicopia:food_types/shells", "unicopia:food_types/shelly" ],
+  "food_component": {
+    "hunger": 0,
+    "saturation": 0
+  },
+  "ailment": {
+    "effects": []
+  }
+}

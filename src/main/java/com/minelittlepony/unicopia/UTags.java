@@ -34,9 +34,12 @@ public interface UTags {
         TagKey<Item> SPOOKED_MOB_DROPS = item("spooked_mob_drops");
         TagKey<Item> HAS_NO_TRAITS = item("has_no_traits");
         TagKey<Item> IS_DELIVERED_AGGRESSIVELY = item("is_delivered_aggressively");
+        TagKey<Item> CONTAINER_WITH_LOVE = item("container_with_love");
         TagKey<Item> FLOATS_ON_CLOUDS = item("floats_on_clouds");
         TagKey<Item> COOLS_OFF_KIRINS = item("cools_off_kirins");
-        TagKey<Item> LOOT_BUG_HIGH_VALUE_DROPS = item("loot_bug_high_value_drops");
+        TagKey<Item> LOOT_BUG_COMMON_DROPS = item("loot_bug_common_drops");
+        TagKey<Item> LOOT_BUG_RARE_DROPS = item("loot_bug_rare_drops");
+        TagKey<Item> LOOT_BUG_EPIC_DROPS = item("loot_bug_epic_drops");
 
         TagKey<Item> SHELLS = item("food_types/shells");
 

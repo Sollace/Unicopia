@@ -4,46 +4,46 @@
   "multipliers": [
     {
       "tags": [
-        "unicopia:food_types/candy",
-        "unicopia:food_types/desserts",
-        "unicopia:food_types/rocks"
+        "unicopia:candy",
+        "unicopia:desserts",
+        "unicopia:rocks"
       ],
       "hunger": 2.5,
       "saturation": 1.7
     },
     {
       "tags": [
-        "unicopia:food_types/baked_goods"
+        "unicopia:baked_goods"
       ],
       "hunger": 1.2,
       "saturation": 2
     },
     {
-      "tags": [ "unicopia:food_types/cooked_fish" ],
+      "tags": [ "unicopia:fish/cooked" ],
       "hunger": 0.2,
       "saturation": 0.2
     },
     {
       "tags": [
-        "unicopia:food_types/cooked_insect",
-        "unicopia:food_types/cooked_meat"
+        "unicopia:insect/cooked",
+        "unicopia:meat/cooked"
       ],
       "hunger": 0.1,
       "saturation": 0.1
     },
     {
       "tags": [
-        "unicopia:food_types/love",
-        "unicopia:food_types/raw_fish",
-        "unicopia:food_types/raw_insect",
-        "unicopia:food_types/raw_meat",
-        "unicopia:food_types/rotten_meat"
+        "unicopia:love",
+        "unicopia:fish/raw",
+        "unicopia:insect/raw",
+        "unicopia:meat/raw",
+        "unicopia:meat/rotten"
       ],
       "hunger": 0,
       "saturation": 0
     },
     {
-      "tags": [ "unicopia:food_types/pinecone" ],
+      "tags": [ "unicopia:pinecone" ],
       "hunger": 1,
       "saturation": 1
     }
@@ -51,8 +51,8 @@
   "effects": [
     {
       "tags": [
-        "unicopia:food_types/candy",
-        "unicopia:food_types/rocks"
+        "unicopia:candy",
+        "unicopia:rocks"
       ],
       "food_component": {
         "hunger": 5,
@@ -65,7 +65,7 @@
     },
     {
       "tags": [
-        "unicopia:food_types/desserts"
+        "unicopia:desserts"
       ],
       "food_component": {
         "hunger": 12,
