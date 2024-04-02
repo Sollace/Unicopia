@@ -2,9 +2,8 @@
   "replace": false,
   "values": [
     "unicopia:pearl_necklace",
-    "minecraft:nautilus_shell",
-    "#unicopia:food_types/shells",
-    "#unicopia:food_types/shelly",
+    "#unicopia:shells",
+    "#unicopia:special_shells",
     "#unicopia:food_types/raw_sea_vegitable",
     "#unicopia:food_types/cooked_sea_vegitable"
   ]

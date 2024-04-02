@@ -2,10 +2,13 @@ package com.minelittlepony.unicopia.diet;
 
 import java.util.function.Function;
 
+import com.minelittlepony.unicopia.Debug;
+import com.minelittlepony.unicopia.Unicopia;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -28,6 +31,7 @@ public interface FoodGroupKey {
     });
     Function<TagKey<Item>, FoodGroupKey> TAG_LOOKUP = Util.memoize(tag -> {
         return new FoodGroupKey() {
+            private boolean check;
             @Override
             public Identifier id() {
                 return tag.id();
@@ -35,6 +39,13 @@ public interface FoodGroupKey {
 
             @Override
             public boolean contains(ItemStack stack) {
+                if (Debug.CHECK_GAME_VALUES && !check) {
+                    check = true;
+                    if (Registries.ITEM.getEntryList(tag).isEmpty()) {
+                        Unicopia.LOGGER.info("Tag is empty: " + tag.id());
+                    }
+                }
+
                 return stack.isIn(tag);
             }
         };

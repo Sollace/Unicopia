@@ -41,6 +41,7 @@ public interface UConventionalTags {
         TagKey<Item> MUFFINS = item("muffins");
         TagKey<Item> MANGOES = item("mangoes");
         TagKey<Item> OATMEALS = item("oatmeals");
+        TagKey<Item> COOKIES = item("cookies");
 
         TagKey<Item> FRUITS = item("fruits");
         TagKey<Item> WORMS = item("worms");
@@ -55,6 +56,8 @@ public interface UConventionalTags {
         TagKey<Item> RAW_MEAT = item("raw_meat");
         TagKey<Item> COOKED_MEAT = item("cooked_meat");
         TagKey<Item> ROTTEN_MEAT = item("rotten_meat");
+        TagKey<Item> DESSERTS = item("desserts");
+        TagKey<Item> CANDY = item("candy");
 
         TagKey<Item> CROPS_PEANUTS = item("crops/peanuts");
         TagKey<Item> TOOL_KNIVES = item("tools/knives");

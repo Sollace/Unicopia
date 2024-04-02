@@ -13,7 +13,7 @@
     "unicopia:hive",
     "unicopia:dark_oak_stable_door",
     "#c:cooked_meat",
-    "#unicopia:food_types/raw_meat",
+    "#c:raw_meat",
     "#c:raw_insect",
     "#c:rotten_meat",
     "#unicopia:container_with_love"

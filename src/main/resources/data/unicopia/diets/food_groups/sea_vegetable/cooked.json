@@ -1,5 +1,5 @@
 {
-  "tags": [ "unicopia:food_types/cooked_sea_vegitable" ],
+  "tags": [ "unicopia:food_types/cooked_sea_vegitable", "c:coral_blocks" ],
   "food_component": {
     "hunger": 0,
     "saturation": 0

@@ -41,7 +41,10 @@ public interface UTags {
         TagKey<Item> LOOT_BUG_RARE_DROPS = item("loot_bug_rare_drops");
         TagKey<Item> LOOT_BUG_EPIC_DROPS = item("loot_bug_epic_drops");
 
-        TagKey<Item> SHELLS = item("food_types/shells");
+        TagKey<Item> SHELLS = item("shells");
+        TagKey<Item> SPECIAL_SHELLS = item("special_shells");
+        TagKey<Item> ROCK_STEWS = item("rock_stews");
+        TagKey<Item> BAKED_GOODS = item("baked_goods");
 
         TagKey<Item> POLEARMS = item("polearms");
         TagKey<Item> HORSE_SHOES = item("horse_shoes");

@@ -1,5 +1,5 @@
 {
-  "tags": [ "unicopia:food_types/fruit" ],
+  "tags": [ "c:fruits" ],
   "food_component": {
     "hunger": 1,
     "saturation": 1

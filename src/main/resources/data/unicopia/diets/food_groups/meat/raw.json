@@ -1,5 +1,5 @@
 {
-  "tags": [ "unicopia:food_types/raw_meat" ],
+  "tags": [ "c:raw_meat" ],
   "food_component": {
     "hunger": 1,
     "saturation": 1

@@ -1,5 +1,5 @@
 {
-  "tags": [ "unicopia:food_types/pinecone" ],
+  "tags": [ "c:pinecones" ],
   "food_component": {
     "hunger": 1,
     "saturation": 0.1

@@ -127,6 +127,9 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
                 Items.DIAMOND_PICKAXE, Items.DIAMOND_SHOVEL, Items.DIAMOND_AXE, Items.DIAMOND_SWORD, Items.DIAMOND_HOE,
                 UItems.DIAMOND_POLEARM
         ).forceAddTag(UTags.Items.BADGES).forceAddTag(ConventionalItemTags.GOLD_INGOTS);
+        getOrCreateTagBuilder(UTags.Items.SHELLS).add(Items.NAUTILUS_SHELL, UItems.CLAM_SHELL, UItems.SCALLOP_SHELL, UItems.TURRET_SHELL);
+        getOrCreateTagBuilder(UTags.Items.SPECIAL_SHELLS).add(UItems.SHELLY);
+        getOrCreateTagBuilder(UTags.Items.ROCK_STEWS).add(UItems.ROCK_STEW);
 
         exportFarmersDelightItems();
     }
@@ -209,15 +212,31 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(UConventionalTags.Items.SEEDS).add(Items.BEETROOT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.TORCHFLOWER_SEEDS, Items.WHEAT_SEEDS)
             .add(UItems.OAT_SEEDS)
             .forceAddTag(UTags.Items.APPLE_SEEDS);
+        getOrCreateTagBuilder(UConventionalTags.Items.COOKIES).add(Items.COOKIE, UItems.OATMEAL_COOKIE, UItems.CHOCOLATE_OATMEAL_COOKIE, UItems.PINECONE_COOKIE);
         getOrCreateTagBuilder(UConventionalTags.Items.OATMEALS).add(UItems.OATMEAL);
         getOrCreateTagBuilder(UConventionalTags.Items.GRAIN).add(Items.WHEAT, UItems.OATS);
-        getOrCreateTagBuilder(UConventionalTags.Items.NUTS).addOptionalTag(UConventionalTags.Items.CROPS_PEANUTS);
-
+        getOrCreateTagBuilder(UConventionalTags.Items.NUTS).add(UItems.BOWL_OF_NUTS)
+            .addOptionalTag(UConventionalTags.Items.CROPS_PEANUTS)
+            .forceAddTag(UConventionalTags.Items.ACORNS)
+            .addOptional(new Identifier("garnished", "nuts"))
+            .addOptional(new Identifier("garnished", "nut_mix"))
+            .addOptional(new Identifier("garnished", "neverable_delecacies"));
         getOrCreateTagBuilder(UConventionalTags.Items.FRUITS)
+            .add(Items.MELON_SLICE, Items.SWEET_BERRIES, Items.GLOW_BERRIES, Items.CHORUS_FRUIT)
+            .add(UItems.JUICE, UItems.ZAP_APPLE, UItems.ZAP_BULB)
             .forceAddTag(UConventionalTags.Items.MANGOES)
             .forceAddTag(UConventionalTags.Items.PINEAPPLES)
             .forceAddTag(UConventionalTags.Items.APPLES)
-            .forceAddTag(UConventionalTags.Items.BANANAS);
+            .forceAddTag(UConventionalTags.Items.BANANAS)
+            .addOptionalTag(new Identifier("garnished", "berries"));
+        getOrCreateTagBuilder(UConventionalTags.Items.DESSERTS).add(Items.CAKE, UItems.APPLE_PIE_SLICE).forceAddTag(UTags.Items.PIES);
+        getOrCreateTagBuilder(UConventionalTags.Items.CANDY).add(Items.SUGAR, UItems.ROCK_CANDY, UItems.CANDIED_APPLE);
+        getOrCreateTagBuilder(UTags.Items.BAKED_GOODS).add(
+                Items.BREAD, Items.COOKIE, Items.PUMPKIN_PIE,
+                UItems.MUFFIN, UItems.SCONE, UItems.COOKED_ZAP_APPLE, UItems.TOAST, UItems.BURNED_TOAST, UItems.JAM_TOAST, UItems.IMPORTED_OATS,
+                UItems.HAY_FRIES, UItems.CRISPY_HAY_FRIES, UItems.HORSE_SHOE_FRIES)
+            .forceAddTag(UConventionalTags.Items.OATMEALS)
+            .forceAddTag(UConventionalTags.Items.COOKIES);
     }
 
     private void exportFarmersDelightItems() {
@@ -235,5 +254,46 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .addOptional(new Identifier("farmersdelight", "fish_stew"))
             .addOptional(new Identifier("farmersdelight", "baked_cod_stew"))
             .addOptional(new Identifier("farmersdelight", "grilled_salmon"));
+        getOrCreateTagBuilder(UConventionalTags.Items.RAW_MEAT)
+            .addOptional(new Identifier("farmersdelight", "ham"));
+        getOrCreateTagBuilder(UConventionalTags.Items.COOKED_MEAT)
+            .addOptional(new Identifier("farmersdelight", "chicken_soup"))
+            .addOptional(new Identifier("farmersdelight", "bacon_and_eggs"))
+            .addOptional(new Identifier("farmersdelight", "pasta_with_meatballs"))
+            .addOptional(new Identifier("farmersdelight", "beef_stew"))
+            .addOptional(new Identifier("farmersdelight", "bone_broth"))
+            .addOptional(new Identifier("farmersdelight", "mutton_wrap"))
+            .addOptional(new Identifier("farmersdelight", "bacon_sandwich"))
+            .addOptional(new Identifier("farmersdelight", "hamburger"))
+            .addOptional(new Identifier("farmersdelight", "chicken_sandwich"))
+            .addOptional(new Identifier("farmersdelight", "barbecue_stick"))
+            .addOptional(new Identifier("farmersdelight", "smoked_ham"))
+            .addOptional(new Identifier("farmersdelight", "honey_glazed_ham"))
+            .addOptional(new Identifier("farmersdelight", "honey_glazed_ham_block"))
+            .addOptional(new Identifier("farmersdelight", "roast_chicken"))
+            .addOptional(new Identifier("farmersdelight", "roast_chicken_block"))
+            .addOptional(new Identifier("farmersdelight", "steak_and_potatoes"))
+            .addOptional(new Identifier("farmersdelight", "roasted_mutton_chops"))
+            .addOptional(new Identifier("farmersdelight", "pasta_with_mutton_chop"));
+        getOrCreateTagBuilder(UConventionalTags.Items.FRUITS)
+            .addOptional(new Identifier("farmersdelight", "pumpkin_slice"))
+            .addOptional(new Identifier("farmersdelight", "tomato"))
+            .addOptional(new Identifier("farmersdelight", "melon_juice"))
+            .addOptional(new Identifier("farmersdelight", "fruit_salad"));
+        getOrCreateTagBuilder(UConventionalTags.Items.DESSERTS)
+            .addOptional(new Identifier("farmersdelight", "sweet_berry_cheesecake"))
+            .addOptional(new Identifier("farmersdelight", "sweet_berry_cheesecake_slice"))
+            .addOptional(new Identifier("farmersdelight", "chocolate_pie_slice"))
+            .addOptional(new Identifier("farmersdelight", "cake_slice"))
+            .addOptional(new Identifier("farmersdelight", "apple_pie_slice"))
+            .addOptional(new Identifier("farmersdelight", "glow_berry_custard"));
+        getOrCreateTagBuilder(UConventionalTags.Items.COOKIES)
+            .addOptional(new Identifier("farmersdelight", "sweet_berry_cookie"))
+            .addOptional(new Identifier("farmersdelight", "honey_cookie"));
+        getOrCreateTagBuilder(UTags.Items.BAKED_GOODS)
+            .addOptional(new Identifier("farmersdelight", "wheat_dough"))
+            .addOptional(new Identifier("farmersdelight", "raw_pasta"))
+            .addOptional(new Identifier("farmersdelight", "pie_crust"))
+            .addOptional(new Identifier("farmersdelight", "egg_sandwich"));
     }
 }
