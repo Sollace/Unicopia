@@ -37,10 +37,10 @@ public class DietsLoader implements IdentifiableResourceReloadListener {
             Map<Identifier, Effect> foodGroups = new HashMap<>();
             for (var group : loadData(manager, prepareExecutor, "diets/food_groups").entrySet()) {
                 try {
-                    Effect.CODEC.parse(JsonOps.INSTANCE, group.getValue())
+                    FoodGroup.CODEC.parse(JsonOps.INSTANCE, group.getValue())
                         .resultOrPartial(error -> LOGGER.error("Could not load food group {}: {}", group.getKey(), error))
                         .ifPresent(value -> {
-                            foodGroups.put(group.getKey(), value);
+                            foodGroups.put(group.getKey(), new FoodGroup(group.getKey(), value));
                         });
                 } catch (Throwable t) {
                     LOGGER.error("Could not load food effects {}", group.getKey(), t);

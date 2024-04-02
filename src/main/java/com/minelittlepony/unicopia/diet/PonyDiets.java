@@ -1,8 +1,11 @@
 package com.minelittlepony.unicopia.diet;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -47,12 +50,15 @@ public class PonyDiets implements DietView {
     }
 
     public PonyDiets(PacketByteBuf buffer) {
-        this(buffer.readMap(b -> b.readRegistryValue(Race.REGISTRY), DietProfile::new), buffer.readMap(PacketByteBuf::readIdentifier, b -> new Effect(b, FoodGroupKey.TAG_ID_LOOKUP)));
+        this(
+                buffer.readMap(b -> b.readRegistryValue(Race.REGISTRY), DietProfile::new),
+                buffer.readCollection(ArrayList::new, FoodGroup::new).stream().collect(Collectors.toMap(FoodGroup::id, Function.identity()))
+        );
     }
 
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeMap(diets, (b, r) -> b.writeRegistryValue(Race.REGISTRY, r), (b, e) -> e.toBuffer(b));
-        buffer.writeMap(effects, PacketByteBuf::writeIdentifier, (b, e) -> e.toBuffer(b));
+        buffer.writeCollection(effects.values(), (b, e) -> e.toBuffer(b));
     }
 
     private DietProfile getDiet(Pony pony) {
@@ -77,7 +83,7 @@ public class PonyDiets implements DietView {
     @Override
     public void finishUsing(ItemStack stack, World world, LivingEntity entity) {
         if (initEdibility(stack, entity)) {
-            Pony.of(entity).ifPresent(pony -> getEffects(stack, pony).afflict(pony, stack));
+            Pony.of(entity).ifPresent(pony -> getEffects(stack, pony).ailment().effects().afflict(pony.asEntity(), stack));
         }
     }
 

@@ -30,23 +30,23 @@ public record DietProfile(
         float defaultMultiplier,
         float foragingMultiplier,
         List<Multiplier> multipliers,
-        List<Effect> effects,
-        Optional<Effect> defaultEffect
+        List<FoodGroupEffects> effects,
+        Optional<FoodGroupEffects> defaultEffect
     ) {
     public static final DietProfile EMPTY = new DietProfile(1, 1, List.of(), List.of(), Optional.empty());
     public static final Codec<DietProfile> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.FLOAT.fieldOf("default_multiplier").forGetter(DietProfile::defaultMultiplier),
                 Codec.FLOAT.fieldOf("foraging_multiplier").forGetter(DietProfile::foragingMultiplier),
                 Codec.list(Multiplier.CODEC).fieldOf("multipliers").forGetter(DietProfile::multipliers),
-                Codec.list(Effect.PROFILE_CODEC).fieldOf("effects").forGetter(DietProfile::effects),
-                Effect.CODEC.optionalFieldOf("default_effect").forGetter(DietProfile::defaultEffect)
+                Codec.list(FoodGroupEffects.CODEC).fieldOf("effects").forGetter(DietProfile::effects),
+                FoodGroupEffects.CODEC.optionalFieldOf("default_effect").forGetter(DietProfile::defaultEffect)
     ).apply(instance, DietProfile::new));
 
     public DietProfile(PacketByteBuf buffer) {
         this(buffer.readFloat(), buffer.readFloat(),
                 buffer.readList(Multiplier::new),
-                buffer.readList(b -> new Effect(b, FoodGroupKey.LOOKUP)),
-                buffer.readOptional(b -> new Effect(b, FoodGroupKey.LOOKUP))
+                buffer.readList(b -> new FoodGroupEffects(b, FoodGroupKey.LOOKUP)),
+                buffer.readOptional(b -> new FoodGroupEffects(b, FoodGroupKey.LOOKUP))
         );
     }
 
@@ -81,7 +81,7 @@ public record DietProfile(
     }
 
     public Optional<Effect> findEffect(ItemStack stack) {
-        return effects.stream().filter(m -> m.test(stack)).findFirst().or(this::defaultEffect);
+        return effects.stream().filter(m -> m.test(stack)).findFirst().or(this::defaultEffect).map(Effect.class::cast);
     }
 
     static boolean isForaged(ItemStack stack) {
