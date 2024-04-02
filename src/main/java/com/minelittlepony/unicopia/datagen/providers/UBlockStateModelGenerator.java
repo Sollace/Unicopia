@@ -113,7 +113,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerHiveBlock(UBlocks.HIVE);
         registerRotated(UBlocks.CHITIN_SPIKES, BlockModels.SPIKES);
         registerHull(UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHITIN, UBlocks.CHISELLED_CHITIN);
-        registerParentedItemModel(UBlocks.SLIME_PUSTULE, ModelIds.getBlockSubModelId(UBlocks.SLIME_PUSTULE, "_pod"));
+        registerItemModel(UBlocks.SLIME_PUSTULE.asItem());
         blockStateCollector.accept(VariantsBlockStateSupplier.create(UBlocks.SLIME_PUSTULE)
                 .coordinate(BlockStateVariantMap.create(SlimePustuleBlock.SHAPE)
                 .register(state -> BlockStateVariant.create().put(MODEL, ModelIds.getBlockSubModelId(UBlocks.SLIME_PUSTULE, "_" + state.asString())))));
@@ -176,7 +176,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerWithStages(UBlocks.FROSTED_OBSIDIAN, Properties.AGE_3, BlockModels.CUBE_ALL, 0, 1, 2, 3);
         registerWithStagesBuiltinModels(UBlocks.ROCKS, Properties.AGE_7, 0, 1, 2, 3, 4, 5, 6, 7);
         registerWithStagesBuiltinModels(UBlocks.MYSTERIOUS_EGG, PileBlock.COUNT, 1, 2, 3);
-        excludeFromSimpleItemModelGeneration(UBlocks.MYSTERIOUS_EGG);
+        registerItemModel(UBlocks.MYSTERIOUS_EGG.asItem());
         FireModels.registerSoulFire(this, UBlocks.SPECTRAL_FIRE, Blocks.SOUL_FIRE);
 
         blockStateCollector.accept(createSingletonBlockState(UBlocks.JAR, BlockModels.TEMPLATE_JAR));
