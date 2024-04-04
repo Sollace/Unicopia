@@ -30,7 +30,6 @@ public interface UTags {
         TagKey<Item> MAGIC_FEATHERS = item("magic_feathers");
 
         TagKey<Item> SHADES = item("shades");
-        TagKey<Item> CHANGELING_EDIBLE = item("food_types/changeling_edible");
         TagKey<Item> SPOOKED_MOB_DROPS = item("spooked_mob_drops");
         TagKey<Item> HAS_NO_TRAITS = item("has_no_traits");
         TagKey<Item> IS_DELIVERED_AGGRESSIVELY = item("is_delivered_aggressively");
@@ -45,6 +44,9 @@ public interface UTags {
         TagKey<Item> SPECIAL_SHELLS = item("special_shells");
         TagKey<Item> ROCK_STEWS = item("rock_stews");
         TagKey<Item> BAKED_GOODS = item("baked_goods");
+
+        TagKey<Item> HIGH_QUALITY_SEA_VEGETABLES = item("food_types/high_quality_sea_vegetables");
+        TagKey<Item> LOW_QUALITY_SEA_VEGETABLES = item("food_types/low_quality_sea_vegetables");
 
         TagKey<Item> POLEARMS = item("polearms");
         TagKey<Item> HORSE_SHOES = item("horse_shoes");
@@ -63,6 +65,18 @@ public interface UTags {
         TagKey<Item> GROUP_BAT_PONY = item("groups/bat_pony");
         TagKey<Item> GROUP_SEA_PONY = item("groups/sea_pony");
         TagKey<Item> GROUP_CHANGELING = item("groups/changeling");
+
+        TagKey<Item> FORAGE_BLINDING = item("forage/blinding");
+        TagKey<Item> FORAGE_DANGEROUS = item("forage/dangerous");
+        TagKey<Item> FORAGE_FILLING = item("forage/filling");
+        TagKey<Item> FORAGE_SAFE = item("forage/safe");
+        TagKey<Item> FORAGE_NAUSEATING = item("forage/nauseating");
+        TagKey<Item> FORAGE_PRICKLY = item("forage/prickly");
+        TagKey<Item> FORAGE_GLOWING = item("forage/glowing");
+        TagKey<Item> FORAGE_RISKY = item("forage/risky");
+        TagKey<Item> FORAGE_STRENGHENING = item("forage/strenghtening");
+        TagKey<Item> FORAGE_SEVERE_NAUSEATING = item("forage/severe/nauseating");
+        TagKey<Item> FORAGE_SEVERE_PRICKLY = item("forage/severe/prickly");
 
         private static TagKey<Item> item(String name) {
             return TagKey.of(RegistryKeys.ITEM, Unicopia.id(name));

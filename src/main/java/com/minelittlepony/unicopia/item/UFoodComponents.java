@@ -30,10 +30,6 @@ public interface UFoodComponents {
     FoodComponent CHOCOLATE_OATMEAL_COOKIE = builder(3, 0.4F).build();
     FoodComponent SCONE = builder(2, 0.2F).build();
 
-    @Deprecated
-    FoodComponent RANDOM_FOLIAGE = builder(2, 1).build();
-    @Deprecated
-    FoodComponent RANDOM_FOLIAGE_FILLING = builder(18, 1).build();
     FoodComponent WORMS = builder(1, 1.5F).alwaysEdible().meat().build();
     FoodComponent INSECTS = builder(1, 0).alwaysEdible().build();
 
@@ -62,9 +58,7 @@ public interface UFoodComponents {
 
     FoodComponent POISON_JOKE = builder(0, 0F).alwaysEdible().snack().build();
 
-    @Deprecated
     FoodComponent SHELL = builder(3, 5).build();
-    @Deprecated
     FoodComponent SHELLY = builder(6, 7).build();
 
     static FoodComponent.Builder builder(int hunger, float saturation) {

@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 
-class CompoundAffliction implements Affliction {
+public class CompoundAffliction implements Affliction {
     public final List<Affliction> afflictions;
     private final Text name;
 

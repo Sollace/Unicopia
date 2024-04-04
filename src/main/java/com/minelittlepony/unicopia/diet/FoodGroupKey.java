@@ -27,6 +27,16 @@ public interface FoodGroupKey {
                 var group = PonyDiets.getEffect(id);
                 return group != null && group.test(stack);
             }
+
+            @Override
+            public boolean equals(Object o) {
+                return o == this && (o instanceof FoodGroupKey k && k.id().equals(id()));
+            }
+
+            @Override
+            public int hashCode() {
+                return id().hashCode();
+            }
         };
     });
     Function<TagKey<Item>, FoodGroupKey> TAG_LOOKUP = Util.memoize(tag -> {
@@ -47,6 +57,16 @@ public interface FoodGroupKey {
                 }
 
                 return stack.isIn(tag);
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                return o == this && (o instanceof FoodGroupKey k && k.id().equals(id()));
+            }
+
+            @Override
+            public int hashCode() {
+                return id().hashCode();
             }
         };
     });

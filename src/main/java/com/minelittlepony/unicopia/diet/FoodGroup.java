@@ -17,23 +17,31 @@ import net.minecraft.util.Util;
 
 public record FoodGroup(
         Identifier id,
-        List<FoodGroupKey> tags,
-        Optional<FoodComponent> foodComponent,
-        Ailment ailment) implements Effect {
+        FoodGroupEffects attributes) implements Effect {
     public static final Codec<FoodGroupEffects> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             FoodGroupKey.TAG_CODEC.listOf().fieldOf("tags").forGetter(FoodGroupEffects::tags),
             FoodAttributes.CODEC.optionalFieldOf("food_component").forGetter(FoodGroupEffects::foodComponent),
             Ailment.CODEC.fieldOf("ailment").forGetter(FoodGroupEffects::ailment)
     ).apply(instance, FoodGroupEffects::new));
 
-    public FoodGroup(Identifier id, Effect effect) {
-        this(id, effect.tags(), effect.foodComponent(), effect.ailment());
-    }
-
     public FoodGroup(PacketByteBuf buffer) {
         this(buffer.readIdentifier(), new FoodGroupEffects(buffer, FoodGroupKey.TAG_ID_LOOKUP));
     }
 
+    @Override
+    public List<FoodGroupKey> tags() {
+        return attributes.tags();
+    }
+
+    @Override
+    public Optional<FoodComponent> foodComponent() {
+        return attributes.foodComponent();
+    }
+
+    @Override
+    public Ailment ailment() {
+        return attributes.ailment();
+    }
     @Override
     public void appendTooltip(ItemStack stack, List<Text> tooltip, TooltipContext context) {
         tooltip.add(Text.literal(" ").append(Text.translatable(Util.createTranslationKey("food_group", id()))).formatted(Formatting.GRAY));

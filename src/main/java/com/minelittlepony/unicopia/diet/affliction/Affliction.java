@@ -37,7 +37,7 @@ public interface Affliction {
             affliction -> ((CompoundAffliction)affliction).afflictions
     )).xmap(
             either -> either.left().or(either::right).get(),
-            affliction -> affliction instanceof CompoundAffliction ? Either.left(affliction) : Either.right(affliction)
+            affliction -> affliction instanceof CompoundAffliction ? Either.right(affliction) : Either.left(affliction)
     );
 
     void afflict(PlayerEntity player, ItemStack stack);

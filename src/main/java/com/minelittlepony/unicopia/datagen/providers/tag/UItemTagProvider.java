@@ -130,7 +130,14 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(UTags.Items.SHELLS).add(Items.NAUTILUS_SHELL, UItems.CLAM_SHELL, UItems.SCALLOP_SHELL, UItems.TURRET_SHELL);
         getOrCreateTagBuilder(UTags.Items.SPECIAL_SHELLS).add(UItems.SHELLY);
         getOrCreateTagBuilder(UTags.Items.ROCK_STEWS).add(UItems.ROCK_STEW);
+        getOrCreateTagBuilder(UTags.Items.HIGH_QUALITY_SEA_VEGETABLES)
+            .add(Items.DRIED_KELP_BLOCK, Items.GLOW_LICHEN)
+            .forceAddTag(UConventionalTags.Items.CORAL_BLOCKS);
+        getOrCreateTagBuilder(UTags.Items.LOW_QUALITY_SEA_VEGETABLES)
+            .add(Items.KELP, Items.DRIED_KELP, Items.SEAGRASS, Items.SEA_PICKLE)
+            .forceAddTag(UConventionalTags.Items.CORALS).forceAddTag(UConventionalTags.Items.CORAL_FANS);
 
+        exportForagingTags();
         exportFarmersDelightItems();
     }
 
@@ -160,6 +167,23 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         copy(UTags.Blocks.CLOUD_STAIRS, UTags.Items.CLOUD_STAIRS);
         copy(UTags.Blocks.CLOUD_BLOCKS, UTags.Items.CLOUD_BLOCKS);
         copy(UTags.Blocks.CHITIN_BLOCKS, UTags.Items.CHITIN_BLOCKS);
+    }
+
+    private void exportForagingTags() {
+        getOrCreateTagBuilder(UTags.Items.FORAGE_BLINDING).add(Items.OXEYE_DAISY);
+        getOrCreateTagBuilder(UTags.Items.FORAGE_DANGEROUS).add(Items.POPPY, Items.LILY_OF_THE_VALLEY);
+        getOrCreateTagBuilder(UTags.Items.FORAGE_FILLING).add(Items.HAY_BLOCK);
+        getOrCreateTagBuilder(UTags.Items.FORAGE_SAFE).add(Items.BLUE_ORCHID, Items.RED_TULIP, Items.ORANGE_TULIP,
+                Items.PINK_TULIP, Items.CORNFLOWER, Items.PEONY, Items.SUNFLOWER, Items.DANDELION, Items.LILAC, Items.TALL_GRASS,
+                Items.DEAD_BUSH, Items.PINK_PETALS
+        ).forceAddTag(UConventionalTags.Items.MUSHROOMS).forceAddTag(ItemTags.SAPLINGS);
+        getOrCreateTagBuilder(UTags.Items.FORAGE_NAUSEATING).add(Items.GRASS, UItems.CIDER);
+        getOrCreateTagBuilder(UTags.Items.FORAGE_PRICKLY).add(Items.ROSE_BUSH).forceAddTag(ItemTags.SAPLINGS);
+        getOrCreateTagBuilder(UTags.Items.FORAGE_GLOWING).add(Items.AZURE_BLUET, Items.TORCHFLOWER);
+        getOrCreateTagBuilder(UTags.Items.FORAGE_RISKY).add(Items.ALLIUM, Items.WHITE_TULIP, UItems.BURNED_JUICE);
+        getOrCreateTagBuilder(UTags.Items.FORAGE_STRENGHENING).add(Items.FERN);
+        getOrCreateTagBuilder(UTags.Items.FORAGE_SEVERE_NAUSEATING).add(Items.PITCHER_PLANT);
+        getOrCreateTagBuilder(UTags.Items.FORAGE_SEVERE_PRICKLY).add(Items.LARGE_FERN);
     }
 
     private void exportConventionalTags() {
@@ -199,7 +223,9 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .addOptionalTag(new Identifier("c", "raw_pork"))
             .addOptionalTag(new Identifier("c", "lemon_chickens"));
         getOrCreateTagBuilder(UConventionalTags.Items.ROTTEN_MEAT).add(Items.ROTTEN_FLESH);
-        getOrCreateTagBuilder(UConventionalTags.Items.COOKED_INSECT).add(Items.FERMENTED_SPIDER_EYE);
+        getOrCreateTagBuilder(UConventionalTags.Items.ROTTEN_FISH);//.add(Items.ROTTEN_FLESH); TODO:
+        getOrCreateTagBuilder(UConventionalTags.Items.ROTTEN_INSECT).add(Items.FERMENTED_SPIDER_EYE);
+        getOrCreateTagBuilder(UConventionalTags.Items.COOKED_INSECT);//.add(Items.FERMENTED_SPIDER_EYE);
         getOrCreateTagBuilder(UConventionalTags.Items.RAW_INSECT).add(Items.SPIDER_EYE, UItems.BUTTERFLY, UItems.WHEAT_WORMS, UBlocks.WORM_BLOCK.asItem());
         getOrCreateTagBuilder(UConventionalTags.Items.WORMS).add(UItems.WHEAT_WORMS);
         getOrCreateTagBuilder(UConventionalTags.Items.STICKS).add(Items.STICK);
@@ -295,5 +321,24 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .addOptional(new Identifier("farmersdelight", "raw_pasta"))
             .addOptional(new Identifier("farmersdelight", "pie_crust"))
             .addOptional(new Identifier("farmersdelight", "egg_sandwich"));
+        getOrCreateTagBuilder(UTags.Items.HIGH_QUALITY_SEA_VEGETABLES)
+            .addOptional(new Identifier("farmersdelight", "kelp_roll"));
+        getOrCreateTagBuilder(UTags.Items.LOW_QUALITY_SEA_VEGETABLES)
+            .addOptional(new Identifier("farmersdelight", "kelp_roll_slice"));
+        getOrCreateTagBuilder(UTags.Items.FORAGE_FILLING)
+            .addOptional(new Identifier("farmersdelight", "horse_feed"))
+            .addOptional(new Identifier("farmersdelight", "rice_bale"))
+            .addOptional(new Identifier("farmersdelight", "straw_bale"));
+        getOrCreateTagBuilder(UTags.Items.FORAGE_SAFE)
+            .addOptional(new Identifier("farmersdelight", "sandy_shrub"))
+            .addOptional(new Identifier("farmersdelight", "wild_cabbages"))
+            .addOptional(new Identifier("farmersdelight", "wild_onions"))
+            .addOptional(new Identifier("farmersdelight", "wild_carrots"))
+            .addOptional(new Identifier("farmersdelight", "wild_beetroots"))
+            .addOptional(new Identifier("farmersdelight", "wild_rice"));
+        getOrCreateTagBuilder(UTags.Items.FORAGE_RISKY)
+            .addOptional(new Identifier("farmersdelight", "wild_tomatoes"))
+            .addOptional(new Identifier("farmersdelight", "wild_potatoes"))
+            .addOptionalTag(new Identifier("c", "meads"));
     }
 }

@@ -12,17 +12,16 @@ import com.minelittlepony.unicopia.server.world.UTreeGen;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataOutput;
-import net.minecraft.data.DataOutput.PathResolver;
 import net.minecraft.registry.Registries;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 
 public class SeasonsGrowthRatesProvider implements DataProvider {
 
-    private final PathResolver pathResolver;
+    private final DataCollector collectedData;
 
     public SeasonsGrowthRatesProvider(FabricDataOutput output) {
-        this.pathResolver = output.getResolver(DataOutput.OutputType.DATA_PACK, "seasons/crop");
+        this.collectedData = new DataCollector(output.getResolver(DataOutput.OutputType.DATA_PACK, "seasons/crop"));
     }
 
     @Override
@@ -32,7 +31,6 @@ public class SeasonsGrowthRatesProvider implements DataProvider {
 
     @Override
     public CompletableFuture<?> run(DataWriter writer) {
-        DataCollector collectedData = new DataCollector(pathResolver);
         var exporter = collectedData.prime();
         generate((block, crop) -> {
             exporter.accept(Registries.BLOCK.getId(block), crop::toJson);

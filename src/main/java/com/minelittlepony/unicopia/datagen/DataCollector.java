@@ -22,6 +22,10 @@ public class DataCollector {
         this.resolver = resolver;
     }
 
+    public boolean isDefined(Identifier id) {
+        return values.containsKey(id);
+    }
+
     public BiConsumer<Identifier, Supplier<JsonElement>> prime() {
         values.clear();
         return (Identifier id, Supplier<JsonElement> value) ->

@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.minelittlepony.unicopia.block.EdibleBlock;
+import com.minelittlepony.unicopia.datagen.providers.DietsProvider;
 import com.minelittlepony.unicopia.datagen.providers.SeasonsGrowthRatesProvider;
 import com.minelittlepony.unicopia.datagen.providers.UAdvancementsProvider;
 import com.minelittlepony.unicopia.datagen.providers.UModelProvider;
@@ -49,7 +50,8 @@ public class Datagen implements DataGeneratorEntrypoint {
     public void onInitializeDataGenerator(FabricDataGenerator fabricDataGenerator) {
         final var pack = fabricDataGenerator.createPack();
         final var blockTags = pack.addProvider(UBlockTagProvider::new);
-        pack.addProvider((output, registries) -> new UItemTagProvider(output, registries, blockTags));
+        final var itemTags = pack.addProvider((output, registries) -> new UItemTagProvider(output, registries, blockTags));
+        pack.addProvider((output, registries) -> new DietsProvider(output, itemTags));
         pack.addProvider(UDamageTypeProvider::new);
 
         pack.addProvider(UModelProvider::new);

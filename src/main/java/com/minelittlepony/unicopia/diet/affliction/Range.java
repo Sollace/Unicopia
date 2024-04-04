@@ -7,7 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.dynamic.Codecs;
 
-record Range(int min, int max) {
+public record Range(int min, int max) {
     public static final Codec<Range> CODEC = Codecs.xor(
             Codec.INT.xmap(value -> Range.of(value, -1), range -> range.min()),
             RecordCodecBuilder.<Range>create(instance -> instance.group(
@@ -18,6 +18,10 @@ record Range(int min, int max) {
 
     public static Range of(int min, int max) {
         return new Range(min, max);
+    }
+
+    public static Range of(int exact) {
+        return of(exact, exact);
     }
 
     public static Range of(PacketByteBuf buffer) {

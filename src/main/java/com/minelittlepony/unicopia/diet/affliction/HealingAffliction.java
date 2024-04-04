@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 
-record HealingAffliction(float health) implements Affliction {
+public record HealingAffliction(float health) implements Affliction {
     public static final Codec<HealingAffliction> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.FLOAT.fieldOf("health").forGetter(HealingAffliction::health)
     ).apply(instance, HealingAffliction::new));
