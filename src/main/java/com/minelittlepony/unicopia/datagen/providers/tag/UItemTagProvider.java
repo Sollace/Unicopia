@@ -201,7 +201,12 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         ;
         getOrCreateTagBuilder(UConventionalTags.Items.BANANAS).add(UItems.BANANA);
         getOrCreateTagBuilder(UConventionalTags.Items.RAW_FISH).add(Items.COD, Items.SALMON, Items.PUFFERFISH, Items.TROPICAL_FISH).addOptionalTag(new Identifier("c", "mollusks"));
-        getOrCreateTagBuilder(UConventionalTags.Items.COOKED_FISH).add(Items.COOKED_COD, Items.COOKED_SALMON);
+        getOrCreateTagBuilder(UConventionalTags.Items.COOKED_FISH).add(Items.COOKED_COD, Items.COOKED_SALMON, UItems.COOKED_TROPICAL_FISH, UItems.COOKED_PUFFERFISH, UItems.FRIED_AXOLOTL);
+        getOrCreateTagBuilder(UConventionalTags.Items.ROTTEN_FISH).add(UItems.ROTTEN_COD, UItems.ROTTEN_TROPICAL_FISH, UItems.ROTTEN_SALMON, UItems.ROTTEN_PUFFERFISH);
+        getOrCreateTagBuilder(ItemTags.FISHES).add(
+                UItems.COOKED_TROPICAL_FISH, UItems.COOKED_PUFFERFISH, UItems.FRIED_AXOLOTL,
+                UItems.ROTTEN_COD, UItems.ROTTEN_TROPICAL_FISH, UItems.ROTTEN_SALMON, UItems.ROTTEN_PUFFERFISH
+        );
         getOrCreateTagBuilder(UConventionalTags.Items.COOKED_MEAT)
             .add(Items.COOKED_PORKCHOP, Items.COOKED_BEEF, Items.COOKED_MUTTON, Items.COOKED_RABBIT, Items.COOKED_CHICKEN, Items.RABBIT_STEW)
             .addOptionalTag(new Identifier("c", "cooked_bacon"))

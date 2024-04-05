@@ -411,6 +411,10 @@ public class URecipeProvider extends FabricRecipeProvider {
         offerSmelting(exporter, List.of(UItems.BURNED_JUICE, UItems.BURNED_TOAST), RecipeCategory.FOOD, Items.CHARCOAL, 1, 20, "coal");
         offerSmelting(exporter, List.of(UItems.HAY_FRIES), RecipeCategory.FOOD, UItems.CRISPY_HAY_FRIES, 1F, 25, "hay_fries");
         offerSmelting(exporter, List.of(UItems.ZAP_APPLE), RecipeCategory.FOOD, UItems.COOKED_ZAP_APPLE, 1.2F, 430, "zap_apple");
+        offerSmelting(exporter, List.of(Items.TROPICAL_FISH), RecipeCategory.FOOD, UItems.COOKED_TROPICAL_FISH, 1.2F, 230, "fish");
+        offerSmelting(exporter, List.of(Items.PUFFERFISH), RecipeCategory.FOOD, UItems.COOKED_PUFFERFISH, 1.2F, 230, "fish");
+        offerSmelting(exporter, List.of(Items.AXOLOTL_BUCKET), RecipeCategory.FOOD, UItems.FRIED_AXOLOTL, 2.2F, 230, "fried_axolotl");
+        offerSmelting(exporter, List.of(UBlocks.MYSTERIOUS_EGG.asItem()), RecipeCategory.FOOD, UItems.GREEN_FRIED_EGG, 3.8F, 630, "fried_egg");
 
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.ZAP_APPLE_JAM_JAR)
             .input(UItems.COOKED_ZAP_APPLE, 6).criterion(hasItem(UItems.COOKED_ZAP_APPLE), conditionsFromItem(UItems.COOKED_ZAP_APPLE))

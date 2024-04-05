@@ -11,9 +11,13 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
-public class DrinkableItem extends Item {
-    public DrinkableItem(Item.Settings settings) {
+public class ConsumableItem extends Item {
+
+    private final UseAction action;
+
+    public ConsumableItem(Item.Settings settings, UseAction action) {
         super(settings);
+        this.action = action;
     }
 
     @Override
@@ -30,6 +34,6 @@ public class DrinkableItem extends Item {
 
     @Override
     public UseAction getUseAction(ItemStack stack) {
-        return UseAction.DRINK;
+        return action;
     }
 }

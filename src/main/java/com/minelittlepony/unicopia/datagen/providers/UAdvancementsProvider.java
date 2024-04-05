@@ -77,6 +77,7 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
             p.child(UItems.WEIRD_ROCK).hidden().criterion("has_rock", hasItems(UItems.WEIRD_ROCK)).build(consumer, "thats_unusual");
         });
 
+        parent.child(UItems.FRIED_AXOLOTL).criterion("eaten_axolotl", ConsumeItemCriterion.Conditions.item(UItems.FRIED_AXOLOTL)).build(consumer, "tastes_like_chicken");
         parent.child(UItems.OATS).criterion("has_oats", hasItems(UItems.OATS)).build(consumer, "oats_so_easy");
         parent.child(Items.HAY_BLOCK).criterion("eat_hay", ConsumeItemCriterion.Conditions.item(Items.HAY_BLOCK)).build(consumer, "what_the_hay");
         parent.child(UItems.COPPER_HORSE_SHOE).criterion("has_horseshoe", hasItems(UTags.Items.HORSE_SHOES)).build(consumer, "blacksmith").children(p -> {

@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.datagen.providers.loot;
 
 import java.util.function.Function;
 
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 
@@ -14,26 +15,34 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
+import net.minecraft.loot.condition.LocationCheckLootCondition;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.MatchToolLootCondition;
 import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.condition.TableBonusLootCondition;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.LootPoolEntry;
+import net.minecraft.loot.entry.TagEntry;
 import net.minecraft.loot.function.ApplyBonusLootFunction;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.biome.BiomeKeys;
 
 public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvider {
     public static final LootCondition.Builder WITH_GEM_FINDER = MatchToolLootCondition.builder(ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(UEnchantments.GEM_FINDER, NumberRange.IntRange.atLeast(1))));
 
     public static final LootCondition.Builder WITHOUT_SILK_TOUCH_AND_GEM_FINDER = WITHOUT_SILK_TOUCH.and(WITH_GEM_FINDER);
     public static final float[] GEMSTONES_FORTUNE_CHANCE = { 0.1F, 0.14285715F, 0.25F, 1F };
+
+    public static final LootCondition.Builder NEEDS_OCEAN_OR_BEACH_BIOME =
+            LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(BiomeKeys.OCEAN))
+        .or(LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(BiomeKeys.BEACH)));
 
     public UBlockAdditionsLootTableProvider(FabricDataOutput dataOutput) {
         super(dataOutput);
@@ -57,10 +66,23 @@ public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvid
         addVanillaDrop(Blocks.DEEPSLATE_DIAMOND_ORE, this::crystalShardDrops);
         addVanillaDrop(Blocks.OAK_LEAVES, block -> chanceDropWithShears(block, UItems.ACORN, GEMSTONES_FORTUNE_CHANCE));
         addVanillaDrop(Blocks.SPRUCE_LEAVES, block -> chanceDropWithShears(block, UItems.PINECONE, GEMSTONES_FORTUNE_CHANCE));
+        addVanillaDrop(Blocks.GRAVEL, this::shellDrops);
+        addVanillaDrop(Blocks.SUSPICIOUS_GRAVEL, this::shellDrops);
     }
 
     private void addVanillaDrop(Block block, Function<Block, LootTable.Builder> lootTableFunction) {
         lootTables.put(new Identifier("unicopiamc", block.getLootTableId().getPath()), lootTableFunction.apply(block));
+    }
+
+    public LootTable.Builder shellDrops(Block block) {
+        return LootTable.builder().pool(LootPool.builder()
+                .rolls(ConstantLootNumberProvider.create(1))
+                .conditionally(WITHOUT_SILK_TOUCH.and(NEEDS_OCEAN_OR_BEACH_BIOME))
+                .with(applyExplosionDecay(block, TagEntry.builder(UTags.Items.SHELLS)
+                        .apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1)))
+                    )
+                    .conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, GEMSTONES_FORTUNE_CHANCE)))
+                );
     }
 
     public LootTable.Builder chanceDropWithShears(Block block, ItemConvertible drop, float...chance) {

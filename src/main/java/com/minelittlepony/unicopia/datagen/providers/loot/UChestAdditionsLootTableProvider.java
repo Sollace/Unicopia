@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.datagen.providers.loot;
 
 import java.util.function.BiConsumer;
 
+import com.minelittlepony.unicopia.UConventionalTags;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.item.UItems;
 
@@ -60,6 +61,7 @@ public class UChestAdditionsLootTableProvider extends SimpleFabricLootTableProvi
                 .rolls(UniformLootNumberProvider.create(0, 1))
                 .with(ItemEntry.builder(UItems.GROGARS_BELL).weight(1))
         ));
+
         exporter.accept(LootTables.BURIED_TREASURE_CHEST, LootTable.builder().pool(LootPool.builder()
                 .rolls(UniformLootNumberProvider.create(1, 4))
                 .with(ItemEntry.builder(UItems.PEARL_NECKLACE).weight(1))
@@ -68,21 +70,25 @@ public class UChestAdditionsLootTableProvider extends SimpleFabricLootTableProvi
         exporter.accept(LootTables.SHIPWRECK_SUPPLY_CHEST, LootTable.builder().pool(LootPool.builder()
                 .rolls(UniformLootNumberProvider.create(1, 6))
                 .with(TagEntry.expandBuilder(UTags.Items.SHELLS).weight(3))
+                .with(TagEntry.expandBuilder(UConventionalTags.Items.ROTTEN_FISH).weight(1))
         ));
         exporter.accept(LootTables.SHIPWRECK_TREASURE_CHEST, LootTable.builder().pool(LootPool.builder()
                 .rolls(UniformLootNumberProvider.create(1, 4))
                 .with(ItemEntry.builder(UItems.PEARL_NECKLACE).weight(1))
                 .with(TagEntry.expandBuilder(UTags.Items.SHELLS).weight(3))
+                .with(TagEntry.expandBuilder(UConventionalTags.Items.ROTTEN_FISH).weight(1))
         ));
         exporter.accept(LootTables.UNDERWATER_RUIN_BIG_CHEST, LootTable.builder().pool(LootPool.builder()
                 .rolls(UniformLootNumberProvider.create(1, 2))
                 .with(ItemEntry.builder(UItems.PEARL_NECKLACE).weight(1))
                 .with(ItemEntry.builder(UItems.SHELLY).weight(4))
                 .with(TagEntry.expandBuilder(UTags.Items.SHELLS).weight(8))
+                .with(TagEntry.expandBuilder(UConventionalTags.Items.ROTTEN_FISH).weight(1))
         ));
         exporter.accept(LootTables.UNDERWATER_RUIN_SMALL_CHEST, LootTable.builder().pool(LootPool.builder()
                 .rolls(UniformLootNumberProvider.create(1, 4))
                 .with(TagEntry.expandBuilder(UTags.Items.SHELLS).weight(1))
+                .with(TagEntry.expandBuilder(UConventionalTags.Items.ROTTEN_FISH).weight(1))
         ));
 
         exporter.accept(LootTables.DESERT_WELL_ARCHAEOLOGY, LootTable.builder().pool(LootPool.builder()
@@ -112,17 +118,20 @@ public class UChestAdditionsLootTableProvider extends SimpleFabricLootTableProvi
                 .rolls(UniformLootNumberProvider.create(1, 4))
                 .with(TagEntry.expandBuilder(UTags.Items.SHELLS).weight(1))
                 .with(ItemEntry.builder(UItems.PEARL_NECKLACE).weight(1))
+                .with(TagEntry.expandBuilder(UConventionalTags.Items.ROTTEN_FISH).weight(1))
         ));
 
         exporter.accept(LootTables.FISHING_GAMEPLAY, LootTable.builder().pool(LootPool.builder()
                 .rolls(UniformLootNumberProvider.create(1, 4))
                 .with(TagEntry.expandBuilder(UTags.Items.SHELLS).weight(2))
+                .with(TagEntry.expandBuilder(UConventionalTags.Items.ROTTEN_FISH).weight(1))
         ));
 
         exporter.accept(LootTables.FISHING_JUNK_GAMEPLAY, LootTable.builder().pool(LootPool.builder()
                 .rolls(UniformLootNumberProvider.create(1, 4))
                 .with(ItemEntry.builder(UItems.BROKEN_SUNGLASSES).weight(2))
                 .with(ItemEntry.builder(UItems.WHEAT_WORMS).weight(2))
+                .with(TagEntry.expandBuilder(UConventionalTags.Items.ROTTEN_FISH).weight(1))
                 .with(ItemEntry.builder(UItems.BOTCHED_GEM).weight(4))
         ));
 

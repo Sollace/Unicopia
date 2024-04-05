@@ -29,6 +29,7 @@ public interface UFoodComponents {
     FoodComponent OATMEAL_COOKIE = FoodComponents.COOKIE; //builder(2, 0.1F).build();
     FoodComponent CHOCOLATE_OATMEAL_COOKIE = builder(3, 0.4F).build();
     FoodComponent SCONE = builder(2, 0.2F).build();
+    FoodComponent FRIED_EGG = builder(4, 0.4F).build();
 
     FoodComponent WORMS = builder(1, 1.5F).alwaysEdible().meat().build();
     FoodComponent INSECTS = builder(1, 0).alwaysEdible().build();
