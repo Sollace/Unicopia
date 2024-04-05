@@ -4,7 +4,7 @@
     "unicopia:pearl_necklace",
     "#unicopia:shells",
     "#unicopia:special_shells",
-    "#unicopia:food_types/raw_sea_vegitable",
-    "#unicopia:food_types/cooked_sea_vegitable"
+    "#unicopia:food_types/low_quality_sea_vegetables",
+    "#unicopia:food_types/high_quality_sea_vegetables"
   ]
 }

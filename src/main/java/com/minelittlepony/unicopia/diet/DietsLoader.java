@@ -35,7 +35,7 @@ public class DietsLoader implements IdentifiableResourceReloadListener {
 
         CompletableFuture<Map<Identifier, Effect>> foodGroupsFuture = CompletableFuture.supplyAsync(() -> {
             Map<Identifier, Effect> foodGroups = new HashMap<>();
-            for (var group : loadData(manager, prepareExecutor, "diets/food_groups").entrySet()) {
+            for (var group : loadData(manager, prepareExecutor, "diet/food_groups").entrySet()) {
                 try {
                     FoodGroup.CODEC.parse(JsonOps.INSTANCE, group.getValue())
                         .resultOrPartial(error -> LOGGER.error("Could not load food group {}: {}", group.getKey(), error))
@@ -50,7 +50,7 @@ public class DietsLoader implements IdentifiableResourceReloadListener {
         }, prepareExecutor);
         CompletableFuture<Map<Race, DietProfile>> profilesFuture = CompletableFuture.supplyAsync(() -> {
             Map<Race, DietProfile> profiles = new HashMap<>();
-            for (var entry : loadData(manager, prepareExecutor, "diets/races").entrySet()) {
+            for (var entry : loadData(manager, prepareExecutor, "diet/races").entrySet()) {
                 Identifier id = entry.getKey();
                 try {
                     Race.REGISTRY.getOrEmpty(id).ifPresentOrElse(race -> {

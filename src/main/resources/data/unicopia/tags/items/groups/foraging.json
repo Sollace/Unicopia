@@ -1,16 +1,16 @@
 {
   "replace": false,
   "values": [
-    "#unicopia:food_types/forage_dangerous",
-    "#unicopia:food_types/forage_edible_filling",
-    "#unicopia:food_types/forage_edible",
-    "#unicopia:food_types/forage_nauseating",
-    "#unicopia:food_types/forage_blinding",
-    "#unicopia:food_types/forage_prickly",
-    "#unicopia:food_types/forage_radioactive",
-    "#unicopia:food_types/forage_risky",
-    "#unicopia:food_types/forage_severely_nauseating",
-    "#unicopia:food_types/forage_severely_prickly",
-    "#unicopia:food_types/forage_strengthening"
+    "#unicopia:forage/dangerous",
+    "#unicopia:forage/filling",
+    "#unicopia:forage/safe",
+    "#unicopia:forage/nauseating",
+    "#unicopia:forage/blinding",
+    "#unicopia:forage/prickly",
+    "#unicopia:forage/glowing",
+    "#unicopia:forage/risky",
+    "#unicopia:forage/severe/nauseating",
+    "#unicopia:forage/severe/prickly",
+    "#unicopia:forage/strenghtening"
   ]
 }
