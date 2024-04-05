@@ -235,7 +235,7 @@ public interface UItems {
 
     Item COOKED_TROPICAL_FISH = register("cooked_tropical_fish", new Item(new Item.Settings().food(FoodComponents.COOKED_COD)), ItemGroups.FOOD_AND_DRINK);
     Item COOKED_PUFFERFISH = register("cooked_pufferfish", new Item(new Item.Settings().food(FoodComponents.COOKED_COD)), ItemGroups.FOOD_AND_DRINK);
-    Item FRIED_AXOLOTL = register("fried_axolotl", new ConsumableItem(new Item.Settings().food(FoodComponents.COOKED_CHICKEN).recipeRemainder(Items.BUCKET), UseAction.EAT), ItemGroups.FOOD_AND_DRINK);
+    Item FRIED_AXOLOTL = register("fried_axolotl", new ConsumableItem(new Item.Settings().food(FoodComponents.COOKED_CHICKEN).maxCount(1).recipeRemainder(Items.BUCKET), UseAction.EAT), ItemGroups.FOOD_AND_DRINK);
     Item GREEN_FRIED_EGG = register("green_fried_egg", new Item(new Item.Settings().food(UFoodComponents.FRIED_EGG)), ItemGroups.FOOD_AND_DRINK);
 
     Item CARAPACE = register("carapace", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
