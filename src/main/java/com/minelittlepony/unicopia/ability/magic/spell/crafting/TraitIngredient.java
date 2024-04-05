@@ -23,7 +23,10 @@ public record TraitIngredient (
     private static final Codec<TraitIngredient> STRUCTURED_CODEC = RecordCodecBuilder.<TraitIngredient>create(instance -> instance.group(
             SpellTraits.CODEC.optionalFieldOf("min").forGetter(TraitIngredient::min),
             SpellTraits.CODEC.optionalFieldOf("max").forGetter(TraitIngredient::max)
-    ).apply(instance, TraitIngredient::new));
+    ).apply(instance, TraitIngredient::new)).flatXmap(
+            ingredient -> !ingredient.isEmpty() ? DataResult.success(ingredient) : DataResult.error(() -> "No min or max supplied for ingredient"),
+            DataResult::success
+    );
     public static final Codec<TraitIngredient> CODEC = Codecs.xor(INLINE_CODEC, STRUCTURED_CODEC).flatXmap(
             either -> either.left().or(either::right).map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Invalid traits")),
             ingredient -> DataResult.success(ingredient.max.isEmpty() ? Either.left(ingredient) : Either.right(ingredient))
