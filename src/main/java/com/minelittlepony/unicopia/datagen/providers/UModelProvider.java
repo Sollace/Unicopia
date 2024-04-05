@@ -19,6 +19,7 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.data.client.ModelIds;
+import net.minecraft.data.client.Models;
 import net.minecraft.data.client.TextureKey;
 import net.minecraft.data.client.TextureMap;
 
@@ -57,21 +58,24 @@ public class UModelProvider extends FabricModelProvider {
     public void generateItemModels(ItemModelGenerator itemModelGenerator) {
         ItemModels.register(itemModelGenerator,
                 UItems.ACORN, UItems.APPLE_PIE_HOOF, UItems.APPLE_PIE_SLICE, UItems.APPLE_PIE,
-                UItems.BANANA, UItems.BOTCHED_GEM, UItems.BROKEN_SUNGLASSES, UItems.BURNED_JUICE, UItems.BURNED_TOAST,
-                UItems.CARAPACE, UItems.CLAM_SHELL, UItems.COOKED_ZAP_APPLE, UItems.CLOUD_LUMP, UItems.CRISPY_HAY_FRIES, UItems.CRYSTAL_HEART, UItems.CRYSTAL_SHARD,
+                UItems.BANANA, UItems.BOTCHED_GEM, UItems.BOWL_OF_NUTS, UItems.BROKEN_SUNGLASSES, UItems.BURNED_JUICE, UItems.BURNED_TOAST,
+                UItems.CARAPACE, UItems.CLAM_SHELL, UItems.COOKED_ZAP_APPLE, UItems.CHOCOLATE_OATMEAL_COOKIE,
+                    UItems.CLOUD_LUMP, UItems.CRISPY_HAY_FRIES, UItems.CRYSTAL_HEART, UItems.CRYSTAL_SHARD,
+                    UItems.COOKED_TROPICAL_FISH, UItems.COOKED_PUFFERFISH, UItems.FRIED_AXOLOTL,
                 UItems.DAFFODIL_DAISY_SANDWICH, UItems.DRAGON_BREATH_SCROLL,
                 UItems.EMPTY_JAR,
                 UItems.FRIENDSHIP_BRACELET,
                 UItems.GIANT_BALLOON, UItems.GOLDEN_FEATHER, UItems.GOLDEN_OAK_SEEDS, UItems.GOLDEN_WING, UItems.GREEN_APPLE_SEEDS, UItems.GREEN_APPLE, UItems.GROGARS_BELL,
-                    UItems.GRYPHON_FEATHER,
+                    UItems.GRYPHON_FEATHER, UItems.GREEN_FRIED_EGG,
                 UItems.HAY_BURGER, UItems.HAY_FRIES, UItems.HORSE_SHOE_FRIES,
                 UItems.IMPORTED_OATS,
                 UItems.JAM_TOAST, UItems.JUICE,
                 UItems.LIGHTNING_JAR,
                 UItems.MANGO, UItems.MUFFIN,
-                UItems.OATMEAL,
-                UItems.PEBBLES, UItems.PEGASUS_FEATHER, UItems.PINECONE, UItems.PINEAPPLE_CROWN,
-                UItems.RAIN_CLOUD_JAR, UItems.ROCK_STEW, UItems.ROCK, UItems.ROTTEN_APPLE,
+                UItems.OATMEAL, UItems.OATMEAL_COOKIE, UItems.SCONE,
+                UItems.PEBBLES, UItems.PEGASUS_FEATHER, UItems.PINECONE, UItems.PINECONE_COOKIE, UItems.PINEAPPLE_CROWN,
+                UItems.RAIN_CLOUD_JAR, UItems.ROCK_STEW, UItems.ROCK,
+                    UItems.ROTTEN_APPLE, UItems.ROTTEN_COD, UItems.ROTTEN_TROPICAL_FISH, UItems.ROTTEN_SALMON, UItems.ROTTEN_PUFFERFISH,
                 UItems.SALT_CUBE, UItems.SCALLOP_SHELL, UItems.SHELLY, UItems.SOUR_APPLE_SEEDS, UItems.SOUR_APPLE, UItems.SPELLBOOK, UItems.STORM_CLOUD_JAR,
                     UItems.SWEET_APPLE_SEEDS, UItems.SWEET_APPLE,
                 UItems.TOAST, UItems.TOM, UItems.TURRET_SHELL,
@@ -105,7 +109,10 @@ public class UModelProvider extends FabricModelProvider {
                 .put(TextureKey.LAYER1, ModelIds.getItemSubModelId(UItems.MAGIC_STAFF, "_magic")), itemModelGenerator.writer);
 
         // polearms
-        List.of(UItems.DIAMOND_POLEARM, UItems.GOLDEN_POLEARM, UItems.NETHERITE_POLEARM, UItems.STONE_POLEARM, UItems.WOODEN_POLEARM, UItems.IRON_POLEARM).forEach(item -> ItemModels.registerPolearm(itemModelGenerator, item));
+        List.of(
+                UItems.DIAMOND_POLEARM, UItems.GOLDEN_POLEARM, UItems.NETHERITE_POLEARM,
+                UItems.STONE_POLEARM, UItems.WOODEN_POLEARM, UItems.IRON_POLEARM
+        ).forEach(item -> ItemModels.registerPolearm(itemModelGenerator, item));
         // sheets
         ItemModels.register(itemModelGenerator, BedsheetsItem.ITEMS.values().stream().toArray(Item[]::new));
         // badges
@@ -133,5 +140,8 @@ public class UModelProvider extends FabricModelProvider {
                 .addOverride(ModelIds.getItemSubModelId(UItems.GEMSTONE, "_pure"), "affinity", 0)
                 .addOverride(ModelIds.getItemSubModelId(UItems.GEMSTONE, "_corrupted"), "affinity", 1)
                 .upload(UItems.GEMSTONE, itemModelGenerator);
+
+        // fishing rod
+        ItemModels.register(itemModelGenerator, Models.HANDHELD_ROD, UItems.BAITED_FISHING_ROD);
     }
 }

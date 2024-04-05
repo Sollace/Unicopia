@@ -27,18 +27,13 @@ archivesBaseName = project.name
 loom {
     mixin.defaultRefmapName = 'unicopia.mixin.refmap.json'
     accessWidenerPath = file('src/main/resources/unicopia.aw')
-    runs {
-        datagen {
-            server()
-            name "Data Generation"
-            vmArg "-Dfabric-api.datagen"
-            vmArg "-Dfabric-api.datagen.modid=unicopia"
-            vmArg "-Dfabric-api.datagen.output-dir=${file("src/main/generated")}"
-            runDir "build/datagen"
-        }
+}
+
+fabricApi {
+    configureDataGeneration {
+      modId = 'unicopia'
     }
 }
-//assemble.dependsOn(runDatagen)
 
 reckon {
     scopeFromProp()
@@ -48,13 +43,15 @@ reckon {
 repositories {
     mavenLocal()
     flatDir { dirs 'lib' }
-    maven { name 'entity-reach-attributes'; url 'https://maven.jamieswhiteshirt.com/libs-release' }
+    maven { name 'entity-reach-attributes'; url 'https://maven.jamieswhiteshirt.com/libs-release'; content { includeGroup "com.jamieswhiteshirt" } }
     maven { name 'trinkets'; url 'https://maven.ladysnake.org/releases' }
     maven { name 'mod-menu'; url 'https://maven.terraformersmc.com/' }
     maven { name 'minelp-snapshot'; url 'https://repo.minelittlepony-mod.com/maven/snapshot' }
     maven { name 'minelp-releases'; url 'https://repo.minelittlepony-mod.com/maven/release' }
     maven { name 'TerraformersMC'; url 'https://maven.terraformersmc.com/' }
     maven { name 'Nodium'; url 'https://maven.cafeteria.dev/releases/' }
+    maven { name 'Greenhouse Maven For Farmers delight'; url 'https://maven.greenhouseteam.dev/releases/' }
+    maven { name 'Porting Lib For Farmers delight'; url = 'https://mvn.devos.one/releases/' }
     maven { name 'Modrinth'; url 'https://api.modrinth.com/maven' }
     maven { name 'JitPack'; url 'https://jitpack.io'; content { includeGroup "com.github.Virtuoel" } }
 }
@@ -86,11 +83,13 @@ dependencies {
 
     modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
     include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
-    
+
     modImplementation "me.luligabi:NoIndium:${project.nodium_version}"
     include "me.luligabi:NoIndium:${project.nodium_version}"
 
-    //modCompileOnly "maven.modrinth:farmers-delight-fabric:${project.farmers_delight_version}", { exclude group: "net.fabricmc.fabric-api" }
+    //modImplementation "vectorwing:FarmersDelight-Refabricated:${project.farmers_delight_version}", {
+    //  exclude group: "net.fabricmc"
+    //}
     if (project.use_pehkui == '1') {
       modCompileOnly "maven.modrinth:pehkui:${project.pehkui_version}", { exclude group: "net.fabricmc.fabric-api" }
       modCompileOnly "com.github.Virtuoel:KanosConfig:0.4.1", { exclude group: "net.fabricmc.fabric-api" }
@@ -109,12 +108,8 @@ dependencies {
     }
 }
 
-sourceSets {
-  main {
-    resources {
-      srcDirs += [ "src/main/generated" ]
-    }
-  }
+remapJar {
+    addNestedDependencies = true
 }
 
 processResources {

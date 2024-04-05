@@ -7,10 +7,7 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.command.CommandArgumentEnum;
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-
 import net.minecraft.command.argument.EnumArgumentType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -20,7 +17,6 @@ import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.dynamic.Codecs;
 
 public enum Trait implements CommandArgumentEnum<Trait> {
     /**
@@ -64,14 +60,10 @@ public enum Trait implements CommandArgumentEnum<Trait> {
     BLOOD(TraitGroup.DARKNESS);
 
     private static final Map<Identifier, Trait> IDS = Arrays.stream(values()).collect(Collectors.toMap(Trait::getId, Function.identity()));
-    @Deprecated
-    private static final EnumCodec<Trait> NAME_CODEC = StringIdentifiable.createCodec(Trait::values, String::toLowerCase);
-    @Deprecated
-    private static final EnumCodec<Trait> ID_CODEC = StringIdentifiable.createCodec(Trait::values, i -> "unicopia:" + i);
-
-    public static final Codec<Trait> CODEC = Codecs.xor(NAME_CODEC, ID_CODEC).flatXmap(
-            either -> either.left().or(either::right).map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Not a proper trait")),
-            trait -> DataResult.success(Either.right(trait))
+    public static final EnumCodec<Trait> CODEC = StringIdentifiable.createCodec(Trait::values, n -> n.toLowerCase(Locale.ROOT));
+    public static final Codec<Set<Trait>> SET_CODEC = CODEC.listOf().xmap(
+            l -> l.stream().distinct().collect(Collectors.toSet()),
+            s -> s.stream().toList()
     );
 
     private final Identifier id;
@@ -115,7 +107,7 @@ public enum Trait implements CommandArgumentEnum<Trait> {
 
     @Override
     public String asString() {
-        return name();
+        return getId().getPath();
     }
 
     public TraitGroup getGroup() {
@@ -173,7 +165,7 @@ public enum Trait implements CommandArgumentEnum<Trait> {
 
     @Deprecated
     public static Optional<Trait> fromName(String name) {
-        return Optional.ofNullable(NAME_CODEC.byId(name));
+        return Optional.ofNullable(CODEC.byId(name));
     }
 
     public static EnumArgumentType<Trait> argument() {

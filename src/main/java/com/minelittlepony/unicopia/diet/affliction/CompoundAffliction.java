@@ -7,11 +7,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 
-class CompoundAffliction implements Affliction {
+public class CompoundAffliction implements Affliction {
     public final List<Affliction> afflictions;
 
     public CompoundAffliction(List<Affliction> afflictions) {
         this.afflictions = afflictions;
+    }
+
+    public static CompoundAffliction of(Affliction...afflictions) {
+        return new CompoundAffliction(List.of(afflictions));
     }
 
     public CompoundAffliction(PacketByteBuf buffer) {

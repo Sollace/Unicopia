@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.*;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.minelittlepony.unicopia.recipe.URecipes;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -15,12 +16,10 @@ import net.minecraft.world.World;
 /**
  * Recipe for adding traits to an existing spell.
  */
-public class SpellEnhancingRecipe implements SpellbookRecipe {
-    final IngredientWithSpell material;
-
-    private SpellEnhancingRecipe(IngredientWithSpell material) {
-        this.material = material;
-    }
+public record SpellEnhancingRecipe (IngredientWithSpell material) implements SpellbookRecipe {
+    public static final Codec<SpellEnhancingRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            IngredientWithSpell.CODEC.fieldOf("material").forGetter(recipe -> recipe.material)
+    ).apply(instance, SpellEnhancingRecipe::new));
 
     public IngredientWithSpell getBaseMaterial() {
         return material;
@@ -65,10 +64,6 @@ public class SpellEnhancingRecipe implements SpellbookRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<SpellEnhancingRecipe> {
-        private static final Codec<SpellEnhancingRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            IngredientWithSpell.CODEC.fieldOf("material").forGetter(recipe -> recipe.material)
-        ).apply(instance, SpellEnhancingRecipe::new));
-
         @Override
         public Codec<SpellEnhancingRecipe> codec() {
             return CODEC;
@@ -81,7 +76,7 @@ public class SpellEnhancingRecipe implements SpellbookRecipe {
 
         @Override
         public void write(PacketByteBuf buf, SpellEnhancingRecipe recipe) {
-            recipe.material.write(buf);
+            recipe.material().write(buf);
         }
     }
 }

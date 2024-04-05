@@ -145,7 +145,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
             return;
         } else {
             ItemStack stack = asItemStack();
-            if (stack.isIn(UTags.HORSE_SHOES)) {
+            if (stack.isIn(UTags.Items.HORSE_SHOES)) {
                 if (stack.damage(1 + random.nextInt(10), random, null)) {
                     playSound(USounds.Vanilla.ENTITY_ITEM_BREAK, 1, 1);
                 } else {
@@ -205,7 +205,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
             boolean ownerCanModify = !getWorld().isClient && Caster.of(getOwner()).filter(pony -> pony.canModifyAt(hit.getBlockPos())).isPresent();
 
             if (ownerCanModify && getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
-                if ((!isBouncy() || getWorld().random.nextInt(200) == 0) && state.isIn(UTags.FRAGILE)) {
+                if ((!isBouncy() || getWorld().random.nextInt(200) == 0) && state.isIn(UTags.Blocks.FRAGILE)) {
                     getWorld().breakBlock(hit.getBlockPos(), true);
                 }
             }
@@ -246,7 +246,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
         emitGameEvent(GameEvent.STEP);
 
         if (!isBouncy()) {
-            if (stack.isIn(UTags.HORSE_SHOES)) {
+            if (stack.isIn(UTags.Items.HORSE_SHOES)) {
                 if (stack.damage(1 + random.nextInt(10), random, null)) {
                     playSound(USounds.Vanilla.ENTITY_ITEM_BREAK, 1, 1);
                     discard();
@@ -262,7 +262,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     @Override
     protected SoundEvent getHitSound() {
-        if (getStack().isIn(UTags.HORSE_SHOES)) {
+        if (getStack().isIn(UTags.Items.HORSE_SHOES)) {
             return USounds.Vanilla.ITEM_TRIDENT_HIT_GROUND;
         }
         return isBouncy() ? USounds.ITEM_MUFFIN_BOUNCE.value() : USounds.ITEM_ROCK_LAND;

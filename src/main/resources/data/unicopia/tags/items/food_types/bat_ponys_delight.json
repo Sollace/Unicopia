@@ -1,8 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "unicopia:mango",
-    { "id": "#c:mango", "required": false },
-    { "id": "#c:mangoes", "required": false }
-  ]
-}

@@ -111,7 +111,7 @@ public class ItemImpl implements Equine<ItemEntity> {
                     });
             }
 
-            if (stack.isIn(UTags.FALLS_SLOWLY)) {
+            if (stack.isIn(UTags.Items.FALLS_SLOWLY)) {
                 if (!entity.isOnGround() && Math.signum(entity.getVelocity().y) != getPhysics().getGravitySignum()) {
                     double ticks = ((Entity)entity).age;
                     double shift = Math.sin(ticks / 9D) / 9D;
@@ -160,7 +160,7 @@ public class ItemImpl implements Equine<ItemEntity> {
 
     @Override
     public boolean collidesWithClouds() {
-        return entity.getStack().isIn(UTags.FLOATS_ON_CLOUDS) || getSpecies().canInteractWithClouds();
+        return entity.getStack().isIn(UTags.Items.FLOATS_ON_CLOUDS) || getSpecies().hasPersistentWeatherMagic();
     }
 
     @Override

@@ -12,6 +12,8 @@ import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.util.CodecUtils;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
@@ -35,6 +37,17 @@ public class IngredientWithSpell implements Predicate<ItemStack> {
     private final Optional<SpellType<?>> spell;
 
     private final Supplier<ItemStack[]> stacks;
+
+    public static IngredientWithSpell mundane(ItemConvertible item) {
+        return new IngredientWithSpell(Optional.of(Ingredient.ofItems(item)), Optional.empty());
+    }
+
+    public static IngredientWithSpell of(ItemConvertible base, SpellType<?> spell) {
+        if (spell == SpellType.EMPTY_KEY) {
+            return mundane(base);
+        }
+        return new IngredientWithSpell(Optional.of(Ingredient.ofItems(base)), Optional.of(spell));
+    }
 
     private IngredientWithSpell(Optional<Ingredient> stack, Optional<SpellType<?>> spell) {
         this.stack = stack;

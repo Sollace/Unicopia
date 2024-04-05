@@ -2,7 +2,7 @@
   "replace": false,
   "traits": "happiness:10 kindness:10",
   "items": [
-    "#c:love",
+    "#unicopia:container_with_love",
     "#unicopia:clouds"
   ]
 }

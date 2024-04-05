@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
 import com.minelittlepony.unicopia.item.EnchantableItem;
-import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.entity.collision;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -22,6 +23,12 @@ public final class MultiBox extends Box {
 
     public static Box unbox(Box box) {
         return box instanceof MultiBox m ? m.first : box;
+    }
+
+    public static void forEach(Box box, Consumer<Box> consumer) {
+        if (box instanceof MultiBox m) {
+            m.children.forEach(consumer);
+        }
     }
 
     private MultiBox(Box first, BoxChildren children) {
@@ -146,6 +153,12 @@ public final class MultiBox extends Box {
                 }
             }
             return false;
+        }
+
+        public void forEach(Consumer<Box> consumer) {
+            for (int i = 0; i < children.length; i++) {
+                consumer.accept(children[i]);
+            }
         }
 
         @Override

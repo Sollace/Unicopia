@@ -17,6 +17,10 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 17
+      - name: Prepare Datagen
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: rundatagen
       - name: Publish Modrinth Jar
         env:
           MODRINTH_KEY: ${{ secrets.MODRINTH_KEY }}

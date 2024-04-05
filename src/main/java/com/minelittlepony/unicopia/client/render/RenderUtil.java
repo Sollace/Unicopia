@@ -12,7 +12,8 @@ import net.minecraft.client.util.math.MatrixStack;
 
 public class RenderUtil {
     public static final Vector4f TEMP_VECTOR = new Vector4f();
-    private static final Vector4f TEMP_UV_VECTOR = new Vector4f();
+    public static final Vector4f TEMP_UV_VECTOR = new Vector4f();
+    public static final Vector3f TEMP_NORMAL_VECTOR = new Vector3f();
     public static final Vertex[] UNIT_FACE = new Vertex[] {
             new Vertex(0, 0, 0, 1, 1),
             new Vertex(0, 1, 0, 1, 0),
@@ -25,6 +26,9 @@ public class RenderUtil {
             new Vertex(1, 0, 0, 1, 1),
             new Vertex(0, 0, 0, 0, 1)
     };
+
+
+
 
     public static void renderFace(MatrixStack matrices, Tessellator te, BufferBuilder buffer, float r, float g, float b, float a, int light) {
         renderFace(matrices, te, buffer, r, g, b, a, light, 1, 1);

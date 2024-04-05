@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.*;
+import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -16,12 +17,10 @@ import net.minecraft.world.World;
 /**
  * A recipe for creating a new spell from input traits and items.
  */
-public class SpellDuplicatingRecipe implements SpellbookRecipe {
-    final IngredientWithSpell material;
-
-    private SpellDuplicatingRecipe(IngredientWithSpell material) {
-        this.material = material;
-    }
+public record SpellDuplicatingRecipe (IngredientWithSpell material) implements SpellbookRecipe {
+    public static final Codec<SpellDuplicatingRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            IngredientWithSpell.CODEC.fieldOf("material").forGetter(recipe -> recipe.material)
+    ).apply(instance, SpellDuplicatingRecipe::new));
 
     @Override
     public void buildCraftingTree(CraftingTreeBuilder builder) {
@@ -81,10 +80,6 @@ public class SpellDuplicatingRecipe implements SpellbookRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<SpellDuplicatingRecipe> {
-        private static final Codec<SpellDuplicatingRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                IngredientWithSpell.CODEC.fieldOf("material").forGetter(recipe -> recipe.material)
-        ).apply(instance, SpellDuplicatingRecipe::new));
-
         @Override
         public Codec<SpellDuplicatingRecipe> codec() {
             return CODEC;

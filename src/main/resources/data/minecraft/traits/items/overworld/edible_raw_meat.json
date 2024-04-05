@@ -2,6 +2,6 @@
   "replace": false,
   "traits": "blood:1 famine:-2",
   "items": [
-    "#c:raw_meats"
+    "#c:raw_meat"
   ]
 }

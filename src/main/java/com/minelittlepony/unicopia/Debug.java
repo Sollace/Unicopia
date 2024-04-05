@@ -51,7 +51,7 @@ public interface Debug {
         )).forEach((namespace, entries) -> {
             @SuppressWarnings("deprecation")
             var unregistered = entries.stream()
-                .filter(entry -> !entry.getValue().getRegistryEntry().isIn(UTags.HAS_NO_TRAITS) && SpellTraits.of(entry.getValue()).isEmpty())
+                .filter(entry -> !entry.getValue().getRegistryEntry().isIn(UTags.Items.HAS_NO_TRAITS) && SpellTraits.of(entry.getValue()).isEmpty())
                 .map(entry -> {
                     String id = entry.getKey().getValue().toString();
 

@@ -74,7 +74,7 @@ public class HorseShoeItem extends HeavyProjectileItem {
     }
 
     @Override
-    protected PhysicsBodyProjectileEntity createProjectile(ItemStack stack, World world, @Nullable PlayerEntity player) {
+    public PhysicsBodyProjectileEntity createProjectile(ItemStack stack, World world, @Nullable PlayerEntity player) {
         PhysicsBodyProjectileEntity projectile = super.createProjectile(stack, world, player);
         projectile.setDamageType(UDamageTypes.HORSESHOE);
 
@@ -99,7 +99,7 @@ public class HorseShoeItem extends HeavyProjectileItem {
     }
 
     @Override
-    protected SoundEvent getThrowSound(ItemStack stack) {
+    public SoundEvent getThrowSound(ItemStack stack) {
         return USounds.Vanilla.ITEM_TRIDENT_THROW;
     }
 

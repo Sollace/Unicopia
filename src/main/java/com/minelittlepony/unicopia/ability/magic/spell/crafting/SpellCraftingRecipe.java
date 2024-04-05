@@ -9,7 +9,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.EnchantableItem;
-import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.util.CodecUtils;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 import com.mojang.datafixers.util.Pair;
@@ -47,7 +47,7 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
      */
     final ItemStack output;
 
-    private SpellCraftingRecipe(IngredientWithSpell material, TraitIngredient requiredTraits, List<IngredientWithSpell> requiredItems, ItemStack output) {
+    public SpellCraftingRecipe(IngredientWithSpell material, TraitIngredient requiredTraits, List<IngredientWithSpell> requiredItems, ItemStack output) {
         this.material = material;
         this.requiredTraits = requiredTraits;
         this.requiredItems = requiredItems;

@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.container;
 
 import com.minelittlepony.unicopia.block.UBlocks;
-import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.recipe.URecipes;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;

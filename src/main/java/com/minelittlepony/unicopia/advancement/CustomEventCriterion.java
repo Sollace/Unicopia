@@ -10,6 +10,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.entity.Entity;
 import net.minecraft.predicate.entity.EntityPredicate;
@@ -35,6 +36,22 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
 
     public interface Trigger {
         void trigger(@Nullable Entity player);
+    }
+
+    public static AdvancementCriterion<?> create(String name) {
+        return UCriteria.CUSTOM_EVENT.create(new Conditions(Optional.empty(), name, RacePredicate.EMPTY, TriState.DEFAULT, 1));
+    }
+
+    public static AdvancementCriterion<?> create(String name, int count) {
+        return UCriteria.CUSTOM_EVENT.create(new Conditions(Optional.empty(), name, RacePredicate.EMPTY, TriState.DEFAULT, count));
+    }
+
+    public static AdvancementCriterion<?> createFlying(String name) {
+        return UCriteria.CUSTOM_EVENT.create(new Conditions(Optional.empty(), name, RacePredicate.EMPTY, TriState.TRUE, 1));
+    }
+
+    public static AdvancementCriterion<?> createFlying(String name, int count) {
+        return UCriteria.CUSTOM_EVENT.create(new Conditions(Optional.empty(), name, RacePredicate.EMPTY, TriState.TRUE, count));
     }
 
     public record Conditions (

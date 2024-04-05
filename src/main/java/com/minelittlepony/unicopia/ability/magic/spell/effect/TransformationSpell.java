@@ -66,7 +66,7 @@ public class TransformationSpell extends AbstractSpell implements ProjectileDele
 
     @SuppressWarnings("unchecked")
     private <T extends MobEntity> Optional<EntityType<T>> pickType(EntityType<?> except, World world) {
-        Set<EntityType<?>> options = RegistryUtils.valuesForTag(world, UTags.TRANSFORMABLE_ENTITIES).collect(Collectors.toSet());
+        Set<EntityType<?>> options = RegistryUtils.valuesForTag(world, UTags.Entities.TRANSFORMABLE).collect(Collectors.toSet());
         if (except.getSpawnGroup() == SpawnGroup.MONSTER) {
             options.removeIf(t -> t.getSpawnGroup() == SpawnGroup.MONSTER);
         } else {

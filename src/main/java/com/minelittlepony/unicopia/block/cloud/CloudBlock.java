@@ -185,7 +185,7 @@ public class CloudBlock extends Block implements CloudLike {
     }
 
     protected boolean canInteract(BlockState state, BlockView world, BlockPos pos, EquineContext context) {
-        return context.collidesWithClouds();
+        return context.collidesWithClouds() || context.hasFeatherTouch();
     }
 
     @SuppressWarnings("deprecation")

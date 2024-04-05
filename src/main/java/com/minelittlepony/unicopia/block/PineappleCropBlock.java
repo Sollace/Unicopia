@@ -47,7 +47,7 @@ public class PineappleCropBlock extends CropBlock {
     }
 
     @Override
-    protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+    public boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
         return floor.isOf(this) || super.canPlantOnTop(floor, world, pos);
     }
 

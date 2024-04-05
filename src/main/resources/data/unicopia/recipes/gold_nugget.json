@@ -1,9 +1,0 @@
-{
-  "type": "smelting",
-  "ingredient": {
-    "item": "unicopia:golden_oak_seeds"
-  },
-  "result": "minecraft:gold_nugget",
-  "experience": 0.2,
-  "cookingtime": 10
-}

@@ -9,7 +9,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 
 public class EnchantedFruitBlock extends FruitBlock {
-    static final BooleanProperty ENCHANTED = BooleanProperty.of("enchanted");
+    public static final BooleanProperty ENCHANTED = BooleanProperty.of("enchanted");
 
     private static final MapCodec<EnchantedFruitBlock> CODEC = createCodec(EnchantedFruitBlock::new);
 

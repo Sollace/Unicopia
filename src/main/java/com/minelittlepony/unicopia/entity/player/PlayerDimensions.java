@@ -25,11 +25,7 @@ public final class PlayerDimensions {
                 .or(() -> physics.isFlyingSurvival ? FLYING_EYE_HEIGHT : physics.isGravityNegative() ? Optional.of(dimensions.height) : Optional.empty())
                 .map(h -> {
                     if (physics.isGravityNegative()) {
-                        if (pony.asEntity().isSneaking()) {
-                            h += 0.2F;
-                        }
-
-                        return dimensions.height - h;
+                        return dimensions.height - h + 0.1F;
                     }
                     return h;
                 });

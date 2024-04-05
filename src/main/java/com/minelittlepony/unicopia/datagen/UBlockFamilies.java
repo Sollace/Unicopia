@@ -19,4 +19,24 @@ public interface UBlockFamilies {
             .slab(UBlocks.WAXED_ZAP_SLAB).stairs(UBlocks.WAXED_ZAP_STAIRS).fence(UBlocks.WAXED_ZAP_FENCE).fenceGate(UBlocks.WAXED_ZAP_FENCE_GATE)
             .group("wooden").unlockCriterionName("has_planks")
             .build();
+    BlockFamily CHISELED_CHITIN = new BlockFamily.Builder(UBlocks.CHISELLED_CHITIN)
+            .slab(UBlocks.CHISELLED_CHITIN_SLAB).stairs(UBlocks.CHISELLED_CHITIN_STAIRS)
+            .group("chitin").unlockCriterionName("has_chiselled_chitin")
+            .build();
+    BlockFamily CLOUD = new BlockFamily.Builder(UBlocks.CLOUD)
+            .slab(UBlocks.CLOUD_SLAB).stairs(UBlocks.CLOUD_STAIRS)
+            .group("cloud").unlockCriterionName("has_cloud_lump")
+            .build();
+    BlockFamily CLOUD_PLANKS = new BlockFamily.Builder(UBlocks.CLOUD_PLANKS)
+            .slab(UBlocks.CLOUD_PLANK_SLAB).stairs(UBlocks.CLOUD_PLANK_STAIRS)
+            .group("cloud").unlockCriterionName("has_cloud")
+            .build();
+    BlockFamily CLOUD_BRICKS = new BlockFamily.Builder(UBlocks.CLOUD_BRICKS)
+            .slab(UBlocks.CLOUD_BRICK_SLAB).stairs(UBlocks.CLOUD_BRICK_STAIRS)
+            .group("cloud").unlockCriterionName("has_cloud_bricks")
+            .build();
+    BlockFamily DENSE_CLOUD = new BlockFamily.Builder(UBlocks.DENSE_CLOUD)
+            .slab(UBlocks.DENSE_CLOUD_SLAB).stairs(UBlocks.DENSE_CLOUD_STAIRS)
+            .group("cloud").unlockCriterionName("has_dense_cloud")
+            .build();
 }

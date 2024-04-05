@@ -119,7 +119,7 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
     }
 
     @Override
-    protected boolean canPlantOnTop(BlockState state, BlockView view, BlockPos pos) {
+    public boolean canPlantOnTop(BlockState state, BlockView view, BlockPos pos) {
         return (state.getBlock() instanceof SegmentedCropBlock o && o.canSupportBlock(this, state, view, pos)) || super.canPlantOnTop(state, view, pos);
     }
 
@@ -226,4 +226,8 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
         return state.getBlock() == this || (nextSegmentSupplier != null && nextSegmentSupplier.get().isNext(state));
     }
 
+    @Nullable
+    public SegmentedCropBlock getNext() {
+        return nextSegmentSupplier == null ? null : nextSegmentSupplier.get();
+    }
 }

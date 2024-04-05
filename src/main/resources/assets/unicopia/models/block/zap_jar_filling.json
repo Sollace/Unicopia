@@ -1,0 +1,20 @@
+{
+	"textures": {
+		"filling": "unicopia:block/zap_jar_filling",
+		"particle": "#filling"
+	},
+	"elements": [
+		{
+			"from": [4.1, 0.1, 4.1],
+			"to": [11.9, 9.9, 11.9],
+			"faces": {
+				"north": {"uv": [0, 2, 8, 12], "texture": "#filling"},
+				"east": {"uv": [0, 6, 8, 16], "texture": "#filling"},
+				"south": {"uv": [8, 6, 16, 16], "texture": "#filling"},
+				"west": {"uv": [8, 0, 16, 10], "texture": "#filling"},
+				"up": {"uv": [4, 3, 12, 11], "texture": "#filling"},
+				"down": {"uv": [8, 4, 16, 12], "texture": "#filling"}
+			}
+		}
+	]
+}

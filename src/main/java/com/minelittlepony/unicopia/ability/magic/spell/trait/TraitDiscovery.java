@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.trait;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgMarkTraitRead;
@@ -76,8 +78,11 @@ public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery>
         });
         unreadTraits.addAll(newTraits);
         pony.setDirty();
-        if (!newTraits.isEmpty() && !pony.asWorld().isClient) {
-            Channel.UNLOCK_TRAITS.sendToPlayer(new MsgUnlockTraits(newTraits), (ServerPlayerEntity)pony.asEntity());
+        if (!newTraits.isEmpty()) {
+            if (!pony.asWorld().isClient) {
+                Channel.UNLOCK_TRAITS.sendToPlayer(new MsgUnlockTraits(newTraits), (ServerPlayerEntity)pony.asEntity());
+            }
+            UCriteria.TRAIT_DISCOVERED.trigger(pony.asEntity());
         }
     }
 
@@ -101,6 +106,10 @@ public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery>
 
     public boolean isKnown(Trait trait) {
         return traits.contains(trait);
+    }
+
+    public boolean isKnown(Collection<Trait> traits) {
+        return traits.containsAll(traits);
     }
 
     @Environment(EnvType.CLIENT)
