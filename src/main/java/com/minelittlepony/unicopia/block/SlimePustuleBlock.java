@@ -199,7 +199,7 @@ public class SlimePustuleBlock extends Block {
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         super.onStateReplaced(state, world, pos, newState, moved);
         if (state.isOf(this) && newState.isOf(this) && state.get(POWERED) != newState.get(POWERED)) {
-            world.updateNeighbor(pos.up(), this, pos);
+            world.updateNeighborsAlways(pos.up(), this);
         }
     }
 
