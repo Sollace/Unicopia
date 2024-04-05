@@ -4,8 +4,10 @@ import java.util.Optional;
 
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.UseAction;
@@ -29,7 +31,16 @@ public class ConsumableItem extends Item {
             serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
         }
 
-        return stack.isEmpty() ? Optional.ofNullable(getRecipeRemainder()).map(Item::getDefaultStack).orElse(ItemStack.EMPTY) : stack;
+        if (stack.isEmpty()) {
+            return stack.isEmpty() ? Optional.ofNullable(getRecipeRemainder()).map(Item::getDefaultStack).orElse(ItemStack.EMPTY) : stack;
+        }
+
+        if (user instanceof PlayerEntity player) {
+            return Optional.ofNullable(getRecipeRemainder()).map(Item::getDefaultStack).map(remainder -> {
+                return ItemUsage.exchangeStack(stack, player, remainder);
+            }).orElse(stack);
+        }
+        return stack;
     }
 
     @Override
