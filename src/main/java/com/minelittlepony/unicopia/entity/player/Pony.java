@@ -388,6 +388,13 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             boolean mustAvoidAir = getCompositeRace().includes(Race.SEAPONY) && !sw.getFluidState(getOrigin()).isIn(FluidTags.WATER);
             if (mustAvoidSun || mustAvoidAir) {
                 SpawnLocator.selectSpawnPosition(sw, entity, mustAvoidAir, mustAvoidSun);
+                if ((mustAvoidAir && !sw.getFluidState(getOrigin()).isIn(FluidTags.WATER))
+                 || (mustAvoidSun && MeteorlogicalUtil.isPositionExposedToSun(sw, getOrigin()))) {
+                    Race suppressedRace = getSuppressedRace();
+                    if (suppressedRace != Race.UNSET) {
+                        setSpecies(suppressedRace);
+                    }
+                }
             }
         }
         ticksSunImmunity = INITIAL_SUN_IMMUNITY;
@@ -544,7 +551,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         if (getObservedSpecies() == Race.BAT && !entity.hasPortalCooldown()) {
-            boolean hasShades = TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE).anyMatch(s -> s.isIn(UTags.SHADES));
+            boolean hasShades = TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE).anyMatch(s -> s.isIn(UTags.Items.SHADES));
             if (!this.hasShades && hasShades && getObservedSpecies() == Race.BAT) {
                 UCriteria.WEAR_SHADES.trigger(entity);
             }
@@ -631,7 +638,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             float max = 0.6F;
             return Optional.of(new Vec3d(
                     MathHelper.clamp(speed.x * factor, -max, max),
-                    speed.y * ((speed.y * getPhysics().getGravitySignum()) > 0 ? 1.2 : 1.101),
+                    speed.y * (speed.y > 0 ? 1.2 : 1.101),
                     MathHelper.clamp(speed.z * factor, -max, max)
             ));
         }
@@ -715,10 +722,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public Optional<Float> onImpact(float distance, float damageMultiplier, DamageSource cause) {
-
         float originalDistance = distance;
-
-        distance *= gravity.getGravityModifier();
 
         boolean extraProtection = getSpellSlot().get(SpellType.SHIELD, false).isPresent();
 
@@ -750,7 +754,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         if (getObservedSpecies() == Race.KIRIN
-                && (stack.isIn(UTags.COOLS_OFF_KIRINS) || PotionUtil.getPotion(stack) == Potions.WATER)) {
+                && (stack.isIn(UTags.Items.COOLS_OFF_KIRINS) || PotionUtil.getPotion(stack) == Potions.WATER)) {
             getMagicalReserves().getCharge().multiply(0.5F);
             getSpellSlot().get(SpellType.RAGE, false).ifPresent(RageAbilitySpell::setExtenguishing);
         }

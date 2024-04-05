@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -31,6 +30,13 @@ import net.minecraft.world.World;
  * @param <T> The type of the entity this reference points to.
  */
 public class EntityReference<T extends Entity> implements NbtSerialisable {
+    private static final Serializer<?> SERIALIZER = Serializer.of(EntityReference::new);
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Entity> Serializer<EntityReference<T>> getSerializer() {
+        return (Serializer<EntityReference<T>>)SERIALIZER;
+    }
+
     @Nullable
     private EntityValues<T> reference;
 

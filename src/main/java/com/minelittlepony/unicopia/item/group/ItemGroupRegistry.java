@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -57,10 +56,9 @@ public interface ItemGroupRegistry {
         return key;
     }
 
-    static RegistryKey<ItemGroup> createGroupFromTag(String name, Supplier<ItemStack> icon) {
-        TagKey<Item> key = UTags.item("groups/" + name);
+    static RegistryKey<ItemGroup> createGroupFromTag(String name, TagKey<Item> tag, Supplier<ItemStack> icon) {
         return createDynamic(name, icon, () -> {
-            return Registries.ITEM.getEntryList(key)
+            return Registries.ITEM.getEntryList(tag)
                     .stream()
                     .flatMap(named -> named.stream())
                     .map(entry -> entry.value());

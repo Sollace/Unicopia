@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.client;
 import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.event.ScreenInitCallback;
@@ -33,11 +34,14 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.OpenToLanScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class UnicopiaClient implements ClientModInitializer {
 
@@ -64,6 +68,20 @@ public class UnicopiaClient implements ClientModInitializer {
         }
 
         return Optional.empty();
+    }
+
+
+    public static Vec3d getAdjustedSoundPosition(Vec3d pos) {
+        PlayerCamera cam = getCamera().orElse(null);
+        if (cam == null) {
+            return pos;
+        }
+        Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
+
+        Vector3f rotated = pos.subtract(camera.getPos()).toVector3f();
+        rotated = rotated.rotateAxis(cam.calculateRoll() * MathHelper.RADIANS_PER_DEGREE, 0, 1, 0);
+
+        return new Vec3d(rotated).add(camera.getPos());
     }
 
     public static Race getPreferredRace() {

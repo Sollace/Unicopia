@@ -21,7 +21,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public interface PosHelper {
-
+    Direction[] ALL = Direction.values();
     Direction[] HORIZONTAL = Arrays.stream(Direction.values()).filter(d -> d.getAxis().isHorizontal()).toArray(Direction[]::new);
 
     static Vec3d offset(Vec3d a, Vec3i b) {

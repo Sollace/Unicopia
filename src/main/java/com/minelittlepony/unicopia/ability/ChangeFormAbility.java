@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 
@@ -79,6 +80,7 @@ public class ChangeFormAbility implements Ability<Hit> {
                 Race actualRace = isTransforming ? target.getSpecies() : Race.UNSET;
                 target.setSpecies(supressed.or(player.getCompositeRace().potential()));
                 target.setSuppressedRace(actualRace);
+                UCriteria.SEAPONY_TRANSITION.trigger(target.asEntity());
             }
         });
 

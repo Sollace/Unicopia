@@ -34,6 +34,7 @@ public interface BlockModels {
     Model DOOR_RIGHT = block("door_right", TextureKey.BOTTOM, TextureKey.TOP);
     Model TEMPLATE_PILLAR = block("template_pillar", TextureKey.SIDE);
     Model TEMPLATE_PILLAR_END = block("template_pillar_end", "_end", TextureKey.BOTTOM, TextureKey.TOP, TextureKey.END);
+    Identifier TEMPLATE_JAR = Unicopia.id("block/template_jar");
 
     Factory CROP = Factory.of(TextureMap::crop, Models.CROP);
     Factory CUBE_ALL = Factory.of(TextureMap::all, Models.CUBE_ALL);

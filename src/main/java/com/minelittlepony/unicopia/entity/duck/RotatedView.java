@@ -39,7 +39,8 @@ public interface RotatedView {
             if (!hasTransform() || rotations.isEmpty()) {
                 return y;
             }
-            return y - ((y - rotations.peek()) * 2);
+
+            return (rotations.peek() * 2) - y;
         }
     }
 

@@ -6,6 +6,7 @@ public interface UCriteria {
     CustomEventCriterion CUSTOM_EVENT = Criteria.register("unicopia:custom", new CustomEventCriterion());
     RaceChangeCriterion PLAYER_CHANGE_RACE = Criteria.register("unicopia:player_change_race", new RaceChangeCriterion());
     SendViaDragonBreathScrollCriterion SEND_DRAGON_BREATH = Criteria.register("unicopia:send_dragon_breath", new SendViaDragonBreathScrollCriterion());
+    TraitDiscoveredCriterion TRAIT_DISCOVERED = Criteria.register("unicopia:trait_discovered", new TraitDiscoveredCriterion());
 
     CustomEventCriterion.Trigger LOOK_INTO_SUN = CUSTOM_EVENT.createTrigger("look_into_sun");
     CustomEventCriterion.Trigger WEAR_SHADES = CUSTOM_EVENT.createTrigger("wear_shades");
@@ -27,7 +28,9 @@ public interface UCriteria {
     CustomEventCriterion.Trigger POWER_UP_HEART = CUSTOM_EVENT.createTrigger("power_up_heart");
     CustomEventCriterion.Trigger SPLIT_SEA = CUSTOM_EVENT.createTrigger("split_sea");
     CustomEventCriterion.Trigger RIDE_BALLOON = CUSTOM_EVENT.createTrigger("ride_balloon");
+    CustomEventCriterion.Trigger CONSTRUCT_BALLOON = CUSTOM_EVENT.createTrigger("construct_balloon");
     CustomEventCriterion.Trigger TELEPORT_ABOVE_WORLD = CUSTOM_EVENT.createTrigger("teleport_above_world");
+    CustomEventCriterion.Trigger SEAPONY_TRANSITION = CUSTOM_EVENT.createTrigger("seapony_transition");
 
     static void bootstrap() { }
 }

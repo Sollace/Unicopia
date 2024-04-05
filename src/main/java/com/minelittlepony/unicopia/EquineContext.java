@@ -22,14 +22,19 @@ public interface EquineContext {
     }
 
     default boolean collidesWithClouds() {
-        return getCompositeRace().any(Race::canInteractWithClouds);
+        return getCompositeRace().canInteractWithClouds();
+    }
+
+    default boolean hasFeatherTouch() {
+        return false;
     }
 
     static EquineContext of(ShapeContext context) {
         if (context == ShapeContext.absent()) {
             return Unicopia.SIDE.getPony().map(EquineContext.class::cast).orElse(ABSENT);
         }
-        return context instanceof EquineContext c ? c : ABSENT;
+        EquineContext result = context instanceof Container c ? c.get() : ABSENT;
+        return result == null ? ABSENT : result;
     }
 
     static EquineContext of(ItemUsageContext context) {
@@ -41,5 +46,9 @@ public interface EquineContext {
             return c;
         }
         return MoreObjects.firstNonNull(Equine.of(entity).orElse(null), ABSENT);
+    }
+
+    interface Container {
+        EquineContext get();
     }
 }

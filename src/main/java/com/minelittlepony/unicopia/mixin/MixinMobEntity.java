@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.*;
-import com.minelittlepony.unicopia.entity.duck.RotatedView;
 import com.minelittlepony.unicopia.item.enchantment.WantItNeedItEnchantment;
 
 import net.minecraft.entity.EntityType;
@@ -31,18 +30,6 @@ abstract class MixinMobEntity extends LivingEntity implements Equine.Container<C
     @Inject(method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V", at = @At("RETURN"))
     private void init(EntityType<? extends MobEntity> entityType, World world, CallbackInfo info) {
         get().initAi(goalSelector, targetSelector);
-    }
-
-    @Inject(method = "tickNewAi", at = @At("HEAD"))
-    public void beforeTickAi(CallbackInfo into) {
-        if (get().getPhysics().isGravityNegative()) {
-            ((RotatedView)getWorld()).pushRotation((int)getY());
-        }
-    }
-
-    @Inject(method = "tickNewAi", at = @At("RETURN"))
-    public void afterTickAi(CallbackInfo into) {
-        ((RotatedView)getWorld()).popRotation();
     }
 
     @Inject(method = "prefersNewEquipment(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)Z",

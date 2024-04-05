@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 import java.util.function.Function;
 
 import com.minelittlepony.unicopia.item.EnchantableItem;
-import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 import com.mojang.serialization.Codec;
 

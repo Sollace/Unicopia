@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#unicopia:food_types/raw_insect",
+    "#c:raw_insect",
     "#unicopia:polearms",
     "unicopia:mango_leaves",
     "unicopia:mango_sapling",

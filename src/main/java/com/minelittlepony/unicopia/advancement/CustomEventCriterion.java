@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.advancement.criterion.AbstractCriterionConditions;
 import net.minecraft.entity.Entity;
@@ -41,6 +42,22 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
         void trigger(@Nullable Entity player);
     }
 
+    public static AdvancementCriterion<?> create(String name) {
+        return UCriteria.CUSTOM_EVENT.create(new Conditions(Optional.empty(), name, RacePredicate.EMPTY, null, 1));
+    }
+
+    public static AdvancementCriterion<?> create(String name, int count) {
+        return UCriteria.CUSTOM_EVENT.create(new Conditions(Optional.empty(), name, RacePredicate.EMPTY, null, count));
+    }
+
+    public static AdvancementCriterion<?> createFlying(String name) {
+        return UCriteria.CUSTOM_EVENT.create(new Conditions(Optional.empty(), name, RacePredicate.EMPTY, true, 1));
+    }
+
+    public static AdvancementCriterion<?> createFlying(String name, int count) {
+        return UCriteria.CUSTOM_EVENT.create(new Conditions(Optional.empty(), name, RacePredicate.EMPTY, true, count));
+    }
+
     public static class Conditions extends AbstractCriterionConditions {
         private final String event;
 
@@ -69,11 +86,13 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
         public JsonObject toJson() {
             JsonObject json = super.toJson();
             json.addProperty("event", event);
-            json.add("race", races.toJson());
+            if (!races.isEmpty()) {
+                json.add("race", races.toJson());
+            }
             if (flying != null) {
                 json.addProperty("flying", flying);
             }
-            if (repeatCount > 0) {
+            if (repeatCount > 1) {
                 json.addProperty("repeats", repeatCount);
             }
             return json;

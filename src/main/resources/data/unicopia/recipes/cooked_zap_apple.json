@@ -1,9 +1,0 @@
-{
-  "type": "smelting",
-  "ingredient": {
-    "item": "unicopia:zap_apple"
-  },
-  "result": "unicopia:cooked_zap_apple",
-  "experience": 0.2,
-  "cookingtime": 430
-}

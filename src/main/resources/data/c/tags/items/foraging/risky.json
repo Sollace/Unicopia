@@ -1,8 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    { "id": "#c:meads", "required": false },
-    { "id": "farmersdelight:wild_tomatoes", "required": false },
-    { "id": "farmersdelight:wild_potatoes", "required": false }
-  ]
-}

@@ -14,6 +14,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class InteractionManager {
@@ -88,6 +90,10 @@ public class InteractionManager {
     }
 
     public void sendPlayerLookAngles(PlayerEntity player) {
+
+    }
+
+    public void addBlockBreakingParticles(BlockPos pos, Direction direction) {
 
     }
 }

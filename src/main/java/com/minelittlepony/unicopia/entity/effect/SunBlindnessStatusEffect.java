@@ -72,8 +72,8 @@ public class SunBlindnessStatusEffect extends StatusEffect {
             return true;
         }
 
-        if (entity.getEquippedStack(EquipmentSlot.HEAD).isIn(UTags.SHADES)
-            || TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE).anyMatch(i -> i.isIn(UTags.SHADES))
+        if (entity.getEquippedStack(EquipmentSlot.HEAD).isIn(UTags.Items.SHADES)
+            || TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE).anyMatch(i -> i.isIn(UTags.Items.SHADES))
             || entity.isSubmergedInWater()) {
             return false;
         }

@@ -5,9 +5,7 @@ import java.util.Optional;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -130,11 +128,6 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
         get().adjustMovementSpeedInWater(info.getReturnValue()).ifPresent(info::setReturnValue);
     }
 
-    @Inject(method = "jump()V", at = @At("RETURN"))
-    private void onJump(CallbackInfo info) {
-        get().onJump();
-    }
-
     @Inject(method = "tick()V", at = @At("HEAD"), cancellable = true)
     private void beforeTick(CallbackInfo info) {
         if (get().beforeUpdate()) {
@@ -178,14 +171,6 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
         }
     }
 
-    @ModifyConstant(method = "travel(Lnet/minecraft/util/math/Vec3d;)V", constant = {
-            @Constant(doubleValue = 0.08D),
-            @Constant(doubleValue = 0.01D)
-    })
-    private double modifyGravity(double initial) {
-        return get().getPhysics().calcGravity(initial);
-    }
-
     @Override
     public void updateItemUsage(Hand hand, ItemStack stack, int time) {
         activeItemStack = stack;
@@ -194,23 +179,6 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
         if (!getWorld().isClient) {
             setLivingFlag(1, !stack.isEmpty());
             setLivingFlag(2, hand == Hand.OFF_HAND);
-        }
-    }
-
-    @Override
-    public BlockPos getBlockPos() {
-        if (get().getPhysics().isGravityNegative()) {
-            return get().getPhysics().getHeadPosition();
-        }
-        return super.getBlockPos();
-    }
-
-    @Override
-    protected void spawnSprintingParticles() {
-        if (get().getPhysics().isGravityNegative()) {
-            get().getPhysics().spawnSprintingParticles();
-        } else {
-            super.spawnSprintingParticles();
         }
     }
 }

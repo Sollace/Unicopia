@@ -31,7 +31,7 @@ public record RacePredicate(Set<Race> include, Set<Race> exclude) implements Pre
         return of(getRaces(root, "include"), getRaces(root, "exclude"));
     }
 
-    private static RacePredicate of(Set<Race> include, Set<Race> exclude) {
+    public static RacePredicate of(Set<Race> include, Set<Race> exclude) {
         if (include.isEmpty() && exclude.isEmpty()) {
             return EMPTY;
         }
@@ -54,6 +54,10 @@ public record RacePredicate(Set<Race> include, Set<Race> exclude) implements Pre
     public boolean test(ServerPlayerEntity player) {
         Race race = Pony.of(player).getSpecies();
         return (include.isEmpty() || include.contains(race)) && !(!exclude.isEmpty() && exclude.contains(race));
+    }
+
+    public boolean isEmpty() {
+        return include.isEmpty() && exclude.isEmpty();
     }
 
     public JsonObject toJson() {

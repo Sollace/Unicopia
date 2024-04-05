@@ -69,7 +69,7 @@ public interface UTreeGen {
             .sapling(Unicopia.id("palm_sapling")).sapling((generator, settings) -> {
                 return new SaplingBlock(generator, settings) {
                     @Override
-                    protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
+                    public boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
                         return floor.isIn(BlockTags.SAND);
                     }
                 };

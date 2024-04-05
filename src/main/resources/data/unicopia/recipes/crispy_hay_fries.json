@@ -1,9 +1,0 @@
-{
-  "type": "smelting",
-  "ingredient": {
-    "item": "unicopia:hay_fries"
-  },
-  "result": "unicopia:crispy_hay_fries",
-  "experience": 1,
-  "cookingtime": 25
-}

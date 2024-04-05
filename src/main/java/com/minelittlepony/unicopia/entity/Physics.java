@@ -21,8 +21,6 @@ public interface Physics extends NbtSerialisable {
 
     BlockPos getHeadPosition();
 
-    void spawnSprintingParticles();
-
     default boolean isGravityNegative() {
         return getGravityModifier() < 0;
     }

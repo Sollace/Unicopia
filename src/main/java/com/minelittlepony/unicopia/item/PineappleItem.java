@@ -29,7 +29,7 @@ public class PineappleItem extends Item {
                 });
 
                 if (world.random.nextInt(20) == 0) {
-                    RegistryUtils.pickRandom(world, UTags.PINEAPPLE_EFFECTS, e -> !user.hasStatusEffect(e)).ifPresent(effect -> {
+                    RegistryUtils.pickRandom(world, UTags.StatusEffects.PINEAPPLE_EFFECTS, e -> !user.hasStatusEffect(e)).ifPresent(effect -> {
                         user.addStatusEffect(new StatusEffectInstance(effect, 10, 1));
                     });
                 }

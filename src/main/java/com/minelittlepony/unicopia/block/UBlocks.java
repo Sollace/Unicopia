@@ -36,6 +36,7 @@ import com.minelittlepony.unicopia.item.cloud.CloudBlockItem;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.server.world.UTreeGen;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.registry.OxidizableBlocksRegistry;
 import net.fabricmc.fabric.api.registry.StrippableBlockRegistry;
@@ -252,7 +253,13 @@ public interface UBlocks {
     Block CLOUD_DOOR = register("cloud_door", new CloudDoorBlock(Settings.copy(CLOUD), CLOUD.getDefaultState(), UWoodTypes.CLOUD), ItemGroups.FUNCTIONAL);
 
     Block SPECTRAL_FIRE = register("spectral_fire", new SpectralFireBlock(Settings.copy(Blocks.SOUL_FIRE)));
+    Block JAR = register("jar", new ItemJarBlock(Settings.copy(Blocks.GLASS)));
+    Block CLOUD_JAR = register("cloud_jar", new JarBlock(Settings.copy(Blocks.GLASS)));
+    Block STORM_JAR = register("storm_jar", new JarBlock(Settings.copy(Blocks.GLASS)));
+    Block LIGHTNING_JAR = register("lightning_jar", new JarBlock(Settings.copy(Blocks.GLASS)));
+    Block ZAP_JAR = register("zap_jar", new JarBlock(Settings.copy(Blocks.GLASS)));
 
+    Block WORM_BLOCK = register("worm_block", new FallingBlock(Settings.create().hardness(0.1F).resistance(0).requiresTool().sounds(BlockSoundGroup.MUD)), ItemGroups.NATURAL);
     EdibleBlock HAY_BLOCK = register("hay_block", new EdibleBlock(new Identifier("hay_block"), new Identifier("wheat"), true));
 
     private static <T extends Block> T register(String name, T item) {
@@ -303,7 +310,10 @@ public interface UBlocks {
         OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_SLAB, WAXED_ZAP_SLAB);
         OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_FENCE, WAXED_ZAP_FENCE);
         OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_FENCE_GATE, WAXED_ZAP_FENCE_GATE);
-        Collections.addAll(TRANSLUCENT_BLOCKS, WEATHER_VANE, CHITIN_SPIKES, PLUNDER_VINE, PLUNDER_VINE_BUD, CLAM_SHELL, SCALLOP_SHELL, TURRET_SHELL, CURING_JOKE, SPECTRAL_FIRE);
+        Collections.addAll(TRANSLUCENT_BLOCKS,
+                WEATHER_VANE, CHITIN_SPIKES, PLUNDER_VINE, PLUNDER_VINE_BUD, CLAM_SHELL, SCALLOP_SHELL, TURRET_SHELL, CURING_JOKE, SPECTRAL_FIRE,
+                JAR, CLOUD_JAR, STORM_JAR, LIGHTNING_JAR, ZAP_JAR
+        );
         TintedBlock.REGISTRY.add(PALM_LEAVES);
 
         FlammableBlockRegistry.getDefaultInstance().add(GREEN_APPLE_LEAVES, 30, 60);
@@ -327,6 +337,8 @@ public interface UBlocks {
 
         FlammableBlockRegistry.getDefaultInstance().add(BANANAS, 5, 20);
         FlammableBlockRegistry.getDefaultInstance().add(CURING_JOKE, 60, 100);
+
+        CompostingChanceRegistry.INSTANCE.add(WORM_BLOCK, 1F);
 
         UBlockEntities.bootstrap();
         EdibleBlock.bootstrap();
