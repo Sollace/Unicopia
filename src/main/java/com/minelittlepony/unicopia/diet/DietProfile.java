@@ -193,5 +193,30 @@ public record DietProfile(
             buffer.writeFloat(hunger);
             buffer.writeFloat(saturation);
         }
+
+        public static final class Builder {
+            private Set<FoodGroupKey> tags = new HashSet<>();
+            private float hunger = 1;
+            private float saturation = 1;
+
+            public Builder tag(Identifier tag) {
+                tags.add(FoodGroupKey.LOOKUP.apply(tag));
+                return this;
+            }
+
+            public Builder hunger(float hunger) {
+                this.hunger = hunger;
+                return this;
+            }
+
+            public Builder saturation(float saturation) {
+                this.saturation = saturation;
+                return this;
+            }
+
+            public Multiplier build() {
+                return new Multiplier(tags, hunger, saturation);
+            }
+        }
     }
 }

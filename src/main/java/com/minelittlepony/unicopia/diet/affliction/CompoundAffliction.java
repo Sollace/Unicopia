@@ -18,6 +18,10 @@ public class CompoundAffliction implements Affliction {
         });
     }
 
+    public static CompoundAffliction of(Affliction...afflictions) {
+        return new CompoundAffliction(List.of(afflictions));
+    }
+
     public CompoundAffliction(PacketByteBuf buffer) {
         this(buffer.readList(Affliction::read));
     }
