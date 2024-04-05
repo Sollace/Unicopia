@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.*;
+import com.minelittlepony.unicopia.recipe.URecipes;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;

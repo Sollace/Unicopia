@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
 import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.item.EnchantableItem;
-import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 
 import net.minecraft.inventory.RecipeInputInventory;

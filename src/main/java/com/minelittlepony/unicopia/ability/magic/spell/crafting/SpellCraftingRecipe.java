@@ -9,7 +9,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.EnchantableItem;
-import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 import com.mojang.datafixers.util.Pair;
 

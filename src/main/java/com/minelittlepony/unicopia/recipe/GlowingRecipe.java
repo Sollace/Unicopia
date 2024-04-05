@@ -1,4 +1,6 @@
-package com.minelittlepony.unicopia.item;
+package com.minelittlepony.unicopia.recipe;
+
+import com.minelittlepony.unicopia.item.GlowableItem;
 
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;

@@ -1,6 +1,8 @@
-package com.minelittlepony.unicopia.item;
+package com.minelittlepony.unicopia.recipe;
 
 import org.jetbrains.annotations.Nullable;
+
+import com.minelittlepony.unicopia.item.UItems;
 
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;

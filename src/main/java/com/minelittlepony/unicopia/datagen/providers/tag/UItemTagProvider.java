@@ -228,9 +228,8 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .addOptionalTag(new Identifier("c", "raw_pork"))
             .addOptionalTag(new Identifier("c", "lemon_chickens"));
         getOrCreateTagBuilder(UConventionalTags.Items.ROTTEN_MEAT).add(Items.ROTTEN_FLESH);
-        getOrCreateTagBuilder(UConventionalTags.Items.ROTTEN_FISH);//.add(Items.ROTTEN_FLESH); TODO:
         getOrCreateTagBuilder(UConventionalTags.Items.ROTTEN_INSECT).add(Items.FERMENTED_SPIDER_EYE);
-        getOrCreateTagBuilder(UConventionalTags.Items.COOKED_INSECT);//.add(Items.FERMENTED_SPIDER_EYE);
+        getOrCreateTagBuilder(UConventionalTags.Items.COOKED_INSECT);//.add(Items.FERMENTED_SPIDER_EYE); TODO
         getOrCreateTagBuilder(UConventionalTags.Items.RAW_INSECT).add(Items.SPIDER_EYE, UItems.BUTTERFLY, UItems.WHEAT_WORMS, UBlocks.WORM_BLOCK.asItem());
         getOrCreateTagBuilder(UConventionalTags.Items.WORMS).add(UItems.WHEAT_WORMS);
         getOrCreateTagBuilder(UConventionalTags.Items.STICKS).add(Items.STICK);

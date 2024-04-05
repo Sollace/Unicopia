@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.item;
+package com.minelittlepony.unicopia.recipe;
 
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;

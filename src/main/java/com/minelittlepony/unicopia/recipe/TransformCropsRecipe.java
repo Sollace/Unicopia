@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.item;
+package com.minelittlepony.unicopia.recipe;
 
 import java.util.HashSet;
 import java.util.Set;

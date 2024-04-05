@@ -1,8 +1,9 @@
-package com.minelittlepony.unicopia.item;
+package com.minelittlepony.unicopia.recipe;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
+import com.minelittlepony.unicopia.item.UItems;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;

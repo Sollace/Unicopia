@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.include.com.google.common.base.Preconditions;
 
 import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.recipe.URecipes;
 import com.mojang.serialization.JsonOps;
 
 import net.minecraft.advancement.Advancement;

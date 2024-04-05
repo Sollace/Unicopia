@@ -15,7 +15,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.advancement.TraitDiscoveredCriterion;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.recipe.URecipes;
+
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriterionMerger;

@@ -17,7 +17,7 @@ import com.minelittlepony.unicopia.datagen.ItemFamilies;
 import com.minelittlepony.unicopia.datagen.UBlockFamilies;
 import com.minelittlepony.unicopia.datagen.providers.recipe.BedSheetPatternRecipeBuilder.PatternTemplate;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.server.world.UTreeGen;
 import com.mojang.datafixers.util.Either;
 

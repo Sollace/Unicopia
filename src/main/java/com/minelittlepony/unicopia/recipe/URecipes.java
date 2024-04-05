@@ -1,10 +1,9 @@
-package com.minelittlepony.unicopia.item;
+package com.minelittlepony.unicopia.recipe;
 
 import java.util.List;
 
 import com.google.gson.JsonArray;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.*;
-import com.minelittlepony.unicopia.item.cloud.CloudShapingRecipe;
 
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.minecraft.loot.LootTable;

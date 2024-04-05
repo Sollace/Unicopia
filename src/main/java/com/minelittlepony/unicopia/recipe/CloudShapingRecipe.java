@@ -1,7 +1,6 @@
-package com.minelittlepony.unicopia.item.cloud;
+package com.minelittlepony.unicopia.recipe;
 
 import com.minelittlepony.unicopia.block.UBlocks;
-import com.minelittlepony.unicopia.item.URecipes;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
