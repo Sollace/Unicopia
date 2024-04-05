@@ -55,9 +55,9 @@ public interface CodecUtils {
             @Override
             public <T> DataResult<T> encode(Pair<Optional<A>, Optional<B>> input, DynamicOps<T> ops, T prefix) {
                 return baseCodec.encode(input.getFirst().get(), ops, prefix)
-                        .flatMap(leftResult -> input.getSecond()
-                            .map(r -> fieldCodec.encode(r, ops, ops.mapBuilder()).build(prefix))
-                            .orElse(DataResult.success(leftResult)));
+                        .flatMap(l -> input.getSecond()
+                            .map(r -> fieldCodec.encode(r, ops, ops.mapBuilder()).build(prefix).flatMap(rr -> ops.getMap(rr).flatMap(rrr -> ops.mergeToMap(l, rrr))))
+                            .orElse(DataResult.success(l)));
             }
         }, new Decoder<Pair<Optional<A>, Optional<B>>>() {
             @Override
