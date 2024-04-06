@@ -16,6 +16,7 @@ import com.minelittlepony.unicopia.block.ShellsBlock;
 import com.minelittlepony.unicopia.block.SlimePustuleBlock;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.zap.ZapAppleLeavesBlock;
+import com.minelittlepony.unicopia.datagen.Datagen;
 import com.minelittlepony.unicopia.datagen.UBlockFamilies;
 import com.minelittlepony.unicopia.server.world.Tree;
 
@@ -41,7 +42,6 @@ import net.minecraft.data.client.When;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
@@ -113,7 +113,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerHiveBlock(UBlocks.HIVE);
         registerRotated(UBlocks.CHITIN_SPIKES, BlockModels.SPIKES);
         registerHull(UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHITIN, UBlocks.CHISELLED_CHITIN);
-        registerParentedItemModel(UBlocks.SLIME_PUSTULE, ModelIds.getBlockSubModelId(UBlocks.SLIME_PUSTULE, "_pod"));
+        registerItemModel(UBlocks.SLIME_PUSTULE.asItem());
         blockStateCollector.accept(VariantsBlockStateSupplier.create(UBlocks.SLIME_PUSTULE)
                 .coordinate(BlockStateVariantMap.create(SlimePustuleBlock.SHAPE)
                 .register(state -> BlockStateVariant.create().put(MODEL, ModelIds.getBlockSubModelId(UBlocks.SLIME_PUSTULE, "_" + state.asString())))));
@@ -176,7 +176,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerWithStages(UBlocks.FROSTED_OBSIDIAN, Properties.AGE_3, BlockModels.CUBE_ALL, 0, 1, 2, 3);
         registerWithStagesBuiltinModels(UBlocks.ROCKS, Properties.AGE_7, 0, 1, 2, 3, 4, 5, 6, 7);
         registerWithStagesBuiltinModels(UBlocks.MYSTERIOUS_EGG, PileBlock.COUNT, 1, 2, 3);
-        excludeFromSimpleItemModelGeneration(UBlocks.MYSTERIOUS_EGG);
+        registerItemModel(UBlocks.MYSTERIOUS_EGG.asItem());
         FireModels.registerSoulFire(this, UBlocks.SPECTRAL_FIRE, Blocks.SOUL_FIRE);
 
         blockStateCollector.accept(createSingletonBlockState(UBlocks.JAR, BlockModels.TEMPLATE_JAR));
@@ -429,9 +429,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         Identifier side = baseBlockId.withPath(p -> "block/" + p + "_side");
         TextureMap textures = new TextureMap().put(TOP, top).put(SIDE, side);
 
-        MultipartBlockStateSupplier supplier = MultipartBlockStateSupplier.create(Registries.BLOCK.getOrEmpty(blockId).orElseGet(() -> {
-            return Registry.register(Registries.BLOCK, blockId, new EdibleBlock(blockId, blockId, false));
-        }));
+        MultipartBlockStateSupplier supplier = MultipartBlockStateSupplier.create(Datagen.getOrCreateBaleBlock(blockId));
         Map<Integer, Identifier> uploadedModels = new HashMap<>();
 
         for (Direction.Axis axis : Direction.Axis.VALUES) {

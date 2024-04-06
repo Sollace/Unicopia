@@ -8,12 +8,14 @@ import java.util.stream.Stream;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public interface NbtSerialisable {
     Serializer<BlockPos> BLOCK_POS = Serializer.of(NbtHelper::toBlockPos, NbtHelper::fromBlockPos);
+    Serializer<ItemStack> ITEM_STACK = Serializer.of(ItemStack::fromNbt, stack -> stack.writeNbt(new NbtCompound()));
 
     /**
      * Called to save this to nbt to persist state on file or to transmit over the network
@@ -44,6 +46,7 @@ public interface NbtSerialisable {
     }
 
     static Vec3d readVector(NbtList list) {
+
         return new Vec3d(list.getDouble(0), list.getDouble(1), list.getDouble(2));
     }
 

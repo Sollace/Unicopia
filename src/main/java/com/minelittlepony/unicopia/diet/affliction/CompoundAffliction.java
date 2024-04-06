@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 
-class CompoundAffliction implements Affliction {
+public class CompoundAffliction implements Affliction {
     public final List<Affliction> afflictions;
     private final Text name;
 
@@ -16,6 +16,10 @@ class CompoundAffliction implements Affliction {
         name = afflictions.stream().map(Affliction::getName).reduce(null, (a, b) -> {
             return a == null ? b : a.copy().append(" + ").append(b);
         });
+    }
+
+    public static CompoundAffliction of(Affliction...afflictions) {
+        return new CompoundAffliction(List.of(afflictions));
     }
 
     public CompoundAffliction(PacketByteBuf buffer) {

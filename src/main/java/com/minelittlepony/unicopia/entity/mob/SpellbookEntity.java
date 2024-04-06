@@ -373,7 +373,7 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
 
     @Override
     public boolean isInvulnerableTo(DamageSource damageSource) {
-        return super.isInvulnerableTo(damageSource) || damageSource.isIn(UTags.SPELLBOOK_IMMUNE_TO);
+        return super.isInvulnerableTo(damageSource) || damageSource.isIn(UTags.DamageTypes.SPELLBOOK_IMMUNE_TO);
     }
 
     @Override

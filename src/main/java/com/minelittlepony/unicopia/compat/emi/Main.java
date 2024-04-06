@@ -15,10 +15,10 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.state.Schematic;
 import com.minelittlepony.unicopia.item.EnchantableItem;
-import com.minelittlepony.unicopia.item.TransformCropsRecipe;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.item.URecipes;
 import com.minelittlepony.unicopia.item.group.MultiItem;
+import com.minelittlepony.unicopia.recipe.TransformCropsRecipe;
+import com.minelittlepony.unicopia.recipe.URecipes;
 
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;

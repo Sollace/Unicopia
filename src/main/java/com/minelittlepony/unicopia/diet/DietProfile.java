@@ -5,11 +5,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.ItemDuck;
 import com.mojang.datafixers.util.Pair;
@@ -19,33 +19,53 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.FoodComponent;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
 
 public record DietProfile(
         float defaultMultiplier,
         float foragingMultiplier,
         List<Multiplier> multipliers,
-        List<Effect> effects,
-        Optional<Effect> defaultEffect
+        List<FoodGroupEffects> effects,
+        Optional<FoodGroupEffects> defaultEffect
     ) {
     public static final DietProfile EMPTY = new DietProfile(1, 1, List.of(), List.of(), Optional.empty());
     public static final Codec<DietProfile> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.FLOAT.fieldOf("default_multiplier").forGetter(DietProfile::defaultMultiplier),
                 Codec.FLOAT.fieldOf("foraging_multiplier").forGetter(DietProfile::foragingMultiplier),
                 Codec.list(Multiplier.CODEC).fieldOf("multipliers").forGetter(DietProfile::multipliers),
-                Codec.list(Effect.CODEC).fieldOf("effects").forGetter(DietProfile::effects),
-                Effect.CODEC.optionalFieldOf("default_effect").forGetter(DietProfile::defaultEffect)
+                Codec.list(FoodGroupEffects.CODEC).fieldOf("effects").forGetter(DietProfile::effects),
+                FoodGroupEffects.CODEC.optionalFieldOf("default_effect").forGetter(DietProfile::defaultEffect)
     ).apply(instance, DietProfile::new));
 
     public DietProfile(PacketByteBuf buffer) {
-        this(buffer.readFloat(), buffer.readFloat(), buffer.readList(Multiplier::new), buffer.readList(Effect::new), buffer.readOptional(Effect::new));
+        this(buffer.readFloat(), buffer.readFloat(),
+                buffer.readList(Multiplier::new),
+                buffer.readList(b -> new FoodGroupEffects(b, FoodGroupKey.LOOKUP)),
+                buffer.readOptional(b -> new FoodGroupEffects(b, FoodGroupKey.LOOKUP))
+        );
+    }
+
+    public void validate(Consumer<String> issues, Predicate<Identifier> foodGroupExists) {
+        multipliers.stream().flatMap(i -> i.tags().stream()).forEach(key -> {
+            if (!foodGroupExists.test(key.id())) {
+                issues.accept("Multiplier referenced unknown food group: " + key.id());
+            }
+        });
+        effects.stream().flatMap(i -> i.tags().stream()).forEach(key -> {
+            if (!foodGroupExists.test(key.id())) {
+                issues.accept("Override defined for unknown food group: " + key.id());
+            }
+        });
+        defaultEffect.stream().flatMap(i -> i.tags().stream()).forEach(key -> {
+            if (!foodGroupExists.test(key.id())) {
+                issues.accept("Default override defined for unknown food group: " + key.id());
+            }
+        });
     }
 
     public void toBuffer(PacketByteBuf buffer) {
@@ -61,7 +81,7 @@ public record DietProfile(
     }
 
     public Optional<Effect> findEffect(ItemStack stack) {
-        return effects.stream().filter(m -> m.test(stack)).findFirst().or(this::defaultEffect);
+        return effects.stream().filter(m -> m.test(stack)).findFirst().or(this::defaultEffect).map(Effect.class::cast);
     }
 
     static boolean isForaged(ItemStack stack) {
@@ -145,11 +165,11 @@ public record DietProfile(
     }
 
     public record Multiplier(
-            Set<TagKey<Item>> tags,
+            Set<FoodGroupKey> tags,
             float hunger,
             float saturation
     ) implements Predicate<ItemStack> {
-        public static final Codec<Set<TagKey<Item>>> TAGS_CODEC = Codec.list(TagKey.unprefixedCodec(RegistryKeys.ITEM)).xmap(
+        public static final Codec<Set<FoodGroupKey>> TAGS_CODEC = FoodGroupKey.CODEC.listOf().xmap(
                 l -> l.stream().distinct().collect(Collectors.toSet()),
                 set -> new ArrayList<>(set)
         );
@@ -160,18 +180,43 @@ public record DietProfile(
         ).apply(instance, Multiplier::new));
 
         public Multiplier(PacketByteBuf buffer) {
-            this(buffer.readCollection(HashSet::new, p -> TagKey.of(RegistryKeys.ITEM, p.readIdentifier())), buffer.readFloat(), buffer.readFloat());
+            this(buffer.readCollection(HashSet::new, p -> FoodGroupKey.LOOKUP.apply(p.readIdentifier())), buffer.readFloat(), buffer.readFloat());
         }
 
         @Override
         public boolean test(ItemStack stack) {
-            return tags.stream().anyMatch(tag -> stack.isIn(tag));
+            return tags.stream().anyMatch(tag -> tag.contains(stack));
         }
 
         public void toBuffer(PacketByteBuf buffer) {
             buffer.writeCollection(tags, (p, t) -> p.writeIdentifier(t.id()));
             buffer.writeFloat(hunger);
             buffer.writeFloat(saturation);
+        }
+
+        public static final class Builder {
+            private Set<FoodGroupKey> tags = new HashSet<>();
+            private float hunger = 1;
+            private float saturation = 1;
+
+            public Builder tag(Identifier tag) {
+                tags.add(FoodGroupKey.LOOKUP.apply(tag));
+                return this;
+            }
+
+            public Builder hunger(float hunger) {
+                this.hunger = hunger;
+                return this;
+            }
+
+            public Builder saturation(float saturation) {
+                this.saturation = saturation;
+                return this;
+            }
+
+            public Multiplier build() {
+                return new Multiplier(tags, hunger, saturation);
+            }
         }
     }
 }

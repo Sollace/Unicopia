@@ -551,7 +551,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         if (getObservedSpecies() == Race.BAT && !entity.hasPortalCooldown()) {
-            boolean hasShades = TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE).anyMatch(s -> s.isIn(UTags.SHADES));
+            boolean hasShades = TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE).anyMatch(s -> s.isIn(UTags.Items.SHADES));
             if (!this.hasShades && hasShades && getObservedSpecies() == Race.BAT) {
                 UCriteria.WEAR_SHADES.trigger(entity);
             }
@@ -754,7 +754,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         if (getObservedSpecies() == Race.KIRIN
-                && (stack.isIn(UTags.COOLS_OFF_KIRINS) || PotionUtil.getPotion(stack) == Potions.WATER)) {
+                && (stack.isIn(UTags.Items.COOLS_OFF_KIRINS) || PotionUtil.getPotion(stack) == Potions.WATER)) {
             getMagicalReserves().getCharge().multiply(0.5F);
             getSpellSlot().get(SpellType.RAGE, false).ifPresent(RageAbilitySpell::setExtenguishing);
         }

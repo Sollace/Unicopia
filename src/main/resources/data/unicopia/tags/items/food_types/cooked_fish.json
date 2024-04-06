@@ -1,9 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "#c:cooked_fish",
-    { "id": "farmersdelight:fish_stew", "required": false },
-    { "id": "farmersdelight:baked_cod_stew", "required": false },
-    { "id": "farmersdelight:grilled_salmon", "required": false }
-  ]
-}

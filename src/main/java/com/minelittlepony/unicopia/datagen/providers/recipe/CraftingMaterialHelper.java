@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.recipe.URecipes;
 import com.mojang.datafixers.util.Either;
 
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;

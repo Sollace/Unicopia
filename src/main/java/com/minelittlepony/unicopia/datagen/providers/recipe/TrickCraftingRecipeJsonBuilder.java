@@ -8,7 +8,7 @@ import org.spongepowered.include.com.google.common.base.Preconditions;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.recipe.URecipes;
 
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementRewards;

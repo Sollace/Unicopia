@@ -162,7 +162,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
             ParticleUtils.spawnParticle(player.getWorld(), UParticles.GROUND_POUND, player.getX(), player.getY() - 1, player.getZ(), 0, 0, 0);
             BlockState steppingState = player.getSteppingBlockState();
-            if (steppingState.isIn(UTags.KICKS_UP_DUST)) {
+            if (steppingState.isIn(UTags.Blocks.KICKS_UP_DUST)) {
                 ParticleUtils.spawnParticle(player.getWorld(), new BlockStateParticleEffect(UParticles.DUST_CLOUD, steppingState), player.getBlockPos().down().toCenterPos(), Vec3d.ZERO);
             }
 
@@ -227,7 +227,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
             w.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
         }
 
-        if (state.isIn(UTags.KICKS_UP_DUST)) {
+        if (state.isIn(UTags.Blocks.KICKS_UP_DUST)) {
             if (w.random.nextInt(4) == 0 && w.isAir(pos.up()) && w.getFluidState(pos.up()).isEmpty()) {
                 ParticleUtils.spawnParticle(w, new BlockStateParticleEffect(UParticles.DUST_CLOUD, state), pos.up().toCenterPos(), VecHelper.supply(() -> w.random.nextTriangular(0, 0.1F)));
             }

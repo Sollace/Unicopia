@@ -110,7 +110,7 @@ public class ScreechAbility implements Ability<Numeric> {
 
 
             if (living.getWorld().random.nextInt(MOB_SPOOK_PROBABILITY) == 0) {
-                RegistryUtils.pickRandom(living.getWorld(), UTags.SPOOKED_MOB_DROPS).ifPresent(drop -> {
+                RegistryUtils.pickRandom(living.getWorld(), UTags.Items.SPOOKED_MOB_DROPS).ifPresent(drop -> {
                     living.dropStack(drop.getDefaultStack());
                     living.playSound(USounds.Vanilla.ENTITY_ITEM_PICKUP, 1, 0.1F);
                     UCriteria.SPOOK_MOB.trigger(player.asEntity());

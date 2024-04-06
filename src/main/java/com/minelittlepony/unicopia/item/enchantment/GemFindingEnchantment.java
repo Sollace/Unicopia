@@ -21,7 +21,7 @@ public class GemFindingEnchantment extends SimpleEnchantment {
 
         BlockPos origin = user.getOrigin();
 
-        double volume = BlockPos.findClosest(origin, radius, radius, pos -> user.asWorld().getBlockState(pos).isIn(UTags.INTERESTING))
+        double volume = BlockPos.findClosest(origin, radius, radius, pos -> user.asWorld().getBlockState(pos).isIn(UTags.Blocks.INTERESTING))
             .map(p -> user.getOriginVector().squaredDistanceTo(p.getX(), p.getY(), p.getZ()))
             .map(find -> (1 - (Math.sqrt(find) / radius)))
             .orElse(-1D);

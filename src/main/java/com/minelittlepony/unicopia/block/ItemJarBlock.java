@@ -1,9 +1,14 @@
 package com.minelittlepony.unicopia.block;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.IntStream;
+import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.block.jar.EntityJarContents;
+import com.minelittlepony.unicopia.block.jar.FluidOnlyJarContents;
+import com.minelittlepony.unicopia.block.jar.ItemsJarContents;
+import com.minelittlepony.unicopia.block.jar.FakeFluidJarContents;
+
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -12,11 +17,18 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
@@ -36,14 +48,7 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
         if (hand == Hand.OFF_HAND) {
             return ActionResult.PASS;
         }
-        return world.getBlockEntity(pos, UBlockEntities.ITEM_JAR).map(data -> {
-            ItemStack stack = player.getStackInHand(hand);
-            if (stack.isEmpty()) {
-                return data.removeItem(world, pos);
-            }
-
-            return data.insertItem(world, pos, player.isCreative() ? stack.copyWithCount(1) : stack.split(1));
-        }).orElse(ActionResult.PASS);
+        return world.getBlockEntity(pos, UBlockEntities.ITEM_JAR).map(data -> data.interact(player, hand)).orElse(ActionResult.PASS);
     }
 
     @Deprecated
@@ -51,9 +56,7 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!moved && !state.isOf(newState.getBlock())) {
             world.getBlockEntity(pos, UBlockEntities.ITEM_JAR).ifPresent(data -> {
-                data.getStacks().forEach(stack -> {
-                    dropStack(world, pos, stack);
-                });
+                data.getContents().onDestroyed();
             });
         }
         super.onStateReplaced(state, world, pos, newState, moved);
@@ -66,7 +69,10 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
 
     @Override
     public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-        return world.getBlockEntity(pos, UBlockEntities.ITEM_JAR).map(data -> Math.min(16, data.getStacks().size())).orElse(0);
+        return world.getBlockEntity(pos, UBlockEntities.ITEM_JAR)
+                .map(TileData::getItems)
+                .map(data -> Math.min(16, data.stacks().size()))
+                .orElse(0);
     }
 
     @Deprecated
@@ -82,135 +88,113 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
         return new TileData(pos, state);
     }
 
-
+    @Nullable
     @Override
     public SidedInventory getInventory(BlockState state, WorldAccess world, BlockPos pos) {
-        return world.getBlockEntity(pos, UBlockEntities.ITEM_JAR).orElse(null);
+        return world.getBlockEntity(pos, UBlockEntities.ITEM_JAR).map(TileData::getItems).orElse(null);
     }
 
-    public static class TileData extends BlockEntity implements SidedInventory {
-        private static final int[] SLOTS = IntStream.range(0, 16).toArray();
-        private final List<ItemStack> stacks = new ArrayList<>();
+    public static class TileData extends BlockEntity {
+
+        private JarContents contents = new ItemsJarContents(this);
 
         public TileData(BlockPos pos, BlockState state) {
             super(UBlockEntities.ITEM_JAR, pos, state);
         }
 
-        public ActionResult insertItem(World world, BlockPos pos, ItemStack stack) {
-            if (stacks.size() >= size()) {
-                return ActionResult.FAIL;
-            }
-            stacks.add(stack);
-            markDirty();
-
-            return ActionResult.SUCCESS;
+        public ActionResult interact(PlayerEntity player, Hand hand) {
+            TypedActionResult<JarContents> result = contents.interact(player, hand);
+            contents = result.getValue();
+            return result.getResult();
         }
 
-        public ActionResult removeItem(World world, BlockPos pos) {
-            if (stacks.isEmpty()) {
-                return ActionResult.FAIL;
-            }
-            dropStack(world, pos, stacks.remove(0));
-            markDirty();
-            return ActionResult.SUCCESS;
+        public JarContents getContents() {
+            return contents;
         }
 
-        public List<ItemStack> getStacks() {
-            return stacks;
+        @Nullable
+        public ItemsJarContents getItems() {
+            return getContents() instanceof ItemsJarContents c ? c : null;
         }
 
-        @Override
-        public int size() {
-            return 15;
+        @Nullable
+        public EntityJarContents getEntity() {
+            return getContents() instanceof EntityJarContents c ? c : null;
         }
 
-        @Override
-        public boolean isEmpty() {
-            return stacks.isEmpty();
+        @Nullable
+        public FluidJarContents getFluid() {
+            return getContents() instanceof FluidJarContents c ? c : null;
+        }
+
+        @Nullable
+        public FakeFluidJarContents getFakeFluid() {
+            return getContents() instanceof FakeFluidJarContents c ? c : null;
         }
 
         @Override
-        public ItemStack getStack(int slot) {
-            return slot < 0 || slot >= stacks.size() ? ItemStack.EMPTY : stacks.get(slot);
+        public Packet<ClientPlayPacketListener> toUpdatePacket() {
+            return BlockEntityUpdateS2CPacket.create(this);
         }
 
         @Override
-        public ItemStack removeStack(int slot, int amount) {
-            if (slot < 0 || slot >= stacks.size()) {
-                try {
-                    ItemStack stack = stacks.get(slot);
-                    ItemStack removed = stack.split(1);
-                    if (stack.isEmpty()) {
-                        stacks.remove(slot);
-                    }
-                    return removed;
-                } finally {
-                    markDirty();
-                }
-            }
-            return ItemStack.EMPTY;
+        public NbtCompound toInitialChunkDataNbt() {
+            return createNbt();
         }
 
         @Override
-        public ItemStack removeStack(int slot) {
-            if (slot < 0 || slot >= stacks.size()) {
-                try {
-                    return stacks.remove(slot);
-                } finally {
-                    markDirty();
-                }
-            }
-            return ItemStack.EMPTY;
-        }
-
-        @Override
-        public void setStack(int slot, ItemStack stack) {
-            if (slot >= stacks.size()) {
-                if (stacks.size() >= size()) {
-                    dropStack(getWorld(), getPos(), stack);
-                } else {
-                    stacks.add(stack);
-                }
-            } else {
-                ItemStack existing = stacks.get(slot);
-                if (!ItemStack.canCombine(existing, stack)) {
-                    dropStack(getWorld(), getPos(), stack);
-                } else {
-                    existing.setCount(existing.getCount() + stack.split(Math.max(0, existing.getMaxCount() - existing.getCount())).getCount());
-                    if (!stack.isEmpty()) {
-                        dropStack(getWorld(), getPos(), stack);
-                    }
-                }
+        public void markDirty() {
+            super.markDirty();
+            if (getWorld() instanceof ServerWorld sw) {
+                sw.getChunkManager().markForUpdate(getPos());
             }
         }
 
         @Override
-        public boolean canPlayerUse(PlayerEntity player) {
-            return false;
+        public void readNbt(NbtCompound nbt) {
+            if (nbt.contains("items", NbtElement.COMPOUND_TYPE)) {
+                contents = new ItemsJarContents(this, nbt.getCompound("items"));
+            } else if (nbt.contains("entity", NbtElement.COMPOUND_TYPE)) {
+                contents = new EntityJarContents(this, nbt.getCompound("entity"));
+            } else if (nbt.contains("fluid", NbtElement.COMPOUND_TYPE)) {
+                contents = new FluidOnlyJarContents(this, nbt.getCompound("fluid"));
+            } else if (nbt.contains("fakeFluid", NbtElement.COMPOUND_TYPE)) {
+                contents = new FakeFluidJarContents(this, nbt.getCompound("fakeFluid"));
+            }
         }
 
         @Override
-        public void clear() {
-            stacks.clear();
-            markDirty();
+        protected void writeNbt(NbtCompound nbt) {
+            var items = getItems();
+            if (items != null) {
+                nbt.put("items", items.toNBT(new NbtCompound()));
+            } else if (getEntity() != null) {
+                nbt.put("entity", getEntity().toNBT(new NbtCompound()));
+            } else if (getFluid() != null) {
+                nbt.put("fluid", getFluid().toNBT(new NbtCompound()));
+            } else if (getFakeFluid() != null) {
+                nbt.put("fakeFluid", getFakeFluid().toNBT(new NbtCompound()));
+            }
         }
+    }
 
-        @Override
-        public int[] getAvailableSlots(Direction side) {
-            return SLOTS;
+    public interface JarContents {
+        TypedActionResult<JarContents> interact(PlayerEntity player, Hand hand);
+
+        void onDestroyed();
+
+        NbtCompound toNBT(NbtCompound compound);
+
+        default void consumeAndSwap(PlayerEntity player, Hand hand, ItemStack output) {
+            player.setStackInHand(hand, ItemUsage.exchangeStack(player.getStackInHand(hand), player, output.copy()));
         }
+    }
 
-        @Override
-        public boolean canInsert(int slot, ItemStack stack, Direction dir) {
-            return (slot >= 0 && slot < size()) && (slot >= stacks.size() || (
-                    ItemStack.canCombine(stacks.get(slot), stack)
-                    && (stacks.get(slot).getCount() + stack.getCount()) <= Math.min(stacks.get(slot).getMaxCount(), stack.getMaxCount())
-            ));
-        }
+    public interface FluidJarContents extends JarContents {
+        FluidVariant fluid();
 
-        @Override
-        public boolean canExtract(int slot, ItemStack stack, Direction dir) {
-            return true;
+        default long amount() {
+            return FluidConstants.BUCKET;
         }
     }
 }

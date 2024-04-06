@@ -7,7 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 
-final class ClearLoveSicknessAffliction implements Affliction {
+public final class ClearLoveSicknessAffliction implements Affliction {
     public static final ClearLoveSicknessAffliction INSTANCE = new ClearLoveSicknessAffliction();
     public static final Codec<ClearLoveSicknessAffliction> CODEC = Codec.unit(INSTANCE);
 
@@ -21,6 +21,7 @@ final class ClearLoveSicknessAffliction implements Affliction {
         player.heal(stack.isFood() ? stack.getItem().getFoodComponent().getHunger() : 1);
         player.removeStatusEffect(StatusEffects.NAUSEA);
         player.removeStatusEffect(UEffects.FOOD_POISONING);
+        player.removeStatusEffect(StatusEffects.WEAKNESS);
     }
 
     @Override

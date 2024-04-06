@@ -64,7 +64,7 @@ public class RainboomAbilitySpell extends AbstractSpell {
         });
         EFFECT_RANGE.translate(source.getOrigin()).getBlockPositions().forEach(pos -> {
             BlockState state = source.asWorld().getBlockState(pos);
-            if (state.isIn(UTags.FRAGILE) && source.canModifyAt(pos, ModificationType.PHYSICAL)) {
+            if (state.isIn(UTags.Blocks.FRAGILE) && source.canModifyAt(pos, ModificationType.PHYSICAL)) {
                 source.asWorld().breakBlock(pos, true);
             }
         });

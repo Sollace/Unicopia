@@ -17,7 +17,7 @@ import com.minelittlepony.unicopia.datagen.ItemFamilies;
 import com.minelittlepony.unicopia.datagen.UBlockFamilies;
 import com.minelittlepony.unicopia.datagen.providers.recipe.BedSheetPatternRecipeBuilder.PatternTemplate;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.server.world.UTreeGen;
 import com.mojang.datafixers.util.Either;
 
@@ -80,8 +80,19 @@ public class URecipeProvider extends FabricRecipeProvider {
     }
 
     private void generateVanillaRecipeExtensions(Consumer<RecipeJsonProvider> exporter) {
-        ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.WRITABLE_BOOK).input(Items.BOOK).input(Items.INK_SAC).input(UTags.MAGIC_FEATHERS).criterion("has_book", conditionsFromItem(Items.BOOK)).offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.ARROW, 4).input('#', UConventionalTags.STICKS).input('X', Items.FLINT).input('Y', UTags.MAGIC_FEATHERS).pattern("X").pattern("#").pattern("Y").criterion("has_feather", conditionsFromTag(UTags.MAGIC_FEATHERS)).criterion("has_flint", conditionsFromItem(Items.FLINT)).offerTo(exporter);
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.WRITABLE_BOOK)
+            .input(Items.BOOK).criterion("has_book", conditionsFromItem(Items.BOOK))
+            .input(Items.INK_SAC)
+            .input(UTags.Items.MAGIC_FEATHERS)
+            .offerTo(exporter);
+        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.ARROW, 4)
+            .input('#', UConventionalTags.Items.STICKS)
+            .input('X', Items.FLINT).criterion("has_flint", conditionsFromItem(Items.FLINT))
+            .input('Y', UTags.Items.MAGIC_FEATHERS).criterion("has_feather", conditionsFromTag(UTags.Items.MAGIC_FEATHERS))
+            .pattern("X")
+            .pattern("#")
+            .pattern("Y")
+            .offerTo(exporter);
     }
 
     private void offerJarRecipes(Consumer<RecipeJsonProvider> exporter) {
@@ -97,7 +108,7 @@ public class URecipeProvider extends FabricRecipeProvider {
     }
 
     private void offerCloudRecipes(Consumer<RecipeJsonProvider> exporter) {
-        offerShapelessRecipe(exporter, UItems.CLOUD_LUMP, UTags.CLOUD_JARS, "cloud", 4);
+        offerShapelessRecipe(exporter, UItems.CLOUD_LUMP, UTags.Items.CLOUD_JARS, "cloud", 4);
         generateFamily(exporter, UBlockFamilies.CLOUD);
         offer2x3Recipe(exporter, UBlocks.CLOUD_PILLAR, UBlocks.CLOUD, "pillar");
         offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CLOUD, UItems.CLOUD_LUMP);
@@ -200,7 +211,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         // magic staff
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.MAGIC_STAFF)
             .input('*', UItems.GEMSTONE).criterion("has_gemstone", conditionsFromItem(UItems.GEMSTONE))
-            .input('#', UConventionalTags.STICKS).criterion("has_stick", conditionsFromTag(UConventionalTags.STICKS))
+            .input('#', UConventionalTags.Items.STICKS).criterion("has_stick", conditionsFromTag(UConventionalTags.Items.STICKS))
             .pattern("  *")
             .pattern(" # ")
             .pattern("#  ")
@@ -217,7 +228,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         // pegasus amulet
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.GOLDEN_FEATHER)
             .input('*', Items.GOLD_NUGGET).criterion("has_nugget", conditionsFromItem(Items.GOLD_NUGGET))
-            .input('#', UTags.MAGIC_FEATHERS).criterion("has_feather", conditionsFromTag(UTags.MAGIC_FEATHERS))
+            .input('#', UTags.Items.MAGIC_FEATHERS).criterion("has_feather", conditionsFromTag(UTags.Items.MAGIC_FEATHERS))
             .pattern("***")
             .pattern("*#*")
             .pattern("***")
@@ -232,7 +243,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         // friendship bracelet
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.FRIENDSHIP_BRACELET)
             .input('*', Items.STRING)
-            .input('#', Items.LEATHER).criterion(hasItem(Items.LEATHER), conditionsFromTag(UTags.MAGIC_FEATHERS))
+            .input('#', Items.LEATHER).criterion(hasItem(Items.LEATHER), conditionsFromItem(Items.LEATHER))
             .pattern("*#*")
             .pattern("# #")
             .pattern("*#*")
@@ -242,7 +253,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         // meadowbrook's staff
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.MEADOWBROOKS_STAFF)
             .input('*', UItems.GEMSTONE).criterion(hasItem(UItems.GEMSTONE), conditionsFromItem(UItems.GEMSTONE))
-            .input('/', UConventionalTags.STICKS).criterion(hasItem(Items.STICK), conditionsFromTag(UConventionalTags.STICKS))
+            .input('/', UConventionalTags.Items.STICKS).criterion(hasItem(Items.STICK), conditionsFromTag(UConventionalTags.Items.STICKS))
             .pattern("  *")
             .pattern(" / ")
             .pattern("/  ")
@@ -310,7 +321,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         offerShapelessRecipe(exporter, UItems.SOUR_APPLE_SEEDS, UItems.SOUR_APPLE, "seeds", 3);
         offerShapelessRecipe(exporter, UItems.GREEN_APPLE_SEEDS, UItems.GREEN_APPLE, "seeds", 3);
         offerShapelessRecipe(exporter, UItems.GOLDEN_OAK_SEEDS, Items.GOLDEN_APPLE, "seeds", 1);
-        offerPieRecipe(exporter, UItems.APPLE_PIE, UItems.APPLE_PIE_SLICE, Items.WHEAT, UTags.FRESH_APPLES);
+        offerPieRecipe(exporter, UItems.APPLE_PIE, UItems.APPLE_PIE_SLICE, Items.WHEAT, UTags.Items.FRESH_APPLES);
 
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.ROCK_STEW)
             .input(UItems.ROCK, 3).criterion(hasItem(UItems.ROCK), conditionsFromItem(UItems.ROCK))
@@ -344,20 +355,20 @@ public class URecipeProvider extends FabricRecipeProvider {
             .pattern("###")
             .offerTo(exporter, convertBetween(UItems.OATS, Items.WHEAT));
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.JUICE)
-            .input(Ingredient.fromTag(UTags.FRESH_APPLES), 6).criterion(hasItem(Items.APPLE), conditionsFromTag(UTags.FRESH_APPLES))
+            .input(Ingredient.fromTag(UTags.Items.FRESH_APPLES), 6).criterion(hasItem(Items.APPLE), conditionsFromTag(UTags.Items.FRESH_APPLES))
             .input(Items.GLASS_BOTTLE)
             .group("juice")
             .offerTo(exporter);
         appendIngredients(ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.MUFFIN), Items.SUGAR, Items.EGG, Items.POTATO, UItems.JUICE, UItems.WHEAT_WORMS).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.MUG)
             .input('*', Items.IRON_NUGGET).criterion(hasItem(Items.IRON_NUGGET), conditionsFromItem(Items.IRON_NUGGET))
-            .input('#', UConventionalTags.STICKS).criterion(hasItem(Items.STICK), conditionsFromTag(UConventionalTags.STICKS))
+            .input('#', UConventionalTags.Items.STICKS).criterion(hasItem(Items.STICK), conditionsFromTag(UConventionalTags.Items.STICKS))
             .pattern("# #")
             .pattern("* *")
             .pattern(" # ")
             .offerTo(exporter);
         appendIngredients(ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.CIDER), UItems.BURNED_JUICE, UItems.MUG)
-            .input(Ingredient.fromTag(UTags.FRESH_APPLES)).criterion(hasItem(Items.APPLE), conditionsFromTag(UTags.FRESH_APPLES))
+            .input(Ingredient.fromTag(UTags.Items.FRESH_APPLES)).criterion(hasItem(Items.APPLE), conditionsFromTag(UTags.Items.FRESH_APPLES))
             .offerTo(exporter);
 
         ShapedRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.HAY_FRIES)
@@ -400,6 +411,10 @@ public class URecipeProvider extends FabricRecipeProvider {
         offerSmelting(exporter, List.of(UItems.BURNED_JUICE, UItems.BURNED_TOAST), RecipeCategory.FOOD, Items.CHARCOAL, 1, 20, "coal");
         offerSmelting(exporter, List.of(UItems.HAY_FRIES), RecipeCategory.FOOD, UItems.CRISPY_HAY_FRIES, 1F, 25, "hay_fries");
         offerSmelting(exporter, List.of(UItems.ZAP_APPLE), RecipeCategory.FOOD, UItems.COOKED_ZAP_APPLE, 1.2F, 430, "zap_apple");
+        offerSmelting(exporter, List.of(Items.TROPICAL_FISH), RecipeCategory.FOOD, UItems.COOKED_TROPICAL_FISH, 1.2F, 230, "fish");
+        offerSmelting(exporter, List.of(Items.PUFFERFISH), RecipeCategory.FOOD, UItems.COOKED_PUFFERFISH, 1.2F, 230, "fish");
+        offerSmelting(exporter, List.of(Items.AXOLOTL_BUCKET), RecipeCategory.FOOD, UItems.FRIED_AXOLOTL, 2.2F, 230, "fried_axolotl");
+        offerSmelting(exporter, List.of(UBlocks.MYSTERIOUS_EGG.asItem()), RecipeCategory.FOOD, UItems.GREEN_FRIED_EGG, 3.8F, 630, "fried_egg");
 
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.ZAP_APPLE_JAM_JAR)
             .input(UItems.COOKED_ZAP_APPLE, 6).criterion(hasItem(UItems.COOKED_ZAP_APPLE), conditionsFromItem(UItems.COOKED_ZAP_APPLE))
@@ -410,8 +425,8 @@ public class URecipeProvider extends FabricRecipeProvider {
             .input(UItems.TOAST, 8)
             .offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.CANDIED_APPLE)
-            .input(UConventionalTags.STICKS)
-            .input(UTags.FRESH_APPLES).criterion(hasItem(UItems.ZAP_APPLE_JAM_JAR), conditionsFromItem(UItems.ZAP_APPLE_JAM_JAR))
+            .input(UConventionalTags.Items.STICKS)
+            .input(UTags.Items.FRESH_APPLES).criterion(hasItem(Items.APPLE), conditionsFromTag(UTags.Items.FRESH_APPLES))
             .input(Items.SUGAR, 4)
             .offerTo(exporter);
 
@@ -445,7 +460,7 @@ public class URecipeProvider extends FabricRecipeProvider {
             .pattern(" C ")
             .offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, UItems.PEARL_NECKLACE)
-            .input('#', UTags.SHELLS).criterion("has_shell", conditionsFromTag(UTags.SHELLS))
+            .input('#', UTags.Items.SHELLS).criterion("has_shell", conditionsFromTag(UTags.Items.SHELLS))
             .input('~', Items.STRING)
             .pattern("# #")
             .pattern("# #")
@@ -492,7 +507,7 @@ public class URecipeProvider extends FabricRecipeProvider {
             .pattern("#*")
             .offerTo(exporter, convertBetween(Items.DIRT, UItems.WHEAT_WORMS));
 
-        offerShapelessRecipe(exporter, Items.BONE_MEAL, UTags.SHELLS, "bonemeal", 3);
+        offerShapelessRecipe(exporter, Items.BONE_MEAL, UTags.Items.SHELLS, "bonemeal", 3);
 
         // pegasus feathers for non pegasi
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.PEGASUS_FEATHER)
@@ -578,7 +593,7 @@ public class URecipeProvider extends FabricRecipeProvider {
     public static void offerPolearmRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, Either<ItemConvertible, TagKey<Item>> input) {
         CraftingMaterialHelper
             .input(ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, output), 'o', input).criterion(CraftingMaterialHelper.hasEither(input), CraftingMaterialHelper.conditionsFromEither(input))
-            .input('#', UConventionalTags.STICKS)
+            .input('#', UConventionalTags.Items.STICKS)
             .pattern("  o")
             .pattern(" # ")
             .pattern("#  ")

@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.item.cloud.CloudBedItem;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.item.group.UItemGroups;
+import com.minelittlepony.unicopia.recipe.URecipes;
 import com.terraformersmc.terraform.boat.api.TerraformBoatType;
 import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
 import com.terraformersmc.terraform.boat.api.item.TerraformBoatItemHelper;
@@ -27,6 +28,7 @@ import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Rarity;
+import net.minecraft.util.UseAction;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.Registries;
@@ -109,7 +111,7 @@ public interface UItems {
     Item TOM = register("tom", new BluntWeaponItem(new Item.Settings(), ImmutableMultimap.of(
             EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, new EntityAttributeModifier(BluntWeaponItem.KNOCKBACK_MODIFIER_ID, "Weapon modifier", 0.9, EntityAttributeModifier.Operation.ADDITION)
     )), ItemGroups.NATURAL);
-    Item ROCK_STEW = register("rock_stew", new StewItem(new Item.Settings().food(FoodComponents.MUSHROOM_STEW).recipeRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
+    Item ROCK_STEW = register("rock_stew", new StewItem(new Item.Settings().food(FoodComponents.MUSHROOM_STEW).maxCount(1).recipeRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
     Item ROCK_CANDY = register("rock_candy", new Item(new Item.Settings().food(UFoodComponents.CANDY).maxCount(16)), ItemGroups.FOOD_AND_DRINK);
     Item SALT_CUBE = register("salt_cube", new Item(new Item.Settings().food(UFoodComponents.SALT_CUBE)), ItemGroups.FOOD_AND_DRINK);
 
@@ -119,17 +121,17 @@ public interface UItems {
     Item GOLDEN_OAK_SEEDS = register("golden_oak_seeds", new AliasedBlockItem(UBlocks.GOLDEN_OAK_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
 
     Item MUG = register("mug", new Item(new Settings()), ItemGroups.TOOLS);
-    Item CIDER = register("cider", new DrinkableItem(new Item.Settings().food(UFoodComponents.CIDER).maxCount(16).recipeRemainder(MUG)), ItemGroups.FOOD_AND_DRINK);
-    Item JUICE = register("juice", new DrinkableItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE).maxCount(16).food(UFoodComponents.JUICE)), ItemGroups.FOOD_AND_DRINK);
-    Item BURNED_JUICE = register("burned_juice", new DrinkableItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE).maxCount(16).food(UFoodComponents.BURNED_JUICE)), ItemGroups.FOOD_AND_DRINK);
+    Item CIDER = register("cider", new ConsumableItem(new Item.Settings().food(UFoodComponents.CIDER).maxCount(16).recipeRemainder(MUG), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
+    Item JUICE = register("juice", new ConsumableItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE).maxCount(16).food(UFoodComponents.JUICE), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
+    Item BURNED_JUICE = register("burned_juice", new ConsumableItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE).maxCount(16).food(UFoodComponents.BURNED_JUICE), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE = register("apple_pie", new BlockItem(UBlocks.APPLE_PIE, new Item.Settings().maxCount(1)), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE_HOOF = register("apple_pie_hoof", new AliasedBlockItem(UBlocks.APPLE_PIE, new Item.Settings().maxCount(1)), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE_SLICE = register("apple_pie_slice", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.PIE)), ItemGroups.FOOD_AND_DRINK);
     Item CANDIED_APPLE = register("candied_apple", new StagedFoodItem(new Item.Settings().food(UFoodComponents.CANDY).maxDamage(3), () -> Items.STICK), ItemGroups.FOOD_AND_DRINK);
 
-    Item LOVE_BOTTLE = register("love_bottle", new DrinkableItem(new Item.Settings().food(UFoodComponents.LOVE_BOTTLE).maxCount(1).recipeRemainder(Items.GLASS_BOTTLE)), ItemGroups.FOOD_AND_DRINK);
-    Item LOVE_BUCKET = register("love_bucket", new DrinkableItem(new Item.Settings().food(UFoodComponents.LOVE_BUCKET).recipeRemainder(Items.BUCKET)), ItemGroups.FOOD_AND_DRINK);
-    Item LOVE_MUG = register("love_mug", new DrinkableItem(new Item.Settings().food(UFoodComponents.LOVE_MUG).recipeRemainder(MUG)), ItemGroups.FOOD_AND_DRINK);
+    Item LOVE_BOTTLE = register("love_bottle", new ConsumableItem(new Item.Settings().food(UFoodComponents.LOVE_BOTTLE).maxCount(1).recipeRemainder(Items.GLASS_BOTTLE), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
+    Item LOVE_BUCKET = register("love_bucket", new ConsumableItem(new Item.Settings().food(UFoodComponents.LOVE_BUCKET).recipeRemainder(Items.BUCKET), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
+    Item LOVE_MUG = register("love_mug", new ConsumableItem(new Item.Settings().food(UFoodComponents.LOVE_MUG).recipeRemainder(MUG), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
 
     Item GOLDEN_FEATHER = register("golden_feather", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)), ItemGroups.NATURAL);
     Item GOLDEN_WING = register("golden_wing", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)), ItemGroups.NATURAL);
@@ -226,6 +228,16 @@ public interface UItems {
     Item TURRET_SHELL = register("turret_shell", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
     Item SHELLY = register("shelly", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
 
+    Item ROTTEN_COD = register("rotten_cod", new Item(new Item.Settings().food(FoodComponents.ROTTEN_FLESH)), ItemGroups.FOOD_AND_DRINK);
+    Item ROTTEN_SALMON = register("rotten_salmon", new Item(new Item.Settings().food(FoodComponents.ROTTEN_FLESH)), ItemGroups.FOOD_AND_DRINK);
+    Item ROTTEN_TROPICAL_FISH = register("rotten_tropical_fish", new Item(new Item.Settings().food(FoodComponents.ROTTEN_FLESH)), ItemGroups.FOOD_AND_DRINK);
+    Item ROTTEN_PUFFERFISH = register("rotten_pufferfish", new Item(new Item.Settings().food(FoodComponents.ROTTEN_FLESH)), ItemGroups.FOOD_AND_DRINK);
+
+    Item COOKED_TROPICAL_FISH = register("cooked_tropical_fish", new Item(new Item.Settings().food(FoodComponents.COOKED_COD)), ItemGroups.FOOD_AND_DRINK);
+    Item COOKED_PUFFERFISH = register("cooked_pufferfish", new Item(new Item.Settings().food(FoodComponents.COOKED_COD)), ItemGroups.FOOD_AND_DRINK);
+    Item FRIED_AXOLOTL = register("fried_axolotl", new ConsumableItem(new Item.Settings().food(FoodComponents.COOKED_CHICKEN).maxCount(1).recipeRemainder(Items.BUCKET), UseAction.EAT), ItemGroups.FOOD_AND_DRINK);
+    Item GREEN_FRIED_EGG = register("green_fried_egg", new Item(new Item.Settings().food(UFoodComponents.FRIED_EGG)), ItemGroups.FOOD_AND_DRINK);
+
     Item CARAPACE = register("carapace", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
     Item CLOTH_BED = register("cloth_bed", new FancyBedItem(UBlocks.CLOTH_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
     Item CLOUD_BED = register("cloud_bed", new CloudBedItem(UBlocks.CLOUD_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
@@ -272,7 +284,7 @@ public interface UItems {
         FuelRegistry.INSTANCE.add(SPELLBOOK, 9000);
         FuelRegistry.INSTANCE.add(MEADOWBROOKS_STAFF, 800);
         FuelRegistry.INSTANCE.add(BURNED_TOAST, 1600);
-        FuelRegistry.INSTANCE.add(UTags.BASKETS, 1700);
+        FuelRegistry.INSTANCE.add(UTags.Items.BASKETS, 1700);
 
         CompostingChanceRegistry.INSTANCE.add(GREEN_APPLE, 0.65F);
         CompostingChanceRegistry.INSTANCE.add(SWEET_APPLE, 0.65F);

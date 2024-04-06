@@ -5,7 +5,7 @@ import java.util.List;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.recipe.URecipes;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;

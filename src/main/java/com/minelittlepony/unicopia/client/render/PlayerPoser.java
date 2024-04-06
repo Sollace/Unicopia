@@ -52,7 +52,7 @@ public class PlayerPoser {
             float pitchChange = -0.5F;
             float yawChange = 0.8F;
 
-            if (player.getStackInHand(rightHand).isIn(UTags.POLEARMS) && (!ponyRace.isEquine() || model.rightArm.pitch != 0)) {
+            if (player.getStackInHand(rightHand).isIn(UTags.Items.POLEARMS) && (!ponyRace.isEquine() || model.rightArm.pitch != 0)) {
                 model.rightArm.pitch += pitchChange;
                 model.rightArm.yaw += yawChange;
                 if (player.handSwingTicks > 0 && rightHand == Hand.MAIN_HAND) {
@@ -61,7 +61,7 @@ public class PlayerPoser {
                 }
             }
 
-            if (player.getStackInHand(leftHand).isIn(UTags.POLEARMS) && (!ponyRace.isEquine() || model.leftArm.pitch != 0)) {
+            if (player.getStackInHand(leftHand).isIn(UTags.Items.POLEARMS) && (!ponyRace.isEquine() || model.leftArm.pitch != 0)) {
                 model.leftArm.pitch += pitchChange;
                 model.leftArm.yaw -= yawChange;
                 if (player.handSwingTicks > 0 && leftHand == Hand.MAIN_HAND) {

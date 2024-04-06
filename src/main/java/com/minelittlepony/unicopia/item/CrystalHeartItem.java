@@ -188,7 +188,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
 
         BlockPos tip = entity.getBlockPos().offset(direction);
         BlockState tipState = entity.getWorld().getBlockState(tip);
-        if (!tipState.isIn(UTags.CRYSTAL_HEART_ORNAMENT) || (!tipState.contains(EndRodBlock.FACING)|| tipState.get(EndRodBlock.FACING) != direction.getOpposite())) {
+        if (!tipState.isIn(UTags.Blocks.CRYSTAL_HEART_ORNAMENT) || (!tipState.contains(EndRodBlock.FACING)|| tipState.get(EndRodBlock.FACING) != direction.getOpposite())) {
             return false;
         }
 
@@ -207,6 +207,6 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
     }
 
     private boolean isDiamond(BlockState state) {
-        return state.isIn(UTags.CRYSTAL_HEART_BASE);
+        return state.isIn(UTags.Blocks.CRYSTAL_HEART_BASE);
     }
 }

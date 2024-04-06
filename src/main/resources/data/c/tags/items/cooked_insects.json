@@ -1,7 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "minecraft:fermented_spider_eye",
-    { "id": "#c:cooked_insect", "required": false }
-  ]
-}

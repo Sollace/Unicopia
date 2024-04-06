@@ -73,7 +73,7 @@ public class BedSheetPatternRecipeBuilder {
 
     private static void offerBedSheetConversionRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, Stream<ItemConvertible> wools) {
         var builder = ShapelessRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output)
-            .input(UTags.WOOL_BED_SHEETS).criterion("has_bed_sheet", RecipeProvider.conditionsFromTag(UTags.WOOL_BED_SHEETS));
+            .input(UTags.Items.WOOL_BED_SHEETS).criterion("has_bed_sheet", RecipeProvider.conditionsFromTag(UTags.Items.WOOL_BED_SHEETS));
         wools.forEach(builder::input);
         builder
             .group("bed_sheet")
