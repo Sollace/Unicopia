@@ -716,7 +716,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     private void applyTurbulance(MutableVector velocity) {
-        int globalEffectStrength = MathHelper.clamp(entity.getWorld().getGameRules().getInt(UGameRules.WEATHER_EFFECTS_STRENGTH), 0, 100);
+        int globalEffectStrength = entity.getWorld().getGameRules().getInt(UGameRules.WEATHER_EFFECTS_STRENGTH);
         float effectStrength = Math.min(1, (float)ticksInAir / MAX_TICKS_TO_WEATHER_EFFECTS) * (globalEffectStrength / 100F);
         Vec3d gust = WeatherConditions.getGustStrength(entity.getWorld(), entity.getBlockPos())
                 .multiply(globalEffectStrength / 100D)

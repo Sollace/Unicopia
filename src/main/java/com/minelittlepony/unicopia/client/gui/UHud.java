@@ -198,7 +198,7 @@ public class UHud {
 
         float vortexDistortion = DarkVortexSpellRenderer.getCameraDistortion();
 
-        if (vortexDistortion > 20) {
+        if (vortexDistortion > 25) {
             context.fill(RenderLayers.getEndPortal(), 0, 0, scaledWidth, scaledHeight, 0);
             context.getMatrices().push();
             context.getMatrices().translate(scaledWidth / 2, scaledHeight / 2, 0);
@@ -206,7 +206,7 @@ public class UHud {
             context.getMatrices().pop();
             return;
         } else if (vortexDistortion > 0) {
-            context.fill(0, 0, scaledWidth, scaledHeight, (int)((vortexDistortion / 20F) * 255) << 24);
+            context.fill(0, 0, scaledWidth, scaledHeight, (int)((Math.min(20, vortexDistortion) / 20F) * 255) << 24);
         }
 
         boolean hasEffect = client.player.hasStatusEffect(UEffects.SUN_BLINDNESS);
