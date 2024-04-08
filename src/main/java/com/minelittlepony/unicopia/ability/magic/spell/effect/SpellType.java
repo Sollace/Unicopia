@@ -1,10 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import java.util.EnumMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
@@ -39,48 +34,47 @@ import net.minecraft.server.command.ServerCommandSource;
 
 public final class SpellType<T extends Spell> implements Affine, SpellPredicate<T> {
     public static final Identifier EMPTY_ID = Unicopia.id("none");
-    public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, SpellTraits.EMPTY, t -> null);
+    public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, GemstoneItem.Shape.ROUND, SpellTraits.EMPTY, t -> null);
 
     public static final Registry<SpellType<?>> REGISTRY = RegistryUtils.createSimple(Unicopia.id("spells"));
     public static final RegistryKey<? extends Registry<SpellType<?>>> REGISTRY_KEY = REGISTRY.getKey();
-    public static final Map<Affinity, Set<SpellType<?>>> BY_AFFINITY = new EnumMap<>(Affinity.class);
 
     private static final DynamicCommandExceptionType UNKNOWN_SPELL_TYPE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("spell_type.unknown", id));
 
-    public static final SpellType<PlaceableSpell> PLACED_SPELL = register("placed", Affinity.NEUTRAL, 0, false, SpellTraits.EMPTY, PlaceableSpell::new);
-    public static final SpellType<ThrowableSpell> THROWN_SPELL = register("thrown", Affinity.NEUTRAL, 0, false, SpellTraits.EMPTY, ThrowableSpell::new);
+    public static final SpellType<PlaceableSpell> PLACED_SPELL = register("placed", Affinity.NEUTRAL, 0, false, GemstoneItem.Shape.DONUT, SpellTraits.EMPTY, PlaceableSpell::new);
+    public static final SpellType<ThrowableSpell> THROWN_SPELL = register("thrown", Affinity.NEUTRAL, 0, false, GemstoneItem.Shape.DONUT, SpellTraits.EMPTY, ThrowableSpell::new);
 
-    public static final SpellType<DispersableDisguiseSpell> CHANGELING_DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, SpellTraits.EMPTY, DispersableDisguiseSpell::new);
-    public static final SpellType<ChangelingFeedingSpell> FEED = register("feed", Affinity.BAD, 0xBDBDF9, false, SpellTraits.EMPTY, ChangelingFeedingSpell::new);
-    public static final SpellType<RainboomAbilitySpell> RAINBOOM = register("rainboom", Affinity.GOOD, 0xBDBDF9, false, SpellTraits.EMPTY, RainboomAbilitySpell::new);
-    public static final SpellType<RageAbilitySpell> RAGE = register("rage", Affinity.GOOD, 0xBDBDF9, false, SpellTraits.EMPTY, RageAbilitySpell::new);
-    public static final SpellType<TimeControlAbilitySpell> TIME_CONTROL = register("time_control", Affinity.GOOD, 0xBDBDF9, false, SpellTraits.EMPTY, TimeControlAbilitySpell::new);
+    public static final SpellType<DispersableDisguiseSpell> CHANGELING_DISGUISE = register("disguise", Affinity.BAD, 0x19E48E, false, GemstoneItem.Shape.ARROW, SpellTraits.EMPTY, DispersableDisguiseSpell::new);
+    public static final SpellType<ChangelingFeedingSpell> FEED = register("feed", Affinity.BAD, 0xBDBDF9, false, GemstoneItem.Shape.ARROW, SpellTraits.EMPTY, ChangelingFeedingSpell::new);
+    public static final SpellType<RainboomAbilitySpell> RAINBOOM = register("rainboom", Affinity.GOOD, 0xBDBDF9, false, GemstoneItem.Shape.ROCKET, SpellTraits.EMPTY, RainboomAbilitySpell::new);
+    public static final SpellType<RageAbilitySpell> RAGE = register("rage", Affinity.GOOD, 0xBDBDF9, false, GemstoneItem.Shape.FLAME, SpellTraits.EMPTY, RageAbilitySpell::new);
+    public static final SpellType<TimeControlAbilitySpell> TIME_CONTROL = register("time_control", Affinity.GOOD, 0xBDBDF9, false, GemstoneItem.Shape.STAR, SpellTraits.EMPTY, TimeControlAbilitySpell::new);
 
-    public static final SpellType<IceSpell> FROST = register("frost", Affinity.GOOD, 0xEABBFF, true, IceSpell.DEFAULT_TRAITS, IceSpell::new);
-    public static final SpellType<ChillingBreathSpell> CHILLING_BREATH = register("chilling_breath", Affinity.NEUTRAL, 0xFFEAFF, true, ChillingBreathSpell.DEFAULT_TRAITS, ChillingBreathSpell::new);
-    public static final SpellType<ScorchSpell> SCORCH = register("scorch", Affinity.BAD, 0xF8EC1F, true, ScorchSpell.DEFAULT_TRAITS, ScorchSpell::new);
-    public static final SpellType<FireSpell> FLAME = register("flame", Affinity.GOOD, 0xFFBB99, true, FireSpell.DEFAULT_TRAITS, FireSpell::new);
-    public static final SpellType<InfernoSpell> INFERNAL = register("infernal", Affinity.BAD, 0xFFAA00, true, InfernoSpell.DEFAULT_TRAITS, InfernoSpell::new);
-    public static final SpellType<ShieldSpell> SHIELD = register("shield", Affinity.NEUTRAL, 0x66CDAA, true, ShieldSpell.DEFAULT_TRAITS, ShieldSpell::new);
-    public static final SpellType<AreaProtectionSpell> ARCANE_PROTECTION = register("arcane_protection", Affinity.BAD, 0x99CDAA, true, AreaProtectionSpell.DEFAULT_TRAITS, AreaProtectionSpell::new);
-    public static final SpellType<AttractiveSpell> VORTEX = register("vortex", Affinity.NEUTRAL, 0xFFEA88, true, AttractiveSpell.DEFAULT_TRAITS, AttractiveSpell::new);
-    public static final SpellType<DarkVortexSpell> DARK_VORTEX = register("dark_vortex", Affinity.BAD, 0xA33333, true, DarkVortexSpell.DEFAULT_TRAITS, DarkVortexSpell::new);
-    public static final SpellType<NecromancySpell> NECROMANCY = register("necromancy", Affinity.BAD, 0xFA3A3A, true, SpellTraits.EMPTY, NecromancySpell::new);
-    public static final SpellType<SiphoningSpell> SIPHONING = register("siphoning", Affinity.NEUTRAL, 0xFFA3AA, true, SpellTraits.EMPTY, SiphoningSpell::new);
-    public static final SpellType<DisperseIllusionSpell> REVEALING = register("reveal", Affinity.GOOD, 0xFFFFAF, true, SpellTraits.EMPTY, DisperseIllusionSpell::new);
-    public static final SpellType<AwkwardSpell> AWKWARD = register("awkward", Affinity.GOOD, 0x3A59FF, true, SpellTraits.EMPTY, AwkwardSpell::new);
-    public static final SpellType<TransformationSpell> TRANSFORMATION = register("transformation", Affinity.GOOD, 0x19E48E, true, SpellTraits.EMPTY, TransformationSpell::new);
-    public static final SpellType<FeatherFallSpell> FEATHER_FALL = register("feather_fall", Affinity.GOOD, 0x00EEFF, true, FeatherFallSpell.DEFAULT_TRAITS, FeatherFallSpell::new);
-    public static final SpellType<CatapultSpell> CATAPULT = register("catapult", Affinity.GOOD, 0x22FF00, true, CatapultSpell.DEFAULT_TRAITS, CatapultSpell::new);
-    public static final SpellType<FireBoltSpell> FIRE_BOLT = register("fire_bolt", Affinity.GOOD, 0xFF8811, true, FireBoltSpell.DEFAULT_TRAITS, FireBoltSpell::new);
-    public static final SpellType<LightSpell> LIGHT = register("light", Affinity.GOOD, 0xEEFFAA, true, LightSpell.DEFAULT_TRAITS, LightSpell::new);
-    public static final SpellType<DisplacementSpell> DISPLACEMENT = register("displacement", Affinity.NEUTRAL, 0x9900FF, true, PortalSpell.DEFAULT_TRAITS, DisplacementSpell::new);
-    public static final SpellType<PortalSpell> PORTAL = register("portal", Affinity.GOOD, 0x99FFFF, true, PortalSpell.DEFAULT_TRAITS, PortalSpell::new);
-    public static final SpellType<MimicSpell> MIMIC = register("mimic", Affinity.GOOD, 0xFFFF00, true, SpellTraits.EMPTY, MimicSpell::new);
-    public static final SpellType<MindSwapSpell> MIND_SWAP = register("mind_swap", Affinity.BAD, 0xF9FF99, true, SpellTraits.EMPTY, MindSwapSpell::new);
-    public static final SpellType<HydrophobicSpell> HYDROPHOBIC = register("hydrophobic", Affinity.NEUTRAL, 0xF999FF, true, SpellTraits.EMPTY, s -> new HydrophobicSpell(s, FluidTags.WATER));
-    public static final SpellType<BubbleSpell> BUBBLE = register("bubble", Affinity.NEUTRAL, 0xF999FF, true, BubbleSpell.DEFAULT_TRAITS, BubbleSpell::new);
-    public static final SpellType<DispellEvilSpell> DISPEL_EVIL = register("dispel_evil", Affinity.GOOD, 0x00FF00, true, DispellEvilSpell.DEFAULT_TRAITS, DispellEvilSpell::new);
+    public static final SpellType<IceSpell> FROST = register("frost", Affinity.GOOD, 0xEABBFF, true, GemstoneItem.Shape.TRIANGLE, IceSpell.DEFAULT_TRAITS, IceSpell::new);
+    public static final SpellType<ChillingBreathSpell> CHILLING_BREATH = register("chilling_breath", Affinity.NEUTRAL, 0xFFEAFF, true, GemstoneItem.Shape.TRIANGLE, ChillingBreathSpell.DEFAULT_TRAITS, ChillingBreathSpell::new);
+    public static final SpellType<ScorchSpell> SCORCH = register("scorch", Affinity.BAD, 0xF8EC1F, true, GemstoneItem.Shape.FLAME, ScorchSpell.DEFAULT_TRAITS, ScorchSpell::new);
+    public static final SpellType<FireSpell> FLAME = register("flame", Affinity.GOOD, 0xFFBB99, true, GemstoneItem.Shape.FLAME, FireSpell.DEFAULT_TRAITS, FireSpell::new);
+    public static final SpellType<InfernoSpell> INFERNAL = register("infernal", Affinity.BAD, 0xFFAA00, true, GemstoneItem.Shape.FLAME, InfernoSpell.DEFAULT_TRAITS, InfernoSpell::new);
+    public static final SpellType<ShieldSpell> SHIELD = register("shield", Affinity.NEUTRAL, 0x66CDAA, true, GemstoneItem.Shape.SHIELD, ShieldSpell.DEFAULT_TRAITS, ShieldSpell::new);
+    public static final SpellType<AreaProtectionSpell> ARCANE_PROTECTION = register("arcane_protection", Affinity.BAD, 0x99CDAA, true, GemstoneItem.Shape.SHIELD, AreaProtectionSpell.DEFAULT_TRAITS, AreaProtectionSpell::new);
+    public static final SpellType<AttractiveSpell> VORTEX = register("vortex", Affinity.NEUTRAL, 0xFFEA88, true, GemstoneItem.Shape.VORTEX, AttractiveSpell.DEFAULT_TRAITS, AttractiveSpell::new);
+    public static final SpellType<DarkVortexSpell> DARK_VORTEX = register("dark_vortex", Affinity.BAD, 0xA33333, true, GemstoneItem.Shape.VORTEX, DarkVortexSpell.DEFAULT_TRAITS, DarkVortexSpell::new);
+    public static final SpellType<NecromancySpell> NECROMANCY = register("necromancy", Affinity.BAD, 0xFA3A3A, true, GemstoneItem.Shape.SKULL, SpellTraits.EMPTY, NecromancySpell::new);
+    public static final SpellType<SiphoningSpell> SIPHONING = register("siphoning", Affinity.NEUTRAL, 0xFFA3AA, true, GemstoneItem.Shape.LAMBDA, SpellTraits.EMPTY, SiphoningSpell::new);
+    public static final SpellType<DisperseIllusionSpell> REVEALING = register("reveal", Affinity.GOOD, 0xFFFFAF, true, GemstoneItem.Shape.CROSS, SpellTraits.EMPTY, DisperseIllusionSpell::new);
+    public static final SpellType<AwkwardSpell> AWKWARD = register("awkward", Affinity.GOOD, 0x3A59FF, true, GemstoneItem.Shape.ICE, SpellTraits.EMPTY, AwkwardSpell::new);
+    public static final SpellType<TransformationSpell> TRANSFORMATION = register("transformation", Affinity.GOOD, 0x19E48E, true, GemstoneItem.Shape.BRUSH, SpellTraits.EMPTY, TransformationSpell::new);
+    public static final SpellType<FeatherFallSpell> FEATHER_FALL = register("feather_fall", Affinity.GOOD, 0x00EEFF, true, GemstoneItem.Shape.LAMBDA, FeatherFallSpell.DEFAULT_TRAITS, FeatherFallSpell::new);
+    public static final SpellType<CatapultSpell> CATAPULT = register("catapult", Affinity.GOOD, 0x22FF00, true, GemstoneItem.Shape.ROCKET, CatapultSpell.DEFAULT_TRAITS, CatapultSpell::new);
+    public static final SpellType<FireBoltSpell> FIRE_BOLT = register("fire_bolt", Affinity.GOOD, 0xFF8811, true, GemstoneItem.Shape.FLAME, FireBoltSpell.DEFAULT_TRAITS, FireBoltSpell::new);
+    public static final SpellType<LightSpell> LIGHT = register("light", Affinity.GOOD, 0xEEFFAA, true, GemstoneItem.Shape.STAR, LightSpell.DEFAULT_TRAITS, LightSpell::new);
+    public static final SpellType<DisplacementSpell> DISPLACEMENT = register("displacement", Affinity.NEUTRAL, 0x9900FF, true, GemstoneItem.Shape.BRUSH, PortalSpell.DEFAULT_TRAITS, DisplacementSpell::new);
+    public static final SpellType<PortalSpell> PORTAL = register("portal", Affinity.GOOD, 0x99FFFF, true, GemstoneItem.Shape.RING, PortalSpell.DEFAULT_TRAITS, PortalSpell::new);
+    public static final SpellType<MimicSpell> MIMIC = register("mimic", Affinity.GOOD, 0xFFFF00, true, GemstoneItem.Shape.ARROW, SpellTraits.EMPTY, MimicSpell::new);
+    public static final SpellType<MindSwapSpell> MIND_SWAP = register("mind_swap", Affinity.BAD, 0xF9FF99, true, GemstoneItem.Shape.WAVE, SpellTraits.EMPTY, MindSwapSpell::new);
+    public static final SpellType<HydrophobicSpell> HYDROPHOBIC = register("hydrophobic", Affinity.NEUTRAL, 0xF999FF, true, GemstoneItem.Shape.ROCKET, SpellTraits.EMPTY, s -> new HydrophobicSpell(s, FluidTags.WATER));
+    public static final SpellType<BubbleSpell> BUBBLE = register("bubble", Affinity.NEUTRAL, 0xF999FF, true, GemstoneItem.Shape.DONUT, BubbleSpell.DEFAULT_TRAITS, BubbleSpell::new);
+    public static final SpellType<DispellEvilSpell> DISPEL_EVIL = register("dispel_evil", Affinity.GOOD, 0x00FF00, true, GemstoneItem.Shape.CROSS, DispellEvilSpell.DEFAULT_TRAITS, DispellEvilSpell::new);
 
     public static void bootstrap() {}
 
@@ -88,6 +82,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     private final Affinity affinity;
     private final int color;
     private final boolean obtainable;
+    private final GemstoneItem.Shape shape;
 
     private final Factory<T> factory;
 
@@ -99,11 +94,12 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     private final ItemStack defaultStack;
 
-    private SpellType(Identifier id, Affinity affinity, int color, boolean obtainable, SpellTraits traits, Factory<T> factory) {
+    private SpellType(Identifier id, Affinity affinity, int color, boolean obtainable, GemstoneItem.Shape shape, SpellTraits traits, Factory<T> factory) {
         this.id = id;
         this.affinity = affinity;
         this.color = color;
         this.obtainable = obtainable;
+        this.shape = shape;
         this.factory = factory;
         this.traits = traits;
         traited = new CustomisedSpellType<>(this, traits);
@@ -135,26 +131,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     }
 
     public GemstoneItem.Shape getGemShape() {
-        if (this == NECROMANCY) return GemstoneItem.Shape.SKULL;
-        if (this == DARK_VORTEX) return GemstoneItem.Shape.VORTEX;
-        if (this == FROST || this == CHILLING_BREATH) return GemstoneItem.Shape.TRIANGLE;
-        if (this == SHIELD || this == ARCANE_PROTECTION) return GemstoneItem.Shape.SHIELD;
-        if (this == FLAME || this == SCORCH || this == INFERNAL || this == FIRE_BOLT) return GemstoneItem.Shape.FLAME;
-        if (this == MIMIC) return GemstoneItem.Shape.ARROW;
-        if (this == DISPEL_EVIL) return GemstoneItem.Shape.CROSS;
-        if (this == REVEALING) return GemstoneItem.Shape.CROSS;
-        if (this == SIPHONING) return GemstoneItem.Shape.LAMBDA;
-        if (this == VORTEX) return GemstoneItem.Shape.VORTEX;
-        if (this == FEATHER_FALL) return GemstoneItem.Shape.LAMBDA;
-        if (this == DISPLACEMENT) return GemstoneItem.Shape.BRUSH;
-        if (this == TRANSFORMATION) return GemstoneItem.Shape.BRUSH;
-        if (this == BUBBLE) return GemstoneItem.Shape.DONUT;
-        if (this == MIND_SWAP) return GemstoneItem.Shape.WAVE;
-        if (this == HYDROPHOBIC || this == CATAPULT) return GemstoneItem.Shape.ROCKET;
-        if (this == LIGHT) return GemstoneItem.Shape.STAR;
-        if (this == PORTAL) return GemstoneItem.Shape.RING;
-        if (this == AWKWARD) return GemstoneItem.Shape.ICE;
-        return GemstoneItem.Shape.ROUND;
+        return shape;
     }
 
     public SpellTraits getTraits() {
@@ -202,15 +179,12 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         return "SpellType[" + getTranslationKey() + "]";
     }
 
-    public static <T extends Spell> SpellType<T> register(String name, Affinity affinity, int color, boolean obtainable, SpellTraits traits, Factory<T> factory) {
-        return register(Unicopia.id(name), affinity, color, obtainable, traits, factory);
+    public static <T extends Spell> SpellType<T> register(String name, Affinity affinity, int color, boolean obtainable, GemstoneItem.Shape shape, SpellTraits traits, Factory<T> factory) {
+        return register(Unicopia.id(name), affinity, color, obtainable, shape, traits, factory);
     }
 
-    public static <T extends Spell> SpellType<T> register(Identifier id, Affinity affinity, int color, boolean obtainable, SpellTraits traits, Factory<T> factory) {
-        SpellType<T> type = new SpellType<>(id, affinity, color, obtainable, traits, factory);
-        byAffinity(affinity).add(type);
-        Registry.register(REGISTRY, id, type);
-        return type;
+    public static <T extends Spell> SpellType<T> register(Identifier id, Affinity affinity, int color, boolean obtainable, GemstoneItem.Shape shape, SpellTraits traits, Factory<T> factory) {
+        return Registry.register(REGISTRY, id, new SpellType<>(id, affinity, color, obtainable, shape, traits, factory));
     }
 
     @SuppressWarnings("unchecked")
@@ -225,10 +199,6 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     @SuppressWarnings("unchecked")
     public static <T extends Spell> SpellType<T> getKey(@Nullable Identifier id) {
         return (SpellType<T>)REGISTRY.getOrEmpty(id).orElse(EMPTY_KEY);
-    }
-
-    public static Set<SpellType<?>> byAffinity(Affinity affinity) {
-        return BY_AFFINITY.computeIfAbsent(affinity, a -> new LinkedHashSet<>());
     }
 
     public static SpellType<?> fromArgument(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
