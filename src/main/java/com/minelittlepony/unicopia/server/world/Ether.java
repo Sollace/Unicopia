@@ -211,12 +211,24 @@ public class Ether extends PersistentState {
         }
 
         public boolean isAvailable() {
-            return !isDead() && !taken;
+            return !isDead() && !taken && entity.isSet();
         }
 
         public void setTaken(boolean taken) {
             this.taken = taken;
             markDirty();
+        }
+
+        public void release() {
+            setTaken(false);
+        }
+
+        public boolean claim() {
+            if (isAvailable()) {
+                setTaken(true);
+                return true;
+            }
+            return false;
         }
 
         @Nullable

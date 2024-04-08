@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 
 /**
  * An indirect reference to an entity by its unique id.
- * Used to store the 'owner' reference for certain objects that allows them to\
+ * Used to store the 'owner' reference for certain objects that allows them to
  * remember who they belong to even when the entity has been unloaded.
  *
  * Will also remember the position and certain attributes of the owner.
