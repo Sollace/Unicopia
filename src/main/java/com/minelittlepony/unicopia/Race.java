@@ -73,7 +73,7 @@ public record Race (
             .abilities(Abilities.HUG, Abilities.STOMP, Abilities.KICK, Abilities.GROW)
     );
     public static final Race UNICORN = register("unicorn", new Builder().foraging().magic()
-            .abilities(Abilities.TELEPORT, Abilities.GROUP_TELEPORT, Abilities.SHOOT, Abilities.DISPELL)
+            .abilities(Abilities.TELEPORT, Abilities.CAST, Abilities.GROUP_TELEPORT, Abilities.SHOOT, Abilities.DISPELL)
     );
     public static final Race PEGASUS = register("pegasus", new Builder().foraging().flight(FlightType.AVIAN).weatherMagic().cloudMagic()
             .abilities(Abilities.TOGGLE_FLIGHT, Abilities.RAINBOOM, Abilities.CAPTURE_CLOUD, Abilities.CARRY)
@@ -83,7 +83,7 @@ public record Race (
     );
     public static final Race ALICORN = register("alicorn", new Builder().foraging().availability(Availability.COMMANDS).flight(FlightType.AVIAN).earth().magic().weatherMagic().cloudMagic()
             .abilities(
-                    Abilities.TELEPORT, Abilities.GROUP_TELEPORT, Abilities.SHOOT, Abilities.DISPELL,
+                    Abilities.TELEPORT, Abilities.GROUP_TELEPORT, Abilities.CAST, Abilities.SHOOT, Abilities.DISPELL,
                     Abilities.TOGGLE_FLIGHT, Abilities.RAINBOOM, Abilities.CAPTURE_CLOUD, Abilities.CARRY,
                     Abilities.HUG, Abilities.STOMP, Abilities.KICK, Abilities.GROW,
                     Abilities.TIME

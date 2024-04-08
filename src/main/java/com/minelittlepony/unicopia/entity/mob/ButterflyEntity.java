@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.item.ButterflyItem;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
@@ -74,7 +73,7 @@ public class ButterflyEntity extends AmbientEntity {
     }
 
     public static boolean canSpawn(EntityType<? extends ButterflyEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-        return world.getBlockState(pos.down()).isIn(UTags.Blocks.BUTTERFLIES_SPAWNABLE_ON);
+        return true;//world.getBlockState(pos.down()).isIn(UTags.Blocks.BUTTERFLIES_SPAWNABLE_ON);
     }
 
     @Override

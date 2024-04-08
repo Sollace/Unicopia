@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client.gui;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
@@ -82,6 +83,12 @@ class Slot {
             bSwap &= abilities.isFilled(bSlot);
         }
 
+        AbilityDispatcher.Stat stat = abilities.getStat(bSwap ? bSlot : aSlot);
+
+        if (stat.getAbility(Unicopia.getConfig().hudPage.get()).isEmpty()) {
+            return;
+        }
+
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.enableBlend();
         MatrixStack matrices = context.getMatrices();
@@ -91,7 +98,7 @@ class Slot {
         // background
         context.drawTexture(UHud.HUD_TEXTURE, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
 
-        AbilityDispatcher.Stat stat = abilities.getStat(bSwap ? bSlot : aSlot);
+
 
         int iconPosition = ((size - iconSize + slotPadding + 1) / 2);
         int sz = iconSize - slotPadding;
@@ -122,6 +129,11 @@ class Slot {
     }
 
     void renderLabel(DrawContext context, AbilityDispatcher abilities, float tickDelta) {
+
+        if (abilities.getStat(aSlot).getAbility(Unicopia.getConfig().hudPage.get()).isEmpty()) {
+            return;
+        }
+
         Text label = KeyBindingsHandler.INSTANCE.getBinding(aSlot).getLabel();
 
         MatrixStack matrices = context.getMatrices();
