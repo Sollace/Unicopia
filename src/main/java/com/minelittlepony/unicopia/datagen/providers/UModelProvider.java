@@ -1,12 +1,14 @@
 package com.minelittlepony.unicopia.datagen.providers;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.datagen.DataCollector;
 import com.minelittlepony.unicopia.item.BedsheetsItem;
+import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
@@ -137,8 +139,7 @@ public class UModelProvider extends FabricModelProvider {
 
         // gemstone
         ModelOverrides.of(ItemModels.GENERATED)
-                .addOverride(ModelIds.getItemSubModelId(UItems.GEMSTONE, "_pure"), "affinity", 0)
-                .addOverride(ModelIds.getItemSubModelId(UItems.GEMSTONE, "_corrupted"), "affinity", 1)
+                .addUniform("shape", List.of(GemstoneItem.Shape.values()), GemstoneItem.Shape::getId, shape -> ModelIds.getItemSubModelId(UItems.GEMSTONE, "_" + shape.name().toLowerCase(Locale.ROOT)))
                 .upload(UItems.GEMSTONE, itemModelGenerator);
 
         // fishing rod

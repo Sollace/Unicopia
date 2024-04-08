@@ -20,6 +20,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.ThrowableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.TimeControlAbilitySpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 import com.mojang.brigadier.context.CommandContext;
@@ -131,6 +132,29 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     @Override
     public Affinity getAffinity() {
         return affinity;
+    }
+
+    public GemstoneItem.Shape getGemShape() {
+        if (this == NECROMANCY) return GemstoneItem.Shape.SKULL;
+        if (this == DARK_VORTEX) return GemstoneItem.Shape.VORTEX;
+        if (this == FROST || this == CHILLING_BREATH) return GemstoneItem.Shape.TRIANGLE;
+        if (this == SHIELD || this == ARCANE_PROTECTION) return GemstoneItem.Shape.SHIELD;
+        if (this == FLAME || this == SCORCH || this == INFERNAL || this == FIRE_BOLT) return GemstoneItem.Shape.FLAME;
+        if (this == MIMIC) return GemstoneItem.Shape.ARROW;
+        if (this == DISPEL_EVIL) return GemstoneItem.Shape.CROSS;
+        if (this == REVEALING) return GemstoneItem.Shape.CROSS;
+        if (this == SIPHONING) return GemstoneItem.Shape.LAMBDA;
+        if (this == VORTEX) return GemstoneItem.Shape.VORTEX;
+        if (this == FEATHER_FALL) return GemstoneItem.Shape.LAMBDA;
+        if (this == DISPLACEMENT) return GemstoneItem.Shape.BRUSH;
+        if (this == TRANSFORMATION) return GemstoneItem.Shape.BRUSH;
+        if (this == BUBBLE) return GemstoneItem.Shape.DONUT;
+        if (this == MIND_SWAP) return GemstoneItem.Shape.WAVE;
+        if (this == HYDROPHOBIC || this == CATAPULT) return GemstoneItem.Shape.ROCKET;
+        if (this == LIGHT) return GemstoneItem.Shape.STAR;
+        if (this == PORTAL) return GemstoneItem.Shape.RING;
+        if (this == AWKWARD) return GemstoneItem.Shape.ICE;
+        return GemstoneItem.Shape.ROUND;
     }
 
     public SpellTraits getTraits() {

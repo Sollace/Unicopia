@@ -28,6 +28,13 @@ public final class ModelOverrides {
         this.model = model;
     }
 
+    public <T> ModelOverrides addUniform(String key, Iterable<T> values, Function<T, Float> idFunc, Function<T, Identifier> childModelSupplier) {
+        for (T t : values) {
+            addOverride(childModelSupplier.apply(t), key, idFunc.apply(t));
+        }
+        return this;
+    }
+
     public ModelOverrides addUniform(String key, int from, int to, Identifier model) {
         float step = 1F / to;
         for (int index = from; index <= to; index++) {

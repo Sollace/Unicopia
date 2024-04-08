@@ -1,12 +1,10 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
-
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -96,12 +94,13 @@ public class GemstoneItem extends Item implements MultiItem, EnchantableItem {
 
     @Override
     public List<ItemStack> getDefaultStacks() {
-        return Arrays.stream(Affinity.VALUES)
-            .flatMap(i -> SpellType.byAffinity(i).stream()
-                    .filter(type -> type.isObtainable())
-                    .map(type -> EnchantableItem.enchant(getDefaultStack(), type, i))
-            )
-            .toList();
+        return SpellType.REGISTRY.stream()
+                .filter(SpellType::isObtainable)
+                .sorted(
+                        Comparator.<SpellType<?>, GemstoneItem.Shape>comparing(SpellType::getGemShape).thenComparing(Comparator.comparing(SpellType::getAffinity))
+                )
+                .map(type -> EnchantableItem.enchant(getDefaultStack(), type))
+                .toList();
     }
 
     @Override
@@ -121,4 +120,29 @@ public class GemstoneItem extends Item implements MultiItem, EnchantableItem {
         return super.getName();
     }
 
+    public enum Shape {
+        ARROW,
+        BRUSH,
+        CROSS,
+        DONUT,
+        FLAME,
+        ICE,
+        LAMBDA,
+        RING,
+        ROCKET,
+        ROUND,
+        SHIELD,
+        SKULL,
+        SPLINT,
+        STAR,
+        TRIANGLE,
+        VORTEX,
+        WAVE;
+
+        public static final int LENGTH = values().length;
+
+        public float getId() {
+            return ordinal() / (float)LENGTH;
+        }
+    }
 }
