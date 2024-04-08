@@ -101,6 +101,8 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
         if (situation == Situation.BODY) {
             return true;
         }
+
+        Vec3d origin = getOrigin(source);
         double mass = getMass() * 0.1;
         double logarithm = 1 - (1D / (1 + (mass * mass)));
         radius.update((float)Math.max(0.1, logarithm * source.asWorld().getGameRules().getInt(UGameRules.MAX_DARK_VORTEX_SIZE)), 200L);
@@ -114,7 +116,6 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
         if (source.isClient()) {
             if (eventHorizon > 0.3) {
                 double range = eventHorizon * 2;
-                Vec3d origin = getOrigin(source);
                 source.spawnParticles(origin, new Sphere(false, range), 50, p -> {
                     source.addParticle(
                             new FollowingParticleEffect(UParticles.HEALTH_DRAIN, origin, 0.4F)
@@ -125,12 +126,11 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
                 });
             }
         } else if (source.asWorld().random.nextInt(300) == 0) {
-            ParticleUtils.spawnParticle(source.asWorld(), LightningBoltParticleEffect.DEFAULT, getOrigin(source), Vec3d.ZERO);
+            ParticleUtils.spawnParticle(source.asWorld(), LightningBoltParticleEffect.DEFAULT, origin, Vec3d.ZERO);
         }
 
         if (!source.isClient()) {
             if (eventHorizon > 2) {
-                Vec3d origin = getOrigin(source);
                 new Sphere(false, eventHorizon + 3).translate(origin).randomPoints(10, source.asWorld().random).forEach(i -> {
                     BlockPos pos = BlockPos.ofFloored(i);
                     if (!source.asWorld().isAir(pos)) {
@@ -143,7 +143,7 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
             }
         }
 
-        Vec3d origin = getOrigin(source);
+
         for (Entity insideEntity : source.findAllEntitiesInRange(eventHorizon * 0.5F).toList()) {
             insideEntity.setVelocity(Vec3d.ZERO);
             Living.updateVelocity(insideEntity);
@@ -151,22 +151,22 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
             if (insideEntity instanceof CastSpellEntity s && getType().isOn(insideEntity)) {
                 setDead();
                 s.getSpellSlot().clear();
-                source.asWorld().createExplosion(source.asEntity(), source.getOrigin().getX(), source.getOrigin().getY(), source.getOrigin().getZ(), 12, ExplosionSourceType.NONE);
+                source.asWorld().createExplosion(source.asEntity(), origin.x, origin.y, origin.z, 12, ExplosionSourceType.NONE);
                 source.asWorld().createExplosion(source.asEntity(), insideEntity.getX(), insideEntity.getY(), insideEntity.getZ(), 12, ExplosionSourceType.NONE);
                 return false;
             }
         }
         targetSelecter.getEntities(source, getDrawDropOffRange()).forEach(i -> {
             try {
-                affectEntity(source, i, i.getPos().distanceTo(origin));
+                affectEntity(source, i, origin);
             } catch (Throwable e) {
                 Unicopia.LOGGER.error("Error updating radial effect", e);
             }
         });
 
-        if (!source.subtractEnergyCost(-accumulatedMass)) {
+        if (!source.subtractEnergyCost(accumulatedMass * 0.001)) {
             setDead();
-            source.asWorld().createExplosion(source.asEntity(), source.getOrigin().getX(), source.getOrigin().getY(), source.getOrigin().getZ(), 3, ExplosionSourceType.NONE);
+            source.asWorld().createExplosion(source.asEntity(), origin.x, origin.y, origin.z, 3, ExplosionSourceType.NONE);
         }
 
         return true;
@@ -188,8 +188,8 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
     @Override
     public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
         if (!projectile.isClient() && projectile instanceof MagicBeamEntity source) {
-            BlockPos pos = hit.getBlockPos();
-            projectile.getWorld().createExplosion(projectile, pos.getX(), pos.getY(), pos.getZ(), 12, ExplosionSourceType.NONE);
+            Vec3d pos = hit.getPos();
+            projectile.getWorld().createExplosion(projectile, pos.x, pos.y, pos.z, 12, ExplosionSourceType.NONE);
             toPlaceable().tick(source, Situation.BODY);
         }
     }
@@ -208,7 +208,7 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
     }
 
     public double getYOffset() {
-        return 3 - radius.getValue() * 0.5;
+        return 2;
     }
 
     private boolean canAffect(Caster<?> source, BlockPos pos) {
@@ -224,24 +224,29 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
             }
             return;
         }
-        if (source.getOrigin().isWithinDistance(pos, getEventHorizonRadius())) {
+        if (pos.isWithinDistance(origin, getEventHorizonRadius())) {
             source.asWorld().breakBlock(pos, false);
-            if (!source.asWorld().getFluidState(pos).isEmpty()) {
-                source.asWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
-            }
+            updateStatePostRemoval(source, pos);
         } else {
             CatapultSpell.createBlockEntity(source.asWorld(), pos, e -> {
+                updateStatePostRemoval(source, pos);
                 e.addVelocity(0, 0.1, 0);
-                if (e instanceof PlayerEntity) {
-                    affectEntity(source, e, e.getPos().distanceTo(getOrigin(source)));
-                }
             });
         }
     }
 
-    private void affectEntity(Caster<?> source, Entity target, double distance) {
-        if (distance <= getEventHorizonRadius() + 0.5) {
-            target.setVelocity(target.getVelocity().multiply(distance < 1 ? distance : distance / (2 * getEventHorizonRadius())));
+    private void updateStatePostRemoval(Caster<?> source, BlockPos pos) {
+        if (!source.asWorld().getFluidState(pos).isEmpty()) {
+            source.asWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
+        }
+    }
+
+    private void affectEntity(Caster<?> source, Entity target, Vec3d origin) {
+        double distance = target.getPos().distanceTo(origin);
+        double eventHorizonRadius = getEventHorizonRadius();
+
+        if (distance <= eventHorizonRadius + 0.5) {
+            target.setVelocity(target.getVelocity().multiply(distance < 1 ? distance : distance / (2 * eventHorizonRadius)));
             Living.updateVelocity(target);
 
             @Nullable
@@ -278,16 +283,14 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
 
             source.subtractEnergyCost(-massOfTarget * 10);
 
-            if (target instanceof PlayerEntity && distance < getEventHorizonRadius() + 5) {
+            if (target instanceof PlayerEntity && distance < eventHorizonRadius + 5) {
                 source.asWorld().playSound(null, target.getBlockPos(), USounds.AMBIENT_DARK_VORTEX_MOOD, SoundCategory.AMBIENT, 2, 0.02F);
             }
 
         } else {
             double force = getAttractiveForce(source, target);
 
-            AttractionUtils.applyForce(getOrigin(source), target, -force, 0, true);
-
-            source.subtractEnergyCost(-2);
+            AttractionUtils.applyForce(origin, target, -force, 0, true);
         }
     }
 
