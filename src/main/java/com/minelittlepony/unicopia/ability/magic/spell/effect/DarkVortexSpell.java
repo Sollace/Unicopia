@@ -164,7 +164,7 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
             }
         });
 
-        if (!source.subtractEnergyCost(accumulatedMass * 0.001)) {
+        if (!source.subtractEnergyCost(0.01)) {
             setDead();
             source.asWorld().createExplosion(source.asEntity(), origin.x, origin.y, origin.z, 3, ExplosionSourceType.NONE);
         }
@@ -175,7 +175,7 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
 
     @Override
     public void tickDying(Caster<?> source) {
-        accumulatedMass /= 2D;
+        accumulatedMass *= 0.8F;
         double mass = getMass() * 0.1;
         double logarithm = 1 - (1D / (1 + (mass * mass)));
         radius.update((float)Math.max(0.1, logarithm * source.asWorld().getGameRules().getInt(UGameRules.MAX_DARK_VORTEX_SIZE)), 200L);
