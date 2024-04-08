@@ -63,11 +63,6 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     }
 
     @Override
-    public boolean canUse(Race race) {
-        return race.canUseEarth();
-    }
-
-    @Override
     public Identifier getIcon(Pony player) {
         Identifier id = Abilities.REGISTRY.getId(this);
         Race race = player.getObservedSpecies();

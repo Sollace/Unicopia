@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.ability;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.data.Hit;
@@ -46,11 +45,6 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
     @Override
     public int getCooldownTime(Pony player) {
         return 50;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race.canUseEarth();
     }
 
     @Override

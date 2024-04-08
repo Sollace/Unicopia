@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.ability;
 
 import com.minelittlepony.unicopia.AwaitTickQueue;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
@@ -15,11 +14,6 @@ import net.minecraft.world.event.GameEvent;
  */
 public class BatEeeeAbility extends ScreechAbility {
     public static final int SELF_SPOOK_PROBABILITY = 20000;
-
-    @Override
-    public boolean canUse(Race race) {
-        return race == Race.BAT;
-    }
 
     @Override
     protected void playSounds(Pony player, Random rng, float strength) {

@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.ability;
 
 import java.util.Optional;
 
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Multi;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.TraceHelper;
@@ -28,11 +27,6 @@ public class BatPonyHangAbility implements Ability<Multi> {
     @Override
     public double getCostEstimate(Pony player) {
         return 0;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race == Race.BAT;
     }
 
     @Override

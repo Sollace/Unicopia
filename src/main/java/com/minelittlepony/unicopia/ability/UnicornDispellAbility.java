@@ -34,11 +34,6 @@ public class UnicornDispellAbility implements Ability<Pos> {
     }
 
     @Override
-    public boolean canUse(Race race) {
-        return race.canCast() || race == Race.CHANGELING;
-    }
-
-    @Override
     public int getColor(Pony player) {
         return SpellType.PORTAL.getColor();
     }

@@ -1,9 +1,22 @@
 package com.minelittlepony.unicopia;
 
-public enum Availability {
+import java.util.Locale;
+
+import net.minecraft.util.StringIdentifiable;
+
+public enum Availability implements StringIdentifiable {
     DEFAULT,
     COMMANDS,
     NONE;
+
+    public static final Codec<Availability> CODEC = StringIdentifiable.createCodec(Availability::values);
+
+    private final String name = name().toLowerCase(Locale.ROOT);
+
+    @Override
+    public String asString() {
+        return name;
+    }
 
     public boolean isSelectable() {
         return this == DEFAULT;

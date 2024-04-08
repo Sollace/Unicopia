@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.ChangelingFeedingSpell;
@@ -46,11 +45,6 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     @Override
     public int getCooldownTime(Pony player) {
         return !SpellType.FEED.isOn(player) && ChangelingFeedingSpell.canFeed(player) ? 15 : 80;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race == Race.CHANGELING;
     }
 
     @Nullable

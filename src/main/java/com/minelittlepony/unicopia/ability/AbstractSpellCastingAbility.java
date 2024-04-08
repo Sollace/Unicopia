@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability;
 
-import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -11,15 +10,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
 
 abstract class AbstractSpellCastingAbility implements Ability<Hit> {
-
     @Override
     public int getCooldownTime(Pony player) {
         return 0;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race.canCast() && race != Race.KIRIN;
     }
 
     @Override

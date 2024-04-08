@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.ability;
 
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.Living;
@@ -16,12 +15,6 @@ import net.minecraft.particle.ParticleTypes;
  * Ability to hug mobs. Not all of them are receptive to your advances though, so be careful!
  */
 public class HugAbility extends CarryAbility {
-
-    @Override
-    public boolean canUse(Race race) {
-        return race.canUseEarth();
-    }
-
     @Override
     public boolean apply(Pony pony, Hit data) {
         PlayerEntity player = pony.asEntity();

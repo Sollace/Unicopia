@@ -1,11 +1,16 @@
 package com.minelittlepony.unicopia;
 
-import net.minecraft.util.Formatting;
+import java.util.Locale;
 
-public enum Affinity {
+import net.minecraft.util.Formatting;
+import net.minecraft.util.StringIdentifiable;
+
+public enum Affinity implements StringIdentifiable {
     GOOD(Formatting.BLUE, -1, 0),
     NEUTRAL(Formatting.LIGHT_PURPLE, 0, 0.5F),
     BAD(Formatting.RED, 1, 1);
+
+    public static final Codec<Affinity> CODEC = StringIdentifiable.createCodec(Affinity::values);
 
     private final Formatting color;
 
@@ -18,6 +23,11 @@ public enum Affinity {
         this.color = color;
         this.corruption = corruption;
         this.alignment = alignment;
+    }
+
+    @Override
+    public String asString() {
+        return name().toLowerCase(Locale.ROOT);
     }
 
     public Formatting getColor() {
