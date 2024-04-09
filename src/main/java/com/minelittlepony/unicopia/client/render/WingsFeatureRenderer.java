@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.client.render;
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.entity.AmuletSelectors;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.client.model.Dilation;
@@ -54,7 +55,8 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
     protected boolean canRender(E entity) {
         return entity instanceof PlayerEntity player
                 && Pony.of(player).getObservedSpecies().flightType() == FlightType.AVIAN
-                && Pony.of(player).getObservedSpecies() != Race.BAT;
+                && Pony.of(player).getObservedSpecies() != Race.BAT
+                && !AmuletSelectors.PEGASUS_AMULET.test(entity);
     }
 
     protected Identifier getTexture(E entity) {
