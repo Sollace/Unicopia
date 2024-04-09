@@ -2,6 +2,7 @@
 
 [![Build Status](https://github.com/Sollace/Unicopia/actions/workflows/gradle-build.yml/badge.svg)](https://github.com/Sollace/Unicopia/actions/workflows/gradle-build.yml)
 [![Downloads](https://img.shields.io/github/downloads/Sollace/Unicopia/total.svg?color=yellowgreen)](https://github.com/Sollace/Unicopia/releases/latest)
+[![Crowdin](https://badges.crowdin.net/unicopia/localized.svg)](https://crowdin.com/project/unicopia)
 ![](https://img.shields.io/badge/api-fabric-orange.svg)
 
 [![ru](https://img.shields.io/badge/lang-ru-d52b1e.svg)](README_RU.md)
