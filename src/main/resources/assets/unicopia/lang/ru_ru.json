@@ -1,11 +1,9 @@
 {
-
   "block.unicopia.bed.not_safe": "Вы не можете уснуть, пока рядом есть монстры",
   "block.unicopia.bed.not_tired": "Сейчас вы не чувствуете усталости",
   "block.unicopia.bed.no_sleep.nocturnal": "Вы можете спать только днём или во время грозы",
   "sleep.not_possible.nocturnal": "Никакой отдых не может пройти в этот день",
   "sleep.skipping_day": "Проспал этот день",
-
   "ability.unicopia.empty_hooves": "Мне нужно найти банку",
   "ability.unicopia.indoors": "Я не вижу отсюда неба",
   "ability.unicopia.too_low": "Мне нужно подняться повыше",
@@ -14,7 +12,6 @@
   "ability.unicopia.too_calm.2": "Я не чувствую злости...",
   "ability.unicopia.too_calm.3": "У Брюса это выглядело проще...",
   "ability.unicopia.too_calm.4": "Селестия, дай мне силы...",
-
   "itemGroup.unicopia.items": "Unicopia",
   "itemGroup.unicopia.foraging": "Unicopia - Корм",
   "itemGroup.unicopia.earth_pony": "Unicopia - Понивилль",
@@ -23,11 +20,9 @@
   "itemGroup.unicopia.bat_pony": "Unicopia - Лощина Теней",
   "itemGroup.unicopia.sea_pony": "Unicopia - Из глубин",
   "itemGroup.unicopia.changeling": "Unicopia - Сырные Холмы",
-
   "item.unicopia.friendship_bracelet": "Браслет товарищества",
   "item.unicopia.friendship_bracelet.issuer": "Подписано %s",
   "item.unicopia.friendship_bracelet.glowing": "Светящийся",
-
   "item.unicopia.oak_basket": "Дубовая корзина",
   "item.unicopia.spruce_basket": "Еловая корзина",
   "item.unicopia.birch_basket": "Берёзовая корзина",
@@ -39,20 +34,16 @@
   "item.unicopia.bamboo_basket": "Бамбуковая корзина",
   "item.unicopia.palm_basket": "Пальмовая корзина",
   "item.unicopia.giant_balloon": "Гигантский воздушный шар",
-
   "item.unicopia.palm_boat": "Пальмовая лодка",
   "item.unicopia.palm_chest_boat": "Пальмовая лодка с сундуком",
-
   "item.unicopia.spellbook": "Книга заклинаний",
   "item.unicopia.spectral_clock": "Спектральные часы",
-
   "emi.category.unicopia.spellbook": "Книга заклинаний",
   "emi.category.unicopia.cloud_shaping": "Формоизменение",
   "emi.category.unicopia.growing": "Выращивание",
   "emi.category.unicopia.altar": "Тёмный ритуал",
   "recipe.unicopia.altar.instruction": "Бросить предмет в огонь",
   "recipe.unicopia.growing.instruction": "Сфокусировать магию земного пони",
-
   "item.unicopia.alicorn_badge": "Эмблема аликорна",
   "item.unicopia.unicorn_badge": "Эмблема единорога",
   "item.unicopia.pegasus_badge": "Эмблема пегаса",
@@ -61,12 +52,10 @@
   "item.unicopia.bat_badge": "Эмблема бэтпони",
   "item.unicopia.kirin_badge": "Эмблема кирина",
   "item.unicopia.hippogriff_badge": "Эмблема гиппогрифа",
-
   "item.unicopia.butterfly_spawn_egg": "Яйцо призыва бабочки",
   "item.unicopia.butterfly": "Бабочка",
   "item.unicopia.loot_bug_spawn_egg": "Яйцо призыва жука-сборщика",
   "item.unicopia.loot_bug": "Жук-сборщик",
-
   "item.unicopia.green_apple": "Яблоко Гренни Смит",
   "item.unicopia.sweet_apple": "Яблоко Яблочной Аллеи",
   "item.unicopia.sour_apple": "Кислое яблоко",
@@ -82,11 +71,9 @@
   "item.unicopia.cooked_pufferfish": "Приготовленный иглобрюх",
   "item.unicopia.fried_axolotl": "Жареный аксолотль",
   "item.unicopia.green_fried_egg": "Жареное зелёное яйцо",
-
   "item.unicopia.love_bottle": "Бутылочка любви",
   "item.unicopia.love_bucket": "Ведро любви",
   "item.unicopia.love_mug": "Кружка любви",
-
   "item.unicopia.plunder_vine": "Чёрная лоза",
   "item.unicopia.empty_jar": "Стеклянная банка",
   "block.unicopia.jar": "Стеклянная банка",
@@ -99,11 +86,9 @@
   "block.unicopia.lightning_jar": "Молния в банке",
   "item.unicopia.zap_apple_jam_jar": "Джем из зап-яблока",
   "block.unicopia.zap_jar": "Банка зап-яблочного джема",
-
   "item.unicopia.toast": "Тост",
   "item.unicopia.burned_toast": "Подгоревший тост",
   "item.unicopia.jam_toast": "Тост с зап-яблочным джемом",
-
   "item.unicopia.crystal_heart": "Кристальное сердце",
   "item.unicopia.crystal_shard": "Осколок кристалла",
   "item.unicopia.dragon_breath_scroll": "Свиток дыхания дракона",
@@ -111,26 +96,21 @@
   "item.unicopia.gemstone.enchanted": "Самоцвет \"%s\"",
   "item.unicopia.gemstone.obfuscated": "Загадочный самоцвет",
   "item.unicopia.botched_gem": "Неудачный самоцвет",
-
   "item.unicopia.pegasus_feather": "Перо пегаса",
   "item.unicopia.gryphon_feather": "Перо грифона",
   "item.unicopia.golden_feather": "Золотое перо",
   "item.unicopia.golden_wing": "Золотое крыло",
-
   "item.unicopia.mug": "Кружка",
   "item.unicopia.cider": "Сидр",
   "item.unicopia.juice": "Сок",
   "item.unicopia.burned_juice": "Жжёный сок",
-
   "item.unicopia.mango": "Манго",
   "item.unicopia.banana": "Банан",
   "item.unicopia.pineapple": "Ананас",
   "item.unicopia.pineapple_crown": "Ботва ананаса",
   "item.unicopia.sunglasses": "Солнцезащитные очки",
   "item.unicopia.broken_sunglasses": "Сломанные солнцезащитные очки",
-
   "item.unicopia.carapace": "Панцырь",
-
   "item.unicopia.pebbles": "Галька",
   "item.unicopia.rock": "Камень",
   "item.unicopia.weird_rock": "Странный камень",
@@ -147,7 +127,6 @@
   "item.unicopia.apple_pie_hoof": "Яблочный пирог с отпечатком копыта",
   "item.unicopia.apple_pie_slice": "Кусочек яблочного пирога",
   "item.unicopia.candied_apple": "Засахаренное яблоко",
-
   "item.unicopia.oats": "Овёс",
   "item.unicopia.imported_oats": "Шикарный импортный овёс",
   "item.unicopia.oatmeal": "Овсянка",
@@ -165,32 +144,26 @@
   "item.unicopia.chocolate_oatmeal_cookie": "Шоколадное овсяное печенье",
   "item.unicopia.pinecone_cookie": "Печенье из шишек",
   "item.unicopia.bowl_of_nuts": "Миска с орехами",
-
   "item.unicopia.pegasus_amulet": "Крылья Икара",
   "item.unicopia.pegasus_amulet.lore": "Дарует временный полёт тому, кто носит его",
   "item.unicopia.amulet.energy": "Энергия: %d / %d",
-
   "item.unicopia.alicorn_amulet": "Амулет аликорна",
   "item.unicopia.alicorn_amulet.lore": "Время ношения: %d",
-
   "item.unicopia.pearl_necklace": "Жемчужное ожерелье",
   "item.unicopia.pearl_necklace.lore": "Наделяет владельца подводными способностями",
   "item.unicopia.clam_shell": "Раковина моллюска",
   "item.unicopia.scallop_shell": "Раковина гребешка",
   "item.unicopia.turret_shell": "Раковина туррителлы",
   "item.unicopia.shelly": "Шелли",
-
   "item.unicopia.horse_shoe.accuracy": "Точность: %d%%",
   "item.unicopia.horse_shoe.speed": "Скорость: %d",
   "item.unicopia.iron_horse_shoe": "Железная подкова",
   "item.unicopia.golden_horse_shoe": "Золотая подкова",
   "item.unicopia.copper_horse_shoe": "Медная подкова",
   "item.unicopia.netherite_horse_shoe": "Незеритовая подкова",
-
   "item.unicopia.broken_alicorn_amulet": "Сломанный амулет аликорна",
   "item.unicopia.unicorn_amulet": "Амулет единорога",
   "item.unicopia.unicorn_amulet.lore": "Наделяет носящего магическими способностями",
-
   "item.unicopia.grogars_bell": "Колокольчик Грогара",
   "item.unicopia.grogars_bell.charges": "Заряды: %d / %d",
   "item.unicopia.magic_staff": "Волшебный посох",
@@ -198,14 +171,12 @@
   "item.unicopia.magic_staff.charges": "Заряды: %d / %d",
   "item.unicopia.meadowbrooks_staff": "Посох Медоубрук",
   "item.unicopia.meadowbrooks_staff.lore": "Тяжёлая палка",
-
   "item.unicopia.wooden_polearm": "Деревянное копьё",
   "item.unicopia.stone_polearm": "Каменное копьё",
   "item.unicopia.iron_polearm": "Железное копьё",
   "item.unicopia.golden_polearm": "Золотое копьё",
   "item.unicopia.diamond_polearm": "Алмазное копьё",
   "item.unicopia.netherite_polearm": "Незеритовое копьё",
-
   "item.unicopia.music_disc_pet": "Пластинка",
   "item.unicopia.music_disc_pet.desc": "Дэниел Инграм - pet",
   "item.unicopia.music_disc_popular": "Пластинка",
@@ -214,7 +185,6 @@
   "item.unicopia.music_disc_crusade.desc": "Дэниел Инграм - crusade",
   "item.unicopia.music_disc_funk": "Пластинка",
   "item.unicopia.music_disc_funk.desc": "Фанк, просто фанк",
-
   "item.unicopia.cloud_lump": "Облачный ком",
   "item.unicopia.white_bed_sheets": "Белая простынь",
   "item.unicopia.light_gray_bed_sheets": "Светло-серая простынь",
@@ -241,7 +211,6 @@
   "item.unicopia.rainbow_bpy_bed_sheets": "Простынь с радужным СРЖ узором",
   "item.unicopia.rainbow_pbg_bed_sheets": "Простынь с радужным ФСЧ узором",
   "item.unicopia.rainbow_pwr_bed_sheets": "Простынь с радужным РБК узором",
-
   "block.unicopia.rocks": "Камни",
   "block.unicopia.plunder_vine": "Чёрная лоза",
   "block.unicopia.plunder_vine_bud": "Бутон чёрной лозы",
@@ -304,11 +273,9 @@
   "block.unicopia.mango_sapling": "Саженец мангового дерева",
   "block.unicopia.potted_mango_sapling": "Саженец манго в горшке",
   "block.unicopia.pineapple": "Ананас",
-
   "block.unicopia.clam_shell": "Раковина моллюска",
   "block.unicopia.scallop_shell": "Раковина гребешка",
   "block.unicopia.turret_shell": "Раковина туррителлы",
-
   "block.unicopia.green_apple_leaves": "Листья яблони Гренни Смит",
   "block.unicopia.green_apple_sapling": "Саженец яблони Гренни Смит",
   "block.unicopia.potted_green_apple_sapling": "Саженец яблони Гренни Смит в горшке",
@@ -321,7 +288,6 @@
   "block.unicopia.sour_apple_sapling": "Саженец кислой яблони",
   "block.unicopia.potted_sour_apple_sapling": "Саженец кислой яблони в горшке",
   "block.unicopia.sour_apple_sprout": "Росток кислой яблони",
-
   "block.unicopia.surface_chitin": "Поверхностный хитин",
   "block.unicopia.mysterious_egg": "Загадочное яйцо",
   "block.unicopia.hive": "Улей",
@@ -332,7 +298,6 @@
   "block.unicopia.chiselled_chitin_hull": "Резной хитиновый остов",
   "block.unicopia.chiselled_chitin_slab": "Резная хитиновая плита",
   "block.unicopia.chiselled_chitin_stairs": "Резные хитиновые ступеньки",
-
   "block.unicopia.shaping_bench": "Стенд формоизменения",
   "block.unicopia.cloud": "Облако",
   "block.unicopia.cloud_slab": "Плита из облака",
@@ -368,11 +333,9 @@
   "block.unicopia.crystal_door": "Кристальная дверь",
   "block.unicopia.stable_door": "Дверь конюшни",
   "block.unicopia.dark_oak_stable_door": "Деревянная дверь конюшни",
-
   "block.unicopia.oats": "Овёс",
   "block.unicopia.oats_stem": "Овёс",
   "block.unicopia.oats_crown": "Овёс",
-
   "entity.unicopia.butterfly": "Бабочка",
   "entity.unicopia.twittermite": "Твиттермит",
   "entity.unicopia.specter": "Призрак",
@@ -386,22 +349,18 @@
   "entity.unicopia.crystal_shards": "Кристальные осколки",
   "entity.unicopia.ignominious_vine": "Позорная лоза",
   "entity.unicopia.ignominious_bulb": "Позорная лампочка",
-
   "player.reachDistance": "Расстояние до цели",
   "player.miningSpeed": "Скорость добычи",
   "player.gravityModifier": "Гравитация",
-
   "unicopia.effect.tribe.stage.initial": "Похоже, что эффекта нет",
   "unicopia.effect.tribe.stage.crawling": "Вы чувствуете, как кожа ползёт по спине",
   "unicopia.effect.tribe.stage.determination": "По мере того, как ваши кости выравниваются, вы наполняетесь решимостью",
   "unicopia.effect.tribe.stage.resurection": "Зная то, что вы вернетесь в этот мир как %s",
-
   "effect.unicopia.food_poisoning": "Пищевое отравление",
   "effect.unicopia.sun_blindness": "Солнечная слепота",
   "effect.unicopia.corrupt_influence": "Испорченное влияние",
   "effect.unicopia.paralysis": "Паралич",
   "effect.unicopia.butter_fingers": "Растяпа",
-
   "effect.unicopia.change_race_earth": "Метаморфозы земного пони",
   "effect.unicopia.change_race_unicorn": "Метаморфозы единорога",
   "effect.unicopia.change_race_pegasus": "Метаморфозы пегаса",
@@ -409,7 +368,6 @@
   "effect.unicopia.change_race_bat": "Метаморфозы бэтпони",
   "effect.unicopia.change_race_kirin": "Метаморфозы кирина",
   "effect.unicopia.change_race_hippogriff": "Метаморфозы гиппогрифа",
-
   "effect.unicopia.morph_race_earth": "Превращение в земного пони",
   "effect.unicopia.morph_race_unicorn": "Превращение в единорога",
   "effect.unicopia.morph_race_pegasus": "Превращение в пегаса",
@@ -417,115 +375,92 @@
   "effect.unicopia.morph_race_bat": "Превращение в бэтпони",
   "effect.unicopia.morph_race_kirin": "Превращение в кирина",
   "effect.unicopia.morph_race_hippogriff": "Превращение в гиппогрифа",
-
   "item.minecraft.potion.effect.unicopia.tribe_swap_earth": "Зелье метаморфоз земного пони",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_earth": "Взрывное зелье метаморфоз земного пони",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_earth": "Туманное зелье метаморфоз земного пони",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_earth": "Стрела метаморфоз земного пони",
-
   "item.minecraft.potion.effect.unicopia.tribe_swap_unicorn": "Зелье метаморфоз единорога",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_unicorn": "Взрывное зелье метаморфоз единорога",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_unicorn": "Туманное зелье метаморфоз единорога",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_unicorn": "Стрела метаморфоз единорога",
-
   "item.minecraft.potion.effect.unicopia.tribe_swap_pegasus": "Зелье метаморфоз пегаса",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_pegasus": "Взрывное зелье метаморфоз пегаса",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_pegasus": "Туманное зелье метаморфоз пегаса",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_pegasus": "Стрела метаморфоз пегаса",
-
   "item.minecraft.potion.effect.unicopia.tribe_swap_changeling": "Зелье метаморфоз чейнджлинга",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_changeling": "Взрывное зелье метаморфоз чейнджлинга",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_changeling": "Туманное зелье метаморфоз чейнджлинга",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_changeling": "Стрела метаморфоз чейнджлинга",
-
   "item.minecraft.potion.effect.unicopia.tribe_swap_bat": "Зелье метаморфоз бэтпони",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_bat": "Взрывное зелье метаморфоз бэтпони",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_bat": "Туманное зелье метаморфоз бэтпони",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_bat": "Стрела метаморфоз бэтпони",
-
   "item.minecraft.potion.effect.unicopia.tribe_swap_kirin": "Зелье метаморфоз кирина",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_kirin": "Взрывное зелье метаморфоз кирина",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_kirin": "Туманное зелье метаморфоз кирина",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_kirin": "Стрела метаморфоз кирина",
-
   "item.minecraft.potion.effect.unicopia.tribe_swap_hippogriff": "Зелье метаморфоз гиппогрифа",
   "item.minecraft.splash_potion.effect.unicopia.tribe_swap_hippogriff": "Взрывное зелье метаморфоз гиппогрифа",
   "item.minecraft.lingering_potion.effect.unicopia.tribe_swap_hippogriff": "Туманное зелье метаморфоз гиппогрифа",
   "item.minecraft.tipped_arrow.effect.unicopia.tribe_swap_hippogriff": "Стрела метаморфоз гиппогрифа",
-
   "item.minecraft.potion.effect.unicopia.short_morph_earth": "Зелье быстрого превращения в земного пони",
   "item.minecraft.splash_potion.effect.unicopia.short_morph_earth": "Взрывное зелье быстрого превращения в земного пони",
   "item.minecraft.lingering_potion.effect.unicopia.short_morph_earth": "Туманное зелье быстрого превращения в земного пони",
   "item.minecraft.tipped_arrow.effect.unicopia.short_morph_earth": "Стрела быстрого превращения в земного пони",
-
   "item.minecraft.potion.effect.unicopia.short_morph_unicorn": "Зелье быстрого превращения в единорога",
   "item.minecraft.splash_potion.effect.unicopia.short_morph_unicorn": "Взрывное зелье быстрого превращения в единорога",
   "item.minecraft.lingering_potion.effect.unicopia.short_morph_unicorn": "Туманное зелье быстрого превращения в единорога",
   "item.minecraft.tipped_arrow.effect.unicopia.short_morph_unicorn": "Стрела быстрого превращения в единорога",
-
   "item.minecraft.potion.effect.unicopia.short_morph_pegasus": "Зелье быстрого превращения в пегаса",
   "item.minecraft.splash_potion.effect.unicopia.short_morph_pegasus": "Взрывное зелье быстрого превращения в пегаса",
   "item.minecraft.lingering_potion.effect.unicopia.short_morph_pegasus": "Туманное зелье быстрого превращения в пегаса",
   "item.minecraft.tipped_arrow.effect.unicopia.short_morph_pegasus": "Стрела быстрого превращения в пегаса",
-
   "item.minecraft.potion.effect.unicopia.short_morph_changeling": "Зелье быстрого превращения в чейнджлинга",
   "item.minecraft.splash_potion.effect.unicopia.short_morph_changeling": "Взрывное зелье быстрого превращения в чейнджлинга",
   "item.minecraft.lingering_potion.effect.unicopia.short_morph_changeling": "Туманное зелье быстрого превращения в чейнджлинга",
   "item.minecraft.tipped_arrow.effect.unicopia.short_morph_changeling": "Стрела быстрого превращения в чейнджлинга",
-
   "item.minecraft.potion.effect.unicopia.short_morph_bat": "Зелье быстрого превращения в бэтпони",
   "item.minecraft.splash_potion.effect.unicopia.short_morph_bat": "Взрывное зелье быстрого превращения в бэтпони",
   "item.minecraft.lingering_potion.effect.unicopia.short_morph_bat": "Туманное зелье быстрого превращения в бэтпони",
   "item.minecraft.tipped_arrow.effect.unicopia.short_morph_bat": "Стрела быстрого превращения в бэтпони",
-
   "item.minecraft.potion.effect.unicopia.short_morph_kirin": "Зелье быстрого превращения в кирина",
   "item.minecraft.splash_potion.effect.unicopia.short_morph_kirin": "Взрывное зелье быстрого превращения в кирина",
   "item.minecraft.lingering_potion.effect.unicopia.short_morph_kirin": "Туманное зелье быстрого превращения в кирина",
   "item.minecraft.tipped_arrow.effect.unicopia.short_morph_kirin": "Стрела быстрого превращения в кирина",
-
   "item.minecraft.potion.effect.unicopia.short_morph_hippogriff": "Зелье быстрого превращения в гиппогрифа",
   "item.minecraft.splash_potion.effect.unicopia.short_morph_hippogriff": "Взрывное зелье быстрого превращения в гиппогрифа",
   "item.minecraft.lingering_potion.effect.unicopia.short_morph_hippogriff": "Туманное зелье быстрого превращения в гиппогрифа",
   "item.minecraft.tipped_arrow.effect.unicopia.short_morph_hippogriff": "Стрела быстрого превращения в гиппогрифа",
-
   "item.minecraft.potion.effect.unicopia.long_morph_earth": "Зелье долгого превращения в земного пони",
   "item.minecraft.splash_potion.effect.unicopia.long_morph_earth": "Взрывное зелье долгого превращения в земного пони",
   "item.minecraft.lingering_potion.effect.unicopia.long_morph_earth": "Туманное зелье долгого превращения в земного пони",
   "item.minecraft.tipped_arrow.effect.unicopia.long_morph_earth": "Стрела долгого превращения в земного пони",
-
   "item.minecraft.potion.effect.unicopia.long_morph_unicorn": "Зелье долгого превращения в единорога",
   "item.minecraft.splash_potion.effect.unicopia.long_morph_unicorn": "Взрывное зелье долгого превращения в единорога",
   "item.minecraft.lingering_potion.effect.unicopia.long_morph_unicorn": "Туманное зелье долгого превращения в единорога",
   "item.minecraft.tipped_arrow.effect.unicopia.long_morph_unicorn": "Стрела долгого превращения в единорога",
-
   "item.minecraft.potion.effect.unicopia.long_morph_pegasus": "Зелье долгого превращения в пегаса",
   "item.minecraft.splash_potion.effect.unicopia.long_morph_pegasus": "Взрывное зелье долгого превращения в пегаса",
   "item.minecraft.lingering_potion.effect.unicopia.long_morph_pegasus": "Туманное зелье долгого превращения в пегаса",
   "item.minecraft.tipped_arrow.effect.unicopia.long_morph_pegasus": "Стрела долгого превращения в пегаса",
-
   "item.minecraft.potion.effect.unicopia.long_morph_changeling": "Зелье долгого превращения в чейнджлинга",
   "item.minecraft.splash_potion.effect.unicopia.long_morph_changeling": "Взрывное зелье долгого превращения в чейнджлинга",
   "item.minecraft.lingering_potion.effect.unicopia.long_morph_changeling": "Туманное зелье долгого превращения в чейнджлинга",
   "item.minecraft.tipped_arrow.effect.unicopia.long_morph_changeling": "Стрела долгого превращения в чейнджлинга",
-
   "item.minecraft.potion.effect.unicopia.long_morph_bat": "Зелье долгого превращения в бэтпони",
   "item.minecraft.splash_potion.effect.unicopia.long_morph_bat": "Взрывное зелье долгого превращения в бэтпони",
   "item.minecraft.lingering_potion.effect.unicopia.long_morph_bat": "Туманное зелье долгого превращения в бэтпони",
   "item.minecraft.tipped_arrow.effect.unicopia.long_morph_bat": "Стрела долгого превращения в бэтпони",
-
   "item.minecraft.potion.effect.unicopia.long_morph_kirin": "Зелье долгого превращения в кирина",
   "item.minecraft.splash_potion.effect.unicopia.long_morph_kirin": "Взрывное зелье долгого превращения в кирина",
   "item.minecraft.lingering_potion.effect.unicopia.long_morph_kirin": "Туманное зелье долгого превращения в кирина",
   "item.minecraft.tipped_arrow.effect.unicopia.long_morph_kirin": "Стрела долгого превращения в кирина",
-
   "item.minecraft.potion.effect.unicopia.long_morph_hippogriff": "Зелье долгого превращения в гиппогрифа",
   "item.minecraft.splash_potion.effect.unicopia.long_morph_hippogriff": "Взрывное зелье долгого превращения в гиппогрифа",
   "item.minecraft.lingering_potion.effect.unicopia.long_morph_hippogriff": "Туманное зелье долгого превращения в гиппогрифа",
   "item.minecraft.tipped_arrow.effect.unicopia.long_morph_hippogriff": "Стрела долгого превращения в гиппогрифа",
-
   "potion.withChance": "Шанс 1 к %s получить %s",
   "potion.potency.6": "VII",
-
   "spell.unicopia.frost": "Заморозка",
   "spell.unicopia.frost.lore": "Холодный на ощупь, этот самоцвет заморозит всё, на что он будет использован",
   "spell.unicopia.hydrophobic": "Отталкивание воды",
@@ -576,7 +511,6 @@
   "spell.unicopia.catapult.lore": "Хватает ближайший блок или объект и подбрасывает его в воздух",
   "spell.unicopia.dispel_evil": "Изгнание зла",
   "spell.unicopia.dispel_evil.lore": "Изгоняет все находящиеся поблизости неземные силы",
-
   "trait.unicopia.strength.name": "Силы",
   "trait.unicopia.strength.description": "Наделяет физической силой или повышает выносливость.\nЗаклинания с большим количеством силы бьют сильнее и действуют дольше.",
   "trait.unicopia.focus.name": "Фокусировки",
@@ -617,7 +551,6 @@
   "trait.unicopia.life.description": "Воплощает энергию, которая живёт внутри всех живых существ.",
   "trait.unicopia.poison.name": "Яда",
   "trait.unicopia.poison.description": "Смертоносный дротик убивает зверя",
-
   "unicopia.diet.information": "Информация о диете:",
   "unicopia.diet.side_effects": "Побочные эффекты:",
   "unicopia.diet.not_edible": "Предмет не съедобен",
@@ -626,7 +559,6 @@
   "unicopia.diet.saturation.detailed": "Насыщения получено: %s из %s (%s%%)",
   "unicopia.diet.hunger": "Коэффициент голода: %s%%",
   "unicopia.diet.saturation": "Коэффициент насыщения: %s%%",
-
   "food_group.unicopia.meat.rotten": "Гниющее мясо",
   "food_group.unicopia.meat.raw": "Свежее мясо",
   "food_group.unicopia.meat.cooked": "Готовое мясо",
@@ -664,18 +596,15 @@
   "food_group.unicopia.foraging.dangerous": "Опасное",
   "food_group.unicopia.foraging.blinding": "Токсичное",
   "food_group.unicopia.foraging.leafy_greens": "Листовая зелень",
-
   "toxicity.safe.name": "Безопасное",
   "toxicity.mild.name": "Слаботоксичное",
   "toxicity.fair.name": "Достаточно токсичное",
   "toxicity.severe.name": "Токсичное",
   "toxicity.lethal.name": "Смертельное",
-
   "affliction.unicopia.empty": "Нет эффекта",
   "affliction.unicopia.healing": "Восполняет %s%% здоровья",
   "affliction.unicopia.cure_love_sickness": "Лечит от любовной болезни",
   "affliction.unicopia.lose_hunger": "Теряет %s%% сытости",
-
   "ability.unicopia.shoot": "Стрелять магией",
   "ability.unicopia.shoot.with_spell": "Стрелять \"%s\"",
   "ability.unicopia.shoot.with_spell.active": "Стрельба \"%s\"",
@@ -719,23 +648,18 @@
   "ability.unicopia.dash": "Рывок",
   "ability.unicopia.change_form": "Изменить форму",
   "ability.unicopia.sonar_pulse": "Сонарный импульс",
-
   "gui.unicopia.trait.label": "Элемент %s",
   "gui.unicopia.trait.group": "\n %s",
   "gui.unicopia.trait.corruption": "\n %s порчи",
-
   "gui.unicopia.dispell_screen.cancel": "Нажмите ESC для выхода",
   "gui.unicopia.dispell_screen.spell_type": "Тип заклинания: %s",
   "gui.unicopia.dispell_screen.affinity": "Сродство: %s",
   "gui.unicopia.dispell_screen.time_left": "Времени осталось: %s",
   "gui.unicopia.dispell_screen.discard": "[Нажмите для отмены]",
-
   "gui.unicopia": "Unicopia...",
   "gui.unicopia.page_num": "%d из %d",
-
   "respawn.reason.joined_new_tribe": "%1$s был перерождён как %2$s",
   "respawn.reason.illegal_race": "Раса %s не разрешена конфигурацией вашего сервера.",
-
   "gui.unicopia.tribe_selection.respawn": "Вы умерли.",
   "gui.unicopia.tribe_selection.respawn.journey": "Но конец - это еще не всё, потому что в конце каждого конца есть другое начало.",
   "gui.unicopia.tribe_selection.respawn.choice": "Выбирайте мудро, потому что выбор, который вы сделаете сейчас, изменит мир вокруг вас и пути, по которым вы можете пойти.",
@@ -745,7 +669,6 @@
   "gui.unicopia.tribe_selection.preference": "Ваше текущее предпочитаемое племя установлено на %s.",
   "gui.unicopia.tribe_selection.options": "Доступные племена:",
   "gui.unicopia.tribe_selection.options.disabled": "Опция недоступна",
-
   "gui.unicopia.tribe_selection.describe.unicopia.earth": "Присоединяйтесь к племени земных пони",
   "gui.unicopia.tribe_selection.describe.unicopia.unicorn": "Присоединитесь к племени единорогов, овладейте магическими искусствами",
   "gui.unicopia.tribe_selection.describe.unicopia.pegasus": "Присоединяйтесь к племени пегасов, парите вместе с Вондерболтами",
@@ -753,14 +676,11 @@
   "gui.unicopia.tribe_selection.describe.unicopia.kirin": "Присоединяйтесь к Деревне Киринов, дайте обет молчания",
   "gui.unicopia.tribe_selection.describe.unicopia.hippogriff": "Присоединяйтесь к племени гиппогрифов, кричите на своих соседей",
   "gui.unicopia.tribe_selection.describe.unicopia.changeling": "Присоединяйтесь к Улью Чейнджлингов, ваша королева требует этого",
-
   "gui.unicopia.tribe_selection.confirm": "Вы выбрали племя \"%s\"",
   "gui.unicopia.tribe_selection.confirm.goods": "%s имеют следующие преимущества:",
-
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.human": " - Всеядны и могут есть все виды пищи, кроме любви",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.human": " - Противоположные большие пальцы",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.human": " - Ходят прямо",
-
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.earth": " - Более сильная отдача и сопротивление магии",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.earth": " - Дополнительный вес делает их эффективными против магии и грубой силы",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.earth": " - Особая связь с землёй, которая делает земледелие на 10,000% эффективнее!",
@@ -768,82 +688,65 @@
   "gui.unicopia.tribe_selection.confirm.goods.5.unicopia.earth": " - Единственные, кто может обняться с крипером и выжить",
   "gui.unicopia.tribe_selection.confirm.goods.6.unicopia.earth": " - Могут есть камни",
   "gui.unicopia.tribe_selection.confirm.goods.7.unicopia.earth": " - Милые висячие пони-ушки",
-
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.unicorn": " - Телепортация и магические заклинания",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.unicorn": " - Исследуют и создают магические артефакты, усиливающие их способности",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.unicorn": " - Могут использовать магию для обнаружения или раскрытия находящихся поблизости чейнджлингов",
   "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.unicorn": " - Имеют заостренные палки на голове",
-
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.pegasus": " - Полёт и способность к тренировкам для повышения выносливости",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.pegasus": " - Используют накопленную ману для выполнения мощной звуковой радуги",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.pegasus": " - Двигаются быстрее и получают меньше урона от падения",
   "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.pegasus": " - Можно напрямую взаимодействовать с облачными предметами и блоками",
   "gui.unicopia.tribe_selection.confirm.goods.5.unicopia.pegasus": " - Могут есть овощи и некоторые виды рыбы",
-
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.bat": " - Полёт и способность к тренировкам для повышения выносливости",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.bat": " - Лучше видят ночью",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.bat": " - Способность цепляться за нижнюю часть блоков",
   "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.bat": " - Имеют ужасающий, но очаровательный (и слегка раздражающий) визг",
-
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.changeling": " - Могут летать и зависать на месте",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.changeling": " - Перевоплощаются практически в кого и что угодно",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.changeling": " - Прилипают к стенам и могут перелезть практически через всё",
   "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.changeling": " - Плотоядны. Могут есть всё, от чего не тошнит",
-
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.kirin": " - Невосприимчивы ко всем видам огненного урона",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.kirin": " - Могут открыть способность ярости, получая урон",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.kirin": " - В обычном состоянии бесшумны и могут спокойно ходить рядом с Хранителем",
   "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.kirin": " - Могут есть фрукты и овощи, мясо и некоторые виды кормов, обычно ядовитые для других рас",
-
   "gui.unicopia.tribe_selection.confirm.goods.1.unicopia.hippogriff": " - Полёт и способность к тренировкам для повышения выносливости",
   "gui.unicopia.tribe_selection.confirm.goods.2.unicopia.hippogriff": " - Могут совершать рывки в полёте",
   "gui.unicopia.tribe_selection.confirm.goods.3.unicopia.hippogriff": " - Имеют острый и шумный клюв для кричания и клевания",
   "gui.unicopia.tribe_selection.confirm.goods.4.unicopia.hippogriff": " - Могут употреблять сырую и варёную рыбу, варёное мясо",
   "gui.unicopia.tribe_selection.confirm.goods.5.unicopia.hippogriff": " - При поедании шишек восстанавливают здоровье",
   "gui.unicopia.tribe_selection.confirm.goods.6.unicopia.hippogriff": " - Любят лестницы",
-
   "gui.unicopia.tribe_selection.confirm.bads": "но они...",
-
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.human": " - Не имеют никаких магических способностей",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.human": " - Требуют элитры для полёта",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.human": " - Должны выращивают пищу по старинке, с помощью тяжёлой работы и ручного труда",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.human": " - Не имеют висячих ушей",
-
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.earth": " - Не могут летать",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.earth": " - Слабы к некоторым видам магии",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.earth": " - Могут есть только растения и овощи",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.earth": " - Тяжелее и передвигаются медленнее, чем другие пони",
-
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.unicorn": " - Не могут летать",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.unicorn": " - Слабы к грубым атакам",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.unicorn": " - Могут есть только растения и овощи",
-
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.pegasus": " - Слабы к грубым атакам",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.pegasus": " - Должны отдыхать между полётами",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.pegasus": " - Не могут использовать магию без помощи",
-
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.bat": " - Слабы к грубым атакам",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.bat": " - Должны отдыхать между полётами",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.bat": " - Иногда боятся даже самих себя",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.bat": " - Плотоядны. Могут есть сырое и варёное мясо или питаться исключительно ворованной любовью",
-
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.changeling": " - Постоянно голодают",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.changeling": " - Требуют любви, которую собирают с пони или других мобов для поддержания своего рациона",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.changeling": " - Становятся больными от употребления самой обычной пищи и должны собирать любовь, чтобы ускорить излечение",
-
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.kirin": " - Теряют свою бесшумность в состоянии ярости",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.kirin": " - Поджигают вещи, особенно когда близки к ярости",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.kirin": " - Легче, чем другие пони, и сильнее оттакливаются",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.kirin": " - Не любят воду",
-
   "gui.unicopia.tribe_selection.confirm.bads.1.unicopia.hippogriff": " - Слабы к грубым атакам",
   "gui.unicopia.tribe_selection.confirm.bads.2.unicopia.hippogriff": " - Не могут взаимодействовать с облаками",
   "gui.unicopia.tribe_selection.confirm.bads.3.unicopia.hippogriff": " - Должны отдыхать между полётами, чтобы восстановить силы",
   "gui.unicopia.tribe_selection.confirm.bads.4.unicopia.hippogriff": " - Имеют куриный мозг",
-
   "gui.unicopia.tribe_selection.join": "Присоединиться",
   "gui.unicopia.tribe_selection.cancel": "Назад",
-
   "gui.unicopia.spellbook.empty_spell_slot": "Пустой слот для заклинаний",
   "gui.unicopia.spellbook.page.inventory": "Инвентарь",
   "gui.unicopia.spellbook.page.recipes": "Рецепты",
@@ -853,7 +756,6 @@
   "gui.unicopia.spellbook.page.requirements.entry.item": "- %1$sx %2$s",
   "gui.unicopia.spellbook.page.requirements.entry.trait": "- Не менее %1$sx черт %2$s",
   "gui.unicopia.spellbook.page.requirements.entry.spell": "- %1$sx самоцвет \"%2$s\"",
-
   "gui.unicopia.spellbook.recipe.requires": "Требования:",
   "gui.unicopia.spellbook.author1.sign_off": "По приказу принцессы",
   "gui.unicopia.spellbook.author1.sign_off.b": "По приказу принцессы, так ужасно сожалея",
@@ -891,7 +793,6 @@
   "gui.unicopia.spellbook.chapter.introduction.p9.title": "13-ое Мэйра 12-го",
   "gui.unicopia.spellbook.chapter.introduction.p9.1.body": "Извините за долгую задержку с обновлениями. Я много работал, изучая различные заклинания и определяя свой подход.",
   "gui.unicopia.spellbook.chapter.introduction.p9.2.body": "Огонь становится очень интересным аспектом, учитывая, что черты для него легко доступны.",
-
   "gui.unicopia.spellbook.chapter.fire.p1.title": "Гл.2 - Магия огня",
   "gui.unicopia.spellbook.chapter.fire.p2.title": "9-ое Пониюня 12-го",
   "gui.unicopia.spellbook.chapter.fire.p2.1.body": "Это заняло больше времени, чем я ожидал, - почти месяц! Ха! Но я представляю тебе, дорогой читатель, свои находки для первой элементарной формы магии: ОГОНЬ.",
@@ -945,7 +846,6 @@
   "gui.unicopia.spellbook.chapter.fire.p18.title": "Черновик: 9-ое Пониюня 12-го",
   "gui.unicopia.spellbook.chapter.fire.p18.1.body": "Магия огня оказалась немного более... непредсказуемой. Каждый раз, когда я делаю успехи, она находит способ отбросить меня назад.",
   "gui.unicopia.spellbook.chapter.fire.p18.2.body": "Но я не могу остановиться... Мне сказали, что ситуация на западе становится всё более ужасной. Они попросили меня ускорить темп и создать что-то, что мы сможем использовать, чтобы одержать верх над §kШтормом Чейнджлингов§r.",
-
   "gui.unicopia.spellbook.chapter.ice.p1.title": "Гл.1 - Магия льда",
   "gui.unicopia.spellbook.chapter.ice.p2.title": "4-ое Пониюля 12-го",
   "gui.unicopia.spellbook.chapter.ice.p2.1.body": "А вот это интересная штучка. Довольно простая, признаюсь, но Луна настояла, чтобы я сделал что-нибудь холодное, чтобы помочь нам справиться с этой проклятой жарой.",
@@ -1013,7 +913,6 @@
   "gui.unicopia.spellbook.chapter.ice.hydrophobic.2.body": "Я называю это отталкиванием воды, потому что оно именно так и действует: Отталкивает воду от заклинателя.",
   "gui.unicopia.spellbook.chapter.ice.hydrophobic.modifier.1": "* Добавив больше фокусировки, вы можете увеличить продолжительность заклинания.",
   "gui.unicopia.spellbook.chapter.ice.hydrophobic.modifier.2": "* Добавьте черту щедрости, чтобы привязать это заклинание к месту, а не к себе.",
-
   "gui.unicopia.spellbook.chapter.air.p1.title": "Гл.4 - Магия воздуха",
   "gui.unicopia.spellbook.chapter.air.p2.title": "1-ое Хуфгуста 12-го",
   "gui.unicopia.spellbook.chapter.air.p1.1.body": "Новый месяц, новая глава. Малышке Луне надоело сидеть в башне целый день (да и кто её винит? Мы выполняем это задание уже больше двух месяцев.)",
@@ -1058,7 +957,6 @@
   "gui.unicopia.spellbook.chapter.air.p15.2.body": "Мне пришлось всё время следить за тем, чтобы Луна не выпала, и, конечно, отвечать на вопросы о разных видах облаков. К счастью, оператор воздушного шара был рядом, чтобы помочь разобраться в тонкостях.",
   "gui.unicopia.spellbook.chapter.air.p15.3.body": "Находясь здесь, над всеми нашими проблемами, я на мгновение забываю об остальном мире. Это возвращает меня в более простые времена, до...",
   "gui.unicopia.spellbook.chapter.air.p15.4.body": "Конечно, вспышки взрывов на западе должны были всё испортить. Кажется, на горизонте надвигается буря. Я очень надеюсь, что это не будет плохим предзнаменованием...",
-
   "gui.unicopia.spellbook.chapter.dark_magic.p1.title": "Гл.5 - Арканная магия",
   "gui.unicopia.spellbook.chapter.dark_magic.p2.title": "30-ое Хуфгуста 12-го",
   "gui.unicopia.spellbook.chapter.dark_magic.p2.1.body": "Сегодня пришло новое письмо от короны. Похоже, ситуация на западе ухудшается, и хотя до сих пор они были довольны моей работой, теперь они давят на меня, чтобы я создал что-то более разрушительное.",
@@ -1141,7 +1039,6 @@
   "gui.unicopia.spellbook.chapter.dark_magic.p27.4.body": "Нет, не может быть.",
   "gui.unicopia.spellbook.chapter.dark_magic.p28.1.body": "Я нашёл это заклинание под старыми записями во время уборки лаборатории. Оно... простое и сложное в обращении, но оно справляется со своей задачей.",
   "gui.unicopia.spellbook.chapter.dark_magic.dispel_evil.modifier.1": "* Добавьте черту силы для увеличения дальности действия.",
-
   "gui.unicopia.spellbook.chapter.otherworldly.p1.title": "Гл.6 - Потустороннее",
   "gui.unicopia.spellbook.chapter.otherworldly.p2.title": "1-ое Круптября 12-го",
   "gui.unicopia.spellbook.chapter.otherworldly.p2.1.body": "Эта глава служит исследованием миров за пределами нашего собственного и погружением в то, чего большинство единорогов обычно сторонятся.",
@@ -1156,7 +1053,6 @@
   "gui.unicopia.spellbook.chapter.otherworldly.mind_swap.1.body": "Продолжая исследования способностей чейнджлингов, я усовершенствовал его мимическое заклинание, добавив немного хаоса.",
   "gui.unicopia.spellbook.chapter.otherworldly.mind_swap.2.body": "Обмен разумом распространяет действие мимики на двух личностей, фактически меняя их тела местами на ограниченное время.",
   "gui.unicopia.spellbook.chapter.otherworldly.mind_swap.3.body": "* Добавив больше фокусировки, вы можете увеличить продолжительность заклинания.",
-
   "gui.unicopia.spellbook.chapter.artefacts.p1.title": "Гл.7 - Артефакты",
   "gui.unicopia.spellbook.chapter.artefacts.p2.title": "2-ое Мэйра 12-го",
   "gui.unicopia.spellbook.chapter.artefacts.p2.1.body": "Далее следует сборник исследований некоторых объектов, представляющих интерес, выявленных в ходе моих исследований.",
@@ -1210,10 +1106,8 @@
   "gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.title": "23-е Пониюля 12-го",
   "gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.2.body": "Амулет аликорна - это мощный источник тёмной магии, созданный неизвестным магом в попытке создать совершенное существо.",
   "gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.3.body": "Он сочетает в себе черты всех рас в одной мощной форме, но его трудно контролировать, и он вызывает привыкание. Любой, кто использует его, быстро становится зависимым от него, и лишь немногие, кто пытался избавиться от него, выдерживают это испытание.",
-
   "gui.unicopia.action.spells_cleared": "Удалены все заклинания",
   "gui.unicopia.action.no_spells_cleared": "У вас нет активных заклинаний",
-
   "chapter.unicopia.crafting": "Создание заклинаний",
   "chapter.unicopia.profile": "Профиль",
   "chapter.unicopia.traits": "Исследования",
@@ -1224,115 +1118,100 @@
   "chapter.unicopia.dark_magic": "Тёмная магия",
   "chapter.unicopia.the_otherworldly": "Запретная магия",
   "chapter.unicopia.crystal_heart": "Артефакты",
-
   "experience.unicopia.pure.magical_kindergartner": "Свежая кровь",
   "experience.unicopia.impure.magical_kindergartner": "Испорченный",
   "experience.unicopia.tainted.magical_kindergartner": "Заблудший",
   "experience.unicopia.twisted.magical_kindergartner": "Потерянный",
   "experience.unicopia.corrupt.magical_kindergartner": "Пони-изверг",
   "experience.unicopia.monstrous.magical_kindergartner": "Злой жеребёнок",
-
   "experience.unicopia.pure.friendship_student": "Ученик дружбы",
   "experience.unicopia.impure.friendship_student": "Испорченная душа",
   "experience.unicopia.tainted.friendship_student": "Заблудшая душа",
   "experience.unicopia.twisted.friendship_student": "Потерянная душа",
   "experience.unicopia.corrupt.friendship_student": "Зловещий ученик дружбы",
   "experience.unicopia.monstrous.friendship_student": "Чудовищная душа",
-
   "experience.unicopia.pure.senior_friendship_student": "Многообещающий ученик дружбы",
   "experience.unicopia.impure.senior_friendship_student": "Испорченный студент дружбы",
   "experience.unicopia.tainted.senior_friendship_student": "Заблудший студент дружбы",
   "experience.unicopia.twisted.senior_friendship_student": "Влияние группы",
   "experience.unicopia.corrupt.senior_friendship_student": "Зловещий друг",
   "experience.unicopia.monstrous.senior_friendship_student": "Культист обучения",
-
   "experience.unicopia.pure.junior_mage": "Младший маг",
   "experience.unicopia.impure.junior_mage": "Испорченный младший маг",
   "experience.unicopia.tainted.junior_mage": "Заблудший младший маг",
   "experience.unicopia.twisted.junior_mage": "Зловещий младший маг",
   "experience.unicopia.corrupt.junior_mage": "Младший антимаг",
   "experience.unicopia.monstrous.junior_mage": "Младший культист",
-
   "experience.unicopia.pure.mage": "Маг",
   "experience.unicopia.impure.mage": "Испорченный маг",
   "experience.unicopia.tainted.mage": "Заблудший маг",
   "experience.unicopia.twisted.mage": "Зловещий маг",
   "experience.unicopia.corrupt.mage": "Анти-маг",
   "experience.unicopia.monstrous.mage": "Культист",
-
   "experience.unicopia.pure.archmage": "Архимаг",
   "experience.unicopia.impure.archmage": "Испорченный архимаг",
   "experience.unicopia.tainted.archmage": "Заблудший архимаг",
   "experience.unicopia.twisted.archmage": "Зловещий архимаг",
   "experience.unicopia.corrupt.archmage": "Анти-архимаг",
   "experience.unicopia.monstrous.archmage": "Опытный культист",
-
   "experience.unicopia.pure.archmagus": "Архмагус",
   "experience.unicopia.impure.archmagus": "Испорченный архимагус",
   "experience.unicopia.tainted.archmagus": "Заблудший архимагус",
   "experience.unicopia.twisted.archmagus": "Зловещий архимагус",
   "experience.unicopia.corrupt.archmagus": "Анти-архимагус",
   "experience.unicopia.monstrous.archmagus": "Старший культист",
-
   "experience.unicopia.pure.senior_archmagus": "Старший архимагус",
   "experience.unicopia.impure.senior_archmagus": "Испорченный старший архимагус",
   "experience.unicopia.tainted.senior_archmagus": "Заблудший старший архимагус",
   "experience.unicopia.twisted.senior_archmagus": "Зловещий старший архимагус",
   "experience.unicopia.corrupt.senior_archmagus": "Старший анти-архимагус",
   "experience.unicopia.monstrous.senior_archmagus": "Лидер секты",
-
   "experience.unicopia.pure.ascended_senior_archmagus": "Вознесённый старший архимагус",
   "experience.unicopia.impure.ascended_senior_archmagus": "Испорченный старший архимагус",
   "experience.unicopia.tainted.ascended_senior_archmagus": "Заблудший старший архимагус",
   "experience.unicopia.twisted.ascended_senior_archmagus": "Падший старший архимагус",
   "experience.unicopia.corrupt.ascended_senior_archmagus": "Теневой старший анти-архимагус",
   "experience.unicopia.monstrous.ascended_senior_archmagus": "Лидер тёмного культа",
-
   "experience.unicopia.pure.demi_god": "Стремящаяся принцесса",
   "experience.unicopia.impure.demi_god": "Испорченная стремящаяся принцесса",
   "experience.unicopia.tainted.demi_god": "Заблудшая стремящаяся принцесса",
   "experience.unicopia.twisted.demi_god": "Падшая принцесса",
   "experience.unicopia.corrupt.demi_god": "Восходящий Тёмный Лорд",
   "experience.unicopia.monstrous.demi_god": "Восходящий Тёмный Властелин",
-
   "experience.unicopia.pure.arch_demi_god": "Многообещающая принцесса",
   "experience.unicopia.impure.arch_demi_god": "Испорченная принцесса",
   "experience.unicopia.tainted.arch_demi_god": "Заблудшая принцесса",
   "experience.unicopia.twisted.arch_demi_god": "Падший полубог",
   "experience.unicopia.corrupt.arch_demi_god": "Тёмный полубог",
   "experience.unicopia.monstrous.arch_demi_god": "Тёмный Властелин",
-
   "experience.unicopia.pure.alicorn_princess": "Принцесса аликорн",
   "experience.unicopia.impure.alicorn_princess": "Испорченная принцесса аликорн",
   "experience.unicopia.tainted.alicorn_princess": "Заблудшая принцесса аликорн",
   "experience.unicopia.twisted.alicorn_princess": "Падшая принцесса Аликорн",
   "experience.unicopia.corrupt.alicorn_princess": "Теневой Лорд аликорн",
   "experience.unicopia.monstrous.alicorn_princess": "Тёмный Властелин аликорн",
-
   "experience.unicopia.pure.polycorn_princess": "Принцесса поликорн",
   "experience.unicopia.impure.polycorn_princess": "Испорченная принцесса поликорн",
   "experience.unicopia.tainted.polycorn_princess": "Заблудшая принцесса поликорн",
   "experience.unicopia.twisted.polycorn_princess": "Падшая принцесса поликорн",
   "experience.unicopia.corrupt.polycorn_princess": "Теневая королева поликорн",
   "experience.unicopia.monstrous.polycorn_princess": "Тёмная королева поликорн",
-
   "experience.unicopia.pure.faustian_legend": "Герой легенды",
   "experience.unicopia.impure.faustian_legend": "Легендарный",
   "experience.unicopia.tainted.faustian_legend": "Историческая фигура далёкого происхождения",
   "experience.unicopia.twisted.faustian_legend": "Тёмная личность легенды",
   "experience.unicopia.corrupt.faustian_legend": "Старый Бог",
   "experience.unicopia.monstrous.faustian_legend": "Потусторонний ужас",
-
   "unicopia.category.name": "Способности пони",
-
   "key.unicopia.primary": "Первичная способность",
   "key.unicopia.secondary": "Вторичная способность",
   "key.unicopia.tertiary": "Третичная способность",
   "key.unicopia.passive": "Пассивная способность",
-
+  "key.unicopia.ability_modifier_tap": "Модификатор способностей VR (1-TAP)",
+  "key.unicopia.ability_modifier_double_tap": "Модификатор способностей VR (2-TAP)",
+  "key.unicopia.ability_modifier_triple_tap": "Модификатор способностей VR (3-TAP)",
   "key.unicopia.hud_page_dn": "Предыдущая страница",
   "key.unicopia.hud_page_up": "Следующая страница",
-
   "enchantment.unicopia.gem_finder": "Поиск самоцветов",
   "enchantment.unicopia.gem_finder.desc": "Издает низкий гул, когда вы приближаетесь к ценным рудам",
   "enchantment.unicopia.padded": "Мягкость",
@@ -1357,7 +1236,6 @@
   "enchantment.unicopia.consumption.desc": "Преобразует предметы, добытые с помощью инструмента, в опыт",
   "enchantment.unicopia.feather_touch": "Касание пера",
   "enchantment.unicopia.feather_touch.desc": "Позволяет ломать и размещать облачные блоки при держании",
-
   "commands.race.success.self": "Изменена раса на %1$s.",
   "commands.race.success": "%1$s изменил расу на %2$s.",
   "commands.race.success.other": "Сменил расу %1$s на %2$s.",
@@ -1365,17 +1243,13 @@
   "commands.race.list": "Доступные расы:",
   "commands.race.permission": "Выбранная раса не разрешена на данном сервере.",
   "commands.race.fail": "\"%s\" не является признанной расой.",
-
   "commands.skyangle.get": "Текущий угол наклона солнца составляет %sdeg",
   "commands.skyangle.set": "Изменён угол наклона неба на %sdeg",
-
   "commands.race.tell.self": "Вы - ",
   "commands.race.tell.self.alt": "Вы - ",
   "commands.race.tell.other": "%s - это ",
   "commands.race.tell.other.alt": "%s - это ",
-
   "commands.racelist.illegal": "Раса %s по умолчанию не может быть использована этой командой.",
-
   "commands.racelist.get.allowed": "Разрешены (%s):",
   "commands.racelist.get.not_allowed": "Не разрешены (%s):",
   "commands.racelist.get.list_item": "- %s (%s)",
@@ -1388,10 +1262,8 @@
   "commands.racelist.allowed.failed": "Раса %1$s уже разрешена.",
   "commands.racelist.disallowed": "Раса %1$s удалена из списка разрешений.",
   "commands.racelist.disallowed.failed": "Раса %1$s уже не разрешена.",
-
   "commands.worldtribe.success.get": "Раса по умолчанию для всех новых игроков в настоящее время установлена на: %s.",
   "commands.worldtribe.success.set": "Установка расы по умолчанию для новых игроков теперь имеет значение: %s.",
-
   "commands.disguise.notfound": "Идентификатор сущности \"%s\" не существует.",
   "commands.disguise.removed": "Ваша маскировка была удалена.",
   "commands.disguise.removed.self": "Удалена собственная маскировка.",
@@ -1399,15 +1271,14 @@
   "commands.disguise.success": "Вы замаскировались как %s.",
   "commands.disguise.success.self": "Установил собственную маскировку на %s",
   "commands.disguise.success.other": "%s изменил маскировку на %s",
-
   "commands.gravity.get": "Ваша гравитация равна %f",
   "commands.gravity.get.other": "%s имеет гравитацию %f",
   "commands.gravity.set": "Ваша гравитация была обновлена до %f",
   "commands.gravity.set.self": "Установить собственную гравитацию на %f",
   "commands.gravity.set.other": "Установить гравитацию %s на %f",
   "commands.gravity.set.multiple": "Обновлено %s сущностей",
-
   "unicopia.options.title": "Опции Unicopia",
+  "unicopia.options.toggle_ability_keys": "Нажатие кнопки способности вместо зажатия",
   "unicopia.options.ignore_mine_lp": "Игнорировать Mine Little Pony",
   "unicopia.options.ignore_mine_lp.missing": "* Mine Little Pony не установлен",
   "unicopia.options.ignore_mine_lp.detected": "* Ваша обнаруженная раса %s",
@@ -1421,35 +1292,32 @@
   "unicopia.options.world": "Настройки мира",
   "unicopia.options.world.default_race": "Раса по умолчанию: %s",
   "unicopia.options.lan": "Настройки многопользовательской игры (LAN)",
-
   "command.unicopia.config.add": "[Config] Добавлено %s в свойство %s",
   "command.unicopia.config.remove": "[Config] Удалено %s из свойства %s",
   "command.unicopia.config.list": "[Config] Свойство (%s) содержит (%s) записей:",
   "command.unicopia.config.clear": "[Config] Удалены все значения из свойства %s",
-
-  "unicopia.race.unset": "Не выбрано",
-  "unicopia.race.unset.alt": "не выбрано",
-  "unicopia.race.human": "Человек",
-  "unicopia.race.human.alt": "Люди",
-  "unicopia.race.earth": "Земной пони",
-  "unicopia.race.earth.alt": "Земные пони",
-  "unicopia.race.unicorn": "Единорог",
-  "unicopia.race.unicorn.alt": "Единороги",
-  "unicopia.race.pegasus": "Пегас",
-  "unicopia.race.pegasus.alt": "Пегасы",
-  "unicopia.race.alicorn": "Аликорн",
-  "unicopia.race.alicorn.alt": "Аликорны",
-  "unicopia.race.changeling": "Чейнджлинг",
-  "unicopia.race.changeling.alt": "Чейнджлинги",
-  "unicopia.race.bat": "Бэтпони",
-  "unicopia.race.bat.alt": "Бэтпони",
-  "unicopia.race.kirin": "Кирин",
-  "unicopia.race.kirin.alt": "Кирины",
-  "unicopia.race.hippogriff": "Гиппогриф",
-  "unicopia.race.hippogriff.alt": "Гиппогрифы",
-  "unicopia.race.seapony": "Морской пони",
-  "unicopia.race.seapony.alt": "Морские пони",
-
+  "race.unicopia.unset": "Не выбрано",
+  "race.unicopia.unset.alt": "не выбрано",
+  "race.unicopia.human": "Человек",
+  "race.unicopia.human.alt": "Люди",
+  "race.unicopia.earth": "Земной пони",
+  "race.unicopia.earth.alt": "Земные пони",
+  "race.unicopia.unicorn": "Единорог",
+  "race.unicopia.unicorn.alt": "Единороги",
+  "race.unicopia.pegasus": "Пегас",
+  "race.unicopia.pegasus.alt": "Пегасы",
+  "race.unicopia.alicorn": "Аликорн",
+  "race.unicopia.alicorn.alt": "Аликорны",
+  "race.unicopia.changeling": "Чейнджлинг",
+  "race.unicopia.changeling.alt": "Чейнджлинги",
+  "race.unicopia.bat": "Бэтпони",
+  "race.unicopia.bat.alt": "Бэтпони",
+  "race.unicopia.kirin": "Кирин",
+  "race.unicopia.kirin.alt": "Кирины",
+  "race.unicopia.hippogriff": "Гиппогриф",
+  "race.unicopia.hippogriff.alt": "Гиппогрифы",
+  "race.unicopia.seapony": "Морской пони",
+  "race.unicopia.seapony.alt": "Морские пони",
   "death.attack.unicopia.generic.and_also": "%1$s и %2$s",
   "death.attack.unicopia.generic.whilst_flying": "%1$s во время полёта",
   "death.attack.unicopia.tribe_swap": "%1$s был перерождён в другое племя",
@@ -1480,9 +1348,9 @@
   "death.attack.unicopia.life_draining.self": "%1$s был убит своим собственным заклинанием",
   "death.attack.unicopia.life_draining.player": "%1$s был убит заклинанием, созданным %2$s",
   "death.attack.unicopia.bat_screech": "%1$s был напуган до смерти",
+  "death.attack.unicopia.bat_screech.self": "%1$ напугали себя до смерти",
   "death.attack.unicopia.bat_screech.player": "%2$s напугал %1$s",
   "death.attack.unicopia.bat_screech.item": "%1$s был напуган до смерти %2$s с помощью %3$s",
-  "death.attack.unicopia.bat_screech.self": "%1$ напугали себя до смерти",
   "death.attack.unicopia.gravity_well_recoil": "%1$ превратился в спагетти",
   "death.attack.unicopia.gravity_well_recoil.player": "%1$s превращён в спагетти заклинанием, созданным %2$s",
   "death.attack.unicopia.gravity_well_recoil.item": "%1$s превращён в спагетти заклинанием, созданным %2$s с помощью %3$s",
@@ -1520,7 +1388,6 @@
   "death.attack.unicopia.horseshoe.player": "%2$s зарядил подковой в %1$s",
   "death.attack.unicopia.spikes": "%1$s был заколот до смерти",
   "death.attack.unicopia.spikes.player": "%1$s упал на шипы, пытаясь спастись от %2$s",
-
   "death.fell.accident.ladder.pegasus": "%1$s забыл, что умеет летать, и упал с лестницы",
   "death.fell.accident.vines.pegasus": "%1$s забыл, что умеет летать, и упал с лозы",
   "death.fell.accident.weeping_vines.pegasus": "%1$ забыл, что умеет летать, и упал с плакучих лоз",
@@ -1530,7 +1397,6 @@
   "death.fell.accident.generic.pegasus": "%1$s забыл, что умеет летать",
   "death.fell.accident.pegasus": "%1$s забыл, что умеет летать",
   "death.fell.accident.water": "%1$s намочил свои крылья",
-
   "painting.unicopia.hurricane.title": "Ураган",
   "painting.unicopia.hurricane.author": "Племя пегасов",
   "painting.unicopia.platinum.title": "Платина",
@@ -1561,7 +1427,6 @@
   "painting.unicopia.solar.author": "Королевская стража",
   "painting.unicopia.equality.title": "Равенство",
   "painting.unicopia.equality.author": "Старлайт Глиммер",
-
   "unicopia.subtitle.flap_wings": "Взмах крыла",
   "unicopia.subtitle.dash": "Пони мчится",
   "unicopia.subtitle.wind_rush": "Порыв ветра",
@@ -1570,7 +1435,7 @@
   "unicopia.subtitle.batpony_eeee": "Бэтпони кричит",
   "unicopia.subtitle.sonar": "Сонарные импульсы",
   "unicopia.subtitle.changeling.transform": "Чейнджлинг трансформируется",
-  "unicopia.subtitle.screech": "Гиппогриф кричит",
+  "unicopia.subtitle.screech": "Игрок кричит",
   "unicopia.subtitle.pegasus.molt": "Пегас теряет перо",
   "unicopia.subtitle.unicorn.teleport": "Звук магии",
   "unicopia.subtitle.player.wololo": "Вололо!",
@@ -1579,7 +1444,6 @@
   "unicopia.subtitle.entity.player.kick": "Игрок бьёт",
   "unicopia.subtitle.magic_aura": "Магическое гудение",
   "unicopia.subtitle.player.rebound": "Игрок отскакивает от стены",
-  "unicopia.subtitle.screech": "Игрок кричит",
   "unicopia.subtitle.ears_ringing": "Звон в ушах",
   "unicopia.subtitle.heartbeat": "Стук сердца",
   "unicopia.subtitle.entity.artefact.ambient": "Магическое гудение",
@@ -1612,7 +1476,6 @@
   "unicopia.subtitle.spell.fire.shoot.bolt": "Стрельба огненным снарядом",
   "unicopia.subtitle.spell.shield.projectile.burn": "Стрела горит",
   "unicopia.subtitle.spell.transform.transmute.entity": "Звук магии",
-
   "advancements.unicopia.root.title": "Unicopia",
   "advancements.unicopia.root.description": "Мир волшебства и приключений",
   "advancements.unicopia.praise_the_sun.title": "Хвала Солнцу!",
@@ -1655,17 +1518,14 @@
   "advancements.unicopia.oats_so_easy.description": "Вырастите немного овса",
   "advancements.unicopia.imported_oats.title": "Столь же вкусные, сколь и дорогие",
   "advancements.unicopia.imported_oats.description": "Отправьте или получите шикарный импортный овёс",
-
   "advancements.unicopia.experimental.title": "Ты не можешь взять это с собой",
   "advancements.unicopia.experimental.description": "Зачаровать инструмент на Потребление",
   "advancements.unicopia.xp_miner.title": "Майнер опыта",
   "advancements.unicopia.xp_miner.description": "Используйте Потребление, чтобы накопить опыт",
-
   "advancements.unicopia.hearts_stronger_than_horses.title": "Сердца сильнее лошадей",
   "advancements.unicopia.hearts_stronger_than_horses.description": "Зачаровать инструмент Связанным сердцем",
   "advancements.unicopia.soulmate.title": "Ты можешь взять это с собой",
   "advancements.unicopia.soulmate.description": "Умереть, держа в руках предмет связанный сердцем",
-
   "advancements.unicopia.burn_juice.title": "Это кажется неправильным",
   "advancements.unicopia.burn_juice.description": "Сжечь сок",
   "advancements.unicopia.apple_route.title": "Яблоко, яблоко, яблоко",
@@ -1688,7 +1548,6 @@
   "advancements.unicopia.aeronaut.description": "Оснастите свою корзину фонарём и воздушным шаром",
   "advancements.unicopia.travelling_in_style.title": "Путешествие со стилем",
   "advancements.unicopia.travelling_in_style.description": "Прокатитесь на воздушном шаре",
-
   "advancements.unicopia.bat_route.title": "Дети Ночи",
   "advancements.unicopia.bat_route.description": "Пойдите по пути ночи",
   "advancements.unicopia.screech_twenty_mobs.title": "Ужас с неба",
@@ -1697,12 +1556,10 @@
   "advancements.unicopia.screech_self.description": "Будьте настолько страшным, что даже немного напугайте себя",
   "advancements.unicopia.extra_spooky.title": "Экстра жуткий",
   "advancements.unicopia.extra_spooky.description": "Напугайте моба так сильно, чтобы он выронил кирпич",
-
   "advancements.unicopia.sweet_sweet_revenge.title": "Сладкая, сладкая месть",
   "advancements.unicopia.sweet_sweet_revenge.description": "Отомстите Селестии за то, что она выжгла вам глаза",
   "advancements.unicopia.blasphemy.title": "Кощунство!",
   "advancements.unicopia.blasphemy.description": "Ударьте Селестию по башке. Упс!",
-
   "advancements.unicopia.earth_route.title": "Очаг Земли",
   "advancements.unicopia.earth_route.description": "Вступить в клан Яблока",
   "advancements.unicopia.sticks_and_stones.title": "Палки и камни",
@@ -1721,7 +1578,6 @@
   "advancements.unicopia.born_on_a_rock_farm.description": "Успешно вырастить свой первый камень",
   "advancements.unicopia.thats_unusual.title": "Это необычно",
   "advancements.unicopia.thats_unusual.description": "Но что оно делает?",
-
   "advancements.unicopia.pegasus_route.title": "Путь Пегаса",
   "advancements.unicopia.pegasus_route.description": "Присоединитесь к пегасам Клаудсдейла",
   "advancements.unicopia.molting_season_1.title": "Сезон линьки",
@@ -1754,10 +1610,8 @@
   "advancements.unicopia.second_wind.description": "Летите сквозь боль",
   "advancements.unicopia.deter_phantom.title": "Что летает вокруг",
   "advancements.unicopia.deter_phantom.description": "Поднимитесь и дайте этим фантомам попробовать их собственное лекарство",
-
   "advancements.unicopia.unicorn_route.title": "Рог единорога",
   "advancements.unicopia.unicorn_route.description": "Окунитесь в мир блеска и радуги",
-
   "advancements.unicopia.books.title": "Книги!",
   "advancements.unicopia.books.description": "Это МОЯ книга заклинаний, и я собираюсь её ПРОЧИТАТЬ!",
   "advancements.unicopia.books_books_books.title": "Книги! Книги! Книги!",
@@ -1768,7 +1622,6 @@
   "advancements.unicopia.hello_darkness_my_old_friend.description": "Углубитесь в силы тёмной стороны",
   "advancements.unicopia.a_falling_wizard.title": "Падший волшебник",
   "advancements.unicopia.a_falling_wizard.description": "Единорог безуспешно попытался наложить заклинание полёта",
-
   "advancements.unicopia.split_the_sea.title": "Ты кто? Моисей?",
   "advancements.unicopia.split_the_sea.description": "Используйте магию, чтобы переместить более 100 блоков воды за один раз",
   "advancements.unicopia.save_the_day.title": "Спасти день",
@@ -1783,14 +1636,12 @@
   "advancements.unicopia.power_up_heart.description": "Увеличьте мощность кристального сердца",
   "advancements.unicopia.love_is_power.title": "Любовь - это сила",
   "advancements.unicopia.love_is_power.description": "Изгоните короля Сомбра с помощью кристального сердца",
-
   "advancements.unicopia.hippogriff_route.title": "Всплеск Сиквестрии",
   "advancements.unicopia.hippogriff_route.description": "Присоединитесь к гнезду гиппогрифов",
   "advancements.unicopia.shoo_be_doo.title": "Шу-би-ду!",
   "advancements.unicopia.shoo_be_doo.description": "Используйте жемчужное ожерелье, чтобы превратиться в морское существо",
   "advancements.unicopia.shoo_be_done.title": "Шу-би-всё!",
   "advancements.unicopia.shoo_be_done.description": "Используйте жемчужное ожерелье, чтобы стать снова собой",
-
   "unicopia.toast.discoveries.title": "Новые открытия!",
   "unicopia.toast.discoveries.description": "Проверьте свою книгу заклинаний"
 }
