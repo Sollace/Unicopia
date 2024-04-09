@@ -1,6 +1,9 @@
 package com.minelittlepony.unicopia.entity.player;
 
+import java.util.Optional;
 import java.util.function.Supplier;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.Abilities;
@@ -81,7 +84,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
     private int wallHitCooldown;
 
-    private Vec3d lastPos = Vec3d.ZERO;
+    @Nullable
+    private DimensionType lastDimension;
+    private Optional<Vec3d> lastPos = Optional.empty();
     private Vec3d lastVel = Vec3d.ZERO;
 
     private final PlayerDimensions dimensions;
@@ -247,8 +252,14 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             ticksToGlide--;
         }
 
-        lastVel = entity.getPos().subtract(lastPos);
-        lastPos = entity.getPos();
+        DimensionType dimension = entity.getWorld().getDimension();
+        if (dimension != lastDimension) {
+            lastDimension = dimension;
+            lastPos = Optional.empty();
+        }
+
+        lastVel = lastPos.map(entity.getPos()::subtract).orElse(Vec3d.ZERO);
+        lastPos = Optional.of(entity.getPos());
 
         final MutableVector velocity = new MutableVector(entity.getVelocity());
 
@@ -546,7 +557,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
     private void checkAvianTakeoffConditions(MutableVector velocity) {
         double horMotion = getHorizontalMotion();
-        double motion = entity.getPos().subtract(lastPos).lengthSquared();
+        double motion = lastVel.lengthSquared();
 
         boolean takeOffCondition =
                    (horMotion > 0.05 || motion > 0.05)
