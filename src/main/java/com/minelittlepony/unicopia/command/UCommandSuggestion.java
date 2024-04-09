@@ -43,7 +43,7 @@ public class UCommandSuggestion {
     }
 
     public static <T> void forEachMatching(Iterable<T> candidates, String input, Function<T, Identifier> idFunc, Consumer<T> consumer, String defaultNamespace) {
-        final boolean hasNamespaceDelimiter = input.indexOf(58) > -1;
+        final boolean hasNamespaceDelimiter = input.indexOf(':') > -1;
         for (T object : candidates) {
             final Identifier id = idFunc.apply(object);
             if (hasNamespaceDelimiter) {

@@ -227,7 +227,11 @@ public record Race (
 
     public static Race fromArgument(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
         Identifier id = context.getArgument(name, RegistryKey.class).getValue();
-        return REGISTRY.getOrEmpty(id).orElseThrow(() -> UNKNOWN_RACE_EXCEPTION.create(id));
+        final Identifier idf = id;
+        if (id.getNamespace() == Identifier.DEFAULT_NAMESPACE && !REGISTRY.containsId(id)) {
+            id = Unicopia.id(id.getPath());
+        }
+        return REGISTRY.getOrEmpty(id).orElseThrow(() -> UNKNOWN_RACE_EXCEPTION.create(idf));
     }
 
     public static Set<Race> allPermitted(PlayerEntity player) {
