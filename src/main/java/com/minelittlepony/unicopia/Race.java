@@ -98,7 +98,7 @@ public record Race (
     public static final Race HIPPOGRIFF = register("hippogriff", new Builder().foraging().flight(FlightType.AVIAN).cloudMagic()
             .abilities(Abilities.TOGGLE_FLIGHT, Abilities.SCREECH, Abilities.PECK, Abilities.DASH, Abilities.CARRY)
     );
-    public static final Race SEAPONY = register("seapony", new Builder().foraging().fish()
+    public static final Race SEAPONY = register("seapony", new Builder().availability(Availability.COMMANDS).foraging().fish()
             .abilities(Abilities.SONAR_PULSE)
     );
 
@@ -229,7 +229,7 @@ public record Race (
         Identifier id = context.getArgument(name, RegistryKey.class).getValue();
         final Identifier idf = id;
         if (id.getNamespace() == Identifier.DEFAULT_NAMESPACE && !REGISTRY.containsId(id)) {
-            id = Unicopia.id(id.getPath());
+            id = new Identifier(REGISTRY_KEY.getValue().getNamespace(), id.getPath());
         }
         return REGISTRY.getOrEmpty(id).orElseThrow(() -> UNKNOWN_RACE_EXCEPTION.create(idf));
     }
