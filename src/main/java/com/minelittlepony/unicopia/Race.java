@@ -45,7 +45,7 @@ public record Race (
     public static final Registry<Race> REGISTRY = RegistryUtils.createDefaulted(Unicopia.id("race"), DEFAULT_ID);
     public static final Registry<Race> COMMAND_REGISTRY = RegistryUtils.createDefaulted(Unicopia.id("race/grantable"), DEFAULT_ID);
     public static final RegistryKey<? extends Registry<Race>> REGISTRY_KEY = REGISTRY.getKey();
-    private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("race.unknown", id));
+    private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("commands.race.fail", id));
     private static final Function<Race, Composite> COMPOSITES = Util.memoize(race -> new Composite(race, null, null));
 
     public static final Codec<Race> CODEC = RecordCodecBuilder.create(i -> i.group(
