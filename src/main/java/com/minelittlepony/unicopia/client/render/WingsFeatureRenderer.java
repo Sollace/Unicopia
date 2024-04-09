@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.FlightType;
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -51,7 +52,9 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
     }
 
     protected boolean canRender(E entity) {
-        return entity instanceof PlayerEntity && Pony.of((PlayerEntity)entity).getObservedSpecies().flightType() == FlightType.AVIAN;
+        return entity instanceof PlayerEntity player
+                && Pony.of(player).getObservedSpecies().flightType() == FlightType.AVIAN
+                && Pony.of(player).getObservedSpecies() != Race.BAT;
     }
 
     protected Identifier getTexture(E entity) {
