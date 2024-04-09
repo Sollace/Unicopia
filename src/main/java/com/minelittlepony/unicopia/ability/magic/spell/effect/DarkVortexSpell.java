@@ -28,11 +28,13 @@ import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.unicopia.util.Lerp;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -59,9 +61,6 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
     private final TargetSelecter targetSelecter = new TargetSelecter(this).setFilter(this::isValidTarget).setTargetowner(true).setTargetAllies(true);
 
     private final Lerp radius = new Lerp(0);
-
-    private int prevTicksDying;
-    private int ticksDying;
 
     protected DarkVortexSpell(CustomisedSpellType<?> type) {
         super(type);
@@ -105,7 +104,7 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
         Vec3d origin = getOrigin(source);
         double mass = getMass() * 0.1;
         double logarithm = 1 - (1D / (1 + (mass * mass)));
-        radius.update((float)Math.max(0.1, logarithm * source.asWorld().getGameRules().getInt(UGameRules.MAX_DARK_VORTEX_SIZE)), 200L);
+        radius.update((float)Math.max(0.01, logarithm * source.asWorld().getGameRules().getInt(UGameRules.MAX_DARK_VORTEX_SIZE)), 200L);
 
         if (source.asEntity().age % 20 == 0) {
             source.asWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_ADDITIONS, SoundCategory.AMBIENT, 1, 1);
@@ -125,11 +124,11 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
                     );
                 });
             }
-        } else if (source.asWorld().random.nextInt(300) == 0) {
-            ParticleUtils.spawnParticle(source.asWorld(), LightningBoltParticleEffect.DEFAULT, origin, Vec3d.ZERO);
-        }
 
-        if (!source.isClient()) {
+            if (source.asWorld().random.nextInt(300) == 0) {
+                ParticleUtils.spawnParticle(source.asWorld(), LightningBoltParticleEffect.DEFAULT, origin, Vec3d.ZERO);
+            }
+        } else {
             if (eventHorizon > 2) {
                 new Sphere(false, eventHorizon + 3).translate(origin).randomPoints(10, source.asWorld().random).forEach(i -> {
                     BlockPos pos = BlockPos.ofFloored(i);
@@ -175,13 +174,20 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
 
     @Override
     public void tickDying(Caster<?> source) {
-        accumulatedMass *= 0.8F;
+        accumulatedMass -= 0.8F;
         double mass = getMass() * 0.1;
         double logarithm = 1 - (1D / (1 + (mass * mass)));
         radius.update((float)Math.max(0.1, logarithm * source.asWorld().getGameRules().getInt(UGameRules.MAX_DARK_VORTEX_SIZE)), 200L);
-        prevTicksDying = ticksDying;
-        if (ticksDying++ > 25) {
+        if (accumulatedMass < 1) {
             super.tickDying(source);
+        }
+
+        Vec3d origin = getOrigin(source);
+        ParticleUtils.spawnParticle(source.asWorld(), ParticleTypes.SMOKE, origin, new Vec3d(0, 0.2F, 0));
+        ParticleUtils.spawnParticle(source.asWorld(), ParticleTypes.SMOKE, origin, new Vec3d(0, -0.2F, 0));
+
+        if (!source.isClient() && source.asWorld().getRandom().nextInt(10) == 0) {
+            Block.dropStack(source.asWorld(), BlockPos.ofFloored(origin), (source.asWorld().getRandom().nextInt(75) == 0 ? Items.ANCIENT_DEBRIS : Items.IRON_NUGGET).getDefaultStack());
         }
     }
 
