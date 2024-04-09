@@ -535,13 +535,15 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             return;
         }
 
-        if (animationDuration > 0 && --animationDuration <= 0) {
+        if (animationDuration <= 0 || --animationDuration <= 0) {
 
             if (animation.renderBothArms() && acrobatics.distanceClimbed > 0) {
                 return;
             }
 
-            setAnimation(AnimationInstance.NONE);
+            if (!getAnimation().isOf(Animation.NONE)) {
+                setAnimation(AnimationInstance.NONE);
+            }
         }
     }
 
