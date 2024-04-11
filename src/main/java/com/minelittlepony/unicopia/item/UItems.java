@@ -238,6 +238,9 @@ public interface UItems {
     Item FRIED_AXOLOTL = register("fried_axolotl", new ConsumableItem(new Item.Settings().food(FoodComponents.COOKED_CHICKEN).maxCount(1).recipeRemainder(Items.BUCKET), UseAction.EAT), ItemGroups.FOOD_AND_DRINK);
     Item GREEN_FRIED_EGG = register("green_fried_egg", new Item(new Item.Settings().food(UFoodComponents.FRIED_EGG)), ItemGroups.FOOD_AND_DRINK);
 
+    Item FROG_LEGS = register("frog_legs", new Item(new Item.Settings().food(FoodComponents.CHICKEN)), ItemGroups.FOOD_AND_DRINK);
+    Item COOKED_FROG_LEGS = register("cooked_frog_legs", new Item(new Item.Settings().food(FoodComponents.COOKED_CHICKEN)), ItemGroups.FOOD_AND_DRINK);
+
     Item CARAPACE = register("carapace", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
     Item CLOTH_BED = register("cloth_bed", new FancyBedItem(UBlocks.CLOTH_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
     Item CLOUD_BED = register("cloud_bed", new CloudBedItem(UBlocks.CLOUD_BED, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);

@@ -16,6 +16,7 @@
     "#c:cooked_meat",
     "#c:raw_meat",
     "#c:raw_insect",
+    "#c:cooked_insect",
     "#c:rotten_meat",
     "#unicopia:container_with_love"
   ]
