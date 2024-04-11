@@ -122,7 +122,8 @@ public interface URenderers {
         register(URenderers::renderBedItem, UItems.CLOTH_BED, UItems.CLOUD_BED);
         register(URenderers::renderChestItem, UBlocks.CLOUD_CHEST.asItem());
         PolearmRenderer.register(UItems.WOODEN_POLEARM, UItems.STONE_POLEARM, UItems.IRON_POLEARM, UItems.GOLDEN_POLEARM, UItems.DIAMOND_POLEARM, UItems.NETHERITE_POLEARM);
-        ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity, seed) -> EnchantableItem.isEnchanted(stack) ? EnchantableItem.getSpellKey(stack).getAffinity().getAlignment() : 0);
+        ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity, seed) -> EnchantableItem.getSpellKey(stack).getAffinity().getAlignment());
+        ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("shape"), (stack, world, entity, seed) -> EnchantableItem.getSpellKey(stack).getGemShape().getId());
         ModelPredicateProviderRegistry.register(UItems.ROCK_CANDY, new Identifier("count"), (stack, world, entity, seed) -> stack.getCount() / (float)stack.getMaxCount());
         ModelPredicateProviderRegistry.register(UItems.BUTTERFLY, new Identifier("variant"), (stack, world, entity, seed) -> (float)ButterflyItem.getVariant(stack).ordinal() / ButterflyEntity.Variant.VALUES.length);
         ModelPredicateProviderRegistry.register(Unicopia.id("zap_cycle"), new ClampedModelPredicateProvider() {

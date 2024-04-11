@@ -98,7 +98,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     @Override
     public boolean isDead() {
-        return dead && deathTicks <= 0;
+        return dead && deathTicks <= 0 && super.isDead();
     }
 
     @Override

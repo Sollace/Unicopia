@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.AwaitTickQueue;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UPOIs;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
@@ -36,11 +35,6 @@ public class SeaponySonarPulseAbility implements Ability<Hit> {
     @Override
     public int getCooldownTime(Pony player) {
         return 100;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race == Race.SEAPONY;
     }
 
     @Nullable

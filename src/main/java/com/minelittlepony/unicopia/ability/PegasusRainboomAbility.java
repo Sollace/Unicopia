@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -24,11 +23,6 @@ public class PegasusRainboomAbility implements Ability<Hit> {
     @Override
     public int getCooldownTime(Pony player) {
         return 60;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race.canInfluenceWeather();
     }
 
     @Nullable

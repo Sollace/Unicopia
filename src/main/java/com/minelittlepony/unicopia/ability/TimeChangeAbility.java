@@ -13,11 +13,6 @@ import com.minelittlepony.unicopia.server.world.UGameRules;
 public class TimeChangeAbility implements Ability<Rot> {
 
     @Override
-    public boolean canUse(Race race) {
-        return race == Race.ALICORN;
-    }
-
-    @Override
     public boolean canUse(Race.Composite race) {
         return canUse(race.physical()) || race.pseudo() == Race.UNICORN;
     }

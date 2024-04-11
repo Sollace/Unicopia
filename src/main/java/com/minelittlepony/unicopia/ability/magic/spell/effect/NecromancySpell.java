@@ -197,7 +197,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
         }
 
         Equine.of(minion).filter(eq -> eq instanceof Creature).ifPresent(eq -> {
-            ((Creature)eq).setMaster(source.getMaster());
+            ((Creature)eq).setMaster(source);
             if (source.asWorld().random.nextFloat() < source.getCorruption().getScaled(1)) {
                 ((Creature)eq).setDiscorded(true);
             }

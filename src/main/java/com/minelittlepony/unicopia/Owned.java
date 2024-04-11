@@ -53,7 +53,7 @@ public interface Owned<E extends Entity> {
     }
 
     default boolean hasCommonOwner(Owned<?> sibling) {
-        return getMasterId().isPresent() && getMasterId().equals(sibling.getMasterId());
+        return getMasterId().equals(sibling.getMasterId());
     }
 
     interface Mutable<E extends Entity> {

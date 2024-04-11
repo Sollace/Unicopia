@@ -6,7 +6,6 @@ import java.util.UUID;
 import java.util.stream.StreamSupport;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -35,11 +34,6 @@ public class CarryAbility implements Ability<Hit> {
     @Override
     public double getCostEstimate(Pony player) {
         return 0;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race.canFly();
     }
 
     @Override

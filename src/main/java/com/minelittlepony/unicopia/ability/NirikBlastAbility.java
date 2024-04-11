@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation.Recipient;
@@ -34,11 +33,6 @@ public class NirikBlastAbility implements Ability<Hit> {
     @Override
     public int getCooldownTime(Pony player) {
         return 3;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race == Race.KIRIN;
     }
 
     @Nullable

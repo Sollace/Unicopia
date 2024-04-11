@@ -68,7 +68,9 @@ public interface Ability<T extends Hit> {
      * Checks if the given race is permitted to use this ability
      * @param playerSpecies The player's species
      */
-    boolean canUse(Race playerSpecies);
+    default boolean canUse(Race race) {
+        return race.canUse(this);
+    }
 
     /**
      * Called when an ability is about to be triggered. This event occurs on both the client and server so check {@code Pony#isClient} if you need to know which one you're on.

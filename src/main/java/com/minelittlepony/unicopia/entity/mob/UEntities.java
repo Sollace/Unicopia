@@ -27,7 +27,8 @@ import net.minecraft.world.Heightmap.Type;
 
 public interface UEntities {
     EntityType<ButterflyEntity> BUTTERFLY = register("butterfly", FabricEntityTypeBuilder.createMob().spawnGroup(SpawnGroup.AMBIENT).entityFactory(ButterflyEntity::new)
-            .spawnRestriction(Location.NO_RESTRICTIONS, Type.WORLD_SURFACE_WG, ButterflyEntity::canSpawn)
+            .spawnRestriction(Location.NO_RESTRICTIONS, Type.MOTION_BLOCKING_NO_LEAVES, ButterflyEntity::canSpawn)
+            .spawnableFarFromPlayer()
             .dimensions(EntityDimensions.fixed(0.25F, 0.25F)));
     EntityType<MagicProjectileEntity> THROWN_ITEM = register("thrown_item", FabricEntityTypeBuilder.<MagicProjectileEntity>create(SpawnGroup.MISC, MagicProjectileEntity::new)
             .trackRangeBlocks(100)
@@ -84,7 +85,7 @@ public interface UEntities {
             .trackRangeChunks(8)
             .dimensions(EntityDimensions.fixed(3, 2)));
     EntityType<SpecterEntity> SPECTER = register("specter", FabricEntityTypeBuilder.createMob().spawnGroup(SpawnGroup.MONSTER).entityFactory(SpecterEntity::new)
-            .spawnRestriction(Location.ON_GROUND, Type.WORLD_SURFACE, HostileEntity::canSpawnInDark)
+            .spawnRestriction(Location.ON_GROUND, Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnIgnoreLightLevel)
             .fireImmune()
             .spawnableFarFromPlayer()
             .dimensions(EntityDimensions.fixed(1, 2)));

@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.ability;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Numeric;
@@ -52,11 +51,6 @@ public class PeckAbility implements Ability<Hit> {
     @Override
     public boolean activateOnEarlyRelease() {
         return true;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race == Race.HIPPOGRIFF;
     }
 
     @Override
