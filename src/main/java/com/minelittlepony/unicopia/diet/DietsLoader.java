@@ -76,7 +76,7 @@ public class DietsLoader implements IdentifiableResourceReloadListener {
                 if (!issueList.isEmpty()) {
                     LOGGER.error("Could not load diet profile {}. Caused by {}", entry.getKey(), issueList.toString());
                 }
-                return issueList.isEmpty();
+                return !issueList.isEmpty();
             });
             PonyDiets.load(new PonyDiets(profiles, foodGroups));
         }, applyExecutor);
