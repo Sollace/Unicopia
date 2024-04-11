@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -21,11 +20,6 @@ public class FlyingDashAbility implements Ability<Hit> {
     @Override
     public int getCooldownTime(Pony player) {
         return 30;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race == Race.HIPPOGRIFF;
     }
 
     @Nullable

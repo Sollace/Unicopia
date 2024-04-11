@@ -34,6 +34,9 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
             .addComment("If true Mine Little Pony will not be considered when determining the race to use")
             .addComment("The result will always be what is set by this config file.");
 
+    public final Setting<Boolean> toggleAbilityKeys = value("client", "toggleAbilityKeys", false)
+            .addComment("If true the ability keybinds will function as toggle keys rather than hold keys");
+
     public final Setting<Integer> hudPage = value("client", "hudActivePage", 0)
             .addComment("The page of abilities currently visible in the HUD. You can change this in-game using the PG_UP and PG_DWN keys (configurable)");
 

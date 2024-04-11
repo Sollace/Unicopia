@@ -50,7 +50,7 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity>> implements Gear {
     public static final Predicate<LivingEntity> UNICORN_HORN_PREDICATE = MINE_LP_HAS_NO_HORN.and(AmuletSelectors.ALICORN_AMULET.or(EquinePredicates.raceMatches(com.minelittlepony.unicopia.Race::canCast)));
     public static final Identifier UNICORN_HORN = Unicopia.id("textures/models/horn/unicorn.png");
 
-    public static final Predicate<LivingEntity> PEGA_WINGS_PREDICATE = MINE_LP_HAS_NO_WINGS.and(AmuletSelectors.PEGASUS_AMULET.or(EquinePredicates.raceMatches(race -> race.flightType() == FlightType.AVIAN)));
+    public static final Predicate<LivingEntity> PEGA_WINGS_PREDICATE = MINE_LP_HAS_NO_WINGS.and(AmuletSelectors.PEGASUS_AMULET.or(EquinePredicates.raceMatches(race -> race != com.minelittlepony.unicopia.Race.BAT && race.flightType() == FlightType.AVIAN)));
     public static final Identifier PEGASUS_WINGS = Unicopia.id("textures/models/wings/pegasus_pony.png");
 
     public static BodyPartGear<WingsGearModel> pegasusWings() {

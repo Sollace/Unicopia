@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.ability;
 
 import java.util.Optional;
 
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
@@ -58,11 +57,6 @@ public class UnicornTeleportAbility implements Ability<Pos> {
     @Override
     public int getCooldownTime(Pony player) {
         return (int)(50 - Math.min(45F, player.getLevel().get() * 0.75F));
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race.canCast() && race != Race.KIRIN;
     }
 
     @Override

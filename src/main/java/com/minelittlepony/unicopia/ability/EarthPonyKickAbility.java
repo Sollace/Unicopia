@@ -54,11 +54,6 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     }
 
     @Override
-    public boolean canUse(Race race) {
-        return race.canUseEarth();
-    }
-
-    @Override
     public Identifier getIcon(Pony player) {
         return getId().withPath(p -> "textures/gui/ability/" + p
             + "_" + (player.getObservedSpecies().isHuman() ? Race.EARTH : player.getObservedSpecies()).getId().getPath()

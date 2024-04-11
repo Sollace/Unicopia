@@ -1,14 +1,27 @@
 package com.minelittlepony.unicopia;
 
+import java.util.Locale;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.StringIdentifiable;
 
-public enum FlightType {
+public enum FlightType implements StringIdentifiable {
     UNSET,
     NONE,
     AVIAN,
     INSECTOID,
     ARTIFICIAL;
+
+    @SuppressWarnings("deprecation")
+    public static final EnumCodec<FlightType> CODEC = StringIdentifiable.createCodec(FlightType::values);
+
+    private final String name = name().toLowerCase(Locale.ROOT);
+
+    @Override
+    public String asString() {
+        return name;
+    }
 
     public boolean isGrounded() {
         return this == NONE;

@@ -42,8 +42,8 @@ public interface WeaklyOwned<E extends Entity> extends Owned<E>, WorldConvertabl
         @Override
         @SuppressWarnings("unchecked")
         default void setMaster(Owned<? extends E> sibling) {
-            if (sibling instanceof WeaklyOwned) {
-                getMasterReference().copyFrom(((WeaklyOwned<E>)sibling).getMasterReference());
+            if (sibling instanceof WeaklyOwned w) {
+                getMasterReference().copyFrom(w.getMasterReference());
             } else {
                 setMaster(sibling.getMaster());
             }

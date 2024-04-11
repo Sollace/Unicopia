@@ -44,7 +44,11 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 UBlocks.GOLDEN_OAK_SPROUT
         };
 
-        getOrCreateTagBuilder(UTags.Blocks.CATAPULT_IMMUNE).add(Blocks.BEDROCK).forceAddTag(BlockTags.DOORS).forceAddTag(BlockTags.TRAPDOORS);
+        getOrCreateTagBuilder(UTags.Blocks.CATAPULT_IMMUNE).add(
+                Blocks.STRUCTURE_VOID, Blocks.STRUCTURE_BLOCK,
+                Blocks.COMMAND_BLOCK, Blocks.CHAIN_COMMAND_BLOCK, Blocks.REPEATING_COMMAND_BLOCK,
+                Blocks.LIGHT, Blocks.JIGSAW, Blocks.BARRIER, Blocks.BEDROCK
+        ).forceAddTag(BlockTags.DOORS).forceAddTag(BlockTags.TRAPDOORS);
         getOrCreateTagBuilder(UTags.Blocks.BUTTERFLIES_SPAWNABLE_ON).forceAddTag(BlockTags.ANIMALS_SPAWNABLE_ON).forceAddTag(BlockTags.LEAVES).forceAddTag(BlockTags.FLOWERS).forceAddTag(BlockTags.FLOWER_POTS);
         getOrCreateTagBuilder(UTags.Blocks.JARS).add(UBlocks.JAR, UBlocks.CLOUD_JAR, UBlocks.STORM_JAR, UBlocks.LIGHTNING_JAR, UBlocks.ZAP_JAR);
         getOrCreateTagBuilder(BlockTags.CROPS).add(crops);

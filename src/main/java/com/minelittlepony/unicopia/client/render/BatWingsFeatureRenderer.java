@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.entity.AmuletSelectors;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.client.model.Dilation;
@@ -56,7 +57,9 @@ public class BatWingsFeatureRenderer<E extends LivingEntity> extends WingsFeatur
 
     @Override
     protected boolean canRender(E entity) {
-        return entity instanceof PlayerEntity && Pony.of((PlayerEntity)entity).getObservedSpecies() == Race.BAT;
+        return entity instanceof PlayerEntity
+                && Pony.of((PlayerEntity)entity).getObservedSpecies() == Race.BAT
+                && !AmuletSelectors.PEGASUS_AMULET.test(entity);
     }
 
     @Override

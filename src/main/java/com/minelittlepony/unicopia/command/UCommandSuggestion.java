@@ -21,7 +21,7 @@ import net.minecraft.util.Identifier;
 
 public class UCommandSuggestion {
     public static final SuggestionProvider<ServerCommandSource> ALL_RACE_SUGGESTIONS = suggestFromRegistry(Race.REGISTRY_KEY);
-    public static final SuggestionProvider<ServerCommandSource> ALLOWED_RACE_SUGGESTIONS = suggestFromRegistry(Race.REGISTRY_KEY, (context, race) -> race.isPermitted(context.getSource().getPlayer()));
+    public static final SuggestionProvider<ServerCommandSource> ALLOWED_RACE_SUGGESTIONS = suggestFromRegistry(Race.REGISTRY_KEY, (context, race) -> race.availability().isGrantable() && race.isPermitted(context.getSource().getPlayer()));
 
     public static <T> SuggestionProvider<ServerCommandSource> suggestFromRegistry(RegistryKey<? extends Registry<T>> registryKey, @Nullable BiPredicate<CommandContext<ServerCommandSource>, T> filter) {
         return (context, builder) -> {
@@ -43,7 +43,7 @@ public class UCommandSuggestion {
     }
 
     public static <T> void forEachMatching(Iterable<T> candidates, String input, Function<T, Identifier> idFunc, Consumer<T> consumer, String defaultNamespace) {
-        final boolean hasNamespaceDelimiter = input.indexOf(58) > -1;
+        final boolean hasNamespaceDelimiter = input.indexOf(':') > -1;
         for (T object : candidates) {
             final Identifier id = idFunc.apply(object);
             if (hasNamespaceDelimiter) {

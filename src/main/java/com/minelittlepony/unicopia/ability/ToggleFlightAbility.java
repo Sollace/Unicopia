@@ -24,11 +24,6 @@ public class ToggleFlightAbility implements Ability<Hit> {
         return 0;
     }
 
-    @Override
-    public boolean canUse(Race race) {
-        return race.canFly();
-    }
-
     @Nullable
     @Override
     public Optional<Hit> prepare(Pony player) {

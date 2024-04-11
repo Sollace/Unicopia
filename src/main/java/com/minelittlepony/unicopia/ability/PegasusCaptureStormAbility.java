@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
@@ -31,11 +30,6 @@ public class PegasusCaptureStormAbility implements Ability<Hit> {
     @Override
     public int getCooldownTime(Pony player) {
         return 6;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race.canInfluenceWeather();
     }
 
     @Nullable

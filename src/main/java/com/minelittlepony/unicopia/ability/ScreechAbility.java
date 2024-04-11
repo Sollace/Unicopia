@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.ability;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.data.Numeric;
@@ -47,11 +46,6 @@ public class ScreechAbility implements Ability<Numeric> {
     @Override
     public boolean activateOnEarlyRelease() {
         return true;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race == Race.HIPPOGRIFF;
     }
 
     @Override

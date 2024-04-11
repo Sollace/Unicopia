@@ -18,7 +18,9 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.option.StickyKeyBinding;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
@@ -35,6 +37,10 @@ public class KeyBindingsHandler {
     private final Binding pageDown = register(GLFW.GLFW_KEY_PAGE_DOWN, "hud_page_dn");
     private final Binding pageUp = register(GLFW.GLFW_KEY_PAGE_UP, "hud_page_up");
 
+    private final Binding singleTapModifier = register(InputUtil.UNKNOWN_KEY.getCode(), "ability_modifier_tap");
+    private final Binding doubleTapModifier = register(InputUtil.UNKNOWN_KEY.getCode(), "ability_modifier_double_tap");
+    private final Binding tripleTapModifier = register(InputUtil.UNKNOWN_KEY.getCode(), "ability_modifier_triple_tap");
+
     private final Set<KeyBinding> pressed = new HashSet<>();
 
     public KeyBindingsHandler() {
@@ -47,8 +53,12 @@ public class KeyBindingsHandler {
         return reverse.get(slot);
     }
 
+    public boolean isToggleMode() {
+        return Unicopia.getConfig().toggleAbilityKeys.get();
+    }
+
     public void addKeybind(int code, AbilitySlot slot) {
-        Binding binding = register(code, slot.name().toLowerCase());
+        Binding binding = new Binding(KeyBindingHelper.registerKeyBinding(new StickyKeyBinding("key.unicopia." + slot.name().toLowerCase(), code, KEY_CATEGORY, this::isToggleMode)));
         reverse.put(slot, binding);
         keys.put(binding, slot);
     }
@@ -104,6 +114,7 @@ public class KeyBindingsHandler {
         int page = Unicopia.getConfig().hudPage.get();
         page += sigma;
         Unicopia.getConfig().hudPage.set(page);
+        Unicopia.getConfig().save();
         client.getSoundManager().play(PositionedSoundInstance.master(USounds.Vanilla.UI_BUTTON_CLICK, 1.75F + (0.25F * sigma)));
         UHud.INSTANCE.setMessage(Text.translatable("gui.unicopia.page_num", page + 1, max + 1));
     }
@@ -141,6 +152,27 @@ public class KeyBindingsHandler {
         }
 
         public ActivationType getType() {
+            if (binding.isPressed() && binding instanceof StickyKeyBinding) {
+                if (singleTapModifier.binding.isPressed()) {
+                    KeyBinding.untoggleStickyKeys();
+                    return ActivationType.TAP;
+                }
+
+                if (doubleTapModifier.binding.isPressed()) {
+                    KeyBinding.untoggleStickyKeys();
+                    return ActivationType.DOUBLE_TAP;
+                }
+
+                if (tripleTapModifier.binding.isPressed()) {
+                    KeyBinding.untoggleStickyKeys();
+                    return ActivationType.TRIPLE_TAP;
+                }
+
+                if (isToggleMode()) {
+                    return ActivationType.NONE;
+                }
+            }
+
             long now = System.currentTimeMillis();
             if (type != ActivationType.NONE && now > nextPhaseTime - 70) {
                 ActivationType t = type;

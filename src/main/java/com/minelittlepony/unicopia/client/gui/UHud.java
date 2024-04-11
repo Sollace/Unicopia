@@ -48,8 +48,8 @@ public class UHud {
 
     private final List<Slot> slots = List.of(
         new ManaRingSlot(this, AbilitySlot.PRIMARY, AbilitySlot.PASSIVE, 0, 0),
-        new Slot(this, AbilitySlot.SECONDARY, AbilitySlot.SECONDARY, 26, -5),
-        new Slot(this, AbilitySlot.TERTIARY, AbilitySlot.TERTIARY, 36, 19)
+        new Slot(this, AbilitySlot.SECONDARY, AbilitySlot.SECONDARY, 30, -8),
+        new Slot(this, AbilitySlot.TERTIARY, AbilitySlot.TERTIARY, 40, 18)
     );
 
     @Nullable
@@ -68,10 +68,6 @@ public class UHud {
     private SpellType<?> focusedType = SpellType.empty();
 
     public void render(InGameHud hud, DrawContext context, float tickDelta) {
-
-        // TODO: Check this when backporting!
-        // InGameHud#renderHotbar line 460
-        // context.getMatrices().translate(0.0f, 0.0f, -90.0f);
         final int hotbarZ = -90;
 
         if (client.player == null) {
@@ -96,7 +92,6 @@ public class UHud {
         font = client.textRenderer;
         xDirection = client.player.getMainArm() == Arm.LEFT ? -1 : 1;
 
-
         matrices.push();
         matrices.translate(scaledWidth / 2, scaledHeight / 2, 0);
 
@@ -109,7 +104,7 @@ public class UHud {
         matrices.pop();
         matrices.push();
 
-        int hudX = ((scaledWidth - 50) / 2) + (104 * xDirection);
+        int hudX = ((scaledWidth - 50) / 2) + (109 * xDirection);
         int hudY = scaledHeight - 50;
         int hudZ = hotbarZ;
 
@@ -139,33 +134,33 @@ public class UHud {
 
         slots.forEach(slot -> slot.renderBackground(context, abilities, swap, tickDelta));
 
-        boolean canCast = Abilities.CAST.canUse(pony.getCompositeRace()) || Abilities.KIRIN_CAST.canUse(pony.getCompositeRace());
+
+        Ability<?> ability = pony.getAbilities().getStat(AbilitySlot.PRIMARY)
+                .getAbility(Unicopia.getConfig().hudPage.get())
+                .orElse(null);
+        boolean canCast = ability == Abilities.CAST || ability == Abilities.KIRIN_CAST || ability == Abilities.SHOOT;
 
         if (canCast) {
-            Ability<?> ability = pony.getAbilities().getStat(AbilitySlot.PRIMARY)
-                    .getAbility(Unicopia.getConfig().hudPage.get())
-                    .orElse(null);
-
-            if (ability == Abilities.CAST || ability == Abilities.SHOOT) {
-                matrices.push();
-                matrices.translate(PRIMARY_SLOT_SIZE / 2F, PRIMARY_SLOT_SIZE / 2F, 0);
-                boolean first = !pony.asEntity().isSneaking();
-                TypedActionResult<CustomisedSpellType<?>> inHand = pony.getCharms().getSpellInHand(false);
-                boolean replacing = inHand.getResult().isAccepted() && pony.getAbilities().getStat(AbilitySlot.PRIMARY).getActiveAbility().isEmpty();
-                if (first != prevPointed || replacing != prevReplacing || inHand.getValue().type() != focusedType) {
-                    focusedType = inHand.getValue().type();
-                    prevPointed = first;
-                    prevReplacing = replacing;
-                    setMessage(ability.getName(pony));
-                }
-                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(first ? 37 : 63));
-                matrices.translate(-23, 0, 0);
-                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-26));
-                matrices.scale(0.8F, 0.8F, 1);
-                int u = replacing ? 16 : 3;
-                context.drawTexture(HUD_TEXTURE, 0, 0, u, 120, 13, 7, 128, 128);
-                matrices.pop();
+            matrices.push();
+            matrices.translate(PRIMARY_SLOT_SIZE / 2F, PRIMARY_SLOT_SIZE / 2F, 0);
+            boolean first = !pony.asEntity().isSneaking();
+            TypedActionResult<CustomisedSpellType<?>> inHand = pony.getCharms().getSpellInHand(false);
+            boolean replacing = inHand.getResult().isAccepted() && pony.getAbilities().getStat(AbilitySlot.PRIMARY).getActiveAbility().isEmpty();
+            if (first != prevPointed || replacing != prevReplacing || inHand.getValue().type() != focusedType) {
+                focusedType = inHand.getValue().type();
+                prevPointed = first;
+                prevReplacing = replacing;
+                setMessage(ability.getName(pony));
             }
+            int baseAngle = xDirection < 0 ? 100 : 0;
+            int secondAngleDif = xDirection * 30;
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(baseAngle + 37 + (first ? 0 : secondAngleDif)));
+            matrices.translate(-23, 0, 0);
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-26));
+            matrices.scale(0.8F, 0.8F, 1);
+            int u = replacing ? 16 : 3;
+            context.drawTexture(HUD_TEXTURE, 0, 0, u, 120, 13, 7, 128, 128);
+            matrices.pop();
         }
 
         slots.forEach(slot -> slot.renderLabel(context, abilities, tickDelta));
@@ -173,8 +168,13 @@ public class UHud {
         matrices.pop();
 
         if (canCast) {
+            matrices.push();
+            if (xDirection < 0) {
+                hudX += PRIMARY_SLOT_SIZE / 2F - 8;
+            }
             SpellIconRenderer.renderSpell(context, pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 10 - xDirection * 13, hudY + 2, EQUIPPED_GEMSTONE_SCALE);
             SpellIconRenderer.renderSpell(context, pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 8 - xDirection * 2, hudY - 6, EQUIPPED_GEMSTONE_SCALE);
+            matrices.pop();
         }
 
         RenderSystem.disableBlend();
@@ -198,7 +198,7 @@ public class UHud {
 
         float vortexDistortion = DarkVortexSpellRenderer.getCameraDistortion();
 
-        if (vortexDistortion > 20) {
+        if (vortexDistortion > 25) {
             context.fill(RenderLayers.getEndPortal(), 0, 0, scaledWidth, scaledHeight, 0);
             context.getMatrices().push();
             context.getMatrices().translate(scaledWidth / 2, scaledHeight / 2, 0);
@@ -206,7 +206,7 @@ public class UHud {
             context.getMatrices().pop();
             return;
         } else if (vortexDistortion > 0) {
-            context.fill(0, 0, scaledWidth, scaledHeight, (int)((vortexDistortion / 20F) * 255) << 24);
+            context.fill(0, 0, scaledWidth, scaledHeight, (int)((Math.min(20, vortexDistortion) / 20F) * 255) << 24);
         }
 
         boolean hasEffect = client.player.hasStatusEffect(UEffects.SUN_BLINDNESS);

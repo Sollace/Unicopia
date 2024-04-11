@@ -68,6 +68,10 @@ public class SettingsScreen extends GameGui {
                 })
                 .getStyle().setText("unicopia.options.ignore_mine_lp");
 
+        content.addButton(new Toggle(LEFT, row += 20, config.toggleAbilityKeys.get()))
+            .onChange(config.toggleAbilityKeys)
+            .getStyle().setText("unicopia.options.toggle_ability_keys");
+
         mineLpStatus = content.addButton(new Label(LEFT, row += 10)).getStyle().setText(getMineLPStatus());
 
         RegistryIndexer<Race> races = RegistryIndexer.of(Race.REGISTRY);

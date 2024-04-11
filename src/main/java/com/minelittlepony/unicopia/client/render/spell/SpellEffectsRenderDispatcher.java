@@ -14,6 +14,9 @@ import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
+import com.minelittlepony.unicopia.entity.player.Pony;
+
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
@@ -91,6 +94,9 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         if (client.getEntityRenderDispatcher().shouldRenderHitboxes()
                 && !client.hasReducedDebugInfo()
                 && !(caster.asEntity() == client.cameraEntity && client.options.getPerspective() == Perspective.FIRST_PERSON)) {
+            if (!(caster instanceof Pony || caster instanceof CastSpellEntity)) {
+                return;
+            }
             renderHotspot(matrices, vertices, caster, animationProgress);
             renderSpellDebugInfo(matrices, vertices, caster, light);
         }
