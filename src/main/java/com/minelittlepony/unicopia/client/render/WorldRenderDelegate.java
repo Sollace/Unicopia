@@ -218,7 +218,7 @@ public class WorldRenderDelegate {
     }
 
     private void flipAngles(Entity entity) {
-        if (entity instanceof PlayerEntity player) {
+        if (entity instanceof PlayerEntity) {
             entity.prevYaw *= -1;
             entity.setYaw(entity.getYaw() * -1);
 
@@ -226,9 +226,7 @@ public class WorldRenderDelegate {
             entity.setPitch(entity.getPitch() * -1);
         }
 
-        if (entity instanceof LivingEntity) {
-            LivingEntity living = (LivingEntity)entity;
-
+        if (entity instanceof LivingEntity living) {
             living.bodyYaw = -living.bodyYaw;
             living.prevBodyYaw = -living.prevBodyYaw;
             living.headYaw = -living.headYaw;
