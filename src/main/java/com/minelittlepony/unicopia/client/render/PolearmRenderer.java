@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.render;
 
-import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.DynamicItemRenderer;
 import net.minecraft.client.MinecraftClient;
@@ -33,9 +33,9 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
             BuiltinItemRendererRegistry.INSTANCE.register(item, INSTANCE);
             ModelPredicateProviderRegistry.register(item, THROWING, INSTANCE);
         }
-        ModelLoadingRegistry.INSTANCE.registerModelProvider((renderer, out) -> {
+        ModelLoadingPlugin.register(context -> {
             for (Item item : items) {
-                out.accept(getModelId(item));
+                context.addModels(getModelId(item));
             }
         });
     }
