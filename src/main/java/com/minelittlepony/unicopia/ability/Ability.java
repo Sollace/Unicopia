@@ -84,6 +84,15 @@ public interface Ability<T extends Hit> {
     }
 
     /**
+     * Checks whether this ability has any special actions for the given activation type.
+     * <p>
+     * The default is to only respond to press-and-hold actions.
+     */
+    default boolean acceptsQuickAction(Pony player, ActivationType type) {
+        return type == ActivationType.NONE;
+    }
+
+    /**
      * Called on the client to get any data required for the quick action.
      *
      * @param player    The player

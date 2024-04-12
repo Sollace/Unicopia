@@ -116,6 +116,11 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         return false;
     }
 
+    @Override
+    public boolean acceptsQuickAction(Pony player, ActivationType type) {
+        return type == ActivationType.NONE || type == ActivationType.TAP || type == ActivationType.DOUBLE_TAP;
+    }
+
     @Nullable
     @Override
     public Optional<Pos> prepare(Pony player) {

@@ -73,6 +73,11 @@ public class UnicornDispellAbility implements Ability<Pos> {
     }
 
     @Override
+    public boolean acceptsQuickAction(Pony player, ActivationType type) {
+        return type == ActivationType.NONE || (player.getSpecies() != Race.CHANGELING && type == ActivationType.TAP);
+    }
+
+    @Override
     public double getCostEstimate(Pony player) {
         return getTarget(player)
                 .filter(caster -> !caster.hasCommonOwner(player))

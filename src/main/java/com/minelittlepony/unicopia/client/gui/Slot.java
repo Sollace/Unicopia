@@ -1,10 +1,14 @@
 package com.minelittlepony.unicopia.client.gui;
 
+import java.util.Optional;
+
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
 import com.minelittlepony.unicopia.ability.ActivationType;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
+import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.gui.DrawContext;
@@ -132,7 +136,9 @@ class Slot {
 
     void renderLabel(DrawContext context, AbilityDispatcher abilities, float tickDelta) {
 
-        if (abilities.getStat(aSlot).getAbility(Unicopia.getConfig().hudPage.get()).isEmpty()) {
+        Optional<Ability<?>> ability = abilities.getStat(aSlot).getAbility(Unicopia.getConfig().hudPage.get());
+
+        if (ability.isEmpty()) {
             return;
         }
 
@@ -155,6 +161,9 @@ class Slot {
         ActivationType activation = KeyBindingsHandler.INSTANCE.getForcedActivationType();
         if (activation.isResult()) {
             label = label.append("+T" + activation.getTapCount());
+            if (!ability.get().acceptsQuickAction(UnicopiaClient.getClientPony(), activation)) {
+                label = label.formatted(Formatting.RED);
+            }
         }
 
         context.drawText(uHud.font, label, 0, 0, 0xFFFFFF, true);
