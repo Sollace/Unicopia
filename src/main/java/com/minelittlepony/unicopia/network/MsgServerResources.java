@@ -31,7 +31,7 @@ public record MsgServerResources (
     public MsgServerResources(PacketByteBuf buffer) {
         this(
             buffer.readMap(PacketByteBuf::readIdentifier, SpellTraits::fromPacket),
-            InteractionManager.instance().readChapters(buffer),
+            InteractionManager.getInstance().readChapters(buffer),
             buffer.readMap(PacketByteBuf::readIdentifier, TreeTypeLoader.TreeTypeDef::new),
             new PonyDiets(buffer)
         );

@@ -37,7 +37,7 @@ public class MagicalShapedEmiRecipe extends EmiCraftingRecipe {
         ItemStack[] stacks = ingredient.getMatchingStacks();
 
         for (int i = 0; i < stacks.length; i++) {
-            if (stacks[i].getItem() instanceof EnchantableItem e) {
+            if (stacks[i].getItem() instanceof EnchantableItem) {
                 stacks = Arrays.copyOf(stacks, stacks.length);
                 stacks[i] = EnchantableItem.enchant(stacks[i].copy(), spellEffect.type());
                 return EmiIngredient.of(Arrays.stream(stacks).map(EmiStack::of).toList());

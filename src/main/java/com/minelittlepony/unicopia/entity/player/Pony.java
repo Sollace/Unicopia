@@ -564,7 +564,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                     entity.addStatusEffect(new StatusEffectInstance(UEffects.SUN_BLINDNESS, SunBlindnessStatusEffect.MAX_DURATION, 2, true, false));
                     UCriteria.LOOK_INTO_SUN.trigger(entity);
                 } else if (isClientPlayer()) {
-                    InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_EARS_RINGING, entity.getId());
+                    InteractionManager.getInstance().playLoopingSound(entity, InteractionManager.SOUND_EARS_RINGING, entity.getId());
                 }
             }
 
@@ -577,7 +577,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                     if (!isClient()) {
                         entity.addStatusEffect(new StatusEffectInstance(UEffects.SUN_BLINDNESS, SunBlindnessStatusEffect.MAX_DURATION, 1, true, false));
                     } else if (isClientPlayer()) {
-                        InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_EARS_RINGING, entity.getId());
+                        InteractionManager.getInstance().playLoopingSound(entity, InteractionManager.SOUND_EARS_RINGING, entity.getId());
                     }
                 }
             } else if (ticksInSun > 0) {
@@ -966,7 +966,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public boolean isClientPlayer() {
-        return InteractionManager.instance().isClientPlayer(asEntity());
+        return InteractionManager.getInstance().isClientPlayer(asEntity());
     }
 
     @SuppressWarnings("unchecked")

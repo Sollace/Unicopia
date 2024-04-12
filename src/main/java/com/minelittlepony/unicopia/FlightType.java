@@ -13,6 +13,7 @@ public enum FlightType implements StringIdentifiable {
     INSECTOID,
     ARTIFICIAL;
 
+    @SuppressWarnings("deprecation")
     public static final Codec<FlightType> CODEC = StringIdentifiable.createCodec(FlightType::values);
 
     private final String name = name().toLowerCase(Locale.ROOT);

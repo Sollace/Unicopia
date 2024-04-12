@@ -366,7 +366,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        if (stack.getItem() instanceof HotAirBalloonItem balloon && !hasBalloon()) {
+        if (stack.getItem() instanceof HotAirBalloonItem && !hasBalloon()) {
             if (!player.getAbilities().creativeMode) {
                 stack.decrement(1);
             }

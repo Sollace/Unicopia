@@ -141,7 +141,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     private synchronized void createPlayer(NbtCompound nbt, GameProfile profile, Caster<?> source) {
         remove();
 
-        entity = InteractionManager.instance().createPlayer(source.asEntity(), profile);
+        entity = InteractionManager.getInstance().createPlayer(source.asEntity(), profile);
         entity.setCustomName(source.asEntity().getName());
         ((PlayerEntity)entity).readNbt(nbt.getCompound("playerNbt"));
         if (nbt.contains("playerVisibleParts", NbtElement.BYTE_TYPE)) {

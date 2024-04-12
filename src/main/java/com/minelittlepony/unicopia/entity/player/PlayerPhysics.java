@@ -459,13 +459,13 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (type.isAvian()) {
             if (!SpellPredicate.IS_DISGUISE.isOn(pony) && pony.isClient()) {
                 if (ticksInAir % GLIDING_SOUND_INTERVAL == 5) {
-                    InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_GLIDING, entity.getId());
+                    InteractionManager.getInstance().playLoopingSound(entity, InteractionManager.SOUND_GLIDING, entity.getId());
                 }
             }
         } else if (type == FlightType.INSECTOID && !SpellPredicate.IS_DISGUISE.isOn(pony)) {
             if (entity.getWorld().isClient && !soundPlaying) {
                 soundPlaying = true;
-                InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_CHANGELING_BUZZ, entity.getId());
+                InteractionManager.getInstance().playLoopingSound(entity, InteractionManager.SOUND_CHANGELING_BUZZ, entity.getId());
             }
         }
 

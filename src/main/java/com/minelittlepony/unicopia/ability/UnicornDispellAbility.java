@@ -64,7 +64,7 @@ public class UnicornDispellAbility implements Ability<Pos> {
             }
 
             if (type == ActivationType.TAP && player.isClient()) {
-                InteractionManager.instance().openScreen(InteractionManager.SCREEN_DISPELL_ABILITY);
+                InteractionManager.getInstance().openScreen(InteractionManager.SCREEN_DISPELL_ABILITY);
                 return true;
             }
         }

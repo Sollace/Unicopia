@@ -9,6 +9,7 @@ public enum Availability implements StringIdentifiable {
     COMMANDS,
     NONE;
 
+    @SuppressWarnings("deprecation")
     public static final Codec<Availability> CODEC = StringIdentifiable.createCodec(Availability::values);
 
     private final String name = name().toLowerCase(Locale.ROOT);

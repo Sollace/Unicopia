@@ -75,7 +75,7 @@ public class CorruptionHandler implements Tickable {
 
     private void recover(float percentage) {
         pony.getCorruption().set((int)(pony.getCorruption().get() * (1 - percentage)));
-        InteractionManager.INSTANCE.playLoopingSound(pony.asEntity(), InteractionManager.SOUND_HEART_BEAT, 0);
+        InteractionManager.getInstance().playLoopingSound(pony.asEntity(), InteractionManager.SOUND_HEART_BEAT, 0);
         MagicReserves reserves = pony.getMagicalReserves();
         reserves.getExertion().addPercent(10);
         reserves.getEnergy().add(10);

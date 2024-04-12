@@ -12,7 +12,7 @@ public class MinecartBehaviour extends EntityBehaviour<AbstractMinecartEntity> {
     public AbstractMinecartEntity onCreate(AbstractMinecartEntity entity, EntityAppearance context, boolean replaceOld) {
         super.onCreate(entity, context, replaceOld);
         if (replaceOld && entity.getWorld().isClient) {
-            InteractionManager.instance().playLoopingSound(entity, InteractionManager.SOUND_MINECART, entity.getId());
+            InteractionManager.getInstance().playLoopingSound(entity, InteractionManager.SOUND_MINECART, entity.getId());
         }
         return entity;
     }

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.TextHelper;
@@ -84,7 +84,7 @@ public class GemstoneItem extends Item implements MultiItem, EnchantableItem {
 
             MutableText line = Text.translatable(key.getTranslationKey() + ".lore").formatted(key.getAffinity().getColor());
 
-            if (!Unicopia.SIDE.getPlayerSpecies().canCast()) {
+            if (!InteractionManager.getInstance().getClientSpecies().canCast()) {
                 line = line.formatted(Formatting.OBFUSCATED);
             }
 
@@ -105,13 +105,13 @@ public class GemstoneItem extends Item implements MultiItem, EnchantableItem {
 
     @Override
     public boolean hasGlint(ItemStack stack) {
-        return super.hasGlint(stack) || (Unicopia.SIDE.getPlayerSpecies().canCast() && EnchantableItem.isEnchanted(stack));
+        return super.hasGlint(stack) || (InteractionManager.getInstance().getClientSpecies().canCast() && EnchantableItem.isEnchanted(stack));
     }
 
     @Override
     public Text getName(ItemStack stack) {
         if (EnchantableItem.isEnchanted(stack)) {
-            if (!Unicopia.SIDE.getPlayerSpecies().canCast()) {
+            if (!InteractionManager.getInstance().getClientSpecies().canCast()) {
                 return Text.translatable(getTranslationKey(stack) + ".obfuscated");
             }
 

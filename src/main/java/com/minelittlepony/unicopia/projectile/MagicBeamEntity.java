@@ -131,7 +131,7 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
     @Override
     public void onSpawnPacket(EntitySpawnS2CPacket packet) {
         super.onSpawnPacket(packet);
-        InteractionManager.instance().playLoopingSound(this, InteractionManager.SOUND_MAGIC_BEAM, getId());
+        InteractionManager.getInstance().playLoopingSound(this, InteractionManager.SOUND_MAGIC_BEAM, getId());
     }
 
     @Override

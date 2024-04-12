@@ -53,7 +53,7 @@ public class DummyPlayerEntity extends PlayerEntity implements Owned<PlayerEntit
 
     @Override
     public boolean shouldRenderName() {
-        return !InteractionManager.instance().isClientPlayer(getMaster());
+        return !InteractionManager.getInstance().isClientPlayer(getMaster());
     }
 
     @Override

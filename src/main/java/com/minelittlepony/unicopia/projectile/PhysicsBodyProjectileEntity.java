@@ -181,7 +181,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
         BlockPos belowPos = buttonPos.down();
         BlockState below = getWorld().getBlockState(belowPos);
         ItemStack stack = getStack();
-        if (below.getBlock() instanceof HopperBlock hopper) {
+        if (below.getBlock() instanceof HopperBlock) {
             BlockEntity e = getWorld().getBlockEntity(belowPos);
             if (e instanceof Inventory inventory) {
                 for (int i = 0; i < inventory.size(); i++) {
