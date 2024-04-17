@@ -57,6 +57,11 @@ public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
     }
 
     @Override
+    public boolean acceptsQuickAction(Pony player, ActivationType type) {
+        return type == ActivationType.NONE || type == ActivationType.DOUBLE_TAP;
+    }
+
+    @Override
     public boolean apply(Pony player, Hit data) {
         TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(true);
 

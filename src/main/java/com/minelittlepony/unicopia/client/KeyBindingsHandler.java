@@ -2,8 +2,10 @@ package com.minelittlepony.unicopia.client;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.lwjgl.glfw.GLFW;
 
@@ -34,12 +36,12 @@ public class KeyBindingsHandler {
     private final Map<Binding, AbilitySlot> keys = new HashMap<>();
     private final Map<AbilitySlot, Binding> reverse = new HashMap<>();
 
-    private final Binding pageDown = register(GLFW.GLFW_KEY_PAGE_DOWN, "hud_page_dn");
-    private final Binding pageUp = register(GLFW.GLFW_KEY_PAGE_UP, "hud_page_up");
+    private final Binding pageDown = new Binding(create(GLFW.GLFW_KEY_PAGE_DOWN, "hud_page_dn"));
+    private final Binding pageUp = new Binding(create(GLFW.GLFW_KEY_PAGE_UP, "hud_page_up"));
 
-    private final Binding singleTapModifier = register(InputUtil.UNKNOWN_KEY.getCode(), "ability_modifier_tap");
-    private final Binding doubleTapModifier = register(InputUtil.UNKNOWN_KEY.getCode(), "ability_modifier_double_tap");
-    private final Binding tripleTapModifier = register(InputUtil.UNKNOWN_KEY.getCode(), "ability_modifier_triple_tap");
+    private final KeyBinding singleTapModifier = createSticky(InputUtil.UNKNOWN_KEY.getCode(), "ability_modifier_tap");
+    private final KeyBinding doubleTapModifier = createSticky(InputUtil.UNKNOWN_KEY.getCode(), "ability_modifier_double_tap");
+    private final KeyBinding tripleTapModifier = createSticky(InputUtil.UNKNOWN_KEY.getCode(), "ability_modifier_triple_tap");
 
     private final Set<KeyBinding> pressed = new HashSet<>();
 
@@ -57,14 +59,34 @@ public class KeyBindingsHandler {
         return Unicopia.getConfig().toggleAbilityKeys.get();
     }
 
+    public ActivationType getForcedActivationType() {
+        if (singleTapModifier.isPressed()) {
+            return ActivationType.TAP;
+        }
+
+        if (doubleTapModifier.isPressed()) {
+            return ActivationType.DOUBLE_TAP;
+        }
+
+        if (tripleTapModifier.isPressed()) {
+            return ActivationType.TRIPLE_TAP;
+        }
+
+        return ActivationType.NONE;
+    }
+
     public void addKeybind(int code, AbilitySlot slot) {
-        Binding binding = new Binding(KeyBindingHelper.registerKeyBinding(new StickyKeyBinding("key.unicopia." + slot.name().toLowerCase(), code, KEY_CATEGORY, this::isToggleMode)));
+        Binding binding = new Binding(createSticky(code, slot.name().toLowerCase(Locale.ROOT)));
         reverse.put(slot, binding);
         keys.put(binding, slot);
     }
 
-    Binding register(int code, String name) {
-        return new Binding(KeyBindingHelper.registerKeyBinding(new KeyBinding("key.unicopia." + name, code, KEY_CATEGORY)));
+    KeyBinding create(int code, String name) {
+        return KeyBindingHelper.registerKeyBinding(new KeyBinding("key.unicopia." + name, code, KEY_CATEGORY));
+    }
+
+    KeyBinding createSticky(int code, String name) {
+        return KeyBindingHelper.registerKeyBinding(new StickyKeyBinding("key.unicopia." + name, code, KEY_CATEGORY, this::isToggleMode));
     }
 
     public void tick(MinecraftClient client) {
@@ -102,7 +124,7 @@ public class KeyBindingsHandler {
                     }
                 } else {
                     ActivationType type = i.getType();
-                    if (type != ActivationType.NONE) {
+                    if (type.isResult()) {
                         abilities.clear(slot, type, page);
                     }
                 }
@@ -124,7 +146,7 @@ public class KeyBindingsHandler {
 
         private long nextPhaseTime;
 
-        private ActivationType type = ActivationType.NONE;
+        private final AtomicReference<ActivationType> type = new AtomicReference<>(ActivationType.NONE);
 
         Binding(KeyBinding binding) {
             this.binding = binding;
@@ -145,40 +167,25 @@ public class KeyBindingsHandler {
 
             if (state == PressedState.RELEASED && now < nextPhaseTime + 10) {
                 nextPhaseTime = now + 200;
-                type = type.getNext();
+                type.set(type.get().getNext());
             }
 
             return state;
         }
 
         public ActivationType getType() {
-            if (binding.isPressed() && binding instanceof StickyKeyBinding) {
-                if (singleTapModifier.binding.isPressed()) {
+            if (binding.isPressed()) {
+                ActivationType t = getForcedActivationType();
+                if (t.isResult()) {
                     KeyBinding.untoggleStickyKeys();
-                    return ActivationType.TAP;
-                }
-
-                if (doubleTapModifier.binding.isPressed()) {
-                    KeyBinding.untoggleStickyKeys();
-                    return ActivationType.DOUBLE_TAP;
-                }
-
-                if (tripleTapModifier.binding.isPressed()) {
-                    KeyBinding.untoggleStickyKeys();
-                    return ActivationType.TRIPLE_TAP;
-                }
-
-                if (isToggleMode()) {
-                    return ActivationType.NONE;
+                    return t;
                 }
             }
 
-            long now = System.currentTimeMillis();
-            if (type != ActivationType.NONE && now > nextPhaseTime - 70) {
-                ActivationType t = type;
-                type = ActivationType.NONE;
-                return t;
+            if (!isToggleMode() && System.currentTimeMillis() > nextPhaseTime - 70) {
+                return type.getAndSet(ActivationType.NONE);
             }
+
             return ActivationType.NONE;
         }
 

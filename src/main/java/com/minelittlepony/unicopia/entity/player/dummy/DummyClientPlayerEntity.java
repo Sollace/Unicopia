@@ -65,7 +65,7 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
 
     @Override
     public boolean shouldRenderName() {
-        return !InteractionManager.instance().isClientPlayer(getMaster());
+        return !InteractionManager.getInstance().isClientPlayer(getMaster());
     }
 
     @Override

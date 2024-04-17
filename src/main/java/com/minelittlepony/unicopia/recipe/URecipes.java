@@ -54,7 +54,7 @@ public interface URecipes {
             LootTable table = manager.getLootTable(modId);
 
             if (table != LootTable.EMPTY) {
-                if (id.getPath().startsWith("blocks/")) {
+                if (id.getPath().startsWith("blocks/") || supplier.build().pools.length == 0) {
                     for (var pool : table.pools) {
                         supplier.pool(pool);
                     }

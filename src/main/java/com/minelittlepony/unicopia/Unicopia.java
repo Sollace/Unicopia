@@ -6,8 +6,6 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 
-import java.util.Optional;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,7 +25,6 @@ import com.minelittlepony.unicopia.diet.affliction.AfflictionType;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.effect.UPotions;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
-import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.Channel;
@@ -42,8 +39,6 @@ import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 public class Unicopia implements ModInitializer {
     public static final String DEFAULT_NAMESPACE = "unicopia";
     public static final Logger LOGGER = LogManager.getLogger();
-
-    public static SidedAccess SIDE = Optional::empty;
 
     private static Config CONFIG;
 
@@ -110,13 +105,5 @@ public class Unicopia implements ModInitializer {
         registry.registerReloadListener(StateMapLoader.INSTANCE);
         registry.registerReloadListener(SpellbookChapterLoader.INSTANCE);
         registry.registerReloadListener(new DietsLoader());
-    }
-
-    public interface SidedAccess {
-        Optional<Pony> getPony();
-
-        default Race.Composite getPlayerSpecies() {
-            return getPony().map(Pony::getCompositeRace).orElse(Race.HUMAN.composite());
-        }
     }
 }

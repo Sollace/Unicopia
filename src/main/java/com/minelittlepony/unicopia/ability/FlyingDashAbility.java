@@ -50,6 +50,11 @@ public class FlyingDashAbility implements Ability<Hit> {
     }
 
     @Override
+    public boolean acceptsQuickAction(Pony player, ActivationType type) {
+        return type == ActivationType.NONE || type == ActivationType.TAP;
+    }
+
+    @Override
     public boolean apply(Pony player, Hit data) {
         player.getPhysics().dashForward((float)player.asWorld().random.nextTriangular(2.5F, 0.3F));
         player.subtractEnergyCost(2);

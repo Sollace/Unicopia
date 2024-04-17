@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.datagen.providers.tag;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -9,14 +12,18 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.datagen.Datagen;
 import com.minelittlepony.unicopia.datagen.ItemFamilies;
+import com.minelittlepony.unicopia.datagen.UBlockFamilies;
 import com.minelittlepony.unicopia.item.BedsheetsItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.server.world.UTreeGen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.minecraft.block.Block;
+import net.minecraft.data.family.BlockFamily;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
@@ -138,6 +145,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .forceAddTag(UConventionalTags.Items.CORALS).forceAddTag(UConventionalTags.Items.CORAL_FANS);
 
         exportForagingTags();
+        exportCreativeTabs();
         exportFarmersDelightItems();
     }
 
@@ -184,6 +192,112 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(UTags.Items.FORAGE_STRENGHENING).add(Items.FERN);
         getOrCreateTagBuilder(UTags.Items.FORAGE_SEVERE_NAUSEATING).add(Items.PITCHER_PLANT);
         getOrCreateTagBuilder(UTags.Items.FORAGE_SEVERE_PRICKLY).add(Items.LARGE_FERN);
+        getOrCreateTagBuilder(UTags.Items.GROUP_FORAGING)
+            .forceAddTag(UTags.Items.FORAGE_BLINDING)
+            .forceAddTag(UTags.Items.FORAGE_DANGEROUS)
+            .forceAddTag(UTags.Items.FORAGE_FILLING)
+            .forceAddTag(UTags.Items.FORAGE_SAFE)
+            .forceAddTag(UTags.Items.FORAGE_NAUSEATING)
+            .forceAddTag(UTags.Items.FORAGE_PRICKLY)
+            .forceAddTag(UTags.Items.FORAGE_GLOWING)
+            .forceAddTag(UTags.Items.FORAGE_RISKY)
+            .forceAddTag(UTags.Items.FORAGE_STRENGHENING)
+            .forceAddTag(UTags.Items.FORAGE_SEVERE_NAUSEATING)
+            .forceAddTag(UTags.Items.FORAGE_SEVERE_PRICKLY);
+    }
+
+    private void exportCreativeTabs() {
+        getOrCreateTagBuilder(UTags.Items.GROUP_UNICORN).add(
+                UItems.SPELLBOOK, UItems.GEMSTONE, UItems.BOTCHED_GEM, UItems.FRIENDSHIP_BRACELET,
+                UItems.CRYSTAL_HEART, UItems.CRYSTAL_SHARD, UBlocks.CRYSTAL_DOOR.asItem(),
+                UItems.MEADOWBROOKS_STAFF, UItems.MAGIC_STAFF, UItems.GROGARS_BELL,
+                UItems.DRAGON_BREATH_SCROLL, UItems.PEGASUS_AMULET, UItems.ALICORN_AMULET,
+                UItems.BROKEN_ALICORN_AMULET, UItems.UNICORN_AMULET, UItems.SPECTRAL_CLOCK
+        );
+        getOrCreateTagBuilder(UTags.Items.GROUP_PEGASUS)
+            .add(UBlocks.SHAPING_BENCH.asItem(), UBlocks.CLOUD_CHEST.asItem(), UItems.CLOUD_LUMP)
+            .add(List.of(UBlockFamilies.CLOUD, UBlockFamilies.CLOUD_PLANKS, UBlockFamilies.CLOUD_BRICKS, UBlockFamilies.DENSE_CLOUD, UBlockFamilies.ETCHED_CLOUD)
+                    .stream()
+                    .map(BlockFamily::getVariants)
+                    .map(Map::values)
+                    .flatMap(Collection::stream)
+                    .map(ItemConvertible::asItem)
+                    .filter(Objects::nonNull)
+                    .toArray(Item[]::new))
+            .add(UBlocks.UNSTABLE_CLOUD.asItem(), UBlocks.CLOUD_PILLAR.asItem(), UBlocks.CLOUD_DOOR.asItem(), UBlocks.CLOUD_BED.asItem())
+            .forceAddTag(UTags.Items.BED_SHEETS)
+            .forceAddTag(UConventionalTags.Items.RAW_FISH)
+            .forceAddTag(UConventionalTags.Items.COOKED_FISH)
+            .forceAddTag(UConventionalTags.Items.ROTTEN_FISH)
+            .forceAddTag(UTags.Items.CLOUD_JARS)
+            .add(UItems.LIGHTNING_JAR)
+            .forceAddTag(UTags.Items.POLEARMS)
+            .add(UItems.PEGASUS_FEATHER, UItems.GRYPHON_FEATHER, UItems.GOLDEN_FEATHER, UItems.GOLDEN_WING);
+        getOrCreateTagBuilder(UTags.Items.GROUP_EARTH_PONY)
+            .add(
+                UBlocks.GREEN_APPLE_LEAVES.asItem(), UBlocks.SWEET_APPLE_LEAVES.asItem(), UBlocks.SOUR_APPLE_LEAVES.asItem(), UBlocks.ZAP_LEAVES.asItem(), UBlocks.FLOWERING_ZAP_LEAVES.asItem(),
+                UBlocks.ZAP_LOG.asItem(), UBlocks.ZAP_WOOD.asItem(),
+                UBlocks.STRIPPED_ZAP_LOG.asItem(), UBlocks.STRIPPED_ZAP_WOOD.asItem(),
+                UBlocks.ZAP_PLANKS.asItem(), UBlocks.ZAP_STAIRS.asItem(), UBlocks.ZAP_SLAB.asItem(), UBlocks.ZAP_FENCE.asItem(), UBlocks.ZAP_FENCE_GATE.asItem(),
+
+                UBlocks.WAXED_ZAP_LOG.asItem(), UBlocks.WAXED_ZAP_WOOD.asItem(),
+                UBlocks.WAXED_STRIPPED_ZAP_LOG.asItem(), UBlocks.WAXED_STRIPPED_ZAP_WOOD.asItem(),
+                UBlocks.WAXED_ZAP_PLANKS.asItem(), UBlocks.WAXED_ZAP_STAIRS.asItem(), UBlocks.WAXED_ZAP_SLAB.asItem(), UBlocks.WAXED_ZAP_FENCE.asItem(), UBlocks.WAXED_ZAP_FENCE_GATE.asItem(),
+
+                UItems.CANDIED_APPLE, UBlocks.STABLE_DOOR.asItem(), UBlocks.DARK_OAK_DOOR.asItem())
+            .forceAddTag(UTags.Items.FRESH_APPLES)
+            .add(
+                UItems.ZAP_APPLE, UItems.ZAP_BULB, UItems.ROTTEN_APPLE,
+                UItems.GREEN_APPLE_SEEDS, UItems.SWEET_APPLE_SEEDS, UItems.SOUR_APPLE_SEEDS,
+                UTreeGen.ZAP_APPLE_TREE.sapling().get().asItem(),
+                UTreeGen.BANANA_TREE.sapling().get().asItem(),
+                UItems.CURING_JOKE, UItems.MANGO, UItems.EMPTY_JAR, UItems.COOKED_ZAP_APPLE,
+                UItems.ZAP_APPLE_JAM_JAR,
+                UItems.OAT_SEEDS, UItems.OATS, UItems.IMPORTED_OATS,
+                UItems.OATMEAL, UItems.OATMEAL_COOKIE, UItems.CHOCOLATE_OATMEAL_COOKIE,
+                UItems.DAFFODIL_DAISY_SANDWICH, UItems.HAY_BURGER, UItems.HAY_BURGER, UItems.HAY_FRIES,
+                UItems.CRISPY_HAY_FRIES, UItems.HORSE_SHOE_FRIES, UItems.WHEAT_WORMS,
+                UItems.BAITED_FISHING_ROD, UBlocks.WORM_BLOCK.asItem(),
+                UItems.MUFFIN, UItems.SCONE, UItems.ACORN, UItems.PINECONE, UItems.PINECONE_COOKIE,
+                UItems.BOWL_OF_NUTS, UItems.CRYSTAL_SHARD, UItems.PEBBLES, UItems.ROCK, UItems.WEIRD_ROCK,
+                UItems.ROCK_STEW, UItems.ROCK_CANDY, UItems.SALT_CUBE, UItems.MUG, UItems.CIDER, UItems.JUICE,
+                UItems.BURNED_JUICE, UItems.TOAST, UItems.JAM_TOAST, UItems.BURNED_TOAST, UItems.APPLE_PIE,
+                UItems.APPLE_PIE_HOOF, UItems.APPLE_PIE_SLICE, UBlocks.WEATHER_VANE.asItem()
+            )
+            .forceAddTag(UTags.Items.BASKETS)
+            .add(UItems.GIANT_BALLOON, UBlocks.CLOTH_BED.asItem())
+            .forceAddTag(UTags.Items.BED_SHEETS);
+        getOrCreateTagBuilder(UTags.Items.GROUP_BAT_PONY)
+            .forceAddTag(UConventionalTags.Items.RAW_INSECT)
+            .forceAddTag(UConventionalTags.Items.COOKED_INSECT)
+            .forceAddTag(UTags.Items.POLEARMS)
+            .add(
+                UBlocks.MANGO_LEAVES.asItem(), UTreeGen.MANGO_TREE.sapling().get().asItem(), UItems.MANGO,
+                UItems.PINEAPPLE, UItems.PINEAPPLE_CROWN, UItems.BANANA, UItems.SUNGLASSES, UItems.BROKEN_SUNGLASSES
+            );
+        getOrCreateTagBuilder(UTags.Items.GROUP_CHANGELING)
+            .add(
+                UItems.CARAPACE, UBlocks.SURFACE_CHITIN.asItem(), UBlocks.CHITIN.asItem()
+            ).add(UBlockFamilies.CHISELED_CHITIN.getVariants().values().stream().map(ItemConvertible::asItem).toArray(Item[]::new))
+            .add(
+                UBlocks.CHISELLED_CHITIN_HULL.asItem(), UBlocks.CHITIN_SPIKES.asItem(),
+                UBlocks.SLIME_PUSTULE.asItem(),
+                UBlocks.MYSTERIOUS_EGG.asItem(), UItems.GREEN_FRIED_EGG,
+                UBlocks.HIVE.asItem()
+            )
+            .forceAddTag(UConventionalTags.Items.RAW_MEAT)
+            .forceAddTag(UConventionalTags.Items.COOKED_MEAT)
+            .forceAddTag(UConventionalTags.Items.ROTTEN_MEAT)
+            .forceAddTag(UConventionalTags.Items.RAW_INSECT)
+            .forceAddTag(UConventionalTags.Items.COOKED_INSECT)
+            .forceAddTag(UConventionalTags.Items.ROTTEN_INSECT)
+            .forceAddTag(UTags.Items.CONTAINER_WITH_LOVE);
+        getOrCreateTagBuilder(UTags.Items.GROUP_SEA_PONY)
+            .add(UItems.PEARL_NECKLACE)
+            .forceAddTag(UTags.Items.SHELLS)
+            .forceAddTag(UTags.Items.SPECIAL_SHELLS)
+            .forceAddTag(UTags.Items.LOW_QUALITY_SEA_VEGETABLES)
+            .forceAddTag(UTags.Items.HIGH_QUALITY_SEA_VEGETABLES);
     }
 
     private void exportConventionalTags() {
@@ -229,8 +343,8 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .addOptionalTag(new Identifier("c", "lemon_chickens"));
         getOrCreateTagBuilder(UConventionalTags.Items.ROTTEN_MEAT).add(Items.ROTTEN_FLESH);
         getOrCreateTagBuilder(UConventionalTags.Items.ROTTEN_INSECT).add(Items.FERMENTED_SPIDER_EYE);
-        getOrCreateTagBuilder(UConventionalTags.Items.COOKED_INSECT);//.add(Items.FERMENTED_SPIDER_EYE); TODO
-        getOrCreateTagBuilder(UConventionalTags.Items.RAW_INSECT).add(Items.SPIDER_EYE, UItems.BUTTERFLY, UItems.WHEAT_WORMS, UBlocks.WORM_BLOCK.asItem());
+        getOrCreateTagBuilder(UConventionalTags.Items.COOKED_INSECT).add(UItems.COOKED_FROG_LEGS);
+        getOrCreateTagBuilder(UConventionalTags.Items.RAW_INSECT).add(Items.SPIDER_EYE, UItems.BUTTERFLY, UItems.FROG_LEGS, UItems.WHEAT_WORMS, UBlocks.WORM_BLOCK.asItem());
         getOrCreateTagBuilder(UConventionalTags.Items.WORMS).add(UItems.WHEAT_WORMS);
         getOrCreateTagBuilder(UConventionalTags.Items.STICKS).add(Items.STICK);
         getOrCreateTagBuilder(UConventionalTags.Items.ROCKS).add(UItems.ROCK);

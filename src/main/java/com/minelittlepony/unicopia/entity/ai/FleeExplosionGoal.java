@@ -90,7 +90,7 @@ public class FleeExplosionGoal extends Goal {
 
     public static void notifySurroundings(Entity explosionSource, float radius) {
         explosionSource.getWorld().getOtherEntities(explosionSource, explosionSource.getBoundingBox().expand(radius), e -> {
-           return Living.getOrEmpty(e).filter(l -> l instanceof Creature c).isPresent();
+           return Living.getOrEmpty(e).filter(l -> l instanceof Creature).isPresent();
         }).forEach(e -> {
             getGoals((Creature)Living.living(e)).forEach(goal -> goal.setFleeTarget(explosionSource));
         });

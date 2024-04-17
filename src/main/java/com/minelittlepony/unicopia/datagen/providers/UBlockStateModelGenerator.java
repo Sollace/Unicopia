@@ -34,6 +34,7 @@ import net.minecraft.data.client.Model;
 import net.minecraft.data.client.ModelIds;
 import net.minecraft.data.client.Models;
 import net.minecraft.data.client.MultipartBlockStateSupplier;
+import net.minecraft.data.client.TextureKey;
 import net.minecraft.data.client.TextureMap;
 import net.minecraft.data.client.TexturedModel;
 import net.minecraft.data.client.VariantSettings;
@@ -89,7 +90,8 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerAll((g, block) -> g.registerParentedItemModel(block, ModelIds.getBlockModelId(block)), UBlocks.SHAPING_BENCH, UBlocks.SURFACE_CHITIN);
         registerAll(UBlockStateModelGenerator::registerSimpleState, UBlocks.SHAPING_BENCH, UBlocks.BANANAS);
         // doors
-        registerAll(UBlockStateModelGenerator::registerStableDoor, UBlocks.STABLE_DOOR, UBlocks.DARK_OAK_DOOR, UBlocks.CRYSTAL_DOOR, UBlocks.CLOUD_DOOR);
+        registerAll(UBlockStateModelGenerator::registerStableDoor, UBlocks.STABLE_DOOR, UBlocks.DARK_OAK_DOOR, UBlocks.CLOUD_DOOR);
+        registerLockingDoor(UBlocks.CRYSTAL_DOOR);
 
         // cloud blocks
         createCustomTexturePool(UBlocks.CLOUD, TexturedModel.CUBE_ALL).same(UBlocks.UNSTABLE_CLOUD).slab(UBlocks.CLOUD_SLAB).stairs(UBlocks.CLOUD_STAIRS);
@@ -347,23 +349,37 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
     }
 
     public void registerStableDoor(Block door) {
-        TextureMap topTextures = TextureMap.topBottom(door);
-        TextureMap bottomTextures = topTextures.copyAndAdd(TOP, topTextures.getTexture(BOTTOM));
-        registerItemModel(door.asItem());
         var variants = BlockStateVariantMap.create(Properties.HORIZONTAL_FACING, Properties.DOUBLE_BLOCK_HALF, Properties.DOOR_HINGE, Properties.OPEN);
-        fillStableDoorVariantMap(variants, DoubleBlockHalf.LOWER,
-                BlockModels.DOOR_LEFT.upload(door, "_bottom_left", bottomTextures, modelCollector),
-                BlockModels.DOOR_RIGHT.upload(door, "_bottom_right", bottomTextures, modelCollector)
-        );
-        fillStableDoorVariantMap(variants, DoubleBlockHalf.UPPER,
-                BlockModels.DOOR_LEFT.upload(door, "_top_left", topTextures, modelCollector),
-                BlockModels.DOOR_RIGHT.upload(door, "_top_right", topTextures, modelCollector)
-        );
+        registerItemModel(door.asItem());
+        buildDoorStateModels(door, "", variants::register);
         blockStateCollector.accept(VariantsBlockStateSupplier.create(door).coordinate(variants));
     }
 
-    public static void fillStableDoorVariantMap(
-            BlockStateVariantMap.QuadrupleProperty<Direction, DoubleBlockHalf, DoorHinge, Boolean> variantMap,
+    public void registerLockingDoor(Block door) {
+        var variants = BlockStateVariantMap.create(Properties.HORIZONTAL_FACING, Properties.DOUBLE_BLOCK_HALF, Properties.DOOR_HINGE, Properties.OPEN, Properties.LOCKED);
+        registerItemModel(door.asItem());
+        buildDoorStateModels(door, "", (facing, half, hinge, open, map) -> variants.register(facing, half, hinge, open, false, map));
+        buildDoorStateModels(door, "_locked", (facing, half, hinge, open, map) -> variants.register(facing, half, hinge, open, true, map));
+        blockStateCollector.accept(VariantsBlockStateSupplier.create(door).coordinate(variants));
+    }
+
+    private void buildDoorStateModels(Block door, String suffex, DoorStateConsumer variants) {
+        TextureMap topTextures = new TextureMap()
+                .put(TextureKey.TOP, TextureMap.getSubId(door, "_top" + suffex))
+                .put(TextureKey.BOTTOM, TextureMap.getSubId(door, "_bottom" + suffex));
+        TextureMap bottomTextures = topTextures.copyAndAdd(TOP, topTextures.getTexture(BOTTOM));
+        fillStableDoorVariantMap(variants, DoubleBlockHalf.LOWER,
+                BlockModels.DOOR_LEFT.upload(door, "_bottom_left" + suffex, bottomTextures, modelCollector),
+                BlockModels.DOOR_RIGHT.upload(door, "_bottom_right" + suffex, bottomTextures, modelCollector)
+        );
+        fillStableDoorVariantMap(variants, DoubleBlockHalf.UPPER,
+                BlockModels.DOOR_LEFT.upload(door, "_top_left" + suffex, topTextures, modelCollector),
+                BlockModels.DOOR_RIGHT.upload(door, "_top_right" + suffex, topTextures, modelCollector)
+        );
+    }
+
+    private static void fillStableDoorVariantMap(
+            DoorStateConsumer variantMap,
             DoubleBlockHalf targetHalf, Identifier leftModelId, Identifier rightModelId) {
         fillStableDoorVariantMap(variantMap, targetHalf, DoorHinge.LEFT, false, R0, leftModelId);
         fillStableDoorVariantMap(variantMap, targetHalf, DoorHinge.RIGHT, false, R0, rightModelId);
@@ -373,7 +389,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
     }
 
     public static void fillStableDoorVariantMap(
-            BlockStateVariantMap.QuadrupleProperty<Direction, DoubleBlockHalf, DoorHinge, Boolean> variantMap,
+            DoorStateConsumer variantMap,
             DoubleBlockHalf targetHalf,
             DoorHinge hinge, boolean open, Rotation rotation,
             Identifier modelId) {
@@ -384,6 +400,10 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
                     .put(Y, BlockRotation.cycle(rotation, i))
             );
         }
+    }
+
+    interface DoorStateConsumer {
+        void register(Direction direction, DoubleBlockHalf half, DoorHinge hinge, boolean open, BlockStateVariant variant);
     }
 
     public void registerPillar(Block pillar) {

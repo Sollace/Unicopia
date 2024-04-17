@@ -49,7 +49,7 @@ public class ForageableItem extends Item {
             if (state.isIn(BlockTags.LEAVES)) {
                 player.swingHand(hand);
                 world.playSound(player, pos, state.getSoundGroup().getHitSound(), SoundCategory.BLOCKS);
-                InteractionManager.instance().addBlockBreakingParticles(pos, hitResult.getSide());
+                InteractionManager.getInstance().addBlockBreakingParticles(pos, hitResult.getSide());
 
                 int miningLevel = (stack.getItem() instanceof HoeItem hoe ? hoe.getMaterial().getMiningLevel() : 59);
 

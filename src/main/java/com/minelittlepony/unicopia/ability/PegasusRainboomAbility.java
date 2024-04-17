@@ -55,6 +55,11 @@ public class PegasusRainboomAbility implements Ability<Hit> {
     }
 
     @Override
+    public boolean acceptsQuickAction(Pony player, ActivationType type) {
+        return type == ActivationType.NONE || type == ActivationType.TAP;
+    }
+
+    @Override
     public boolean apply(Pony player, Hit data) {
 
         if (prepare(player).isEmpty()) {

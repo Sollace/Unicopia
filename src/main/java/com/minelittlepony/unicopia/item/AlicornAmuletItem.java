@@ -271,7 +271,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                 pony.playSound(USounds.ITEM_ALICORN_AMULET_HALLUCINATION, 3, 1);
             } else if (attachedTicks < 2 || (attachedTicks % (10 * ItemTracker.SECONDS) < 9 && world.random.nextInt(90) == 0)) {
                 if (attachedTicks % 5 == 0) {
-                    InteractionManager.INSTANCE.playLoopingSound(player, InteractionManager.SOUND_HEART_BEAT, 0);
+                    InteractionManager.getInstance().playLoopingSound(player, InteractionManager.SOUND_HEART_BEAT, 0);
                 }
 
                 reserves.getExertion().addPercent(10);

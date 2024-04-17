@@ -104,7 +104,7 @@ public class DisguiseCommand {
     }
 
     static Entity loadPlayer(ServerCommandSource source, String username) {
-        return InteractionManager.instance().createPlayer(source.getWorld(), new GameProfile(null, username));
+        return InteractionManager.getInstance().createPlayer(source.getWorld(), new GameProfile(null, username));
     }
 
     static int reveal(ServerCommandSource source, PlayerEntity player) {

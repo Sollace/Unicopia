@@ -27,6 +27,10 @@ public interface UBlockFamilies {
             .slab(UBlocks.CLOUD_SLAB).stairs(UBlocks.CLOUD_STAIRS)
             .group("cloud").unlockCriterionName("has_cloud_lump")
             .build();
+    BlockFamily ETCHED_CLOUD = new BlockFamily.Builder(UBlocks.ETCHED_CLOUD)
+            .slab(UBlocks.ETCHED_CLOUD_SLAB).stairs(UBlocks.ETCHED_CLOUD_STAIRS)
+            .group("etched_cloud").unlockCriterionName("has_cloud_lump")
+            .build();
     BlockFamily CLOUD_PLANKS = new BlockFamily.Builder(UBlocks.CLOUD_PLANKS)
             .slab(UBlocks.CLOUD_PLANK_SLAB).stairs(UBlocks.CLOUD_PLANK_STAIRS)
             .group("cloud").unlockCriterionName("has_cloud")

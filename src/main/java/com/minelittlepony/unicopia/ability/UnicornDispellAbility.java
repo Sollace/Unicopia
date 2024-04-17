@@ -64,12 +64,17 @@ public class UnicornDispellAbility implements Ability<Pos> {
             }
 
             if (type == ActivationType.TAP && player.isClient()) {
-                InteractionManager.instance().openScreen(InteractionManager.SCREEN_DISPELL_ABILITY);
+                InteractionManager.getInstance().openScreen(InteractionManager.SCREEN_DISPELL_ABILITY);
                 return true;
             }
         }
 
         return false;
+    }
+
+    @Override
+    public boolean acceptsQuickAction(Pony player, ActivationType type) {
+        return type == ActivationType.NONE || (player.getSpecies() != Race.CHANGELING && type == ActivationType.TAP);
     }
 
     @Override
