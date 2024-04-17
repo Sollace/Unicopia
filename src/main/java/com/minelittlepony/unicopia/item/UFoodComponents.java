@@ -31,6 +31,20 @@ public interface UFoodComponents {
     FoodComponent SCONE = builder(2, 0.2F).build();
     FoodComponent FRIED_EGG = builder(4, 0.4F).build();
 
+    FoodComponent ROTTEN_PUFFERFISH = new FoodComponent.Builder()
+            .hunger(4)
+            .saturationModifier(0.1F)
+            .statusEffect(new StatusEffectInstance(StatusEffects.POISON, 1200, 1), 1)
+            .statusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 300, 2), 1)
+            .statusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 300, 0), 1)
+            .meat()
+            .build();
+    FoodComponent COOKED_PUFFERFISH = builder(5, 0.6F)
+            .statusEffect(new StatusEffectInstance(StatusEffects.POISON, 1200, 1), 0.2F)
+            .statusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 300, 2), 0.3F)
+            .statusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 300, 0), 0.4F)
+            .build();
+
     FoodComponent WORMS = builder(1, 1.5F).alwaysEdible().meat().build();
     FoodComponent INSECTS = builder(1, 0).alwaysEdible().build();
 

@@ -1,11 +1,13 @@
 package com.minelittlepony.unicopia;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyPlayerEntity;
 import com.minelittlepony.unicopia.particle.ParticleSpawner;
 import com.mojang.authlib.GameProfile;
@@ -30,10 +32,14 @@ public class InteractionManager {
 
     public static final int SCREEN_DISPELL_ABILITY = 0;
 
-    public static InteractionManager INSTANCE = new InteractionManager();
+    private static InteractionManager INSTANCE = new InteractionManager();
 
-    public static InteractionManager instance() {
+    public static InteractionManager getInstance() {
         return INSTANCE;
+    }
+
+    public InteractionManager() {
+        INSTANCE = this;
     }
 
     public ParticleSpawner createBoundParticle(UUID id) {
@@ -95,5 +101,13 @@ public class InteractionManager {
 
     public void addBlockBreakingParticles(BlockPos pos, Direction direction) {
 
+    }
+
+    public Optional<Pony> getClientPony() {
+        return Optional.empty();
+    }
+
+    public final Race getClientSpecies() {
+        return getClientPony().map(Pony::getSpecies).orElse(Race.HUMAN);
     }
 }

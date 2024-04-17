@@ -18,6 +18,10 @@ public enum ActivationType {
         return ordinal();
     }
 
+    public boolean isResult() {
+        return this != NONE;
+    }
+
     public static ActivationType of(int id) {
         return VALUES[MathHelper.clamp(id, 0, VALUES.length)];
     }

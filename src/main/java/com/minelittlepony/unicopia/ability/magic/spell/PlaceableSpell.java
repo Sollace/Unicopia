@@ -209,7 +209,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
                 castEntity.set(null);
             });
 
-            if (source.asEntity() instanceof CastSpellEntity spellcast) {
+            if (source.asEntity() instanceof CastSpellEntity) {
                 Ether.get(source.asWorld()).remove(this, source);
             }
         }

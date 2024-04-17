@@ -64,6 +64,11 @@ public class CarryAbility implements Ability<Hit> {
     }
 
     @Override
+    public boolean acceptsQuickAction(Pony player, ActivationType type) {
+        return type == ActivationType.NONE || type == ActivationType.TAP;
+    }
+
+    @Override
     public boolean apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.asEntity();
         LivingEntity rider = findRider(player, iplayer.asWorld());

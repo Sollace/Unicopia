@@ -209,7 +209,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
                 warmup = 0;
 
                 if (data.isPresent()) {
-                    InteractionManager.instance().sendPlayerLookAngles(player.asEntity());
+                    InteractionManager.getInstance().sendPlayerLookAngles(player.asEntity());
                     Channel.CLIENT_PLAYER_ABILITY.sendToServer(new MsgPlayerAbility<>(ability, data, ActivationType.NONE));
                 } else {
                     player.asEntity().playSound(USounds.GUI_ABILITY_FAIL, 1, 1);

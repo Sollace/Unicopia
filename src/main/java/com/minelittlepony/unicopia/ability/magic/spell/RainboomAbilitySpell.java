@@ -50,7 +50,7 @@ public class RainboomAbilitySpell extends AbstractSpell {
 
         if (source.isClient()) {
             if (boundParticle == null) {
-                boundParticle = InteractionManager.INSTANCE.createBoundParticle(getUuid());
+                boundParticle = InteractionManager.getInstance().createBoundParticle(getUuid());
             }
             boundParticle.addParticle(new TargetBoundParticleEffect(UParticles.RAINBOOM_TRAIL, source.asEntity()), source.getOriginVector(), Vec3d.ZERO);
 

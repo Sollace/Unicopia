@@ -124,6 +124,10 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
                 .isPresent();
     }
 
+    public static boolean isComrade(UUID signator, Entity entity) {
+        return entity instanceof LivingEntity l && getWornBangles(l).anyMatch(stack -> isSignedBy(stack, signator));
+    }
+
     public static Stream<Pony> getPartyMembers(Caster<?> caster, double radius) {
         return Pony.stream(caster.findAllEntitiesInRange(radius, entity -> isComrade(caster, entity)));
     }

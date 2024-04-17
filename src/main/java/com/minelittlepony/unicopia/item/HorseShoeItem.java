@@ -6,9 +6,9 @@ import org.jetbrains.annotations.Nullable;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -53,18 +53,15 @@ public class HorseShoeItem extends HeavyProjectileItem {
         float inaccuracy = projectileInnacuracy + degradation * 30;
         tooltip.add(Text.empty());
 
-        Pony pony = Unicopia.SIDE.getPony().orElse(null);
+        var race = InteractionManager.getInstance().getClientPony().map(Pony::getCompositeRace).orElse(null);
         float speed = baseProjectileSpeed;
-        if (pony != null) {
-            var race = pony.getCompositeRace();
-
+        if (race != null) {
             if (race.any(Race::canUseEarth)) {
                 speed += 0.5F;
             }
             if (!race.includes(Race.ALICORN) && race.physical().canFly()) {
                 speed /= 1.5F;
             }
-
         }
         speed /= 1.5F;
         speed *= 1 - (0.6F * degradation);

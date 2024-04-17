@@ -8,7 +8,6 @@ import org.joml.Vector3f;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.event.ScreenInitCallback;
 import com.minelittlepony.common.event.ScreenInitCallback.ButtonList;
-import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.LanSettingsScreen;
@@ -52,6 +51,11 @@ public class UnicopiaClient implements ClientModInitializer {
     }
 
     @Nullable
+    public static Pony getClientPony() {
+        return Pony.of(MinecraftClient.getInstance().player);
+    }
+
+    @Nullable
     private Float originalRainGradient;
     private final Lerp rainGradient = new Lerp(0);
 
@@ -61,18 +65,23 @@ public class UnicopiaClient implements ClientModInitializer {
     private ZapAppleStageStore.Stage zapAppleStage = ZapAppleStageStore.Stage.HIBERNATING;
 
     public static Optional<PlayerCamera> getCamera() {
+        return Optional.of(getNullableCamera());
+    }
+
+    @Nullable
+    private static PlayerCamera getNullableCamera() {
         PlayerEntity player = MinecraftClient.getInstance().player;
 
         if (player != null && MinecraftClient.getInstance().cameraEntity == player) {
-            return Optional.of(Pony.of(player).getCamera());
+            return Pony.of(player).getCamera();
         }
 
-        return Optional.empty();
+        return null;
     }
 
 
     public static Vec3d getAdjustedSoundPosition(Vec3d pos) {
-        PlayerCamera cam = getCamera().orElse(null);
+        PlayerCamera cam = getNullableCamera();
         if (cam == null) {
             return pos;
         }
@@ -124,7 +133,7 @@ public class UnicopiaClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        InteractionManager.INSTANCE = new ClientInteractionManager();
+        new ClientInteractionManager();
         new ClientNetworkHandlerImpl();
 
         KeyBindingsHandler.bootstrap();
@@ -140,8 +149,6 @@ public class UnicopiaClient implements ClientModInitializer {
 
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(ViewportShader.INSTANCE);
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(SpellEffectsRenderDispatcher.INSTANCE);
-
-        Unicopia.SIDE = () -> Optional.ofNullable(MinecraftClient.getInstance().player).map(Pony::of);
     }
 
     private void onTick(MinecraftClient client) {

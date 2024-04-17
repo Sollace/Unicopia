@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client;
 
 import java.lang.ref.WeakReference;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -167,5 +168,10 @@ public class ClientInteractionManager extends InteractionManager {
     @Override
     public void addBlockBreakingParticles(BlockPos pos, Direction direction) {
         client.particleManager.addBlockBreakingParticles(pos, direction);
+    }
+
+    @Override
+    public Optional<Pony> getClientPony() {
+        return Optional.ofNullable(client.player).map(Pony::of);
     }
 }
