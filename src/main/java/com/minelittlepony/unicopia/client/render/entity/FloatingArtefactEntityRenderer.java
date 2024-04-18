@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client.render.entity;
 
 import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.entity.mob.FloatingArtefactEntity;
+import com.minelittlepony.unicopia.entity.mob.StationaryObjectEntity;
 import com.minelittlepony.unicopia.item.UItems;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -15,6 +16,7 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
@@ -52,9 +54,7 @@ public class FloatingArtefactEntityRenderer extends EntityRenderer<FloatingArtef
         matrices.translate(0, verticalOffset + variance * modelScaleY, 0);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.getRotation(timeDelta)));
 
-        int destructionStage = (int)(MathHelper.clamp(1F - (entity.getHealth() / entity.getMaxHealth()), 0F, 1F) * (ModelLoader.field_32983 - 1F));
-
-        itemRenderer.renderItem(stack, ModelTransformationMode.GROUND, false, matrices, getDestructionOverlayProvider(matrices, vertices, destructionStage), lightUv, OverlayTexture.DEFAULT_UV, model);
+        itemRenderer.renderItem(stack, ModelTransformationMode.GROUND, false, matrices, getDestructionOverlayProvider(matrices, vertices, 4F, getDestructionStage(entity)), lightUv, OverlayTexture.DEFAULT_UV, model);
 
         matrices.pop();
 
@@ -66,16 +66,24 @@ public class FloatingArtefactEntityRenderer extends EntityRenderer<FloatingArtef
         return PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
     }
 
-    static VertexConsumerProvider getDestructionOverlayProvider(MatrixStack matrices, VertexConsumerProvider vertices, int stage) {
+    static int getDestructionStage(StationaryObjectEntity entity) {
+        return (int)(MathHelper.clamp(1F - (entity.getHealth() / entity.getMaxHealth()), 0F, 1F) * (ModelLoader.field_32983 - 1F));
+    }
+
+    static int getDestructionStage(LivingEntity entity) {
+        return (int)(MathHelper.clamp(1F - (entity.getHealth() / entity.getMaxHealth()), 0F, 1F) * (ModelLoader.field_32983 - 1F));
+    }
+
+    static VertexConsumerProvider getDestructionOverlayProvider(MatrixStack matrices, VertexConsumerProvider vertices, float scale, int stage) {
         if (stage <= 0) {
             return vertices;
         }
         final MatrixStack.Entry entry = matrices.peek();
         final OverlayVertexConsumer destructionOverlay = new OverlayVertexConsumer(
-                MinecraftClient.getInstance().getBufferBuilders().getEffectVertexConsumers().getBuffer(RenderLayers.getCrumbling(stage)),
+                MinecraftClient.getInstance().getBufferBuilders().getEffectVertexConsumers().getBuffer(RenderLayers.getCrumbling(MathHelper.clamp(stage, 0, ModelLoader.field_32983 - 1))),
                 entry.getPositionMatrix(),
                 entry.getNormalMatrix(),
-                4F
+                scale
         );
         return layer -> layer.hasCrumbling() ? VertexConsumers.union(destructionOverlay, vertices.getBuffer(layer)) : vertices.getBuffer(layer);
     }
