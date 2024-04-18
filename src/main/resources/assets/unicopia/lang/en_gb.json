@@ -341,6 +341,7 @@
   "entity.unicopia.butterfly": "Butterfly",
   "entity.unicopia.twittermite": "Twittermite",
   "entity.unicopia.specter": "Spectre",
+  "entity.unicopia.mimic": "Mimic",
   "entity.unicopia.cast_spell": "Cast Spell",
   "entity.unicopia.cast_spell.by": "a spell cast by %s",
   "entity.unicopia.spellbook": "Spellbook",
