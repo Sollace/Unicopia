@@ -68,7 +68,7 @@ public class MimicEntity extends PathAwareEntity {
             }
             float spawnChance = (difficulty / 3F) * 0.25F;
             float roll = world.random.nextFloat();
-            System.out.println("Roll mimic: " + roll + " < " + spawnChance);
+
             if (roll >= spawnChance) {
                 return TypedActionResult.pass(null);
             }
@@ -112,6 +112,11 @@ public class MimicEntity extends PathAwareEntity {
         return isAlive();
     }
 
+    @Override
+    public boolean canBreatheInWater() {
+        return true;
+    }
+
     @Nullable
     @Override
     public ItemStack getPickBlockStack() {
@@ -121,7 +126,7 @@ public class MimicEntity extends PathAwareEntity {
 
     @Override
     protected void initGoals() {
-        goalSelector.add(2, new AttackGoal(this, 1.0, false));
+        goalSelector.add(2, new AttackGoal(this, 0.6F, false));
     }
 
     public void setChest(ChestBlock chest) {
@@ -168,6 +173,10 @@ public class MimicEntity extends PathAwareEntity {
         setMouthOpen(true);
     }
 
+    public float getPeekAmount() {
+        return MathHelper.clamp((float)getVelocity().lengthSquared() * 50F, 0, 1);
+    }
+
     @Override
     public void tick() {
         super.tick();
@@ -183,6 +192,9 @@ public class MimicEntity extends PathAwareEntity {
                 setBodyYaw(MathHelper.floor(getBodyYaw() / 90) * 90);
                 setYaw(MathHelper.floor(getYaw() / 90) * 90);
                 setHeadYaw(MathHelper.floor(getHeadYaw() / 90) * 90);
+                if (getHealth() < getMaxHealth() && getWorld().random.nextInt(20) == 0) {
+                    heal(1);
+                }
             }
         }
 
