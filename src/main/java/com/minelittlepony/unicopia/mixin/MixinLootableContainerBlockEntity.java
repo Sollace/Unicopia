@@ -14,25 +14,49 @@ import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.util.ActionResult;
+import net.minecraft.util.Identifier;
 
 @Mixin(LootableContainerBlockEntity.class)
-abstract class MixinLootableContainerBlockEntity extends LockableContainerBlockEntity {
-    private boolean generateMimic;
+abstract class MixinLootableContainerBlockEntity extends LockableContainerBlockEntity implements MimicEntity.MimicGeneratable {
+    private Identifier mimicLootTable;
+    private boolean allowMimics = true;
+    private boolean isMimic;
+
+    @Shadow
+    @Nullable
+    private Identifier lootTableId;
 
     MixinLootableContainerBlockEntity() { super(null, null, null); }
 
-    @Inject(
-            method = "checkLootInteraction",
-            at = @At(
-                value = "INVOKE",
-                target = "net/minecraft/loot/LootTable.supplyInventory(Lnet/minecraft/inventory/Inventory;Lnet/minecraft/loot/context/LootContextParameterSet;J)V",
-                shift = Shift.AFTER
-    ))
+    @Inject(method = "deserializeLootTable", at = @At("HEAD"))
+    private void deserializeMimic(NbtCompound nbt, CallbackInfoReturnable<Boolean> info) {
+        isMimic = nbt.getBoolean("mimic");
+    }
+
+    @Inject(method = "serializeLootTable", at = @At("HEAD"))
+    private void serializeMimic(NbtCompound nbt, CallbackInfoReturnable<Boolean> info) {
+        nbt.putBoolean("mimic", isMimic);
+    }
+
+    @Override
+    public void setAllowMimics(boolean allowMimics) {
+        this.allowMimics = allowMimics;
+        this.isMimic &= allowMimics;
+        markDirty();
+    }
+
+    @Override
+    public void setMimic(boolean mimic) {
+        isMimic = mimic;
+        markDirty();
+    }
+
+    @Inject(method = "checkLootInteraction", at = @At("HEAD"))
     private void onCheckLootInteraction(@Nullable PlayerEntity player, CallbackInfo info) {
-        if (player != null) {
-            generateMimic = true;
+        if (player != null && allowMimics && lootTableId != null) {
+            mimicLootTable = lootTableId;
         }
     }
 
@@ -44,12 +68,12 @@ abstract class MixinLootableContainerBlockEntity extends LockableContainerBlockE
                 shift = Shift.AFTER
     ), cancellable = true)
     private void onCreateMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player, CallbackInfoReturnable<ScreenHandler> info) {
-        if (generateMimic) {
-            generateMimic = false;
-            var mimic = MimicEntity.spawnFromChest(player.getWorld(), getPos(), player);
-            if (mimic.getResult() == ActionResult.SUCCESS) {
-                info.setReturnValue(mimic.getValue().createScreenHandler(syncId, playerInventory, player));
+        if (player != null && (isMimic || (allowMimics && MimicEntity.shouldConvert(player.getWorld(), getPos(), player, mimicLootTable)))) {
+            var mimic = MimicEntity.spawnFromChest(player.getWorld(), getPos());
+            if (mimic != null) {
+                info.setReturnValue(mimic.createScreenHandler(syncId, playerInventory, player));
             }
+            mimicLootTable = null;
         }
     }
 }

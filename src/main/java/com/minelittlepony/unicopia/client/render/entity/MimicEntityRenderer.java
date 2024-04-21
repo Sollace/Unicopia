@@ -36,6 +36,11 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
     public void render(MimicEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
         matrices.push();
         matrices.translate(0, 0.3F * entity.getPeekAmount(), 0);
+
+        float legAngle = entity.limbAnimator.getPos(tickDelta);
+        float legSpeed = entity.limbAnimator.getSpeed(tickDelta);
+
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.cos(legAngle * 0.6662F) * 1.4F * legSpeed * 10 * entity.getPeekAmount()));
         super.render(entity, yaw, tickDelta, matrices,
             FloatingArtefactEntityRenderer.getDestructionOverlayProvider(
                     matrices,

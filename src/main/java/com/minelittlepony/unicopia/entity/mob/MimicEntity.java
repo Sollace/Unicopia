@@ -5,6 +5,8 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 
@@ -40,8 +42,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -59,40 +61,47 @@ public class MimicEntity extends PathAwareEntity {
     private int openTicks;
     private final Set<PlayerEntity> observingPlayers = new HashSet<>();
 
-    @SuppressWarnings("deprecation")
-    public static TypedActionResult<MimicEntity> spawnFromChest(World world, BlockPos pos, PlayerEntity player) {
-        if (world.getBlockState(pos).isOf(Blocks.CHEST) && world.getBlockEntity(pos) instanceof ChestBlockEntity be) {
-            int difficulty = world.getDifficulty().ordinal() - 1;
-            if (difficulty < 0) {
-                return TypedActionResult.pass(null);
-            }
-            float spawnChance = (difficulty / 3F) * 0.25F;
-            float roll = world.random.nextFloat();
-
-            if (roll >= spawnChance) {
-                return TypedActionResult.pass(null);
-            }
-
-            BlockState state = be.getCachedState();
-            if (state.getOrEmpty(ChestBlock.CHEST_TYPE).orElse(ChestType.SINGLE) != ChestType.SINGLE) {
-                return TypedActionResult.fail(null);
-            }
-
-            world.removeBlockEntity(pos);
-            world.setBlockState(pos, Blocks.AIR.getDefaultState());
-            MimicEntity mimic = UEntities.MIMIC.create(world);
-            Direction facing = state.getOrEmpty(ChestBlock.FACING).orElse(null);
-            float yaw = facing.asRotation();
-            be.setCachedState(be.getCachedState().getBlock().getDefaultState());
-            mimic.updatePositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, yaw, 0);
-            mimic.setHeadYaw(yaw);
-            mimic.setBodyYaw(yaw);
-            mimic.setYaw(yaw);
-            mimic.setChest(be);
-            world.spawnEntity(mimic);
-            return TypedActionResult.success(mimic);
+    public static boolean shouldConvert(World world, BlockPos pos, PlayerEntity player, Identifier lootTable) {
+        if (!shouldGenerateMimic(lootTable)
+                || !world.getBlockState(pos).isIn(UTags.Blocks.MIMIC_CHESTS)
+                || !(world.getBlockEntity(pos) instanceof ChestBlockEntity be)
+                || be.getCachedState().getOrEmpty(ChestBlock.CHEST_TYPE).orElse(ChestType.SINGLE) != ChestType.SINGLE) {
+            return false;
         }
-        return TypedActionResult.fail(null);
+
+        int difficulty = world.getDifficulty().ordinal() - 1;
+        float threshold = 0.35F * ((EnchantmentUtil.getLuck(0, player) / 20F) + 0.5F);
+        return difficulty > 0 && world.random.nextFloat() < (difficulty / 3F) * threshold;
+    }
+
+    @SuppressWarnings("deprecation")
+    @Nullable
+    public static MimicEntity spawnFromChest(World world, BlockPos pos) {
+        if (!(world.getBlockEntity(pos) instanceof ChestBlockEntity be)) {
+            return null;
+        }
+        world.removeBlockEntity(pos);
+        world.setBlockState(pos, Blocks.AIR.getDefaultState());
+        MimicEntity mimic = UEntities.MIMIC.create(world);
+        BlockState state = be.getCachedState();
+        Direction facing = state.getOrEmpty(ChestBlock.FACING).orElse(null);
+        float yaw = facing.asRotation();
+        be.setCachedState(be.getCachedState().getBlock().getDefaultState());
+        mimic.updatePositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, yaw, 0);
+        mimic.setHeadYaw(yaw);
+        mimic.setBodyYaw(yaw);
+        mimic.setYaw(yaw);
+        mimic.setChest(be);
+        world.spawnEntity(mimic);
+        return mimic;
+    }
+
+    public static boolean shouldGenerateMimic(@Nullable Identifier lootTable) {
+        return lootTable != null
+             && lootTable.getPath().indexOf("village") == -1
+             && lootTable.getPath().indexOf("bastion") == -1
+             && lootTable.getPath().indexOf("underwater") == -1
+             && lootTable.getPath().indexOf("shipwreck") == -1;
     }
 
     MimicEntity(EntityType<? extends MimicEntity> type, World world) {
@@ -141,6 +150,7 @@ public class MimicEntity extends PathAwareEntity {
 
     public void setChest(ChestBlockEntity chestData) {
         this.chestData = chestData;
+        ((MimicGeneratable)chestData).setAllowMimics(false);
         chestData.setWorld(getWorld());
         if (!getWorld().isClient) {
             dataTracker.set(CHEST_DATA, writeChestData(chestData));
@@ -194,7 +204,20 @@ public class MimicEntity extends PathAwareEntity {
                 setHeadYaw(MathHelper.floor(getHeadYaw() / 90) * 90);
                 if (getHealth() < getMaxHealth() && getWorld().random.nextInt(20) == 0) {
                     heal(1);
+                } else if (age % 150 == 0 && chestData != null && !isMouthOpen()) {
+                    if (getWorld().getClosestPlayer(this, 15) == null) {
+                        getWorld().setBlockState(getBlockPos(), chestData.getCachedState().withIfExists(ChestBlock.FACING, getHorizontalFacing()));
+                        if (getWorld().getBlockEntity(getBlockPos()) instanceof ChestBlockEntity be) {
+                            InventoryUtil.copyInto(chestData, be);
+                            ((MimicGeneratable)be).setMimic(true);
+                            discard();
+                        }
+                    }
                 }
+            }
+
+            if (!observingPlayers.isEmpty()) {
+                setMouthOpen(true);
             }
         }
 
@@ -245,7 +268,7 @@ public class MimicEntity extends PathAwareEntity {
             @Override
             public void onOpen(PlayerEntity player) {
                 observingPlayers.add(player);
-                setMouthOpen(true);
+                //setMouthOpen(true);
             }
 
             @Override
@@ -311,6 +334,7 @@ public class MimicEntity extends PathAwareEntity {
         BlockState state = BlockState.CODEC.decode(NbtOps.INSTANCE, nbt.getCompound("state")).result().get().getFirst();
         if (BlockEntity.createFromNbt(getBlockPos(), state, nbt.getCompound("data")) instanceof ChestBlockEntity data) {
             data.setWorld(getWorld());
+            ((MimicGeneratable)data).setAllowMimics(false);
             return data;
         }
         return null;
@@ -369,5 +393,11 @@ public class MimicEntity extends PathAwareEntity {
                 setAttacking(false);
             }
         }
+    }
+
+    public interface MimicGeneratable {
+        void setAllowMimics(boolean allowMimics);
+
+        void setMimic(boolean mimic);
     }
 }
