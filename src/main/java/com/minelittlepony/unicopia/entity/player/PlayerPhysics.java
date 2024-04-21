@@ -696,7 +696,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 if (manualFlap) {
                     descentRate -= 0.5;
                 } else {
-                    descentRate = Math.max(0, descentRate / 2);
+                    descentRate *= 0.25F;
+                    if (velocity.y < 0) {
+                        velocity.y *= 0.6F;
+                    }
                 }
             }
         }
@@ -710,9 +713,11 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         Vec3d direction = entity.getRotationVec(1).normalize().multiply(thrustStrength);
 
-        if (hovering) {
+        if (hovering || !manualFlap) {
             if (entity.isSneaking()) {
-                velocity.y -= 0.2F;
+                velocity.y -= 0.006F;
+            } else {
+                velocity.y *= 1 - thrustScale;
             }
         } else {
             velocity.x += direction.x * 1.3F;
