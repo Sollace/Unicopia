@@ -649,6 +649,14 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         velocity.x += - forward * MathHelper.sin(entity.getYaw() * 0.017453292F);
         velocity.z += forward * MathHelper.cos(entity.getYaw() * 0.017453292F);
 
+        if (pony.isClient()) {
+            float effectChance = 1F - (float)(MathHelper.clamp(velocity.horizontalLengthSquared(), 0, 1));
+
+            if (entity.getWorld().random.nextInt(1 + (int)(120 * effectChance)) == 0) {
+                pony.spawnParticles(new TargetBoundParticleEffect(UParticles.WIND, pony.asEntity()), 3);
+            }
+        }
+
         if (entity.getWorld().hasRain(entity.getBlockPos())) {
             applyTurbulance(velocity);
         } else {
@@ -819,6 +827,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         }
 
         pony.updateVelocity();
+
+        pony.spawnParticles(new TargetBoundParticleEffect(UParticles.WIND, pony.asEntity()), 4);
 
         if (isFlying()) {
             playSound(USounds.ENTITY_PLAYER_PEGASUS_DASH, 1, 1);

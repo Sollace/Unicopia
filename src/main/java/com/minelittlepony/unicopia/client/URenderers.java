@@ -22,6 +22,7 @@ import com.minelittlepony.unicopia.client.particle.RainbowTrailParticle;
 import com.minelittlepony.unicopia.client.particle.RaindropsParticle;
 import com.minelittlepony.unicopia.client.particle.ShockwaveParticle;
 import com.minelittlepony.unicopia.client.particle.SphereParticle;
+import com.minelittlepony.unicopia.client.particle.WindParticle;
 import com.minelittlepony.unicopia.client.render.*;
 import com.minelittlepony.unicopia.client.render.entity.*;
 import com.minelittlepony.unicopia.client.render.shader.UShaders;
@@ -81,6 +82,7 @@ public interface URenderers {
         ParticleFactoryRegistry.getInstance().register(UParticles.FOOTPRINT, createFactory(FootprintParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.RAINBOOM_RING, RainboomParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.RAINBOOM_TRAIL, RainbowTrailParticle::new);
+        ParticleFactoryRegistry.getInstance().register(UParticles.WIND, WindParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.SHOCKWAVE, ShockwaveParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.SPHERE, SphereParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.DISK, DiskParticle::new);

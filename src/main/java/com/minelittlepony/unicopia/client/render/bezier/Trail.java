@@ -12,8 +12,11 @@ public class Trail {
 
     public final Vec3d pos;
 
-    public Trail(Vec3d pos) {
+    private final float height;
+
+    public Trail(Vec3d pos, float height) {
         this.pos = pos;
+        this.height = height;
         segments.add(new Segment(pos));
     }
 
@@ -61,7 +64,7 @@ public class Trail {
         }
 
         public BezierSegment getPlane(Segment to) {
-            return new BezierSegment(offset, to.offset, 1);
+            return new BezierSegment(offset, to.offset, height);
         }
     }
 }
