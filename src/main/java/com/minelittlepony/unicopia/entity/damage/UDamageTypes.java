@@ -8,7 +8,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 
 public interface UDamageTypes {
-    DynamicRegistry<DamageType> REGISTRY = new DynamicRegistry<>(RegistryKeys.DAMAGE_TYPE, key -> new DamageType(key.getValue().getNamespace() + "." + key.getValue().getPath(), 0));
+    DynamicRegistry<DamageType> REGISTRY = new DynamicRegistry<>(RegistryKeys.DAMAGE_TYPE, (lookup, key) -> new DamageType(key.getValue().getNamespace() + "." + key.getValue().getPath(), 0));
 
     RegistryKey<DamageType> EXHAUSTION = register("magical_exhaustion");
     RegistryKey<DamageType> ALICORN_AMULET = register("alicorn_amulet");
