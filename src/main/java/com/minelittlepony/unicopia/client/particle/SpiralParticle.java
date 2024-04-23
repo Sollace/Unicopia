@@ -30,7 +30,6 @@ public class SpiralParticle extends NoRenderParticle {
         this.collidesWithWorld = false;
         this.particle = MinecraftClient.getInstance().particleManager.addParticle(parameters.effect(), x, y, z, velocityX, velocityY, velocityZ);
         this.particle.setMaxAge(1000);
-        this.gravityStrength = 0;
     }
 
     @Override

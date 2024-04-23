@@ -40,6 +40,7 @@ public class WindParticle extends AbstractBillboardParticle {
         this.velocityZ = velocityZ;
         this.attachmentTicks = (int)world.random.nextTriangular(15, 12);
         this.passive = effect.getTargetId() <= 0;
+        this.collidesWithWorld = false;
 
         if (effect.getTargetId() > 0) {
             this.target = world.getEntityById(effect.getTargetId());
