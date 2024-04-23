@@ -88,6 +88,10 @@ public interface UEntities {
             .fireImmune()
             .spawnableFarFromPlayer()
             .dimensions(EntityDimensions.fixed(1, 2)));
+    EntityType<MimicEntity> MIMIC = register("mimic", FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, MimicEntity::new)
+            .fireImmune()
+            //.disableSummon()
+            .dimensions(EntityDimensions.changing(0.875F, 0.875F)));
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {
         EntityType<T> type = builder.build();
@@ -104,6 +108,7 @@ public interface UEntities {
         FabricDefaultAttributeRegistry.register(LOOT_BUG, LootBugEntity.createSilverfishAttributes());
         FabricDefaultAttributeRegistry.register(IGNOMINIOUS_BULB, IgnominiousBulbEntity.createMobAttributes());
         FabricDefaultAttributeRegistry.register(SPECTER, SpecterEntity.createAttributes());
+        FabricDefaultAttributeRegistry.register(MIMIC, MimicEntity.createMobAttributes());
 
         if (!Unicopia.getConfig().disableButterflySpawning.get()) {
             final Predicate<BiomeSelectionContext> butterflySpawnable = BiomeSelectors.foundInOverworld()

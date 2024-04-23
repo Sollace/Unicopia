@@ -3,6 +3,8 @@ package com.minelittlepony.unicopia.particle;
 
 import java.util.Locale;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
@@ -29,9 +31,9 @@ public class TargetBoundParticleEffect implements ParticleEffect {
         this.targetId = buf.readInt();
     }
 
-    public TargetBoundParticleEffect(ParticleType<TargetBoundParticleEffect> type, Entity target) {
+    public TargetBoundParticleEffect(ParticleType<TargetBoundParticleEffect> type, @Nullable Entity target) {
         this.type = type;
-        this.targetId = target.getId();
+        this.targetId = target == null ? -1 : target.getId();
     }
 
     public int getTargetId() {

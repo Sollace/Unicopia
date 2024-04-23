@@ -22,6 +22,8 @@ import com.minelittlepony.unicopia.client.particle.RainbowTrailParticle;
 import com.minelittlepony.unicopia.client.particle.RaindropsParticle;
 import com.minelittlepony.unicopia.client.particle.ShockwaveParticle;
 import com.minelittlepony.unicopia.client.particle.SphereParticle;
+import com.minelittlepony.unicopia.client.particle.SpiralParticle;
+import com.minelittlepony.unicopia.client.particle.WindParticle;
 import com.minelittlepony.unicopia.client.render.*;
 import com.minelittlepony.unicopia.client.render.entity.*;
 import com.minelittlepony.unicopia.client.render.shader.UShaders;
@@ -79,8 +81,10 @@ public interface URenderers {
         ParticleFactoryRegistry.getInstance().register(UParticles.RAIN_DROPS, createFactory(RaindropsParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.HEALTH_DRAIN, createFactory(HealthDrainParticle::create));
         ParticleFactoryRegistry.getInstance().register(UParticles.FOOTPRINT, createFactory(FootprintParticle::new));
+        ParticleFactoryRegistry.getInstance().register(UParticles.SPIRAL, createFactory(SpiralParticle::new));
         ParticleFactoryRegistry.getInstance().register(UParticles.RAINBOOM_RING, RainboomParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.RAINBOOM_TRAIL, RainbowTrailParticle::new);
+        ParticleFactoryRegistry.getInstance().register(UParticles.WIND, WindParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.SHOCKWAVE, ShockwaveParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.SPHERE, SphereParticle::new);
         ParticleFactoryRegistry.getInstance().register(UParticles.DISK, DiskParticle::new);
@@ -112,6 +116,7 @@ public interface URenderers {
         EntityRendererRegistry.register(UEntities.TENTACLE, TentacleEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.IGNOMINIOUS_BULB, IgnominiousBulbEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.SPECTER, EmptyEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.MIMIC, MimicEntityRenderer::new);
 
         BlockEntityRendererFactories.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(UBlockEntities.FANCY_BED, CloudBedBlockEntityRenderer::new);

@@ -104,7 +104,7 @@ public class KeyBindingsHandler {
             changePage(client, maxPage, -1);
         } else if (page < maxPage && pageUp.getState() == PressedState.PRESSED) {
             changePage(client, maxPage, 1);
-        } else {
+        } else if (!client.player.isSpectator()) {
             for (Binding i : keys.keySet()) {
                 AbilitySlot slot = keys.get(i);
                 if (slot == AbilitySlot.PRIMARY && client.options.sneakKey.isPressed() && abilities.isFilled(AbilitySlot.PASSIVE)) {

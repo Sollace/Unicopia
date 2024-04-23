@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.util;
 
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import net.minecraft.inventory.Inventory;
@@ -21,5 +22,28 @@ public interface InventoryUtil {
             }
         }
         return -1;
+    }
+
+    static boolean contentEquals(Inventory a, Inventory b) {
+        if (a.size() != b.size()) {
+            return false;
+        }
+        for (int i = 0; i < a.size(); i++) {
+            if (!ItemStack.areEqual(a.getStack(i), b.getStack(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static <I extends Inventory> I copy(Inventory from, Function<Integer, I> factory) {
+        return copyInto(from, factory.apply(from.size()));
+    }
+
+    static <I extends Inventory> I copyInto(Inventory from, I into) {
+        for (int i = 0; i < from.size(); i++) {
+            into.setStack(i, from.getStack(i).copy());
+        }
+        return into;
     }
 }

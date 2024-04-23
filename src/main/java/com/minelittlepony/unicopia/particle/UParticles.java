@@ -19,6 +19,7 @@ public interface UParticles {
 
     ParticleType<OrientedBillboardParticleEffect> RAINBOOM_RING = register("rainboom_ring", FabricParticleTypes.complex(OrientedBillboardParticleEffect.FACTORY));
     ParticleType<TargetBoundParticleEffect> RAINBOOM_TRAIL = register("rainboom_trail", FabricParticleTypes.complex(TargetBoundParticleEffect.FACTORY));
+    ParticleType<TargetBoundParticleEffect> WIND = register("wind", FabricParticleTypes.complex(TargetBoundParticleEffect.FACTORY));
 
     DefaultParticleType RAIN_DROPS = register("rain_drops", FabricParticleTypes.simple());
 
@@ -26,6 +27,7 @@ public interface UParticles {
     ParticleType<SphereParticleEffect> DISK = register("disk", FabricParticleTypes.complex(true, SphereParticleEffect.FACTORY));
 
     ParticleType<FollowingParticleEffect> HEALTH_DRAIN = register("health_drain", FabricParticleTypes.complex(true, FollowingParticleEffect.FACTORY));
+    ParticleType<SpiralParticleEffect> SPIRAL = register("spiral", FabricParticleTypes.complex(true, SpiralParticleEffect.FACTORY));
 
     DefaultParticleType GROUND_POUND = register("ground_pound", FabricParticleTypes.simple());
     DefaultParticleType CLOUDS_ESCAPING = register("clouds_escaping", FabricParticleTypes.simple(true));

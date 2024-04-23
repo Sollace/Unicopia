@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlock;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
 import com.minelittlepony.unicopia.util.Tickable;
@@ -25,7 +26,6 @@ import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.state.property.Properties;
 import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
@@ -118,13 +118,9 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
             }
 
             be.setWorld(entity.getWorld());
-            ((Positioned)be).setPos(entity.getBlockPos());
+            ((MixinBlockEntity)be).setPos(entity.getBlockPos());
             ceb.tick();
             be.setWorld(null);
         }
-    }
-
-    public interface Positioned {
-        void setPos(BlockPos pos);
     }
 }

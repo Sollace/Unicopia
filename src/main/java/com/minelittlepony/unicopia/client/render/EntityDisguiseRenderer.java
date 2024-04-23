@@ -7,7 +7,8 @@ import com.minelittlepony.unicopia.compat.pehkui.PehkUtil;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
-import com.minelittlepony.unicopia.entity.behaviour.FallingBlockBehaviour;
+import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -86,7 +87,7 @@ class EntityDisguiseRenderer {
         if (blockEntity != null) {
             BlockEntityRenderer<BlockEntity> r = MinecraftClient.getInstance().getBlockEntityRenderDispatcher().get(blockEntity);
             if (r != null) {
-                ((FallingBlockBehaviour.Positioned)blockEntity).setPos(e.getBlockPos());
+                ((MixinBlockEntity)blockEntity).setPos(e.getBlockPos());
                 blockEntity.setWorld(e.getWorld());
                 matrices.push();
 

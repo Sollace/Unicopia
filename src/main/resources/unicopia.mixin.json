@@ -30,6 +30,7 @@
     "MixinItemEntity",
     "MixinItemStack",
     "MixinLivingEntity",
+    "MixinLootableContainerBlockEntity",
     "MixinMilkBucketItem",
     "MixinMobEntity",
     "MixinPersistentProjectileEntity",
