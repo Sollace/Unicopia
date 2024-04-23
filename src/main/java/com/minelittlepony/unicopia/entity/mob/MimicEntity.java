@@ -121,11 +121,6 @@ public class MimicEntity extends PathAwareEntity {
         return isAlive();
     }
 
-    @Override
-    public boolean canBreatheInWater() {
-        return true;
-    }
-
     @Nullable
     @Override
     public ItemStack getPickBlockStack() {
@@ -262,7 +257,7 @@ public class MimicEntity extends PathAwareEntity {
     }
 
     public ScreenHandler createScreenHandler(int syncId, PlayerInventory inv, PlayerEntity player) {
-        chestData.checkLootInteraction(player);
+        chestData.generateLoot(player);
         setChest(chestData);
         var inventory = InventoryUtil.copyInto(chestData, new SimpleInventory(chestData.size()) {
             @Override
@@ -399,5 +394,11 @@ public class MimicEntity extends PathAwareEntity {
         void setAllowMimics(boolean allowMimics);
 
         void setMimic(boolean mimic);
+
+        void readMimicAttributes(NbtCompound nbt);
+
+        void writeMimicAttributes(NbtCompound nbt);
+
+        void configureMimic(@Nullable PlayerEntity player);
     }
 }

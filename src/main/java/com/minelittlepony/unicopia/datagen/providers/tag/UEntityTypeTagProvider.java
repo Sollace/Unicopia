@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.tag.EntityTypeTags;
 
 public class UEntityTypeTagProvider extends FabricTagProvider<EntityType<?>> {
     public UEntityTypeTagProvider(FabricDataOutput output, CompletableFuture<WrapperLookup> registriesFuture) {
@@ -40,5 +41,6 @@ public class UEntityTypeTagProvider extends FabricTagProvider<EntityType<?>> {
                 EntityType.SALMON, EntityType.COD, EntityType.PUFFERFISH,
                 EntityType.FROG
         );
+        getOrCreateTagBuilder(EntityTypeTags.CAN_BREATHE_UNDER_WATER).add(UEntities.MIMIC);
     }
 }
