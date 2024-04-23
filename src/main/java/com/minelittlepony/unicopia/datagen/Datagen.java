@@ -32,7 +32,6 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryBuilder;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.biome.OverworldBiomeCreator;
 
 public class Datagen implements DataGeneratorEntrypoint {
     public static final Logger LOGGER = LogManager.getLogger();
@@ -73,11 +72,7 @@ public class Datagen implements DataGeneratorEntrypoint {
 
     @Override
     public void buildRegistry(RegistryBuilder builder) {
-        builder.addRegistry(RegistryKeys.BIOME, registerable -> {
-            final var placedFeatureLookup = registerable.getRegistryLookup(RegistryKeys.PLACED_FEATURE);
-            final var carverLookup = registerable.getRegistryLookup(RegistryKeys.CONFIGURED_CARVER);
-            registerable.register(UWorldGen.SWEET_APPLE_ORCHARD, OverworldBiomeCreator.createNormalForest(placedFeatureLookup, carverLookup, false, false, false));
-        });
+        builder.addRegistry(RegistryKeys.BIOME, UWorldGen.REGISTRY);
         builder.addRegistry(RegistryKeys.DAMAGE_TYPE, UDamageTypes.REGISTRY);
     }
 }
