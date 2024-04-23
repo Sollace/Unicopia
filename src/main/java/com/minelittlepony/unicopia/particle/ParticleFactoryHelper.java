@@ -14,17 +14,11 @@ import net.minecraft.registry.Registries;
 import net.minecraft.util.math.Vec3d;
 
 public interface ParticleFactoryHelper {
-    @SuppressWarnings("deprecation")
-    PacketCodec<ParticleEffect> PARTICLE_EFFECT_CODEC = new PacketCodec<>(
-            buf -> {
-                @SuppressWarnings("unchecked")
-                ParticleType<ParticleEffect> type = (ParticleType<ParticleEffect>)Registries.PARTICLE_TYPE.get(buf.readInt());
-                return type.getParametersFactory().read(type, buf);
-            },
-            (buf, effect) -> {
-                buf.writeInt(Registries.PARTICLE_TYPE.getRawId(effect.getType()));
-                effect.write(buf);
-            }
+    @SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })
+    PacketCodec<ParticleEffect> PARTICLE_EFFECT_CODEC = PacketCodec.ofRegistry(Registries.PARTICLE_TYPE).andThen(
+            (buf, type) -> type.getParametersFactory().read((ParticleType) type, buf),
+            ParticleEffect::getType,
+            (buf, effect) -> effect.write(buf)
     );
     PacketCodec<Optional<ParticleEffect>> OPTIONAL_PARTICLE_EFFECT_CODEC = PARTICLE_EFFECT_CODEC.asOptional();
     PacketCodec<Vec3d> VECTOR_CODEC = new PacketCodec<>(
@@ -39,6 +33,7 @@ public interface ParticleFactoryHelper {
 
     @SuppressWarnings("unchecked")
     static <T extends ParticleEffect> T read(StringReader reader) throws CommandSyntaxException {
+        reader.expect(' ');
         return (T)ParticleEffectArgumentType.readParameters(reader, Registries.PARTICLE_TYPE.getReadOnlyWrapper());
     }
 

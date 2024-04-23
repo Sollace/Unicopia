@@ -26,10 +26,7 @@ public record FollowingParticleEffect (
         this(type,
                 new WeakTarget(reader),
                 ParticleFactoryHelper.readFloat(reader),
-                ParticleFactoryHelper.readOptional(reader, r -> {
-                    r.expect(' ');
-                    return ParticleFactoryHelper.read(r);
-                }));
+                ParticleFactoryHelper.readOptional(reader, r -> ParticleFactoryHelper.read(r)));
     }
 
     protected FollowingParticleEffect(ParticleType<FollowingParticleEffect> type, PacketByteBuf buf) {

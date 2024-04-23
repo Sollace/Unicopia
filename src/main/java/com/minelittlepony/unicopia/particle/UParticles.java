@@ -27,6 +27,7 @@ public interface UParticles {
     ParticleType<SphereParticleEffect> DISK = register("disk", FabricParticleTypes.complex(true, SphereParticleEffect.FACTORY));
 
     ParticleType<FollowingParticleEffect> HEALTH_DRAIN = register("health_drain", FabricParticleTypes.complex(true, FollowingParticleEffect.FACTORY));
+    ParticleType<SpiralParticleEffect> SPIRAL = register("spiral", FabricParticleTypes.complex(true, SpiralParticleEffect.FACTORY));
 
     DefaultParticleType GROUND_POUND = register("ground_pound", FabricParticleTypes.simple());
     DefaultParticleType CLOUDS_ESCAPING = register("clouds_escaping", FabricParticleTypes.simple(true));
