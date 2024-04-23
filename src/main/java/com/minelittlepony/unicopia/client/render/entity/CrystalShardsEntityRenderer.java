@@ -9,10 +9,8 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
 public class CrystalShardsEntityRenderer extends EntityRenderer<CrystalShardsEntity> {
@@ -30,6 +28,8 @@ public class CrystalShardsEntityRenderer extends EntityRenderer<CrystalShardsEnt
 
     @Override
     public void render(CrystalShardsEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+        vertices = FloatingArtefactEntityRenderer.getDestructionOverlayProvider(matrices, vertices, 4, FloatingArtefactEntityRenderer.getDestructionStage(entity));
+
         matrices.push();
         matrices.multiply(entity.getAttachmentFace().getRotationQuaternion());
         matrices.scale(-1, -1, 1);
@@ -39,11 +39,6 @@ public class CrystalShardsEntityRenderer extends EntityRenderer<CrystalShardsEnt
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
 
         model.setAngles(entity, 0, 0, 0, 0, 0);
-
-        int destructionStage = (int)(MathHelper.clamp(1F - (entity.getHealth() / entity.getMaxHealth()), 0F, 1F) * (ModelLoader.field_32983 - 1F));
-
-        vertices = FloatingArtefactEntityRenderer.getDestructionOverlayProvider(matrices, vertices, destructionStage);
-
         model.render(matrices, vertices.getBuffer(model.getLayer(getTexture(entity))), light, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
         matrices.pop();
         super.render(entity, yaw, tickDelta, matrices, vertices, light);

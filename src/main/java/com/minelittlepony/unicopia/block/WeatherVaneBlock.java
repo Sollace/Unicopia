@@ -3,6 +3,8 @@ package com.minelittlepony.unicopia.block;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.particle.TargetBoundParticleEffect;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 import com.mojang.serialization.MapCodec;
 
@@ -58,6 +60,9 @@ public class WeatherVaneBlock extends BlockWithEntity {
 
         private float clientAngle;
         private float prevAngle;
+        private float lastAngle;
+
+        private Vec3d airflow = Vec3d.ZERO;
 
         public WeatherVane(BlockPos pos, BlockState state) {
             super(UBlockEntities.WEATHER_VANE, pos, state);
@@ -70,11 +75,14 @@ public class WeatherVaneBlock extends BlockWithEntity {
         @Override
         public void readNbt(NbtCompound nbt) {
             angle = nbt.getFloat("angle");
+            airflow = new Vec3d(nbt.getDouble("windX"), 0, nbt.getDouble("windZ"));
         }
 
         @Override
         protected void writeNbt(NbtCompound nbt) {
             nbt.putFloat("angle", angle);
+            nbt.putDouble("windX", airflow.x);
+            nbt.putDouble("windZ", airflow.z);
         }
 
         @Override
@@ -89,21 +97,24 @@ public class WeatherVaneBlock extends BlockWithEntity {
 
         public static void serverTick(World world, BlockPos pos, BlockState state, WeatherVane entity) {
             Vec3d airflow = WeatherConditions.get(world).getWindDirection();
-            float angle = (float)Math.atan2(airflow.x, airflow.z) + MathHelper.PI;
-            if (Math.signum(entity.angle) != Math.signum(angle)) {
-                angle = MathHelper.PI - angle;
-            }
-            angle %= MathHelper.PI;
+            float angle = (WeatherConditions.get(world).getWindYaw() % MathHelper.PI);
 
+            entity.lastAngle = entity.prevAngle;
+            entity.prevAngle = entity.angle;
             if (angle != entity.angle) {
                 entity.angle = angle;
+
+                entity.airflow = airflow;
                 entity.markDirty();
-                if (world instanceof ServerWorld serverWorld) {
-                    serverWorld.getChunkManager().markForUpdate(pos);
+                if (world instanceof ServerWorld sw) {
+                    sw.getChunkManager().markForUpdate(pos);
                 }
 
-                world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), USounds.BLOCK_WEATHER_VANE_ROTATE, SoundCategory.BLOCKS, 1, 0.5F + (float)world.random.nextGaussian());
+                if (entity.lastAngle == entity.prevAngle) {
+                    world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), USounds.BLOCK_WEATHER_VANE_ROTATE, SoundCategory.BLOCKS, 1, 0.5F + (float)world.random.nextGaussian());
+                }
             }
+
         }
 
         public static void clientTick(World world, BlockPos pos, BlockState state, WeatherVane entity) {
@@ -117,6 +128,18 @@ public class WeatherVaneBlock extends BlockWithEntity {
                 entity.clientAngle += step;
             } else if (entity.clientAngle > angle) {
                 entity.clientAngle -= step;
+            }
+
+            if (world.random.nextInt(3) == 0) {
+                float radius = 10;
+                for (int i = 0; i < 5; i++) {
+                    world.addImportantParticle(new TargetBoundParticleEffect(UParticles.WIND, null),
+                            world.getRandom().nextTriangular(pos.getX(), radius),
+                            world.getRandom().nextTriangular(pos.getY(), radius),
+                            world.getRandom().nextTriangular(pos.getZ(), radius),
+                            entity.airflow.x / 10F, 0, entity.airflow.z / 10F
+                    );
+                }
             }
         }
     }

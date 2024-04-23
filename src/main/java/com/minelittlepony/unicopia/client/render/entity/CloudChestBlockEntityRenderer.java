@@ -59,7 +59,7 @@ public class CloudChestBlockEntityRenderer extends ChestBlockEntityRenderer<Ches
         matrices.pop();
     }
 
-    private DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> getProperties(BlockState state, ChestBlockEntity entity) {
+    public static DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> getProperties(BlockState state, ChestBlockEntity entity) {
         return entity.getWorld() != null
                 ? ((AbstractChestBlock<?>)state.getBlock()).getBlockEntitySource(state, entity.getWorld(), entity.getPos(), true)
                 : DoubleBlockProperties.PropertyRetriever::getFallback;

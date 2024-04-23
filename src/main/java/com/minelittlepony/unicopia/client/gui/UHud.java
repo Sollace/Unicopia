@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.client.gui;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.*;
@@ -24,6 +25,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -302,6 +305,34 @@ public class UHud {
             int alpha = 0x3A + (int)(125 * Math.abs(MathHelper.sin(client.player.age / 25F)));//3A
             context.fill(0, 0, scaledWidth, scaledHeight, 0x00FF0000 | (alpha << 24));
             context.fillGradient(0, (int)(scaledHeight / 1.5), scaledWidth, scaledHeight, 0x00FF0000, 0xAAFF0000);
+        }
+
+        if (pony.getPhysics().isFlyingSurvival) {
+            float effectStrength = (float)MathHelper.clamp(pony.getPhysics().getClientVelocity().length() / 15F, 0, 1);
+
+            VertexConsumer vertexConsumer = context.getVertexConsumers().getBuffer(RenderLayer.getGui());
+
+            float innerRadiusPulse = MathHelper.cos((pony.asEntity().age + tickDelta) / 2F) * 6 + (effectStrength * scaledHeight / 2F);
+
+            double points = 22;
+            float wedgeAngle = 0.05F + MathHelper.sin((pony.asEntity().age + tickDelta) / 3F) * 0.01F;
+            float outerRadius = Math.max(scaledWidth, scaledHeight);
+            float alpha = effectStrength * (0.6F + Math.abs(MathHelper.sin((pony.asEntity().age + tickDelta) / 10F)));
+            context.getMatrices().push();
+            context.getMatrices().translate(scaledWidth / 2F, scaledHeight / 2F, 0);
+            Matrix4f matrix4f = context.getMatrices().peek().getPositionMatrix();
+            for (int i = 0; i < points; i++) {
+                float angle = (MathHelper.TAU * i / (float)points) - wedgeAngle * 0.5F;
+                float innerRadius = Math.max(0, (scaledHeight / 2F) + (i % 2) * 72 + 14 * (1 - effectStrength) - innerRadiusPulse);
+                float centerX = MathHelper.sin(angle) * innerRadius;
+                float centerY = MathHelper.cos(angle) * innerRadius;
+
+                vertexConsumer.vertex(matrix4f, centerX, centerY, 0).color(1F, 1F, 1F, alpha * 0.3F).next();
+                vertexConsumer.vertex(matrix4f, MathHelper.sin(angle - wedgeAngle) * outerRadius, MathHelper.cos(angle - wedgeAngle) * outerRadius, 0).color(1F, 1F, 1F, alpha).next();
+                vertexConsumer.vertex(matrix4f, MathHelper.sin(angle + wedgeAngle) * outerRadius, MathHelper.cos(angle + wedgeAngle) * outerRadius, 0).color(1F, 1F, 1F, alpha).next();
+                vertexConsumer.vertex(matrix4f, centerX, centerY, 0).color(1F, 1F, 1F, alpha * 0.3F).next();
+            }
+            context.getMatrices().pop();
         }
     }
 

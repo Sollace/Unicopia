@@ -104,6 +104,7 @@ public interface UTags {
         TagKey<Block> KICKS_UP_DUST = block("kicks_up_dust");
 
         TagKey<Block> POLEARM_MINEABLE = block("mineable/polearm");
+        TagKey<Block> MIMIC_CHESTS = block("mimic_chests");
 
         TagKey<Block> BUTTERFLIES_SPAWNABLE_ON = block("butterflies_spawn_on");
 

@@ -81,6 +81,10 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
             .forceAddTag(UTags.Blocks.JARS)
             .add(Blocks.VINE, Blocks.LILY_PAD);
 
+        getOrCreateTagBuilder(UTags.Blocks.MIMIC_CHESTS).add(
+                Blocks.CHEST, Blocks.TRAPPED_CHEST, UBlocks.CLOUD_CHEST
+        );
+
         getOrCreateTagBuilder(UTags.Blocks.INTERESTING).add(
                 Blocks.SEA_LANTERN, Blocks.ENDER_CHEST, Blocks.END_PORTAL_FRAME,
                 Blocks.JUKEBOX, Blocks.SPAWNER

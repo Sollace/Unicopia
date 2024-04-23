@@ -114,8 +114,12 @@ public class WeatherConditions extends PersistentState implements Tickable {
         return MathHelper.lerp(interpolation / (float)maxInterpolation, prevWindYaw, windYaw);
     }
 
+    public int getWindInterpolation() {
+        return interpolation;
+    }
+
     public Vec3d getWindDirection() {
-        return Vec3d.fromPolar(0, windYaw).normalize();
+        return Vec3d.fromPolar(0, getWindYaw()).normalize();
     }
 
     @Override

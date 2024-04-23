@@ -4,43 +4,48 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.render.bezier.BezierSegment;
 import com.minelittlepony.unicopia.client.render.bezier.Trail;
 import com.minelittlepony.unicopia.particle.TargetBoundParticleEffect;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class RainbowTrailParticle extends AbstractBillboardParticle {
-    private static final Identifier TEXTURE = Unicopia.id("textures/particles/rainboom_trail.png");
+public class WindParticle extends AbstractBillboardParticle {
+    private static final Identifier TEXTURE = Unicopia.id("textures/particle/wind.png");
 
     private final Trail trail;
 
     @Nullable
     private Entity target;
-    private boolean isAbility;
 
-    public RainbowTrailParticle(TargetBoundParticleEffect effect, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+    private int attachmentTicks;
+
+    private final Vec3d offset;
+    private final boolean passive;
+
+    public WindParticle(TargetBoundParticleEffect effect, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
-        trail = new Trail(new Vec3d(x, y, z), 1);
+        trail = new Trail(new Vec3d(x, y, z), 0.02F);
         setMaxAge(300);
+        this.alpha = 0.15F;
         this.velocityX = velocityX;
         this.velocityY = velocityY;
         this.velocityZ = velocityZ;
+        this.attachmentTicks = (int)world.random.nextTriangular(15, 12);
+        this.passive = effect.getTargetId() <= 0;
+        this.collidesWithWorld = false;
 
-        if (effect.getTargetId() <= 0) {
-            this.target = world.getOtherEntities(null, Box.from(trail.pos)).get(0);
-        } else {
+        if (effect.getTargetId() > 0) {
             this.target = world.getEntityById(effect.getTargetId());
         }
-        isAbility = Caster.of(target).filter(caster -> SpellType.RAINBOOM.isOn(caster)).isPresent();
+        offset = target == null ? Vec3d.ZERO : new Vec3d(x, y, z).subtract(target.getPos());
     }
 
     @Override
@@ -75,14 +80,20 @@ public class RainbowTrailParticle extends AbstractBillboardParticle {
     public void tick() {
         super.tick();
 
-        if (target != null && target.isAlive()) {
-            if (isAbility) {
-                age = 0;
-            }
-            trail.update(target.getEyePos());
+        float animationFrame = age + MinecraftClient.getInstance().getTickDelta();
 
-            if (isAbility && Caster.of(target).filter(caster -> SpellType.RAINBOOM.isOn(caster)).isEmpty()) {
-                target = null;
+        float sin = MathHelper.sin(animationFrame / 5F) * 0.1F;
+        float cos = MathHelper.cos(animationFrame / 10F) * 0.2F;
+
+        if (passive) {
+            trail.update(new Vec3d(x + cos, y + sin, z - cos));
+        } else {
+            if (target != null && target.isAlive()) {
+                trail.update(target.getPos().add(offset).add(cos, sin, -cos));
+
+                if (attachmentTicks > 0 && --attachmentTicks <= 0) {
+                    target = null;
+                }
             }
         }
 
