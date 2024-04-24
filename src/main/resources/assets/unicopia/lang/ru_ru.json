@@ -341,6 +341,7 @@
   "entity.unicopia.butterfly": "Бабочка",
   "entity.unicopia.twittermite": "Твиттермит",
   "entity.unicopia.specter": "Призрак",
+  "entity.unicopia.mimic": "Мимик",
   "entity.unicopia.cast_spell": "Заклинание",
   "entity.unicopia.cast_spell.by": "Заклинание, наложенное %s",
   "entity.unicopia.spellbook": "Книга заклинаний",
