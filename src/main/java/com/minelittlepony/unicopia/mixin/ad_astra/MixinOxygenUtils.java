@@ -1,30 +1,31 @@
 package com.minelittlepony.unicopia.mixin.ad_astra;
 
-import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Coerce;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.compat.ad_astra.OxygenUtils;
+import com.minelittlepony.unicopia.compat.ad_astra.OxygenApi;
 
 @Pseudo
 @Mixin(
         targets = { "earth.terrarium.adastra.api.systems.OxygenApi" },
         remap = false
 )
-public interface MixinOxygenUtils extends OxygenUtils.OxygenApi {
-    @Accessor("API")
-    @Coerce
-    static Object getAPI() {
-        throw new AbstractMethodError("stub");
-    }
+interface MixinOxygenApi extends OxygenApi {
+}
 
-    @Dynamic("Compiler-generated class-init() method")
-    @Inject(method = "<clinit>()V", at = @At("RETURN"), remap = false)
-    private static void classInit() {
-        OxygenUtils.API = (OxygenUtils.OxygenApi)getAPI();
+@Pseudo
+@Mixin(
+        targets = { "earth.terrarium.adastra.api.ApiHelper" },
+        remap = false
+)
+abstract class MixinApiHelper {
+    @Inject(method = "load", at = @At("RETURN"), require = 0)
+    private static <T> void onLoad(Class<T> clazz, CallbackInfoReturnable<T> info) {
+        if (info.getReturnValue() instanceof OxygenApi api) {
+            OxygenApi.API.set(api);
+        }
     }
 }
