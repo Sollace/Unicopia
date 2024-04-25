@@ -71,7 +71,8 @@
     "trinkets.MixinTrinketInventory",
     "trinkets.MixinScreenHandler",
     "seasons.MixinFertilizableUtil",
-    "ad_astra.MixinOxygenUtils",
+    "ad_astra.MixinApiHelper",
+    "ad_astra.MixinOxygenApi",
     "forgified.MixinIForgeBoat"
   ],
   "client": [
