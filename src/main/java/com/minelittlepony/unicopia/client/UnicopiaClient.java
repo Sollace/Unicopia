@@ -65,7 +65,7 @@ public class UnicopiaClient implements ClientModInitializer {
     private ZapAppleStageStore.Stage zapAppleStage = ZapAppleStageStore.Stage.HIBERNATING;
 
     public static Optional<PlayerCamera> getCamera() {
-        return Optional.of(getNullableCamera());
+        return Optional.ofNullable(getNullableCamera());
     }
 
     @Nullable
