@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity.mob;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import com.minelittlepony.unicopia.Unicopia;
@@ -135,8 +137,14 @@ public interface UEntities {
     }
 
     interface Paintings {
+        Set<PaintingVariant> REGISTRY = new HashSet<>();
+
         private static void register(String id, int width, int height) {
-            Registry.register(Registries.PAINTING_VARIANT, RegistryKey.of(RegistryKeys.PAINTING_VARIANT, Unicopia.id(id)), new PaintingVariant(16 * width, 16 * height));
+            REGISTRY.add(Registry.register(
+                    Registries.PAINTING_VARIANT,
+                    RegistryKey.of(RegistryKeys.PAINTING_VARIANT, Unicopia.id(id)),
+                    new PaintingVariant(16 * width, 16 * height)
+            ));
         }
 
         static void bootstrap() {
