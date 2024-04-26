@@ -20,6 +20,7 @@ import com.minelittlepony.unicopia.datagen.providers.tag.UDamageTypeProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UDimensionTypeTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UEntityTypeTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UItemTagProvider;
+import com.minelittlepony.unicopia.datagen.providers.tag.UPaintingVariantTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UStatusEffectTagProvider;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.server.world.UWorldGen;
@@ -59,6 +60,7 @@ public class Datagen implements DataGeneratorEntrypoint {
         pack.addProvider(UEntityTypeTagProvider::new);
         pack.addProvider(UStatusEffectTagProvider::new);
         pack.addProvider(UDimensionTypeTagProvider::new);
+        pack.addProvider(UPaintingVariantTagProvider::new);
 
         pack.addProvider(UModelProvider::new);
         pack.addProvider(URecipeProvider::new);

@@ -26,5 +26,29 @@ public class UDamageTypeProvider extends FabricTagProvider<DamageType> {
         getOrCreateTagBuilder(UTags.DamageTypes.FROM_ROCKS).add(UDamageTypes.ROCK);
         getOrCreateTagBuilder(UTags.DamageTypes.FROM_HORSESHOES).add(UDamageTypes.HORSESHOE);
         getOrCreateTagBuilder(UTags.DamageTypes.BREAKS_SUNGLASSES).add(UDamageTypes.BAT_SCREECH, UDamageTypes.RAINBOOM);
+
+        getOrCreateTagBuilder(DamageTypeTags.AVOIDS_GUARDIAN_THORNS).add(
+                UDamageTypes.EXHAUSTION, UDamageTypes.ALICORN_AMULET, UDamageTypes.ZAP_APPLE, UDamageTypes.KICK, UDamageTypes.SMASH,
+                UDamageTypes.BAT_SCREECH, UDamageTypes.LOVE_DRAINING, UDamageTypes.LIFE_DRAINING, UDamageTypes.RAINBOOM, UDamageTypes.STEAMROLLER
+        );
+        getOrCreateTagBuilder(DamageTypeTags.BYPASSES_ARMOR).add(
+                UDamageTypes.EXHAUSTION, UDamageTypes.GAVITY_WELL_RECOIL, UDamageTypes.ALICORN_AMULET,
+                UDamageTypes.ZAP_APPLE, UDamageTypes.KICK, UDamageTypes.SMASH, UDamageTypes.BAT_SCREECH,
+                UDamageTypes.LOVE_DRAINING, UDamageTypes.LIFE_DRAINING, UDamageTypes.STEAMROLLER, UDamageTypes.RAINBOOM,
+                UDamageTypes.SUN, UDamageTypes.SUNLIGHT, UDamageTypes.PETRIFIED
+        );
+        getOrCreateTagBuilder(DamageTypeTags.BYPASSES_INVULNERABILITY).add(UDamageTypes.TRIBE_SWAP);
+        getOrCreateTagBuilder(DamageTypeTags.BYPASSES_SHIELD).add(
+                UDamageTypes.EXHAUSTION, UDamageTypes.BAT_SCREECH, UDamageTypes.ALICORN_AMULET,
+                UDamageTypes.LOVE_DRAINING, UDamageTypes.LIFE_DRAINING,
+                UDamageTypes.RAINBOOM, UDamageTypes.TRIBE_SWAP
+        );
+        getOrCreateTagBuilder(DamageTypeTags.IS_FIRE).add(UDamageTypes.SUN, UDamageTypes.SUNLIGHT, UDamageTypes.PETRIFIED);
+        getOrCreateTagBuilder(DamageTypeTags.IS_LIGHTNING).add(UDamageTypes.ZAP_APPLE);
+        getOrCreateTagBuilder(DamageTypeTags.WITCH_RESISTANT_TO).add(
+                UDamageTypes.EXHAUSTION, UDamageTypes.ALICORN_AMULET, UDamageTypes.ZAP_APPLE,
+                UDamageTypes.LOVE_DRAINING, UDamageTypes.LIFE_DRAINING,
+                UDamageTypes.KICK, UDamageTypes.SMASH, UDamageTypes.STEAMROLLER
+        );
     }
 }
