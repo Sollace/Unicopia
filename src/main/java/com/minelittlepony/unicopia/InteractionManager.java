@@ -37,6 +37,8 @@ public class InteractionManager {
     @Nullable
     private SyncedConfig config;
 
+    private EquineContext equineContext = EquineContext.ABSENT;
+
     public static InteractionManager getInstance() {
         return INSTANCE;
     }
@@ -104,6 +106,14 @@ public class InteractionManager {
 
     public void addBlockBreakingParticles(BlockPos pos, Direction direction) {
 
+    }
+
+    public void setEquineContext(EquineContext context) {
+        equineContext = context;
+    }
+
+    public EquineContext getEquineContext() {
+        return getClientPony().map(EquineContext.class::cast).orElse(equineContext);
     }
 
     public Optional<Pony> getClientPony() {
