@@ -30,7 +30,7 @@ public class CloudBlock extends Block implements CloudLike {
     protected final boolean meltable;
 
     public CloudBlock(Settings settings, boolean meltable) {
-        super((meltable ? settings.ticksRandomly() : settings).nonOpaque());
+        super((meltable ? settings.ticksRandomly() : settings).nonOpaque().dynamicBounds());
         this.meltable = meltable;
     }
 

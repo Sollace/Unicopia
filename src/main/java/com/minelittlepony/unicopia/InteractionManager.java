@@ -34,6 +34,11 @@ public class InteractionManager {
 
     private static InteractionManager INSTANCE = new InteractionManager();
 
+    @Nullable
+    private SyncedConfig config;
+
+    private EquineContext equineContext = EquineContext.ABSENT;
+
     public static InteractionManager getInstance() {
         return INSTANCE;
     }
@@ -103,11 +108,30 @@ public class InteractionManager {
 
     }
 
+    public void setEquineContext(EquineContext context) {
+        equineContext = context;
+    }
+
+    public EquineContext getEquineContext() {
+        return getClientPony().map(EquineContext.class::cast).orElse(equineContext);
+    }
+
     public Optional<Pony> getClientPony() {
         return Optional.empty();
     }
 
     public final Race getClientSpecies() {
         return getClientPony().map(Pony::getSpecies).orElse(Race.HUMAN);
+    }
+
+    public void setSyncedConfig(SyncedConfig config) {
+        this.config = config;
+    }
+
+    public SyncedConfig getSyncedConfig() {
+        if (config == null) {
+            config = Unicopia.getConfig().toSynced();
+        }
+        return config;
     }
 }

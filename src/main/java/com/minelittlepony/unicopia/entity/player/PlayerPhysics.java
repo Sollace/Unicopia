@@ -199,7 +199,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         DimensionType dimension = entity.getWorld().getDimension();
 
         if ((RegistryUtils.isIn(entity.getWorld(), dimension, RegistryKeys.DIMENSION_TYPE, UTags.DimensionTypes.HAS_NO_ATMOSPHERE)
-                || Unicopia.getConfig().dimensionsWithoutAtmosphere.get().contains(RegistryUtils.getId(entity.getWorld(), dimension, RegistryKeys.DIMENSION_TYPE).toString()))
+                || InteractionManager.getInstance().getSyncedConfig().dimensionsWithoutAtmosphere().contains(RegistryUtils.getId(entity.getWorld(), dimension, RegistryKeys.DIMENSION_TYPE).toString()))
                 && !OxygenApi.API.get().hasOxygen(entity.getWorld(), entity.getBlockPos())) {
             return FlightType.NONE;
         }

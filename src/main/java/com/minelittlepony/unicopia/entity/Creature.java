@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.WeaklyOwned;
 import com.minelittlepony.unicopia.ability.magic.*;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -147,7 +147,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
         DynamicTargetGoal targetter = new DynamicTargetGoal((MobEntity)entity);
         targets.add(1, targetter);
-        if (!Unicopia.getConfig().wantItNeedItEntityExcludelist.get().contains(EntityType.getId(entity.getType()).toString())) {
+        if (!InteractionManager.getInstance().getSyncedConfig().wantItNeedItExcludeList().contains(EntityType.getId(entity.getType()).toString())) {
             goals.add(1, new WantItTakeItGoal(this, targetter));
         }
         if (entity.getType().getSpawnGroup() == SpawnGroup.MONSTER) {

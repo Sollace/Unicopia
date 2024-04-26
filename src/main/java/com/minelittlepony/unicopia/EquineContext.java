@@ -31,7 +31,7 @@ public interface EquineContext {
 
     static EquineContext of(ShapeContext context) {
         if (context == ShapeContext.absent()) {
-            return InteractionManager.getInstance().getClientPony().map(EquineContext.class::cast).orElse(ABSENT);
+            return InteractionManager.getInstance().getEquineContext();
         }
         EquineContext result = context instanceof Container c ? c.get() : ABSENT;
         return result == null ? ABSENT : result;

@@ -21,7 +21,7 @@ public class CloudStairsBlock extends StairsBlock implements CloudLike {
     private final CloudBlock baseBlock;
 
     public CloudStairsBlock(BlockState baseState, Settings settings) {
-        super(baseState, settings);
+        super(baseState, settings.dynamicBounds());
         this.baseBlock = (CloudBlock)baseState.getBlock();
     }
 
