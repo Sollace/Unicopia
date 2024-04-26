@@ -33,7 +33,7 @@ public class CloudDoorBlock extends DoorBlock implements CloudLike {
     private final CloudBlock baseBlock;
 
     public CloudDoorBlock(BlockState baseState, BlockSetType blockSet, Settings settings) {
-        super(blockSet, settings);
+        super(blockSet, settings.dynamicBounds());
         this.baseState = baseState;
         this.baseBlock = (CloudBlock)baseState.getBlock();
     }

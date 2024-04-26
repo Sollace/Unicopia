@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.network.handler;
 
 import java.util.Map;
 
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Rot;
 import com.minelittlepony.unicopia.ability.data.tree.TreeTypes;
@@ -35,6 +36,7 @@ public class ClientNetworkHandlerImpl {
         Channel.SERVER_ZAP_STAGE.receiver().addPersistentListener(this::handleZapStage);
         Channel.SERVER_PLAYER_ANIMATION_CHANGE.receiver().addPersistentListener(this::handlePlayerAnimation);
         Channel.SERVER_REQUEST_PLAYER_LOOK.receiver().addPersistentListener(this::handleCasterLookRequest);
+        Channel.CONFIGURATION_CHANGE.receiver().addPersistentListener(this::handleConfigurationChange);
     }
 
     private void handleTribeScreen(PlayerEntity sender, MsgTribeSelect packet) {
@@ -92,5 +94,9 @@ public class ClientNetworkHandlerImpl {
         }
 
         Channel.CLIENT_CASTER_LOOK.sendToServer(new Reply(packet.spellId(), Rot.of(player)));
+    }
+
+    private void handleConfigurationChange(PlayerEntity sender, MsgConfigurationChange packet) {
+        InteractionManager.getInstance().setSyncedConfig(packet.config());
     }
 }

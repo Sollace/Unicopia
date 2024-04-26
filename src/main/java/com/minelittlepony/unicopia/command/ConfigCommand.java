@@ -4,9 +4,12 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
-import com.minelittlepony.common.util.settings.Config;
 import com.minelittlepony.common.util.settings.Setting;
+import com.minelittlepony.unicopia.Config;
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.network.Channel;
+import com.minelittlepony.unicopia.network.MsgConfigurationChange;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
@@ -36,10 +39,10 @@ public class ConfigCommand {
         return CommandManager.literal(configName)
             .then(CommandManager.literal("clear").executes(source -> {
                         source.getSource().sendFeedback(() -> Text.translatable("command.unicopia.config.clear", configName), true);
-                        return changeProperty(configName, values -> new HashSet<>());
+                        return changeProperty(source.getSource(), configName, values -> new HashSet<>());
                     }))
             .then(CommandManager.literal("add").then(
-                CommandManager.argument("id", IdentifierArgumentType.identifier()).suggests(suggestions).executes(source -> ConfigCommand.<Set<String>>changeProperty(configName, values -> {
+                CommandManager.argument("id", IdentifierArgumentType.identifier()).suggests(suggestions).executes(source -> ConfigCommand.<Set<String>>changeProperty(source.getSource(), configName, values -> {
                         String value = IdentifierArgumentType.getIdentifier(source, "id").toString();
                         source.getSource().sendFeedback(() -> Text.translatable("command.unicopia.config.add", value, configName), true);
                         values.add(value);
@@ -52,7 +55,7 @@ public class ConfigCommand {
                             .map(Identifier::tryParse)
                             .filter(Objects::nonNull)
                             .toList(), builder);
-                }).executes(source -> ConfigCommand.<Set<String>>changeProperty(configName, values -> {
+                }).executes(source -> ConfigCommand.<Set<String>>changeProperty(source.getSource(), configName, values -> {
                         String value = IdentifierArgumentType.getIdentifier(source, "id").toString();
                         source.getSource().sendFeedback(() -> Text.translatable("command.unicopia.config.remove", value, configName), true);
                         values.remove(value);
@@ -73,11 +76,18 @@ public class ConfigCommand {
         return (context, builder) -> CommandSource.suggestIdentifiers(wrapper.streamKeys().map(RegistryKey::getValue), builder);
     }
 
-    private static <T> int changeProperty(String configName, Function<T, T> changer) {
+    private static <T> int changeProperty(ServerCommandSource source, String configName, Function<T, T> changer) {
         Config config = Unicopia.getConfig();
         Setting<T> setting = config.getCategory("server").get(configName);
         setting.set(changer.apply(setting.get()));
         config.save();
+
+        MsgConfigurationChange msg = new MsgConfigurationChange(config.toSynced());
+        InteractionManager.getInstance().setSyncedConfig(msg.config());
+        source.getServer().getPlayerManager().getPlayerList().forEach(recipient -> {
+            Channel.CONFIGURATION_CHANGE.sendToPlayer(msg, recipient);
+        });
+
         return 0;
     }
 
