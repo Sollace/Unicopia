@@ -1,12 +1,9 @@
 package com.minelittlepony.unicopia.item;
 
-import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.IItemEntity;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.minecraft.block.Block;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
@@ -23,8 +20,6 @@ public class EmptyJarItem extends BlockItem implements ItemImpl.GroundTickCallba
     @Override
     public ActionResult onGroundTick(IItemEntity item) {
         ItemEntity entity = item.get().asEntity();
-
-        BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), UBlocks.CLOUD_JAR, UBlocks.STORM_JAR, UBlocks.LIGHTNING_JAR, UBlocks.ZAP_JAR);
 
         entity.setInvulnerable(true);
 

@@ -84,17 +84,6 @@ public class JarBlock extends AbstractGlassBlock implements Waterloggable {
         }
     }
 
-    @Deprecated
-    @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        super.onStateReplaced(state, world, pos, newState, moved);
-    }
-
-    @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        super.onBreak(world, pos, state, player);
-    }
-
     @Override
     public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
         if (asItem() instanceof WeatherJarItem jar) {
