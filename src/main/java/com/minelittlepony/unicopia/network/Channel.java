@@ -34,6 +34,7 @@ public interface Channel {
     S2CPacketType<MsgOtherPlayerCapabilities> SERVER_OTHER_PLAYER_CAPABILITIES = SimpleNetworking.serverToClient(Unicopia.id("other_player_capabilities"), MsgOtherPlayerCapabilities::new);
     S2CPacketType<MsgPlayerAnimationChange> SERVER_PLAYER_ANIMATION_CHANGE = SimpleNetworking.serverToClient(Unicopia.id("other_player_animation_change"), MsgPlayerAnimationChange::new);
     S2CPacketType<MsgSkyAngle> SERVER_SKY_ANGLE = SimpleNetworking.serverToClient(Unicopia.id("sky_angle"), MsgSkyAngle::new);
+    S2CPacketType<MsgConfigurationChange> CONFIGURATION_CHANGE = SimpleNetworking.serverToClient(Unicopia.id("config"), MsgConfigurationChange::new);
     S2CPacketType<MsgZapAppleStage> SERVER_ZAP_STAGE = SimpleNetworking.serverToClient(Unicopia.id("zap_stage"), MsgZapAppleStage::new);
 
     static void bootstrap() {
@@ -53,8 +54,8 @@ public interface Channel {
             }
             sender.sendPacket(SERVER_RESOURCES.id(), new MsgServerResources().toBuffer());
             sender.sendPacket(SERVER_SKY_ANGLE.id(), new MsgSkyAngle(UnicopiaWorldProperties.forWorld(handler.getPlayer().getServerWorld()).getTangentalSkyAngle()).toBuffer());
-            ZapAppleStageStore store = ZapAppleStageStore.get(handler.player.getServerWorld());
-            sender.sendPacket(SERVER_ZAP_STAGE.id(), new MsgZapAppleStage(store.getStage()).toBuffer());
+            sender.sendPacket(CONFIGURATION_CHANGE.id(), new MsgConfigurationChange(InteractionManager.getInstance().getSyncedConfig()).toBuffer());
+            sender.sendPacket(SERVER_ZAP_STAGE.id(), new MsgZapAppleStage(ZapAppleStageStore.get(handler.player.getServerWorld()).getStage()).toBuffer());
         });
     }
 }
