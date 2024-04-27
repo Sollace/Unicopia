@@ -78,7 +78,7 @@ public record Race (
     public static final Race PEGASUS = register("pegasus", new Builder().foraging().flight(FlightType.AVIAN).weatherMagic().cloudMagic()
             .abilities(Abilities.TOGGLE_FLIGHT, Abilities.RAINBOOM, Abilities.CAPTURE_CLOUD, Abilities.CARRY)
     );
-    public static final Race BAT = register("bat", new Builder().foraging().flight(FlightType.AVIAN).canHang().cloudMagic()
+    public static final Race BAT = register("bat", new Builder().foraging().flight(FlightType.AVIAN).canHang().cloudMagic().nocturnal()
             .abilities(Abilities.TOGGLE_FLIGHT, Abilities.CARRY, Abilities.HANG, Abilities.EEEE)
     );
     public static final Race ALICORN = register("alicorn", new Builder().foraging().availability(Availability.COMMANDS).flight(FlightType.AVIAN).earth().magic().weatherMagic().cloudMagic()
