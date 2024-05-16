@@ -24,16 +24,18 @@ public class FoodPoisoningStatusEffect extends StatusEffect {
 
     @Override
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
+        if (entity.getWorld().isClient) {
+            return;
+        }
 
         boolean showParticles = entity.getStatusEffect(this).shouldShowParticles();
 
         if (!entity.hasStatusEffect(StatusEffects.NAUSEA) && entity.getRandom().nextInt(12) == 0) {
-
             entity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 1, true, showParticles, false));
         }
 
-        if (entity instanceof PlayerEntity) {
-            ((PlayerEntity)entity).getHungerManager().addExhaustion(0.5F);
+        if (entity instanceof PlayerEntity player) {
+            player.getHungerManager().addExhaustion(0.5F);
         }
 
         if (EffectUtils.isPoisoned(entity) && entity.getRandom().nextInt(12) == 0 && !entity.hasStatusEffect(StatusEffects.POISON)) {
@@ -63,7 +65,9 @@ public class FoodPoisoningStatusEffect extends StatusEffect {
         user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), USounds.Vanilla.ENTITY_PLAYER_BURP, SoundCategory.NEUTRAL,
                 1,
                 1 + (user.getWorld().random.nextFloat() - user.getWorld().random.nextFloat()) * 0.4f);
-        user.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 1, true, false, false));
+        if (!user.getWorld().isClient) {
+            user.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 1, true, false, false));
+        }
         return TypedActionResult.fail(stack);
     }
 }

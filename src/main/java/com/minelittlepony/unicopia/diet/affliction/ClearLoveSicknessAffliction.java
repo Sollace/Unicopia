@@ -19,6 +19,9 @@ public final class ClearLoveSicknessAffliction implements Affliction {
     @Override
     public void afflict(PlayerEntity player, ItemStack stack) {
         player.heal(stack.isFood() ? stack.getItem().getFoodComponent().getHunger() : 1);
+        if (player.getWorld().isClient) {
+            return;
+        }
         player.removeStatusEffect(StatusEffects.NAUSEA);
         player.removeStatusEffect(UEffects.FOOD_POISONING);
         player.removeStatusEffect(StatusEffects.WEAKNESS);
