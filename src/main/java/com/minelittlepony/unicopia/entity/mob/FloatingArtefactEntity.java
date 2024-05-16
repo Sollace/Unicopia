@@ -13,6 +13,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -46,6 +47,11 @@ public class FloatingArtefactEntity extends StationaryObjectEntity {
         super(entityType, world);
 
         positionSeed = (float)(Math.random() * Math.PI * 2);
+    }
+
+    @Override
+    protected Text getDefaultName() {
+        return getStack().getName();
     }
 
     @Override
