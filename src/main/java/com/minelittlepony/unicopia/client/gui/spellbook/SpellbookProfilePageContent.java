@@ -59,11 +59,6 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
     }
 
     @Override
-    public boolean showInventory() {
-        return true;
-    }
-
-    @Override
     public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
 
         int y = SpellbookScreen.TITLE_Y;
