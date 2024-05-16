@@ -60,6 +60,7 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(BlockTags.FIRE).add(UBlocks.SPECTRAL_FIRE);
         getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(UBlocks.HAY_BLOCK).addOptional(Unicopia.id("rice_block")).addOptional(Unicopia.id("straw_block"));
         getOrCreateTagBuilder(BlockTags.SHOVEL_MINEABLE).add(UBlocks.WORM_BLOCK);
+        getOrCreateTagBuilder(BlockTags.REPLACEABLE_BY_TREES).add(UBlocks.GREEN_APPLE, UBlocks.SOUR_APPLE, UBlocks.GOLDEN_APPLE, UBlocks.SWEET_APPLE, UBlocks.ZAP_APPLE, UBlocks.ZAP_BULB);
 
         addZapWoodset();
         addPalmWoodset();
