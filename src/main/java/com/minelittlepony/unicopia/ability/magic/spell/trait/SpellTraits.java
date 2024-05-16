@@ -319,7 +319,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
 
     public static Stream<Map.Entry<Trait, Float>> streamFromJson(JsonObject traits) {
         return traits.entrySet().stream().map(entry -> {
-            Trait trait = Trait.fromName(entry.getKey()).orElse(null);
+            Trait trait = Trait.fromId(entry.getKey()).orElse(null);
             if (trait == null || !entry.getValue().isJsonPrimitive() && !entry.getValue().getAsJsonPrimitive().isNumber()) {
                 return null;
             }

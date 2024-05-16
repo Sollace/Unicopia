@@ -164,7 +164,11 @@ public enum Trait implements CommandArgumentEnum<Trait> {
     }
 
     public static Optional<Trait> fromName(String name) {
-        return Optional.ofNullable(REGISTRY.getOrDefault(name.toUpperCase(), null));
+        Trait trait = REGISTRY.getOrDefault(name.toUpperCase(), null);
+        if (trait == null) {
+            Unicopia.LOGGER.error("Unknown trait: " + name);
+        }
+        return Optional.ofNullable(trait);
     }
 
     public static EnumArgumentType<Trait> argument() {
