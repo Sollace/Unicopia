@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -39,7 +38,6 @@ import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 import com.minelittlepony.unicopia.server.world.DragonBreathStore;
 import com.minelittlepony.unicopia.util.*;
 
-import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.block.BlockState;
@@ -84,10 +82,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     private final Interactable landedHeuristic;
     private final Interactable jumpingHeuristic;
 
-    @Nullable
-    private final AtomicReference<Float2FloatFunction> landEvent = new AtomicReference<>();
-    private float prevFallDistance;
-
     private boolean invisible = false;
 
     @Nullable
@@ -101,6 +95,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     private final List<Tickable> tickers = new ArrayList<>();
 
+    private final LandingEventHandler landEvent = addTicker(new LandingEventHandler(this));
     private final Enchantments enchants = addTicker(new Enchantments(this));
     private final ItemTracker armour = addTicker(new ItemTracker(this));
     //private final Transportation<T> transportation = new Transportation<>(this);
@@ -134,12 +129,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         this.invisible = invisible;
     }
 
-    public void waitForFall(Float2FloatFunction action) {
-        if (entity.isOnGround()) {
-            action.get(0F);
-        } else {
-            landEvent.set(action);
-        }
+    public void waitForFall(LandingEventHandler.Callback callback) {
+        landEvent.setCallback(callback);
     }
 
     public boolean sneakingChanged() {
@@ -209,7 +200,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public boolean beforeUpdate() {
-        prevFallDistance = entity.fallDistance;
+        landEvent.beforeTick();
         if (EffectUtils.getAmplifier(entity, UEffects.PARALYSIS) > 1 && entity.getVelocity().horizontalLengthSquared() > 0) {
             entity.setVelocity(entity.getVelocity().multiply(0, 1, 0));
             updateVelocity();
@@ -240,10 +231,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             invinsibilityTicks--;
         }
 
-        if (entity.isOnGround() && landedChanged()) {
-            onLanded(prevFallDistance);
-        }
-
         if (entity.hasStatusEffect(UEffects.PARALYSIS) && entity.getVelocity().horizontalLengthSquared() > 0) {
             entity.setVelocity(entity.getVelocity().multiply(0, 1, 0));
             updateVelocity();
@@ -262,11 +249,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         updateDragonBreath();
 
         transportation.tick();
-    }
-
-    private float onLanded(float fallDistance) {
-        var event = landEvent.getAndSet(null);
-        return event == null ? fallDistance : event.get(fallDistance);
     }
 
     public void updateAttributeModifier(UUID id, EntityAttribute attribute, float desiredValue, Float2ObjectFunction<EntityAttributeModifier> modifierSupplier, boolean permanent) {
@@ -474,7 +456,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     public float onImpact(float distance, float damageMultiplier, DamageSource cause) {
-        float fallDistance = onLanded(getEffectiveFallDistance(distance));
+        float fallDistance = landEvent.fire(getEffectiveFallDistance(distance));
 
         getSpellSlot().get(SpellPredicate.IS_DISGUISE, false).ifPresent(spell -> {
             spell.getDisguise().onImpact(this, fallDistance, damageMultiplier, cause);
