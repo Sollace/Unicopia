@@ -723,9 +723,22 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         });
     }
 
-    public Optional<Float> onImpact(float distance, float damageMultiplier, DamageSource cause) {
-        float originalDistance = distance;
+    @Override
+    public float onImpact(float distance, float damageMultiplier, DamageSource cause) {
+        distance = super.onImpact(distance, damageMultiplier, cause);
 
+        if (getCompositeRace().canUseEarth() && entity.isSneaking()) {
+            double radius = distance / 10;
+            if (radius > 0) {
+                EarthPonyStompAbility.spawnEffectAround(entity, entity.getSteppingPos(), radius, radius);
+            }
+        }
+
+        return distance;
+    }
+
+    @Override
+    protected float getEffectiveFallDistance(float distance) {
         boolean extraProtection = getSpellSlot().get(SpellType.SHIELD, false).isPresent();
 
         if (!entity.isCreative() && !entity.isSpectator()) {
@@ -740,14 +753,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             if (getCompositeRace().canFly() || (getCompositeRace().canUseEarth() && entity.isSneaking())) {
                 distance -= 5;
             }
-            distance = Math.max(0, distance);
         }
 
-        handleFall(distance, damageMultiplier, cause);
-        if (distance != originalDistance) {
-            return Optional.of(distance);
-        }
-        return Optional.empty();
+        return Math.max(0, distance);
     }
 
     public void onEat(ItemStack stack) {
@@ -759,19 +767,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 && (stack.isIn(UTags.Items.COOLS_OFF_KIRINS) || PotionUtil.getPotion(stack) == Potions.WATER)) {
             getMagicalReserves().getCharge().multiply(0.5F);
             getSpellSlot().get(SpellType.RAGE, false).ifPresent(RageAbilitySpell::setExtenguishing);
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    protected void handleFall(float distance, float damageMultiplier, DamageSource cause) {
-        super.handleFall(distance, damageMultiplier, cause);
-
-        if (getCompositeRace().canUseEarth() && entity.isSneaking()) {
-            double radius = distance / 10;
-            if (radius > 0) {
-                EarthPonyStompAbility.spawnEffectAround(entity, entity.getLandingPos(), radius, radius);
-            }
         }
     }
 

@@ -20,6 +20,7 @@ import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
+import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -106,7 +107,8 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     public boolean apply(Pony iplayer, Hit data) {
         PlayerEntity player = iplayer.asEntity();
 
-        Runnable r = () -> {
+        Float2FloatFunction r = fallDistance -> {
+            player.fallDistance = 0;
             BlockPos center = PosHelper.findSolidGroundAt(player.getEntityWorld(), player.getBlockPos(), iplayer.getPhysics().getGravitySignum());
 
             float heavyness = 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, player);
@@ -163,13 +165,14 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
             iplayer.subtractEnergyCost(rad);
             iplayer.asEntity().addExhaustion(3);
+            return 0F;
         };
 
         if (iplayer.asEntity().isOnGround()) {
             iplayer.setAnimation(Animation.STOMP, Animation.Recipient.ANYONE, 10);
             iplayer.asEntity().jump();
             iplayer.updateVelocity();
-            AwaitTickQueue.scheduleTask(iplayer.asWorld(), w -> r.run(), 5);
+            AwaitTickQueue.scheduleTask(iplayer.asWorld(), w -> r.get(0F), 5);
         } else {
             thrustDownwards(iplayer);
             iplayer.waitForFall(r);

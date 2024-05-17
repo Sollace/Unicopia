@@ -26,7 +26,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.stat.Stats;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -48,22 +47,9 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
         Pony.registerAttributes(info.getReturnValue());
     }
 
-    @ModifyVariable(method = "applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V", at = @At("HEAD"), ordinal = 0)
+    @ModifyVariable(method = "applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     protected float modifyDamageAmount(float amount, DamageSource source) {
         return get().modifyDamage(source, amount).orElse(amount);
-    }
-
-    @Inject(method = "handleFallDamage(FFLnet/minecraft/entity/damage/DamageSource;)Z", at = @At("HEAD"), cancellable = true)
-    private void onHandleFallDamage(float distance, float damageMultiplier, DamageSource cause, CallbackInfoReturnable<Boolean> info) {
-        get().onImpact(fallDistance, damageMultiplier, cause).ifPresent(newDistance -> {
-            PlayerEntity self = (PlayerEntity)(Object)this;
-
-            if (distance >= 2) {
-                self.increaseStat(Stats.FALL_ONE_CM, Math.round(distance * 100));
-            }
-
-            info.setReturnValue(super.handleFallDamage(newDistance, damageMultiplier, cause));
-        });
     }
 
     @Inject(method = "eatFood(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/item/ItemStack;", at = @At("HEAD"))

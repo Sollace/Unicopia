@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -149,6 +150,11 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
     @Inject(method = "damage(Lnet/minecraft/entity/damage/DamageSource;F)Z", at = @At("HEAD"), cancellable = true)
     private void onDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
         get().onDamage(source, amount).ifPresent(info::setReturnValue);
+    }
+
+    @ModifyVariable(method = "handleFallDamage(FFLnet/minecraft/entity/damage/DamageSource;)Z", at = @At("HEAD"), ordinal = 0, argsOnly = true)
+    private float onHandleFallDamage(float distance, float distanceAgain, float damageMultiplier, DamageSource cause) {
+        return get().onImpact(distance, damageMultiplier, cause);
     }
 
     @Inject(method = "hurtByWater()Z", at = @At("HEAD"), cancellable = true)
