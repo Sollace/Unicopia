@@ -82,7 +82,9 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     @Override
     public Optional<Hit> prepare(Pony player) {
         if (player.asEntity().getVelocity().y * player.getPhysics().getGravitySignum() < 0
-                && !player.asEntity().getAbilities().flying) {
+                && !player.asEntity().getAbilities().flying
+                && !player.asEntity().isFallFlying()
+                && !player.asEntity().isUsingRiptide()) {
             thrustDownwards(player);
             return Hit.INSTANCE;
         }
