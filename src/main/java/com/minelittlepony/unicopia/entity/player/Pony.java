@@ -21,6 +21,7 @@ import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
+import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.effect.MetamorphosisStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
@@ -700,18 +701,17 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             }
         }
 
-        if (!cause.isIn(DamageTypeTags.BYPASSES_SHIELD)
+        if (EffectUtils.hasExtraDefenses(entity)
+                && !cause.isIn(DamageTypeTags.BYPASSES_SHIELD)
                 && !cause.isOf(DamageTypes.MAGIC)
                 && !cause.isIn(DamageTypeTags.IS_FIRE)
                 && !cause.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)
                 && !cause.isOf(DamageTypes.THORNS)
                 && !cause.isOf(DamageTypes.FREEZE)) {
 
-            if (getCompositeRace().canUseEarth() && entity.isSneaking()) {
-                amount /= (cause.isOf(DamageTypes.MOB_PROJECTILE) ? 3 : 2) * (entity.getHealth() < 5 ? 3 : 1);
+            amount /= (cause.isOf(DamageTypes.MOB_PROJECTILE) ? 3 : 2) * (entity.getHealth() < 5 ? 3 : 1);
 
-                return Optional.of(amount);
-            }
+            return Optional.of(amount);
         }
         return Optional.empty();
     }
@@ -727,7 +727,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public float onImpact(float distance, float damageMultiplier, DamageSource cause) {
         distance = super.onImpact(distance, damageMultiplier, cause);
 
-        if (getCompositeRace().canUseEarth() && entity.isSneaking()) {
+        if (EffectUtils.hasExtraDefenses(entity)) {
             double radius = distance / 10;
             if (radius > 0) {
                 EarthPonyStompAbility.spawnEffectAround(entity, entity.getSteppingPos(), radius, radius);
@@ -750,7 +750,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 }
             }
 
-            if (getCompositeRace().canFly() || (getCompositeRace().canUseEarth() && entity.isSneaking())) {
+            if (getCompositeRace().canFly() || EffectUtils.hasExtraDefenses(entity)) {
                 distance -= 5;
             }
         }

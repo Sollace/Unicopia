@@ -15,7 +15,8 @@ public interface UEffects {
      * When affecting an entity, will give them a random chance to reproduce or duplicate themselves when they die.
      */
     StatusEffect CORRUPT_INFLUENCE = register("corrupt_influence", new CorruptInfluenceStatusEffect(0x00FF00));
-    StatusEffect PARALYSIS = register("paralysis", new StatusEffect(StatusEffectCategory.HARMFUL, 0) {});
+    StatusEffect PARALYSIS = register("paralysis", new SimpleStatusEffect(StatusEffectCategory.HARMFUL, 0, false));
+    StatusEffect FORTIFICATION = register("fortification", new SimpleStatusEffect(StatusEffectCategory.BENEFICIAL, 0x000077, false));
     /**
      * Side-effect of wearing the alicorn amulet.
      * Causes the player to lose grip on whatever item they're holding.

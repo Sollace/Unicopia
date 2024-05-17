@@ -6,6 +6,8 @@ import java.util.function.Predicate;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.entity.effect.EffectUtils;
+import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.util.Tickable;
 
@@ -87,6 +89,7 @@ public class PlayerAttributes implements Tickable {
     @Override
     public void tick() {
         ATTRIBUTES.forEach(attribute -> attribute.update(pony));
+        EffectUtils.applyStatusEffect(pony.asEntity(), UEffects.FORTIFICATION, pony.getCompositeRace().canUseEarth() && pony.asEntity().isSneaking());
     }
 
     record ToggleableAttribute(EntityAttributeModifier modifier, List<EntityAttribute> attributes, Predicate<Pony> test) {
