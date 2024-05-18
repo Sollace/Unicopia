@@ -80,15 +80,20 @@ public class GemstoneItem extends Item implements MultiItem, EnchantableItem {
         super.appendTooltip(stack, world, lines, tooltipContext);
 
         if (EnchantableItem.isEnchanted(stack)) {
-            SpellType<?> key = EnchantableItem.getSpellKey(stack);
+            CustomisedSpellType<?> type = getSpellEffect(stack);
 
-            MutableText line = Text.translatable(key.getTranslationKey() + ".lore").formatted(key.getAffinity().getColor());
+            MutableText line = Text.translatable(type.type().getTranslationKey() + ".lore").formatted(type.type().getAffinity().getColor());
 
             if (!InteractionManager.getInstance().getClientSpecies().canCast()) {
                 line = line.formatted(Formatting.OBFUSCATED);
             }
-
             lines.addAll(TextHelper.wrap(line, 180).toList());
+            lines.add(Text.empty());
+            float corruption = ((int)type.traits().getCorruption() * 10) + type.type().getAffinity().getCorruption();
+            if (corruption != 0) {
+                lines.add(Text.translatable("affinity.unicopia.when_cast").formatted(Formatting.GRAY));
+                lines.add(Text.translatable("affinity.unicopia.corruption", corruption > 0 ? "+" : "-", ItemStack.MODIFIER_FORMAT.format(Math.abs(corruption))).formatted(corruption < 0 ? Formatting.DARK_GREEN : Formatting.RED));
+            }
         }
     }
 

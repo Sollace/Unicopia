@@ -45,7 +45,7 @@ public enum Affinity implements StringIdentifiable {
     }
 
     public Text getDisplayName() {
-        return Text.translatable(getTranslationKey());
+        return Text.translatable(getTranslationKey()).formatted(getColor());
     }
 
     public int getCorruption() {

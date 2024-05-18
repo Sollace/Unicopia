@@ -955,7 +955,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             if (spell.getAffinity() == Affinity.BAD && entity.getWorld().random.nextInt(20) == 0) {
                 getCorruption().add(entity.getRandom().nextBetween(1, 10));
             }
-            getCorruption().add((int)spell.getTypeAndTraits().traits().getCorruption() * 10);
+            getCorruption().add(((int)spell.getTypeAndTraits().traits().getCorruption() * 10) + spell.getTypeAndTraits().type().getAffinity().getCorruption());
             setDirty();
         }
     }

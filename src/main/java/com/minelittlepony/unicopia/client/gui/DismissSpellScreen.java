@@ -194,7 +194,7 @@ public class DismissSpellScreen extends GameGui {
                 tooltip.add(Text.translatable("gui.unicopia.dispell_screen.spell_type", name));
                 type.traits().appendTooltip(tooltip);
                 tooltip.add(ScreenTexts.EMPTY);
-                tooltip.add(Text.translatable("gui.unicopia.dispell_screen.affinity", affinity.getDisplayName()).formatted(affinity.getColor()));
+                tooltip.add(Text.translatable("gui.unicopia.dispell_screen.affinity", affinity.getDisplayName()));
                 tooltip.add(ScreenTexts.EMPTY);
                 tooltip.addAll(TextHelper.wrap(Text.translatable(type.type().getTranslationKey() + ".lore").formatted(affinity.getColor()), 180).toList());
                 if (spell instanceof TimedSpell timed) {
