@@ -95,13 +95,17 @@ This project uses reach-entity-attributes, which may not be updated at the time 
 If you're building for 1.19.3, you may follow these steps to make sure it's available to git:
 
 `git clone https://github.com/Sollace/reach-entity-attributes`
+
 `cd reach-entity-attributes`
+
 `gradlew build publishToMavenLocal`
 
 ### Building Unicopia
 
 `git clone https://github.com/Sollace/Unicopia`
+
 `cd Unicopia` 
+
 `gradlew build`
 
 Built jars are located in /build/bin` within the Unicopia folder after performing the above two command.
