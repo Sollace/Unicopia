@@ -7,11 +7,12 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.include.com.google.common.base.Objects;
 
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.NbtCompound;
@@ -24,14 +25,18 @@ public interface Spell extends NbtSerialisable, Affine {
     Serializer<Spell> SERIALIZER = Serializer.of(Spell::readNbt, Spell::writeNbt);
 
     /**
-     * Returns the registered type of this spell.
+     * Returns the full type that describes this spell.
      */
-    SpellType<?> getType();
+    CustomisedSpellType<?> getTypeAndTraits();
 
-    /**
-     * Gets the traits of this spell.
-     */
-    SpellTraits getTraits();
+    default boolean isOf(SpellType<?> type) {
+        return getTypeAndTraits().type() == type;
+    }
+
+    @Override
+    default Affinity getAffinity() {
+        return getTypeAndTraits().type().getAffinity();
+    }
 
     /**
      * The unique id of this particular spell instance.
@@ -132,15 +137,8 @@ public interface Spell extends NbtSerialisable, Affine {
     @Nullable
     static <T extends Spell> T readNbt(@Nullable NbtCompound compound) {
         try {
-            if (compound != null && compound.contains("effect_id")) {
-                @SuppressWarnings("unchecked")
-                T effect = (T)SpellType.getKey(compound).withTraits().create();
-
-                if (effect != null) {
-                    effect.fromNBT(compound);
-                }
-
-                return effect;
+            if (compound != null) {
+                return CustomisedSpellType.<T>fromNBT(compound).create(compound);
             }
         } catch (Exception e) {
             Unicopia.LOGGER.fatal("Invalid spell nbt {}", e);
@@ -155,7 +153,7 @@ public interface Spell extends NbtSerialisable, Affine {
 
     static NbtCompound writeNbt(Spell effect) {
         NbtCompound compound = effect.toNBT();
-        effect.getType().toNbt(compound);
+        effect.getTypeAndTraits().toNbt(compound);
         return compound;
     }
 }

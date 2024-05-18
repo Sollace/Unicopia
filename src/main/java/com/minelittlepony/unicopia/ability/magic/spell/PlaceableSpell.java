@@ -154,7 +154,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     }
 
     private void checkDetachment(Caster<?> source, EntityValues<?> target) {
-        if (getWorld(source).map(Ether::get).map(ether -> ether.get(getType(), target, placedSpellId)).isEmpty()) {
+        if (getWorld(source).map(Ether::get).map(ether -> ether.get(getTypeAndTraits().type(), target, placedSpellId)).isEmpty()) {
             setDead();
         }
     }
@@ -202,7 +202,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         if (!source.isClient()) {
             castEntity.getTarget().ifPresent(target -> {
                 getWorld(source).map(Ether::get)
-                    .ifPresent(ether -> ether.remove(getType(), target.uuid()));
+                    .ifPresent(ether -> ether.remove(getTypeAndTraits().type(), target.uuid()));
             });
             castEntity.set(null);
             getSpellEntity(source).ifPresent(e -> {

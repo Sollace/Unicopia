@@ -164,18 +164,19 @@ public class DismissSpellScreen extends GameGui {
         public void render(DrawContext context, int mouseX, int mouseY, float tickDelta) {
             MatrixStack matrices = context.getMatrices();
 
-            var type = actualSpell.getType().withTraits(actualSpell.getTraits());
+            var type = actualSpell.getTypeAndTraits();
+            var affinity = actualSpell.getAffinity();
 
             copy.set(mouseX - width * 0.5F - x * 0.5F, mouseY - height * 0.5F - y * 0.5F, 0, 0);
 
-            DrawableUtil.drawLine(matrices, 0, 0, (int)x, (int)y, actualSpell.getAffinity().getColor().getColorValue());
+            DrawableUtil.drawLine(matrices, 0, 0, (int)x, (int)y, affinity.getColor().getColorValue());
             DrawableUtil.renderItemIcon(context, actualSpell.isDead() ? UItems.BOTCHED_GEM.getDefaultStack() : type.getDefaultStack(),
                     x - 8 - copy.x * 0.2F,
                     y - 8 - copy.y * 0.2F,
                     1
             );
 
-            int color = actualSpell.getType().getColor() << 2;
+            int color = type.type().getColor() << 2;
 
             matrices.push();
             matrices.translate(x, y, 0);
@@ -187,15 +188,15 @@ public class DismissSpellScreen extends GameGui {
 
                 List<Text> tooltip = new ArrayList<>();
 
-                MutableText name = actualSpell.getType().getName().copy();
-                color = actualSpell.getType().getColor();
+                MutableText name = type.type().getName().copy();
+                color = type.type().getColor();
                 name.setStyle(name.getStyle().withColor(color == 0 ? 0xFFAAAAAA : color));
                 tooltip.add(Text.translatable("gui.unicopia.dispell_screen.spell_type", name));
-                actualSpell.getType().getTraits().appendTooltip(tooltip);
+                type.traits().appendTooltip(tooltip);
                 tooltip.add(ScreenTexts.EMPTY);
-                tooltip.add(Text.translatable("gui.unicopia.dispell_screen.affinity", actualSpell.getAffinity().name()).formatted(actualSpell.getAffinity().getColor()));
+                tooltip.add(Text.translatable("gui.unicopia.dispell_screen.affinity", affinity.getDisplayName()).formatted(affinity.getColor()));
                 tooltip.add(ScreenTexts.EMPTY);
-                tooltip.addAll(TextHelper.wrap(Text.translatable(actualSpell.getType().getTranslationKey() + ".lore").formatted(actualSpell.getAffinity().getColor()), 180).toList());
+                tooltip.addAll(TextHelper.wrap(Text.translatable(type.type().getTranslationKey() + ".lore").formatted(affinity.getColor()), 180).toList());
                 if (spell instanceof TimedSpell timed) {
                     tooltip.add(ScreenTexts.EMPTY);
                     tooltip.add(Text.translatable("gui.unicopia.dispell_screen.time_left", StringHelper.formatTicks(timed.getTimer().getTicksRemaining())));

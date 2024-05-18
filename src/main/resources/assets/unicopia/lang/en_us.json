@@ -725,6 +725,10 @@
   "ability.unicopia.dash": "Flying Dash",
   "ability.unicopia.change_form": "Change Form",
   "ability.unicopia.sonar_pulse": "Sonar Pulse",
+  
+  "affinity.unicopia.good": "Good",
+  "affinity.unicopia.bad": "Bad",
+  "affinity.unicopia.neutral": "Neutral",
 
   "gui.unicopia.trait.label": "Element of %s",
   "gui.unicopia.trait.group": "\n %s",

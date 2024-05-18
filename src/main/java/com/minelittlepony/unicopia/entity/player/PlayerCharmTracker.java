@@ -66,7 +66,7 @@ public class PlayerCharmTracker implements NbtSerialisable {
     public void toNBT(NbtCompound compound) {
         NbtList equippedSpells = new NbtList();
         for (CustomisedSpellType<?> spell : handSpells) {
-            equippedSpells.add(spell.toNBT());
+            equippedSpells.add(spell.toNbt(new NbtCompound()));
         }
         compound.put("handSpells", equippedSpells);
     }

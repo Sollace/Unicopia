@@ -42,7 +42,7 @@ public class SpellRenderer<T extends Spell> {
         matrices.push();
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(animationProgress));
 
-        client.getItemRenderer().renderItem(spell.getType().withTraits(spell.getTraits()).getDefaultStack(), ModelTransformationMode.FIXED, light, 0, matrices, vertices, caster.asWorld(), 0);
+        client.getItemRenderer().renderItem(spell.getTypeAndTraits().getDefaultStack(), ModelTransformationMode.FIXED, light, 0, matrices, vertices, caster.asWorld(), 0);
         matrices.pop();
 
         if (spell instanceof TimedSpell timed) {

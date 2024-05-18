@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.UUID;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -17,7 +16,7 @@ public abstract class AbstractSpell implements Spell {
     private boolean hidden;
     private boolean destroyed;
 
-    private CustomisedSpellType<?> type;
+    private final CustomisedSpellType<?> type;
 
     private UUID uuid = UUID.randomUUID();
 
@@ -30,17 +29,16 @@ public abstract class AbstractSpell implements Spell {
         return uuid;
     }
 
-    @Override
-    public final SpellType<?> getType() {
+    protected final SpellType<?> getType() {
         return type.type();
     }
 
+    @Override
     public final CustomisedSpellType<?> getTypeAndTraits() {
         return type;
     }
 
-    @Override
-    public final SpellTraits getTraits() {
+    protected final SpellTraits getTraits() {
         return type.traits();
     }
 
@@ -80,11 +78,6 @@ public abstract class AbstractSpell implements Spell {
         this.hidden = hidden;
     }
 
-    @Override
-    public Affinity getAffinity() {
-        return getType().getAffinity();
-    }
-
     protected void onDestroyed(Caster<?> caster) {
     }
 
@@ -121,9 +114,6 @@ public abstract class AbstractSpell implements Spell {
         dying = compound.getBoolean("dying");
         dead = compound.getBoolean("dead");
         hidden = compound.getBoolean("hidden");
-        if (compound.contains("traits")) {
-            type = type.type().withTraits(SpellTraits.fromNbt(compound.getCompound("traits")).orElse(SpellTraits.EMPTY));
-        }
     }
 
     @Override

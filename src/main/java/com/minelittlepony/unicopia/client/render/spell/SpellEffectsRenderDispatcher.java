@@ -68,7 +68,7 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
 
     @SuppressWarnings("unchecked")
     public <S extends Spell> SpellRenderer<S> getRenderer(S spell) {
-        return (SpellRenderer<S>)renderers.getOrDefault(spell.getType(), SpellRenderer.DEFAULT);
+        return (SpellRenderer<S>)renderers.getOrDefault(spell.getTypeAndTraits().type(), SpellRenderer.DEFAULT);
     }
 
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, Spell spell, Caster<?> caster, int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
@@ -127,8 +127,8 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
                 caster.getSpellSlot().stream(AllSpells.INSTANCE, false).flatMap(spell ->
                     Stream.of(
                             Text.literal("UUID: " + spell.getUuid()),
-                            Text.literal("|>Type: ").append(Text.literal(spell.getType().getId().toString()).styled(s -> s.withColor(spell.getType().getColor()))),
-                            Text.of("|>Traits: " + spell.getTraits()),
+                            Text.literal("|>Type: ").append(Text.literal(spell.getTypeAndTraits().type().getId().toString()).styled(s -> s.withColor(spell.getTypeAndTraits().type().getColor()))),
+                            Text.of("|>Traits: " + spell.getTypeAndTraits().traits()),
                             Text.literal("|>HasRenderer: ").append(Text.literal((getRenderer(spell) != null) + "").formatted(getRenderer(spell) != null ? Formatting.GREEN : Formatting.RED))
                     )
                 )

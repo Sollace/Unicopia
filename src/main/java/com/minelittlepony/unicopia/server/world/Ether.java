@@ -25,7 +25,7 @@ public class Ether extends PersistentState {
         return WorldOverlay.getPersistableStorage(world, ID, Ether::new, Ether::new);
     }
 
-    private final Map<Identifier, Map<UUID, Map<UUID, Entry<?>>>> endpoints;
+    private final Map<SpellType<?>, Map<UUID, Map<UUID, Entry<?>>>> endpoints;
 
     private final Object locker = new Object();
 
@@ -33,7 +33,7 @@ public class Ether extends PersistentState {
 
     Ether(World world, NbtCompound compound) {
         this.world = world;
-        this.endpoints = NbtSerialisable.readMap(compound.getCompound("endpoints"), Identifier::tryParse, typeNbt -> {
+        this.endpoints = NbtSerialisable.readMap(compound.getCompound("endpoints"), id -> SpellType.getKey(Identifier.tryParse(id)), typeNbt -> {
             return NbtSerialisable.readMap((NbtCompound)typeNbt, UUID::fromString, entityNbt -> {
                 return NbtSerialisable.readMap((NbtCompound)entityNbt, UUID::fromString, Entry::new);
             });
@@ -49,7 +49,7 @@ public class Ether extends PersistentState {
     public NbtCompound writeNbt(NbtCompound compound) {
         synchronized (locker) {
             pruneNodes();
-            compound.put("endpoints", NbtSerialisable.writeMap(endpoints, Identifier::toString, entities -> {
+            compound.put("endpoints", NbtSerialisable.writeMap(endpoints, type -> type.getId().toString(), entities -> {
                 return NbtSerialisable.writeMap(entities, UUID::toString, spells -> {
                     return NbtSerialisable.writeMap(spells, UUID::toString, Entry::toNBT);
                 });
@@ -62,7 +62,7 @@ public class Ether extends PersistentState {
     public <T extends Spell> Entry<T> getOrCreate(T spell, Caster<?> caster) {
         synchronized (locker) {
             Entry<T> entry = (Entry<T>)endpoints
-                    .computeIfAbsent(spell.getType().getId(), typeId -> new HashMap<>())
+                    .computeIfAbsent(spell.getTypeAndTraits().type(), typeId -> new HashMap<>())
                     .computeIfAbsent(caster.asEntity().getUuid(), entityId -> new HashMap<>())
                     .computeIfAbsent(spell.getUuid(), spellid -> {
                         markDirty();
@@ -82,7 +82,7 @@ public class Ether extends PersistentState {
 
     public <T extends Spell> void remove(SpellType<T> spellType, UUID entityId) {
         synchronized (locker) {
-            endpoints.computeIfPresent(spellType.getId(), (typeId, entries) -> {
+            endpoints.computeIfPresent(spellType, (typeId, entries) -> {
                 if (entries.remove(entityId) != null) {
                     markDirty();
                 }
@@ -104,7 +104,7 @@ public class Ether extends PersistentState {
 
     @SuppressWarnings("unchecked")
     public <T extends Spell> Entry<T> get(T spell, Caster<?> caster) {
-        return get((SpellType<T>)spell.getType(), caster.asEntity().getUuid(), spell.getUuid());
+        return get((SpellType<T>)spell.getTypeAndTraits().type(), caster.asEntity().getUuid(), spell.getUuid());
     }
 
     public <T extends Spell> Entry<T> get(SpellType<T> spell, EntityReference.EntityValues<?> entityId, @Nullable UUID spellId) {

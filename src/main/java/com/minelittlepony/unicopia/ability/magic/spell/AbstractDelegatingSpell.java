@@ -5,11 +5,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
@@ -26,10 +23,10 @@ public abstract class AbstractDelegatingSpell implements Spell,
 
     private UUID uuid = UUID.randomUUID();
 
-    private final SpellType<?> type;
+    private final CustomisedSpellType<?> type;
 
     public AbstractDelegatingSpell(CustomisedSpellType<?> type) {
-        this.type = type.type();
+        this.type = type;
     }
 
     public abstract Collection<Spell> getDelegates();
@@ -45,18 +42,8 @@ public abstract class AbstractDelegatingSpell implements Spell,
     }
 
     @Override
-    public Affinity getAffinity() {
-        return Affinity.NEUTRAL;
-    }
-
-    @Override
-    public SpellType<?> getType() {
+    public CustomisedSpellType<?> getTypeAndTraits() {
         return type;
-    }
-
-    @Override
-    public SpellTraits getTraits() {
-        return getDelegates().stream().map(Spell::getTraits).reduce(SpellTraits.EMPTY, SpellTraits::union);
     }
 
     @Override

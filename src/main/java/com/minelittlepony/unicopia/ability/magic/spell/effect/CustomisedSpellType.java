@@ -21,6 +21,10 @@ public record CustomisedSpellType<T extends Spell> (
         return type.isEmpty();
     }
 
+    public boolean isStackable() {
+        return type().isStackable();
+    }
+
     public T create() {
         try {
             return type.getFactory().create(this);
@@ -31,6 +35,14 @@ public record CustomisedSpellType<T extends Spell> (
         return null;
     }
 
+    @Nullable
+    public T create(NbtCompound compound) {
+        T spell = create();
+        if (spell != null) {
+            spell.fromNBT(compound);
+        }
+        return spell;
+    }
 
     @Nullable
     public T apply(Caster<?> caster, CastingMethod method) {
@@ -50,8 +62,8 @@ public record CustomisedSpellType<T extends Spell> (
     }
 
     @Override
-    public boolean test(Spell spell) {
-        return type.test(spell) && spell.getTraits().equals(traits);
+    public boolean test(@Nullable Spell spell) {
+        return spell != null && spell.getTypeAndTraits().equals(this);
     }
 
     public ItemStack getDefaultStack() {
@@ -62,17 +74,14 @@ public record CustomisedSpellType<T extends Spell> (
         return isEmpty() ? TypedActionResult.fail(this) : TypedActionResult.pass(this);
     }
 
-    public NbtCompound toNBT() {
-        NbtCompound tag = new NbtCompound();
-        type.toNbt(tag);
-        tag.put("traits", traits.toNbt());
-        return tag;
+    public NbtCompound toNbt(NbtCompound compound) {
+        type.toNbt(compound);
+        compound.put("traits", traits.toNbt());
+        return compound;
     }
 
-    public static CustomisedSpellType<?> fromNBT(NbtCompound compound) {
-        SpellType<?> type = SpellType.getKey(compound);
-        SpellTraits traits = SpellTraits.fromNbt(compound.getCompound("traits")).orElse(type.getTraits());
-
-        return type.withTraits(traits);
+    public static <T extends Spell> CustomisedSpellType<T> fromNBT(NbtCompound compound) {
+        SpellType<T> type = SpellType.getKey(compound);
+        return type.withTraits(SpellTraits.fromNbt(compound.getCompound("traits")).orElse(type.getTraits()));
     }
 }

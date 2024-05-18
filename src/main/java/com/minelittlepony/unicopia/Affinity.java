@@ -2,8 +2,10 @@ package com.minelittlepony.unicopia;
 
 import java.util.Locale;
 
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.Util;
 
 public enum Affinity implements StringIdentifiable {
     GOOD(Formatting.BLUE, -1, 0),
@@ -20,10 +22,13 @@ public enum Affinity implements StringIdentifiable {
 
     public static final Affinity[] VALUES = values();
 
+    private final String translationKey;
+
     Affinity(Formatting color, int corruption, float alignment) {
         this.color = color;
         this.corruption = corruption;
         this.alignment = alignment;
+        this.translationKey = Util.createTranslationKey("affinity", Unicopia.id(name().toLowerCase(Locale.ROOT)));
     }
 
     @Override
@@ -36,7 +41,11 @@ public enum Affinity implements StringIdentifiable {
     }
 
     public String getTranslationKey() {
-        return this == BAD ? "curse" : "spell";
+        return translationKey;
+    }
+
+    public Text getDisplayName() {
+        return Text.translatable(getTranslationKey());
     }
 
     public int getCorruption() {

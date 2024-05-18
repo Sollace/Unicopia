@@ -66,7 +66,7 @@ public class PlacedSpellRenderer extends SpellRenderer<PlaceableSpell> {
 
         float angle = (animationProgress / 9F) % 360;
 
-        int color = delegate.getType().getColor();
+        int color = delegate.getTypeAndTraits().type().getColor();
 
         float red = Color.r(color);
         float green = Color.g(color);

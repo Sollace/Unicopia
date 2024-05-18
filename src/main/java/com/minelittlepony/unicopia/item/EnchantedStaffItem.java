@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
@@ -46,7 +47,10 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
 
     public static SpellType<?> getSpellType(Entity entity, boolean remove) {
         if (entity instanceof CastSpellEntity cast) {
-            return cast.getSpellSlot().get(c -> !SpellPredicate.IS_PLACED.test(c), true).map(Spell::getType).orElse(SpellType.empty());
+            return cast.getSpellSlot().get(c -> !SpellPredicate.IS_PLACED.test(c), true)
+                    .map(Spell::getTypeAndTraits)
+                    .map(CustomisedSpellType::type)
+                    .orElse(SpellType.empty());
         }
         if (entity instanceof PlayerEntity player) {
             if (remove) {
