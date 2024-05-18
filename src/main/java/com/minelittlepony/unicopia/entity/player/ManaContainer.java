@@ -99,13 +99,13 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
             energy.addPercent(-1);
         }
 
-        if (pony.getCompositeRace().canFly() && !pony.getPhysics().isFlying()) {
-            exhaustion.multiply(0.8F);
+        if (pony.getCompositeRace().canFly() && !pony.getPhysics().isFlying() && pony.asEntity().isOnGround()) {
+            exhaustion.multiply(0.99F);
         } else {
             exhaustion.addPercent(-1);
         }
 
-        if (!pony.getCompositeRace().canFly() || !pony.getPhysics().isFlying()) {
+        if (!pony.getCompositeRace().canFly() || (!pony.getPhysics().isFlying() && pony.asEntity().isOnGround())) {
             if (mana.getPercentFill() < 1 && mana.getShadowFill(1) <= mana.getPercentFill(1)) {
                 mana.addPercent(MathHelper.clamp(1 + pony.getLevel().get(), 1, 50) / 4F);
             }
