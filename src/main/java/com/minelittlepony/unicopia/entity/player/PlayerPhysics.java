@@ -393,7 +393,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private void tickGrounded() {
         prevStrafe = 0;
         strafe = 0;
-        ticksInAir = 0;
+        if (entity.isOnGround()) {
+            ticksInAir = 0;
+        }
         wallHitCooldown = MAX_WALL_HIT_CALLDOWN;
         soundPlaying = false;
         descentRate = 0;
@@ -524,9 +526,15 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
             mana.add(MathHelper.clamp(cost, -100, 0));
 
-            if (mana.getPercentFill() < 0.2) {
-                pony.getMagicalReserves().getExertion().addPercent(2);
-                pony.getMagicalReserves().getExhaustion().add(2 + (int)(getHorizontalMotion() * 50));
+            boolean overVoid = PosHelper.isOverVoid(pony.asWorld(), pony.getOrigin(), getGravitySignum());
+
+            if (overVoid) {
+                mana.addPercent(-2);
+            }
+
+            if (mana.getPercentFill() < (overVoid ? 0.4F : 0.2F)) {
+                pony.getMagicalReserves().getExertion().addPercent(overVoid ? 4 : 2);
+                pony.getMagicalReserves().getExhaustion().add((overVoid ? 4 : 0) + 2 + (int)(getHorizontalMotion() * 50));
 
                 if (mana.getPercentFill() < 0.1 && ticksInAir % 10 == 0) {
                     float exhaustion = (0.3F * ticksInAir) / 70;
@@ -537,10 +545,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     entity.addExhaustion(exhaustion);
                 }
 
-                if (pony.getMagicalReserves().getExhaustion().get() > 99 && ticksInAir % 25 == 0) {
-                    entity.damage(pony.damageOf(UDamageTypes.EXHAUSTION), 2);
+                if (pony.getMagicalReserves().getExhaustion().getPercentFill() > 0.99F && ticksInAir % 25 == 0 && !pony.isClient()) {
+                    entity.damage(pony.damageOf(UDamageTypes.EXHAUSTION), entity.getWorld().random.nextBetween(2, 4));
 
-                    if (entity.getWorld().random.nextInt(110) == 1 && !pony.isClient()) {
+                    if (entity.getWorld().random.nextInt(110) == 1) {
                         pony.getLevel().add(1);
                         if (Abilities.RAINBOOM.canUse(pony.getCompositeRace())) {
                             pony.getMagicalReserves().getCharge().addPercent(4);

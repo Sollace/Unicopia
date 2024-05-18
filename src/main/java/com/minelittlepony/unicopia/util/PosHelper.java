@@ -37,6 +37,10 @@ public interface PosHelper {
         return mutable.toImmutable();
     }
 
+    static boolean isOverVoid(World world, BlockPos pos, int signum) {
+        return signum > 0 && findSolidGroundAt(world, pos, signum).getY() < world.getBottomY();
+    }
+
     static void fastAll(BlockPos origin, Consumer<BlockPos.Mutable> consumer, Direction... directions) {
         final BlockPos immutable = origin instanceof BlockPos.Mutable m ? m.toImmutable() : origin;
         final BlockPos.Mutable mutable = origin instanceof BlockPos.Mutable m ? m : origin.mutableCopy();
