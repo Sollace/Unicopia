@@ -100,12 +100,19 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
 
             if (newSpell.getResult() != ActionResult.FAIL && canCast(newSpell.getValue().type())) {
                 CustomisedSpellType<?> spell = newSpell.getValue();
+                if (newSpell.getResult() == ActionResult.CONSUME) {
+                    CustomisedSpellType<?> equippedType = player.getCharms().getEquippedSpell(player.getCharms().getHand());
+                    if (equippedType.type() == spell.type()) {
+                        player.getCharms().equipSpell(player.getCharms().getHand(), spell);
+                    }
+                }
 
+                boolean hasExact = player.getSpellSlot().contains(spell);
                 boolean removed = player.getSpellSlot().removeWhere(s -> {
-                    return s.findMatches(spell).findAny().isPresent() && (spell.isEmpty() || !SpellType.PLACED_SPELL.test(s));
+                    return s.findMatches(spell.type()).findAny().isPresent() && (spell.isEmpty() || !SpellType.PLACED_SPELL.test(s));
                 }, true);
                 player.subtractEnergyCost(removed ? 2 : 4);
-                if (!removed) {
+                if (!hasExact && !spell.isEmpty()) {
                     Spell s = spell.apply(player, CastingMethod.DIRECT);
                     if (s == null) {
                         player.spawnParticles(ParticleTypes.LARGE_SMOKE, 6);
