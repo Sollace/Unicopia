@@ -7,7 +7,7 @@
   ],
   "tool": {
     "type": "farmersdelight:tool",
-    "tag": "c:tools/axes"
+    "tag": "minecraft:axes"
   },
   "result": [
     {
