@@ -56,7 +56,6 @@ import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
-import net.minecraft.client.render.entity.EmptyEntityRenderer;
 import net.minecraft.client.render.entity.FlyingItemEntityRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
@@ -115,7 +114,7 @@ public interface URenderers {
         EntityRendererRegistry.register(UEntities.LOOT_BUG, LootBugEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.TENTACLE, TentacleEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.IGNOMINIOUS_BULB, IgnominiousBulbEntityRenderer::new);
-        EntityRendererRegistry.register(UEntities.SPECTER, EmptyEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.SPECTER, SpecterEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.MIMIC, MimicEntityRenderer::new);
 
         BlockEntityRendererFactories.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
