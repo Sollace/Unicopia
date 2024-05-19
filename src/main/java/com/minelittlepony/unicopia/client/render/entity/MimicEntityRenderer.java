@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
 import com.minelittlepony.unicopia.entity.mob.MimicEntity;
+import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
 
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -74,6 +75,8 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
                 matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-entity.getPitch(tickDelta)));
                 matrices.push();
                 matrices.translate(-0.5, -1.5, -0.5);
+                tileData.setWorld(entity.getWorld());
+                ((MixinBlockEntity)tileData).setPos(entity.getBlockPos());
                 MinecraftClient.getInstance().getBlockEntityRenderDispatcher().render(tileData, tickDelta, matrices, vertexConsumers);
                 matrices.pop();
             }
@@ -101,7 +104,8 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
             lid.addChild("tongue", ModelPartBuilder.create()
                     .uv(11, 34).cuboid(-3, -11, 1, 6, 1, 8, Dilation.NONE), ModelTransform.of(0, 6, 9, 0.8F, 0, 0));
             lid.addChild("upper_teeth", ModelPartBuilder.create()
-                    //.uv(0, 0).cuboid(-7, 0, 0, 14, 5, 14, Dilation.NONE)
+                    //.uv(0, 0).cuboid(-7, 0, 0, 14, 5, 14, Dilation.NONE) //lid
+                    //.uv(0, 0).cuboid(-1, -2.0F, 14.0F, 2.0F, 4.0F, 1.0F) //lock
                     .uv(0, 0).cuboid(-1, -2, 12, 2, 4, 1, Dilation.NONE)
                     .uv(0, 0).cuboid(-4, -2, 12, 2, 4, 1, Dilation.NONE)
                     .uv(0, 0).cuboid(2, -2, 12, 2, 4, 1, Dilation.NONE), ModelTransform.NONE)
@@ -112,6 +116,7 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
                         .uv(0, 0).cuboid(-5, -2, 5, 2, 4, 1, Dilation.NONE)
                         .uv(0, 0).cuboid(-8, -2, 5, 2, 4, 1, Dilation.NONE)
                         .uv(0, 0).cuboid(-11, -2, 5, 2, 4, 1, Dilation.NONE), ModelTransform.of(0, 0, 0, 0, 1.5708F, 0));
+            //root.addChild("base", ModelPartBuilder.create().uv(0, 19).cuboid(1, 0, 1, 14, 10, 14), ModelTransform.of(8, 24, -8, 0, 0, -3.1416F));
             root.addChild("lower_teeth", ModelPartBuilder.create()
                 .uv(0, 0).cuboid(-1, -1, 12, 2, 4, 1, Dilation.NONE)
                 .uv(0, 0).cuboid(-4, -1, 12, 2, 4, 1, Dilation.NONE)
@@ -132,6 +137,11 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
 
         @Override
         public void animateModel(MimicEntity entity, float limbAngle, float limbDistance, float tickDelta) {
+            /*part = MimicModel.getTexturedModelData().createModel();
+            this.lid = part.getChild("lid");
+            this.leftLeg = part.getChild("left_leg");
+            this.rightLeg = part.getChild("right_leg");*/
+
             ChestBlockEntity tileData = entity.getChestData();
             if (tileData != null) {
                 var properties = CloudChestBlockEntityRenderer.getProperties(tileData.getCachedState(), tileData);
