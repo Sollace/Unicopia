@@ -17,6 +17,8 @@ import com.minelittlepony.unicopia.entity.ai.BreakHeartGoal;
 import com.minelittlepony.unicopia.entity.ai.DynamicTargetGoal;
 import com.minelittlepony.unicopia.entity.ai.EatMuffinGoal;
 import com.minelittlepony.unicopia.entity.ai.FleeExplosionGoal;
+import com.minelittlepony.unicopia.entity.ai.PrioritizedActiveTargetGoal;
+import com.minelittlepony.unicopia.entity.ai.TargettingUtil;
 import com.minelittlepony.unicopia.entity.ai.WantItTakeItGoal;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 
@@ -152,6 +154,9 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         }
         if (entity.getType().getSpawnGroup() == SpawnGroup.MONSTER) {
             goals.add(3, new BreakHeartGoal((MobEntity)entity, targetter));
+            if (entity instanceof AbstractSkeletonEntity) {
+                targets.add(1, new PrioritizedActiveTargetGoal<>((MobEntity)entity, PlayerEntity.class, TargettingUtil.FLYING_PREFERRED, true));
+            }
         }
         if (entity instanceof PigEntity pig) {
             eatMuffinGoal = new EatMuffinGoal(pig, targetter);

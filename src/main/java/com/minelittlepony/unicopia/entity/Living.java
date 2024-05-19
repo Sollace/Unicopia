@@ -98,7 +98,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     private final LandingEventHandler landEvent = addTicker(new LandingEventHandler(this));
     private final Enchantments enchants = addTicker(new Enchantments(this));
     private final ItemTracker armour = addTicker(new ItemTracker(this));
-    //private final Transportation<T> transportation = new Transportation<>(this);
     private final Transportation<T> transportation = new Transportation<>(this);
 
     protected Living(T entity, TrackedData<NbtCompound> effect) {
