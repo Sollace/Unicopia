@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.util.RegistryUtils;
+import com.minelittlepony.unicopia.util.serialization.PacketCodec;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
@@ -44,6 +45,7 @@ public record Race (
     public static final String DEFAULT_ID = "unicopia:unset";
     public static final Registry<Race> REGISTRY = RegistryUtils.createDefaulted(Unicopia.id("race"), DEFAULT_ID);
     public static final Registry<Race> COMMAND_REGISTRY = RegistryUtils.createDefaulted(Unicopia.id("race/grantable"), DEFAULT_ID);
+    public static final PacketCodec<Race> PACKET_CODEC = PacketCodec.ofRegistry(REGISTRY);
     public static final RegistryKey<? extends Registry<Race>> REGISTRY_KEY = REGISTRY.getKey();
     private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("commands.race.fail", id));
     private static final Function<Race, Composite> COMPOSITES = Util.memoize(race -> new Composite(race, null, null));

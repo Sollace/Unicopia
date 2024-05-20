@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.Living;
@@ -124,7 +125,7 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
                         caster.asEntity().getDisplayName().copy().append(" (" + Registries.ENTITY_TYPE.getId(caster.asEntity().getType()) + ")"),
                         caster.getMaster() != null ? Text.literal("Master: ").append(caster.getMaster().getDisplayName()) : Text.empty()
                 ),
-                caster.getSpellSlot().stream(AllSpells.INSTANCE, false).flatMap(spell ->
+                caster.getSpellSlot().stream(SpellPredicate.ALL, false).flatMap(spell ->
                     Stream.of(
                             Text.literal("UUID: " + spell.getUuid()),
                             Text.literal("|>Type: ").append(Text.literal(spell.getTypeAndTraits().type().getId().toString()).styled(s -> s.withColor(spell.getTypeAndTraits().type().getColor()))),

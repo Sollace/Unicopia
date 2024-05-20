@@ -7,10 +7,10 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.MimicSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.ShieldSpell;
-
 import net.minecraft.entity.Entity;
 
 public interface SpellPredicate<T extends Spell> extends Predicate<Spell> {
+    SpellPredicate<?> ALL = spell -> true;
     SpellPredicate<IllusionarySpell> CAN_SUPPRESS = s -> s instanceof IllusionarySpell;
     SpellPredicate<PlaceableSpell> IS_PLACED = s -> s instanceof PlaceableSpell;
     SpellPredicate<AbstractDisguiseSpell> IS_DISGUISE = s -> s instanceof AbstractDisguiseSpell;

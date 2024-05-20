@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.network.datasync.EffectSync;
+import com.minelittlepony.unicopia.network.track.Trackable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -26,10 +27,9 @@ import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 public class CastSpellEntity extends LightEmittingEntity implements Caster<CastSpellEntity>, WeaklyOwned.Mutable<LivingEntity>, MagicImmune {
-    private static final TrackedData<Float> GRAVITY = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.FLOAT);
     private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 
-    private final EntityPhysics<CastSpellEntity> physics = new EntityPhysics<>(this, GRAVITY);
+    private final EntityPhysics<CastSpellEntity> physics = new EntityPhysics<>(this, Trackable.of(this).getDataTrackers().getPrimaryTracker());
 
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
 

@@ -3,11 +3,13 @@ package com.minelittlepony.unicopia.entity.player;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
+import com.minelittlepony.unicopia.util.serialization.PacketCodec;
 
-import net.minecraft.entity.data.TrackedData;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 
@@ -23,23 +25,19 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
     private final BarInst xp;
     private final BarInst charge;
 
-    public ManaContainer(Pony pony) {
+    public ManaContainer(Pony pony, DataTracker tracker) {
         this.pony = pony;
-        this.energy = addBar("energy", new BarInst(Pony.ENERGY, 100F, 0));
-        this.exhaustion = addBar("exhaustion", new BarInst(Pony.EXHAUSTION, 100F, 0));
-        this.exertion = addBar("exertion", new BarInst(Pony.EXERTION, 10F, 0));
-        this.xp = addBar("xp", new BarInst(Pony.XP, 1F, 0));
-        this.mana = addBar("mana", new XpCollectingBar(Pony.MANA, 100F, 1));
-        this.charge = addBar("charge", new BarInst(Pony.CHARGE, 10F, 0) {
+        this.energy = addBar("energy", new BarInst(tracker, 100F, 0));
+        this.exhaustion = addBar("exhaustion", new BarInst(tracker, 100F, 0));
+        this.exertion = addBar("exertion", new BarInst(tracker, 10F, 0));
+        this.xp = addBar("xp", new BarInst(tracker, 1F, 0));
+        this.mana = addBar("mana", new XpCollectingBar(tracker, 100F, 1));
+        this.charge = addBar("charge", new BarInst(tracker, 10F, 0) {
             @Override
             protected float applyLimits(float value) {
                 return Math.max(0, value);
             }
         });
-    }
-
-    public void initDataTracker() {
-        bars.values().forEach(BarInst::initDataTracker);
     }
 
     protected BarInst addBar(String name, BarInst bar) {
@@ -130,9 +128,8 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
     }
 
     class XpCollectingBar extends BarInst {
-
-        XpCollectingBar(TrackedData<Float> marker, float max, float initial) {
-            super(marker, max, initial);
+        XpCollectingBar(DataTracker tracker, float max, float initial) {
+            super(tracker, max, initial);
         }
 
         @Override
@@ -156,29 +153,26 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
     }
 
     class BarInst implements Bar, NbtSerialisable {
-
-        private final TrackedData<Float> marker;
+        private final DataTracker tracker;
+        private final DataTracker.Entry<Float> marker;
         private final float max;
 
         private float trailingValue;
         private float prevTrailingValue;
         private float prevValue;
 
-        BarInst(TrackedData<Float> marker, float max, float initial) {
-            this.marker = marker;
+        BarInst(DataTracker tracker, float max, float initial) {
+            this.tracker = tracker;
             this.max = max;
             this.trailingValue = initial;
             this.prevTrailingValue = initial;
             this.prevValue = initial;
-        }
-
-        public void initDataTracker() {
-            pony.asEntity().getDataTracker().startTracking(marker, max * trailingValue);
+            this.marker = tracker.startTracking(TrackableDataType.of(PacketCodec.FLOAT), max * trailingValue);
         }
 
         @Override
         public float get() {
-            return applyLimits(pony.asEntity().getDataTracker().get(marker));
+            return applyLimits(tracker.get(marker));
         }
 
         @Override
@@ -197,7 +191,7 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
         }
 
         private void load(float value) {
-            pony.asEntity().getDataTracker().set(marker, value);
+            tracker.set(marker, value);
         }
 
         protected float getInitial(float initial) {

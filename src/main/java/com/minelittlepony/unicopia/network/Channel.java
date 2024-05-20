@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.network.track.MsgTrackedValues;
 import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 import com.sollace.fabwork.api.packets.*;
@@ -31,6 +32,7 @@ public interface Channel {
 
     S2CPacketType<MsgServerResources> SERVER_RESOURCES = SimpleNetworking.serverToClient(Unicopia.id("resources"), MsgServerResources::new);
 
+    S2CPacketType<MsgTrackedValues> SERVER_TRACKED_ENTITY_DATA = SimpleNetworking.serverToClient(Unicopia.id("tracked_entity_date"), MsgTrackedValues::new);
     S2CPacketType<MsgOtherPlayerCapabilities> SERVER_OTHER_PLAYER_CAPABILITIES = SimpleNetworking.serverToClient(Unicopia.id("other_player_capabilities"), MsgOtherPlayerCapabilities::new);
     S2CPacketType<MsgPlayerAnimationChange> SERVER_PLAYER_ANIMATION_CHANGE = SimpleNetworking.serverToClient(Unicopia.id("other_player_animation_change"), MsgPlayerAnimationChange::new);
     S2CPacketType<MsgSkyAngle> SERVER_SKY_ANGLE = SimpleNetworking.serverToClient(Unicopia.id("sky_angle"), MsgSkyAngle::new);

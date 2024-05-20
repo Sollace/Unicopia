@@ -32,10 +32,15 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.datasync.EffectSync;
 import com.minelittlepony.unicopia.network.datasync.Transmittable;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.DataTrackerManager;
+import com.minelittlepony.unicopia.network.track.Trackable;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 import com.minelittlepony.unicopia.server.world.DragonBreathStore;
 import com.minelittlepony.unicopia.util.*;
+import com.minelittlepony.unicopia.util.serialization.PacketCodec;
 
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import net.fabricmc.fabric.api.util.TriState;
@@ -48,7 +53,6 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
-import net.minecraft.entity.data.*;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -64,6 +68,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -71,7 +76,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T>, Transmittable {
-    private static final TrackedData<Optional<UUID>> CARRIER_ID = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+    //private static final TrackedData<Optional<UUID>> CARRIER_ID = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 
     protected final T entity;
 
@@ -99,19 +104,26 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     private final ItemTracker armour = addTicker(new ItemTracker(this));
     private final Transportation<T> transportation = new Transportation<>(this);
 
-    protected Living(T entity, TrackedData<NbtCompound> effect) {
+    private final DataTrackerManager trackers;
+    protected final DataTracker tracker;
+
+    protected final DataTracker.Entry<UUID> carrierId;
+
+    protected Living(T entity) {
         this.entity = entity;
-        this.effectDelegate = new EffectSync(this, effect);
+        this.trackers = Trackable.of(entity).getDataTrackers();
+        this.tracker = trackers.getPrimaryTracker();
+        this.effectDelegate = new EffectSync(this, Creature.EFFECT);
         this.sneakingHeuristic = addTicker(new Interactable(entity::isSneaking));
         this.landedHeuristic = addTicker(new Interactable(entity::isOnGround));
         this.jumpingHeuristic = addTicker(new Interactable(((LivingEntityDuck)entity)::isJumping));
+
+        carrierId = tracker.startTracking(TrackableDataType.of(PacketCodec.UUID), Util.NIL_UUID);
     }
 
     @Override
     public void initDataTracker() {
-        effectDelegate.initDataTracker();
-        entity.getDataTracker().startTracking(Creature.GRAVITY, 1F);
-        entity.getDataTracker().startTracking(CARRIER_ID, Optional.empty());
+        entity.getDataTracker().startTracking(Creature.EFFECT, new NbtCompound());
     }
 
     public <Q extends Tickable> Q addTicker(Q tickable) {
@@ -166,15 +178,16 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     public Optional<UUID> getCarrierId() {
-        return entity.getDataTracker().get(CARRIER_ID);
+        UUID carrierId = tracker.get(this.carrierId);
+        return carrierId == Util.NIL_UUID ? Optional.empty() : Optional.of(carrierId);
     }
 
     public void setCarrier(UUID carrier) {
-        entity.getDataTracker().set(CARRIER_ID, Optional.ofNullable(carrier));
+        tracker.set(this.carrierId, carrier == null ? Util.NIL_UUID : carrier);
     }
 
     public void setCarrier(Entity carrier) {
-        entity.getDataTracker().set(CARRIER_ID, Optional.ofNullable(carrier).map(Entity::getUuid));
+        setCarrier(carrier == null ? Util.NIL_UUID : carrier.getUuid());
     }
 
     @Nullable

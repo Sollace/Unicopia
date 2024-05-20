@@ -25,6 +25,7 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgPlayerFlightControlsInput;
+import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.particle.*;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
@@ -97,8 +98,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private Lerp updraft = new Lerp(0);
     private Lerp windStrength = new Lerp(0);
 
-    public PlayerPhysics(Pony pony) {
-        super(pony.asEntity(), Creature.GRAVITY);
+    public PlayerPhysics(Pony pony, DataTracker tracker) {
+        super(pony.asEntity(), tracker);
         this.pony = pony;
         dimensions = new PlayerDimensions(pony, this);
     }

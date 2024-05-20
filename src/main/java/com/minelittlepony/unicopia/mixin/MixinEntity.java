@@ -11,6 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.duck.LavaAffine;
+import com.minelittlepony.unicopia.network.track.DataTrackerManager;
+import com.minelittlepony.unicopia.network.track.Trackable;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -19,11 +21,11 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.Entity.PositionUpdater;
 import net.minecraft.entity.Entity.RemovalReason;
+import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.TagKey;
@@ -31,9 +33,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 @Mixin(Entity.class)
-abstract class MixinEntity implements EntityDuck {
+abstract class MixinEntity implements EntityDuck, Trackable {
     @Nullable
     private transient Caster<?> host;
+
+    private DataTrackerManager dataTrackerManager;
 
     @Override
     @Nullable
@@ -44,6 +48,14 @@ abstract class MixinEntity implements EntityDuck {
     @Override
     public void setHost(Caster<?> host) {
         this.host = host;
+    }
+
+    @Override
+    public DataTrackerManager getDataTrackers() {
+        if (dataTrackerManager == null) {
+            dataTrackerManager = new DataTrackerManager((Entity)(Object)this);
+        }
+        return dataTrackerManager;
     }
 
     @Override
@@ -101,6 +113,13 @@ abstract class MixinEntity implements EntityDuck {
     private void onDoesRenderOnFire(CallbackInfoReturnable<Boolean> info) {
         if (EquinePredicates.RAGING.test((Entity)(Object)this)) {
             info.setReturnValue(true);
+        }
+    }
+
+    @Inject(method = "tick()V", at = @At("RETURN"))
+    private void afterTick(CallbackInfo info) {
+        if (dataTrackerManager != null) {
+            dataTrackerManager.tick();
         }
     }
 

@@ -34,6 +34,8 @@ import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.*;
 import com.minelittlepony.unicopia.network.*;
 import com.minelittlepony.unicopia.network.datasync.EffectSync.UpdateCallback;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.common.util.animation.LinearInterpolator;
 import com.google.common.collect.Streams;
@@ -46,9 +48,6 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -71,28 +70,14 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 
 public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, UpdateCallback {
-    private static final TrackedData<String> RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.STRING);
-    private static final TrackedData<String> SUPPRESSED_RACE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.STRING);
-
-    static final TrackedData<Float> ENERGY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    static final TrackedData<Float> EXHAUSTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    static final TrackedData<Float> EXERTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    static final TrackedData<Float> MANA = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    static final TrackedData<Float> XP = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    static final TrackedData<Float> CHARGE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    static final TrackedData<Integer> LEVEL = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    static final TrackedData<Integer> CORRUPTION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
-
     static final int INITIAL_SUN_IMMUNITY = 20;
 
-    private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
-
     private final AbilityDispatcher powers = new AbilityDispatcher(this);
-    private final PlayerPhysics gravity = addTicker(new PlayerPhysics(this));
+    private final PlayerPhysics gravity = addTicker(new PlayerPhysics(this, tracker));
     private final PlayerCharmTracker charms = new PlayerCharmTracker(this);
     private final PlayerCamera camera = new PlayerCamera(this);
     private final TraitDiscovery discoveries = new TraitDiscovery(this);
-    private final Acrobatics acrobatics = new Acrobatics(this);
+    private final Acrobatics acrobatics = new Acrobatics(this, tracker);
     private final CorruptionHandler corruptionHandler = new CorruptionHandler(this);
 
     private final Map<String, Integer> advancementProgress = new HashMap<>();
@@ -121,28 +106,22 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private int animationMaxDuration;
     private int animationDuration;
 
+    private DataTracker.Entry<Race> race;
+    private DataTracker.Entry<Race> suppressedRace;
+
     public Pony(PlayerEntity player) {
-        super(player, EFFECT);
-        this.levels = new PlayerLevelStore(this, LEVEL, true, USounds.Vanilla.ENTITY_PLAYER_LEVELUP);
-        this.corruption = new PlayerLevelStore(this, CORRUPTION, false, USounds.ENTITY_PLAYER_CORRUPTION);
-        this.mana = addTicker(new ManaContainer(this));
+        super(player);
+        race = this.tracker.startTracking(TrackableDataType.of(Race.PACKET_CODEC), Race.HUMAN);
+        suppressedRace = this.tracker.startTracking(TrackableDataType.of(Race.PACKET_CODEC), Race.HUMAN);
+        this.levels = new PlayerLevelStore(this, tracker, true, USounds.Vanilla.ENTITY_PLAYER_LEVELUP);
+        this.corruption = new PlayerLevelStore(this, tracker, false, USounds.ENTITY_PLAYER_CORRUPTION);
+        this.mana = addTicker(new ManaContainer(this, tracker));
 
         addTicker(this::updateAnimations);
         addTicker(this::updateBatPonyAbilities);
         addTicker(this::updateCorruptionDecay);
         addTicker(new PlayerAttributes(this));
         addTicker(corruptionHandler);
-    }
-
-    @Override
-    public void initDataTracker() {
-        super.initDataTracker();
-        acrobatics.initDataTracker();
-        mana.initDataTracker();
-        entity.getDataTracker().startTracking(LEVEL, 0);
-        entity.getDataTracker().startTracking(CORRUPTION, 0);
-        entity.getDataTracker().startTracking(RACE, Race.DEFAULT_ID);
-        entity.getDataTracker().startTracking(SUPPRESSED_RACE, Race.DEFAULT_ID);
     }
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
@@ -218,7 +197,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
      */
     @Override
     public Race getSpecies() {
-        return Race.fromName(entity.getDataTracker().get(RACE), Race.HUMAN);
+        return tracker.get(race);
     }
 
     /**
@@ -242,7 +221,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public void setSpecies(Race race) {
         race = race.validate(entity);
         Race current = getSpecies();
-        entity.getDataTracker().set(RACE, race.getId().toString());
+        tracker.set(this.race, race);
         if (race != current) {
             clearSuppressedRace();
         }
@@ -255,7 +234,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public void setSuppressedRace(Race race) {
-        entity.getDataTracker().set(SUPPRESSED_RACE, race.validate(entity).getId().toString());
+        tracker.set(suppressedRace, race.validate(entity));
     }
 
     public void clearSuppressedRace() {
@@ -263,7 +242,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public Race getSuppressedRace() {
-        return Race.fromName(entity.getDataTracker().get(SUPPRESSED_RACE), Race.UNSET);
+        return tracker.get(suppressedRace);
     }
 
     public TraitDiscovery getDiscoveries() {

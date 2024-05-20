@@ -19,6 +19,7 @@ import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.network.datasync.EffectSync;
+import com.minelittlepony.unicopia.network.track.Trackable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -31,13 +32,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class MagicBeamEntity extends MagicProjectileEntity implements Caster<MagicBeamEntity>, MagicImmune {
-    private static final TrackedData<Float> GRAVITY = DataTracker.registerData(MagicBeamEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicBeamEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(MagicBeamEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
+    private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicBeamEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
-
-    private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this, GRAVITY);
+    private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this, Trackable.of(this).getDataTrackers().getPrimaryTracker());
 
     public MagicBeamEntity(EntityType<MagicBeamEntity> type, World world) {
         super(type, world);
@@ -55,10 +54,10 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        getDataTracker().startTracking(GRAVITY, 1F);
         getDataTracker().startTracking(HYDROPHOBIC, false);
         getDataTracker().startTracking(EFFECT, new NbtCompound());
     }
+
     @Override
     public void tick() {
         super.tick();
