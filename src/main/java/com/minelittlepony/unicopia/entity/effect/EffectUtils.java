@@ -6,11 +6,19 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 
 public interface EffectUtils {
     static boolean isPoisoned(LivingEntity entity) {
-        return getAmplifier(entity, UEffects.FOOD_POISONING) > 2;
+        return getAmplifier(entity, UEffects.FOOD_POISONING) > 1;
+    }
+
+    static boolean hasABrokenWing(LivingEntity entity) {
+        return entity.hasStatusEffect(UEffects.BROKEN_WINGS);
+    }
+
+    static boolean hasBothBrokenWing(LivingEntity entity) {
+        return getAmplifier(entity, UEffects.BROKEN_WINGS) > 1;
     }
 
     static int getAmplifier(LivingEntity entity, StatusEffect effect) {
-        return entity.hasStatusEffect(effect) ? entity.getStatusEffect(effect).getAmplifier() : 0;
+        return entity.hasStatusEffect(effect) ? entity.getStatusEffect(effect).getAmplifier() + 1 : 0;
     }
 
     static boolean isChangingRace(LivingEntity entity) {

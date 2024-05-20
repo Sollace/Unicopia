@@ -16,6 +16,7 @@ import com.minelittlepony.unicopia.compat.ad_astra.OxygenApi;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
+import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.input.Heuristic;
 import com.minelittlepony.unicopia.item.AmuletItem;
@@ -229,6 +230,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (wasFlying) {
             entity.calculateDimensions();
         }
+
+        if (!pony.isClient()) {
+            pony.setDirty();
+        }
     }
 
     public double getHorizontalMotion() {
@@ -283,6 +288,19 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (!creative) {
             if (entity.isOnGround() || isCancelled) {
                 cancelFlight(false);
+            }
+
+            if (!pony.isClient()) {
+                System.out.println(ticksInAir + " " + type.canFly() + " " + isFlying() + " " + EffectUtils.hasBothBrokenWing(entity));
+                if (type.canFly()
+                        && isFlying()
+                        && EffectUtils.hasBothBrokenWing(entity)
+                        && ticksInAir > 90) {
+
+                    entity.getWorld().playSoundFromEntity(null, entity, USounds.Vanilla.ENTITY_PLAYER_BIG_FALL, SoundCategory.PLAYERS, 2, 1F);
+                    entity.damage(entity.getDamageSources().generic(), 3);
+                    cancelFlight(true);
+                }
             }
 
             if (entity.isOnGround()) {
@@ -441,7 +459,12 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         entity.fallDistance = 0;
 
-        applyThrust(velocity);
+        if (!EffectUtils.hasABrokenWing(entity) || entity.age % 50 < 25) {
+            applyThrust(velocity);
+        } else if (entity.getWorld().random.nextInt(40) == 0) {
+            entity.getWorld().playSoundFromEntity(null, entity, USounds.Vanilla.ENTITY_PLAYER_BIG_FALL, SoundCategory.PLAYERS, 2, 1.5F);
+            entity.damage(entity.getDamageSources().generic(), 0.5F);
+        }
 
         if (type.isAvian()) {
             if (pony.getObservedSpecies() != Race.BAT && entity.getWorld().random.nextInt(9000) == 0) {

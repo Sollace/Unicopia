@@ -17,6 +17,7 @@ public interface UEffects {
     StatusEffect CORRUPT_INFLUENCE = register("corrupt_influence", new CorruptInfluenceStatusEffect(0x00FF00));
     StatusEffect PARALYSIS = register("paralysis", new SimpleStatusEffect(StatusEffectCategory.HARMFUL, 0, false));
     StatusEffect FORTIFICATION = register("fortification", new SimpleStatusEffect(StatusEffectCategory.BENEFICIAL, 0x000077, false));
+    StatusEffect BROKEN_WINGS = register("broken_wings", new SimpleStatusEffect(StatusEffectCategory.BENEFICIAL, 0xEEAA00, false));
     /**
      * Side-effect of wearing the alicorn amulet.
      * Causes the player to lose grip on whatever item they're holding.

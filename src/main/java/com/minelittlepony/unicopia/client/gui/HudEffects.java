@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
-import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -31,7 +30,7 @@ public class HudEffects {
 
     private static void apply(Pony pony, float tickDelta, boolean on) {
         if (on) {
-            if (!pony.asEntity().hasStatusEffect(StatusEffects.HUNGER) && EffectUtils.getAmplifier(pony.asEntity(), UEffects.FOOD_POISONING) > 0) {
+            if (!pony.asEntity().hasStatusEffect(StatusEffects.HUNGER) && pony.asEntity().hasStatusEffect(UEffects.FOOD_POISONING)) {
                 addedHunger = true;
                 pony.asEntity().addStatusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 1, 1, false, false));
             }

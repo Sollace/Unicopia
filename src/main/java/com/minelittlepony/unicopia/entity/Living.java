@@ -23,7 +23,6 @@ import com.minelittlepony.unicopia.entity.behaviour.Guest;
 import com.minelittlepony.unicopia.entity.damage.MagicalDamageSource;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.effect.CorruptInfluenceStatusEffect;
-import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.input.Heuristic;
@@ -200,7 +199,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Override
     public boolean beforeUpdate() {
         landEvent.beforeTick();
-        if (EffectUtils.getAmplifier(entity, UEffects.PARALYSIS) > 1 && entity.getVelocity().horizontalLengthSquared() > 0) {
+        if (entity.hasStatusEffect(UEffects.PARALYSIS) && entity.getVelocity().horizontalLengthSquared() > 0) {
             entity.setVelocity(entity.getVelocity().multiply(0, 1, 0));
             updateVelocity();
         }
