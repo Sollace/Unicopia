@@ -48,10 +48,6 @@ public class ItemImpl implements Equine<ItemEntity> {
     }
 
     @Override
-    public void initDataTracker() {
-    }
-
-    @Override
     public boolean onProjectileImpact(ProjectileEntity projectile) {
         return false;
     }

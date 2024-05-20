@@ -30,7 +30,6 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 @Mixin(Entity.class)
 abstract class MixinEntity implements EntityDuck, Trackable {
@@ -78,14 +77,6 @@ abstract class MixinEntity implements EntityDuck, Trackable {
     public boolean isLavaAffine() {
         Entity self = (Entity)(Object)this;
         return self.hasVehicle() && self.getVehicle() instanceof LavaAffine affine && affine.isLavaAffine();
-    }
-
-
-    @Inject(method = "<init>", at = @At(value = "INVOKE", target = "net/minecraft/entity/Entity.initDataTracker()V"))
-    private void onInstanceInit(EntityType<?> type, World world, CallbackInfo info) {
-        if (this instanceof Equine.Container c) {
-            c.get().initDataTracker();
-        }
     }
 
     @Inject(method = "isFireImmune", at = @At("HEAD"), cancellable = true)

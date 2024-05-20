@@ -19,19 +19,15 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 public class CastSpellEntity extends LightEmittingEntity implements Caster<CastSpellEntity>, WeaklyOwned.Mutable<LivingEntity>, MagicImmune {
-    private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
 
     private final EntityPhysics<CastSpellEntity> physics = new EntityPhysics<>(this, Trackable.of(this).getDataTrackers().getPrimaryTracker());
 
-    private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
+    private final EffectSync effectDelegate = new EffectSync(this, Trackable.of(this).getDataTrackers().getPrimaryTracker());
 
     private final EntityReference<LivingEntity> owner = new EntityReference<>();
 
@@ -45,7 +41,6 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
 
     @Override
     protected void initDataTracker() {
-        getDataTracker().startTracking(EFFECT, new NbtCompound());
     }
 
     @Override

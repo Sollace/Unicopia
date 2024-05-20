@@ -76,8 +76,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T>, Transmittable {
-    //private static final TrackedData<Optional<UUID>> CARRIER_ID = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
-
     protected final T entity;
 
     private final EffectSync effectDelegate;
@@ -113,17 +111,12 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         this.entity = entity;
         this.trackers = Trackable.of(entity).getDataTrackers();
         this.tracker = trackers.getPrimaryTracker();
-        this.effectDelegate = new EffectSync(this, Creature.EFFECT);
+        this.effectDelegate = new EffectSync(this, tracker);
         this.sneakingHeuristic = addTicker(new Interactable(entity::isSneaking));
         this.landedHeuristic = addTicker(new Interactable(entity::isOnGround));
         this.jumpingHeuristic = addTicker(new Interactable(((LivingEntityDuck)entity)::isJumping));
 
         carrierId = tracker.startTracking(TrackableDataType.of(PacketCodec.UUID), Util.NIL_UUID);
-    }
-
-    @Override
-    public void initDataTracker() {
-        entity.getDataTracker().startTracking(Creature.EFFECT, new NbtCompound());
     }
 
     public <Q extends Tickable> Q addTicker(Q tickable) {

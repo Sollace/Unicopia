@@ -31,8 +31,6 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
@@ -41,7 +39,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.MathHelper;
 
 public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutable<LivingEntity> {
-    static final TrackedData<NbtCompound> EFFECT = net.minecraft.entity.data.DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
     public static void boostrap() {}
 
     private final EntityPhysics<LivingEntity> physics;

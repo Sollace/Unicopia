@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.network.datasync;
 
-import java.util.Optional;
 import java.util.UUID;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -14,9 +14,11 @@ import com.minelittlepony.unicopia.ability.magic.SpellContainer;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.serialization.PacketCodec;
 
-import net.minecraft.entity.data.TrackedData;
 import net.minecraft.nbt.NbtCompound;
 
 /**
@@ -32,19 +34,21 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
 
     private final Caster<?> owner;
 
-    private final TrackedData<NbtCompound> param;
+    private final DataTracker tracker;
+    private final DataTracker.Entry<NbtCompound> param;
 
-    @Nullable
-    private NbtCompound lastValue;
-
-    public EffectSync(Caster<?> owner, TrackedData<NbtCompound> param) {
-        spells = new NetworkedReferenceSet<>(Spell::getUuid, () -> new SpellNetworkedReference<>(owner));
+    public EffectSync(Caster<?> owner, DataTracker tracker) {
         this.owner = owner;
-        this.param = param;
-    }
+        this.tracker = tracker;
+        this.param = tracker.startTracking(TrackableDataType.of(PacketCodec.NBT), new NbtCompound());
+        spells = new NetworkedReferenceSet<>(Spell::getUuid, () -> new SpellNetworkedReference<>(owner));
 
-    public void initDataTracker() {
-        owner.asEntity().getDataTracker().startTracking(param, new NbtCompound());
+        tracker.onBeforeSend(param, () -> {
+            if (spells.isDirty()) {
+                tracker.set(param, spells.toNbt());
+            }
+        });
+        tracker.onReceive(param, nbt -> spells.fromNbt(nbt));
     }
 
     public boolean tick(Situation situation) {
@@ -79,19 +83,8 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
     }
 
     @Override
-    public boolean contains(@Nullable SpellPredicate<?> type) {
-        return read(type).findFirst().isPresent();
-    }
-
-    @Override
-    public <T extends Spell> Optional<T> get(@Nullable SpellPredicate<T> type) {
-        return read(type).findFirst();
-    }
-
-    @Override
     public void put(@Nullable Spell effect) {
         spells.addReference(effect);
-        write();
         if (owner instanceof UpdateCallback callback) {
             callback.onSpellSet(effect);
         }
@@ -99,12 +92,7 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
 
     @Override
     public void remove(UUID id) {
-        Spell spell = spells.getReference(id);
-        spell.setDead();
-        spell.tickDying(owner);
-        if (spell.isDead()) {
-            spells.removeReference(id);
-        }
+        discard(spells.getReference(id));
     }
 
     @Override
@@ -113,13 +101,19 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
             if (!test.test(spell)) {
                 return initial;
             }
+            discard(spell);
+            return true;
+        });
+    }
+
+    private void discard(Spell spell) {
+        if (spell != null) {
             spell.setDead();
             spell.tickDying(owner);
             if (spell.isDead()) {
                 spells.removeReference(spell);
             }
-            return true;
-        });
+        }
     }
 
     @Override
@@ -135,55 +129,28 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
         });
     }
 
-    @Override
-    public Stream<Spell> stream() {
-        return stream(null);
-    }
-
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Spell> Stream<T> stream(@Nullable SpellPredicate<T> type) {
-        return read(type);
-    }
-
-    @Override
-    public boolean clear() {
-        if (spells.clear()) {
-            write();
-            if (owner instanceof UpdateCallback) {
-                ((UpdateCallback)owner).onSpellSet(null);
-            }
-            return true;
-        }
-        return false;
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T extends Spell> Stream<T> read(@Nullable SpellPredicate<T> type) {
-        if (owner.isClient()) {
-            spells.fromNbt(owner.asEntity().getDataTracker().get(param));
-        }
-        write();
-
         if (type == null) {
             return (Stream<T>)spells.getReferences();
         }
         return (Stream<T>)spells.getReferences().flatMap(s -> s.findMatches(type));
     }
 
-    private boolean reduce(Alteration alteration) {
-        boolean initial = false;
-        for (Spell i : read(null).toList()) {
-            initial = alteration.apply(initial, i);
+    @Override
+    public boolean clear() {
+        if (spells.clear()) {
+            if (owner instanceof UpdateCallback c) {
+                c.onSpellSet(null);
+            }
+            return true;
         }
-
-        write();
-        return initial;
+        return false;
     }
 
-    private void write() {
-        if (spells.isDirty() && !owner.isClient()) {
-            owner.asEntity().getDataTracker().set(param, spells.toNbt());
-        }
+    private boolean reduce(BiFunction<Boolean, Spell, Boolean> alteration) {
+        return stream().toList().stream().reduce(false, alteration, (a, b) -> b);
     }
 
     @Override
@@ -194,14 +161,10 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
     @Override
     public void fromNBT(NbtCompound compound) {
         spells.fromNbt(compound.getCompound("spells"));
-        owner.asEntity().getDataTracker().set(param, spells.toNbt());
+        tracker.set(param, spells.toNbt());
     }
 
     public interface UpdateCallback {
         void onSpellSet(@Nullable Spell spell);
-    }
-
-    private interface Alteration {
-        boolean apply(boolean initial, Spell spell);
     }
 }

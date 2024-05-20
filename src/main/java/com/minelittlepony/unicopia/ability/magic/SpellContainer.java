@@ -32,7 +32,9 @@ public interface SpellContainer {
     /**
      * Gets the active effect for this caster updating it if needed.
      */
-    <T extends Spell> Optional<T> get(@Nullable SpellPredicate<T> type);
+    default <T extends Spell> Optional<T> get(@Nullable SpellPredicate<T> type) {
+        return stream(type).findFirst();
+    }
 
     /**
      * Sets the active effect.
@@ -73,10 +75,12 @@ public interface SpellContainer {
     /**
      * Gets all active effects for this caster updating it if needed.
      */
-    Stream<Spell> stream();
+    default Stream<Spell> stream() {
+        return stream(null);
+    }
 
     /**
-     * Gets all active effects for this caster that match the given type updating it if needed.
+     * Gets all active effects for this caster that match the given type.
      */
     <T extends Spell> Stream<T> stream(@Nullable SpellPredicate<T> type);
 

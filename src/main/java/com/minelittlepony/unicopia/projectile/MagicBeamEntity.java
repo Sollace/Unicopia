@@ -32,10 +32,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class MagicBeamEntity extends MagicProjectileEntity implements Caster<MagicBeamEntity>, MagicImmune {
-    private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(MagicBeamEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
     private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicBeamEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-    private final EffectSync effectDelegate = new EffectSync(this, EFFECT);
+    private final EffectSync effectDelegate = new EffectSync(this, Trackable.of(this).getDataTrackers().getPrimaryTracker());
     private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this, Trackable.of(this).getDataTrackers().getPrimaryTracker());
 
     public MagicBeamEntity(EntityType<MagicBeamEntity> type, World world) {
@@ -55,7 +54,6 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
     protected void initDataTracker() {
         super.initDataTracker();
         getDataTracker().startTracking(HYDROPHOBIC, false);
-        getDataTracker().startTracking(EFFECT, new NbtCompound());
     }
 
     @Override
