@@ -59,13 +59,15 @@ public class DataTracker {
 
         Pair<T> pair = getPair(entry);
         if (!Objects.equals(pair.value, value)) {
-            pair.value = value;
-            dirtyIndices.add(entry.id());
+            synchronized (this) {
+                pair.value = value;
+                dirtyIndices.add(entry.id());
+            }
         }
     }
 
     @Nullable
-    MsgTrackedValues.TrackerEntries getDirtyPairs() {
+    synchronized MsgTrackedValues.TrackerEntries getDirtyPairs() {
         writethroughCallback.values().forEach(Runnable::run);
 
         if (initial) {
@@ -88,7 +90,7 @@ public class DataTracker {
     }
 
     @SuppressWarnings("unchecked")
-    void load(boolean wipe, List<Pair<?>> values) {
+    synchronized void load(boolean wipe, List<Pair<?>> values) {
         if (wipe) {
             codecs.clear();
             codecs.addAll(values);

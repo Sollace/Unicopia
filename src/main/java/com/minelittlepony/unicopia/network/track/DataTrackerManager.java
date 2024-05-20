@@ -30,13 +30,13 @@ public class DataTrackerManager implements Tickable {
         return primaryTracker;
     }
 
-    public DataTracker checkoutTracker() {
+    public synchronized DataTracker checkoutTracker() {
         DataTracker tracker = new DataTracker(this, nextId++);
         trackers.put(tracker.id, tracker);
         return tracker;
     }
 
-    void closeTracker(int id) {
+    synchronized void closeTracker(int id) {
         if (id <= 0) {
             return;
         }
@@ -53,31 +53,35 @@ public class DataTrackerManager implements Tickable {
             return;
         }
 
-        List<MsgTrackedValues.TrackerEntries> toTransmit = new ArrayList<>();
+        synchronized (this) {
+            List<MsgTrackedValues.TrackerEntries> toTransmit = new ArrayList<>();
 
-        for (var entry : trackers.int2ObjectEntrySet()) {
-            MsgTrackedValues.TrackerEntries dirtyPairs = entry.getValue().getDirtyPairs();
-            if (dirtyPairs != null) {
-                toTransmit.add(dirtyPairs);
+            for (var entry : trackers.int2ObjectEntrySet()) {
+                MsgTrackedValues.TrackerEntries dirtyPairs = entry.getValue().getDirtyPairs();
+                if (dirtyPairs != null) {
+                    toTransmit.add(dirtyPairs);
+                }
             }
-        }
 
-        if (!toTransmit.isEmpty() || !discardedTrackers.isEmpty()) {
-            MsgTrackedValues packet = new MsgTrackedValues(entity.getId(), toTransmit, discardedTrackers.toIntArray());
-            discardedTrackers = new IntOpenHashSet();
-            Channel.SERVER_TRACKED_ENTITY_DATA.sendToSurroundingPlayers(packet, entity);
+            if (!toTransmit.isEmpty() || !discardedTrackers.isEmpty()) {
+                MsgTrackedValues packet = new MsgTrackedValues(entity.getId(), toTransmit, discardedTrackers.toIntArray());
+                discardedTrackers = new IntOpenHashSet();
+                Channel.SERVER_TRACKED_ENTITY_DATA.sendToSurroundingPlayers(packet, entity);
+            }
         }
     }
 
-    void load(MsgTrackedValues packet) {
+    synchronized void load(MsgTrackedValues packet) {
         for (int id : packet.removedTrackers()) {
             closeTracker(id);
         }
         for (var update : packet.updatedTrackers()) {
             DataTracker tracker = trackers.get(update.id());
-            if (tracker != null) {
-                tracker.load(update.wipe(), update.values());
+            if (tracker == null) {
+                tracker = new DataTracker(this, update.id());
+                trackers.put(update.id(), tracker);
             }
+            tracker.load(update.wipe(), update.values());
         }
     }
 }
