@@ -40,7 +40,7 @@ public interface Caster<E extends Entity> extends
 
     Physics getPhysics();
 
-    SpellContainer getSpellSlot();
+    SpellSlots getSpellSlot();
 
     /**
      * Removes the desired amount of mana or health from this caster in exchange for a spell's benefits.

@@ -1,9 +1,13 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.Objects;
+import java.util.UUID;
+import java.util.stream.Stream;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.NbtCompound;
@@ -38,6 +42,17 @@ public final class SpellReference<T extends Spell> implements NbtSerialisable {
             oldValue.destroy(owner);
         }
         return true;
+    }
+
+    public boolean equalsOrContains(UUID id) {
+        @Nullable T spell = get();
+        return spell != null && spell.equalsOrContains(id);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <V extends Spell> Stream<V> findMatches(SpellPredicate<V> predicate) {
+        @Nullable T spell = get();
+        return spell != null ? (predicate == null ? Stream.of((V)spell) : spell.findMatches(predicate)) : Stream.empty();
     }
 
     @Override

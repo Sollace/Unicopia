@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.client.render.PlayerPoser.AnimationInstance;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.*;
 import com.minelittlepony.unicopia.ability.magic.*;
+import com.minelittlepony.unicopia.ability.magic.SpellSlots.UpdateCallback;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.RageAbilitySpell;
@@ -33,7 +34,6 @@ import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.*;
 import com.minelittlepony.unicopia.network.*;
-import com.minelittlepony.unicopia.network.datasync.EffectSync.UpdateCallback;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.server.world.UGameRules;
@@ -929,14 +929,11 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     @Override
-    public void onSpellSet(@Nullable Spell spell) {
-        if (spell != null) {
-            if (spell.getAffinity() == Affinity.BAD && entity.getWorld().random.nextInt(20) == 0) {
-                getCorruption().add(entity.getRandom().nextBetween(1, 10));
-            }
-            getCorruption().add(((int)spell.getTypeAndTraits().traits().getCorruption() * 10) + spell.getTypeAndTraits().type().getAffinity().getCorruption());
-            setDirty();
+    public void onSpellAdded(Spell spell) {
+        if (spell.getAffinity() == Affinity.BAD && entity.getWorld().random.nextInt(20) == 0) {
+            getCorruption().add(entity.getRandom().nextBetween(1, 10));
         }
+        getCorruption().add(((int)spell.getTypeAndTraits().traits().getCorruption() * 10) + spell.getTypeAndTraits().type().getAffinity().getCorruption());
     }
 
     public boolean isClientPlayer() {

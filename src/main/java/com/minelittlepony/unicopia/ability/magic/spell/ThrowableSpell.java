@@ -1,32 +1,28 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.projectile.MagicBeamEntity;
-import net.minecraft.nbt.NbtCompound;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
+
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.world.World;
 
-public final class ThrowableSpell extends AbstractDelegatingSpell {
-
-    private final SpellReference<Spell> spell = new SpellReference<>();
+public final class ThrowableSpell extends AbstractDelegatingSpell implements
+    ProjectileDelegate.ConfigurationListener, ProjectileDelegate.BlockHitListener, ProjectileDelegate.EntityHitListener {
 
     public ThrowableSpell(CustomisedSpellType<?> type) {
         super(type);
     }
 
     public ThrowableSpell setSpell(Spell spell) {
-        this.spell.set(spell);
+        delegate.set(spell);
         return this;
-    }
-
-    @Override
-    public Collection<Spell> getDelegates() {
-        return List.of(spell.get());
     }
 
     @Override
@@ -57,7 +53,7 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(spell.get().prepareForCast(caster, CastingMethod.STORED)).map(s -> {
+        return Optional.ofNullable(delegate.get().prepareForCast(caster, CastingMethod.STORED)).map(s -> {
             MagicBeamEntity projectile = new MagicBeamEntity(world, caster.asEntity(), divergance, s);
 
             configureProjectile(projectile, caster);
@@ -65,16 +61,6 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
 
             return projectile;
         });
-    }
-
-    @Override
-    protected void loadDelegates(NbtCompound compound) {
-        spell.fromNBT(compound.getCompound("spell"));
-    }
-
-    @Override
-    protected void saveDelegates(NbtCompound compound) {
-        compound.put("spell", spell.toNBT());
     }
 
     @Override
@@ -89,5 +75,26 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
 
     @Override
     public void setHidden(boolean hidden) {
+    }
+
+    @Override
+    public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
+        if (delegate.get() instanceof BlockHitListener listener) {
+            listener.onImpact(projectile, hit);
+        }
+    }
+
+    @Override
+    public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
+        if (delegate.get() instanceof EntityHitListener listener) {
+            listener.onImpact(projectile, hit);
+        }
+    }
+
+    @Override
+    public void configureProjectile(MagicProjectileEntity projectile, Caster<?> caster) {
+        if (delegate.get() instanceof ConfigurationListener listener) {
+            listener.configureProjectile(projectile, caster);
+        }
     }
 }

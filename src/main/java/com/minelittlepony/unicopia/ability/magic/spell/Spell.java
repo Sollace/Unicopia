@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.UUID;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
@@ -11,6 +10,7 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
@@ -53,8 +53,9 @@ public interface Spell extends NbtSerialisable, Affine {
     /**
      * Returns an optional containing the spell that matched the given predicate.
      */
-    default Stream<Spell> findMatches(Predicate<Spell> predicate) {
-        return predicate.test(this) ? Stream.of(this) : Stream.empty();
+    @SuppressWarnings("unchecked")
+    default <T extends Spell> Stream<T> findMatches(SpellPredicate<T> predicate) {
+        return predicate == null || predicate.test(this) ? Stream.of((T)this) : Stream.empty();
     }
 
     /**

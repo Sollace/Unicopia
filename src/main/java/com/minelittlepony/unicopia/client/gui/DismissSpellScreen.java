@@ -137,10 +137,7 @@ public class DismissSpellScreen extends GameGui {
         }
 
         private Spell getActualSpell() {
-            if (spell instanceof AbstractDelegatingSpell) {
-                return ((AbstractDelegatingSpell)spell).getDelegates().stream().findFirst().orElse(spell);
-            }
-            return spell;
+            return spell instanceof AbstractDelegatingSpell s && s.getDelegate() instanceof Spell p ? p : spell;
         }
 
         @Override

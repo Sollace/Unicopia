@@ -99,7 +99,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private Lerp windStrength = new Lerp(0);
 
     public PlayerPhysics(Pony pony, DataTracker tracker) {
-        super(pony.asEntity(), tracker);
+        super(pony.asEntity());
         this.pony = pony;
         dimensions = new PlayerDimensions(pony, this);
     }

@@ -9,8 +9,9 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
-import com.minelittlepony.unicopia.ability.magic.SpellContainer;
-import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
+import com.minelittlepony.unicopia.ability.magic.SpellInventory;
+import com.minelittlepony.unicopia.ability.magic.SpellInventory.Operation;
+import com.minelittlepony.unicopia.ability.magic.SpellSlots;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.block.state.StatePredicate;
@@ -18,9 +19,6 @@ import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
-import com.minelittlepony.unicopia.network.datasync.EffectSync;
-import com.minelittlepony.unicopia.network.track.Trackable;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
@@ -34,8 +32,8 @@ import net.minecraft.world.World;
 public class MagicBeamEntity extends MagicProjectileEntity implements Caster<MagicBeamEntity>, MagicImmune {
     private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicBeamEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-    private final EffectSync effectDelegate = new EffectSync(this, Trackable.of(this).getDataTrackers().getPrimaryTracker());
-    private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this, Trackable.of(this).getDataTrackers().getPrimaryTracker());
+    private final SpellInventory spells = SpellSlots.ofSingle(this);
+    private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this);
 
     public MagicBeamEntity(EntityType<MagicBeamEntity> type, World world) {
         super(type, world);
@@ -61,9 +59,8 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
         super.tick();
 
         if (getOwner() != null) {
-            effectDelegate.tick(Situation.PROJECTILE);
+            spells.tick(Situation.PROJECTILE);
         }
-
 
         if (getHydrophobic()) {
             if (StatePredicate.isFluid(getWorld().getBlockState(getBlockPos()))) {
@@ -116,8 +113,8 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
     }
 
     @Override
-    public SpellContainer getSpellSlot() {
-        return effectDelegate;
+    public SpellSlots getSpellSlot() {
+        return spells.getSlots();
     }
 
     @Override
@@ -139,7 +136,7 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
 
     @Override
     protected <T extends ProjectileDelegate> void forEachDelegates(Consumer<T> consumer, Function<Object, T> predicate) {
-        effectDelegate.tick(spell -> {
+        spells.tick(spell -> {
             Optional.ofNullable(predicate.apply(spell)).ifPresent(consumer);
             return Operation.SKIP;
         });
@@ -151,9 +148,7 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
         super.readCustomDataFromNbt(compound);
         getDataTracker().set(HYDROPHOBIC, compound.getBoolean("hydrophobic"));
         physics.fromNBT(compound);
-        if (compound.contains("effect")) {
-            getSpellSlot().put(Spell.readNbt(compound.getCompound("effect")));
-        }
+        spells.getSlots().fromNBT(compound);
     }
 
     @Override
@@ -161,8 +156,6 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
         super.writeCustomDataToNbt(compound);
         compound.putBoolean("hydrophobic", getHydrophobic());
         physics.toNBT(compound);
-        getSpellSlot().get().ifPresent(effect -> {
-            compound.put("effect", Spell.writeNbt(effect));
-        });
+        spells.getSlots().toNBT(compound);
     }
 }

@@ -69,7 +69,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     public Creature(LivingEntity entity) {
         super(entity);
-        physics = new EntityPhysics<>(entity, tracker);
+        physics = new EntityPhysics<>(entity);
         addTicker(physics);
         addTicker(this::updateConsumption);
 

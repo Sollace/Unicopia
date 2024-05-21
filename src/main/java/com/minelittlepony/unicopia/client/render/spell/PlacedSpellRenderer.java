@@ -34,8 +34,9 @@ public class PlacedSpellRenderer extends SpellRenderer<PlaceableSpell> {
         matrices.push();
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-castSpell.getYaw()));
 
+        Spell delegate = spell.getDelegate();
 
-        for (Spell delegate : spell.getDelegates()) {
+        if (delegate != null) {
             renderAmbientEffects(matrices, vertices, spell, delegate, caster, light, animationProgress, tickDelta);
 
             matrices.push();

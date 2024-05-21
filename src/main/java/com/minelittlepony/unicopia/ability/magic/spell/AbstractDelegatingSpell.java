@@ -1,22 +1,14 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
-import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
-import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
-
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
 
-public abstract class AbstractDelegatingSpell implements Spell,
-    ProjectileDelegate.ConfigurationListener, ProjectileDelegate.BlockHitListener, ProjectileDelegate.EntityHitListener {
-
+public abstract class AbstractDelegatingSpell implements Spell {
     private boolean dirty;
     private boolean hidden;
     private boolean destroyed;
@@ -24,21 +16,24 @@ public abstract class AbstractDelegatingSpell implements Spell,
     private UUID uuid = UUID.randomUUID();
 
     private final CustomisedSpellType<?> type;
+    protected final SpellReference<Spell> delegate = new SpellReference<>();
 
     public AbstractDelegatingSpell(CustomisedSpellType<?> type) {
         this.type = type;
     }
 
-    public abstract Collection<Spell> getDelegates();
-
-    @Override
-    public boolean equalsOrContains(UUID id) {
-        return Spell.super.equalsOrContains(id) || getDelegates().stream().anyMatch(s -> s.equalsOrContains(id));
+    public final Spell getDelegate() {
+        return delegate.get();
     }
 
     @Override
-    public Stream<Spell> findMatches(Predicate<Spell> predicate) {
-        return Stream.concat(Spell.super.findMatches(predicate), getDelegates().stream().flatMap(s -> s.findMatches(predicate)));
+    public boolean equalsOrContains(UUID id) {
+        return Spell.super.equalsOrContains(id) || delegate.equalsOrContains(id);
+    }
+
+    @Override
+    public <T extends Spell> Stream<T> findMatches(SpellPredicate<T> predicate) {
+        return Stream.concat(Spell.super.findMatches(predicate), delegate.findMatches(predicate));
     }
 
     @Override
@@ -53,7 +48,10 @@ public abstract class AbstractDelegatingSpell implements Spell,
 
     @Override
     public void setDead() {
-        getDelegates().forEach(Spell::setDead);
+        Spell spell = delegate.get();
+        if (spell != null) {
+            spell.setDead();
+        }
     }
 
     @Override
@@ -62,7 +60,7 @@ public abstract class AbstractDelegatingSpell implements Spell,
 
     @Override
     public boolean isDead() {
-        return getDelegates().isEmpty() || getDelegates().stream().allMatch(Spell::isDead);
+        return delegate.get() == null || delegate.get().isDead();
     }
 
     @Override
@@ -72,7 +70,7 @@ public abstract class AbstractDelegatingSpell implements Spell,
 
     @Override
     public boolean isDirty() {
-        return dirty || getDelegates().stream().anyMatch(Spell::isDirty);
+        return dirty || (delegate.get() instanceof Spell p && p.isDirty());
     }
 
     @Override
@@ -82,7 +80,7 @@ public abstract class AbstractDelegatingSpell implements Spell,
 
     @Override
     public boolean isHidden() {
-        return hidden || getDelegates().stream().allMatch(Spell::isHidden);
+        return hidden || (delegate.get() instanceof Spell p && p.isHidden());
     }
 
     @Override
@@ -101,40 +99,28 @@ public abstract class AbstractDelegatingSpell implements Spell,
     }
 
     protected void onDestroyed(Caster<?> caster) {
-        getDelegates().forEach(a -> a.destroy(caster));
+        if (delegate.get() instanceof Spell s) {
+            s.destroy(caster);
+        }
     }
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        return execute(getDelegates().stream(), a -> {
-            if (a.isDying()) {
-                a.tickDying(source);
-                return !a.isDead();
+        if (delegate.get() instanceof Spell s) {
+            if (s.isDying()) {
+                s.tickDying(source);
+                return !s.isDead();
             }
-            return a.tick(source, situation);
-        });
-    }
-
-    @Override
-    public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
-        getDelegates(BlockHitListener.PREDICATE).forEach(a -> a.onImpact(projectile, hit));
-    }
-
-    @Override
-    public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
-        getDelegates(EntityHitListener.PREDICATE).forEach(a -> a.onImpact(projectile, hit));
-    }
-
-    @Override
-    public void configureProjectile(MagicProjectileEntity projectile, Caster<?> caster) {
-        getDelegates(ConfigurationListener.PREDICATE).forEach(a -> a.configureProjectile(projectile, caster));
+            return s.tick(source, situation) && !isDead();
+        }
+        return !isDead();
     }
 
     @Override
     public void toNBT(NbtCompound compound) {
         compound.putUuid("uuid", uuid);
         compound.putBoolean("hidden", hidden);
-        saveDelegates(compound);
+        compound.put("spell", delegate.toNBT());
     }
 
     @Override
@@ -144,18 +130,11 @@ public abstract class AbstractDelegatingSpell implements Spell,
         if (compound.contains("uuid")) {
             uuid = compound.getUuid("uuid");
         }
-        loadDelegates(compound);
+        delegate.fromNBT(compound.getCompound("spell"));
     }
 
-    protected abstract void loadDelegates(NbtCompound compound);
-
-    protected abstract void saveDelegates(NbtCompound compound);
-
-    protected <T> Stream<T> getDelegates(Function<? super Spell, T> cast) {
-        return getDelegates().stream().map(cast).filter(Objects::nonNull);
-    }
-
-    protected static boolean execute(Stream<Spell> spells, Function<Spell, Boolean> action) {
-        return spells.reduce(false, (u, a) -> action.apply(a), (a, b) -> a || b);
+    @Override
+    public final String toString() {
+        return "Delegate{" + getTypeAndTraits() + "}[uuid=" + uuid + ", destroyed=" + destroyed + ", hidden=" + hidden + "][spell=" + delegate.get() + "]";
     }
 }

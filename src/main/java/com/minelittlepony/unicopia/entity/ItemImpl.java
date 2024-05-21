@@ -42,7 +42,7 @@ public class ItemImpl implements Equine<ItemEntity> {
         this.entity = owner;
         this.trackers = Trackable.of(entity).getDataTrackers();
         this.tracker = trackers.getPrimaryTracker();
-        this.physics = new ItemPhysics(owner, tracker);
+        this.physics = new ItemPhysics(owner);
 
         race = tracker.startTracking(TrackableDataType.of(Race.PACKET_CODEC), Race.HUMAN);
     }

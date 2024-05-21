@@ -3,21 +3,22 @@ package com.minelittlepony.unicopia.network.track;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
-
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.util.serialization.PacketCodec;
+
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 
 public class DataTracker {
     private final List<Pair<?>> codecs = new ObjectArrayList<>();
-    private final Int2ObjectOpenHashMap<Consumer<?>> loadCallbacks = new Int2ObjectOpenHashMap<>();
-    private final Int2ObjectOpenHashMap<Runnable> writethroughCallback = new Int2ObjectOpenHashMap<>();
     private IntSet dirtyIndices = new IntOpenHashSet();
+    private Int2ObjectMap<TrackableObject> persistentObjects = new Int2ObjectOpenHashMap<>();
 
     private final DataTrackerManager manager;
     private boolean initial = true;
@@ -29,18 +30,16 @@ public class DataTracker {
         this.id = id;
     }
 
+    public <T extends TrackableObject> Entry<NbtCompound> startTracking(T value) {
+        Entry<NbtCompound> entry = startTracking(TrackableDataType.of(PacketCodec.NBT), value.toTrackedNbt());
+        persistentObjects.put(entry.id(), value);
+        return entry;
+    }
+
     public <T> Entry<T> startTracking(TrackableDataType<T> type, T initialValue) {
         Entry<T> entry = new Entry<>(codecs.size());
         codecs.add(new Pair<>(entry.id(), type, initialValue));
         return entry;
-    }
-
-    public <T> void onReceive(Entry<T> entry, Consumer<T> loadCallback) {
-        loadCallbacks.put(entry.id(), loadCallback);
-    }
-
-    public <T> void onBeforeSend(Entry<T> entry, Runnable action) {
-        writethroughCallback.put(entry.id(), action);
     }
 
     @SuppressWarnings("unchecked")
@@ -66,57 +65,56 @@ public class DataTracker {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Nullable
-    synchronized MsgTrackedValues.TrackerEntries getDirtyPairs() {
-        writethroughCallback.values().forEach(Runnable::run);
+    synchronized void getDirtyPairs(List<MsgTrackedValues.TrackerEntries> output) {
+        for (var entry : persistentObjects.int2ObjectEntrySet()) {
+            int key = entry.getIntKey();
+            TrackableObject.Status status = entry.getValue().getStatus();
+            if (status == TrackableObject.Status.NEW || status == TrackableObject.Status.UPDATED) {
+                ((Pair<Object>)codecs.get(key)).value = entry.getValue().toTrackedNbt();
+                dirtyIndices.add(key);
+            }
+        }
 
         if (initial) {
             initial = false;
             dirtyIndices = new IntOpenHashSet();
-            return new MsgTrackedValues.TrackerEntries(id, true, codecs);
+            output.add(new MsgTrackedValues.TrackerEntries(id, true, codecs));
+        } else if (!dirtyIndices.isEmpty()) {
+            IntSet toSend = dirtyIndices;
+            dirtyIndices = new IntOpenHashSet();
+            List<Pair<?>> pairs = new ArrayList<>();
+            for (int i : toSend) {
+                pairs.add(codecs.get(i));
+            }
+            output.add(new MsgTrackedValues.TrackerEntries(id, false, pairs));
         }
-
-        if (dirtyIndices.isEmpty()) {
-            return null;
-        }
-
-        IntSet toSend = dirtyIndices;
-        dirtyIndices = new IntOpenHashSet();
-        List<Pair<?>> pairs = new ArrayList<>();
-        for (int i : toSend) {
-            pairs.add(codecs.get(i));
-        }
-        return new MsgTrackedValues.TrackerEntries(id, false, pairs);
     }
 
-    @SuppressWarnings("unchecked")
-    synchronized void load(boolean wipe, List<Pair<?>> values) {
-        if (wipe) {
+    synchronized void load(MsgTrackedValues.TrackerEntries values) {
+        if (values.wipe()) {
             codecs.clear();
-            codecs.addAll(values);
-            for (var value : values) {
-                Consumer<?> callback = loadCallbacks.get(value.id);
-                if (callback != null) {
-                    ((Consumer<Object>)callback).accept(value.value);
+            codecs.addAll(values.values());
+            for (var entry : persistentObjects.int2ObjectEntrySet()) {
+                Pair<?> pair = codecs.get(entry.getIntKey());
+                if (pair != null) {
+                    entry.getValue().readTrackedNbt((NbtCompound)pair.value);
                 }
             }
         } else {
-            values.forEach(value -> {
+            for (var value : values.values()) {
                 if (value.id >= 0 && value.id < codecs.size()) {
                     if (codecs.get(value.id).type == value.type) {
                         codecs.set(value.id, value);
-                        Consumer<?> callback = loadCallbacks.get(value.id);
-                        if (callback != null) {
-                            ((Consumer<Object>)callback).accept(value.value);
+                        TrackableObject o = persistentObjects.get(value.id);
+                        if (o != null) {
+                            o.readTrackedNbt((NbtCompound)value.value);
                         }
                     }
                 }
-            });
+            }
         }
-    }
-
-    public void close() {
-        manager.closeTracker(id);
     }
 
     public record Entry<T>(int id) {}
@@ -141,5 +139,9 @@ public class DataTracker {
             buffer.writeInt(id);
             type.write(buffer, value);
         }
+    }
+
+    public interface Updater<T> {
+        void update(T t);
     }
 }

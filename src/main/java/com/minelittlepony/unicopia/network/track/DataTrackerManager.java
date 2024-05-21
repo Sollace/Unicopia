@@ -2,22 +2,19 @@ package com.minelittlepony.unicopia.network.track;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.util.Tickable;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.entity.Entity;
 
 public class DataTrackerManager implements Tickable {
     private final Entity entity;
     final boolean isClient;
-    private final Int2ObjectOpenHashMap<DataTracker> trackers = new Int2ObjectOpenHashMap<>();
-
-    private IntSet discardedTrackers = new IntOpenHashSet();
-    private int nextId = 0;
+    private final List<DataTracker> trackers = new ObjectArrayList<>();
+    private final List<ObjectTracker<?>> objectTrackers = new ObjectArrayList<>();
 
     private final DataTracker primaryTracker = checkoutTracker();
 
@@ -31,20 +28,15 @@ public class DataTrackerManager implements Tickable {
     }
 
     public synchronized DataTracker checkoutTracker() {
-        DataTracker tracker = new DataTracker(this, nextId++);
-        trackers.put(tracker.id, tracker);
+        DataTracker tracker = new DataTracker(this, trackers.size());
+        trackers.add(tracker);
         return tracker;
     }
 
-    synchronized void closeTracker(int id) {
-        if (id <= 0) {
-            return;
-        }
-
-        trackers.remove(id);
-        if (!isClient) {
-            discardedTrackers.add(id);
-        }
+    public synchronized <T extends TrackableObject> ObjectTracker<T> checkoutTracker(Supplier<T> objFunction) {
+        ObjectTracker<T> tracker = new ObjectTracker<>(objectTrackers.size(), objFunction);
+        objectTrackers.add(tracker);
+        return tracker;
     }
 
     @Override
@@ -53,35 +45,41 @@ public class DataTrackerManager implements Tickable {
             return;
         }
 
-        synchronized (this) {
-            List<MsgTrackedValues.TrackerEntries> toTransmit = new ArrayList<>();
+        List<MsgTrackedValues.TrackerEntries> toTransmit = new ArrayList<>();
+        List<MsgTrackedValues.TrackerObjects> objToTransmit = new ArrayList<>();
 
-            for (var entry : trackers.int2ObjectEntrySet()) {
-                MsgTrackedValues.TrackerEntries dirtyPairs = entry.getValue().getDirtyPairs();
-                if (dirtyPairs != null) {
-                    toTransmit.add(dirtyPairs);
-                }
+        synchronized (this) {
+            for (var entry : trackers) {
+                entry.getDirtyPairs(toTransmit);
             }
 
-            if (!toTransmit.isEmpty() || !discardedTrackers.isEmpty()) {
-                MsgTrackedValues packet = new MsgTrackedValues(entity.getId(), toTransmit, discardedTrackers.toIntArray());
-                discardedTrackers = new IntOpenHashSet();
+            for (var entry : objectTrackers) {
+                entry.getDirtyPairs(objToTransmit);
+            }
+
+            if (!toTransmit.isEmpty() || !objToTransmit.isEmpty()) {
+                MsgTrackedValues packet = new MsgTrackedValues(
+                        entity.getId(),
+                        objToTransmit,
+                        toTransmit
+                );
                 Channel.SERVER_TRACKED_ENTITY_DATA.sendToSurroundingPlayers(packet, entity);
             }
         }
     }
 
     synchronized void load(MsgTrackedValues packet) {
-        for (int id : packet.removedTrackers()) {
-            closeTracker(id);
-        }
         for (var update : packet.updatedTrackers()) {
             DataTracker tracker = trackers.get(update.id());
-            if (tracker == null) {
-                tracker = new DataTracker(this, update.id());
-                trackers.put(update.id(), tracker);
+            if (tracker != null) {
+                tracker.load(update);
             }
-            tracker.load(update.wipe(), update.values());
+        }
+        for (var update : packet.updatedObjects()) {
+            ObjectTracker<?> tracker = objectTrackers.get(update.id());
+            if (tracker != null) {
+                tracker.load(update);
+            }
         }
     }
 }

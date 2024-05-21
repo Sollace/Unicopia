@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -87,9 +86,8 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
             return;
         }
 
-        caster.getSpellSlot().forEach(spell -> {
+        caster.getSpellSlot().stream().forEach(spell -> {
             render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
-            return Operation.SKIP;
         });
 
         if (client.getEntityRenderDispatcher().shouldRenderHitboxes()

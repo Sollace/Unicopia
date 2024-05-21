@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.Trackable;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.Tickable;
@@ -27,10 +28,9 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
     private final DataTracker tracker;
     protected final DataTracker.Entry<Float> gravity;
 
-    public EntityPhysics(T entity, DataTracker tracker) {
+    public EntityPhysics(T entity) {
         this.entity = entity;
-        this.tracker = tracker;
-        //this.gravity = gravity;
+        this.tracker = Trackable.of(entity).getDataTrackers().getPrimaryTracker();
         gravity = tracker.startTracking(TrackableDataType.of(PacketCodec.FLOAT), 1F);
     }
 

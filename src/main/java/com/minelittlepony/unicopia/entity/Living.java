@@ -12,7 +12,8 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.SpellContainer;
+import com.minelittlepony.unicopia.ability.magic.SpellInventory;
+import com.minelittlepony.unicopia.ability.magic.SpellSlots;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
@@ -30,7 +31,6 @@ import com.minelittlepony.unicopia.input.Interactable;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
-import com.minelittlepony.unicopia.network.datasync.EffectSync;
 import com.minelittlepony.unicopia.network.datasync.Transmittable;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.DataTrackerManager;
@@ -78,7 +78,7 @@ import net.minecraft.util.math.Vec3d;
 public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T>, Transmittable {
     protected final T entity;
 
-    private final EffectSync effectDelegate;
+    private final SpellInventory spells;
 
     private final Interactable sneakingHeuristic;
     private final Interactable landedHeuristic;
@@ -111,7 +111,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         this.entity = entity;
         this.trackers = Trackable.of(entity).getDataTrackers();
         this.tracker = trackers.getPrimaryTracker();
-        this.effectDelegate = new EffectSync(this, tracker);
+        this.spells = SpellSlots.ofUnbounded(this);
         this.sneakingHeuristic = addTicker(new Interactable(entity::isSneaking));
         this.landedHeuristic = addTicker(new Interactable(entity::isOnGround));
         this.jumpingHeuristic = addTicker(new Interactable(((LivingEntityDuck)entity)::isJumping));
@@ -149,8 +149,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     @Override
-    public SpellContainer getSpellSlot() {
-        return effectDelegate;
+    public SpellSlots getSpellSlot() {
+        return spells.getSlots();
     }
 
     public Enchantments getEnchants() {
@@ -216,7 +216,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Override
     public void tick() {
         tickers.forEach(Tickable::tick);
-        effectDelegate.tick(Situation.BODY);
+        spells.tick(Situation.BODY);
 
         if (!(entity instanceof PlayerEntity)) {
             if (!entity.hasVehicle() && getCarrierId().isPresent() && !asWorld().isClient && entity.age % 10 == 0) {
@@ -486,14 +486,14 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Override
     public void toNBT(NbtCompound compound) {
         enchants.toNBT(compound);
-        effectDelegate.toNBT(compound);
+        spells.getSlots().toNBT(compound);
         toSyncronisedNbt(compound);
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         enchants.fromNBT(compound);
-        effectDelegate.fromNBT(compound);
+        spells.getSlots().fromNBT(compound);
         fromSynchronizedNbt(compound);
     }
 

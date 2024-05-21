@@ -1,12 +1,10 @@
 package com.minelittlepony.unicopia.entity;
 
-import com.minelittlepony.unicopia.network.track.DataTracker;
-
 import net.minecraft.entity.ItemEntity;
 
 class ItemPhysics extends EntityPhysics<ItemEntity> {
-    public ItemPhysics(ItemEntity entity, DataTracker tracker) {
-        super(entity, tracker);
+    public ItemPhysics(ItemEntity entity) {
+        super(entity);
     }
 
     @Override

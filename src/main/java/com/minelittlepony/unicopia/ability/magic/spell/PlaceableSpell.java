@@ -29,6 +29,11 @@ import net.minecraft.world.World;
  * <p>
  * The spell's effects are still powered by the casting player, so if the player dies or leaves the area, their
  * spell loses affect until they return.
+ * <p>
+ * When cast two copies of this spell are created. One is attached to the player and is the controlling spell,
+ * the other is attached to a cast spell entity and placed in the world.
+ *
+ * TODO: Split this up into separate classes.
  */
 public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedSpell {
     /**
@@ -48,11 +53,6 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
      */
     private final EntityReference<CastSpellEntity> castEntity = new EntityReference<>();
 
-    /**
-     * The spell being cast
-     */
-    private final SpellReference<Spell> spell = new SpellReference<>();
-
     public float pitch;
     public float yaw;
 
@@ -70,7 +70,7 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     }
 
     public PlaceableSpell setSpell(Spell spell) {
-        this.spell.set(spell);
+        delegate.set(spell);
         return this;
     }
 
@@ -102,13 +102,8 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     }
 
     @Override
-    public Collection<Spell> getDelegates() {
-        Spell spell = this.spell.get();
-        return spell == null ? List.of() : List.of(spell);
-    }
-
-    @Override
     public boolean tick(Caster<?> source, Situation situation) {
+        System.out.println("Placed Tick: " + source + " " + source.isClient() + " " + situation);
         if (situation == Situation.BODY) {
             if (!source.isClient()) {
                 if (dimension == null) {
@@ -163,8 +158,8 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         CastSpellEntity entity = UEntities.CAST_SPELL.create(source.asWorld());
         Vec3d pos = getPosition().orElse(position.orElse(source.asEntity().getPos()));
         entity.updatePositionAndAngles(pos.x, pos.y, pos.z, source.asEntity().getYaw(), source.asEntity().getPitch());
-        PlaceableSpell copy = spell.get().toPlaceable();
-        if (spell.get() instanceof PlacementDelegate delegate) {
+        PlaceableSpell copy = delegate.get().toPlaceable();
+        if (delegate.get() instanceof PlacementDelegate delegate) {
             delegate.onPlaced(source, copy, entity);
         }
         entity.getSpellSlot().put(copy);
@@ -181,8 +176,9 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     public void setOrientation(float pitch, float yaw) {
         this.pitch = -90 - pitch;
         this.yaw = -yaw;
-        getDelegates(spell -> spell instanceof OrientedSpell o ? o : null)
-            .forEach(spell -> spell.setOrientation(pitch, yaw));
+        if (delegate.get() instanceof OrientedSpell o) {
+            o.setOrientation(pitch, yaw);
+        }
         setDirty();
     }
 
@@ -192,8 +188,9 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         castEntity.ifPresent(source.asWorld(), entity -> {
             entity.updatePositionAndAngles(position.x, position.y, position.z, entity.getYaw(), entity.getPitch());
         });
-        getDelegates(spell -> spell instanceof PlaceableSpell o ? o : null)
-            .forEach(spell -> spell.setPosition(source, position));
+        if (delegate.get() instanceof PlaceableSpell o) {
+            o.setPosition(source, position);
+        }
         setDirty();
     }
 
@@ -269,16 +266,6 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         if (compound.contains("castEntity")) {
             castEntity.fromNBT(compound.getCompound("castEntity"));
         }
-    }
-
-    @Override
-    protected void loadDelegates(NbtCompound compound) {
-        spell.fromNBT(compound.getCompound("spell"));
-    }
-
-    @Override
-    protected void saveDelegates(NbtCompound compound) {
-        compound.put("spell", spell.toNBT());
     }
 
     @Override

@@ -3,7 +3,8 @@ package com.minelittlepony.unicopia.entity.mob;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
-import com.minelittlepony.unicopia.ability.magic.SpellContainer;
+import com.minelittlepony.unicopia.ability.magic.SpellInventory;
+import com.minelittlepony.unicopia.ability.magic.SpellSlots;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -11,9 +12,6 @@ import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.Physics;
-import com.minelittlepony.unicopia.network.datasync.EffectSync;
-import com.minelittlepony.unicopia.network.track.Trackable;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -25,9 +23,9 @@ import net.minecraft.world.World;
 
 public class CastSpellEntity extends LightEmittingEntity implements Caster<CastSpellEntity>, WeaklyOwned.Mutable<LivingEntity>, MagicImmune {
 
-    private final EntityPhysics<CastSpellEntity> physics = new EntityPhysics<>(this, Trackable.of(this).getDataTrackers().getPrimaryTracker());
+    private final EntityPhysics<CastSpellEntity> physics = new EntityPhysics<>(this);
 
-    private final EffectSync effectDelegate = new EffectSync(this, Trackable.of(this).getDataTrackers().getPrimaryTracker());
+    private final SpellInventory spells = SpellSlots.ofSingle(this);
 
     private final EntityReference<LivingEntity> owner = new EntityReference<>();
 
@@ -65,7 +63,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
             return;
         }
 
-        if (!effectDelegate.tick(Situation.GROUND_ENTITY)) {
+        if (!spells.tick(Situation.GROUND_ENTITY)) {
             discard();
         }
     }
@@ -112,8 +110,8 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
     }
 
     @Override
-    public SpellContainer getSpellSlot() {
-        return effectDelegate;
+    public SpellSlots getSpellSlot() {
+        return spells.getSlots();
     }
 
     @Override
@@ -137,9 +135,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
         tag.put("owner", owner.toNBT());
         tag.put("level", level.toNbt());
         tag.put("corruption", corruption.toNbt());
-        getSpellSlot().get().ifPresent(effect -> {
-            tag.put("effect", Spell.writeNbt(effect));
-        });
+        spells.getSlots().toNBT(tag);
     }
 
     @Override
@@ -147,9 +143,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
         if (tag.contains("owner")) {
             owner.fromNBT(tag.getCompound("owner"));
         }
-        if (tag.contains("effect")) {
-            getSpellSlot().put(Spell.readNbt(tag.getCompound("effect")));
-        }
+        spells.getSlots().fromNBT(tag);
         level = Levelled.fromNbt(tag.getCompound("level"));
         corruption = Levelled.fromNbt(tag.getCompound("corruption"));
     }
