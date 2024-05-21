@@ -25,7 +25,6 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.Entity.PositionUpdater;
 import net.minecraft.entity.Entity.RemovalReason;
-import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.TagKey;
