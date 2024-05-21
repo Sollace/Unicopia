@@ -43,7 +43,7 @@ public class DismissSpellScreen extends GameGui {
 
         List<PlaceableSpell> placeableSpells = new ArrayList<>();
 
-        for (Spell spell : pony.getSpellSlot().stream(true).filter(SpellPredicate.IS_VISIBLE).toList()) {
+        for (Spell spell : pony.getSpellSlot().stream().filter(SpellPredicate.IS_VISIBLE).toList()) {
 
             if (spell instanceof PlaceableSpell placeable) {
                 if (placeable.getPosition().isPresent()) {
@@ -147,7 +147,7 @@ public class DismissSpellScreen extends GameGui {
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (isMouseOver(relativeMouseX, relativeMouseY)) {
                 remove(this);
-                pony.getSpellSlot().removeIf(spell -> spell == this.spell, true);
+                pony.getSpellSlot().removeIf(spell -> spell == this.spell);
                 Channel.REMOVE_SPELL.sendToServer(new MsgRemoveSpell(spell));
                 playClickEffect();
                 return true;

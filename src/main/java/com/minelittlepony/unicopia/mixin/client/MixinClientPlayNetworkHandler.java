@@ -24,7 +24,7 @@ abstract class MixinClientPlayNetworkHandler {
         Living<?> living = Living.living(packet.getEntity(world));
         if (living != null) {
             living.getSpellSlot()
-                .get(SpellPredicate.IS_DISGUISE, false)
+                .get(SpellPredicate.IS_DISGUISE)
                 .map(Disguise::getDisguise)
                 .map(EntityAppearance::getAppearance)
                 .ifPresent(appearance -> {

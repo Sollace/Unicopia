@@ -71,8 +71,7 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
     @Override
     public boolean apply(Caster<?> source) {
 
-        if (getType().isOn(source)) {
-            source.getSpellSlot().removeWhere(getType(), true);
+        if (source.getSpellSlot().removeWhere(getType())) {
             return false;
         }
 

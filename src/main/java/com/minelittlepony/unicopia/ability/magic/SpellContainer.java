@@ -19,20 +19,20 @@ public interface SpellContainer {
      * Checks if any matching spells are active.
      */
     default boolean contains(@Nullable SpellPredicate<?> type) {
-        return get(type, true).isPresent();
+        return get(type).isPresent();
     }
 
     /**
      * Gets the active effect for this caster updating it if needed.
      */
-    default <T extends Spell> Optional<T> get(boolean update) {
-        return get(null, update);
+    default <T extends Spell> Optional<T> get() {
+        return get(null);
     }
 
     /**
      * Gets the active effect for this caster updating it if needed.
      */
-    <T extends Spell> Optional<T> get(@Nullable SpellPredicate<T> type, boolean update);
+    <T extends Spell> Optional<T> get(@Nullable SpellPredicate<T> type);
 
     /**
      * Sets the active effect.
@@ -51,8 +51,8 @@ public interface SpellContainer {
      *
      * @return True if the collection was changed
      */
-    default boolean removeIf(Predicate<Spell> test, boolean update) {
-        return removeWhere(spell -> spell.findMatches(test).findFirst().isPresent(), update);
+    default boolean removeIf(Predicate<Spell> test) {
+        return removeWhere(spell -> spell.findMatches(test).findFirst().isPresent());
     }
 
     /**
@@ -60,25 +60,25 @@ public interface SpellContainer {
      *
      * @return True if the collection was changed
      */
-    boolean removeWhere(Predicate<Spell> test, boolean update);
+    boolean removeWhere(Predicate<Spell> test);
 
     /**
      * Iterates active spells and optionally removes matching ones.
      *
      * @return True if any matching spells remain active
      */
-    boolean forEach(Function<Spell, Operation> action, boolean update);
+    boolean forEach(Function<Spell, Operation> action);
 
 
     /**
      * Gets all active effects for this caster updating it if needed.
      */
-    Stream<Spell> stream(boolean update);
+    Stream<Spell> stream();
 
     /**
      * Gets all active effects for this caster that match the given type updating it if needed.
      */
-    <T extends Spell> Stream<T> stream(@Nullable SpellPredicate<T> type, boolean update);
+    <T extends Spell> Stream<T> stream(@Nullable SpellPredicate<T> type);
 
     /**
      * Removes all effects currently active in this slot.

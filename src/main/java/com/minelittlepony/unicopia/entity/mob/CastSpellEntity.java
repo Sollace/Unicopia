@@ -77,7 +77,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
 
     @Override
     public EntityDimensions getDimensions(EntityPose pose) {
-        return super.getDimensions(pose).scaled(getSpellSlot().get(SpellType.IS_PLACED, false).map(spell -> spell.getScale(1)).orElse(1F));
+        return super.getDimensions(pose).scaled(getSpellSlot().get(SpellType.IS_PLACED).map(spell -> spell.getScale(1)).orElse(1F));
     }
 
     @Override
@@ -108,7 +108,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
 
     @Override
     public Affinity getAffinity() {
-        return getSpellSlot().get(true).map(Spell::getAffinity).orElse(Affinity.NEUTRAL);
+        return getSpellSlot().get().map(Spell::getAffinity).orElse(Affinity.NEUTRAL);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
         tag.put("owner", owner.toNBT());
         tag.put("level", level.toNbt());
         tag.put("corruption", corruption.toNbt());
-        getSpellSlot().get(true).ifPresent(effect -> {
+        getSpellSlot().get().ifPresent(effect -> {
             tag.put("effect", Spell.writeNbt(effect));
         });
     }

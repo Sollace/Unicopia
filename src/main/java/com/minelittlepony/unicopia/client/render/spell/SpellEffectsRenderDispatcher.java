@@ -90,7 +90,7 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         caster.getSpellSlot().forEach(spell -> {
             render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
             return Operation.SKIP;
-        }, false);
+        });
 
         if (client.getEntityRenderDispatcher().shouldRenderHitboxes()
                 && !client.hasReducedDebugInfo()
@@ -125,7 +125,7 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
                         caster.asEntity().getDisplayName().copy().append(" (" + Registries.ENTITY_TYPE.getId(caster.asEntity().getType()) + ")"),
                         caster.getMaster() != null ? Text.literal("Master: ").append(caster.getMaster().getDisplayName()) : Text.empty()
                 ),
-                caster.getSpellSlot().stream(SpellPredicate.ALL, false).flatMap(spell ->
+                caster.getSpellSlot().stream(SpellPredicate.ALL).flatMap(spell ->
                     Stream.of(
                             Text.literal("UUID: " + spell.getUuid()),
                             Text.literal("|>Type: ").append(Text.literal(spell.getTypeAndTraits().type().getId().toString()).styled(s -> s.withColor(spell.getTypeAndTraits().type().getColor()))),

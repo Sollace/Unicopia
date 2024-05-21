@@ -55,7 +55,9 @@ public class HornFeatureRenderer<E extends LivingEntity> implements AccessoryFea
                 return pony.getAbilities().getActiveStat()
                         .flatMap(Stat::getActiveAbility)
                         .map(ability -> ability.getColor(pony))
-                        .filter(i -> i != -1).or(() -> pony.getSpellSlot().get(SpellPredicate.IS_NOT_PLACED, false).map(spell -> spell.getTypeAndTraits().type().getColor()));
+                        .filter(i -> i != -1).or(() -> pony.getSpellSlot()
+                                .get(SpellPredicate.IS_NOT_PLACED)
+                                .map(spell -> spell.getTypeAndTraits().type().getColor()));
             }).ifPresent(color -> {
                 model.setState(true);
                 model.render(stack, ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayers.getMagicColored((0x99 << 24) | color), false, false), lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);

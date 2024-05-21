@@ -66,7 +66,7 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
                     Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", owner, t);
                 }
                 return Operation.REMOVE;
-            }, owner.isClient());
+            });
         } catch (Exception e) {
             Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", owner.asEntity(), e);
         }
@@ -80,12 +80,12 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
 
     @Override
     public boolean contains(@Nullable SpellPredicate<?> type) {
-        return read(type, true, false).findFirst().isPresent();
+        return read(type).findFirst().isPresent();
     }
 
     @Override
-    public <T extends Spell> Optional<T> get(@Nullable SpellPredicate<T> type, boolean update) {
-        return read(type, update, true).findFirst();
+    public <T extends Spell> Optional<T> get(@Nullable SpellPredicate<T> type) {
+        return read(type).findFirst();
     }
 
     @Override
@@ -108,8 +108,8 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
     }
 
     @Override
-    public boolean removeWhere(Predicate<Spell> test, boolean update) {
-        return reduce(update, (initial, spell) -> {
+    public boolean removeWhere(Predicate<Spell> test) {
+        return reduce((initial, spell) -> {
             if (!test.test(spell)) {
                 return initial;
             }
@@ -123,8 +123,8 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
     }
 
     @Override
-    public boolean forEach(Function<Spell, Operation> test, boolean update) {
-        return reduce(update, (initial, effect) -> {
+    public boolean forEach(Function<Spell, Operation> test) {
+        return reduce((initial, effect) -> {
             Operation op = test.apply(effect);
             if (op == Operation.REMOVE) {
                 spells.removeReference(effect);
@@ -136,13 +136,13 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
     }
 
     @Override
-    public Stream<Spell> stream(boolean update) {
-        return stream(null, update);
+    public Stream<Spell> stream() {
+        return stream(null);
     }
 
     @Override
-    public <T extends Spell> Stream<T> stream(@Nullable SpellPredicate<T> type, boolean update) {
-        return read(type, update, true);
+    public <T extends Spell> Stream<T> stream(@Nullable SpellPredicate<T> type) {
+        return read(type);
     }
 
     @Override
@@ -158,10 +158,11 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
     }
 
     @SuppressWarnings("unchecked")
-    private <T extends Spell> Stream<T> read(@Nullable SpellPredicate<T> type, boolean synchronize, boolean sendUpdate) {
-        if (synchronize && spells.fromNbt(owner.asEntity().getDataTracker().get(param)) && sendUpdate) {
-            write();
+    private <T extends Spell> Stream<T> read(@Nullable SpellPredicate<T> type) {
+        if (owner.isClient()) {
+            spells.fromNbt(owner.asEntity().getDataTracker().get(param));
         }
+        write();
 
         if (type == null) {
             return (Stream<T>)spells.getReferences();
@@ -169,9 +170,9 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
         return (Stream<T>)spells.getReferences().flatMap(s -> s.findMatches(type));
     }
 
-    private boolean reduce(boolean update, Alteration alteration) {
+    private boolean reduce(Alteration alteration) {
         boolean initial = false;
-        for (Spell i : read(null, update, false).toList()) {
+        for (Spell i : read(null).toList()) {
             initial = alteration.apply(initial, i);
         }
 
@@ -180,7 +181,7 @@ public class EffectSync implements SpellContainer, NbtSerialisable {
     }
 
     private void write() {
-        if (spells.isDirty()) {
+        if (spells.isDirty() && !owner.isClient()) {
             owner.asEntity().getDataTracker().set(param, spells.toNbt());
         }
     }

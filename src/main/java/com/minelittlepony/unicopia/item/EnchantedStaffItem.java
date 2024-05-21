@@ -47,7 +47,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
 
     public static SpellType<?> getSpellType(Entity entity, boolean remove) {
         if (entity instanceof CastSpellEntity cast) {
-            return cast.getSpellSlot().get(c -> !SpellPredicate.IS_PLACED.test(c), true)
+            return cast.getSpellSlot().get(c -> !SpellPredicate.IS_PLACED.test(c))
                     .map(Spell::getTypeAndTraits)
                     .map(CustomisedSpellType::type)
                     .orElse(SpellType.empty());

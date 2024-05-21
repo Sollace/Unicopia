@@ -242,7 +242,7 @@ public class Ether extends PersistentState {
                     spell = entity
                             .getOrEmpty(world)
                             .flatMap(Caster::of)
-                            .flatMap(caster -> caster.getSpellSlot().<T>get(s -> s.getUuid().equals(spellId), true))
+                            .flatMap(caster -> caster.getSpellSlot().<T>get(s -> s.getUuid().equals(spellId)))
                             .orElse(null);
 
                     if (spell != null) {

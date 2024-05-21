@@ -97,7 +97,7 @@ public class UnicornDispellAbility implements Ability<Pos> {
                 spell.setDead();
                 spell.tickDying(target);
                 return Operation.ofBoolean(!spell.isDead());
-            }, true);
+            });
         });
         return true;
     }

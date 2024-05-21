@@ -50,7 +50,7 @@ public record MsgCasterLookRequest (UUID spellId) implements Packet<PlayerEntity
         @Override
         public void handle(ServerPlayerEntity sender) {
             Pony.of(sender).getSpellSlot()
-                .get(SpellPredicate.IS_ORIENTED.withId(spellId), false)
+                .get(SpellPredicate.IS_ORIENTED.withId(spellId))
                 .ifPresent(spell -> {
                    spell.setOrientation(rotation);
                 });

@@ -479,7 +479,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         Race intrinsicRace = getSpecies();
         Race suppressedRace = getSuppressedRace();
         compositeRace = MetamorphosisStatusEffect.getEffectiveRace(entity, getSpellSlot()
-                .get(SpellPredicate.IS_MIMIC, true)
+                .get(SpellPredicate.IS_MIMIC)
                 .map(AbstractDisguiseSpell::getDisguise)
                 .map(EntityAppearance::getAppearance)
                 .flatMap(Pony::of)
@@ -495,7 +495,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public Optional<BlockPos> chooseClimbingPos() {
-        if (getObservedSpecies() == Race.CHANGELING && getSpellSlot().get(SpellPredicate.IS_DISGUISE, false).isEmpty()) {
+        if (getObservedSpecies() == Race.CHANGELING && getSpellSlot().get(SpellPredicate.IS_DISGUISE).isEmpty()) {
             if (acrobatics.isFaceClimbable(entity.getWorld(), entity.getBlockPos(), entity.getHorizontalFacing()) || acrobatics.canHangAt(entity.getBlockPos())) {
                 return Optional.of(entity.getBlockPos());
             }
@@ -718,7 +718,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     protected float getEffectiveFallDistance(float distance) {
-        boolean extraProtection = getSpellSlot().get(SpellType.SHIELD, false).isPresent();
+        boolean extraProtection = getSpellSlot().get(SpellType.SHIELD).isPresent();
 
         if (!entity.isCreative() && !entity.isSpectator()) {
 
@@ -745,7 +745,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         if (getObservedSpecies() == Race.KIRIN
                 && (stack.isIn(UTags.Items.COOLS_OFF_KIRINS) || PotionUtil.getPotion(stack) == Potions.WATER)) {
             getMagicalReserves().getCharge().multiply(0.5F);
-            getSpellSlot().get(SpellType.RAGE, false).ifPresent(RageAbilitySpell::setExtenguishing);
+            getSpellSlot().get(SpellType.RAGE).ifPresent(RageAbilitySpell::setExtenguishing);
         }
     }
 
@@ -758,7 +758,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public boolean subtractEnergyCost(double foodSubtract) {
 
-        if (getSpellSlot().get(SpellPredicate.IS_CORRUPTING, false).isPresent()) {
+        if (getSpellSlot().get(SpellPredicate.IS_CORRUPTING).isPresent()) {
             int corruptionTaken = (int)(foodSubtract * (AmuletSelectors.ALICORN_AMULET.test(entity) ? 0.9F : 0.5F));
             foodSubtract -= corruptionTaken;
             getCorruption().add(corruptionTaken);
@@ -888,13 +888,13 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         Race oldSuppressedRace = oldPlayer.getSuppressedRace();
 
         if (alive) {
-            oldPlayer.getSpellSlot().stream(true).forEach(getSpellSlot()::put);
+            oldPlayer.getSpellSlot().stream().forEach(getSpellSlot()::put);
         } else {
             if (forcedSwap) {
                 oldSuppressedRace = Race.UNSET;
                 Channel.SERVER_SELECT_TRIBE.sendToPlayer(new MsgTribeSelect(Race.allPermitted(entity), "gui.unicopia.tribe_selection.respawn"), (ServerPlayerEntity)entity);
             } else {
-                oldPlayer.getSpellSlot().stream(true).filter(SpellPredicate.IS_PLACED).forEach(getSpellSlot()::put);
+                oldPlayer.getSpellSlot().stream().filter(SpellPredicate.IS_PLACED).forEach(getSpellSlot()::put);
             }
 
             // putting it here instead of adding another injection point into ServerPlayerEntity.copyFrom()

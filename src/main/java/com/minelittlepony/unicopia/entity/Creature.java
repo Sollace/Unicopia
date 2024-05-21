@@ -311,7 +311,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
-        getSpellSlot().get(true).ifPresent(effect -> {
+        getSpellSlot().get().ifPresent(effect -> {
             compound.put("effect", Spell.writeNbt(effect));
         });
         compound.put("master", getMasterReference().toNBT());

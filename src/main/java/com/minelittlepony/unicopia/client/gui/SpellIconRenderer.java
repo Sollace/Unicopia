@@ -35,11 +35,11 @@ public interface SpellIconRenderer {
 
             DrawableUtil.drawArc(modelStack, radius, radius + 3, 0, DrawableUtil.TAU, color & 0xFFFFFF2F, false);
             DrawableUtil.drawArc(modelStack, radius + 3, radius + 4, 0, DrawableUtil.TAU, color & 0xFFFFFFAF, false);
-            pony.getSpellSlot().get(spell.and(SpellPredicate.IS_TIMED), false).map(TimedSpell::getTimer).ifPresent(timer -> {
+            pony.getSpellSlot().get(spell.and(SpellPredicate.IS_TIMED)).map(TimedSpell::getTimer).ifPresent(timer -> {
                 DrawableUtil.drawArc(modelStack, radius, radius + 3, 0, DrawableUtil.TAU * timer.getPercentTimeRemaining(client.getTickDelta()), 0xFFFFFFFF, false);
             });
 
-            long count = pony.getSpellSlot().stream(spell, false).count();
+            long count = pony.getSpellSlot().stream(spell).count();
             if (count > 1) {
                 modelStack.push();
                 modelStack.translate(1, 1, 900);

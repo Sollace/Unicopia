@@ -210,7 +210,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             return FlightType.ARTIFICIAL;
         }
 
-        return pony.getSpellSlot().get(true)
+        return pony.getSpellSlot().get()
             .filter(effect -> !effect.isDead() && effect instanceof FlightType.Provider)
             .map(effect -> ((FlightType.Provider)effect).getFlightType())
             .filter(FlightType::isPresent)

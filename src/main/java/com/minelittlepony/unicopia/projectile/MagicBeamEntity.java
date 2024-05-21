@@ -114,7 +114,7 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
 
     @Override
     public Affinity getAffinity() {
-        return getSpellSlot().get(true).map(Affine::getAffinity).orElse(Affinity.NEUTRAL);
+        return getSpellSlot().get().map(Affine::getAffinity).orElse(Affinity.NEUTRAL);
     }
 
     @Override
@@ -163,7 +163,7 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
         super.writeCustomDataToNbt(compound);
         compound.putBoolean("hydrophobic", getHydrophobic());
         physics.toNBT(compound);
-        getSpellSlot().get(true).ifPresent(effect -> {
+        getSpellSlot().get().ifPresent(effect -> {
             compound.put("effect", Spell.writeNbt(effect));
         });
     }

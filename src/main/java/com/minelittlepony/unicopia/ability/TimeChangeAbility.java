@@ -57,9 +57,7 @@ public class TimeChangeAbility implements Ability<Rot> {
             return false;
         }
 
-        if (player.getSpellSlot().contains(SpellType.TIME_CONTROL)) {
-            player.getSpellSlot().removeWhere(SpellType.TIME_CONTROL, true);
-        } else {
+        if (!player.getSpellSlot().removeWhere(SpellType.TIME_CONTROL)) {
             SpellType.TIME_CONTROL.withTraits().apply(player, CastingMethod.INNATE).update(player, data.applyTo(player));
         }
 

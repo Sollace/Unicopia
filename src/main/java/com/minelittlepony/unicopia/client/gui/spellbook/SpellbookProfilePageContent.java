@@ -105,7 +105,7 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
         int color = 0x10404000 | alpha;
         int xpColor = 0xAA0040FF | ((int)((0.3F + 0.7F * xpPercentage) * 0xFF) & 0xFF) << 16;
         int manaColor = 0xFF00F040;
-        if (pony.getSpellSlot().get(SpellPredicate.IS_CORRUPTING, false).isPresent()) {
+        if (pony.getSpellSlot().get(SpellPredicate.IS_CORRUPTING).isPresent()) {
             manaColor = ColorHelper.lerp(Math.abs(MathHelper.sin(pony.asEntity().age / 15F)), manaColor, 0xFF0030F0);
         }
         manaColor |= (int)((0.3F + 0.7F * alphaF) * 0x40) << 16;

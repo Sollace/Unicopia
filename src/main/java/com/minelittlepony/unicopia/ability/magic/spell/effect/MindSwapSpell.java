@@ -60,8 +60,8 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
                 LivingEntity master = caster.getMaster();
                 Caster<?> other = Caster.of(e).get();
 
-                other.getSpellSlot().removeIf(SpellType.MIMIC, true);
-                caster.getSpellSlot().removeIf(getType(), true);
+                other.getSpellSlot().removeIf(SpellType.MIMIC);
+                caster.getSpellSlot().removeIf(getType());
 
                 if (!isValidTarget(master) || !isValidTarget(e)) {
                     master.damage(caster.asWorld().getDamageSources().magic(), Float.MAX_VALUE);

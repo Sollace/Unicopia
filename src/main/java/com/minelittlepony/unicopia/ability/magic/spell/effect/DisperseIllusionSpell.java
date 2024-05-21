@@ -38,7 +38,7 @@ public class DisperseIllusionSpell extends AbstractAreaEffectSpell {
         }
 
         source.findAllSpellsInRange(range).forEach(e -> {
-            e.getSpellSlot().get(SpellPredicate.CAN_SUPPRESS, false)
+            e.getSpellSlot().get(SpellPredicate.CAN_SUPPRESS)
                 .filter(spell -> spell.isVulnerable(source, this))
                 .ifPresent(spell -> {
                 spell.onSuppressed(source, 1 + getTraits().get(Trait.STRENGTH));

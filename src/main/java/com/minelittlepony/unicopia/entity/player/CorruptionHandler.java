@@ -22,7 +22,7 @@ public class CorruptionHandler implements Tickable {
     }
 
     public boolean hasCorruptingMagic() {
-        return pony.getSpellSlot().get(SpellPredicate.IS_CORRUPTING, false).isPresent() || UItems.ALICORN_AMULET.isApplicable(pony.asEntity());
+        return pony.getSpellSlot().get(SpellPredicate.IS_CORRUPTING).isPresent() || UItems.ALICORN_AMULET.isApplicable(pony.asEntity());
     }
 
     @Override

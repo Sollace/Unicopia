@@ -51,7 +51,7 @@ class EntityReplacementManager implements Disguise {
             return Optional.of(this);
         }
 
-        return caster.getSpellSlot().get(SpellPredicate.IS_DISGUISE, false).map(Disguise.class::cast);
+        return caster.getSpellSlot().get(SpellPredicate.IS_DISGUISE).map(Disguise.class::cast);
     }
 
     private List<EntityType<?>> getMobTypePool(EntityType<?> type) {

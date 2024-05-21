@@ -290,7 +290,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     public boolean canBeSeenBy(Entity entity) {
         return !isInvisible()
             && getSpellSlot()
-            .get(SpellPredicate.IS_DISGUISE, true)
+            .get(SpellPredicate.IS_DISGUISE)
             .filter(spell -> spell.getDisguise().getAppearance() == entity)
             .isEmpty();
     }
@@ -424,7 +424,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     public Optional<BlockPos> chooseClimbingPos() {
-        return getSpellSlot().get(SpellPredicate.IS_DISGUISE, false)
+        return getSpellSlot().get(SpellPredicate.IS_DISGUISE)
                 .map(AbstractDisguiseSpell::getDisguise)
                 .filter(EntityAppearance::canClimbWalls)
                 .map(v -> entity.getBlockPos());
@@ -459,7 +459,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public boolean onProjectileImpact(ProjectileEntity projectile) {
-        return getSpellSlot().get(true)
+        return getSpellSlot().get()
                 .filter(effect -> !effect.isDead()
                         && effect instanceof ProjectileImpactListener
                         && ((ProjectileImpactListener)effect).onProjectileImpact(projectile))
@@ -469,7 +469,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     public float onImpact(float distance, float damageMultiplier, DamageSource cause) {
         float fallDistance = landEvent.fire(getEffectiveFallDistance(distance));
 
-        getSpellSlot().get(SpellPredicate.IS_DISGUISE, false).ifPresent(spell -> {
+        getSpellSlot().get(SpellPredicate.IS_DISGUISE).ifPresent(spell -> {
             spell.getDisguise().onImpact(this, fallDistance, damageMultiplier, cause);
         });
         return fallDistance;

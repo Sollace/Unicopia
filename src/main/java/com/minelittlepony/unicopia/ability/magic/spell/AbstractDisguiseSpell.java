@@ -71,7 +71,7 @@ public abstract class AbstractDisguiseSpell extends AbstractSpell implements Dis
     public static Entity getAppearance(Entity e) {
         return e instanceof PlayerEntity ? Pony.of((PlayerEntity)e)
                 .getSpellSlot()
-                .get(SpellPredicate.IS_DISGUISE, true)
+                .get(SpellPredicate.IS_DISGUISE)
                 .map(AbstractDisguiseSpell::getDisguise)
                 .map(EntityAppearance::getAppearance)
                 .orElse(e) : e;
