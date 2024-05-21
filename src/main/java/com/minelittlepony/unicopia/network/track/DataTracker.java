@@ -66,8 +66,7 @@ public class DataTracker {
     }
 
     @SuppressWarnings("unchecked")
-    @Nullable
-    synchronized void getDirtyPairs(List<MsgTrackedValues.TrackerEntries> output) {
+    private void updateTrackables() {
         for (var entry : persistentObjects.int2ObjectEntrySet()) {
             int key = entry.getIntKey();
             TrackableObject.Status status = entry.getValue().getStatus();
@@ -76,19 +75,31 @@ public class DataTracker {
                 dirtyIndices.add(key);
             }
         }
+    }
 
+    synchronized void getInitialPairs(List<MsgTrackedValues.TrackerEntries> output) {
+        updateTrackables();
+        output.add(new MsgTrackedValues.TrackerEntries(id, true, codecs));
+    }
+
+    @Nullable
+    synchronized void getDirtyPairs(List<MsgTrackedValues.TrackerEntries> output) {
         if (initial) {
             initial = false;
             dirtyIndices = new IntOpenHashSet();
-            output.add(new MsgTrackedValues.TrackerEntries(id, true, codecs));
-        } else if (!dirtyIndices.isEmpty()) {
-            IntSet toSend = dirtyIndices;
-            dirtyIndices = new IntOpenHashSet();
-            List<Pair<?>> pairs = new ArrayList<>();
-            for (int i : toSend) {
-                pairs.add(codecs.get(i));
+            getInitialPairs(output);
+        } else {
+            updateTrackables();
+
+            if (!dirtyIndices.isEmpty()) {
+                IntSet toSend = dirtyIndices;
+                dirtyIndices = new IntOpenHashSet();
+                List<Pair<?>> pairs = new ArrayList<>();
+                for (int i : toSend) {
+                    pairs.add(codecs.get(i));
+                }
+                output.add(new MsgTrackedValues.TrackerEntries(id, false, pairs));
             }
-            output.add(new MsgTrackedValues.TrackerEntries(id, false, pairs));
         }
     }
 

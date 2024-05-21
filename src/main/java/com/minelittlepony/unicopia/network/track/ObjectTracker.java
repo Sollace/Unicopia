@@ -73,6 +73,17 @@ public class ObjectTracker<T extends TrackableObject> implements NbtSerialisable
         quickAccess = Map.copyOf(trackedObjects);
     }
 
+    synchronized void getInitialPairs(List<MsgTrackedValues.TrackerObjects> output) {
+        if (!trackedObjects.isEmpty()) {
+            Map<UUID, NbtCompound> trackableCompounds = new HashMap<>();
+            quickAccess.entrySet().forEach(object -> {
+                trackableCompounds.put(object.getKey(), object.getValue().toTrackedNbt());
+            });
+
+            output.add(new MsgTrackedValues.TrackerObjects(id, Set.of(), trackableCompounds));
+        }
+    }
+
     synchronized void getDirtyPairs(List<MsgTrackedValues.TrackerObjects> output) {
         if (!trackedObjects.isEmpty()) {
             Map<UUID, NbtCompound> trackableCompounds = new HashMap<>();

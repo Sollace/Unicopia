@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.network.track;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.minelittlepony.unicopia.network.Channel;
@@ -9,6 +10,9 @@ import com.minelittlepony.unicopia.util.Tickable;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.entity.Entity;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public class DataTrackerManager implements Tickable {
     private final Entity entity;
@@ -45,17 +49,12 @@ public class DataTrackerManager implements Tickable {
             return;
         }
 
-        List<MsgTrackedValues.TrackerEntries> toTransmit = new ArrayList<>();
-        List<MsgTrackedValues.TrackerObjects> objToTransmit = new ArrayList<>();
-
         synchronized (this) {
-            for (var entry : trackers) {
-                entry.getDirtyPairs(toTransmit);
-            }
+            List<MsgTrackedValues.TrackerEntries> toTransmit = new ArrayList<>();
+            List<MsgTrackedValues.TrackerObjects> objToTransmit = new ArrayList<>();
 
-            for (var entry : objectTrackers) {
-                entry.getDirtyPairs(objToTransmit);
-            }
+            for (var entry : trackers) entry.getDirtyPairs(toTransmit);
+            for (var entry : objectTrackers) entry.getDirtyPairs(objToTransmit);
 
             if (!toTransmit.isEmpty() || !objToTransmit.isEmpty()) {
                 MsgTrackedValues packet = new MsgTrackedValues(
@@ -64,6 +63,25 @@ public class DataTrackerManager implements Tickable {
                         toTransmit
                 );
                 Channel.SERVER_TRACKED_ENTITY_DATA.sendToSurroundingPlayers(packet, entity);
+            }
+        }
+    }
+
+    public synchronized void sendInitial(ServerPlayerEntity player, Consumer<Packet<ClientPlayPacketListener>> sender) {
+        synchronized (this) {
+            List<MsgTrackedValues.TrackerEntries> toTransmit = new ArrayList<>();
+            List<MsgTrackedValues.TrackerObjects> objToTransmit = new ArrayList<>();
+
+            for (var entry : trackers) entry.getInitialPairs(toTransmit);
+            for (var entry : objectTrackers) entry.getInitialPairs(objToTransmit);
+
+            if (!toTransmit.isEmpty() || !objToTransmit.isEmpty()) {
+                MsgTrackedValues packet = new MsgTrackedValues(
+                        entity.getId(),
+                        objToTransmit,
+                        toTransmit
+                );
+                sender.accept(Channel.SERVER_TRACKED_ENTITY_DATA.toPacket(packet));
             }
         }
     }
