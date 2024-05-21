@@ -44,7 +44,7 @@ public final class SpellReference<T extends Spell> implements NbtSerialisable {
     public void toNBT(NbtCompound compound) {
         if (spell != null && !spell.isDead()) {
             spell.toNBT(compound);
-            spell.getTypeAndTraits().type().toNbt(compound);
+            spell.getTypeAndTraits().toNbt(compound);
         }
     }
 
