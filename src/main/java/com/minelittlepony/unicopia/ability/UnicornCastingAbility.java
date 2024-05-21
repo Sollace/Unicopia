@@ -107,10 +107,14 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
                     }
                 }
 
-                boolean hasExact = !spell.isStackable() && player.getSpellSlot().contains(s -> !s.getTypeAndTraits().isStackable() && spell.test(s));
-                boolean removed = !spell.isStackable() && player.getSpellSlot().removeWhere(s -> !s.getTypeAndTraits().isStackable() && s.findMatches(spell.type()).findAny().isPresent());
+                if (spell.isEmpty()) {
+                    return false;
+                }
+
+                boolean has = !spell.isStackable() && player.getSpellSlot().contains(spell);
+                boolean removed = !spell.isStackable() && player.getSpellSlot().removeWhere(spell.type());
                 player.subtractEnergyCost(removed ? 2 : 4);
-                if (!hasExact && !spell.isEmpty()) {
+                if (!has) {
                     Spell s = spell.apply(player, CastingMethod.DIRECT);
                     if (s == null) {
                         player.spawnParticles(ParticleTypes.LARGE_SMOKE, 6);
