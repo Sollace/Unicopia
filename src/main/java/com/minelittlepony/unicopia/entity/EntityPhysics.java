@@ -6,7 +6,6 @@ import com.minelittlepony.unicopia.network.track.Trackable;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.Tickable;
-import com.minelittlepony.unicopia.util.serialization.PacketCodec;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
@@ -31,7 +30,7 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
     public EntityPhysics(T entity) {
         this.entity = entity;
         this.tracker = Trackable.of(entity).getDataTrackers().getPrimaryTracker();
-        gravity = tracker.startTracking(TrackableDataType.of(PacketCodec.FLOAT), 1F);
+        gravity = tracker.startTracking(TrackableDataType.FLOAT, 1F);
     }
 
     @Override
@@ -96,12 +95,12 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
 
     @Override
     public void setBaseGravityModifier(float constant) {
-        tracker.set(gravity, constant);
+        gravity.set(constant);
     }
 
     @Override
     public float getBaseGravityModifier() {
-        return tracker.get(gravity);
+        return gravity.get();
     }
 
     @Override

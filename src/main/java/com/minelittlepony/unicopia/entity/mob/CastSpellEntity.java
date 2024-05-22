@@ -12,6 +12,8 @@ import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.Physics;
+import com.minelittlepony.unicopia.network.track.Trackable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -50,6 +52,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
     public CastSpellEntity(EntityType<?> type, World world) {
         super(type, world);
         ignoreCameraFrustum = true;
+        Trackable.of(this).getDataTrackers().getPrimaryTracker().startTracking(owner);
     }
 
     @Override

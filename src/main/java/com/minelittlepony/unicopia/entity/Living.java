@@ -40,7 +40,6 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 import com.minelittlepony.unicopia.server.world.DragonBreathStore;
 import com.minelittlepony.unicopia.util.*;
-import com.minelittlepony.unicopia.util.serialization.PacketCodec;
 
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import net.fabricmc.fabric.api.util.TriState;
@@ -116,7 +115,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         this.landedHeuristic = addTicker(new Interactable(entity::isOnGround));
         this.jumpingHeuristic = addTicker(new Interactable(((LivingEntityDuck)entity)::isJumping));
 
-        carrierId = tracker.startTracking(TrackableDataType.of(PacketCodec.UUID), Util.NIL_UUID);
+        carrierId = tracker.startTracking(TrackableDataType.UUID, Util.NIL_UUID);
     }
 
     public <Q extends Tickable> Q addTicker(Q tickable) {
@@ -171,12 +170,12 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     public Optional<UUID> getCarrierId() {
-        UUID carrierId = tracker.get(this.carrierId);
+        UUID carrierId = this.carrierId.get();
         return carrierId == Util.NIL_UUID ? Optional.empty() : Optional.of(carrierId);
     }
 
     public void setCarrier(UUID carrier) {
-        tracker.set(this.carrierId, carrier == null ? Util.NIL_UUID : carrier);
+        carrierId.set(carrier == null ? Util.NIL_UUID : carrier);
     }
 
     public void setCarrier(Entity carrier) {

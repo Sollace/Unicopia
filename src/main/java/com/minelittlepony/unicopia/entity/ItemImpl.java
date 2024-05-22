@@ -8,7 +8,6 @@ import com.minelittlepony.unicopia.item.enchantment.WantItNeedItEnchantment;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.DataTrackerManager;
 import com.minelittlepony.unicopia.network.track.Trackable;
-import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -44,7 +43,7 @@ public class ItemImpl implements Equine<ItemEntity> {
         this.tracker = trackers.getPrimaryTracker();
         this.physics = new ItemPhysics(owner);
 
-        race = tracker.startTracking(TrackableDataType.of(Race.PACKET_CODEC), Race.HUMAN);
+        race = tracker.startTracking(Race.TRACKABLE_TYPE, Race.HUMAN);
     }
 
     @Override
@@ -141,12 +140,12 @@ public class ItemImpl implements Equine<ItemEntity> {
 
     @Override
     public Race getSpecies() {
-        return tracker.get(race);
+        return race.get();
     }
 
     @Override
     public void setSpecies(Race race) {
-        tracker.set(this.race, race);
+        this.race.set(race);
     }
 
     @Override

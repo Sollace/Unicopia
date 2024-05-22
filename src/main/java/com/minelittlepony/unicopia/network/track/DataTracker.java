@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.util.serialization.PacketCodec;
-
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -31,13 +29,13 @@ public class DataTracker {
     }
 
     public <T extends TrackableObject> Entry<NbtCompound> startTracking(T value) {
-        Entry<NbtCompound> entry = startTracking(TrackableDataType.of(PacketCodec.NBT), value.toTrackedNbt());
+        Entry<NbtCompound> entry = startTracking(TrackableDataType.NBT, value.toTrackedNbt());
         persistentObjects.put(entry.id(), value);
         return entry;
     }
 
     public <T> Entry<T> startTracking(TrackableDataType<T> type, T initialValue) {
-        Entry<T> entry = new Entry<>(codecs.size());
+        Entry<T> entry = new Entry<>(this, codecs.size());
         codecs.add(new Pair<>(entry.id(), type, initialValue));
         return entry;
     }
@@ -47,11 +45,11 @@ public class DataTracker {
         return (Pair<T>)codecs.get(entry.id());
     }
 
-    public <T> T get(Entry<T> entry) {
+    private <T> T get(Entry<T> entry) {
         return getPair(entry).value;
     }
 
-    public <T> void set(Entry<T> entry, T value) {
+    private <T> void set(Entry<T> entry, T value) {
         if (manager.isClient) {
             return;
         }
@@ -128,7 +126,15 @@ public class DataTracker {
         }
     }
 
-    public record Entry<T>(int id) {}
+    public record Entry<T>(DataTracker tracker, int id) {
+        public T get() {
+            return tracker.get(this);
+        }
+
+        public void set(T t) {
+            tracker.set(this, t);
+        }
+    }
     static class Pair<T> {
         private final TrackableDataType<T> type;
         public final int id;
@@ -142,7 +148,7 @@ public class DataTracker {
 
         public Pair(PacketByteBuf buffer) {
             this.id = buffer.readInt();
-            this.type = TrackableDataType.of(buffer.readInt());
+            this.type = TrackableDataType.of(buffer);
             this.value = type.read(buffer);
         }
 

@@ -3,8 +3,6 @@ package com.minelittlepony.unicopia.entity.player;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
-import com.minelittlepony.unicopia.util.serialization.PacketCodec;
-
 import net.minecraft.sound.*;
 import net.minecraft.util.math.MathHelper;
 
@@ -12,7 +10,6 @@ class PlayerLevelStore implements Levelled.LevelStore {
 
     private final Pony pony;
 
-    private final DataTracker tracker;
     private final DataTracker.Entry<Integer> dataEntry;
 
     private final boolean upgradeMana;
@@ -21,8 +18,7 @@ class PlayerLevelStore implements Levelled.LevelStore {
 
     PlayerLevelStore(Pony pony, DataTracker tracker, boolean upgradeMana, SoundEvent levelUpSound) {
         this.pony = pony;
-        this.tracker = tracker;
-        this.dataEntry = tracker.startTracking(TrackableDataType.of(PacketCodec.INT), 0);
+        this.dataEntry = tracker.startTracking(TrackableDataType.INT, 0);
         this.upgradeMana = upgradeMana;
         this.levelUpSound = levelUpSound;
     }
@@ -45,11 +41,11 @@ class PlayerLevelStore implements Levelled.LevelStore {
 
     @Override
     public int get() {
-        return tracker.get(dataEntry);
+        return dataEntry.get();
     }
 
     @Override
     public void set(int level) {
-        tracker.set(dataEntry, MathHelper.clamp(level, 0, getMax()));
+        dataEntry.set(MathHelper.clamp(level, 0, getMax()));
     }
 }

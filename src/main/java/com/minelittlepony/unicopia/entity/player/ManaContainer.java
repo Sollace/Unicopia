@@ -8,8 +8,6 @@ import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
-import com.minelittlepony.unicopia.util.serialization.PacketCodec;
-
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.MathHelper;
 
@@ -153,7 +151,6 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
     }
 
     class BarInst implements Bar, NbtSerialisable {
-        private final DataTracker tracker;
         private final DataTracker.Entry<Float> marker;
         private final float max;
 
@@ -162,17 +159,16 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
         private float prevValue;
 
         BarInst(DataTracker tracker, float max, float initial) {
-            this.tracker = tracker;
             this.max = max;
             this.trailingValue = initial;
             this.prevTrailingValue = initial;
             this.prevValue = initial;
-            this.marker = tracker.startTracking(TrackableDataType.of(PacketCodec.FLOAT), max * trailingValue);
+            this.marker = tracker.startTracking(TrackableDataType.FLOAT, max * trailingValue);
         }
 
         @Override
         public float get() {
-            return applyLimits(tracker.get(marker));
+            return applyLimits(marker.get());
         }
 
         @Override
@@ -191,7 +187,7 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
         }
 
         private void load(float value) {
-            tracker.set(marker, value);
+            marker.set(value);
         }
 
         protected float getInitial(float initial) {

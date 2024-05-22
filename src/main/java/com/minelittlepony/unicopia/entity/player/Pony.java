@@ -35,7 +35,6 @@ import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.*;
 import com.minelittlepony.unicopia.network.*;
 import com.minelittlepony.unicopia.network.track.DataTracker;
-import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.common.util.animation.LinearInterpolator;
 import com.google.common.collect.Streams;
@@ -117,8 +116,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 sender.accept(Channel.SERVER_PLAYER_CAPABILITIES.toPacket(new MsgPlayerCapabilities(this)));
             }
         });
-        race = this.tracker.startTracking(TrackableDataType.of(Race.PACKET_CODEC), Race.HUMAN);
-        suppressedRace = this.tracker.startTracking(TrackableDataType.of(Race.PACKET_CODEC), Race.HUMAN);
+        race = this.tracker.startTracking(Race.TRACKABLE_TYPE, Race.HUMAN);
+        suppressedRace = this.tracker.startTracking(Race.TRACKABLE_TYPE, Race.HUMAN);
         this.levels = new PlayerLevelStore(this, tracker, true, USounds.Vanilla.ENTITY_PLAYER_LEVELUP);
         this.corruption = new PlayerLevelStore(this, tracker, false, USounds.ENTITY_PLAYER_CORRUPTION);
         this.mana = addTicker(new ManaContainer(this, tracker));
@@ -203,7 +202,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
      */
     @Override
     public Race getSpecies() {
-        return tracker.get(race);
+        return race.get();
     }
 
     /**
@@ -227,7 +226,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public void setSpecies(Race race) {
         race = race.validate(entity);
         Race current = getSpecies();
-        tracker.set(this.race, race);
+        this.race.set(race);
         if (race != current) {
             clearSuppressedRace();
         }
@@ -240,7 +239,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public void setSuppressedRace(Race race) {
-        tracker.set(suppressedRace, race.validate(entity));
+        suppressedRace.set(race.validate(entity));
     }
 
     public void clearSuppressedRace() {
@@ -248,7 +247,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public Race getSuppressedRace() {
-        return tracker.get(suppressedRace);
+        return suppressedRace.get();
     }
 
     public TraitDiscovery getDiscoveries() {

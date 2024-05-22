@@ -23,7 +23,6 @@ import com.minelittlepony.unicopia.entity.ai.WantItTakeItGoal;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
-import com.minelittlepony.unicopia.util.serialization.PacketCodec;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -62,7 +61,6 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
                 .isEmpty();
     });
 
-    protected final DataTracker.Entry<NbtCompound> master;
     protected final DataTracker.Entry<Integer> eating;
     protected final DataTracker.Entry<Boolean> discorded;
     protected final DataTracker.Entry<Boolean> smitten;
@@ -73,16 +71,15 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         addTicker(physics);
         addTicker(this::updateConsumption);
 
-        master = tracker.startTracking(TrackableDataType.of(PacketCodec.NBT), owner.toNBT());
-        eating = tracker.startTracking(TrackableDataType.of(PacketCodec.INT), 0);
-        discorded = tracker.startTracking(TrackableDataType.of(PacketCodec.BOOLEAN), false);
-        smitten = tracker.startTracking(TrackableDataType.of(PacketCodec.BOOLEAN), false);
+        tracker.startTracking(owner);
+        eating = tracker.startTracking(TrackableDataType.INT, 0);
+        discorded = tracker.startTracking(TrackableDataType.BOOLEAN, false);
+        smitten = tracker.startTracking(TrackableDataType.BOOLEAN, false);
     }
 
     @Override
     public void setMaster(LivingEntity owner) {
         this.owner.set(owner);
-        tracker.set(master, this.owner.toNBT());
         if (owner != null) {
             targets.ifPresent(this::initMinionAi);
         }
@@ -93,20 +90,20 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     }
 
     public boolean isDiscorded() {
-        return tracker.get(this.discorded);
+        return discorded.get();
     }
 
     public boolean isSmitten() {
-        return tracker.get(this.smitten);
+        return smitten.get();
     }
 
     public void setSmitten(boolean smitten) {
         smittenTicks = smitten ? 20 : 0;
-        tracker.set(this.smitten, smitten);
+        this.smitten.set(smitten);
     }
 
     public void setDiscorded(boolean discorded) {
-        tracker.set(this.discorded, discorded);
+        this.discorded.set(discorded);
         discordedChanged = true;
     }
 
@@ -118,9 +115,6 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     @Override
     public EntityReference<LivingEntity> getMasterReference() {
-        if (master != null) {
-            owner.fromNBT(tracker.get(master));
-        }
         return owner;
     }
 
@@ -232,10 +226,10 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     private void updateConsumption() {
         if (isClient()) {
-            eatTimer = tracker.get(eating);
+            eatTimer = eating.get();
         } else if (eatMuffinGoal != null) {
             eatTimer = eatMuffinGoal.getTimer();
-            tracker.set(eating, eatTimer);
+            eating.set(eatTimer);
         }
     }
 
@@ -324,9 +318,6 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         }
         if (compound.contains("master", NbtElement.COMPOUND_TYPE)) {
             owner.fromNBT(compound.getCompound("master"));
-            if (master != null) {
-                tracker.set(master, owner.toNBT());
-            }
             if (owner.isSet()) {
                 targets.ifPresent(this::initMinionAi);
             }

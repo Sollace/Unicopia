@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
+import com.minelittlepony.unicopia.network.track.TrackableObject;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,7 +30,7 @@ import net.minecraft.world.World;
  *
  * @param <T> The type of the entity this reference points to.
  */
-public class EntityReference<T extends Entity> implements NbtSerialisable {
+public class EntityReference<T extends Entity> implements NbtSerialisable, TrackableObject {
     private static final Serializer<?> SERIALIZER = Serializer.of(EntityReference::new);
 
     @SuppressWarnings("unchecked")
@@ -41,6 +42,8 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
     private EntityValues<T> reference;
 
     private WeakReference<T> directReference = new WeakReference<>(null);
+
+    private boolean dirty = true;
 
     public EntityReference() {}
 
@@ -61,13 +64,14 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
     public boolean set(@Nullable T entity) {
         this.directReference = new WeakReference<>(entity);
         this.reference = entity == null ? null : new EntityValues<>(entity);
+        this.dirty = true;
         return entity != null;
     }
 
     public Optional<EntityValues<T>> getTarget() {
         T value = directReference.get();
         if (value != null) {
-            set(value);
+            this.reference = new EntityValues<>(value);
         }
         return Optional.ofNullable(reference);
     }
@@ -113,11 +117,41 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
     @Override
     public void fromNBT(NbtCompound tag) {
         this.reference = tag.contains("uuid") ? new EntityValues<>(tag) : null;
+        this.dirty = true;
     }
 
     @Override
     public int hashCode() {
-        return getTarget().map(EntityValues::uuid).orElse(Util.NIL_UUID).hashCode();
+        return getUuid().hashCode();
+    }
+
+    @Override
+    public UUID getUuid() {
+        return getTarget().map(EntityValues::uuid).orElse(Util.NIL_UUID);
+    }
+
+    @Override
+    public Status getStatus() {
+        if (dirty) {
+            dirty = false;
+            return Status.UPDATED;
+        }
+        return Status.DEFAULT;
+    }
+
+    @Override
+    public NbtCompound toTrackedNbt() {
+        return toNBT();
+    }
+
+    @Override
+    public void readTrackedNbt(NbtCompound compound) {
+        fromNBT(compound);
+    }
+
+    @Override
+    public void discard(boolean immediate) {
+        set(null);
     }
 
     public record EntityValues<T extends Entity>(

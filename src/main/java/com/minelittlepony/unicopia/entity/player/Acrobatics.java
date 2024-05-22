@@ -12,8 +12,6 @@ import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
-import com.minelittlepony.unicopia.util.serialization.PacketCodec;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SideShapeType;
@@ -36,14 +34,12 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     private final Pony pony;
     private final PlayerEntity entity;
 
-    private final DataTracker tracker;
     private final DataTracker.Entry<Optional<BlockPos>> hangingPos;
 
     public Acrobatics(Pony pony, DataTracker tracker) {
         this.pony = pony;
-        this.tracker = tracker;
         this.entity = pony.asEntity();
-        this.hangingPos = tracker.startTracking(TrackableDataType.of(PacketCodec.OPTIONAL_POS), Optional.empty());
+        this.hangingPos = tracker.startTracking(TrackableDataType.OPTIONAL_POS, Optional.empty());
         pony.addTicker(this::checkDislodge);
     }
 
@@ -146,7 +142,7 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     }
 
     public Optional<BlockPos> getHangingPosition() {
-        return tracker.get(hangingPos);
+        return hangingPos.get();
     }
 
     public boolean isHanging() {
@@ -154,13 +150,13 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     }
 
     public void stopHanging() {
-        tracker.set(hangingPos, Optional.empty());
+        hangingPos.set(Optional.empty());
         entity.calculateDimensions();
         ticksHanging = 0;
     }
 
     public void startHanging(BlockPos pos) {
-        tracker.set(hangingPos, Optional.of(pos));
+        hangingPos.set(Optional.of(pos));
         entity.teleport(pos.getX() + 0.5, pos.getY() - 1, pos.getZ() + 0.5);
         entity.setVelocity(Vec3d.ZERO);
         entity.setSneaking(false);
@@ -201,6 +197,6 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     @Override
     public void fromNBT(NbtCompound compound) {
         ticksHanging = compound.getInt("ticksHanging");
-        tracker.set(hangingPos, NbtSerialisable.BLOCK_POS.readOptional("hangingPosition", compound));
+        hangingPos.set(NbtSerialisable.BLOCK_POS.readOptional("hangingPosition", compound));
     }
 }
