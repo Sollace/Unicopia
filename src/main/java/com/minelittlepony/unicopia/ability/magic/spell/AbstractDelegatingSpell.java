@@ -48,24 +48,26 @@ public abstract class AbstractDelegatingSpell implements Spell {
 
     @Override
     public void setDead() {
-        Spell spell = delegate.get();
-        if (spell != null) {
-            spell.setDead();
+        if (delegate.get() instanceof Spell p) {
+            p.setDead();
         }
     }
 
     @Override
     public void tickDying(Caster<?> caster) {
+        if (delegate.get() instanceof Spell p) {
+            p.tickDying(caster);
+        }
     }
 
     @Override
     public boolean isDead() {
-        return delegate.get() == null || delegate.get().isDead();
+        return !(delegate.get() instanceof Spell p) || p.isDead();
     }
 
     @Override
     public boolean isDying() {
-        return false;
+        return delegate.get() instanceof Spell p && p.isDying();
     }
 
     @Override
