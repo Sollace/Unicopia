@@ -3,6 +3,9 @@ package com.minelittlepony.unicopia.entity.effect;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
 public interface EffectUtils {
     static boolean isPoisoned(LivingEntity entity) {
@@ -45,5 +48,12 @@ public interface EffectUtils {
             return true;
         }
         return false;
+    }
+
+    static Text formatModifierChange(String modifierName, float change, boolean isDetrimental) {
+        return Text.translatable("attribute.modifier." + (change > 0 ? "plus" : "take") + ".addition",
+                ItemStack.MODIFIER_FORMAT.format(Math.abs(change)),
+                Text.translatable(modifierName)
+        ).formatted((isDetrimental ? change : -change) < 0 ? Formatting.DARK_GREEN : Formatting.RED);
     }
 }

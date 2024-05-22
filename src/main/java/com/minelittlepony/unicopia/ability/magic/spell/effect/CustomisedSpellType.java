@@ -1,15 +1,24 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.client.TextHelper;
+import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.TypedActionResult;
 
 public record CustomisedSpellType<T extends Spell> (
@@ -68,6 +77,27 @@ public record CustomisedSpellType<T extends Spell> (
 
     public ItemStack getDefaultStack() {
         return traits.applyTo(type.getDefualtStack());
+    }
+
+    public void appendTooltip(List<Text> lines) {
+        MutableText lore = Text.translatable(type().getTranslationKey() + ".lore").formatted(type().getAffinity().getColor());
+
+        if (!InteractionManager.getInstance().getClientSpecies().canCast()) {
+            lore = lore.formatted(Formatting.OBFUSCATED);
+        }
+        lines.addAll(TextHelper.wrap(lore, 180).toList());
+        float corruption = ((int)traits().getCorruption() * 10) + type().getAffinity().getCorruption();
+        List<Text> modifiers = new ArrayList<>();
+        type.getTooltip().accept(this, modifiers);
+        if (corruption != 0) {
+            modifiers.add(EffectUtils.formatModifierChange("affinity.unicopia.corruption", corruption, true));
+        }
+        if (!modifiers.isEmpty()) {
+            lines.add(Text.empty());
+            lines.add(Text.translatable("affinity.unicopia.when_cast").formatted(Formatting.GRAY));
+            lines.addAll(modifiers);
+        }
+
     }
 
     public TypedActionResult<CustomisedSpellType<?>> toAction() {

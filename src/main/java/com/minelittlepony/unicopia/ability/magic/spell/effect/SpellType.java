@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.List;
+import java.util.function.BiConsumer;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Affinity;
@@ -34,7 +36,7 @@ import net.minecraft.server.command.ServerCommandSource;
 
 public final class SpellType<T extends Spell> implements Affine, SpellPredicate<T> {
     public static final Identifier EMPTY_ID = Unicopia.id("none");
-    public static final SpellType<?> EMPTY_KEY = new SpellType<>(EMPTY_ID, Affinity.NEUTRAL, 0xFFFFFF, false, false, GemstoneItem.Shape.ROUND, SpellTraits.EMPTY, t -> null);
+    public static final SpellType<?> EMPTY_KEY = builder(t -> null).affinity(Affinity.NEUTRAL).color(0xFFFFFF).unobtainable().build(EMPTY_ID);
 
     public static final Registry<SpellType<?>> REGISTRY = RegistryUtils.createSimple(Unicopia.id("spells"));
     public static final RegistryKey<? extends Registry<SpellType<?>>> REGISTRY_KEY = REGISTRY.getKey();
@@ -55,7 +57,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<ScorchSpell> SCORCH = register("scorch", builder(ScorchSpell::new).affinity(Affinity.BAD).color(0xF8EC1F).stackable().shape(GemstoneItem.Shape.FLAME).traits(ScorchSpell.DEFAULT_TRAITS));
     public static final SpellType<FireSpell> FLAME = register("flame", builder(FireSpell::new).color(0xFFBB99).shape(GemstoneItem.Shape.FLAME).traits(FireSpell.DEFAULT_TRAITS));
     public static final SpellType<InfernoSpell> INFERNAL = register("infernal", builder(InfernoSpell::new).affinity(Affinity.BAD).color(0xFFAA00).shape(GemstoneItem.Shape.FLAME).traits(InfernoSpell.DEFAULT_TRAITS));
-    public static final SpellType<ShieldSpell> SHIELD = register("shield", builder(ShieldSpell::new).affinity(Affinity.NEUTRAL).color(0x66CDAA).shape(GemstoneItem.Shape.SHIELD).traits(ShieldSpell.DEFAULT_TRAITS));
+    public static final SpellType<ShieldSpell> SHIELD = register("shield", builder(ShieldSpell::new).affinity(Affinity.NEUTRAL).color(0x66CDAA).shape(GemstoneItem.Shape.SHIELD).traits(ShieldSpell.DEFAULT_TRAITS).tooltip(ShieldSpell::appendTooltip));
     public static final SpellType<AreaProtectionSpell> ARCANE_PROTECTION = register("arcane_protection", builder(AreaProtectionSpell::new).affinity(Affinity.BAD).color(0x99CDAA).shape(GemstoneItem.Shape.SHIELD).traits(AreaProtectionSpell.DEFAULT_TRAITS));
     public static final SpellType<AttractiveSpell> VORTEX = register("vortex", builder(AttractiveSpell::new).affinity(Affinity.NEUTRAL).color(0xFFEA88).shape(GemstoneItem.Shape.VORTEX).traits(AttractiveSpell.DEFAULT_TRAITS));
     public static final SpellType<DarkVortexSpell> DARK_VORTEX = register("dark_vortex", builder(DarkVortexSpell::new).affinity(Affinity.BAD).color(0xA33333).stackable().shape(GemstoneItem.Shape.VORTEX).traits(DarkVortexSpell.DEFAULT_TRAITS));
@@ -95,12 +97,15 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     private final ItemStack defaultStack;
 
-    private SpellType(Identifier id, Affinity affinity, int color, boolean obtainable, boolean stackable, GemstoneItem.Shape shape, SpellTraits traits, Factory<T> factory) {
+    private final BiConsumer<CustomisedSpellType<T>, List<Text>> tooltipFunction;
+
+    private SpellType(Identifier id, Affinity affinity, int color, boolean obtainable, boolean stackable, GemstoneItem.Shape shape, SpellTraits traits, BiConsumer<CustomisedSpellType<T>, List<Text>> tooltipFunction, Factory<T> factory) {
         this.id = id;
         this.affinity = affinity;
         this.color = color;
         this.obtainable = obtainable;
         this.shape = shape;
+        this.tooltipFunction = tooltipFunction;
         this.factory = factory;
         this.traits = traits;
         this.stackable = stackable;
@@ -167,6 +172,10 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         return factory;
     }
 
+    public BiConsumer<CustomisedSpellType<T>, List<Text>> getTooltip() {
+        return tooltipFunction;
+    }
+
     @Override
     public boolean test(@Nullable Spell spell) {
         return spell != null && spell.getTypeAndTraits().type() == this;
@@ -228,6 +237,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         private boolean stackable = false;
         private GemstoneItem.Shape shape = GemstoneItem.Shape.ROUND;
         private SpellTraits traits = SpellTraits.EMPTY;
+        private BiConsumer<CustomisedSpellType<T>, List<Text>> tooltipFunction = (t, l) -> {};
 
         Builder(Factory<T> factory) {
             this.factory = factory;
@@ -263,8 +273,13 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
             return this;
         }
 
+        public Builder<T> tooltip(BiConsumer<CustomisedSpellType<T>, List<Text>> tooltipFunction) {
+            this.tooltipFunction = tooltipFunction;
+            return this;
+        }
+
         public SpellType<T> build(Identifier id) {
-            return new SpellType<>(id, affinity, color, obtainable, stackable, shape, traits, factory);
+            return new SpellType<>(id, affinity, color, obtainable, stackable, shape, traits, tooltipFunction, factory);
         }
     }
 }

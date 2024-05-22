@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.Affinity;
@@ -12,6 +13,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
+import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
@@ -33,6 +35,8 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -43,6 +47,27 @@ public class ShieldSpell extends AbstractSpell {
             .with(Trait.STRENGTH, 50)
             .with(Trait.AIR, 9)
             .build();
+
+    static void appendTooltip(CustomisedSpellType<ShieldSpell> type, List<Text> tooltip) {
+        float addedRange = type.traits().get(Trait.POWER);
+        if (addedRange != 0) {
+            tooltip.add(EffectUtils.formatModifierChange("spell.unicopia.shield.additional_range", addedRange, false));
+        }
+        if (type.traits().get(Trait.LIFE) > 0) {
+            tooltip.add(Text.literal(" ").append(Text.translatable("spell.unicopia.shield.permit.passive")).formatted(Formatting.GRAY));
+        }
+        if (type.traits().get(Trait.BLOOD) > 0) {
+            tooltip.add(Text.literal(" ").append(Text.translatable("spell.unicopia.shield.permit.hostile")).formatted(Formatting.GRAY));
+        }
+        if (type.traits().get(Trait.ICE) > 0) {
+            tooltip.add(Text.literal(" ").append(Text.translatable("spell.unicopia.shield.permit.player")).formatted(Formatting.GRAY));
+        }
+        if (type.traits().get(Trait.GENEROSITY) > 0) {
+            tooltip.add(Text.literal(" ").append(Text.translatable("spell.unicopia.shield.caston.location")).formatted(Formatting.GRAY));
+        } else {
+            tooltip.add(Text.literal(" ").append(Text.translatable("spell.unicopia.shield.caston.person")).formatted(Formatting.GRAY));
+        }
+    }
 
     protected final TargetSelecter targetSelecter = new TargetSelecter(this).setFilter(this::isValidTarget);
 

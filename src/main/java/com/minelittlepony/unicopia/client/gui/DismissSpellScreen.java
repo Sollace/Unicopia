@@ -9,7 +9,6 @@ import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
-import com.minelittlepony.unicopia.client.TextHelper;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
@@ -191,9 +190,8 @@ public class DismissSpellScreen extends GameGui {
                 tooltip.add(Text.translatable("gui.unicopia.dispell_screen.spell_type", name));
                 type.traits().appendTooltip(tooltip);
                 tooltip.add(ScreenTexts.EMPTY);
-                tooltip.add(Text.translatable("gui.unicopia.dispell_screen.affinity", affinity.getDisplayName()));
+                type.appendTooltip(tooltip);
                 tooltip.add(ScreenTexts.EMPTY);
-                tooltip.addAll(TextHelper.wrap(Text.translatable(type.type().getTranslationKey() + ".lore").formatted(affinity.getColor()), 180).toList());
                 if (spell instanceof TimedSpell timed) {
                     tooltip.add(ScreenTexts.EMPTY);
                     tooltip.add(Text.translatable("gui.unicopia.dispell_screen.time_left", StringHelper.formatTicks(timed.getTimer().getTicksRemaining())));
