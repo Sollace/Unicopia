@@ -111,6 +111,12 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public Pony(PlayerEntity player) {
         super(player);
+        trackers.addPacketEmitter((sender, initial) -> {
+            if (initial || dirty) {
+                dirty = false;
+                sender.accept(Channel.SERVER_PLAYER_CAPABILITIES.toPacket(new MsgPlayerCapabilities(this)));
+            }
+        });
         race = this.tracker.startTracking(TrackableDataType.of(Race.PACKET_CODEC), Race.HUMAN);
         suppressedRace = this.tracker.startTracking(TrackableDataType.of(Race.PACKET_CODEC), Race.HUMAN);
         this.levels = new PlayerLevelStore(this, tracker, true, USounds.Vanilla.ENTITY_PLAYER_LEVELUP);
@@ -312,19 +318,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void setDirty() {
         dirty = true;
-    }
-
-    private void sendCapabilities() {
-        if (!dirty) {
-            return;
-        }
-        dirty = false;
-
-        if (entity instanceof ServerPlayerEntity) {
-            MsgOtherPlayerCapabilities packet = new MsgOtherPlayerCapabilities(this);
-            Channel.SERVER_PLAYER_CAPABILITIES.sendToPlayer(packet, (ServerPlayerEntity)entity);
-            Channel.SERVER_OTHER_PLAYER_CAPABILITIES.sendToSurroundingPlayers(packet, entity);
-        }
     }
 
     public AbilityDispatcher getAbilities() {
@@ -582,8 +575,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 setSpecies(newRace);
             }
         }
-
-        sendCapabilities();
     }
 
     @Override
@@ -825,10 +816,28 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     @Override
-    public void toSyncronisedNbt(NbtCompound compound) {
-        super.toSyncronisedNbt(compound);
+    public void toNBT(NbtCompound compound) {
         compound.putString("playerSpecies", Race.REGISTRY.getId(getSpecies()).toString());
         compound.putString("suppressedSpecies", Race.REGISTRY.getId(getSuppressedRace()).toString());
+        compound.put("mana", mana.toNBT());
+        compound.putInt("levels", levels.get());
+        compound.putInt("corruption", corruption.get());
+        super.toNBT(compound);
+    }
+
+    @Override
+    public void fromNBT(NbtCompound compound) {
+        setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
+        setSuppressedRace(Race.fromName(compound.getString("suppressedSpecies"), Race.UNSET));
+        levels.set(compound.getInt("levels"));
+        corruption.set(compound.getInt("corruption"));
+        mana.fromNBT(compound.getCompound("mana"));
+        super.fromNBT(compound);
+    }
+
+    @Override
+    public void toSyncronisedNbt(NbtCompound compound) {
+        super.toSyncronisedNbt(compound);
         compound.putFloat("magicExhaustion", magicExhaustion);
         compound.putInt("ticksInSun", ticksInSun);
         compound.putBoolean("hasShades", hasShades);
@@ -837,12 +846,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         compound.put("gravity", gravity.toNBT());
         compound.put("charms", charms.toNBT());
         compound.put("discoveries", discoveries.toNBT());
-        compound.put("mana", mana.toNBT());
-        compound.putInt("levels", levels.get());
-        compound.putInt("corruption", corruption.get());
         compound.putInt("ticksInvulnerable", ticksInvulnerable);
         compound.putInt("ticksMetamorphising", ticksMetamorphising);
-
         NbtCompound progress = new NbtCompound();
         advancementProgress.forEach((key, count) -> {
             progress.putInt(key, count);
@@ -853,22 +858,16 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void fromSynchronizedNbt(NbtCompound compound) {
         super.fromSynchronizedNbt(compound);
-        setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
-        setSuppressedRace(Race.fromName(compound.getString("suppressedSpecies"), Race.UNSET));
         powers.fromNBT(compound.getCompound("powers"));
         gravity.fromNBT(compound.getCompound("gravity"));
         charms.fromNBT(compound.getCompound("charms"));
         discoveries.fromNBT(compound.getCompound("discoveries"));
-        levels.set(compound.getInt("levels"));
-        corruption.set(compound.getInt("corruption"));
-        mana.fromNBT(compound.getCompound("mana"));
         acrobatics.fromNBT(compound.getCompound("acrobatics"));
         magicExhaustion = compound.getFloat("magicExhaustion");
         ticksInvulnerable = compound.getInt("ticksInvulnerable");
         ticksInSun = compound.getInt("ticksInSun");
         hasShades = compound.getBoolean("hasShades");
         ticksMetamorphising = compound.getInt("ticksMetamorphising");
-
         NbtCompound progress = compound.getCompound("advancementProgress");
         advancementProgress.clear();
         for (String key : progress.getKeys()) {

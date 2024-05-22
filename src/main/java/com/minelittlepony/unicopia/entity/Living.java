@@ -102,7 +102,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     private final ItemTracker armour = addTicker(new ItemTracker(this));
     private final Transportation<T> transportation = new Transportation<>(this);
 
-    private final DataTrackerManager trackers;
+    protected final DataTrackerManager trackers;
     protected final DataTracker tracker;
 
     protected final DataTracker.Entry<UUID> carrierId;
@@ -487,6 +487,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     public void toNBT(NbtCompound compound) {
         enchants.toNBT(compound);
         spells.getSlots().toNBT(compound);
+        getCarrierId().ifPresent(id -> compound.putUuid("carrier", id));
         toSyncronisedNbt(compound);
     }
 
@@ -494,19 +495,18 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     public void fromNBT(NbtCompound compound) {
         enchants.fromNBT(compound);
         spells.getSlots().fromNBT(compound);
+        setCarrier(compound.containsUuid("carrier") ? compound.getUuid("carrier") : null);
         fromSynchronizedNbt(compound);
     }
 
     @Override
     public void toSyncronisedNbt(NbtCompound compound) {
         compound.put("armour", armour.toNBT());
-        getCarrierId().ifPresent(id -> compound.putUuid("carrier", id));
     }
 
     @Override
     public void fromSynchronizedNbt(NbtCompound compound) {
         armour.fromNBT(compound.getCompound("armour"));
-        setCarrier(compound.containsUuid("carrier") ? compound.getUuid("carrier") : null);
     }
 
     public void updateVelocity() {

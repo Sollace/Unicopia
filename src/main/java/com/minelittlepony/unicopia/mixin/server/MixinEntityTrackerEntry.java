@@ -21,9 +21,16 @@ import net.minecraft.server.network.ServerPlayerEntity;
 abstract class MixinEntityTrackerEntry {
     @Shadow
     private @Final Entity entity;
+    @Shadow
+    abstract void sendSyncPacket(Packet<?> packet);
+
+    @Inject(method = "tick()V", at = @At("TAIL"))
+    private void unicopia_onTick(CallbackInfo info) {
+        Trackable.of(entity).getDataTrackers().tick(this::sendSyncPacket);
+    }
 
     @Inject(method = "sendPackets", at = @At("RETURN"))
-    private void onSendPackets(ServerPlayerEntity player, Consumer<Packet<ClientPlayPacketListener>> sender, CallbackInfo info) {
+    private void unicopia_onSendPackets(ServerPlayerEntity player, Consumer<Packet<ClientPlayPacketListener>> sender, CallbackInfo info) {
         Trackable.of(entity).getDataTrackers().sendInitial(player, sender);
     }
 }

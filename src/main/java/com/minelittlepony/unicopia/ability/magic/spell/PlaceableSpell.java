@@ -103,7 +103,6 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        System.out.println("Placed Tick: " + source + " " + source.isClient() + " " + situation);
         if (situation == Situation.BODY) {
             if (!source.isClient()) {
                 if (dimension == null) {

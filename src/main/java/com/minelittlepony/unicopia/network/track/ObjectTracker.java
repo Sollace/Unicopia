@@ -135,7 +135,11 @@ public class ObjectTracker<T extends TrackableObject> implements NbtSerialisable
         Map<UUID, T> values = new Object2ObjectOpenHashMap<>();
         compound.getKeys().forEach(key -> {
             try {
-                UUID id = UUID.fromString(key);
+                UUID id = Util.NIL_UUID;
+                try {
+                    id = UUID.fromString(key);
+                } catch (Throwable ignore) {}
+
                 if (id != null && !Util.NIL_UUID.equals(id)) {
                     NbtCompound nbt = compound.getCompound(key);
                     T entry = constructor.get();
@@ -143,7 +147,7 @@ public class ObjectTracker<T extends TrackableObject> implements NbtSerialisable
                     values.put(id, entry);
                 }
             } catch (Throwable t) {
-                Unicopia.LOGGER.warn("Exception loading tracked object", t);
+                Unicopia.LOGGER.warn("Exception loading tracked object: {}", t.getMessage());
             }
         });
         synchronized (this) {

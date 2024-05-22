@@ -5,29 +5,39 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.minelittlepony.unicopia.network.Channel;
-import com.minelittlepony.unicopia.util.Tickable;
+import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.network.Channel;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class DataTrackerManager implements Tickable {
+public class DataTrackerManager {
     private final Entity entity;
     final boolean isClient;
     private final List<DataTracker> trackers = new ObjectArrayList<>();
     private final List<ObjectTracker<?>> objectTrackers = new ObjectArrayList<>();
 
-    private final DataTracker primaryTracker = checkoutTracker();
+    private final List<PacketEmitter> packetEmitters = new ObjectArrayList<>();
+
+    @Nullable
+    private DataTracker primaryTracker;
 
     public DataTrackerManager(Entity entity) {
         this.entity = entity;
         this.isClient = entity.getWorld().isClient;
     }
 
+    public synchronized void addPacketEmitter(PacketEmitter packetEmitter) {
+        packetEmitters.add(packetEmitter);
+    }
+
     public DataTracker getPrimaryTracker() {
+        if (primaryTracker == null) {
+            primaryTracker = checkoutTracker();
+        }
         return primaryTracker;
     }
 
@@ -43,13 +53,16 @@ public class DataTrackerManager implements Tickable {
         return tracker;
     }
 
-    @Override
-    public void tick() {
-        if (isClient) {
-            return;
-        }
-
+    public void tick(Consumer<Packet<?>> sender) {
         synchronized (this) {
+            for (var emitter : packetEmitters) {
+                emitter.sendPackets(sender, false);
+            }
+
+            if (trackers.isEmpty() && objectTrackers.isEmpty()) {
+                return;
+            }
+
             List<MsgTrackedValues.TrackerEntries> toTransmit = new ArrayList<>();
             List<MsgTrackedValues.TrackerObjects> objToTransmit = new ArrayList<>();
 
@@ -62,13 +75,22 @@ public class DataTrackerManager implements Tickable {
                         objToTransmit,
                         toTransmit
                 );
-                Channel.SERVER_TRACKED_ENTITY_DATA.sendToSurroundingPlayers(packet, entity);
+                sender.accept(Channel.SERVER_TRACKED_ENTITY_DATA.toPacket(packet));
             }
         }
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public synchronized void sendInitial(ServerPlayerEntity player, Consumer<Packet<ClientPlayPacketListener>> sender) {
         synchronized (this) {
+            for (var emitter : packetEmitters) {
+                emitter.sendPackets((Consumer)sender, true);
+            }
+
+            if (trackers.isEmpty() && objectTrackers.isEmpty()) {
+                return;
+            }
+
             List<MsgTrackedValues.TrackerEntries> toTransmit = new ArrayList<>();
             List<MsgTrackedValues.TrackerObjects> objToTransmit = new ArrayList<>();
 
@@ -99,5 +121,9 @@ public class DataTrackerManager implements Tickable {
                 tracker.load(update);
             }
         }
+    }
+
+    public interface PacketEmitter {
+        void sendPackets(Consumer<Packet<?>> consumer, boolean initial);
     }
 }

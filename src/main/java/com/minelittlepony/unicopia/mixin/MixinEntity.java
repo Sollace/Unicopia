@@ -106,13 +106,6 @@ abstract class MixinEntity implements EntityDuck, Trackable {
         }
     }
 
-    @Inject(method = "tick()V", at = @At("RETURN"))
-    private void afterTick(CallbackInfo info) {
-        if (dataTrackerManager != null) {
-            dataTrackerManager.tick();
-        }
-    }
-
     @Inject(method = "updatePassengerPosition(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/Entity$PositionUpdater;)V",
             at = @At("HEAD"),
             cancellable = true
