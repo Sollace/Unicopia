@@ -78,7 +78,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
     }
 
     @Override
-    public void setMaster(LivingEntity owner) {
+    public final void setMaster(LivingEntity owner) {
         setOwner(owner);
     }
 
@@ -86,13 +86,13 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
     public void setOwner(@Nullable Entity entity) {
         super.setOwner(entity);
         if (entity instanceof LivingEntity l) {
-            getMasterReference().set(l);
+            WeaklyOwned.Mutable.super.setMaster(l);
         }
     }
 
     @Override
     @Nullable
-    public Entity getOwner() {
+    public final Entity getOwner() {
         return getMaster();
     }
 

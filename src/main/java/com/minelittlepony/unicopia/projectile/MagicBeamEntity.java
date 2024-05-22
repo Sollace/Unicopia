@@ -4,6 +4,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.ability.magic.Affine;
@@ -31,9 +33,24 @@ import net.minecraft.world.World;
 
 public class MagicBeamEntity extends MagicProjectileEntity implements Caster<MagicBeamEntity>, MagicImmune {
     private static final TrackedData<Boolean> HYDROPHOBIC = DataTracker.registerData(MagicBeamEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Integer> LEVEL = DataTracker.registerData(MagicBeamEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> MAX_LEVEL = DataTracker.registerData(MagicBeamEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> CORRUPTION = DataTracker.registerData(MagicBeamEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> MAX_CORRUPTION = DataTracker.registerData(MagicBeamEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     private final SpellInventory spells = SpellSlots.ofSingle(this);
     private final EntityPhysics<MagicProjectileEntity> physics = new EntityPhysics<>(this);
+
+    private final LevelStore level = Levelled.of(
+            () -> dataTracker.get(LEVEL),
+            l -> dataTracker.set(LEVEL, l),
+            () -> dataTracker.get(MAX_LEVEL)
+    );
+    private final LevelStore corruption = Levelled.of(
+            () -> dataTracker.get(CORRUPTION),
+            l -> dataTracker.set(CORRUPTION, l),
+            () -> dataTracker.get(MAX_CORRUPTION)
+    );
 
     public MagicBeamEntity(EntityType<MagicBeamEntity> type, World world) {
         super(type, world);
@@ -51,7 +68,11 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        getDataTracker().startTracking(HYDROPHOBIC, false);
+        dataTracker.startTracking(HYDROPHOBIC, false);
+        dataTracker.startTracking(LEVEL, 0);
+        dataTracker.startTracking(CORRUPTION, 0);
+        dataTracker.startTracking(MAX_LEVEL, 1);
+        dataTracker.startTracking(MAX_CORRUPTION, 1);
     }
 
     @Override
@@ -93,13 +114,24 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
     }
 
     @Override
+    public void setOwner(@Nullable Entity entity) {
+        super.setOwner(entity);
+        Caster.of(entity).ifPresent(caster -> {
+            dataTracker.set(LEVEL, caster.getLevel().get());
+            dataTracker.set(MAX_LEVEL, caster.getLevel().getMax());
+            dataTracker.set(CORRUPTION, caster.getCorruption().get());
+            dataTracker.set(MAX_CORRUPTION, caster.getCorruption().getMax());
+        });
+    }
+
+    @Override
     public LevelStore getLevel() {
-        return getMasterReference().getTarget().map(target -> target.level()).orElse(Levelled.EMPTY);
+        return level;
     }
 
     @Override
     public LevelStore getCorruption() {
-        return getMasterReference().getTarget().map(target -> target.corruption()).orElse(Levelled.EMPTY);
+        return corruption;
     }
 
     @Override
@@ -149,11 +181,19 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
         getDataTracker().set(HYDROPHOBIC, compound.getBoolean("hydrophobic"));
         physics.fromNBT(compound);
         spells.getSlots().fromNBT(compound);
+        var level = Levelled.fromNbt(compound.getCompound("level"));
+        dataTracker.set(MAX_LEVEL, level.getMax());
+        dataTracker.set(LEVEL, level.get());
+        var corruption = Levelled.fromNbt(compound.getCompound("corruption"));
+        dataTracker.set(MAX_CORRUPTION, corruption.getMax());
+        dataTracker.set(CORRUPTION, corruption.get());
     }
 
     @Override
     public void writeCustomDataToNbt(NbtCompound compound) {
         super.writeCustomDataToNbt(compound);
+        compound.put("level", level.toNbt());
+        compound.put("corruption", corruption.toNbt());
         compound.putBoolean("hydrophobic", getHydrophobic());
         physics.toNBT(compound);
         spells.getSlots().toNBT(compound);

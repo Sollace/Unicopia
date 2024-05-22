@@ -17,11 +17,18 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 public class CastSpellEntity extends LightEmittingEntity implements Caster<CastSpellEntity>, WeaklyOwned.Mutable<LivingEntity>, MagicImmune {
+    private static final TrackedData<Integer> LEVEL = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> MAX_LEVEL = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> CORRUPTION = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Integer> MAX_CORRUPTION = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     private final EntityPhysics<CastSpellEntity> physics = new EntityPhysics<>(this);
 
@@ -29,8 +36,16 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
 
     private final EntityReference<LivingEntity> owner = new EntityReference<>();
 
-    private LevelStore level = Levelled.EMPTY;
-    private LevelStore corruption = Levelled.EMPTY;
+    private final LevelStore level = Levelled.of(
+            () -> dataTracker.get(LEVEL),
+            l -> dataTracker.set(LEVEL, l),
+            () -> dataTracker.get(MAX_LEVEL)
+    );
+    private final LevelStore corruption = Levelled.of(
+            () -> dataTracker.get(CORRUPTION),
+            l -> dataTracker.set(CORRUPTION, l),
+            () -> dataTracker.get(MAX_CORRUPTION)
+    );
 
     public CastSpellEntity(EntityType<?> type, World world) {
         super(type, world);
@@ -39,6 +54,10 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
 
     @Override
     protected void initDataTracker() {
+        dataTracker.startTracking(LEVEL, 0);
+        dataTracker.startTracking(CORRUPTION, 0);
+        dataTracker.startTracking(MAX_LEVEL, 1);
+        dataTracker.startTracking(MAX_CORRUPTION, 1);
     }
 
     @Override
@@ -84,8 +103,10 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
     }
 
     public void setCaster(Caster<?> caster) {
-        this.level = Levelled.copyOf(caster.getLevel());
-        this.corruption = Levelled.copyOf(caster.getCorruption());
+        dataTracker.set(LEVEL, caster.getLevel().get());
+        dataTracker.set(MAX_LEVEL, caster.getLevel().getMax());
+        dataTracker.set(CORRUPTION, caster.getCorruption().get());
+        dataTracker.set(MAX_CORRUPTION, caster.getCorruption().getMax());
         setMaster(caster);
     }
 
@@ -144,7 +165,11 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
             owner.fromNBT(tag.getCompound("owner"));
         }
         spells.getSlots().fromNBT(tag);
-        level = Levelled.fromNbt(tag.getCompound("level"));
-        corruption = Levelled.fromNbt(tag.getCompound("corruption"));
+        var level = Levelled.fromNbt(tag.getCompound("level"));
+        dataTracker.set(MAX_LEVEL, level.getMax());
+        dataTracker.set(LEVEL, level.get());
+        var corruption = Levelled.fromNbt(tag.getCompound("corruption"));
+        dataTracker.set(MAX_CORRUPTION, corruption.getMax());
+        dataTracker.set(CORRUPTION, corruption.get());
     }
 }

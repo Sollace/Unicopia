@@ -279,12 +279,12 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     @Override
     public LevelStore getLevel() {
-        return Levelled.EMPTY;
+        return Levelled.ZERO;
     }
 
     @Override
     public LevelStore getCorruption() {
-        return Levelled.EMPTY;
+        return Levelled.ZERO;
     }
 
     @Override

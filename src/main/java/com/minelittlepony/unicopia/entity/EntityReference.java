@@ -134,8 +134,8 @@ public class EntityReference<T extends Entity> implements NbtSerialisable {
                 entity.getPos(),
                 entity.getId(), entity instanceof PlayerEntity,
                 !entity.isAlive(),
-                Caster.of(entity).map(Caster::getLevel).map(Levelled::copyOf).orElse(Levelled.EMPTY),
-                Caster.of(entity).map(Caster::getCorruption).map(Levelled::copyOf).orElse(Levelled.EMPTY)
+                Caster.of(entity).map(Caster::getLevel).map(Levelled::copyOf).orElse(Levelled.ZERO),
+                Caster.of(entity).map(Caster::getCorruption).map(Levelled::copyOf).orElse(Levelled.ZERO)
             );
         }
 
