@@ -6,7 +6,6 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.PlaceableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.client.render.model.PlaneModel;
-import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -27,12 +26,7 @@ public class PlacedSpellRenderer extends SpellRenderer<PlaceableSpell> {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, PlaceableSpell spell, Caster<?> caster, int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
-        if (!(caster.asEntity() instanceof CastSpellEntity castSpell)) {
-            return;
-        }
-
         matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-castSpell.getYaw()));
 
         Spell delegate = spell.getDelegate();
 
@@ -42,8 +36,8 @@ public class PlacedSpellRenderer extends SpellRenderer<PlaceableSpell> {
             matrices.push();
             float height = caster.asEntity().getHeight();
             matrices.translate(0, (-spell.pitch / 90F) * height * 0.5F, 0);
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(spell.yaw));
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-spell.pitch));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180 - spell.yaw));
             SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertices, delegate, caster, light, spell.getScale(tickDelta), limbDistance, tickDelta, animationProgress, headYaw, headPitch);
             matrices.pop();
         }
@@ -58,8 +52,8 @@ public class PlacedSpellRenderer extends SpellRenderer<PlaceableSpell> {
         float height = caster.asEntity().getHeight();
         matrices.translate(0, (-spell.pitch / 90F) * height * 0.5F, 0);
 
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(spell.yaw));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-spell.pitch));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180 - spell.yaw));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
 
         float scale = spell.getScale(tickDelta) * 3;

@@ -13,7 +13,9 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.Living;
-import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
+import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.network.Channel;
+import com.minelittlepony.unicopia.network.MsgCasterLookRequest;
 import com.minelittlepony.unicopia.particle.*;
 import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.shape.*;
@@ -25,13 +27,14 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldEvents;
 
-public class PortalSpell extends AbstractSpell implements PlaceableSpell.PlacementDelegate, OrientedSpell {
+public class PortalSpell extends AbstractSpell implements PlacementControlSpell.PlacementDelegate, OrientedSpell {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
             .with(Trait.LIFE, 10)
             .with(Trait.KNOWLEDGE, 1)
@@ -91,7 +94,7 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
 
     @Override
     public boolean apply(Caster<?> caster) {
-        setOrientation(caster.asEntity().getPitch(), caster.asEntity().getYaw());
+        setOrientation(caster, caster.asEntity().getPitch(), caster.asEntity().getYaw());
         return toPlaceable().apply(caster);
     }
 
@@ -195,22 +198,25 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
     }
 
     @Override
-    public void setOrientation(float pitch, float yaw) {
+    public void setOrientation(Caster<?> caster, float pitch, float yaw) {
         this.pitch = pitch;
         this.yaw = yaw;
         particleArea = PARTICLE_AREA.rotate(
             pitch * MathHelper.RADIANS_PER_DEGREE,
-            (180 - yaw) * MathHelper.RADIANS_PER_DEGREE
+            yaw * MathHelper.RADIANS_PER_DEGREE
         );
         setDirty();
     }
 
     @Override
-    public void onPlaced(Caster<?> source, PlaceableSpell parent, CastSpellEntity entity) {
+    public void onPlaced(Caster<?> source, PlacementControlSpell parent) {
+        parent.setOrientation(source, source.asEntity().getPitch(), source.asEntity().getYaw());
         LivingEntity caster = source.getMaster();
         Vec3d targetPos = caster.getRotationVector().multiply(3).add(caster.getEyePos());
-        parent.setOrientation(pitch, yaw);
-        entity.setPos(targetPos.x, Math.abs(pitch) > 15 ? targetPos.y : caster.getPos().y, targetPos.z);
+        parent.setPosition(new Vec3d(targetPos.x, caster.getPos().y, targetPos.z));
+        if (source instanceof Pony pony) {
+            Channel.SERVER_REQUEST_PLAYER_LOOK.sendToPlayer(new MsgCasterLookRequest(parent.getUuid()), (ServerPlayerEntity)pony.asEntity());
+        }
     }
 
     @Override

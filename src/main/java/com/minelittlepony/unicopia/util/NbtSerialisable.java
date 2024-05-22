@@ -46,7 +46,6 @@ public interface NbtSerialisable {
     }
 
     static Vec3d readVector(NbtList list) {
-
         return new Vec3d(list.getDouble(0), list.getDouble(1), list.getDouble(2));
     }
 

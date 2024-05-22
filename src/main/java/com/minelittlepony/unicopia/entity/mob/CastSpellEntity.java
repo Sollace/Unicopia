@@ -81,12 +81,10 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
     public void tick() {
         super.tick();
 
-        if (isRemoved()) {
-            return;
-        }
-
-        if (!spells.tick(Situation.GROUND_ENTITY)) {
-            discard();
+        if (!isRemoved() && !spells.tick(Situation.GROUND_ENTITY)) {
+            if (!isClient()) {
+                discard();
+            }
         }
     }
 

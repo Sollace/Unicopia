@@ -123,8 +123,8 @@ public interface Spell extends NbtSerialisable, Affine {
     /**
      * Converts this spell into a placeable spell.
      */
-    default PlaceableSpell toPlaceable() {
-        return SpellType.PLACED_SPELL.withTraits().create().setSpell(this);
+    default PlacementControlSpell toPlaceable() {
+        return new PlacementControlSpell(SpellType.PLACE_CONTROL_SPELL.withTraits(), this);
     }
 
     /**

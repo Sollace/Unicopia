@@ -113,7 +113,7 @@ public class Ether extends PersistentState {
 
     @SuppressWarnings("unchecked")
     @Nullable
-    private <T extends Spell> Entry<T> get(SpellType<T> spell, UUID entityId, @Nullable UUID spellId) {
+    public <T extends Spell> Entry<T> get(SpellType<T> spell, UUID entityId, @Nullable UUID spellId) {
         if (spellId == null) {
             return null;
         }

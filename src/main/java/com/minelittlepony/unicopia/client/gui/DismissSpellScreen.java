@@ -40,11 +40,11 @@ public class DismissSpellScreen extends GameGui {
         double azimuth = 0;
         double ring = 2;
 
-        List<PlaceableSpell> placeableSpells = new ArrayList<>();
+        List<PlacementControlSpell> placeableSpells = new ArrayList<>();
 
         for (Spell spell : pony.getSpellSlot().stream().filter(SpellPredicate.IS_VISIBLE).toList()) {
 
-            if (spell instanceof PlaceableSpell placeable) {
+            if (spell instanceof PlacementControlSpell placeable) {
                 if (placeable.getPosition().isPresent()) {
                     placeableSpells.add(placeable);
                     continue;
