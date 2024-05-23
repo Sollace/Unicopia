@@ -51,9 +51,9 @@ public interface EffectUtils {
     }
 
     static Text formatModifierChange(String modifierName, float change, boolean isDetrimental) {
-        return Text.translatable("attribute.modifier." + (change > 0 ? "plus" : "take") + ".addition",
+        return Text.literal(" ").append(Text.translatable("attribute.modifier." + (change > 0 ? "plus" : "take") + ".0",
                 ItemStack.MODIFIER_FORMAT.format(Math.abs(change)),
                 Text.translatable(modifierName)
-        ).formatted((isDetrimental ? change : -change) < 0 ? Formatting.DARK_GREEN : Formatting.RED);
+        ).formatted((isDetrimental ? change : -change) < 0 ? Formatting.DARK_GREEN : Formatting.RED));
     }
 }
