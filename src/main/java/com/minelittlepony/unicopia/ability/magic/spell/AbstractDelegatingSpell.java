@@ -6,6 +6,8 @@ import java.util.stream.Stream;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
+import com.minelittlepony.unicopia.server.world.Ether;
+
 import net.minecraft.nbt.NbtCompound;
 
 public abstract class AbstractDelegatingSpell implements Spell {
@@ -101,6 +103,9 @@ public abstract class AbstractDelegatingSpell implements Spell {
     }
 
     protected void onDestroyed(Caster<?> caster) {
+        if (!caster.isClient()) {
+            Ether.get(caster.asWorld()).remove(this, caster);
+        }
         if (delegate.get() instanceof Spell s) {
             s.destroy(caster);
         }

@@ -92,8 +92,7 @@ public class HydrophobicSpell extends AbstractSpell {
             }
 
             double range = getRange(source);
-            var entry = Ether.get(source.asWorld()).getOrCreate(this, source);
-            entry.radius =  (float)range;
+            Ether.get(source.asWorld()).getOrCreate(this, source).setRadius((float)range);
 
             source.spawnParticles(new Sphere(true, range), 10, pos -> {
                 BlockPos bp = BlockPos.ofFloored(pos);
@@ -116,7 +115,7 @@ public class HydrophobicSpell extends AbstractSpell {
 
     @Override
     protected void onDestroyed(Caster<?> caster) {
-        Ether.get(caster.asWorld()).remove(this, caster);
+        super.onDestroyed(caster);
         storedFluidPositions.removeIf(entry -> {
             if (caster.canModifyAt(entry.pos())) {
                 entry.restore(caster.asWorld());
@@ -175,7 +174,7 @@ public class HydrophobicSpell extends AbstractSpell {
     }
 
     public boolean blocksFlow(Ether.Entry<?> entry, Vec3d center, BlockPos pos, FluidState fluid) {
-        return fluid.isIn(affectedFluid) && pos.isWithinDistance(center, (double)entry.radius + 1);
+        return fluid.isIn(affectedFluid) && pos.isWithinDistance(center, (double)entry.getRadius() + 1);
     }
 
     public static boolean blocksFluidFlow(BlockView world, BlockPos pos, FluidState state) {

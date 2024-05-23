@@ -54,11 +54,6 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
         return !isDead();
     }
 
-    @Override
-    protected void onDestroyed(Caster<?> caster) {
-        Ether.get(caster.asWorld()).remove(this, caster);
-    }
-
     /**
      * Calculates the maximum radius of the shield. aka The area of effect.
      */

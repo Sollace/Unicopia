@@ -90,6 +90,7 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pro
 
     @Override
     protected void onDestroyed(Caster<?> caster) {
+        super.onDestroyed(caster);
         caster.getOriginatingCaster().asEntity().setGlowing(false);
         target.ifPresent(caster.asWorld(), e -> e.setGlowing(false));
     }

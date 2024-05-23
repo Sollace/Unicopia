@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.NbtCompound;
@@ -81,6 +82,9 @@ public interface Spell extends NbtSerialisable, Affine {
      */
     default boolean apply(Caster<?> caster) {
         caster.getSpellSlot().put(this);
+        if (!caster.isClient()) {
+            Ether.get(caster.asWorld()).getOrCreate(this, caster);
+        }
         return true;
     }
 

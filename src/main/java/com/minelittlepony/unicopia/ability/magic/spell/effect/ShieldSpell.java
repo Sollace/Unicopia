@@ -19,6 +19,7 @@ import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
+import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.ColorHelper;
 import com.minelittlepony.unicopia.util.Lerp;
 import com.minelittlepony.unicopia.util.shape.Sphere;
@@ -115,6 +116,8 @@ public class ShieldSpell extends AbstractSpell {
 
         if (source.isClient()) {
             generateParticles(source);
+        } else {
+            Ether.get(source.asWorld()).getOrCreate(this, source).setRadius(radius.getValue());
         }
 
         if (situation == Situation.PROJECTILE) {

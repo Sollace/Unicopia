@@ -139,6 +139,7 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
 
     @Override
     protected void onDestroyed(Caster<?> source) {
+        super.onDestroyed(source);
         if (source.asEntity() instanceof LivingEntity l) {
             MODIFIERS.forEach((attribute, modifier) -> {
                 if (l.getAttributes().hasAttribute(attribute)) {

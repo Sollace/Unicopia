@@ -136,7 +136,9 @@ public class DismissSpellScreen extends GameGui {
         }
 
         private Spell getActualSpell() {
-            return spell instanceof AbstractDelegatingSpell s && s.getDelegate() instanceof Spell p ? p : spell;
+            return spell instanceof AbstractDelegatingSpell s && s.getDelegate() instanceof Spell p ? p
+                : spell instanceof PlacementControlSpell s && s.getDelegate() instanceof Spell p ? p
+                : spell;
         }
 
         @Override
@@ -161,11 +163,10 @@ public class DismissSpellScreen extends GameGui {
             MatrixStack matrices = context.getMatrices();
 
             var type = actualSpell.getTypeAndTraits();
-            var affinity = actualSpell.getAffinity();
 
             copy.set(mouseX - width * 0.5F - x * 0.5F, mouseY - height * 0.5F - y * 0.5F, 0, 0);
 
-            DrawableUtil.drawLine(matrices, 0, 0, (int)x, (int)y, affinity.getColor().getColorValue());
+            DrawableUtil.drawLine(matrices, 0, 0, (int)x, (int)y, actualSpell.getAffinity().getColor().getColorValue());
             DrawableUtil.renderItemIcon(context, actualSpell.isDead() ? UItems.BOTCHED_GEM.getDefaultStack() : type.getDefaultStack(),
                     x - 8 - copy.x * 0.2F,
                     y - 8 - copy.y * 0.2F,

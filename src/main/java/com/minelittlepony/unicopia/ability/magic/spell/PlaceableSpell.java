@@ -51,16 +51,6 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         }
     }
 
-    @Override
-    public boolean apply(Caster<?> caster) {
-        boolean result = super.apply(caster);
-        if (result && !caster.isClient()) {
-            Ether.get(caster.asWorld()).getOrCreate(this, caster);
-        }
-        setDirty();
-        return result;
-    }
-
     public float getAge(float tickDelta) {
         return MathHelper.lerp(tickDelta, prevAge, age);
     }
@@ -91,9 +81,16 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        if (!source.isClient() && !checkConnection(source)) {
-            setDead();
-            return false;
+        if (!source.isClient()) {
+            if (!checkConnection(source)) {
+                setDead();
+                return true;
+            }
+
+            var entry = Ether.get(source.asWorld()).get(this, source);
+            if (entry != null && entry.hasChanged()) {
+                setOrientation(source, entry.getPitch(), entry.getYaw());
+            }
         }
 
         prevAge = age;
@@ -116,14 +113,6 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
     }
 
     @Override
-    protected void onDestroyed(Caster<?> source) {
-        if (!source.isClient()) {
-            Ether.get(source.asWorld()).remove(this, source);
-        }
-        super.onDestroyed(source);
-    }
-
-    @Override
     public void setOrientation(Caster<?> caster, float pitch, float yaw) {
         this.pitch = -pitch - 90;
         this.yaw = -yaw;
@@ -131,6 +120,15 @@ public class PlaceableSpell extends AbstractDelegatingSpell implements OrientedS
         entity.updatePositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), this.yaw, this.pitch);
         entity.setYaw(this.yaw);
         entity.setPitch(this.pitch);
+
+        if (!caster.isClient()) {
+            var entry = Ether.get(caster.asWorld()).get(this, caster);
+            if (entry != null) {
+                entry.setPitch(pitch);
+                entry.setYaw(yaw);
+            }
+        }
+
         setDirty();
     }
 

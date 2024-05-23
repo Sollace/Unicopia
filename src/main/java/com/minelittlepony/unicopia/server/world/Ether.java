@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.server.world;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
@@ -15,6 +16,7 @@ import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import net.minecraft.nbt.*;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
@@ -168,9 +170,10 @@ public class Ether extends PersistentState {
         private boolean removed;
         private boolean taken;
 
-        public float pitch;
-        public float yaw;
-        public float radius;
+        private float pitch;
+        private final AtomicBoolean changed = new AtomicBoolean(true);
+        private float yaw;
+        private float radius;
 
         private Entry(NbtElement nbt) {
             this.entity = new EntityReference<>();
@@ -182,6 +185,46 @@ public class Ether extends PersistentState {
             this.entity = new EntityReference<>(caster.asEntity());
             this.spell = new WeakReference<>(spell);
             spellId = spell.getUuid();
+        }
+
+        public boolean hasChanged() {
+            return changed.getAndSet(false);
+        }
+
+        public float getPitch() {
+            return pitch;
+        }
+
+        public void setPitch(float pitch) {
+            if (!MathHelper.approximatelyEquals(this.pitch, pitch)) {
+                this.pitch = pitch;
+                changed.set(true);
+            }
+            markDirty();
+        }
+
+        public float getYaw() {
+            return yaw;
+        }
+
+        public void setYaw(float yaw) {
+            if (!MathHelper.approximatelyEquals(this.yaw, yaw)) {
+                this.yaw = yaw;
+                changed.set(true);
+            }
+            markDirty();
+        }
+
+        public float getRadius() {
+            return radius;
+        }
+
+        public void setRadius(float radius) {
+            if (!MathHelper.approximatelyEquals(this.radius, radius)) {
+                this.radius = radius;
+                changed.set(true);
+            }
+            markDirty();
         }
 
         boolean isAlive() {

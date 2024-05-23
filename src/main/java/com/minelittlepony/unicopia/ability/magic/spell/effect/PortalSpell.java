@@ -121,11 +121,9 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
                 );
             }
 
-            Ether ether = Ether.get(source.asWorld());
-            var entry = ether.getOrCreate(this, source);
-            entry.pitch = pitch;
-            entry.yaw = yaw;
-            ether.markDirty();
+            var entry = Ether.get(source.asWorld()).getOrCreate(this, source);
+            entry.setPitch(pitch);
+            entry.setYaw(yaw);
         }
 
         return !isDead();
@@ -133,13 +131,9 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
 
     private void tickWithTargetLink(Caster<?> source, Ether.Entry<?> destination) {
 
-        if (!MathHelper.approximatelyEquals(targetPortalPitch, destination.pitch)) {
-            targetPortalPitch = destination.pitch;
-            setDirty();
-        }
-        if (!MathHelper.approximatelyEquals(targetPortalYaw, destination.yaw)) {
-            targetPortalYaw = destination.yaw;
-            setDirty();
+        if (destination.hasChanged()) {
+            targetPortalPitch = destination.getPitch();
+            targetPortalYaw = destination.getYaw();
         }
 
         destination.entity.getTarget().ifPresent(target -> {
@@ -221,8 +215,10 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
 
     @Override
     protected void onDestroyed(Caster<?> caster) {
-        Ether.get(caster.asWorld()).remove(getType(), caster);
-        getDestination(caster).ifPresent(Ether.Entry::release);
+        super.onDestroyed(caster);
+        if (!caster.isClient()) {
+            getDestination(caster).ifPresent(Ether.Entry::release);
+        }
     }
 
     @Override

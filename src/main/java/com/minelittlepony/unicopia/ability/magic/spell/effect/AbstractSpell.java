@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.server.world.Ether;
 
 import net.minecraft.nbt.NbtCompound;
 
@@ -78,9 +79,6 @@ public abstract class AbstractSpell implements Spell {
         this.hidden = hidden;
     }
 
-    protected void onDestroyed(Caster<?> caster) {
-    }
-
     @Override
     public void tickDying(Caster<?> caster) {
         dead = true;
@@ -94,6 +92,12 @@ public abstract class AbstractSpell implements Spell {
         destroyed = true;
         setDead();
         onDestroyed(caster);
+    }
+
+    protected void onDestroyed(Caster<?> caster) {
+        if (!caster.isClient()) {
+            Ether.get(caster.asWorld()).remove(this, caster);
+        }
     }
 
     @Override
