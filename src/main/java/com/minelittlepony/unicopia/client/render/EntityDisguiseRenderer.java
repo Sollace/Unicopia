@@ -9,7 +9,6 @@ import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -19,10 +18,7 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 
 class EntityDisguiseRenderer {
@@ -90,15 +86,7 @@ class EntityDisguiseRenderer {
                 ((MixinBlockEntity)blockEntity).setPos(e.getBlockPos());
                 blockEntity.setWorld(e.getWorld());
                 matrices.push();
-
-                BlockState state = blockEntity.getCachedState();
-                Direction direction = state.contains(Properties.HORIZONTAL_FACING) ? state.get(Properties.HORIZONTAL_FACING) : Direction.UP;
-
                 matrices.translate(x, y, z);
-
-                matrices.multiply(direction.getRotationQuaternion());
-                matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(90));
-
                 matrices.translate(-0.5, 0, -0.5);
 
                 r.render(blockEntity, 1, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV);

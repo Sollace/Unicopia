@@ -25,7 +25,6 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.state.property.Properties;
-import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 
@@ -74,17 +73,17 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
         BlockState state = entity.getBlockState();
         Block block = state.getBlock();
 
-        if (state.isIn(BlockTags.DOORS) && block instanceof DoorBlock) {
+        if (block instanceof BlockEntityProvider bep) {
+            context.addBlockEntity(bep.createBlockEntity(entity.getBlockPos(), state));
+        }
+
+        if (block instanceof DoorBlock) {
             BlockState lowerState = state.with(DoorBlock.HALF, DoubleBlockHalf.LOWER);
             BlockState upperState = state.with(DoorBlock.HALF, DoubleBlockHalf.UPPER);
 
             context.attachExtraEntity(configure(MixinFallingBlockEntity.createInstance(entity.getWorld(), entity.getX(), entity.getY(), entity.getZ(), upperState), block));
 
             return configure(MixinFallingBlockEntity.createInstance(entity.getWorld(), entity.getX(), entity.getY() + 1, entity.getZ(), lowerState), block);
-        }
-
-        if (block instanceof BlockEntityProvider bep) {
-            context.addBlockEntity(bep.createBlockEntity(entity.getBlockPos(), state));
         }
 
         return configure(entity, block);
@@ -100,15 +99,10 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
             if (state.get(Properties.WATERLOGGED) != logged) {
                 entity = MixinFallingBlockEntity.createInstance(entity.getWorld(), entity.getX(), entity.getY(), entity.getZ(), state.with(Properties.WATERLOGGED, logged));
                 spell.getDisguise().setAppearance(entity);
-                return;
             }
         }
 
         EntityAppearance disguise = spell.getDisguise();
-        List<Entity> attachments = disguise.getAttachments();
-        if (attachments.size() > 0) {
-            copyBaseAttributes(source.asEntity(), attachments.get(0), UP);
-        }
 
         BlockEntity be = disguise.getBlockEntity();
 
@@ -121,6 +115,11 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
             ((MixinBlockEntity)be).setPos(entity.getBlockPos());
             ceb.tick();
             be.setWorld(null);
+        }
+
+        List<Entity> attachments = disguise.getAttachments();
+        if (attachments.size() > 0) {
+            copyBaseAttributes(source.asEntity(), attachments.get(0), UP);
         }
     }
 }
