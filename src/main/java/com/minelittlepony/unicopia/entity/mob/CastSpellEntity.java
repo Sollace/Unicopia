@@ -136,11 +136,10 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
             }
 
             spells.getSlots().get().ifPresent(spell -> {
-                var entry = Ether.get(getWorld()).getOrCreate(spell, this);
-                if (entry.hasChanged()) {
-                    //updatePositionAndAngles(getX(), getY(), getZ(), entry.getYaw(), entry.getPitch());
-                }
+                Ether.get(getWorld()).getOrCreate(spell, this);
             });
+        } else if (isDead()) {
+            spells.getSlots().clear();
         }
 
         prevDeathTicks = deathTicks;
@@ -152,7 +151,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
 
     @Override
     public void kill() {
-        spells.getSlots().clear();
+        setDead(true);
     }
 
     public boolean isDead() {
