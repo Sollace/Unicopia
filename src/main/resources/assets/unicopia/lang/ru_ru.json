@@ -665,7 +665,7 @@
   "affinity.unicopia.bad": "Плохое",
   "affinity.unicopia.neutral": "Нейтральное",
   "affinity.unicopia.when_cast": "Когда наложено:",
-  "affinity.unicopia.corruption": " %s%.2f Порча",
+  "affinity.unicopia.corruption": "Corruption",
   "gui.unicopia.trait.label": "Элемент %s",
   "gui.unicopia.trait.group": "\n %s",
   "gui.unicopia.trait.corruption": "\n %s порчи",
