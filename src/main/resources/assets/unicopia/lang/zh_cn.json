@@ -665,7 +665,7 @@
   "affinity.unicopia.bad": "坏",
   "affinity.unicopia.neutral": "中性",
   "affinity.unicopia.when_cast": "当施展时：",
-  "affinity.unicopia.corruption": " %s%.2f 堕落",
+  "affinity.unicopia.corruption": "Corruption",
   "gui.unicopia.trait.label": "%s 元素",
   "gui.unicopia.trait.group": "\n %s",
   "gui.unicopia.trait.corruption": "\n %s 堕落",
