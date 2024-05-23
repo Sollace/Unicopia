@@ -1,10 +1,13 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.List;
+
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
@@ -13,6 +16,8 @@ import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -21,6 +26,15 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
             .with(Trait.FOCUS, 50)
             .with(Trait.STRENGTH, 30)
             .build();
+
+
+    static void appendTooltip(CustomisedSpellType<PortalSpell> type, List<Text> tooltip) {
+        float addedRange = type.traits().get(Trait.POWER);
+        if (addedRange != 0) {
+            tooltip.add(EffectUtils.formatModifierChange("spell.unicopia.shield.additional_range", addedRange, false));
+        }
+        tooltip.add(Text.literal(" ").append(Text.translatable("spell.unicopia.shield.caston.location")).formatted(Formatting.GRAY));
+    }
 
     protected AreaProtectionSpell(CustomisedSpellType<?> type) {
         super(type);
@@ -33,7 +47,7 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
             return false;
         }
 
-        float radius = (float)getDrawDropOffRange(source);
+        float radius = (float)getRange(source);
 
         if (source.isClient()) {
             Vec3d origin = source.getOriginVector();
@@ -44,7 +58,7 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
                 }
             });
         } else {
-            Ether.get(source.asWorld()).getOrCreate(this, source);
+            Ether.get(source.asWorld()).getOrCreate(this, source).setRadius(radius);
         }
 
         source.findAllSpellsInRange(radius, e -> isValidTarget(source, e)).filter(caster -> !caster.hasCommonOwner(source)).forEach(caster -> {
@@ -54,10 +68,7 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
         return !isDead();
     }
 
-    /**
-     * Calculates the maximum radius of the shield. aka The area of effect.
-     */
-    public double getDrawDropOffRange(Caster<?> source) {
+    private double getRange(Caster<?> source) {
         float multiplier = source instanceof Pony pony && pony.asEntity().isSneaking() ? 1 : 2;
         float min = 4 + getTraits().get(Trait.POWER);
         double range = (min + (source.getLevel().getScaled(4) * 2)) / multiplier;
@@ -69,7 +80,7 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
 
     public boolean blocksMagicFor(Caster<?> source, Caster<?> other, Vec3d position) {
         return !FriendshipBraceletItem.isComrade(other, other.asEntity())
-                && source.getOriginVector().distanceTo(position) <= getDrawDropOffRange(source);
+                && source.getOriginVector().distanceTo(position) <= getRange(source);
     }
 
     protected boolean isValidTarget(Caster<?> source, Entity entity) {

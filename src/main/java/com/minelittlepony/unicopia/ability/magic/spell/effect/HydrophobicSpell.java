@@ -178,15 +178,17 @@ public class HydrophobicSpell extends AbstractSpell {
     }
 
     public static boolean blocksFluidFlow(BlockView world, BlockPos pos, FluidState state) {
-        if (world instanceof ServerWorld sw) {
-            return Ether.get(sw).anyMatch(SpellType.HYDROPHOBIC, entry -> {
-                var spell = entry.getSpell();
-                var target = entry.entity.getTarget().orElse(null);
-                return spell != null && target != null && spell.blocksFlow(entry, target.pos(), pos, state);
-            });
+        if (!(world instanceof ServerWorld sw)) {
+            return false;
         }
 
-        return false;
-
+        return Ether.get(sw).anyMatch(SpellType.HYDROPHOBIC, entry -> {
+            var target = entry.entity.getTarget().orElse(null);
+            if (target == null || !pos.isWithinDistance(target.pos(), entry.getRadius() + 1)) {
+                return false;
+            }
+            var spell = entry.getSpell();
+            return spell != null && target != null && spell.blocksFlow(entry, target.pos(), pos, state);
+        });
     }
 }
