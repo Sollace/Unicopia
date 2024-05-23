@@ -47,7 +47,6 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
     }
 
     static {
-        register(SpellType.PLACED_SPELL, PlacedSpellRenderer::new);
         register(SpellType.SHIELD, ShieldSpellRenderer::new);
         register(SpellType.DARK_VORTEX, DarkVortexSpellRenderer::new);
         register(SpellType.BUBBLE, BubbleSpellRenderer::new);

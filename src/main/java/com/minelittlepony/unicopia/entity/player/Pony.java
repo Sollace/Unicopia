@@ -892,7 +892,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 oldSuppressedRace = Race.UNSET;
                 Channel.SERVER_SELECT_TRIBE.sendToPlayer(new MsgTribeSelect(Race.allPermitted(entity), "gui.unicopia.tribe_selection.respawn"), (ServerPlayerEntity)entity);
             } else {
-                oldPlayer.getSpellSlot().stream().filter(SpellPredicate.IS_PLACED).forEach(getSpellSlot()::put);
+                oldPlayer.getSpellSlot().stream().filter(SpellType.PLACE_CONTROL_SPELL).forEach(getSpellSlot()::put);
             }
 
             // putting it here instead of adding another injection point into ServerPlayerEntity.copyFrom()

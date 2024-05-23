@@ -1,12 +1,10 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -23,7 +21,6 @@ import com.minelittlepony.unicopia.util.shape.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.ParticleTypes;
@@ -59,12 +56,8 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
         super(type);
     }
 
-    public boolean isLinked() {
-        return teleportationTarget.isSet();
-    }
-
-    public Optional<EntityReference.EntityValues<Entity>> getTarget() {
-        return teleportationTarget.getTarget();
+    public EntityReference<Entity> getDestinationReference() {
+        return teleportationTarget;
     }
 
     public float getPitch() {
@@ -88,13 +81,16 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
     }
 
     @SuppressWarnings("unchecked")
-    private Optional<Ether.Entry<PortalSpell>> getDestination(Caster<?> source) {
-        return getTarget().map(target -> Ether.get(source.asWorld()).get((SpellType<PortalSpell>)getType(), target, targetPortalId));
+    private Ether.Entry<PortalSpell> getDestination(Caster<?> source) {
+        return targetPortalId == null ? null : getDestinationReference()
+                .getTarget()
+                .map(target -> Ether.get(source.asWorld()).get((SpellType<PortalSpell>)getType(), target.uuid(), targetPortalId))
+                .filter(destination -> destination.isClaimedBy(getUuid()))
+                .orElse(null);
     }
 
     @Override
     public boolean apply(Caster<?> caster) {
-        setOrientation(caster, caster.asEntity().getPitch(), caster.asEntity().getYaw());
         return toPlaceable().apply(caster);
     }
 
@@ -106,19 +102,43 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
                     source.addParticle(ParticleTypes.ELECTRIC_SPARK, pos, Vec3d.ZERO);
                 });
             } else {
-                teleportationTarget.getTarget().ifPresent(target -> {
-                    if (Ether.get(source.asWorld()).get(getType(), target, targetPortalId) == null) {
-                        Unicopia.LOGGER.debug("Lost sibling, breaking connection to " + target.uuid());
-                        teleportationTarget.set(null);
-                        setDirty();
-                        source.asWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, source.getOrigin(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
-                    }
-                });
+                var ownEntry = Ether.get(source.asWorld()).get(this, source);
+                synchronized (ownEntry) {
+                    var targetEntry = getDestination(source);
 
-                getDestination(source).ifPresentOrElse(
-                        entry -> tickWithTargetLink(source, entry),
-                        () -> findLink(source)
-                );
+                    if (targetEntry == null) {
+                        if (teleportationTarget.isSet()) {
+                            teleportationTarget.set(null);
+                            targetPortalId = null;
+                            setDirty();
+                            source.asWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, source.getOrigin(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
+                        } else {
+                            Ether.get(source.asWorld()).anyMatch(getType(), entry -> {
+                                if (entry.isAlive() && !entry.hasClaimant() && !entry.entityMatches(source.asEntity().getUuid())) {
+                                    entry.claim(getUuid());
+                                    ownEntry.claim(entry.getSpellId());
+                                    synchronized (entry) {
+                                        if (entry.getSpell() instanceof PortalSpell portal) {
+                                            portal.teleportationTarget.copyFrom(ownEntry.entity);
+                                            portal.targetPortalId = getUuid();
+                                            portal.targetPortalPitch = pitch;
+                                            portal.targetPortalYaw = yaw;
+                                            portal.setDirty();
+                                        }
+                                    }
+                                    teleportationTarget.copyFrom(entry.entity);
+                                    targetPortalId = entry.getSpellId();
+                                    targetPortalPitch = entry.getPitch();
+                                    targetPortalYaw = entry.getYaw();
+                                    setDirty();
+                                }
+                                return false;
+                            });
+                        }
+                    } else {
+                        tickActive(source, targetEntry);
+                    }
+                }
             }
 
             var entry = Ether.get(source.asWorld()).getOrCreate(this, source);
@@ -129,13 +149,7 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
         return !isDead();
     }
 
-    private void tickWithTargetLink(Caster<?> source, Ether.Entry<?> destination) {
-
-        if (destination.hasChanged()) {
-            targetPortalPitch = destination.getPitch();
-            targetPortalYaw = destination.getYaw();
-        }
-
+    private void tickActive(Caster<?> source, Ether.Entry<?> destination) {
         destination.entity.getTarget().ifPresent(target -> {
             source.findAllEntitiesInRange(1).forEach(entity -> {
                 if (!entity.hasPortalCooldown()) {
@@ -145,8 +159,9 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
                         return;
                     }
 
-                    Vec3d offset = entity.getPos().subtract(source.getOriginVector());
-                    float yawDifference = pitch < 15 ? getYawDifference() : 0;
+                    Vec3d offset = entity.getPos().subtract(source.asEntity().getPos())
+                            .add(new Vec3d(0, 0, -0.7F).rotateY(-getTargetYaw() * MathHelper.RADIANS_PER_DEGREE));
+                    float yawDifference = getYawDifference();
                     Vec3d dest = target.pos().add(offset.rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE)).add(0, 0.1, 0);
 
                     if (entity.getWorld().isTopSolid(BlockPos.ofFloored(dest).up(), entity)) {
@@ -176,37 +191,22 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
         });
     }
 
-    private void findLink(Caster<?> source) {
-        if (source.isClient()) {
-            return;
-        }
-
-        Ether.get(source.asWorld()).anyMatch(getType(), entry -> {
-            if (!entry.entity.referenceEquals(source.asEntity()) && entry.claim()) {
-                teleportationTarget.copyFrom(entry.entity);
-                targetPortalId = entry.getSpellId();
-                setDirty();
-            }
-            return false;
-        });
-    }
-
     @Override
     public void setOrientation(Caster<?> caster, float pitch, float yaw) {
-        this.pitch = pitch;
-        this.yaw = yaw;
+        this.pitch = 90 - pitch;
+        this.yaw = -yaw;
         particleArea = PARTICLE_AREA.rotate(
-            pitch * MathHelper.RADIANS_PER_DEGREE,
-            yaw * MathHelper.RADIANS_PER_DEGREE
+            this.pitch * MathHelper.RADIANS_PER_DEGREE,
+            this.yaw * MathHelper.RADIANS_PER_DEGREE
         );
         setDirty();
     }
 
     @Override
     public void onPlaced(Caster<?> source, PlacementControlSpell parent) {
-        parent.setOrientation(source, source.asEntity().getPitch(), source.asEntity().getYaw());
-        LivingEntity caster = source.getMaster();
+        Entity caster = source.asEntity();
         Vec3d targetPos = caster.getRotationVector().multiply(3).add(caster.getEyePos());
+        parent.setOrientation(source, -90 - source.asEntity().getPitch(), -source.asEntity().getYaw());
         parent.setPosition(new Vec3d(targetPos.x, caster.getPos().y, targetPos.z));
         if (source instanceof Pony pony) {
             Channel.SERVER_REQUEST_PLAYER_LOOK.sendToPlayer(new MsgCasterLookRequest(parent.getUuid()), (ServerPlayerEntity)pony.asEntity());
@@ -217,7 +217,10 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
     protected void onDestroyed(Caster<?> caster) {
         super.onDestroyed(caster);
         if (!caster.isClient()) {
-            getDestination(caster).ifPresent(Ether.Entry::release);
+            var destination = getDestination(caster);
+            if (destination != null) {
+                destination.release(getUuid());
+            }
         }
     }
 

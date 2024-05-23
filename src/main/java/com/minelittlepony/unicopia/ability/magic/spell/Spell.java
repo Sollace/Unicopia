@@ -156,9 +156,16 @@ public interface Spell extends NbtSerialisable, Affine {
         return compound == null || !compound.containsUuid("uuid") ? Util.NIL_UUID :  compound.getUuid("uuid");
     }
 
-    static NbtCompound writeNbt(Spell effect) {
+    static NbtCompound writeNbt(@Nullable Spell effect) {
+        if (effect == null) {
+            return new NbtCompound();
+        }
         NbtCompound compound = effect.toNBT();
         effect.getTypeAndTraits().toNbt(compound);
         return compound;
+    }
+
+    static <T extends Spell> Spell copy(T spell) {
+        return readNbt(writeNbt(spell));
     }
 }

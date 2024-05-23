@@ -50,7 +50,7 @@ public interface UEntities {
             .trackRangeBlocks(200)
             .disableSummon()
             .dimensions(EntityDimensions.fixed(1, 1)));
-    EntityType<CastSpellEntity> CAST_SPELL = register("cast_spell", FabricEntityTypeBuilder.create(SpawnGroup.MISC, CastSpellEntity::new)
+    EntityType<CastSpellEntity> CAST_SPELL = register("cast_spell", FabricEntityTypeBuilder.<CastSpellEntity>create(SpawnGroup.MISC, CastSpellEntity::new)
             .trackRangeBlocks(200)
             .disableSummon()
             .dimensions(EntityDimensions.changing(4, 4)));

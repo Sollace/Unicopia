@@ -168,12 +168,13 @@ public class Ether extends PersistentState {
         private WeakReference<T> spell;
 
         private boolean removed;
-        private boolean taken;
 
         private float pitch;
         private final AtomicBoolean changed = new AtomicBoolean(true);
         private float yaw;
         private float radius;
+
+        private final Set<UUID> claimants = new HashSet<>();
 
         private Entry(NbtElement nbt) {
             this.entity = new EntityReference<>();
@@ -227,7 +228,7 @@ public class Ether extends PersistentState {
             markDirty();
         }
 
-        boolean isAlive() {
+        public boolean isAlive() {
             return !isDead();
         }
 
@@ -246,6 +247,7 @@ public class Ether extends PersistentState {
         public void markDead() {
             Unicopia.LOGGER.debug("Marking " + entity.getTarget().orElse(null) + " as dead");
             removed = true;
+            claimants.clear();
             markDirty();
         }
 
@@ -253,25 +255,22 @@ public class Ether extends PersistentState {
             return entity.getTarget().filter(target -> uuid.equals(target.uuid())).isPresent();
         }
 
-        public boolean isAvailable() {
-            return !isDead() && !taken && entity.isSet();
-        }
-
-        public void setTaken(boolean taken) {
-            this.taken = taken;
+        public void claim(UUID claimant) {
+            claimants.add(claimant);
             markDirty();
         }
 
-        public void release() {
-            setTaken(false);
+        public void release(UUID claimant) {
+            claimants.remove(claimant);
+            markDirty();
         }
 
-        public boolean claim() {
-            if (isAvailable()) {
-                setTaken(true);
-                return true;
-            }
-            return false;
+        public boolean isClaimedBy(UUID claimant) {
+            return claimants.contains(claimant);
+        }
+
+        public boolean hasClaimant() {
+            return !claimants.isEmpty();
         }
 
         @Nullable
@@ -315,24 +314,34 @@ public class Ether extends PersistentState {
         public void toNBT(NbtCompound compound) {
             entity.toNBT(compound);
             compound.putBoolean("removed", removed);
-            compound.putBoolean("taken", taken);
             compound.putFloat("pitch", pitch);
             compound.putFloat("yaw", yaw);
             compound.putFloat("radius", radius);
             if (spellId != null) {
                 compound.putUuid("spellId", spellId);
             }
+            NbtList list = new NbtList();
+            claimants.forEach(claimant -> {
+                list.add(NbtHelper.fromUuid(claimant));
+            });
+            compound.put("claimants", list);
         }
 
         @Override
         public void fromNBT(NbtCompound compound) {
             entity.fromNBT(compound);
             removed = compound.getBoolean("removed");
-            taken = compound.getBoolean("taken");
             pitch = compound.getFloat("pitch");
             yaw = compound.getFloat("yaw");
             radius = compound.getFloat("radius");
             spellId = compound.containsUuid("spellid") ? compound.getUuid("spellId") : null;
+
+            claimants.clear();
+            if (compound.contains("claimants", NbtElement.LIST_TYPE)) {
+                compound.getList("claimants", NbtElement.INT_ARRAY_TYPE).forEach(el -> {
+                    claimants.add(NbtHelper.toUuid(el));
+                });
+            }
         }
 
         @Override

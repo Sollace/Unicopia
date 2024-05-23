@@ -159,13 +159,13 @@ class PortalFrameBuffer implements AutoCloseable {
                 Camera camera = client.gameRenderer.getCamera();
 
                 Entity cameraEntity = UEntities.CAST_SPELL.create(caster.asWorld());
-                Vec3d offset = new Vec3d(0, -0.2F, -0.2F).rotateY(-spell.getTargetYaw() * MathHelper.RADIANS_PER_DEGREE);
+                Vec3d offset = new Vec3d(0, 0, -0.1F).rotateY(-spell.getTargetYaw() * MathHelper.RADIANS_PER_DEGREE);
 
                 float yaw = spell.getTargetYaw() + camera.getYaw() - spell.getYaw() + 180;
                 float pitch = spell.getTargetPitch() + (camera.getPitch() - spell.getPitch()) * 1.65F;
 
                 cameraEntity.setPosition(target.pos().add(offset));
-                cameraEntity.setPitch(pitch);
+                cameraEntity.setPitch(90 + pitch);
                 cameraEntity.setYaw(yaw);
 
                 drawWorld(cameraEntity, 400, 400);

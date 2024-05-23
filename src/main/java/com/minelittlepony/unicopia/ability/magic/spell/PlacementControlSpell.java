@@ -7,9 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.AbstractSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
-import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
@@ -23,28 +21,27 @@ import net.minecraft.world.World;
 
 public class PlacementControlSpell extends AbstractSpell implements OrientedSpell {
     @Nullable
-    private UUID placedSpellId;
-    @Nullable
     private UUID placedEntityId;
 
     private Optional<RegistryKey<World>> dimension = Optional.empty();
     private Optional<Vec3d> position = Optional.empty();
     private Optional<Vec3d> orientation = Optional.empty();
 
-    private SpellReference<Spell> delegate = new SpellReference<>();
+    @Nullable
+    private Spell delegate;
 
     public PlacementControlSpell(CustomisedSpellType<?> type) {
         super(type);
     }
 
     PlacementControlSpell(CustomisedSpellType<?> type, Spell delegate) {
-        super(type);
-        this.delegate.set(delegate);
+        this(type);
+        this.delegate = delegate;
     }
 
     @Nullable
     public Spell getDelegate() {
-        return delegate.get();
+        return delegate;
     }
 
     public Optional<Vec3d> getPosition() {
@@ -62,20 +59,24 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
     @Override
     public void setOrientation(Caster<?> caster, float pitch, float yaw) {
         this.orientation = Optional.of(new Vec3d(pitch, yaw, 0));
+        if (delegate instanceof OrientedSpell o) {
+            o.setOrientation(caster, pitch, yaw);
+        }
         setDirty();
-        if (!caster.isClient() && placedEntityId != null) {
-            getWorld(caster).ifPresent(world -> {
-                var entry = Ether.get(world).get(SpellType.PLACED_SPELL, placedEntityId, placedSpellId);
-                if (entry != null) {
-                    entry.setPitch(pitch);
-                    entry.setYaw(yaw);
-                }
-            });
+        if (!caster.isClient()) {
+            var entry = getConnection(caster);
+            if (entry != null) {
+                entry.setPitch(pitch);
+                entry.setYaw(yaw);
+            }
         }
     }
 
     @Override
     public boolean apply(Caster<?> caster) {
+        if (delegate == null) {
+            return false;
+        }
         boolean result = super.apply(caster);
         if (result) {
             if (dimension.isEmpty()) {
@@ -84,21 +85,18 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
             if (position.isEmpty()) {
                 setPosition(caster.asEntity().getPos());
             }
+            if (delegate instanceof PlacementDelegate) {
+                ((PlacementDelegate)delegate).onPlaced(caster, this);
+            }
 
-            PlaceableSpell copy = new PlaceableSpell(caster, this, delegate.get());
+            CastSpellEntity entity = new CastSpellEntity(caster.asWorld(), caster, this);
 
-            Vec3d pos = position.orElse(caster.asEntity().getPos());
+            Vec3d pos = position.get();
             Vec3d rot = orientation.orElse(Vec3d.ZERO);
 
-            CastSpellEntity entity = UEntities.CAST_SPELL.create(caster.asWorld());
-            entity.setCaster(caster);
             entity.updatePositionAndAngles(pos.x, pos.y, pos.z, (float)rot.y, (float)rot.x);
-            entity.setYaw((float)rot.y);
-            entity.setPitch((float)rot.x);
-            copy.apply(entity);
             entity.getWorld().spawnEntity(entity);
 
-            placedSpellId = copy.getUuid();
             placedEntityId = entity.getUuid();
             setDirty();
         }
@@ -107,14 +105,17 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        if (!source.isClient() && !checkConnection(source)) {
+        if (!source.isClient() && getConnection(source) == null) {
             setDead();
         }
         return !isDead();
     }
 
-    private boolean checkConnection(Caster<?> source) {
-        return getWorld(source).map(world -> Ether.get(world).get(SpellType.PLACED_SPELL, placedEntityId, placedSpellId)).isPresent();
+    @Nullable
+    private Ether.Entry<?> getConnection(Caster<?> source) {
+        return delegate == null || placedEntityId == null ? null : getWorld(source)
+                .map(world -> Ether.get(world).get(getDelegate().getTypeAndTraits().type(), placedEntityId, delegate.getUuid()))
+                .orElse(null);
     }
 
     private Optional<World> getWorld(Caster<?> source) {
@@ -124,13 +125,10 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
-        compound.put("spell", delegate.toNBT());
+        compound.put("spell", Spell.writeNbt(delegate));
         position.ifPresent(pos -> compound.put("position", NbtSerialisable.writeVector(pos)));
         orientation.ifPresent(o -> compound.put("orientation", NbtSerialisable.writeVector(o)));
         dimension.ifPresent(d -> compound.putString("dimension", d.getValue().toString()));
-        if (placedSpellId != null) {
-            compound.putUuid("placedSpellId", placedSpellId);
-        }
         if (placedEntityId != null) {
             compound.putUuid("placedEntityId", placedEntityId);
         }
@@ -139,8 +137,7 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
-        delegate.fromNBT(compound.getCompound("spell"));
-        placedSpellId = compound.containsUuid("placedSpellId") ? compound.getUuid("placedSpellId") : null;
+        delegate = Spell.readNbt(compound.getCompound("spell"));
         placedEntityId = compound.containsUuid("placedEntityId") ? compound.getUuid("placedEntityId") : null;
         position = compound.contains("position") ? Optional.of(NbtSerialisable.readVector(compound.getList("position", NbtElement.FLOAT_TYPE))) : Optional.empty();
         orientation = compound.contains("orientation") ? Optional.of(NbtSerialisable.readVector(compound.getList("orientation", NbtElement.FLOAT_TYPE))) : Optional.empty();

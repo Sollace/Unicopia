@@ -1,10 +1,14 @@
 package com.minelittlepony.unicopia.entity.mob;
 
+import java.util.UUID;
+
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.ability.magic.SpellInventory;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.SpellSlots;
+import com.minelittlepony.unicopia.ability.magic.spell.PlacementControlSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -13,6 +17,7 @@ import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.network.track.Trackable;
+import com.minelittlepony.unicopia.server.world.Ether;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -24,6 +29,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class CastSpellEntity extends LightEmittingEntity implements Caster<CastSpellEntity>, WeaklyOwned.Mutable<LivingEntity>, MagicImmune {
@@ -31,6 +37,8 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
     private static final TrackedData<Integer> MAX_LEVEL = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> CORRUPTION = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> MAX_CORRUPTION = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
+    private static final TrackedData<Boolean> DEAD = DataTracker.registerData(CastSpellEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     private final EntityPhysics<CastSpellEntity> physics = new EntityPhysics<>(this);
 
@@ -49,6 +57,23 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
             () -> dataTracker.get(MAX_CORRUPTION)
     );
 
+    private UUID controllingEntityUuid;
+    private UUID controllingSpellUuid;
+
+    private int prevAge;
+
+    private int prevDeathTicks;
+    private int deathTicks;
+
+    public CastSpellEntity(World world, Caster<?> caster, PlacementControlSpell control) {
+        this(UEntities.CAST_SPELL, world);
+        this.controllingEntityUuid = caster.asEntity().getUuid();
+        this.controllingSpellUuid = control.getUuid();
+        setCaster(caster);
+        Spell spell = Spell.copy(control.getDelegate());
+        spells.getSlots().put(spell);
+    }
+
     public CastSpellEntity(EntityType<?> type, World world) {
         super(type, world);
         ignoreCameraFrustum = true;
@@ -61,6 +86,27 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
         dataTracker.startTracking(CORRUPTION, 0);
         dataTracker.startTracking(MAX_LEVEL, 1);
         dataTracker.startTracking(MAX_CORRUPTION, 1);
+        dataTracker.startTracking(DEAD, false);
+    }
+
+    @Override
+    public void updatePositionAndAngles(double x, double y, double z, float yaw, float pitch) {
+        super.updatePositionAndAngles(x, y, z, yaw, pitch);
+        spells.getSlots().stream(SpellPredicate.IS_ORIENTED).forEach(spell -> spell.setOrientation(this, pitch, yaw));
+    }
+
+    private boolean checkConnection() {
+        return Ether.get(getWorld()).get(SpellType.PLACE_CONTROL_SPELL, controllingEntityUuid, controllingSpellUuid) != null;
+    }
+
+    public float getAge(float tickDelta) {
+        return MathHelper.lerp(tickDelta, prevAge, age);
+    }
+
+    public float getScale(float tickDelta) {
+        float add = MathHelper.clamp(getAge(tickDelta) / 25F, 0, 1);
+        float subtract = MathHelper.clamp(MathHelper.lerp(tickDelta, prevDeathTicks, deathTicks) / 20F, 0, 1);
+        return MathHelper.clamp(add - subtract, 0, 1);
     }
 
     @Override
@@ -78,19 +124,51 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
     }
 
     @Override
-    public void tick() {
-        super.tick();
+    public void baseTick() {
+        prevAge = age;
+        age++;
 
-        if (!isRemoved() && !spells.tick(Situation.GROUND_ENTITY)) {
-            if (!isClient()) {
-                discard();
+        super.baseTick();
+
+        if (!isClient()) {
+            if (!checkConnection()) {
+                kill();
             }
+
+            spells.getSlots().get().ifPresent(spell -> {
+                var entry = Ether.get(getWorld()).getOrCreate(spell, this);
+                if (entry.hasChanged()) {
+                    //updatePositionAndAngles(getX(), getY(), getZ(), entry.getYaw(), entry.getPitch());
+                }
+            });
+        }
+
+        prevDeathTicks = deathTicks;
+
+        if (!spells.tick(Situation.GROUND) && deathTicks++ > 40) {
+            remove(Entity.RemovalReason.KILLED);
+        }
+    }
+
+    @Override
+    public void kill() {
+        spells.getSlots().clear();
+    }
+
+    public boolean isDead() {
+        return dataTracker.get(DEAD);
+    }
+
+    public void setDead(boolean dead) {
+        dataTracker.set(DEAD, dead);
+        if (dead) {
+            spells.getSlots().clear();
         }
     }
 
     @Override
     public EntityDimensions getDimensions(EntityPose pose) {
-        return super.getDimensions(pose).scaled(getSpellSlot().get(SpellType.IS_PLACED).map(spell -> spell.getScale(1)).orElse(1F));
+        return super.getDimensions(pose).scaled(getScale(1));
     }
 
     @Override
@@ -154,23 +232,42 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound tag) {
-        tag.put("owner", owner.toNBT());
         tag.put("level", level.toNbt());
         tag.put("corruption", corruption.toNbt());
+
+        if (controllingEntityUuid != null) {
+            tag.putUuid("owningEntity", controllingEntityUuid);
+        }
+        if (controllingSpellUuid != null) {
+            tag.putUuid("owningSpell", controllingSpellUuid);
+        }
+
         spells.getSlots().toNBT(tag);
+        tag.putInt("age", age);
+        tag.putInt("prevAge", prevAge);
+        tag.putBoolean("dead", isDead());
+        tag.put("owner", owner.toNBT());
     }
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound tag) {
-        if (tag.contains("owner")) {
-            owner.fromNBT(tag.getCompound("owner"));
-        }
-        spells.getSlots().fromNBT(tag);
         var level = Levelled.fromNbt(tag.getCompound("level"));
         dataTracker.set(MAX_LEVEL, level.getMax());
         dataTracker.set(LEVEL, level.get());
         var corruption = Levelled.fromNbt(tag.getCompound("corruption"));
         dataTracker.set(MAX_CORRUPTION, corruption.getMax());
         dataTracker.set(CORRUPTION, corruption.get());
+
+        controllingEntityUuid = tag.containsUuid("owningEntity") ? tag.getUuid("owningEntity") : null;
+        controllingSpellUuid = tag.containsUuid("owningSpell") ? tag.getUuid("owningSpell") : null;
+
+        spells.getSlots().fromNBT(tag);
+        age = tag.getInt("age");
+        prevAge = tag.getInt("prevAge");
+        setDead(tag.getBoolean("dead"));
+
+        if (tag.contains("owner")) {
+            owner.fromNBT(tag.getCompound("owner"));
+        }
     }
 }

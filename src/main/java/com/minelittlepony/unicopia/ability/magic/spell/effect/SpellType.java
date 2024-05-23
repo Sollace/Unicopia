@@ -11,7 +11,6 @@ import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.ChangelingFeedingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.DispersableDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.RainboomAbilitySpell;
-import com.minelittlepony.unicopia.ability.magic.spell.PlaceableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.PlacementControlSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.RageAbilitySpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -45,7 +44,6 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     private static final DynamicCommandExceptionType UNKNOWN_SPELL_TYPE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("spell_type.unknown", id));
 
     public static final SpellType<PlacementControlSpell> PLACE_CONTROL_SPELL = register("place_controller", SpellType.<PlacementControlSpell>builder(PlacementControlSpell::new).affinity(Affinity.NEUTRAL).unobtainable().stackable().shape(GemstoneItem.Shape.DONUT));
-    public static final SpellType<PlaceableSpell> PLACED_SPELL = register("placed", builder(PlaceableSpell::new).affinity(Affinity.NEUTRAL).unobtainable().stackable().shape(GemstoneItem.Shape.DONUT));
     public static final SpellType<ThrowableSpell> THROWN_SPELL = register("thrown", builder(ThrowableSpell::new).affinity(Affinity.NEUTRAL).unobtainable().shape(GemstoneItem.Shape.DONUT));
 
     public static final SpellType<DispersableDisguiseSpell> CHANGELING_DISGUISE = register("disguise", builder(DispersableDisguiseSpell::new).affinity(Affinity.BAD).color(0x19E48E).unobtainable().shape(GemstoneItem.Shape.ARROW));

@@ -2,9 +2,9 @@ package com.minelittlepony.unicopia.client.gui;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.joml.Vector4f;
 
+import com.google.common.base.MoreObjects;
 import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
@@ -136,8 +136,8 @@ public class DismissSpellScreen extends GameGui {
         }
 
         private Spell getActualSpell() {
-            return spell instanceof AbstractDelegatingSpell s && s.getDelegate() instanceof Spell p ? p
-                : spell instanceof PlacementControlSpell s && s.getDelegate() instanceof Spell p ? p
+            return spell instanceof AbstractDelegatingSpell s ? MoreObjects.firstNonNull(s.getDelegate(), s)
+                : spell instanceof PlacementControlSpell s ? MoreObjects.firstNonNull(s.getDelegate(), s)
                 : spell;
         }
 
