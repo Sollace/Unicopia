@@ -9,15 +9,18 @@ import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
 
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -49,11 +52,11 @@ class EntityDisguiseRenderer {
         }
 
         render(ve, e, x, y, z, fireTicks, tickDelta, matrices, vertices, light);
-        ve.getAttachments().forEach(ee -> {
-            PehkUtil.copyScale(pony.asEntity(), ee);
-            Vec3d difference = ee.getPos().subtract(e.getPos());
-            render(ve, ee, x + difference.x, y + difference.y, z + difference.z, fireTicks, tickDelta, matrices, vertices, light);
-            PehkUtil.clearScale(ee);
+        ve.getAttachments().forEach(attachment -> {
+            PehkUtil.copyScale(pony.asEntity(), attachment.entity());
+            Vec3d difference = attachment.entity().getPos().subtract(e.getPos());
+            render(ve, attachment.entity(), x + difference.x, y + difference.y, z + difference.z, fireTicks, tickDelta, matrices, vertices, light);
+            PehkUtil.clearScale(attachment.entity());
         });
 
         matrices.push();
@@ -66,6 +69,7 @@ class EntityDisguiseRenderer {
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     private void render(EntityAppearance ve, Entity e,
             double x, double y, double z,
             int fireTicks, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
@@ -84,6 +88,9 @@ class EntityDisguiseRenderer {
             BlockEntityRenderer<BlockEntity> r = MinecraftClient.getInstance().getBlockEntityRenderDispatcher().get(blockEntity);
             if (r != null) {
                 ((MixinBlockEntity)blockEntity).setPos(e.getBlockPos());
+                if (e instanceof FallingBlockEntity fbe) {
+                    blockEntity.setCachedState(fbe.getBlockState());
+                }
                 blockEntity.setWorld(e.getWorld());
                 matrices.push();
                 matrices.translate(x, y, z);
@@ -92,8 +99,11 @@ class EntityDisguiseRenderer {
                 r.render(blockEntity, 1, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
 
                 matrices.pop();
-                blockEntity.setWorld(null);
-                return;
+
+                BlockRenderType type = blockEntity.getCachedState().getRenderType();
+                if (type == BlockRenderType.ENTITYBLOCK_ANIMATED) {
+                    return;
+                }
             }
         }
 
@@ -104,7 +114,15 @@ class EntityDisguiseRenderer {
         }
 
         e.setFireTicks(fireTicks);
-        delegate.client.getEntityRenderDispatcher().render(e, x, y, z, e.getYaw(), tickDelta, matrices, vertexConsumers, light);
+
+        EntityRenderDispatcher dispatcher = delegate.client.getEntityRenderDispatcher();
+        if (e instanceof FallingBlockEntity) {
+            dispatcher.setRenderShadows(false);
+        }
+        dispatcher.render(e, x, y, z, e.getYaw(), tickDelta, matrices, vertexConsumers, light);
+        if (e instanceof FallingBlockEntity) {
+            dispatcher.setRenderShadows(true);
+        }
         e.setFireTicks(0);
 
         if (model != null) {

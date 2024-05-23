@@ -48,21 +48,22 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 
 public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provider, FlightType.Provider, EntityCollisions.ComplexCollidable {
     private static final Optional<Float> BLOCK_HEIGHT = Optional.of(0.5F);
 
     @NotNull
-    private String entityId = "";
+    private transient String entityId = "";
 
     @Nullable
-    private Entity entity;
+    private transient Entity entity;
 
     @Nullable
-    private BlockEntity blockEntity;
+    private transient BlockEntity blockEntity;
 
-    private List<Entity> attachments = new ArrayList<>();
+    private transient List<Attachment> attachments = new ArrayList<>();
 
     private Optional<EntityDimensions> dimensions = Optional.empty();
 
@@ -71,7 +72,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
      * This is not serialized, so should only be used for server-side data.
      */
     @Nullable
-    private NbtCompound tag;
+    private transient NbtCompound tag;
 
     @Nullable
     private NbtCompound entityNbt;
@@ -86,16 +87,21 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         return blockEntity;
     }
 
-    public List<Entity> getAttachments() {
+    public List<Attachment> getAttachments() {
         return attachments;
     }
 
-    public void addBlockEntity(BlockEntity blockEntity) {
+    public record Attachment(Vec3d offset, Entity entity) {}
+
+    public void setBlockEntity(@Nullable BlockEntity blockEntity) {
+        if (this.blockEntity != null) {
+            this.blockEntity.markRemoved();
+        }
         this.blockEntity = blockEntity;
     }
 
-    public void attachExtraEntity(Entity entity) {
-        attachments.add(entity);
+    public void attachExtraEntity(Vec3d offset, Entity entity) {
+        attachments.add(new Attachment(offset, entity));
     }
 
     public void setAppearance(@Nullable Entity entity) {
@@ -384,7 +390,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     @Override
     public void getCollissionShapes(ShapeContext context, Consumer<VoxelShape> output) {
         EntityCollisions.getCollissionShapes(getAppearance(), context, output);
-        getAttachments().forEach(e -> EntityCollisions.getCollissionShapes(e, context, output));
+        getAttachments().forEach(e -> EntityCollisions.getCollissionShapes(e.entity(), context, output));
     }
 
 }

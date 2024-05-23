@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -11,27 +10,26 @@ import com.minelittlepony.unicopia.mixin.MixinFallingBlock;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
 import com.minelittlepony.unicopia.util.Tickable;
 
+import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
+import net.minecraft.block.enums.BedPart;
+import net.minecraft.block.enums.ChestType;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 
 public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
-
-    private static final Vec3d UP = Vec3d.of(Direction.UP.getVector());
-
     private static final Optional<EntityDimensions> FULL_BLOCK = Optional.of(EntityDimensions.changing(0.6F, 0.9F));
 
     @Override
@@ -70,22 +68,27 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
     public FallingBlockEntity onCreate(FallingBlockEntity entity, EntityAppearance context, boolean replaceOld) {
         super.onCreate(entity, context, replaceOld);
 
-        BlockState state = entity.getBlockState();
+        BlockState state = entity.getBlockState()
+                .withIfExists(Properties.CHEST_TYPE, ChestType.SINGLE)
+                .withIfExists(Properties.BED_PART, BedPart.HEAD)
+                .withIfExists(Properties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.LOWER);
         Block block = state.getBlock();
+        context.setBlockEntity(block instanceof BlockEntityProvider bep ? bep.createBlockEntity(entity.getBlockPos(), state) : null);
 
-        if (block instanceof BlockEntityProvider bep) {
-            context.addBlockEntity(bep.createBlockEntity(entity.getBlockPos(), state));
+        if (state.contains(Properties.BED_PART)) {
+            Vec3i offset = BedBlock.getOppositePartDirection(state).getVector();
+            BlockState foot = state.with(Properties.BED_PART, BedPart.FOOT);
+            context.attachExtraEntity(Vec3d.of(offset), configure(MixinFallingBlockEntity.createInstance(entity.getWorld(), entity.getX() + offset.getX(), entity.getY() + offset.getY(), entity.getZ() + offset.getZ(), foot), block));
         }
 
-        if (block instanceof DoorBlock) {
-            BlockState lowerState = state.with(DoorBlock.HALF, DoubleBlockHalf.LOWER);
-            BlockState upperState = state.with(DoorBlock.HALF, DoubleBlockHalf.UPPER);
-
-            context.attachExtraEntity(configure(MixinFallingBlockEntity.createInstance(entity.getWorld(), entity.getX(), entity.getY(), entity.getZ(), upperState), block));
-
-            return configure(MixinFallingBlockEntity.createInstance(entity.getWorld(), entity.getX(), entity.getY() + 1, entity.getZ(), lowerState), block);
+        if (state.contains(Properties.DOUBLE_BLOCK_HALF)) {
+            BlockState upperState = state.with(Properties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER);
+            context.attachExtraEntity(new Vec3d(0, 1, 0), configure(MixinFallingBlockEntity.createInstance(entity.getWorld(), entity.getX(), entity.getY() + 1, entity.getZ(), upperState), block));
         }
 
+        if (state != entity.getBlockState()) {
+            entity = MixinFallingBlockEntity.createInstance(entity.getWorld(), entity.getX(), entity.getY(), entity.getZ(), state);
+        }
         return configure(entity, block);
     }
 
@@ -117,9 +120,8 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
             be.setWorld(null);
         }
 
-        List<Entity> attachments = disguise.getAttachments();
-        if (attachments.size() > 0) {
-            copyBaseAttributes(source.asEntity(), attachments.get(0), UP);
+        for (var attachment : disguise.getAttachments()) {
+            copyBaseAttributes(source.asEntity(), attachment.entity(), attachment.offset());
         }
     }
 }
