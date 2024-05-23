@@ -36,7 +36,9 @@ class EntityDisguiseRenderer {
             double x, double y, double z,
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
         int fireTicks = pony.asEntity().doesRenderOnFire() ? 1 : 0;
-        disguise.update(pony, false);
+        if (!delegate.client.isPaused()) {
+            disguise.update(pony, false);
+        }
 
         EntityAppearance ve = disguise.getDisguise();
         Entity e = ve.getAppearance();
