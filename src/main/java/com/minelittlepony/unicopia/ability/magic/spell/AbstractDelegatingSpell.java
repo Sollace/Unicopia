@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 import java.util.*;
 import java.util.stream.Stream;
 
+import com.google.common.base.MoreObjects;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
@@ -28,6 +29,10 @@ public abstract class AbstractDelegatingSpell implements Spell {
         return delegate.get();
     }
 
+    private Spell getOrEmpty() {
+        return MoreObjects.firstNonNull(delegate.get(), EmptySpell.INSTANCE);
+    }
+
     @Override
     public boolean equalsOrContains(UUID id) {
         return Spell.super.equalsOrContains(id) || delegate.equalsOrContains(id);
@@ -50,26 +55,22 @@ public abstract class AbstractDelegatingSpell implements Spell {
 
     @Override
     public void setDead() {
-        if (delegate.get() != null) {
-            delegate.get().setDead();
-        }
+        getOrEmpty().setDead();
     }
 
     @Override
     public void tickDying(Caster<?> caster) {
-        if (delegate.get() != null) {
-            delegate.get().tickDying(caster);
-        }
+        getOrEmpty().tickDying(caster);
     }
 
     @Override
     public boolean isDead() {
-        return delegate.get() == null;
+        return getOrEmpty().isDead();
     }
 
     @Override
     public boolean isDying() {
-        return delegate.get() != null && delegate.get().isDying();
+        return getOrEmpty().isDying();
     }
 
     @Override
@@ -84,12 +85,12 @@ public abstract class AbstractDelegatingSpell implements Spell {
 
     @Override
     public boolean isHidden() {
-        return hidden || (delegate.get() != null && delegate.get().isHidden());
+        return hidden || getOrEmpty().isHidden();
     }
 
     @Override
     public void setHidden(boolean hidden) {
-        this.hidden = hidden;
+        getOrEmpty().setHidden(hidden);
     }
 
     @Override
@@ -106,21 +107,17 @@ public abstract class AbstractDelegatingSpell implements Spell {
         if (!caster.isClient()) {
             Ether.get(caster.asWorld()).remove(this, caster);
         }
-        if (delegate.get() instanceof Spell s) {
-            s.destroy(caster);
-        }
+        getOrEmpty().destroy(caster);
     }
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        if (delegate.get() instanceof Spell s) {
-            if (s.isDying()) {
-                s.tickDying(source);
-                return !s.isDead();
-            }
-            return s.tick(source, situation) && !isDead();
+        Spell s = getOrEmpty();
+        if (s.isDying()) {
+            s.tickDying(source);
+            return !s.isDead();
         }
-        return !isDead();
+        return s.tick(source, situation);
     }
 
     @Override
