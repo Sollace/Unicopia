@@ -486,7 +486,7 @@
   "spell.unicopia.shield.additional_range": "Дополнительный радиус",
   "spell.unicopia.shield.permit.passive": "Пропускает пассивных мобов",
   "spell.unicopia.shield.permit.hostile": "Пропускает враждебных мобов",
-  "spell.unicopia.shield.permit.player": " Permits Other Players",
+  "spell.unicopia.shield.permit.player": " Пропускает других игроков",
   "spell.unicopia.shield.caston.location": "Применяется к месту",
   "spell.unicopia.shield.caston.person": "Применяется на себя",
   "spell.unicopia.shield.lore": "Создает магический щит вокруг пользователя",
