@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +24,8 @@ import net.minecraft.util.TypedActionResult;
 
 public record CustomisedSpellType<T extends Spell> (
         SpellType<T> type,
-        SpellTraits traits
+        SpellTraits traits,
+        Supplier<SpellTraits> traitsDifferenceSupplier
     ) implements SpellPredicate<T> {
 
     public boolean isEmpty() {
@@ -32,6 +34,10 @@ public record CustomisedSpellType<T extends Spell> (
 
     public boolean isStackable() {
         return type().isStackable();
+    }
+
+    public SpellTraits relativeTraits() {
+        return traitsDifferenceSupplier.get();
     }
 
     public T create() {

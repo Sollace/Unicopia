@@ -1,9 +1,12 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.List;
+
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -14,6 +17,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.EntityHitResult;
 
 public class FireBoltSpell extends AbstractSpell implements HomingSpell,
@@ -30,6 +34,19 @@ public class FireBoltSpell extends AbstractSpell implements HomingSpell,
             .with(Trait.STRENGTH, 11)
             .with(Trait.FIRE, 60)
             .build();
+
+    public static void appendTooltip(CustomisedSpellType<? extends FireBoltSpell> type, List<Text> tooltip) {
+        tooltip.add(SpellAttributes.of(SpellAttributes.EXPLOSION_STRENGTH, type.traits().get(Trait.POWER, 0, type.traits().get(Trait.FOCUS) >= 50 ? 500 : 50) / 10F));
+        tooltip.add(SpellAttributes.of(SpellAttributes.VELOCITY, 1.3F + type.traits().get(Trait.STRENGTH) / 11F));
+        tooltip.add(SpellAttributes.of(SpellAttributes.PROJECTILE_COUNT, 1 + (int)type.traits().get(Trait.EARTH) * 3));
+
+        float homingRange = type.traits().get(Trait.FOCUS);
+
+        if (homingRange >= 50) {
+            tooltip.add(SpellAttributes.FOLLOWS_TARGET);
+            tooltip.add(SpellAttributes.of(SpellAttributes.FOLLOW_RANGE, homingRange - 50));
+        }
+    }
 
     private final EntityReference<Entity> target = new EntityReference<>();
 

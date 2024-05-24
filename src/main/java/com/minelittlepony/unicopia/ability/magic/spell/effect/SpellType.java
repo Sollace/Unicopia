@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import org.jetbrains.annotations.Nullable;
 
+import com.google.common.base.Suppliers;
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Affine;
@@ -54,29 +55,29 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     public static final SpellType<IceSpell> FROST = register("frost", builder(IceSpell::new).color(0xEABBFF).shape(GemstoneItem.Shape.TRIANGLE).traits(IceSpell.DEFAULT_TRAITS));
     public static final SpellType<ChillingBreathSpell> CHILLING_BREATH = register("chilling_breath", builder(ChillingBreathSpell::new).affinity(Affinity.NEUTRAL).color(0xFFEAFF).shape(GemstoneItem.Shape.TRIANGLE).traits(ChillingBreathSpell.DEFAULT_TRAITS));
-    public static final SpellType<ScorchSpell> SCORCH = register("scorch", builder(ScorchSpell::new).affinity(Affinity.BAD).color(0xF8EC1F).stackable().shape(GemstoneItem.Shape.FLAME).traits(ScorchSpell.DEFAULT_TRAITS));
-    public static final SpellType<FireSpell> FLAME = register("flame", builder(FireSpell::new).color(0xFFBB99).shape(GemstoneItem.Shape.FLAME).traits(FireSpell.DEFAULT_TRAITS));
-    public static final SpellType<InfernoSpell> INFERNAL = register("infernal", builder(InfernoSpell::new).affinity(Affinity.BAD).color(0xFFAA00).shape(GemstoneItem.Shape.FLAME).traits(InfernoSpell.DEFAULT_TRAITS));
+    public static final SpellType<ScorchSpell> SCORCH = register("scorch", builder(ScorchSpell::new).affinity(Affinity.BAD).color(0xF8EC1F).stackable().shape(GemstoneItem.Shape.FLAME).traits(ScorchSpell.DEFAULT_TRAITS).tooltip(FireSpell::appendTooltip));
+    public static final SpellType<FireSpell> FLAME = register("flame", builder(FireSpell::new).color(0xFFBB99).shape(GemstoneItem.Shape.FLAME).traits(FireSpell.DEFAULT_TRAITS).tooltip(FireSpell::appendTooltip));
+    public static final SpellType<InfernoSpell> INFERNAL = register("infernal", builder(InfernoSpell::new).affinity(Affinity.BAD).color(0xFFAA00).shape(GemstoneItem.Shape.FLAME).traits(InfernoSpell.DEFAULT_TRAITS).tooltip(FireSpell::appendTooltip));
     public static final SpellType<ShieldSpell> SHIELD = register("shield", builder(ShieldSpell::new).affinity(Affinity.NEUTRAL).color(0x66CDAA).shape(GemstoneItem.Shape.SHIELD).traits(ShieldSpell.DEFAULT_TRAITS).tooltip(ShieldSpell::appendTooltip));
-    public static final SpellType<AreaProtectionSpell> ARCANE_PROTECTION = register("arcane_protection", builder(AreaProtectionSpell::new).affinity(Affinity.BAD).color(0x99CDAA).shape(GemstoneItem.Shape.SHIELD).traits(AreaProtectionSpell.DEFAULT_TRAITS));
-    public static final SpellType<AttractiveSpell> VORTEX = register("vortex", builder(AttractiveSpell::new).affinity(Affinity.NEUTRAL).color(0xFFEA88).shape(GemstoneItem.Shape.VORTEX).traits(AttractiveSpell.DEFAULT_TRAITS));
+    public static final SpellType<AreaProtectionSpell> ARCANE_PROTECTION = register("arcane_protection", builder(AreaProtectionSpell::new).affinity(Affinity.BAD).color(0x99CDAA).shape(GemstoneItem.Shape.SHIELD).traits(AreaProtectionSpell.DEFAULT_TRAITS).tooltip(AreaProtectionSpell::appendTooltip));
+    public static final SpellType<AttractiveSpell> VORTEX = register("vortex", builder(AttractiveSpell::new).affinity(Affinity.NEUTRAL).color(0xFFEA88).shape(GemstoneItem.Shape.VORTEX).traits(AttractiveSpell.DEFAULT_TRAITS).tooltip(AttractiveSpell::appendTooltip2));
     public static final SpellType<DarkVortexSpell> DARK_VORTEX = register("dark_vortex", builder(DarkVortexSpell::new).affinity(Affinity.BAD).color(0xA33333).stackable().shape(GemstoneItem.Shape.VORTEX).traits(DarkVortexSpell.DEFAULT_TRAITS));
-    public static final SpellType<NecromancySpell> NECROMANCY = register("necromancy", builder(NecromancySpell::new).affinity(Affinity.BAD).color(0xFA3A3A).shape(GemstoneItem.Shape.SKULL));
-    public static final SpellType<SiphoningSpell> SIPHONING = register("siphoning", builder(SiphoningSpell::new).affinity(Affinity.NEUTRAL).color(0xFFA3AA).shape(GemstoneItem.Shape.LAMBDA));
-    public static final SpellType<DisperseIllusionSpell> REVEALING = register("reveal", builder(DisperseIllusionSpell::new).color(0xFFFFAF).shape(GemstoneItem.Shape.CROSS));
+    public static final SpellType<NecromancySpell> NECROMANCY = register("necromancy", builder(NecromancySpell::new).affinity(Affinity.BAD).color(0xFA3A3A).shape(GemstoneItem.Shape.SKULL).tooltip(NecromancySpell::appendTooltip));
+    public static final SpellType<SiphoningSpell> SIPHONING = register("siphoning", builder(SiphoningSpell::new).affinity(Affinity.NEUTRAL).color(0xFFA3AA).shape(GemstoneItem.Shape.LAMBDA).tooltip(SiphoningSpell::appendTooltip));
+    public static final SpellType<DisperseIllusionSpell> REVEALING = register("reveal", builder(DisperseIllusionSpell::new).color(0xFFFFAF).shape(GemstoneItem.Shape.CROSS).tooltip(DisperseIllusionSpell::appendTooltip));
     public static final SpellType<AwkwardSpell> AWKWARD = register("awkward", builder(AwkwardSpell::new).affinity(Affinity.NEUTRAL).color(0x3A59FF).shape(GemstoneItem.Shape.ICE));
     public static final SpellType<TransformationSpell> TRANSFORMATION = register("transformation", builder(TransformationSpell::new).color(0x19E48E).shape(GemstoneItem.Shape.BRUSH));
-    public static final SpellType<FeatherFallSpell> FEATHER_FALL = register("feather_fall", builder(FeatherFallSpell::new).color(0x00EEFF).shape(GemstoneItem.Shape.LAMBDA).traits(FeatherFallSpell.DEFAULT_TRAITS));
-    public static final SpellType<CatapultSpell> CATAPULT = register("catapult", builder(CatapultSpell::new).color(0x22FF00).shape(GemstoneItem.Shape.ROCKET).traits(CatapultSpell.DEFAULT_TRAITS));
-    public static final SpellType<FireBoltSpell> FIRE_BOLT = register("fire_bolt", builder(FireBoltSpell::new).color(0xFF8811).shape(GemstoneItem.Shape.FLAME).traits(FireBoltSpell.DEFAULT_TRAITS));
-    public static final SpellType<LightSpell> LIGHT = register("light", builder(LightSpell::new).color(0xEEFFAA).shape(GemstoneItem.Shape.STAR).traits(LightSpell.DEFAULT_TRAITS));
-    public static final SpellType<DisplacementSpell> DISPLACEMENT = register("displacement", builder(DisplacementSpell::new).affinity(Affinity.NEUTRAL).color(0x9900FF).stackable().shape(GemstoneItem.Shape.BRUSH).traits(PortalSpell.DEFAULT_TRAITS));
+    public static final SpellType<FeatherFallSpell> FEATHER_FALL = register("feather_fall", builder(FeatherFallSpell::new).color(0x00EEFF).shape(GemstoneItem.Shape.LAMBDA).traits(FeatherFallSpell.DEFAULT_TRAITS).tooltip(FeatherFallSpell::appendTooltip));
+    public static final SpellType<CatapultSpell> CATAPULT = register("catapult", builder(CatapultSpell::new).color(0x22FF00).shape(GemstoneItem.Shape.ROCKET).traits(CatapultSpell.DEFAULT_TRAITS).tooltip(CatapultSpell::appendTooltip));
+    public static final SpellType<FireBoltSpell> FIRE_BOLT = register("fire_bolt", builder(FireBoltSpell::new).color(0xFF8811).shape(GemstoneItem.Shape.FLAME).traits(FireBoltSpell.DEFAULT_TRAITS).tooltip(FireBoltSpell::appendTooltip));
+    public static final SpellType<LightSpell> LIGHT = register("light", builder(LightSpell::new).color(0xEEFFAA).shape(GemstoneItem.Shape.STAR).traits(LightSpell.DEFAULT_TRAITS).tooltip(LightSpell::appendTooltip));
+    public static final SpellType<DisplacementSpell> DISPLACEMENT = register("displacement", builder(DisplacementSpell::new).affinity(Affinity.NEUTRAL).color(0x9900FF).stackable().shape(GemstoneItem.Shape.BRUSH).traits(PortalSpell.DEFAULT_TRAITS).tooltip(DisplacementSpell::appendTooltip));
     public static final SpellType<PortalSpell> PORTAL = register("portal", builder(PortalSpell::new).color(0x99FFFF).shape(GemstoneItem.Shape.RING).traits(PortalSpell.DEFAULT_TRAITS));
-    public static final SpellType<MimicSpell> MIMIC = register("mimic", builder(MimicSpell::new).color(0xFFFF00).shape(GemstoneItem.Shape.ARROW));
-    public static final SpellType<MindSwapSpell> MIND_SWAP = register("mind_swap", builder(MindSwapSpell::new).affinity(Affinity.BAD).color(0xF9FF99).shape(GemstoneItem.Shape.WAVE));
-    public static final SpellType<HydrophobicSpell> HYDROPHOBIC = register("hydrophobic", SpellType.<HydrophobicSpell>builder(s -> new HydrophobicSpell(s, FluidTags.WATER)).affinity(Affinity.NEUTRAL).color(0xF999FF).stackable().shape(GemstoneItem.Shape.ROCKET));
-    public static final SpellType<BubbleSpell> BUBBLE = register("bubble", builder(BubbleSpell::new).affinity(Affinity.NEUTRAL).color(0xF999FF).shape(GemstoneItem.Shape.DONUT).traits(BubbleSpell.DEFAULT_TRAITS));
-    public static final SpellType<DispellEvilSpell> DISPEL_EVIL = register("dispel_evil", builder(DispellEvilSpell::new).color(0x00FF00).shape(GemstoneItem.Shape.CROSS).traits(DispellEvilSpell.DEFAULT_TRAITS));
+    public static final SpellType<MimicSpell> MIMIC = register("mimic", builder(MimicSpell::new).color(0xFFFF00).shape(GemstoneItem.Shape.ARROW).tooltip(MimicSpell::appendTooltip));
+    public static final SpellType<MindSwapSpell> MIND_SWAP = register("mind_swap", builder(MindSwapSpell::new).affinity(Affinity.BAD).color(0xF9FF99).shape(GemstoneItem.Shape.WAVE).tooltip(MimicSpell::appendTooltip));
+    public static final SpellType<HydrophobicSpell> HYDROPHOBIC = register("hydrophobic", SpellType.<HydrophobicSpell>builder(s -> new HydrophobicSpell(s, FluidTags.WATER)).affinity(Affinity.NEUTRAL).color(0xF999FF).stackable().shape(GemstoneItem.Shape.ROCKET).tooltip(HydrophobicSpell::appendTooltip));
+    public static final SpellType<BubbleSpell> BUBBLE = register("bubble", builder(BubbleSpell::new).affinity(Affinity.NEUTRAL).color(0xF999FF).shape(GemstoneItem.Shape.DONUT).traits(BubbleSpell.DEFAULT_TRAITS).tooltip(BubbleSpell::appendTooltip));
+    public static final SpellType<DispellEvilSpell> DISPEL_EVIL = register("dispel_evil", builder(DispellEvilSpell::new).color(0x00FF00).shape(GemstoneItem.Shape.CROSS).traits(DispellEvilSpell.DEFAULT_TRAITS).tooltip(DispellEvilSpell::appendTooltip));
 
     public static void bootstrap() {}
 
@@ -109,7 +110,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         this.factory = factory;
         this.traits = traits;
         this.stackable = stackable;
-        traited = new CustomisedSpellType<>(this, traits);
+        traited = new CustomisedSpellType<>(this, traits, SpellTraits::empty);
         defaultStack = UItems.GEMSTONE.getDefaultStack(this);
     }
 
@@ -165,7 +166,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     }
 
     public CustomisedSpellType<T> withTraits(SpellTraits traits) {
-        return traits.isEmpty() ? withTraits() : new CustomisedSpellType<>(this, traits);
+        return traits.isEmpty() ? withTraits() : new CustomisedSpellType<>(this, traits, Suppliers.memoize(() -> traits.map((trait, value) -> value - getTraits().get(trait))));
     }
 
     public Factory<T> getFactory() {

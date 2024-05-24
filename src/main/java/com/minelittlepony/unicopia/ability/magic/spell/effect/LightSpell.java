@@ -6,6 +6,7 @@ import java.util.List;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -20,6 +21,7 @@ import com.minelittlepony.unicopia.util.VecHelper;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.text.Text;
 
 public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileDelegate.HitListener {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
@@ -29,13 +31,18 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
             .with(Trait.ORDER, 25)
             .build();
 
+    public static void appendTooltip(CustomisedSpellType<? extends LightSpell> type, List<Text> tooltip) {
+        TimedSpell.appendDurationTooltip(type, tooltip);
+        tooltip.add(SpellAttributes.of(SpellAttributes.ORB_COUNT, 2 + (int)(type.relativeTraits().get(Trait.LIFE, 10, 20) / 10F)));
+    }
+
     private final Timer timer;
 
     private final List<EntityReference<FairyEntity>> lights = new ArrayList<>();
 
     protected LightSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer((120 + (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19)) * 20);
+        timer = new Timer(BASE_DURATION + TimedSpell.getExtraDuration(getTraits()));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -22,6 +23,7 @@ import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -46,6 +48,11 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
             .with(Trait.POWER, 1)
             .build();
 
+    static void appendTooltip(CustomisedSpellType<? extends BubbleSpell> type, List<Text> tooltip) {
+        TimedSpell.appendDurationTooltip(type, tooltip);
+        tooltip.add(SpellAttributes.of(SpellAttributes.SOAPINESS, (int)(type.traits().get(Trait.POWER) * 2)));
+    }
+
     private final Timer timer;
 
     private int struggles;
@@ -55,7 +62,7 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
 
     protected BubbleSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer((120 + (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19)) * 20);
+        timer = new Timer(BASE_DURATION + TimedSpell.getExtraDuration(getTraits()));
         struggles = (int)(getTraits().get(Trait.POWER) * 2);
     }
 

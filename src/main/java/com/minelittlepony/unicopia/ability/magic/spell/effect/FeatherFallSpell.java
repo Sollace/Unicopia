@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -15,6 +16,7 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -35,6 +37,17 @@ public class FeatherFallSpell extends AbstractSpell implements TimedSpell {
             .with(Trait.KINDNESS, 90)
             .with(Trait.ORDER, 15)
             .build();
+
+    public static void appendTooltip(CustomisedSpellType<FeatherFallSpell> type, List<Text> tooltip) {
+        tooltip.add(SpellAttributes.ofTime(SpellAttributes.DURATION, 10 + (int)(type.traits().get(Trait.FOCUS, 0, 160))));
+        tooltip.add(SpellAttributes.of(SpellAttributes.STRENGTH, type.traits().get(Trait.STRENGTH, 2, 9)));
+        tooltip.add(SpellAttributes.of(SpellAttributes.RANGE, (float)getEffectRange(type.traits())));
+        tooltip.add(SpellAttributes.of(SpellAttributes.SIMULTANIOUS_TARGETS, getMaxTargets(type.traits())));
+        tooltip.add(SpellAttributes.of(SpellAttributes.COST_PER_INDIVIDUAL, (float)getCostPerEntity(type.traits())));
+        float generosity = type.traits().get(Trait.GENEROSITY, 1, MAX_GENEROSITY_FACTOR) / MAX_GENEROSITY_FACTOR;
+        tooltip.add(SpellAttributes.of(SpellAttributes.TARGET_PREFERENCE, (int)(generosity * 100)));
+        tooltip.add(SpellAttributes.of(SpellAttributes.CASTER_PREFERENCE, (int)((1 - generosity) * 100)));
+    }
 
     private final Timer timer;
 
@@ -91,35 +104,33 @@ public class FeatherFallSpell extends AbstractSpell implements TimedSpell {
             ParticleUtils.spawnParticles(new MagicParticleEffect(getType().getColor()), target, 7);
         });
 
-        return caster.subtractEnergyCost(timer.getTicksRemaining() % 50 == 0 ? getCostPerEntity() * targets.size() : 0);
+        return caster.subtractEnergyCost(timer.getTicksRemaining() % 50 == 0 ? getCostPerEntity(getTraits()) * targets.size() : 0);
     }
 
-    protected double getCostPerEntity() {
-        float focus = Math.max(getTraits().get(Trait.FOCUS), 80) - 80;
-        float power = Math.max(getTraits().get(Trait.POWER), 10) - 10;
+    protected static double getCostPerEntity(SpellTraits traits) {
+        float focus = Math.max(traits.get(Trait.FOCUS), 80) - 80;
+        float power = Math.max(traits.get(Trait.POWER), 10) - 10;
 
         return MathHelper.clamp((power * POWERS_RANGE_WEIGHT) - (focus * FOCUS_RANGE_WEIGHT), 1, 7);
     }
 
-    protected double getEffectRange() {
-        float power = getTraits().get(Trait.POWER) - 10;
-
-        return MathHelper.clamp(power * POWERS_RANGE_WEIGHT, MIN_RANGE, MAX_RANGE);
+    protected static double getEffectRange(SpellTraits traits) {
+        return MathHelper.clamp((traits.get(Trait.POWER) - 10) * POWERS_RANGE_WEIGHT, MIN_RANGE, MAX_RANGE);
     }
 
-    protected long getMaxTargets() {
-        long generosity = (long)getTraits().get(Trait.GENEROSITY) * 2L;
-        long focus = (long)getTraits().get(Trait.FOCUS, MIN_TARGETS, MAX_TARGETS) * 2L;
+    protected static long getMaxTargets(SpellTraits traits) {
+        long generosity = (long)traits.get(Trait.GENEROSITY) * 2L;
+        long focus = (long)traits.get(Trait.FOCUS, MIN_TARGETS, MAX_TARGETS) * 2L;
         return generosity + focus;
     }
 
     protected Stream<Entity> getTargets(Caster<?> caster) {
-        return Stream.concat(Stream.of(caster.asEntity()), caster.findAllEntitiesInRange(getEffectRange()).sorted((a, b) -> {
+        return Stream.concat(Stream.of(caster.asEntity()), caster.findAllEntitiesInRange(getEffectRange(getTraits())).sorted((a, b) -> {
             return Integer.compare(
                     FriendshipBraceletItem.isComrade(caster, a) ? 1 : 0,
                     FriendshipBraceletItem.isComrade(caster, b) ? 1 : 0
             );
-        }).distinct()).limit(getMaxTargets());
+        }).distinct()).limit(getMaxTargets(getTraits()));
     }
 
     @Override

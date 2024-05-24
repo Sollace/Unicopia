@@ -7,13 +7,14 @@ import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
-import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
@@ -27,6 +28,7 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EyeOfEnderEntity;
 import net.minecraft.entity.FallingBlockEntity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.Entity.RemovalReason;
@@ -37,7 +39,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -49,25 +50,30 @@ public class ShieldSpell extends AbstractSpell {
             .with(Trait.AIR, 9)
             .build();
 
-    static void appendTooltip(CustomisedSpellType<ShieldSpell> type, List<Text> tooltip) {
-        float addedRange = type.traits().get(Trait.POWER);
-        if (addedRange != 0) {
-            tooltip.add(EffectUtils.formatModifierChange("spell.unicopia.shield.additional_range", addedRange, false));
-        }
-        if (type.traits().get(Trait.LIFE) > 0) {
-            tooltip.add(Text.literal(" ").append(Text.translatable("spell.unicopia.shield.permit.passive")).formatted(Formatting.GRAY));
-        }
-        if (type.traits().get(Trait.BLOOD) > 0) {
-            tooltip.add(Text.literal(" ").append(Text.translatable("spell.unicopia.shield.permit.hostile")).formatted(Formatting.GRAY));
-        }
-        if (type.traits().get(Trait.ICE) > 0) {
-            tooltip.add(Text.literal(" ").append(Text.translatable("spell.unicopia.shield.permit.player")).formatted(Formatting.GRAY));
-        }
-        if (type.traits().get(Trait.GENEROSITY) > 0) {
-            tooltip.add(Text.literal(" ").append(Text.translatable("spell.unicopia.shield.caston.location")).formatted(Formatting.GRAY));
+    static void appendTooltip(CustomisedSpellType<? extends ShieldSpell> type, List<Text> tooltip) {
+        AbstractAreaEffectSpell.appendRangeTooltip(type, tooltip);
+        appendValidTargetsTooltip(type, tooltip);
+        appendCastLocationTooltip(type, tooltip);
+    }
+
+    static void appendValidTargetsTooltip(CustomisedSpellType<? extends ShieldSpell> type, List<Text> tooltip) {
+        if (type.traits().get(Trait.KNOWLEDGE) > 10) {
+            tooltip.add(SpellAttributes.PERMIT_ITEMS);
         } else {
-            tooltip.add(Text.literal(" ").append(Text.translatable("spell.unicopia.shield.caston.person")).formatted(Formatting.GRAY));
+            if (type.traits().get(Trait.LIFE) > 0) {
+                tooltip.add(SpellAttributes.PERMIT_PASSIVE);
+            }
+            if (type.traits().get(Trait.BLOOD) > 0) {
+                tooltip.add(SpellAttributes.PERMIT_HOSTILE);
+            }
+            if (type.traits().get(Trait.ICE) > 0) {
+                tooltip.add(SpellAttributes.PERMIT_PLAYER);
+            }
         }
+    }
+
+    static void appendCastLocationTooltip(CustomisedSpellType<?> type, List<Text> tooltip) {
+        tooltip.add(type.traits().get(Trait.GENEROSITY) > 0 ? SpellAttributes.CAST_ON_LOCATION : SpellAttributes.CAST_ON_PERSON);
     }
 
     protected final TargetSelecter targetSelecter = new TargetSelecter(this).setFilter(this::isValidTarget);
@@ -177,6 +183,11 @@ public class ShieldSpell extends AbstractSpell {
     }
 
     protected boolean isValidTarget(Caster<?> source, Entity entity) {
+
+        if (getTraits().get(Trait.KNOWLEDGE) > 10) {
+            return entity instanceof ItemEntity;
+        }
+
         boolean valid = (entity instanceof LivingEntity
                 || entity instanceof TntEntity
                 || entity instanceof FallingBlockEntity

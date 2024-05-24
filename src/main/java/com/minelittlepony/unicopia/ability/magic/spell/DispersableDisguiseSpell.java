@@ -36,7 +36,7 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
     @Override
     public void onSuppressed(Caster<?> otherSource, float time) {
         time /= getTraits().getOrDefault(Trait.STRENGTH, 1);
-        suppressionCounter = (int)(100 * time);
+        suppressionCounter = (int)time;
         setDirty();
     }
 

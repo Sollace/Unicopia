@@ -60,6 +60,10 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         });
     }
 
+    public static SpellTraits empty() {
+        return EMPTY;
+    }
+
     public static Map<Identifier, SpellTraits> all() {
         return new HashMap<>(REGISTRY);
     }

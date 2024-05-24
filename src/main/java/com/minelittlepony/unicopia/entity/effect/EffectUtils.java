@@ -6,6 +6,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.StringHelper;
 
 public interface EffectUtils {
     static boolean isPoisoned(LivingEntity entity) {
@@ -48,6 +49,13 @@ public interface EffectUtils {
             return true;
         }
         return false;
+    }
+
+    static Text formatModifierChange(String modifierName, int time, boolean isDetrimental) {
+        return Text.literal(" ").append(Text.translatable("attribute.modifier.equals.0",
+                StringHelper.formatTicks(Math.abs(time)),
+                Text.translatable(modifierName)
+        ).formatted((isDetrimental ? time : -time) < 0 ? Formatting.DARK_GREEN : Formatting.RED));
     }
 
     static Text formatModifierChange(String modifierName, float change, boolean isDetrimental) {

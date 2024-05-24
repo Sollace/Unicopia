@@ -1,9 +1,12 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.List;
+
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -25,6 +28,7 @@ import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.Text;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -40,6 +44,10 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
             .with(Trait.FIRE, 15)
             .build();
+
+    public static void appendTooltip(CustomisedSpellType<? extends FireSpell> type, List<Text> tooltip) {
+        tooltip.add(SpellAttributes.of(SpellAttributes.RANGE, 4 + type.traits().get(Trait.POWER)));
+    }
 
     protected FireSpell(CustomisedSpellType<?> type) {
         super(type);
@@ -67,14 +75,14 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
             generateParticles(source);
         }
 
-        return new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER))).translate(source.getOrigin()).getBlockPositions().reduce(false,
+        return new Sphere(false, Math.max(0, 4 + getAdditionalRange())).translate(source.getOrigin()).getBlockPositions().reduce(false,
                 (r, i) -> source.canModifyAt(i) && applyBlocks(source.asWorld(), i),
                 (a, b) -> a || b)
                 || applyEntities(source, source.getOriginVector());
     }
 
     protected void generateParticles(Caster<?> source) {
-        source.spawnParticles(new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER))), (int)(1 + source.getLevel().getScaled(8)) * 6, pos -> {
+        source.spawnParticles(new Sphere(false, Math.max(0, 4 + getAdditionalRange())), (int)(1 + source.getLevel().getScaled(8)) * 6, pos -> {
             source.addParticle(ParticleTypes.LARGE_SMOKE, pos, Vec3d.ZERO);
         });
     }
@@ -122,7 +130,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
     }
 
     protected boolean applyEntities(Caster<?> source, Vec3d pos) {
-        return source.findAllEntitiesInRange(Math.max(0, 3 + getTraits().get(Trait.POWER)), e -> {
+        return source.findAllEntitiesInRange(Math.max(0, 3 + getAdditionalRange()), e -> {
             LivingEntity master = source.getMaster();
             return (!(e.equals(source.asEntity()) || e.equals(master)) ||
                     (master instanceof PlayerEntity && !EquinePredicates.PLAYER_UNICORN.test(master))) && !(e instanceof ItemEntity)

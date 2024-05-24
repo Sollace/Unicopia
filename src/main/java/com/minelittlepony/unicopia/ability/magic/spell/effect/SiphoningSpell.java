@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -28,6 +29,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -36,6 +38,10 @@ import net.minecraft.util.math.Vec3d;
  */
 public class SiphoningSpell extends AbstractAreaEffectSpell {
     static final Predicate<Entity> TARGET_PREDICATE = EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(EntityPredicates.VALID_LIVING_ENTITY);
+
+    static void appendTooltip(CustomisedSpellType<? extends SiphoningSpell> type, List<Text> tooltip) {
+        tooltip.add(SpellAttributes.of(SpellAttributes.RANGE, 4));
+    }
 
     private int ticksUpset;
 
@@ -56,7 +62,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
         }
 
         if (source.isClient()) {
-            float radius = 4 + source.getLevel().getScaled(5);
+            float radius = 4 + source.getLevel().getScaled(5) + getAdditionalRange();
             int direction = isFriendlyTogether(source) ? 1 : -1;
 
             source.spawnParticles(new Sphere(true, radius, 1, 0, 1), 1, pos -> {

@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
@@ -7,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
@@ -17,6 +19,7 @@ import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -36,6 +39,11 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
 
     private static final float HORIZONTAL_VARIANCE = 0.25F;
     private static final float MAX_STRENGTH = 120;
+
+    static void appendTooltip(CustomisedSpellType<? extends CatapultSpell> type, List<Text> tooltip) {
+        float velocity = 0.1F + type.relativeTraits().get(Trait.STRENGTH, -MAX_STRENGTH, MAX_STRENGTH);
+        tooltip.add(SpellAttributes.of(SpellAttributes.VERTICAL_VELOCITY, velocity / 16F));
+    }
 
     protected CatapultSpell(CustomisedSpellType<?> type) {
         super(type);

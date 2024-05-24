@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -31,6 +32,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -79,6 +81,11 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
         return e -> e.getType() == type;
     }
 
+    static void appendTooltip(CustomisedSpellType<? extends NecromancySpell> type, List<Text> tooltip) {
+        tooltip.add(SpellAttributes.of(SpellAttributes.RANGE, 4 + type.traits().get(Trait.POWER)));
+        tooltip.add(SpellAttributes.of(SpellAttributes.WAVE_SIZE, 10 + (int)type.traits().get(Trait.CHAOS, 0, 10)));
+    }
+
     private final List<EntityReference<LivingEntity>> summonedEntities = new ArrayList<>();
 
     private int spawnCountdown;
@@ -90,7 +97,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
 
-        float radius = 4 + source.getLevel().getScaled(4) * 4 + getTraits().get(Trait.POWER);
+        float radius = 4 + source.getLevel().getScaled(4) * 4 + getAdditionalRange();
 
         if (radius <= 0) {
             return false;

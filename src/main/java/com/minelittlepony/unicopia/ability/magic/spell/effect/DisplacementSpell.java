@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.List;
+
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
@@ -11,10 +13,18 @@ import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 
 public class DisplacementSpell extends AbstractSpell implements HomingSpell, ProjectileDelegate.EntityHitListener {
+
+    static void appendTooltip(CustomisedSpellType<? extends DisplacementSpell> type, List<Text> tooltip) {
+        float damage = type.traits().get(Trait.BLOOD);
+        if (damage > 0) {
+            tooltip.add(SpellAttributes.ofRelative(SpellAttributes.DAMAGE_TO_TARGET, damage));
+        }
+    }
 
     private final EntityReference<Entity> target = new EntityReference<>();
 

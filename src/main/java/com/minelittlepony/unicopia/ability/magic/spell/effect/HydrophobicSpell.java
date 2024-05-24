@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.minelittlepony.unicopia.USounds;
@@ -8,6 +9,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.advancement.UCriteria;
@@ -22,6 +24,7 @@ import net.minecraft.block.*;
 import net.minecraft.fluid.*;
 import net.minecraft.nbt.*;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -34,6 +37,10 @@ public class HydrophobicSpell extends AbstractSpell {
             .with(Trait.FOCUS, 5)
             .with(Trait.KNOWLEDGE, 1)
             .build();
+    static void appendTooltip(CustomisedSpellType<? extends HydrophobicSpell> type, List<Text> tooltip) {
+        ShieldSpell.appendCastLocationTooltip(type, tooltip);
+        tooltip.add(SpellAttributes.of(SpellAttributes.RANGE, 4 + type.traits().get(Trait.POWER)));
+    }
 
     private final TagKey<Fluid> affectedFluid;
 

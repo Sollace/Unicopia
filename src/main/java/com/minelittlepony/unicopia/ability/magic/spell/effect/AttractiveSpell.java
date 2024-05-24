@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.List;
+
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -13,9 +15,9 @@ import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.text.Text;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -26,9 +28,20 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
 
     private final Timer timer;
 
+    public static void appendTooltip2(CustomisedSpellType<AttractiveSpell> type, List<Text> tooltip) {
+        TimedSpell.appendDurationTooltip(type, tooltip);
+        AbstractAreaEffectSpell.appendRangeTooltip(type, tooltip);
+        if (type.traits().get(Trait.ORDER) >= 20) {
+            tooltip.add(SpellAttributes.TARGET_ENTITY);
+        } else {
+            appendValidTargetsTooltip(type, tooltip);
+        }
+        appendCastLocationTooltip(type, tooltip);
+    }
+
     protected AttractiveSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer((120 + (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19)) * 20);
+        timer = new Timer(BASE_DURATION + TimedSpell.getExtraDuration(getTraits()));
     }
 
     @Override
@@ -74,16 +87,11 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
     }
 
     @Override
-    public double getDrawDropOffRange(Caster<?> caster) {
-        return 10 + (caster.getLevel().getScaled(8) * 2);
-    }
-
-    @Override
     protected boolean isValidTarget(Caster<?> source, Entity entity) {
         if (target.referenceEquals(entity)) {
             return true;
         }
-        return getTraits().get(Trait.KNOWLEDGE) > 10 ? entity instanceof ItemEntity : super.isValidTarget(source, entity);
+        return super.isValidTarget(source, entity);
     }
 
     @Override

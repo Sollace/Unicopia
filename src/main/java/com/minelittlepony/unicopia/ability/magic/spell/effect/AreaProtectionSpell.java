@@ -5,9 +5,9 @@ import java.util.List;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
-import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
@@ -17,7 +17,6 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -28,17 +27,19 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
             .build();
 
 
-    static void appendTooltip(CustomisedSpellType<PortalSpell> type, List<Text> tooltip) {
-        float addedRange = type.traits().get(Trait.POWER);
-        if (addedRange != 0) {
-            tooltip.add(EffectUtils.formatModifierChange("spell.unicopia.shield.additional_range", addedRange, false));
-        }
-        tooltip.add(Text.literal(" ").append(Text.translatable("spell.unicopia.shield.caston.location")).formatted(Formatting.GRAY));
+    static void appendTooltip(CustomisedSpellType<AreaProtectionSpell> type, List<Text> tooltip) {
+        tooltip.add(SpellAttributes.CAST_ON_LOCATION);
+        tooltip.add(SpellAttributes.of(SpellAttributes.RANGE, 4 + type.traits().get(Trait.POWER)));
     }
 
     protected AreaProtectionSpell(CustomisedSpellType<?> type) {
         super(type);
     }
+
+    /*@Override
+    public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
+        return method == CastingMethod.STAFF || getTraits().get(Trait.GENEROSITY) > 0 ? toPlaceable() : this;
+    }*/
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
@@ -70,7 +71,7 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
 
     private double getRange(Caster<?> source) {
         float multiplier = source instanceof Pony pony && pony.asEntity().isSneaking() ? 1 : 2;
-        float min = 4 + getTraits().get(Trait.POWER);
+        float min = 4 + getAdditionalRange();
         double range = (min + (source.getLevel().getScaled(4) * 2)) / multiplier;
         if (source instanceof Pony && range > 2) {
             range = Math.sqrt(range);
