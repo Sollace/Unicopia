@@ -175,6 +175,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             animation.animation().getSound().ifPresent(sound -> {
                 playSound(sound, sound == USounds.ENTITY_PLAYER_WOLOLO ? 0.1F : 0.9F, 1);
             });
+            setDirty();
         }
     }
 
@@ -314,7 +315,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return getSpecies().getAffinity();
     }
 
-    @Override
+    @Deprecated
     public void setDirty() {
         dirty = true;
     }

@@ -48,7 +48,6 @@ class GravityCommand {
     static int set(ServerCommandSource source, Collection<? extends Entity> targets, float gravity, boolean isSelf) {
         List<Entity> affected = targets.stream().map(Living::living).filter(Objects::nonNull).map(l -> {
             l.getPhysics().setBaseGravityModifier(gravity);
-            l.setDirty();
             if (l.asEntity() instanceof PlayerEntity player) {
                 if (source.getEntity() == player) {
                     player.sendMessage(Text.translatable("commands.gravity.set.self", gravity));

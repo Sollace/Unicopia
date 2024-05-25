@@ -64,7 +64,6 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
         }
 
         player.calculateDimensions();
-        iplayer.setDirty();
         return true;
     }
 

@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia.network.track;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -73,18 +73,20 @@ public class ObjectTracker<T extends TrackableObject> implements NbtSerialisable
         quickAccess = Map.copyOf(trackedObjects);
     }
 
-    synchronized void getInitialPairs(List<MsgTrackedValues.TrackerObjects> output) {
-        if (!trackedObjects.isEmpty()) {
-            Map<UUID, NbtCompound> trackableCompounds = new HashMap<>();
-            quickAccess.entrySet().forEach(object -> {
-                trackableCompounds.put(object.getKey(), object.getValue().toTrackedNbt());
-            });
-
-            output.add(new MsgTrackedValues.TrackerObjects(id, Set.of(), trackableCompounds));
+    synchronized Optional<MsgTrackedValues.TrackerObjects> getInitialPairs() {
+        if (trackedObjects.isEmpty()) {
+            return Optional.empty();
         }
+
+        Map<UUID, NbtCompound> trackableCompounds = new HashMap<>();
+        quickAccess.entrySet().forEach(object -> {
+            trackableCompounds.put(object.getKey(), object.getValue().toTrackedNbt());
+        });
+
+        return Optional.of(new MsgTrackedValues.TrackerObjects(id, Set.of(), trackableCompounds));
     }
 
-    synchronized void getDirtyPairs(List<MsgTrackedValues.TrackerObjects> output) {
+    synchronized Optional<MsgTrackedValues.TrackerObjects> getDirtyPairs() {
         if (!trackedObjects.isEmpty()) {
             Map<UUID, NbtCompound> trackableCompounds = new HashMap<>();
             Set<UUID> removedTrackableObjects = new HashSet<>();
@@ -100,9 +102,11 @@ public class ObjectTracker<T extends TrackableObject> implements NbtSerialisable
             quickAccess = Map.copyOf(trackedObjects);
 
             if (!trackableCompounds.isEmpty() || !removedTrackableObjects.isEmpty()) {
-                output.add(new MsgTrackedValues.TrackerObjects(id, removedTrackableObjects, trackableCompounds));
+                return Optional.of(new MsgTrackedValues.TrackerObjects(id, removedTrackableObjects, trackableCompounds));
             }
         }
+
+        return Optional.empty();
     }
 
     synchronized void load(MsgTrackedValues.TrackerObjects objects) {

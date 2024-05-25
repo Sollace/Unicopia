@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import com.minelittlepony.unicopia.util.serialization.PacketCodec;
 import com.sollace.fabwork.api.packets.HandledPacket;
 
 import net.minecraft.entity.Entity;
@@ -17,22 +19,22 @@ import net.minecraft.network.PacketByteBuf;
 
 public record MsgTrackedValues(
         int owner,
-        List<TrackerObjects> updatedObjects,
-        List<TrackerEntries> updatedTrackers
+        Optional<TrackerObjects> updatedObjects,
+        Optional<TrackerEntries> updatedTrackers
 ) implements HandledPacket<PlayerEntity> {
     public MsgTrackedValues(PacketByteBuf buffer) {
         this(
             buffer.readInt(),
-            buffer.readCollection(ArrayList::new, TrackerObjects::new),
-            buffer.readCollection(ArrayList::new, TrackerEntries::new)
+            buffer.readOptional(TrackerObjects::new),
+            buffer.readOptional(TrackerEntries::new)
         );
     }
 
     @Override
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeInt(owner);
-        buffer.writeCollection(updatedObjects, (buf, obj) -> obj.write(buf));
-        buffer.writeCollection(updatedTrackers, (buf, tracker) -> tracker.write(buf));
+        buffer.writeOptional(updatedObjects, (buf, obj) -> obj.write(buf));
+        buffer.writeOptional(updatedTrackers, (buf, tracker) -> tracker.write(buf));
     }
 
     @Override
@@ -48,14 +50,15 @@ public record MsgTrackedValues(
             this(
                 buffer.readInt(),
                 buffer.readCollection(HashSet::new, PacketByteBuf::readUuid),
-                buffer.readMap(HashMap::new, PacketByteBuf::readUuid, PacketByteBuf::readNbt)
+                buffer.readMap(HashMap::new, PacketByteBuf::readUuid, PacketCodec.NBT::read)
             );
+
         }
 
         public void write(PacketByteBuf buffer) {
             buffer.writeInt(id);
             buffer.writeCollection(removedValues, PacketByteBuf::writeUuid);
-            buffer.writeMap(values, PacketByteBuf::writeUuid, PacketByteBuf::writeNbt);
+            buffer.writeMap(values, PacketByteBuf::writeUuid, PacketCodec.NBT::write);
         }
     }
 

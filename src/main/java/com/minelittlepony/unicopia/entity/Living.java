@@ -31,7 +31,6 @@ import com.minelittlepony.unicopia.input.Interactable;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
-import com.minelittlepony.unicopia.network.datasync.Transmittable;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.DataTrackerManager;
 import com.minelittlepony.unicopia.network.track.Trackable;
@@ -74,7 +73,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T>, Transmittable {
+public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T> {
     protected final T entity;
 
     private final SpellInventory spells;
@@ -480,9 +479,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     @Override
-    public void setDirty() {}
-
-    @Override
     public void toNBT(NbtCompound compound) {
         enchants.toNBT(compound);
         spells.getSlots().toNBT(compound);
@@ -498,12 +494,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         fromSynchronizedNbt(compound);
     }
 
-    @Override
     public void toSyncronisedNbt(NbtCompound compound) {
         compound.put("armour", armour.toNBT());
     }
 
-    @Override
     public void fromSynchronizedNbt(NbtCompound compound) {
         armour.fromNBT(compound.getCompound("armour"));
     }

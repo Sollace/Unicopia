@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.util.serialization;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -7,7 +10,10 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -27,6 +33,18 @@ public record PacketCodec<T>(PacketByteBuf.PacketReader<T> reader, PacketByteBuf
     public static final PacketCodec<Identifier> IDENTIFIER = STRING.xMap(Identifier::new, Identifier::toString);
 
     public static final PacketCodec<NbtCompound> NBT = new PacketCodec<>(PacketByteBuf::readNbt, PacketByteBuf::writeNbt);
+    public static final PacketCodec<NbtCompound> COMPRESSED_NBT = new PacketCodec<>(buffer -> {
+        try (InputStream in = new ByteBufInputStream(buffer)) {
+            return NbtIo.readCompressed(in);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }, (buffer, nbt) -> {
+        try (OutputStream out = new ByteBufOutputStream(buffer)) {
+            NbtIo.writeCompressed(nbt, out);
+        } catch (IOException e) {
+        }
+    });
 
     public static final PacketCodec<BlockPos> POS = new PacketCodec<>(PacketByteBuf::readBlockPos, PacketByteBuf::writeBlockPos);
     public static final PacketCodec<Optional<BlockPos>> OPTIONAL_POS = POS.asOptional();

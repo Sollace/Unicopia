@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.network.track;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import org.jetbrains.annotations.Nullable;
+import java.util.Optional;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -75,30 +75,31 @@ public class DataTracker {
         }
     }
 
-    synchronized void getInitialPairs(List<MsgTrackedValues.TrackerEntries> output) {
+    synchronized Optional<MsgTrackedValues.TrackerEntries> getInitialPairs() {
+        initial = false;
+        dirtyIndices = new IntOpenHashSet();
         updateTrackables();
-        output.add(new MsgTrackedValues.TrackerEntries(id, true, codecs));
+        return Optional.of(new MsgTrackedValues.TrackerEntries(id, true, codecs));
     }
 
-    @Nullable
-    synchronized void getDirtyPairs(List<MsgTrackedValues.TrackerEntries> output) {
+    synchronized Optional<MsgTrackedValues.TrackerEntries> getDirtyPairs() {
         if (initial) {
-            initial = false;
-            dirtyIndices = new IntOpenHashSet();
-            getInitialPairs(output);
-        } else {
-            updateTrackables();
-
-            if (!dirtyIndices.isEmpty()) {
-                IntSet toSend = dirtyIndices;
-                dirtyIndices = new IntOpenHashSet();
-                List<Pair<?>> pairs = new ArrayList<>();
-                for (int i : toSend) {
-                    pairs.add(codecs.get(i));
-                }
-                output.add(new MsgTrackedValues.TrackerEntries(id, false, pairs));
-            }
+            return getInitialPairs();
         }
+
+        updateTrackables();
+
+        if (dirtyIndices.isEmpty()) {
+            return Optional.empty();
+        }
+
+        IntSet toSend = dirtyIndices;
+        dirtyIndices = new IntOpenHashSet();
+        List<Pair<?>> pairs = new ArrayList<>();
+        for (int i : toSend) {
+            pairs.add(codecs.get(i));
+        }
+        return Optional.of(new MsgTrackedValues.TrackerEntries(id, false, pairs));
     }
 
     synchronized void load(MsgTrackedValues.TrackerEntries values) {

@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.network.track;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -19,7 +19,6 @@ public class DataTrackerManager {
     final boolean isClient;
     private final List<DataTracker> trackers = new ObjectArrayList<>();
     private final List<ObjectTracker<?>> objectTrackers = new ObjectArrayList<>();
-
     private final List<PacketEmitter> packetEmitters = new ObjectArrayList<>();
 
     @Nullable
@@ -44,12 +43,32 @@ public class DataTrackerManager {
     public synchronized DataTracker checkoutTracker() {
         DataTracker tracker = new DataTracker(this, trackers.size());
         trackers.add(tracker);
+        packetEmitters.add((sender, initial) -> {
+            var update = initial ? tracker.getInitialPairs() : tracker.getDirtyPairs();
+            if (update.isPresent()) {
+                sender.accept(Channel.SERVER_TRACKED_ENTITY_DATA.toPacket(new MsgTrackedValues(
+                        entity.getId(),
+                        Optional.empty(),
+                        update
+                )));
+            }
+        });
         return tracker;
     }
 
     public synchronized <T extends TrackableObject> ObjectTracker<T> checkoutTracker(Supplier<T> objFunction) {
         ObjectTracker<T> tracker = new ObjectTracker<>(objectTrackers.size(), objFunction);
         objectTrackers.add(tracker);
+        packetEmitters.add((sender, initial) -> {
+            var update = initial ? tracker.getInitialPairs() : tracker.getDirtyPairs();
+            if (update.isPresent()) {
+                sender.accept(Channel.SERVER_TRACKED_ENTITY_DATA.toPacket(new MsgTrackedValues(
+                        entity.getId(),
+                        update,
+                        Optional.empty()
+                )));
+            }
+        });
         return tracker;
     }
 
@@ -57,25 +76,6 @@ public class DataTrackerManager {
         synchronized (this) {
             for (var emitter : packetEmitters) {
                 emitter.sendPackets(sender, false);
-            }
-
-            if (trackers.isEmpty() && objectTrackers.isEmpty()) {
-                return;
-            }
-
-            List<MsgTrackedValues.TrackerEntries> toTransmit = new ArrayList<>();
-            List<MsgTrackedValues.TrackerObjects> objToTransmit = new ArrayList<>();
-
-            for (var entry : trackers) entry.getDirtyPairs(toTransmit);
-            for (var entry : objectTrackers) entry.getDirtyPairs(objToTransmit);
-
-            if (!toTransmit.isEmpty() || !objToTransmit.isEmpty()) {
-                MsgTrackedValues packet = new MsgTrackedValues(
-                        entity.getId(),
-                        objToTransmit,
-                        toTransmit
-                );
-                sender.accept(Channel.SERVER_TRACKED_ENTITY_DATA.toPacket(packet));
             }
         }
     }
@@ -86,41 +86,22 @@ public class DataTrackerManager {
             for (var emitter : packetEmitters) {
                 emitter.sendPackets((Consumer)sender, true);
             }
-
-            if (trackers.isEmpty() && objectTrackers.isEmpty()) {
-                return;
-            }
-
-            List<MsgTrackedValues.TrackerEntries> toTransmit = new ArrayList<>();
-            List<MsgTrackedValues.TrackerObjects> objToTransmit = new ArrayList<>();
-
-            for (var entry : trackers) entry.getInitialPairs(toTransmit);
-            for (var entry : objectTrackers) entry.getInitialPairs(objToTransmit);
-
-            if (!toTransmit.isEmpty() || !objToTransmit.isEmpty()) {
-                MsgTrackedValues packet = new MsgTrackedValues(
-                        entity.getId(),
-                        objToTransmit,
-                        toTransmit
-                );
-                sender.accept(Channel.SERVER_TRACKED_ENTITY_DATA.toPacket(packet));
-            }
         }
     }
 
     synchronized void load(MsgTrackedValues packet) {
-        for (var update : packet.updatedTrackers()) {
+        packet.updatedTrackers().ifPresent(update -> {
             DataTracker tracker = trackers.get(update.id());
             if (tracker != null) {
                 tracker.load(update);
             }
-        }
-        for (var update : packet.updatedObjects()) {
+        });
+        packet.updatedObjects().ifPresent(update -> {
             ObjectTracker<?> tracker = objectTrackers.get(update.id());
             if (tracker != null) {
                 tracker.load(update);
             }
-        }
+        });
     }
 
     public interface PacketEmitter {
