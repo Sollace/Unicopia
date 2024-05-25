@@ -290,7 +290,6 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             }
 
             if (!pony.isClient()) {
-                System.out.println(ticksInAir + " " + type.canFly() + " " + isFlying() + " " + EffectUtils.hasBothBrokenWing(entity));
                 if (type.canFly()
                         && isFlying()
                         && EffectUtils.hasBothBrokenWing(entity)
