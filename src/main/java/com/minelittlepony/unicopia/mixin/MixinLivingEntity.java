@@ -52,10 +52,12 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
 
     @Override
     public Living<?> get() {
-        if (caster == null) {
-            caster = create();
+        synchronized (this) {
+            if (caster == null) {
+                caster = create();
+            }
+            return (Living<?>)caster;
         }
-        return (Living<?>)caster;
     }
 
     @Override

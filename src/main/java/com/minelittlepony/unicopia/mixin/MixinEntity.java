@@ -50,10 +50,16 @@ abstract class MixinEntity implements EntityDuck, Trackable {
 
     @Override
     public DataTrackerManager getDataTrackers() {
-        if (dataTrackerManager == null) {
-            dataTrackerManager = new DataTrackerManager((Entity)(Object)this);
+        synchronized (this) {
+            if (dataTrackerManager == null) {
+                dataTrackerManager = new DataTrackerManager((Entity)(Object)this);
+                // ensure lazy registration happens
+                if (this instanceof Equine.Container<?> eq) {
+                    eq.get();
+                }
+            }
+            return dataTrackerManager;
         }
-        return dataTrackerManager;
     }
 
     @Override
