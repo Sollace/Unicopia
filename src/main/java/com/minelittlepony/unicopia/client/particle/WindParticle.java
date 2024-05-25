@@ -89,7 +89,8 @@ public class WindParticle extends AbstractBillboardParticle {
             trail.update(new Vec3d(x + cos, y + sin, z - cos));
         } else {
             if (target != null && target.isAlive()) {
-                trail.update(target.getPos().add(offset).add(cos, sin, -cos));
+
+                trail.update(target.getPos().add(target.getRotationVecClient().multiply(-7)).add(offset).add(cos, sin, -cos));
 
                 if (attachmentTicks > 0 && --attachmentTicks <= 0) {
                     target = null;
