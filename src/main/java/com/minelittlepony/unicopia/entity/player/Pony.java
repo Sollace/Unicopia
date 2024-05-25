@@ -116,8 +116,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 sender.accept(Channel.SERVER_PLAYER_CAPABILITIES.toPacket(new MsgPlayerCapabilities(this)));
             }
         });
-        race = this.tracker.startTracking(Race.TRACKABLE_TYPE, Race.HUMAN);
-        suppressedRace = this.tracker.startTracking(Race.TRACKABLE_TYPE, Race.HUMAN);
+        race = this.tracker.startTracking(Race.TRACKABLE_TYPE, Race.UNSET);
+        suppressedRace = this.tracker.startTracking(Race.TRACKABLE_TYPE, Race.UNSET);
         this.levels = new PlayerLevelStore(this, tracker, true, USounds.Vanilla.ENTITY_PLAYER_LEVELUP);
         this.corruption = new PlayerLevelStore(this, tracker, false, USounds.ENTITY_PLAYER_CORRUPTION);
         this.mana = addTicker(new ManaContainer(this, tracker));
