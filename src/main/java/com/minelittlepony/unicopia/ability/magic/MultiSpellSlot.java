@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellReference;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.network.track.ObjectTracker;
 import com.minelittlepony.unicopia.network.track.Trackable;
 import com.minelittlepony.unicopia.network.track.TrackableObject;
@@ -126,6 +127,15 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
         @Override
         public void readTrackedNbt(NbtCompound compound) {
             spell.fromNBT(compound);
+        }
+    }
+
+    @Override
+    public void copyFrom(SpellSlots other, boolean alive) {
+        if (alive) {
+            other.stream().forEach(this::put);
+        } else {
+            other.stream().filter(SpellType.PLACE_CONTROL_SPELL).forEach(this::put);
         }
     }
 }

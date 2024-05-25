@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.EnchantableItem;
+import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.NbtCompound;
@@ -15,7 +16,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 
-public class PlayerCharmTracker implements NbtSerialisable {
+public class PlayerCharmTracker implements NbtSerialisable, Copyable<PlayerCharmTracker> {
 
     private final Pony pony;
 
@@ -60,6 +61,13 @@ public class PlayerCharmTracker implements NbtSerialisable {
         }
         pony.setDirty();
         return previous;
+    }
+
+    @Override
+    public void copyFrom(PlayerCharmTracker old, boolean alive) {
+        for (int i = 0; i < handSpells.length; i++) {
+            handSpells[i] = old.handSpells[i];
+        }
     }
 
     @Override

@@ -80,6 +80,16 @@ public class DataTrackerManager {
         }
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public synchronized void copyTo(DataTrackerManager destination) {
+        for (int i = 0; i < trackers.size(); i++) {
+            trackers.get(i).copyTo(i >= destination.trackers.size() ? destination.checkoutTracker() : destination.trackers.get(i));
+        }
+        for (int i = 0; i < objectTrackers.size(); i++) {
+            ((ObjectTracker)objectTrackers.get(i)).copyTo(destination.objectTrackers.get(i));
+        }
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public synchronized void sendInitial(ServerPlayerEntity player, Consumer<Packet<ClientPlayPacketListener>> sender) {
         synchronized (this) {

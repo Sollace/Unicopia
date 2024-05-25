@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.mixin.client;
 
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,13 +12,19 @@ import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
+import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.network.track.Trackable;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 
 @Mixin(ClientPlayNetworkHandler.class)
 abstract class MixinClientPlayNetworkHandler {
+    @Shadow private @Final MinecraftClient client;
     @Shadow private ClientWorld world;
 
     @Inject(method = "onEntityStatus", at = @At("TAIL"))
@@ -30,6 +38,22 @@ abstract class MixinClientPlayNetworkHandler {
                 .ifPresent(appearance -> {
                     appearance.handleStatus(packet.getStatus());
                 });
+        }
+    }
+
+    @Nullable
+    private ClientPlayerEntity oldPlayer;
+
+    @Inject(method = "onPlayerRespawn", at = @At("HEAD"))
+    public void beforeOnPlayerRespawn(PlayerRespawnS2CPacket packet, CallbackInfo info) {
+        oldPlayer = client.player;
+    }
+
+    @Inject(method = "onPlayerRespawn", at = @At("RETURN"))
+    public void afterOnPlayerRespawn(PlayerRespawnS2CPacket packet, CallbackInfo info) {
+        if (oldPlayer != null && oldPlayer != client.player) {
+            Trackable.of(oldPlayer).getDataTrackers().copyTo(Trackable.of(client.player).getDataTrackers());
+            Pony.of(client.player).copyFrom(Pony.of(oldPlayer), true);
         }
     }
 }

@@ -75,6 +75,17 @@ public class DataTracker {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    synchronized void copyTo(DataTracker destination) {
+        for (int i = 0; i < codecs.size(); i++) {
+            ((Pair<Object>)destination.codecs.get(i)).value = codecs.get(i).value;
+            TrackableObject o = destination.persistentObjects.get(i);
+            if (o != null) {
+                o.readTrackedNbt((NbtCompound)codecs.get(i).value);
+            }
+        }
+    }
+
     synchronized Optional<MsgTrackedValues.TrackerEntries> getInitialPairs() {
         initial = false;
         dirtyIndices = new IntOpenHashSet();

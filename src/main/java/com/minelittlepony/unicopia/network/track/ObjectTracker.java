@@ -73,6 +73,15 @@ public class ObjectTracker<T extends TrackableObject> implements NbtSerialisable
         quickAccess = Map.copyOf(trackedObjects);
     }
 
+    synchronized void copyTo(ObjectTracker<T> destination) {
+        for (var entry : trackedObjects.entrySet()) {
+            T copy = destination.constructor.get();
+            copy.readTrackedNbt(entry.getValue().toTrackedNbt());
+            destination.trackedObjects.put(entry.getKey(), copy);
+        }
+        destination.quickAccess = Map.copyOf(destination.trackedObjects);
+    }
+
     synchronized Optional<MsgTrackedValues.TrackerObjects> getInitialPairs() {
         if (trackedObjects.isEmpty()) {
             return Optional.empty();

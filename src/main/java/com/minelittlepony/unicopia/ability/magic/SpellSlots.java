@@ -7,9 +7,10 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
-public interface SpellSlots extends NbtSerialisable {
+public interface SpellSlots extends NbtSerialisable, Copyable<SpellSlots> {
     static SpellInventory ofUnbounded(Caster<?> caster) {
         return new SpellInventory(caster, new MultiSpellSlot(caster));
     }

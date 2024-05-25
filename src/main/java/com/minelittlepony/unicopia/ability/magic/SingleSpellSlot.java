@@ -65,4 +65,9 @@ class SingleSpellSlot implements SpellSlots, NbtSerialisable {
     public void fromNBT(NbtCompound compound) {
         entry.readTrackedNbt(compound.getCompound("effect"));
     }
+
+    @Override
+    public void copyFrom(SpellSlots other, boolean alive) {
+        other.get().ifPresent(this::put);
+    }
 }

@@ -43,7 +43,7 @@ abstract class MixinServerPlayNetworkHandler implements EntityTrackingListener, 
     }
 
     @Inject(method = "tick()V", at = @At("HEAD"))
-    private void beforePlayerTick() {
+    private void beforePlayerTick(CallbackInfo info) {
         if (Pony.of(player).getPhysics().isFlyingSurvival) {
             floating = false;
             floatingTicks = 0;

@@ -63,7 +63,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -116,6 +115,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 sender.accept(Channel.SERVER_PLAYER_CAPABILITIES.toPacket(new MsgPlayerCapabilities(this)));
             }
         });
+
         race = this.tracker.startTracking(Race.TRACKABLE_TYPE, Race.UNSET);
         suppressedRace = this.tracker.startTracking(Race.TRACKABLE_TYPE, Race.UNSET);
         this.levels = new PlayerLevelStore(this, tracker, true, USounds.Vanilla.ENTITY_PLAYER_LEVELUP);
@@ -817,8 +817,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public void toNBT(NbtCompound compound) {
-        compound.putString("playerSpecies", Race.REGISTRY.getId(getSpecies()).toString());
-        compound.putString("suppressedSpecies", Race.REGISTRY.getId(getSuppressedRace()).toString());
         compound.put("mana", mana.toNBT());
         compound.putInt("levels", levels.get());
         compound.putInt("corruption", corruption.get());
@@ -827,8 +825,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public void fromNBT(NbtCompound compound) {
-        setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
-        setSuppressedRace(Race.fromName(compound.getString("suppressedSpecies"), Race.UNSET));
         levels.set(compound.getInt("levels"));
         corruption.set(compound.getInt("corruption"));
         mana.fromNBT(compound.getCompound("mana"));
@@ -837,7 +833,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public void toSyncronisedNbt(NbtCompound compound) {
+        System.out.println("toSyncNbt");
         super.toSyncronisedNbt(compound);
+        compound.putString("playerSpecies", Race.REGISTRY.getId(getSpecies()).toString());
+        compound.putString("suppressedSpecies", Race.REGISTRY.getId(getSuppressedRace()).toString());
         compound.putFloat("magicExhaustion", magicExhaustion);
         compound.putInt("ticksInSun", ticksInSun);
         compound.putBoolean("hasShades", hasShades);
@@ -857,7 +856,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public void fromSynchronizedNbt(NbtCompound compound) {
+        System.out.println("fromSyncNbt");
         super.fromSynchronizedNbt(compound);
+        setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
+        setSuppressedRace(Race.fromName(compound.getString("suppressedSpecies"), Race.UNSET));
         powers.fromNBT(compound.getCompound("powers"));
         gravity.fromNBT(compound.getCompound("gravity"));
         charms.fromNBT(compound.getCompound("charms"));
@@ -877,7 +879,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public void copyFrom(Pony oldPlayer, boolean alive) {
-
         boolean forcedSwap = (!alive
                 && entity instanceof ServerPlayerEntity
                 && entity.getWorld().getGameRules().getBoolean(UGameRules.SWAP_TRIBE_ON_DEATH)
@@ -885,17 +886,20 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 || oldPlayer.getSpecies().isUnset();
 
         Race oldSuppressedRace = oldPlayer.getSuppressedRace();
+        Race newRace = oldPlayer.respawnRace != Race.UNSET && !alive ? oldPlayer.respawnRace : oldPlayer.getSpecies();
 
-        if (alive) {
-            oldPlayer.getSpellSlot().stream().forEach(getSpellSlot()::put);
+        if (forcedSwap || !newRace.canCast()) {
+            getSpellSlot().clear();
         } else {
-            if (forcedSwap) {
-                oldSuppressedRace = Race.UNSET;
-                Channel.SERVER_SELECT_TRIBE.sendToPlayer(new MsgTribeSelect(Race.allPermitted(entity), "gui.unicopia.tribe_selection.respawn"), (ServerPlayerEntity)entity);
-            } else {
-                oldPlayer.getSpellSlot().stream().filter(SpellType.PLACE_CONTROL_SPELL).forEach(getSpellSlot()::put);
-            }
+            getSpellSlot().copyFrom(oldPlayer.getSpellSlot(), alive);
+        }
 
+        if (forcedSwap) {
+            oldSuppressedRace = Race.UNSET;
+            Channel.SERVER_SELECT_TRIBE.sendToPlayer(new MsgTribeSelect(Race.allPermitted(entity), "gui.unicopia.tribe_selection.respawn"), (ServerPlayerEntity)entity);
+        }
+
+        if (!alive) {
             // putting it here instead of adding another injection point into ServerPlayerEntity.copyFrom()
             if (!asWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
                 PlayerInventory inventory = oldPlayer.asEntity().getInventory();
@@ -908,14 +912,13 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             }
         }
 
-        setSpecies(oldPlayer.respawnRace != Race.UNSET && !alive ? oldPlayer.respawnRace : oldPlayer.getSpecies());
+        setSpecies(newRace);
         setSuppressedRace(oldSuppressedRace);
         getDiscoveries().copyFrom(oldPlayer.getDiscoveries(), alive);
         getPhysics().copyFrom(oldPlayer.getPhysics(), alive);
         if (!forcedSwap) {
             getArmour().copyFrom(oldPlayer.getArmour(), alive);
-            getCharms().equipSpell(Hand.MAIN_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.MAIN_HAND));
-            getCharms().equipSpell(Hand.OFF_HAND, oldPlayer.getCharms().getEquippedSpell(Hand.OFF_HAND));
+            getCharms().copyFrom(oldPlayer.getCharms(), alive);
             corruption.set(oldPlayer.getCorruption().get());
             levels.set(oldPlayer.getLevel().get());
         }
