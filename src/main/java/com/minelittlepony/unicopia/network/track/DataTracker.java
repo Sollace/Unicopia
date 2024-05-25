@@ -29,7 +29,7 @@ public class DataTracker {
     }
 
     public <T extends TrackableObject> Entry<NbtCompound> startTracking(T value) {
-        Entry<NbtCompound> entry = startTracking(TrackableDataType.NBT, value.toTrackedNbt());
+        Entry<NbtCompound> entry = startTracking(TrackableDataType.COMPRESSED_NBT, value.toTrackedNbt());
         persistentObjects.put(entry.id(), value);
         return entry;
     }
@@ -136,6 +136,7 @@ public class DataTracker {
             tracker.set(this, t);
         }
     }
+
     static class Pair<T> {
         private final TrackableDataType<T> type;
         public final int id;

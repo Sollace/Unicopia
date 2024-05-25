@@ -50,7 +50,7 @@ public record MsgTrackedValues(
             this(
                 buffer.readInt(),
                 buffer.readCollection(HashSet::new, PacketByteBuf::readUuid),
-                buffer.readMap(HashMap::new, PacketByteBuf::readUuid, PacketCodec.NBT::read)
+                buffer.readMap(HashMap::new, PacketByteBuf::readUuid, PacketCodec.COMPRESSED_NBT::read)
             );
 
         }
@@ -58,7 +58,7 @@ public record MsgTrackedValues(
         public void write(PacketByteBuf buffer) {
             buffer.writeInt(id);
             buffer.writeCollection(removedValues, PacketByteBuf::writeUuid);
-            buffer.writeMap(values, PacketByteBuf::writeUuid, PacketCodec.NBT::write);
+            buffer.writeMap(values, PacketByteBuf::writeUuid, PacketCodec.COMPRESSED_NBT::write);
         }
     }
 

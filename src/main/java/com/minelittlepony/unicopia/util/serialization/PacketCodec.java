@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.util.serialization;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -12,6 +11,7 @@ import java.util.function.Supplier;
 
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.PacketByteBuf;
@@ -33,16 +33,26 @@ public record PacketCodec<T>(PacketByteBuf.PacketReader<T> reader, PacketByteBuf
     public static final PacketCodec<Identifier> IDENTIFIER = STRING.xMap(Identifier::new, Identifier::toString);
 
     public static final PacketCodec<NbtCompound> NBT = new PacketCodec<>(PacketByteBuf::readNbt, PacketByteBuf::writeNbt);
-    public static final PacketCodec<NbtCompound> COMPRESSED_NBT = new PacketCodec<>(buffer -> {
+
+    public static final PacketCodec<PacketByteBuf> RAW_BYTES = new PacketCodec<>(
+            buffer -> new PacketByteBuf(buffer.readBytes(buffer.readInt())),
+            (buffer, bytes) -> {
+        buffer.writeInt(bytes.writerIndex());
+        buffer.writeBytes(bytes);
+    });
+    public static final PacketCodec<NbtCompound> COMPRESSED_NBT = RAW_BYTES.xMap(buffer -> {
         try (InputStream in = new ByteBufInputStream(buffer)) {
             return NbtIo.readCompressed(in);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }, (buffer, nbt) -> {
-        try (OutputStream out = new ByteBufOutputStream(buffer)) {
+    }, nbt -> {
+        var buffer = new PacketByteBuf(Unpooled.buffer());
+        try (ByteBufOutputStream out = new ByteBufOutputStream(buffer)) {
             NbtIo.writeCompressed(nbt, out);
+            return buffer;
         } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     });
 
