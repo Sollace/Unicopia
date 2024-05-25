@@ -57,15 +57,16 @@ public class DismissSpellScreen extends GameGui {
         }
 
         double minimalDistance = 75 * (ring - 1) - 25;
-        Vec3d origin = pony.getOriginVector();
+        Vec3d origin = pony.asEntity().getPos();
 
         placeableSpells.forEach(placeable -> {
             placeable.getPosition().ifPresent(position -> {
-                Vec3d relativePos = position.subtract(origin);
+                Vec3d relativePos = position.subtract(origin).multiply(1, 0, 1);
+                float yaw = client.gameRenderer.getCamera().getYaw();
                 Vec3d cartesian = relativePos
                         .normalize()
-                        .multiply(minimalDistance + relativePos.length())
-                        .rotateY((pony.asEntity().getYaw() - 180) * MathHelper.RADIANS_PER_DEGREE);
+                        .multiply(minimalDistance + relativePos.horizontalLength())
+                        .rotateY((180 + yaw) * MathHelper.RADIANS_PER_DEGREE);
                 addDrawableChild(new Entry(placeable).ofCartesian(cartesian));
             });
         });
@@ -167,20 +168,28 @@ public class DismissSpellScreen extends GameGui {
             copy.set(mouseX - width * 0.5F - x * 0.5F, mouseY - height * 0.5F - y * 0.5F, 0, 0);
 
             DrawableUtil.drawLine(matrices, 0, 0, (int)x, (int)y, actualSpell.getAffinity().getColor().getColorValue());
-            DrawableUtil.renderItemIcon(context, actualSpell.isDead() ? UItems.BOTCHED_GEM.getDefaultStack() : type.getDefaultStack(),
-                    x - 8 - copy.x * 0.2F,
-                    y - 8 - copy.y * 0.2F,
-                    1
-            );
+
 
             int color = type.type().getColor() << 2;
 
             matrices.push();
             matrices.translate(x, y, 0);
 
-            DrawableUtil.drawArc(matrices, 7, 8, 0, DrawableUtil.TAU, color | 0x00000088, false);
+            matrices.push();
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(((MinecraftClient.getInstance().player.age + tickDelta) * 2) % 360));
+            DrawableUtil.renderItemIcon(context, actualSpell.isDead() ? UItems.BOTCHED_GEM.getDefaultStack() : type.getDefaultStack(),
+                    -8,
+                    -8,
+                    1
+            );
+            matrices.pop();
 
-            if (isMouseOver(relativeMouseX, relativeMouseY)) {
+            boolean hovered = isMouseOver(relativeMouseX, relativeMouseY);
+            double radius = (hovered ? 9 + MathHelper.sin((MinecraftClient.getInstance().player.age + tickDelta) / 9F) : 7);
+
+            DrawableUtil.drawArc(matrices, radius, radius + 1, 0, DrawableUtil.TAU, color | 0x00000088, false);
+
+            if (hovered) {
                 DrawableUtil.drawArc(matrices, 0, 8, 0, DrawableUtil.TAU, color | 0x000000FF, false);
 
                 List<Text> tooltip = new ArrayList<>();

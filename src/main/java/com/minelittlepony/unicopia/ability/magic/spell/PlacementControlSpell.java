@@ -139,8 +139,8 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
         super.fromNBT(compound);
         delegate = Spell.readNbt(compound.getCompound("spell"));
         placedEntityId = compound.containsUuid("placedEntityId") ? compound.getUuid("placedEntityId") : null;
-        position = compound.contains("position") ? Optional.of(NbtSerialisable.readVector(compound.getList("position", NbtElement.FLOAT_TYPE))) : Optional.empty();
-        orientation = compound.contains("orientation") ? Optional.of(NbtSerialisable.readVector(compound.getList("orientation", NbtElement.FLOAT_TYPE))) : Optional.empty();
+        position = compound.contains("position") ? Optional.of(NbtSerialisable.readVector(compound.getList("position", NbtElement.DOUBLE_TYPE))) : Optional.empty();
+        orientation = compound.contains("orientation") ? Optional.of(NbtSerialisable.readVector(compound.getList("orientation", NbtElement.DOUBLE_TYPE))) : Optional.empty();
         if (compound.contains("dimension", NbtElement.STRING_TYPE)) {
             dimension = Optional.ofNullable(Identifier.tryParse(compound.getString("dimension"))).map(id -> RegistryKey.of(RegistryKeys.WORLD, id));
         }
