@@ -833,7 +833,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public void toSyncronisedNbt(NbtCompound compound) {
-        System.out.println("toSyncNbt");
         super.toSyncronisedNbt(compound);
         compound.putString("playerSpecies", Race.REGISTRY.getId(getSpecies()).toString());
         compound.putString("suppressedSpecies", Race.REGISTRY.getId(getSuppressedRace()).toString());
@@ -856,7 +855,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public void fromSynchronizedNbt(NbtCompound compound) {
-        System.out.println("fromSyncNbt");
         super.fromSynchronizedNbt(compound);
         setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
         setSuppressedRace(Race.fromName(compound.getString("suppressedSpecies"), Race.UNSET));

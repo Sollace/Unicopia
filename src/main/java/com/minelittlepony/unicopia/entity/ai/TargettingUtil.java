@@ -32,7 +32,6 @@ public interface TargettingUtil {
     static Vec3d getProjectedPos(LivingEntity entity) {
         if (entity instanceof PlayerEntity player) {
             Vec3d velocity = Pony.of(player).getPhysics().getClientVelocity();
-            System.out.println(velocity);
             return entity.getEyePos().add(velocity.multiply(1.5)).add(0, -1, 0);
         }
         return entity.getEyePos().add(entity.getVelocity());

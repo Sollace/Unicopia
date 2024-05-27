@@ -181,7 +181,6 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
             @Override
             public void onCancelled() {
-                System.out.println("Cancel Stomp");
                 iplayer.playSound(USounds.GUI_ABILITY_FAIL, 1F);
             }
         };
