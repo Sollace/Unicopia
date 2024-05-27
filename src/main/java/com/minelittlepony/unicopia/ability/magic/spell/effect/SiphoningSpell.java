@@ -16,6 +16,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -43,6 +45,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
         tooltip.add(SpellAttributes.of(SpellAttributes.RANGE, 4));
     }
 
+    private final DataTracker.Entry<Boolean> upset = dataTracker.startTracking(TrackableDataType.BOOLEAN, false);
     private int ticksUpset;
 
     protected SiphoningSpell(CustomisedSpellType<?> type) {
@@ -57,8 +60,8 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
 
-        if (ticksUpset > 0) {
-            ticksUpset--;
+        if (ticksUpset > 0 && --ticksUpset <= 0) {
+            upset.set(false);
         }
 
         if (source.isClient()) {
@@ -108,7 +111,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
                 } else {
                     e.damage(damage, e.getHealth() / 4);
                     ticksUpset = 100;
-                    setDirty();
+                    upset.set(true);
                 }
             } else {
                 e.heal((float)Math.min(source.getLevel().getScaled(e.getHealth()) / 2F, maxHealthGain * 0.6));
@@ -174,5 +177,8 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         ticksUpset = compound.getInt("upset");
+        if (ticksUpset > 0) {
+            upset.set(true);
+        }
     }
 }

@@ -63,8 +63,6 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
             return false;
         }
 
-        setDirty();
-
         if (!caster.isClient()) {
             if (lights.isEmpty()) {
                 int size = 2 + caster.asWorld().random.nextInt(2) + (int)(getTraits().get(Trait.LIFE, 10, 20) - 10)/10;
@@ -83,7 +81,6 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
                     entity.getWorld().spawnEntity(entity);
 
                     ref.set(entity);
-                    setDirty();
                 }
             });
         }

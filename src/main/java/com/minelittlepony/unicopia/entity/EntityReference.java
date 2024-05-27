@@ -30,7 +30,7 @@ import net.minecraft.world.World;
  *
  * @param <T> The type of the entity this reference points to.
  */
-public class EntityReference<T extends Entity> implements NbtSerialisable, TrackableObject {
+public class EntityReference<T extends Entity> implements NbtSerialisable, TrackableObject<EntityReference<T>> {
     private static final Serializer<?> SERIALIZER = Serializer.of(EntityReference::new);
 
     @SuppressWarnings("unchecked")
@@ -122,12 +122,7 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
 
     @Override
     public int hashCode() {
-        return getUuid().hashCode();
-    }
-
-    @Override
-    public UUID getUuid() {
-        return getTarget().map(EntityValues::uuid).orElse(Util.NIL_UUID);
+        return getTarget().map(EntityValues::uuid).orElse(Util.NIL_UUID).hashCode();
     }
 
     @Override
@@ -140,13 +135,19 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
     }
 
     @Override
-    public NbtCompound toTrackedNbt() {
+    public NbtCompound writeTrackedNbt() {
         return toNBT();
     }
 
     @Override
     public void readTrackedNbt(NbtCompound compound) {
         fromNBT(compound);
+    }
+
+    @Override
+    public void copyTo(EntityReference<T> destination) {
+        destination.reference = reference;
+        destination.directReference = directReference;
     }
 
     @Override

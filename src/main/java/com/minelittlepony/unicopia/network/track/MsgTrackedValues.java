@@ -14,7 +14,6 @@ import com.sollace.fabwork.api.packets.HandledPacket;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 
 public record MsgTrackedValues(
@@ -45,12 +44,12 @@ public record MsgTrackedValues(
         }
     }
 
-    public record TrackerObjects(int id, Set<UUID> removedValues, Map<UUID, NbtCompound> values) {
+    public record TrackerObjects(int id, Set<UUID> removedValues, Map<UUID, PacketByteBuf> values) {
         public TrackerObjects(PacketByteBuf buffer) {
             this(
                 buffer.readInt(),
                 buffer.readCollection(HashSet::new, PacketByteBuf::readUuid),
-                buffer.readMap(HashMap::new, PacketByteBuf::readUuid, PacketCodec.COMPRESSED_NBT::read)
+                buffer.readMap(HashMap::new, PacketByteBuf::readUuid, PacketCodec.RAW_BYTES::read)
             );
 
         }
@@ -58,19 +57,25 @@ public record MsgTrackedValues(
         public void write(PacketByteBuf buffer) {
             buffer.writeInt(id);
             buffer.writeCollection(removedValues, PacketByteBuf::writeUuid);
-            buffer.writeMap(values, PacketByteBuf::writeUuid, PacketCodec.COMPRESSED_NBT::write);
+            buffer.writeMap(values, PacketByteBuf::writeUuid, PacketCodec.RAW_BYTES::write);
         }
     }
 
-    public record TrackerEntries(int id, boolean wipe, List<DataTracker.Pair<?>> values) {
+    public record TrackerEntries(int id, boolean wipe, List<DataTracker.Pair<?>> values, Map<Integer, PacketByteBuf> objects) {
         public TrackerEntries(PacketByteBuf buffer) {
-            this(buffer.readInt(), buffer.readBoolean(), buffer.readCollection(ArrayList::new, DataTracker.Pair::new));
+            this(
+                buffer.readInt(),
+                buffer.readBoolean(),
+                buffer.readCollection(ArrayList::new, DataTracker.Pair::new),
+                buffer.readMap(PacketByteBuf::readInt, PacketCodec.RAW_BYTES::read)
+            );
         }
 
         public void write(PacketByteBuf buffer) {
             buffer.writeInt(id);
             buffer.writeBoolean(wipe);
             buffer.writeCollection(values, (buf, pair) -> pair.write(buf));
+            buffer.writeMap(objects, PacketByteBuf::writeInt, PacketCodec.RAW_BYTES::write);
         }
     }
 }

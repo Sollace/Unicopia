@@ -7,15 +7,12 @@ import com.google.common.base.MoreObjects;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
+import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.server.world.Ether;
 
 import net.minecraft.nbt.NbtCompound;
 
 public abstract class AbstractDelegatingSpell implements Spell {
-    private boolean dirty;
-    private boolean hidden;
-    private boolean destroyed;
-
     private UUID uuid = UUID.randomUUID();
 
     private final CustomisedSpellType<?> type;
@@ -25,8 +22,18 @@ public abstract class AbstractDelegatingSpell implements Spell {
         this.type = type;
     }
 
+    public AbstractDelegatingSpell(CustomisedSpellType<?> type, Spell delegate) {
+        this.type = type;
+        this.delegate.set(delegate);
+    }
+
     public final Spell getDelegate() {
         return delegate.get();
+    }
+
+    @Override
+    public final DataTracker getDataTracker() {
+        return getOrEmpty().getDataTracker();
     }
 
     private Spell getOrEmpty() {
@@ -73,19 +80,21 @@ public abstract class AbstractDelegatingSpell implements Spell {
         return getOrEmpty().isDying();
     }
 
+    @Deprecated
     @Override
     public boolean isDirty() {
-        return dirty || delegate.hasDirtySpell();
+        return delegate.hasDirtySpell();
     }
 
+    @Deprecated
     @Override
     public void setDirty() {
-        dirty = true;
+        getOrEmpty().setDirty();
     }
 
     @Override
     public boolean isHidden() {
-        return hidden || getOrEmpty().isHidden();
+        return getOrEmpty().isHidden();
     }
 
     @Override
@@ -95,15 +104,6 @@ public abstract class AbstractDelegatingSpell implements Spell {
 
     @Override
     public final void destroy(Caster<?> caster) {
-        if (destroyed) {
-            return;
-        }
-        destroyed = true;
-        setDead();
-        onDestroyed(caster);
-    }
-
-    protected void onDestroyed(Caster<?> caster) {
         if (!caster.isClient()) {
             Ether.get(caster.asWorld()).remove(this, caster);
         }
@@ -123,14 +123,11 @@ public abstract class AbstractDelegatingSpell implements Spell {
     @Override
     public void toNBT(NbtCompound compound) {
         compound.putUuid("uuid", uuid);
-        compound.putBoolean("hidden", hidden);
         compound.put("spell", delegate.toNBT());
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
-        dirty = false;
-        hidden = compound.getBoolean("hidden");
         if (compound.contains("uuid")) {
             uuid = compound.getUuid("uuid");
         }
@@ -139,6 +136,6 @@ public abstract class AbstractDelegatingSpell implements Spell {
 
     @Override
     public final String toString() {
-        return "Delegate{" + getTypeAndTraits() + "}[uuid=" + uuid + ", destroyed=" + destroyed + ", hidden=" + hidden + "][spell=" + delegate.get() + "]";
+        return "Delegate{" + getTypeAndTraits() + "}[uuid=" + uuid + "][spell=" + delegate.get() + "]";
     }
 }

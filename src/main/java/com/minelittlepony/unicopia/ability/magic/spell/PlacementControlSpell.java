@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.AbstractSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
@@ -34,8 +35,8 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
         super(type);
     }
 
-    PlacementControlSpell(CustomisedSpellType<?> type, Spell delegate) {
-        this(type);
+    PlacementControlSpell(Spell delegate) {
+        this(SpellType.PLACE_CONTROL_SPELL.withTraits(delegate.getTypeAndTraits().traits()));
         this.delegate = delegate;
     }
 
@@ -50,10 +51,12 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
 
     public void setDimension(RegistryKey<World> dimension) {
         this.dimension = Optional.of(dimension);
+        setDirty();
     }
 
     public void setPosition(Vec3d position) {
         this.position = Optional.of(position);
+        setDirty();
     }
 
     @Override
@@ -98,7 +101,6 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
             entity.getWorld().spawnEntity(entity);
 
             placedEntityId = entity.getUuid();
-            setDirty();
         }
         return result;
     }

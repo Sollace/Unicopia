@@ -17,6 +17,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
@@ -56,7 +58,7 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
             .with(Trait.DARKNESS, 100)
             .build();
 
-    private float accumulatedMass = 0;
+    private final DataTracker.Entry<Float> accumulatedMass = this.dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
 
     private final TargetSelecter targetSelecter = new TargetSelecter(this).setFilter(this::isValidTarget).setTargetowner(true).setTargetAllies(true);
 
@@ -70,7 +72,7 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
     // 3. force reaches 0 at distance of drawDropOffRange
 
     private double getMass() {
-        return 0.1F + accumulatedMass / 10F;
+        return 0.1F + accumulatedMass.get() / 10F;
     }
 
     public double getEventHorizonRadius() {
@@ -174,11 +176,12 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
 
     @Override
     public void tickDying(Caster<?> source) {
-        accumulatedMass -= 0.8F;
+        float m = accumulatedMass.get() - 0.8F;
+        accumulatedMass.set(m);
         double mass = getMass() * 0.1;
         double logarithm = 1 - (1D / (1 + (mass * mass)));
         radius.update((float)Math.max(0.1, logarithm * source.asWorld().getGameRules().getInt(UGameRules.MAX_DARK_VORTEX_SIZE)), 200L);
-        if (accumulatedMass < 1) {
+        if (m < 1) {
             super.tickDying(source);
         }
 
@@ -202,7 +205,7 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
 
     @Override
     public boolean isFriendlyTogether(Affine other) {
-        return accumulatedMass < 4;
+        return accumulatedMass.get() < 4;
     }
 
     private boolean isValidTarget(Caster<?> source, Entity entity) {
@@ -274,8 +277,7 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
             double massOfTarget = AttractionUtils.getMass(target);
 
             if (!source.isClient() && massOfTarget != 0) {
-                accumulatedMass += massOfTarget;
-                setDirty();
+                accumulatedMass.set((float)(accumulatedMass.get() + massOfTarget));
             }
 
             target.damage(source.damageOf(UDamageTypes.GAVITY_WELL_RECOIL, source), Integer.MAX_VALUE);
@@ -303,12 +305,12 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
-        compound.putFloat("accumulatedMass", accumulatedMass);
+        compound.putFloat("accumulatedMass", accumulatedMass.get());
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
-        accumulatedMass = compound.getFloat("accumulatedMass");
+        accumulatedMass.set(compound.getFloat("accumulatedMass"));
     }
 }

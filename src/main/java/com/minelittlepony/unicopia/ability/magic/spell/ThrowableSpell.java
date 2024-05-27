@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.projectile.MagicBeamEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
@@ -20,9 +21,8 @@ public final class ThrowableSpell extends AbstractDelegatingSpell implements
         super(type);
     }
 
-    public ThrowableSpell setSpell(Spell spell) {
-        delegate.set(spell);
-        return this;
+    public ThrowableSpell(Spell delegate) {
+        super(SpellType.THROWN_SPELL.withTraits(delegate.getTypeAndTraits().traits()), delegate);
     }
 
     @Override

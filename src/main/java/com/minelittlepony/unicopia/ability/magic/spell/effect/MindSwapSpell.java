@@ -135,7 +135,6 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
                     caster.playSound(USounds.SPELL_MINDSWAP_SWAP, 1);
                 });
                 initialized = true;
-                setDirty();
             }
 
             if (counterpart.isSet()) {
@@ -143,13 +142,12 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
 
                 if (other == null) {
                     caster.getOriginatingCaster().asEntity().damage(caster.asWorld().getDamageSources().magic(), Float.MAX_VALUE);
-                    setDead();
+                    destroy(caster);
                     return false;
                 }
 
                 if (!Caster.of(other).get().getSpellSlot().contains(SpellType.MIMIC)) {
-                    onDestroyed(caster);
-                    setDead();
+                    destroy(caster);
                     return false;
                 }
             }
@@ -158,8 +156,7 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
                 counterpart.ifPresent(caster.asWorld(), e -> {
                     e.damage(e.getDamageSources().magic(), Float.MAX_VALUE);
                 });
-                onDestroyed(caster);
-                setDead();
+                destroy(caster);
                 return false;
             }
         }

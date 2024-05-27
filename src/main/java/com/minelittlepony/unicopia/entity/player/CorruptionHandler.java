@@ -38,12 +38,10 @@ public class CorruptionHandler implements Tickable {
             if (entity.age % (10 * ItemTracker.SECONDS) == 0) {
                 if (random.nextInt(100) == 0) {
                     pony.getCorruption().add(-1);
-                    pony.setDirty();
                 }
 
                 if (entity.getHealth() >= entity.getMaxHealth() - 1 && !entity.getHungerManager().isNotFull()) {
                     pony.getCorruption().add(-random.nextInt(4));
-                    pony.setDirty();
                 }
             }
         }
@@ -79,6 +77,5 @@ public class CorruptionHandler implements Tickable {
         MagicReserves reserves = pony.getMagicalReserves();
         reserves.getExertion().addPercent(10);
         reserves.getEnergy().add(10);
-        pony.setDirty();
     }
 }

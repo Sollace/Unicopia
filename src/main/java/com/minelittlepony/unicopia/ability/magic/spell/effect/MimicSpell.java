@@ -35,8 +35,6 @@ public class MimicSpell extends AbstractDisguiseSpell implements HomingSpell, Ti
             return false;
         }
 
-        setDirty();
-
         return super.tick(caster, situation);
     }
 

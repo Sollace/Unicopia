@@ -41,7 +41,7 @@ public class DataTrackerManager {
     }
 
     public synchronized DataTracker checkoutTracker() {
-        DataTracker tracker = new DataTracker(this, trackers.size());
+        DataTracker tracker = new DataTracker(trackers.size());
         trackers.add(tracker);
         packetEmitters.add((sender, initial) -> {
             var update = initial ? tracker.getInitialPairs() : tracker.getDirtyPairs();
@@ -56,7 +56,7 @@ public class DataTrackerManager {
         return tracker;
     }
 
-    public synchronized <T extends TrackableObject> ObjectTracker<T> checkoutTracker(Supplier<T> objFunction) {
+    public synchronized <T extends TrackableObject<T>> ObjectTracker<T> checkoutTracker(Supplier<T> objFunction) {
         ObjectTracker<T> tracker = new ObjectTracker<>(objectTrackers.size(), objFunction);
         objectTrackers.add(tracker);
         packetEmitters.add((sender, initial) -> {

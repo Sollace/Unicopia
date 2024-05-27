@@ -69,8 +69,6 @@ public class FeatherFallSpell extends AbstractSpell implements TimedSpell {
             return false;
         }
 
-        setDirty();
-
         List<Entity> targets = getTargets(caster).toList();
 
         if (targets.isEmpty()) {

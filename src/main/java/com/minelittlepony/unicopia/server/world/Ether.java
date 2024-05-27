@@ -37,7 +37,7 @@ public class Ether extends PersistentState {
         this.world = world;
         this.endpoints = NbtSerialisable.readMap(compound.getCompound("endpoints"), Identifier::tryParse, typeNbt -> {
             return NbtSerialisable.readMap((NbtCompound)typeNbt, UUID::fromString, entityNbt -> {
-                return NbtSerialisable.readMap((NbtCompound)entityNbt, UUID::fromString, Entry::new);
+                return NbtSerialisable.readMap((NbtCompound)entityNbt, UUID::fromString, nbt -> new Entry<>(nbt));
             });
         });
     }

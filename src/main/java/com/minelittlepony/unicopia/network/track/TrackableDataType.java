@@ -23,6 +23,7 @@ public record TrackableDataType<T>(int id, PacketCodec<T> codec) {
     public static final TrackableDataType<UUID> UUID = of(new Identifier("uuid"), PacketCodec.UUID);
     public static final TrackableDataType<NbtCompound> NBT = of(new Identifier("nbt"), PacketCodec.NBT);
     public static final TrackableDataType<NbtCompound> COMPRESSED_NBT = of(new Identifier("compressed_nbt"), PacketCodec.COMPRESSED_NBT);
+    public static final TrackableDataType<Optional<PacketByteBuf>> RAW_BYTES = of(new Identifier("raw_bytes"), PacketCodec.RAW_BYTES.asOptional());
 
     public static final TrackableDataType<Optional<BlockPos>> OPTIONAL_POS = of(new Identifier("optional_pos"), PacketCodec.OPTIONAL_POS);
     public static final TrackableDataType<Race> RACE = TrackableDataType.of(Unicopia.id("race"), PacketCodec.ofRegistry(Race.REGISTRY));

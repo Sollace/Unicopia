@@ -42,6 +42,7 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
     protected AttractiveSpell(CustomisedSpellType<?> type) {
         super(type);
         timer = new Timer(BASE_DURATION + TimedSpell.getExtraDuration(getTraits()));
+        dataTracker.startTracking(target);
     }
 
     @Override
@@ -57,8 +58,6 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
             if (timer.getTicksRemaining() <= 0) {
                 return false;
             }
-
-            setDirty();
         }
 
         target.getOrEmpty(caster.asWorld())

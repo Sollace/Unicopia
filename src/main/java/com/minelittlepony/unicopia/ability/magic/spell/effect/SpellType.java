@@ -45,7 +45,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     private static final DynamicCommandExceptionType UNKNOWN_SPELL_TYPE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("spell_type.unknown", id));
 
     public static final SpellType<PlacementControlSpell> PLACE_CONTROL_SPELL = register("place_controller", SpellType.<PlacementControlSpell>builder(PlacementControlSpell::new).affinity(Affinity.NEUTRAL).unobtainable().stackable().shape(GemstoneItem.Shape.DONUT));
-    public static final SpellType<ThrowableSpell> THROWN_SPELL = register("thrown", builder(ThrowableSpell::new).affinity(Affinity.NEUTRAL).unobtainable().shape(GemstoneItem.Shape.DONUT));
+    public static final SpellType<ThrowableSpell> THROWN_SPELL = register("thrown", SpellType.<ThrowableSpell>builder(ThrowableSpell::new).affinity(Affinity.NEUTRAL).unobtainable().shape(GemstoneItem.Shape.DONUT));
 
     public static final SpellType<DispersableDisguiseSpell> CHANGELING_DISGUISE = register("disguise", builder(DispersableDisguiseSpell::new).affinity(Affinity.BAD).color(0x19E48E).unobtainable().shape(GemstoneItem.Shape.ARROW));
     public static final SpellType<ChangelingFeedingSpell> FEED = register("feed", SpellType.<ChangelingFeedingSpell>builder(ChangelingFeedingSpell::new).affinity(Affinity.BAD).color(0xBDBDF9).unobtainable().shape(GemstoneItem.Shape.ARROW));

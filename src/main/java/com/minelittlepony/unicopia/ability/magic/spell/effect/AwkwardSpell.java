@@ -40,8 +40,6 @@ public class AwkwardSpell extends AbstractSpell implements TimedSpell {
             if (timer.getTicksRemaining() <= 0) {
                 return false;
             }
-
-            setDirty();
         }
 
         if (source.isClient()) {

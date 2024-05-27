@@ -15,7 +15,6 @@ import net.minecraft.nbt.NbtCompound;
 public final class SpellReference<T extends Spell> implements NbtSerialisable {
     @Nullable
     private transient T spell;
-    private int nbtHash;
 
     @Nullable
     public T get() {
@@ -26,6 +25,7 @@ public final class SpellReference<T extends Spell> implements NbtSerialisable {
         set(spell, null);
     }
 
+    @Deprecated
     public boolean hasDirtySpell() {
         return spell != null && spell.isDirty();
     }
@@ -37,7 +37,6 @@ public final class SpellReference<T extends Spell> implements NbtSerialisable {
         }
         T oldValue = this.spell;
         this.spell = spell;
-        nbtHash = 0;
         if (owner != null && oldValue != null && (spell == null || !oldValue.getUuid().equals(spell.getUuid()))) {
             oldValue.destroy(owner);
         }
@@ -65,19 +64,9 @@ public final class SpellReference<T extends Spell> implements NbtSerialisable {
 
     @Override
     public void fromNBT(NbtCompound compound) {
-        fromNBT(compound, true);
-    }
-
-    public void fromNBT(NbtCompound compound, boolean force) {
-        final int hash = compound.hashCode();
-        if (nbtHash == hash) {
-            return;
-        }
-        nbtHash = hash;
-
         if (spell == null || !Objects.equals(Spell.getUuid(compound), spell.getUuid())) {
             spell = Spell.readNbt(compound);
-        } else if (force || !spell.isDirty()) {
+        } else  {
             spell.fromNBT(compound);
         }
     }

@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.network.track.DataTracker;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Util;
@@ -73,5 +74,10 @@ public final class EmptySpell implements Spell {
     @Override
     public String toString() {
         return "EmptySpell{}";
+    }
+
+    @Override
+    public DataTracker getDataTracker() {
+        return null;
     }
 }

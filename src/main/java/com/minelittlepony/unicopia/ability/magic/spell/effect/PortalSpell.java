@@ -14,6 +14,8 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgCasterLookRequest;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.particle.*;
 import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.shape.*;
@@ -26,6 +28,7 @@ import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -40,15 +43,13 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
     private static final Shape PARTICLE_AREA = new Sphere(true, 2, 1, 1, 0);
 
     @Nullable
-    private UUID targetPortalId;
-    private float targetPortalPitch;
-    private float targetPortalYaw;
+    private final DataTracker.Entry<UUID> targetPortalId = dataTracker.startTracking(TrackableDataType.UUID, Util.NIL_UUID);
+    private final DataTracker.Entry<Float> targetPortalPitch = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
+    private final DataTracker.Entry<Float> targetPortalYaw = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
     private final EntityReference<Entity> teleportationTarget = new EntityReference<>();
 
-    private boolean publishedPosition;
-
-    private float pitch;
-    private float yaw;
+    private final DataTracker.Entry<Float> pitch = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
+    private final DataTracker.Entry<Float> yaw = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
 
     private Shape particleArea = PARTICLE_AREA;
 
@@ -61,30 +62,30 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
     }
 
     public float getPitch() {
-        return pitch;
+        return pitch.get();
     }
 
     public float getYaw() {
-        return yaw;
+        return yaw.get();
     }
 
     public float getTargetPitch() {
-        return targetPortalPitch;
+        return targetPortalPitch.get();
     }
 
     public float getTargetYaw() {
-        return targetPortalYaw;
+        return targetPortalYaw.get();
     }
 
     public float getYawDifference() {
-        return MathHelper.wrapDegrees(180 + targetPortalYaw - yaw);
+        return MathHelper.wrapDegrees(180 + getTargetYaw() - getYaw());
     }
 
     @SuppressWarnings("unchecked")
     private Ether.Entry<PortalSpell> getDestination(Caster<?> source) {
-        return targetPortalId == null ? null : getDestinationReference()
+        return Util.NIL_UUID.equals(targetPortalId.get()) ? null : getDestinationReference()
                 .getTarget()
-                .map(target -> Ether.get(source.asWorld()).get((SpellType<PortalSpell>)getType(), target.uuid(), targetPortalId))
+                .map(target -> Ether.get(source.asWorld()).get((SpellType<PortalSpell>)getType(), target.uuid(), targetPortalId.get()))
                 .filter(destination -> destination.isClaimedBy(getUuid()))
                 .orElse(null);
     }
@@ -92,6 +93,18 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
     @Override
     public boolean apply(Caster<?> caster) {
         return toPlaceable().apply(caster);
+    }
+
+    protected void setDestination(@Nullable Ether.Entry<?> destination) {
+        if (destination == null) {
+            teleportationTarget.set(null);
+            targetPortalId.set(Util.NIL_UUID);
+        } else {
+            teleportationTarget.copyFrom(destination.entity);
+            targetPortalId.set(destination.getSpellId());
+            targetPortalPitch.set(destination.getPitch());
+            targetPortalYaw.set(destination.getYaw());
+        }
     }
 
     @Override
@@ -108,9 +121,7 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
 
                     if (targetEntry == null) {
                         if (teleportationTarget.isSet()) {
-                            teleportationTarget.set(null);
-                            targetPortalId = null;
-                            setDirty();
+                            setDestination(null);
                             source.asWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, source.getOrigin(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
                         } else {
                             Ether.get(source.asWorld()).anyMatch(getType(), entry -> {
@@ -119,18 +130,10 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
                                     ownEntry.claim(entry.getSpellId());
                                     synchronized (entry) {
                                         if (entry.getSpell() instanceof PortalSpell portal) {
-                                            portal.teleportationTarget.copyFrom(ownEntry.entity);
-                                            portal.targetPortalId = getUuid();
-                                            portal.targetPortalPitch = pitch;
-                                            portal.targetPortalYaw = yaw;
-                                            portal.setDirty();
+                                            portal.setDestination(ownEntry);
                                         }
                                     }
-                                    teleportationTarget.copyFrom(entry.entity);
-                                    targetPortalId = entry.getSpellId();
-                                    targetPortalPitch = entry.getPitch();
-                                    targetPortalYaw = entry.getYaw();
-                                    setDirty();
+                                    setDestination(entry);
                                 }
                                 return false;
                             });
@@ -142,8 +145,8 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
             }
 
             var entry = Ether.get(source.asWorld()).getOrCreate(this, source);
-            entry.setPitch(pitch);
-            entry.setYaw(yaw);
+            entry.setPitch(pitch.get());
+            entry.setYaw(yaw.get());
         }
 
         return !isDead();
@@ -154,7 +157,7 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
             source.findAllEntitiesInRange(1).forEach(entity -> {
                 if (!entity.hasPortalCooldown()) {
 
-                    float approachYaw = Math.abs(MathHelper.wrapDegrees(entity.getYaw() - this.yaw));
+                    float approachYaw = Math.abs(MathHelper.wrapDegrees(entity.getYaw() - this.yaw.get()));
                     if (approachYaw > 80) {
                         return;
                     }
@@ -177,7 +180,6 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
                     entity.getWorld().playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
                     entity.teleport((ServerWorld)entity.getWorld(), dest.x, dest.y, dest.z, PositionFlag.VALUES, yaw, entity.getPitch());
                     entity.getWorld().playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
-                    setDirty();
 
                     Living.updateVelocity(entity);
 
@@ -193,13 +195,12 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
 
     @Override
     public void setOrientation(Caster<?> caster, float pitch, float yaw) {
-        this.pitch = 90 - pitch;
-        this.yaw = -yaw;
+        this.pitch.set(90 - pitch);
+        this.yaw.set(-yaw);
         particleArea = PARTICLE_AREA.rotate(
-            this.pitch * MathHelper.RADIANS_PER_DEGREE,
-            this.yaw * MathHelper.RADIANS_PER_DEGREE
+            this.pitch.get() * MathHelper.RADIANS_PER_DEGREE,
+            (180 - this.yaw.get()) * MathHelper.RADIANS_PER_DEGREE
         );
-        setDirty();
     }
 
     @Override
@@ -227,30 +228,26 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
-        if (targetPortalId != null) {
-            compound.putUuid("targetPortalId", targetPortalId);
-        }
-        compound.putBoolean("publishedPosition", publishedPosition);
+        compound.putUuid("targetPortalId", targetPortalId.get());
         compound.put("teleportationTarget", teleportationTarget.toNBT());
-        compound.putFloat("pitch", pitch);
-        compound.putFloat("yaw", yaw);
-        compound.putFloat("targetPortalPitch", targetPortalPitch);
-        compound.putFloat("targetPortalYaw", targetPortalYaw);
+        compound.putFloat("pitch", getPitch());
+        compound.putFloat("yaw", getYaw());
+        compound.putFloat("targetPortalPitch", getTargetPitch());
+        compound.putFloat("targetPortalYaw", getTargetYaw());
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
-        targetPortalId = compound.containsUuid("targetPortalId") ? compound.getUuid("targetPortalId") : null;
-        publishedPosition = compound.getBoolean("publishedPosition");
+        targetPortalId.set(compound.containsUuid("targetPortalId") ? compound.getUuid("targetPortalId") : Util.NIL_UUID);
         teleportationTarget.fromNBT(compound.getCompound("teleportationTarget"));
-        pitch = compound.getFloat("pitch");
-        yaw = compound.getFloat("yaw");
-        targetPortalPitch = compound.getFloat("targetPortalPitch");
-        targetPortalYaw = compound.getFloat("targetPortalYaw");
+        pitch.set(compound.getFloat("pitch"));
+        yaw.set(compound.getFloat("yaw"));
+        targetPortalPitch.set(compound.getFloat("targetPortalPitch"));
+        targetPortalYaw.set(compound.getFloat("targetPortalYaw"));
         particleArea = PARTICLE_AREA.rotate(
-            pitch * MathHelper.RADIANS_PER_DEGREE,
-            (180 - yaw) * MathHelper.RADIANS_PER_DEGREE
+            pitch.get() * MathHelper.RADIANS_PER_DEGREE,
+            (180 - yaw.get()) * MathHelper.RADIANS_PER_DEGREE
         );
     }
 }

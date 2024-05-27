@@ -54,7 +54,6 @@ public class RageAbilitySpell extends AbstractSpell {
             ticksExtenguishing++;
             source.playSound(USounds.Vanilla.ENTITY_GENERIC_EXTINGUISH_FIRE, 1);
             source.spawnParticles(ParticleTypes.CLOUD, 12);
-            setDirty();
         } else {
             ticksExtenguishing = 0;
         }
@@ -127,9 +126,6 @@ public class RageAbilitySpell extends AbstractSpell {
 
         age++;
         source.asEntity().setInvulnerable(age < 25);
-
-
-        setDirty();
         return true;
     }
 

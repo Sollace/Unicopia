@@ -131,7 +131,6 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
 
         float additional = source.asWorld().getLocalDifficulty(source.getOrigin()).getLocalDifficulty() + getTraits().get(Trait.CHAOS, 0, 10);
 
-        setDirty();
         if (--spawnCountdown > 0 && !summonedEntities.isEmpty()) {
             return true;
         }
@@ -213,7 +212,6 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
 
         source.asWorld().spawnEntity(minion);
         summonedEntities.add(new EntityReference<>(minion));
-        setDirty();
     }
 
     @Override

@@ -11,14 +11,11 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
-
+import com.minelittlepony.unicopia.network.track.TrackableObject.Status;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Util;
+import net.minecraft.network.PacketByteBuf;
 
-public class ObjectTracker<T extends TrackableObject> implements NbtSerialisable {
+public class ObjectTracker<T extends TrackableObject<T>> {
     private final Map<UUID, T> trackedObjects = new Object2ObjectOpenHashMap<>();
     private volatile Map<UUID, T> quickAccess = Map.of();
 
@@ -28,6 +25,10 @@ public class ObjectTracker<T extends TrackableObject> implements NbtSerialisable
     public ObjectTracker(int id, Supplier<T> constructor) {
         this.id = id;
         this.constructor = constructor;
+    }
+
+    public Map<UUID, T> entries() {
+        return quickAccess;
     }
 
     public Set<UUID> keySet() {
@@ -68,15 +69,15 @@ public class ObjectTracker<T extends TrackableObject> implements NbtSerialisable
         return true;
     }
 
-    public synchronized void add(T obj) {
-        trackedObjects.put(obj.getUuid(), obj);
+    public synchronized void add(UUID id, T obj) {
+        trackedObjects.put(id, obj);
         quickAccess = Map.copyOf(trackedObjects);
     }
 
     synchronized void copyTo(ObjectTracker<T> destination) {
         for (var entry : trackedObjects.entrySet()) {
             T copy = destination.constructor.get();
-            copy.readTrackedNbt(entry.getValue().toTrackedNbt());
+            entry.getValue().copyTo(copy);
             destination.trackedObjects.put(entry.getKey(), copy);
         }
         destination.quickAccess = Map.copyOf(destination.trackedObjects);
@@ -87,31 +88,35 @@ public class ObjectTracker<T extends TrackableObject> implements NbtSerialisable
             return Optional.empty();
         }
 
-        Map<UUID, NbtCompound> trackableCompounds = new HashMap<>();
+        Map<UUID, PacketByteBuf> updates = new HashMap<>();
         quickAccess.entrySet().forEach(object -> {
-            trackableCompounds.put(object.getKey(), object.getValue().toTrackedNbt());
+            object.getValue().write(Status.NEW).ifPresent(data -> {
+                updates.put(object.getKey(), data);
+            });
         });
 
-        return Optional.of(new MsgTrackedValues.TrackerObjects(id, Set.of(), trackableCompounds));
+        return Optional.of(new MsgTrackedValues.TrackerObjects(id, Set.of(), updates));
     }
 
     synchronized Optional<MsgTrackedValues.TrackerObjects> getDirtyPairs() {
         if (!trackedObjects.isEmpty()) {
-            Map<UUID, NbtCompound> trackableCompounds = new HashMap<>();
+            Map<UUID, PacketByteBuf> updates = new HashMap<>();
             Set<UUID> removedTrackableObjects = new HashSet<>();
             trackedObjects.entrySet().removeIf(object -> {
                 TrackableObject.Status status = object.getValue().getStatus();
                 if (status == TrackableObject.Status.REMOVED) {
                     removedTrackableObjects.add(object.getKey());
-                } else if (status != TrackableObject.Status.DEFAULT) {
-                    trackableCompounds.put(object.getKey(), object.getValue().toTrackedNbt());
+                    return true;
                 }
-                return status == TrackableObject.Status.REMOVED;
+                object.getValue().write(status).ifPresent(data -> {
+                    updates.put(object.getKey(), data);
+                });
+                return false;
             });
             quickAccess = Map.copyOf(trackedObjects);
 
-            if (!trackableCompounds.isEmpty() || !removedTrackableObjects.isEmpty()) {
-                return Optional.of(new MsgTrackedValues.TrackerObjects(id, removedTrackableObjects, trackableCompounds));
+            if (!updates.isEmpty() || !removedTrackableObjects.isEmpty()) {
+                return Optional.of(new MsgTrackedValues.TrackerObjects(id, removedTrackableObjects, updates));
             }
         }
 
@@ -125,44 +130,18 @@ public class ObjectTracker<T extends TrackableObject> implements NbtSerialisable
                 o.discard(true);
             }
         });
-        objects.values().forEach((id, nbt) -> {
+        objects.values().forEach((id, data) -> {
             T o = trackedObjects.get(id);
             if (o == null) {
                 o = constructor.get();
                 trackedObjects.put(id, o);
             }
-            o.readTrackedNbt(nbt);
+            o.read(data);
         });
         quickAccess = Map.copyOf(trackedObjects);
     }
 
-    @Override
-    public synchronized void toNBT(NbtCompound compound) {
-        quickAccess.forEach((id, value) -> {
-            compound.put(id.toString(), value.toTrackedNbt());
-        });
-    }
-
-    @Override
-    public void fromNBT(NbtCompound compound) {
-        Map<UUID, T> values = new Object2ObjectOpenHashMap<>();
-        compound.getKeys().forEach(key -> {
-            try {
-                UUID id = Util.NIL_UUID;
-                try {
-                    id = UUID.fromString(key);
-                } catch (Throwable ignore) {}
-
-                if (id != null && !Util.NIL_UUID.equals(id)) {
-                    NbtCompound nbt = compound.getCompound(key);
-                    T entry = constructor.get();
-                    entry.readTrackedNbt(nbt);
-                    values.put(id, entry);
-                }
-            } catch (Throwable t) {
-                Unicopia.LOGGER.warn("Exception loading tracked object: {}", t.getMessage());
-            }
-        });
+    public void load(Map<UUID, T> values) {
         synchronized (this) {
             trackedObjects.clear();
             trackedObjects.putAll(values);
