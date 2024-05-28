@@ -14,7 +14,6 @@ import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
-import com.minelittlepony.unicopia.client.TextHelper;
 import com.minelittlepony.unicopia.client.gui.*;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketSlotBackSprites;
@@ -211,8 +210,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
         List<Text> tooltip = new ArrayList<>();
         tooltip.add(spell.type().getName());
-        tooltip.addAll(TextHelper.wrap(Text.translatable(spell.type().getTranslationKey() + ".lore").formatted(spell.type().getAffinity().getColor()), 180).toList());
-
+        spell.appendTooltip(tooltip);
 
         context.drawTooltip(textRenderer, tooltip, x, y);
         context.getMatrices().pop();
