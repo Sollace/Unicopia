@@ -26,6 +26,10 @@ public interface SpellAttributes {
     Identifier STRENGTH = Unicopia.id("strength");
     Identifier VELOCITY = Unicopia.id("velocity");
     Identifier VERTICAL_VELOCITY = Unicopia.id("vertical_velocity");
+    Identifier HANG_TIME = Unicopia.id("hang_time");
+    Identifier PUSHING_POWER = Unicopia.id("pushing_power");
+    Identifier CAUSES_LEVITATION = Unicopia.id("causes_levitation");
+    Identifier AFFECTS = Unicopia.id("affects");
     Identifier DAMAGE_TO_TARGET = Unicopia.id("damage_to_target");
     Identifier SIMULTANIOUS_TARGETS = Unicopia.id("simultanious_targets");
     Identifier COST_PER_INDIVIDUAL = Unicopia.id("cost_per_individual");
@@ -60,5 +64,12 @@ public interface SpellAttributes {
                 StringHelper.formatTicks((int)Math.abs(time)),
                 Text.translatable(Util.createTranslationKey("spell_attribute", id))
         ).formatted(Formatting.LIGHT_PURPLE));
+    }
+
+    public enum ValueType {
+        REGULAR,
+        TIME,
+        PERCENTAGE,
+        CONDITIONAL
     }
 }

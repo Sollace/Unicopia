@@ -6,10 +6,13 @@ import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.UTags;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.Affects;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
@@ -27,6 +30,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -45,13 +49,22 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
     private static final float HORIZONTAL_VARIANCE = 0.25F;
     private static final float MAX_STRENGTH = 120;
 
+    private static final SpellAttribute<Float> LAUNCH_SPEED = SpellAttribute.create(SpellAttributes.VERTICAL_VELOCITY, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.STRENGTH, strength -> 0.1F + (MathHelper.clamp(strength, -MAX_STRENGTH, MAX_STRENGTH) - 40) / 16F);
+    private static final SpellAttribute<Float> HANG_TIME = SpellAttribute.create(SpellAttributes.HANG_TIME, AttributeFormat.TIME, AttributeFormat.PERCENTAGE, Trait.AIR, air -> 50 + (int)MathHelper.clamp(air, 0, 10) * 20F);
+    private static final SpellAttribute<Float> PUSHING_POWER = SpellAttribute.create(SpellAttributes.PUSHING_POWER, AttributeFormat.REGULAR, Trait.POWER, power -> 1 + MathHelper.clamp(power, 0, 10) / 10F);
+    private static final SpellAttribute<Boolean> CAUSES_LEVITATION = SpellAttribute.createConditional(SpellAttributes.CAUSES_LEVITATION, Trait.FOCUS, focus -> focus > 50);
+    private static final SpellAttribute<Affects> AFFECTS = SpellAttribute.createEnumerated(SpellAttributes.AFFECTS, Trait.ORDER, order -> {
+        if (order <= 0) {
+            return Affects.BOTH;
+        } else if (order <= 10) {
+            return Affects.ENTITIES;
+        }
+        return Affects.BLOCKS;
+    });
+    static final TooltipFactory TOOLTIP = TooltipFactory.of(LAUNCH_SPEED, HANG_TIME, PUSHING_POWER, CAUSES_LEVITATION, AFFECTS);
+
     static void appendTooltip(CustomisedSpellType<? extends CatapultSpell> type, List<Text> tooltip) {
-        float velocity = (float)(0.1F + (type.traits().get(Trait.STRENGTH, -MAX_STRENGTH, MAX_STRENGTH) - 40) / 16D);
-        tooltip.add(SpellAttributes.of(SpellAttributes.VERTICAL_VELOCITY, velocity));
-        int hoverDuration = 50 + (int)type.traits().get(Trait.AIR, 0, 10) * 20;
-        tooltip.add(SpellAttributes.ofTime(Unicopia.id("hang_time"), hoverDuration));
-        float power = 1 + type.traits().get(Trait.POWER, 0, 10) / 10F;
-        tooltip.add(SpellAttributes.of(Unicopia.id("pushing_power"), power));
+        TOOLTIP.appendTooltip(type, tooltip);
     }
 
     protected CatapultSpell(CustomisedSpellType<?> type) {
@@ -60,6 +73,10 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
 
     @Override
     public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
+        if (!AFFECTS.get(getTraits()).allowsBlocks()) {
+            return;
+        }
+
         if (!projectile.isClient() && projectile instanceof MagicBeamEntity source && source.canModifyAt(hit.getBlockPos())) {
             createBlockEntity(projectile.getWorld(), hit.getBlockPos(), e -> {
                 e.setOnGround(true);
@@ -72,6 +89,11 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
     @Override
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
         if (!projectile.isClient() && projectile instanceof MagicBeamEntity source) {
+            Entity e = hit.getEntity();
+            if (!(e instanceof FallingBlockEntity) && !AFFECTS.get(getTraits()).allowsEntities()) {
+                return;
+            }
+
             apply(source, hit.getEntity());
         }
     }
@@ -95,20 +117,28 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
             e.setVelocity(caster.asEntity().getVelocity().multiply(power));
         } else {
             Random rng = caster.asWorld().random;
-            double launchSpeed = 0.1F + (getTraits().get(Trait.STRENGTH, -MAX_STRENGTH, MAX_STRENGTH) - 40) / 16D;
             e.addVelocity(
                 rng.nextTriangular(0, HORIZONTAL_VARIANCE) * 0.1F,
-                launchSpeed,
+                LAUNCH_SPEED.get(getTraits()),
                 rng.nextTriangular(0, HORIZONTAL_VARIANCE) * 0.1F
             );
 
-            if (e instanceof LivingEntity l) {
-                int hoverDuration = 50 + (int)getTraits().get(Trait.AIR, 0, 10) * 20;
+            int hoverDuration = HANG_TIME.get(getTraits()).intValue();
+            boolean noGravity = CAUSES_LEVITATION.get(getTraits());
 
+            if (e instanceof LivingEntity l) {
                 if (l.hasStatusEffect(StatusEffects.SLOW_FALLING)) {
                     l.removeStatusEffect(StatusEffects.SLOW_FALLING);
                 }
                 l.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, hoverDuration, 1));
+            }
+
+            if (noGravity || e instanceof FallingBlockEntity && (!e.getWorld().getBlockState(e.getBlockPos().up()).isReplaceable())) {
+                if (e instanceof LivingEntity l) {
+                    l.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 200, 1));
+                } else {
+                    e.setNoGravity(true);
+                }
             }
         }
 

@@ -52,7 +52,7 @@ public interface EffectUtils {
     }
 
     static Text formatModifierChange(String modifierName, int time, boolean isDetrimental) {
-        return Text.literal(" ").append(Text.translatable("attribute.modifier.equals.0",
+        return Text.literal(" ").append(Text.translatable("attribute.modifier." + (time > 0 ? "plus" : "take") + ".0",
                 StringHelper.formatTicks(Math.abs(time)),
                 Text.translatable(modifierName)
         ).formatted((isDetrimental ? time : -time) < 0 ? Formatting.DARK_GREEN : Formatting.RED));
@@ -62,6 +62,13 @@ public interface EffectUtils {
         return Text.literal(" ").append(Text.translatable("attribute.modifier." + (change > 0 ? "plus" : "take") + ".0",
                 ItemStack.MODIFIER_FORMAT.format(Math.abs(change)),
                 Text.translatable(modifierName)
+        ).formatted((isDetrimental ? change : -change) < 0 ? Formatting.DARK_GREEN : Formatting.RED));
+    }
+
+    static Text formatModifierChange(Text modifierName, float change, boolean isDetrimental) {
+        return Text.literal(" ").append(Text.translatable("attribute.modifier." + (change > 0 ? "plus" : "take") + ".0",
+                ItemStack.MODIFIER_FORMAT.format(Math.abs(change)),
+               modifierName
         ).formatted((isDetrimental ? change : -change) < 0 ? Formatting.DARK_GREEN : Formatting.RED));
     }
 }
