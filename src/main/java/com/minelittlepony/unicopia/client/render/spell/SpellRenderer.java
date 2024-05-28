@@ -58,8 +58,7 @@ public class SpellRenderer<T extends Spell> {
         float timeRemaining = spell.getTimer().getPercentTimeRemaining(tickDelta);
 
         DrawableUtil.drawArc(matrices, radius, radius + 0.3F, 0, DrawableUtil.TAU * timeRemaining,
-                ColorHelper.lerp(MathHelper.clamp(timeRemaining * 4, 0, 1), 0xFF0000FF, 0xFFFFFFFF),
-                false
+                ColorHelper.lerp(MathHelper.clamp(timeRemaining * 4, 0, 1), 0xFF0000FF, 0xFFFFFFFF)
         );
     }
 

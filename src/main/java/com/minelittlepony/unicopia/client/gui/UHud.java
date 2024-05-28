@@ -101,7 +101,7 @@ public class UHud {
         float flapCooldown = pony.getPhysics().getFlapCooldown(tickDelta);
         if (flapCooldown > 0) {
             float angle = MathHelper.TAU * flapCooldown;
-            DrawableUtil.drawArc(context.getMatrices(), 3, 6, -angle / 2F, angle, 0x888888AF, false);
+            DrawableUtil.drawArc(context.getMatrices(), 3, 6, -angle / 2F, angle, 0x888888AF);
         }
 
         matrices.pop();
@@ -205,7 +205,7 @@ public class UHud {
             context.fill(RenderLayers.getEndPortal(), 0, 0, scaledWidth, scaledHeight, 0);
             context.getMatrices().push();
             context.getMatrices().translate(scaledWidth / 2, scaledHeight / 2, 0);
-            DrawableUtil.drawArc(context.getMatrices(), 0, 20, 0, MathHelper.TAU, 0x000000FF, false);
+            DrawableUtil.drawArc(context.getMatrices(), 0, 20, 0, MathHelper.TAU, 0x000000FF);
             context.getMatrices().pop();
             return;
         } else if (vortexDistortion > 0) {

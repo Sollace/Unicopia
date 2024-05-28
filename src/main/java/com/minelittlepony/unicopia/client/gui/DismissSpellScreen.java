@@ -84,8 +84,8 @@ public class DismissSpellScreen extends GameGui {
         matrices.push();
         matrices.translate(width - mouseX, height - mouseY, 0);
         DrawableUtil.drawLine(matrices, 0, 0, relativeMouseX, relativeMouseY, 0xFFFFFF88);
-        DrawableUtil.drawArc(matrices, 40, 80, 0, DrawableUtil.TAU, 0x00000010, false);
-        DrawableUtil.drawArc(matrices, 160, 1600, 0, DrawableUtil.TAU, 0x00000020, false);
+        DrawableUtil.drawArc(matrices, 40, 80, 0, DrawableUtil.TAU, 0x00000010);
+        DrawableUtil.drawArc(matrices, 160, 1600, 0, DrawableUtil.TAU, 0x00000020);
 
         super.render(context, mouseX, mouseY, delta);
         DrawableUtil.renderRaceIcon(context, pony.getObservedSpecies(), 0, 0, 16);
@@ -187,10 +187,10 @@ public class DismissSpellScreen extends GameGui {
             boolean hovered = isMouseOver(relativeMouseX, relativeMouseY);
             double radius = (hovered ? 9 + MathHelper.sin((MinecraftClient.getInstance().player.age + tickDelta) / 9F) : 7);
 
-            DrawableUtil.drawArc(matrices, radius, radius + 1, 0, DrawableUtil.TAU, color | 0x00000088, false);
+            DrawableUtil.drawArc(matrices, radius, radius + 1, 0, DrawableUtil.TAU, color | 0x00000088);
 
             if (hovered) {
-                DrawableUtil.drawArc(matrices, 0, 8, 0, DrawableUtil.TAU, color | 0x000000FF, false);
+                DrawableUtil.drawArc(matrices, 0, 8, 0, DrawableUtil.TAU, color | 0x000000FF);
 
                 List<Text> tooltip = new ArrayList<>();
 

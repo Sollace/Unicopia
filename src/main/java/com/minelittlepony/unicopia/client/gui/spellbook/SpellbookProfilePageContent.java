@@ -110,8 +110,8 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
         }
         manaColor |= (int)((0.3F + 0.7F * alphaF) * 0x40) << 16;
 
-        DrawableUtil.drawArc(matrices, 0, radius + 24, 0, DrawableUtil.TAU, color, false);
-        DrawableUtil.drawArc(matrices, radius / 3, radius + 6, 0, DrawableUtil.TAU, color, false);
+        DrawableUtil.drawArc(matrices, 0, radius + 24, 0, DrawableUtil.TAU, color);
+        DrawableUtil.drawArc(matrices, radius / 3, radius + 6, 0, DrawableUtil.TAU, color);
 
         if (currentLevel >= pony.getLevel().getMax()) {
             int rayCount = 6;
@@ -129,14 +129,14 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
                 double rad = (radius + glowSize) * 0.8F + growth - (i % 2) * 5;
                 float rot = (rotate + raySeparation * i) % MathHelper.TAU;
 
-                DrawableUtil.drawArc(matrices, 0, rad, rot, 0.2F, bandAColor, false);
-                DrawableUtil.drawArc(matrices, 0, rad + 0.3F, rot + 0.37F, 0.25F, bandBColor, false);
+                DrawableUtil.drawArc(matrices, 0, rad, rot, 0.2F, bandAColor);
+                DrawableUtil.drawArc(matrices, 0, rad + 0.3F, rot + 0.37F, 0.25F, bandBColor);
             }
         }
 
-        DrawableUtil.drawArc(matrices, radius / 3, radius + 6, 0, xpPercentage * DrawableUtil.TAU, xpColor, false);
+        DrawableUtil.drawArc(matrices, radius / 3, radius + 6, 0, xpPercentage * DrawableUtil.TAU, xpColor);
         radius += 8;
-        DrawableUtil.drawArc(matrices, radius, radius + 6 + growth, 0, manaPercentage * DrawableUtil.TAU, manaColor, false);
+        DrawableUtil.drawArc(matrices, radius, radius + 6 + growth, 0, manaPercentage * DrawableUtil.TAU, manaColor);
 
         String manaString = (int)reserves.getMana().get() + "/" + (int)reserves.getMana().getMax();
 
