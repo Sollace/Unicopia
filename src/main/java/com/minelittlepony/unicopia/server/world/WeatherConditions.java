@@ -165,6 +165,8 @@ public class WeatherConditions extends PersistentState implements Tickable {
         final float terrainFactor = getScaledDistanceFromTerrain(probedPosition.set(pos), world, MAX_TERRAIN_HEIGHT);
         final float windFactor = getScaledDistanceFromTerrain(probedPosition.set(pos), world, MAX_WIND_HEIGHT);
 
+        System.out.println(terrainFactor + "/" + windFactor);
+
         Vec3d terrainGradient = LOCAL_ALTITUDE_FIELD.computeAverage(world, pos, probedPosition).multiply(1 - terrainFactor);
         Vec3d thermalGradient = THERMAL_FIELD.computeAverage(world, pos, probedPosition).multiply(1 - terrainFactor);
         Vec3d wind = get(world).getWindDirection().multiply(windFactor);
@@ -212,7 +214,15 @@ public class WeatherConditions extends PersistentState implements Tickable {
         }
 
         if (state.getFluidState().isIn(FluidTags.WATER)) {
-            return MeteorlogicalUtil.getSunIntensity(world);
+            float sunIntensity = MeteorlogicalUtil.getSunIntensity(world);
+            int depth = 0;
+            BlockPos.Mutable mutable = pos.mutableCopy();
+            while (depth < 15 && world.getFluidState(mutable).isIn(FluidTags.WATER)) {
+                mutable.move(Direction.DOWN);
+                depth++;
+            }
+
+            return sunIntensity * (depth / 15F);
         }
 
         return 0;

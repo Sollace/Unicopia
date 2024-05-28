@@ -7,10 +7,10 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation.Recipient;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
-import com.minelittlepony.unicopia.entity.mob.StormCloudEntity;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.Tickable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -51,7 +51,7 @@ public class Acrobatics implements Tickable, NbtSerialisable {
         if (entity.isCreative() && entity.getAbilities().flying) {
             return false;
         }
-        return pony.getCompositeRace().any(Race::isFish) && !entity.isTouchingWater() && !entity.getWorld().isWater(StormCloudEntity.findSurfaceBelow(entity.getWorld(), entity.getBlockPos()));
+        return pony.getCompositeRace().any(Race::isFish) && !entity.isTouchingWater() && !entity.getWorld().isWater(PosHelper.findNearestSurface(entity.getWorld(), entity.getBlockPos()));
     }
 
     @Override

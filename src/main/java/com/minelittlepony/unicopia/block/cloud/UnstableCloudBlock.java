@@ -2,9 +2,9 @@ package com.minelittlepony.unicopia.block.cloud;
 
 import java.util.Optional;
 
-import com.minelittlepony.unicopia.entity.mob.StormCloudEntity;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.util.PosHelper;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -82,7 +82,7 @@ public class UnstableCloudBlock extends CloudBlock {
                 );
                 BlockPos shockPosition = lightningRodPos.or(() -> {
                     return sw.getOtherEntities(entity, new Box(pos.down()).expand(5, 0, 5).stretch(0, -10, 0)).stream().findAny().map(Entity::getBlockPos);
-                }).orElseGet(() -> StormCloudEntity.findSurfaceBelow(sw, pos.add(world.random.nextInt(10) - 5, -world.random.nextInt(10), world.random.nextInt(10) - 5)).toImmutable());
+                }).orElseGet(() -> PosHelper.findNearestSurface(sw, pos.add(world.random.nextInt(10) - 5, -world.random.nextInt(10), world.random.nextInt(10) - 5)).toImmutable());
 
                 ParticleUtils.spawnParticle(world,
                         new LightningBoltParticleEffect(false, 10, 6, 0.3F, Optional.of(shockPosition.toCenterPos())),

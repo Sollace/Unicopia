@@ -28,6 +28,20 @@ public interface PosHelper {
         return a.add(b.getX(), b.getY(), b.getZ());
     }
 
+    static BlockPos findNearestSurface(World world, BlockPos pos) {
+        BlockPos.Mutable mutable = pos.mutableCopy();
+
+        while (mutable.getY() > world.getBottomY() && world.isAir(mutable)) {
+            mutable.move(Direction.DOWN);
+        }
+        while (world.isInBuildLimit(mutable) && !world.isAir(mutable)) {
+            mutable.move(Direction.UP);
+        }
+        mutable.move(Direction.DOWN);
+
+        return mutable;
+    }
+
     static BlockPos findSolidGroundAt(World world, BlockPos pos, int signum) {
         BlockPos.Mutable mutable = pos.mutableCopy();
         while (world.isInBuildLimit(mutable) && (world.isAir(mutable) || !world.getBlockState(mutable).canPlaceAt(world, mutable))) {
