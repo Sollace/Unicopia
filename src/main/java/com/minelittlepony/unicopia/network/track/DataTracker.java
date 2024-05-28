@@ -59,10 +59,12 @@ public class DataTracker {
     synchronized void copyTo(DataTracker destination) {
         for (int i = 0; i < codecs.size(); i++) {
             ((Pair<Object>)destination.codecs.get(i)).value = codecs.get(i).value;
-            TrackableObject<?> a = persistentObjects.get(i);
-            TrackableObject<?> b = destination.persistentObjects.get(i);
-            if (a != null && b != null) {
-                ((TrackableObject)a).copyTo(b);
+            if (i < persistentObjects.size() && i < destination.persistentObjects.size()) {
+                TrackableObject<?> a = persistentObjects.get(i);
+                TrackableObject<?> b = destination.persistentObjects.get(i);
+                if (a != null && b != null) {
+                    ((TrackableObject)a).copyTo(b);
+                }
             }
         }
     }
