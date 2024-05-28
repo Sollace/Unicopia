@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
@@ -19,11 +20,15 @@ import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 /**
@@ -41,8 +46,12 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
     private static final float MAX_STRENGTH = 120;
 
     static void appendTooltip(CustomisedSpellType<? extends CatapultSpell> type, List<Text> tooltip) {
-        float velocity = 0.1F + type.relativeTraits().get(Trait.STRENGTH, -MAX_STRENGTH, MAX_STRENGTH);
-        tooltip.add(SpellAttributes.of(SpellAttributes.VERTICAL_VELOCITY, velocity / 16F));
+        float velocity = (float)(0.1F + (type.traits().get(Trait.STRENGTH, -MAX_STRENGTH, MAX_STRENGTH) - 40) / 16D);
+        tooltip.add(SpellAttributes.of(SpellAttributes.VERTICAL_VELOCITY, velocity));
+        int hoverDuration = 50 + (int)type.traits().get(Trait.AIR, 0, 10) * 20;
+        tooltip.add(SpellAttributes.ofTime(Unicopia.id("hang_time"), hoverDuration));
+        float power = 1 + type.traits().get(Trait.POWER, 0, 10) / 10F;
+        tooltip.add(SpellAttributes.of(Unicopia.id("pushing_power"), power));
     }
 
     protected CatapultSpell(CustomisedSpellType<?> type) {
@@ -52,7 +61,11 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
     @Override
     public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
         if (!projectile.isClient() && projectile instanceof MagicBeamEntity source && source.canModifyAt(hit.getBlockPos())) {
-            createBlockEntity(projectile.getWorld(), hit.getBlockPos(), e -> apply(source, e));
+            createBlockEntity(projectile.getWorld(), hit.getBlockPos(), e -> {
+                e.setOnGround(true);
+                apply(source, e);
+                e.setOnGround(false);
+            });
         }
     }
 
@@ -75,16 +88,32 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
     }
 
     protected void apply(Caster<?> caster, Entity e) {
-        Vec3d vel = caster.asEntity().getVelocity();
-        if (Math.abs(e.getVelocity().y) > 0.5) {
-            e.setVelocity(caster.asEntity().getVelocity());
+
+        float power = 1 + getTraits().get(Trait.POWER, 0, 10) / 10F;
+
+        if (!e.isOnGround()) {
+            e.setVelocity(caster.asEntity().getVelocity().multiply(power));
         } else {
+            Random rng = caster.asWorld().random;
+            double launchSpeed = 0.1F + (getTraits().get(Trait.STRENGTH, -MAX_STRENGTH, MAX_STRENGTH) - 40) / 16D;
             e.addVelocity(
-                ((caster.asWorld().random.nextFloat() * HORIZONTAL_VARIANCE) - HORIZONTAL_VARIANCE + vel.x * 0.8F) * 0.1F,
-                0.1F + (getTraits().get(Trait.STRENGTH, -MAX_STRENGTH, MAX_STRENGTH) - 40) / 16D,
-                ((caster.asWorld().random.nextFloat() * HORIZONTAL_VARIANCE) - HORIZONTAL_VARIANCE + vel.z * 0.8F) * 0.1F
+                rng.nextTriangular(0, HORIZONTAL_VARIANCE) * 0.1F,
+                launchSpeed,
+                rng.nextTriangular(0, HORIZONTAL_VARIANCE) * 0.1F
             );
+
+            if (e instanceof LivingEntity l) {
+                int hoverDuration = 50 + (int)getTraits().get(Trait.AIR, 0, 10) * 20;
+
+                if (l.hasStatusEffect(StatusEffects.SLOW_FALLING)) {
+                    l.removeStatusEffect(StatusEffects.SLOW_FALLING);
+                }
+                l.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, hoverDuration, 1));
+            }
         }
+
+        e.velocityDirty = true;
+        e.velocityModified = true;
     }
 
     static void createBlockEntity(World world, BlockPos bpos, @Nullable Consumer<Entity> apply) {
@@ -109,7 +138,5 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
             apply.accept(e);
         }
         world.spawnEntity(e);
-
-        e.updateVelocity(HORIZONTAL_VARIANCE, pos);
     }
 }
