@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -207,7 +208,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
     protected void onEntityHit(EntityHitResult hit) {
         Entity entity = hit.getEntity();
 
-        if (EquinePredicates.IS_MAGIC_IMMUNE.test(entity)) {
+        if (!(entity instanceof FallingBlockEntity) && EquinePredicates.IS_MAGIC_IMMUNE.test(entity)) {
             return;
         }
 
