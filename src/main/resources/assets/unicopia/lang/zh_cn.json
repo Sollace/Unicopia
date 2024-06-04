@@ -543,7 +543,7 @@
   "spell_attribute.unicopia.pushing_power": "推力大小",
   "spell_attribute.unicopia.damage_to_target": "对目标的伤害",
   "spell_attribute.unicopia.simultanious_targets": "多重目标",
-  "spell_attribute.unicopia.cost_per_individual": "每个体法力值消耗量",
+  "spell_attribute.unicopia.cost_per_individual": "单体法力消耗",
   "spell_attribute.unicopia.explosion_strength": "爆炸威力",
   "spell_attribute.unicopia.projectile_count": "弹射物数量",
   "spell_attribute.unicopia.follow_range": "跟随范围",
