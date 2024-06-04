@@ -548,7 +548,7 @@
   "spell_attribute.unicopia.projectile_count": "弹射物数量",
   "spell_attribute.unicopia.follow_range": "跟随范围",
   "spell_attribute.unicopia.orb_count": "经验球数量",
-  "spell_attribute.unicopia.wave_size": "Wave Size",
+  "spell_attribute.unicopia.wave_size": "一波数量",
   "spell_attribute.unicopia.target_preference": "目标首选项",
   "spell_attribute.unicopia.caster_preference": "施法者首选项",
   "trait.unicopia.strength.name": "力量",
