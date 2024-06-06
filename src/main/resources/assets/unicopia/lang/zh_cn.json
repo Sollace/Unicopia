@@ -520,7 +520,7 @@
   "spell.unicopia.dispel_evil.lore": "驱散附近的任何邪恶力量。",
   "spell_attribute.unicopia.added_trait.plus": " + %s x%s",
   "spell_attribute.unicopia.added_trait.take": " - %s x%s",
-  "spell_attribute.unicopia.added_trait.unknown": "未发现的元素",
+  "spell_attribute.unicopia.added_trait.unknown": "未发现的要素",
   "spell_attribute.unicopia.cast_on_location": "应用于位置",
   "spell_attribute.unicopia.cast_on_person": "应用于自身",
   "spell_attribute.unicopia.focused_entity": "应用于焦点实体",
