@@ -1,12 +1,13 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import java.util.List;
-
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -17,8 +18,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.text.Text;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.MathHelper;
 
 public class FireBoltSpell extends AbstractSpell implements HomingSpell,
         ProjectileDelegate.ConfigurationListener, ProjectileDelegate.EntityHitListener {
@@ -35,18 +36,14 @@ public class FireBoltSpell extends AbstractSpell implements HomingSpell,
             .with(Trait.FIRE, 60)
             .build();
 
-    public static void appendTooltip(CustomisedSpellType<? extends FireBoltSpell> type, List<Text> tooltip) {
-        tooltip.add(SpellAttributes.of(SpellAttributes.EXPLOSION_STRENGTH, type.traits().get(Trait.POWER, 0, type.traits().get(Trait.FOCUS) >= 50 ? 500 : 50) / 10F));
-        tooltip.add(SpellAttributes.of(SpellAttributes.VELOCITY, 1.3F + type.traits().get(Trait.STRENGTH) / 11F));
-        tooltip.add(SpellAttributes.of(SpellAttributes.PROJECTILE_COUNT, 1 + (int)type.traits().get(Trait.EARTH) * 3));
+    private static final SpellAttribute<Float> VELOCITY = SpellAttribute.create(SpellAttributes.VELOCITY, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.STRENGTH, strength -> 1.3F + (strength / 11F));
+    private static final SpellAttribute<Integer> PROJECTILE_COUNT = SpellAttribute.create(SpellAttributes.PROJECTILE_COUNT, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.EARTH, earth -> 11 + (int)earth * 3);
+    private static final SpellAttribute<Boolean> FOLLOWS_TARGET = SpellAttribute.createConditional(SpellAttributes.FOLLOWS_TARGET, Trait.FOCUS, focus -> focus >= 50);
+    private static final SpellAttribute<Float> FOLLOW_RANGE = SpellAttribute.create(SpellAttributes.FOLLOW_RANGE, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.FOCUS, focus -> Math.max(0F, focus - 49));
+    private static final SpellAttribute<Float> MAX_EXPLOSION_STRENGTH = SpellAttribute.create(SpellAttributes.EXPLOSION_STRENGTH, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.FOCUS, focus -> focus >= 50 ? 10F : 1F);
+    private static final SpellAttribute<Float> EXPLOSION_STRENGTH = SpellAttribute.create(SpellAttributes.EXPLOSION_STRENGTH, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.POWER, (traits, focus) -> MathHelper.clamp(focus / 50, 0, MAX_EXPLOSION_STRENGTH.get(traits)));
 
-        float homingRange = type.traits().get(Trait.FOCUS);
-
-        if (homingRange >= 50) {
-            tooltip.add(SpellAttributes.FOLLOWS_TARGET);
-            tooltip.add(SpellAttributes.of(SpellAttributes.FOLLOW_RANGE, homingRange - 50));
-        }
-    }
+    static final TooltipFactory TOOLTIP = TooltipFactory.of(MAX_EXPLOSION_STRENGTH, EXPLOSION_STRENGTH, VELOCITY, PROJECTILE_COUNT, FOLLOWS_TARGET, FOLLOW_RANGE.conditionally(FOLLOWS_TARGET::get));
 
     private final EntityReference<Entity> target = new EntityReference<>();
 
@@ -61,10 +58,12 @@ public class FireBoltSpell extends AbstractSpell implements HomingSpell,
 
     @Override
     public boolean tick(Caster<?> caster, Situation situation) {
+        boolean followTarget = FOLLOWS_TARGET.get(getTraits());
+        float followRage = FOLLOW_RANGE.get(getTraits());
         if (situation == Situation.PROJECTILE) {
-            if (caster instanceof MagicProjectileEntity projectile && getTraits().get(Trait.FOCUS) >= 50) {
+            if (caster instanceof MagicProjectileEntity projectile && followTarget) {
                 caster.findAllEntitiesInRange(
-                    getTraits().get(Trait.FOCUS) - 49,
+                        followRage,
                     EntityPredicates.VALID_LIVING_ENTITY.and(TargetSelecter.validTarget(this, caster))
                 ).findFirst().ifPresent(target -> projectile.setHomingTarget(target));
             }
@@ -72,9 +71,9 @@ public class FireBoltSpell extends AbstractSpell implements HomingSpell,
             return true;
         }
 
-        if (getTraits().get(Trait.FOCUS) >= 50 && target.getOrEmpty(caster.asWorld()).isEmpty()) {
+        if (followTarget && target.getOrEmpty(caster.asWorld()).isEmpty()) {
             target.set(caster.findAllEntitiesInRange(
-                getTraits().get(Trait.FOCUS) - 49,
+                    followRage,
                 EntityPredicates.VALID_LIVING_ENTITY.and(TargetSelecter.validTarget(this, caster))
             ).findFirst().orElse(null));
         }
@@ -92,18 +91,18 @@ public class FireBoltSpell extends AbstractSpell implements HomingSpell,
     @Override
     public void configureProjectile(MagicProjectileEntity projectile, Caster<?> caster) {
         projectile.setItem(Items.FIRE_CHARGE.getDefaultStack());
-        projectile.addThrowDamage(getTraits().get(Trait.POWER, 0, getTraits().get(Trait.FOCUS) >= 50 ? 500 : 50) / 10F);
+        projectile.addThrowDamage(EXPLOSION_STRENGTH.get(getTraits()));
         projectile.setFireTicks(900000);
-        projectile.setVelocity(projectile.getVelocity().multiply(1.3 + getTraits().get(Trait.STRENGTH) / 11F));
+        projectile.setVelocity(projectile.getVelocity().multiply(VELOCITY.get(getTraits())));
     }
 
     protected int getNumberOfBalls(Caster<?> caster) {
-        return 1 + caster.asWorld().random.nextInt(3) + (int)getTraits().get(Trait.EARTH) * 3;
+        return PROJECTILE_COUNT.get(getTraits()) + caster.asWorld().random.nextInt(3);
     }
 
     @Override
     public boolean setTarget(Entity target) {
-        if (getTraits().get(Trait.FOCUS) >= 50) {
+        if (FOLLOWS_TARGET.get(getTraits())) {
             this.target.set(target);
             return true;
         }

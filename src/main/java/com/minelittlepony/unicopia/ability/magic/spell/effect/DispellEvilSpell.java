@@ -1,9 +1,10 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import java.util.List;
-
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
@@ -13,7 +14,6 @@ import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 
 public class DispellEvilSpell extends AbstractSpell implements ProjectileDelegate.HitListener {
@@ -21,9 +21,9 @@ public class DispellEvilSpell extends AbstractSpell implements ProjectileDelegat
             .with(Trait.POWER, 1)
             .build();
 
-    static void appendTooltip(CustomisedSpellType<? extends DispellEvilSpell> type, List<Text> tooltip) {
-        tooltip.add(SpellAttributes.of(SpellAttributes.RANGE, (1 + type.relativeTraits().get(Trait.POWER)) * 10));
-    }
+    private static final SpellAttribute<Double> RANGE = SpellAttribute.create(SpellAttributes.RANGE, AttributeFormat.TIME, AttributeFormat.PERCENTAGE, Trait.POWER, power -> (1 + power) * 10D);
+
+    static final TooltipFactory TOOLTIP = RANGE;
 
     protected DispellEvilSpell(CustomisedSpellType<?> type) {
         super(type);
@@ -35,7 +35,7 @@ public class DispellEvilSpell extends AbstractSpell implements ProjectileDelegat
             return !isDead();
         }
 
-        source.findAllEntitiesInRange((1 + getTraits().get(Trait.POWER)) * 10, e -> e.getType() == EntityType.PHANTOM).forEach(entity -> {
+        source.findAllEntitiesInRange(RANGE.get(getTraits()), e -> e.getType() == EntityType.PHANTOM).forEach(entity -> {
             entity.damage(entity.getDamageSources().magic(), 50);
             if (entity instanceof LivingEntity l) {
                 double d = source.getOriginVector().getX() - entity.getX();

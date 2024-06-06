@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.minelittlepony.unicopia.USounds;
@@ -9,7 +8,8 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.CastOn;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.advancement.UCriteria;
@@ -24,7 +24,6 @@ import net.minecraft.block.*;
 import net.minecraft.fluid.*;
 import net.minecraft.nbt.*;
 import net.minecraft.state.property.Properties;
-import net.minecraft.text.Text;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -37,10 +36,8 @@ public class HydrophobicSpell extends AbstractSpell {
             .with(Trait.FOCUS, 5)
             .with(Trait.KNOWLEDGE, 1)
             .build();
-    static void appendTooltip(CustomisedSpellType<? extends HydrophobicSpell> type, List<Text> tooltip) {
-        ShieldSpell.appendCastLocationTooltip(type, tooltip);
-        tooltip.add(SpellAttributes.of(SpellAttributes.RANGE, 4 + type.traits().get(Trait.POWER)));
-    }
+
+    static final TooltipFactory TOOLTIP = TooltipFactory.of(ShieldSpell.CAST_ON, ShieldSpell.RANGE);
 
     private final TagKey<Fluid> affectedFluid;
 
@@ -53,7 +50,7 @@ public class HydrophobicSpell extends AbstractSpell {
 
     @Override
     public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
-        if ((method == CastingMethod.DIRECT || method == CastingMethod.STAFF) && getTraits().get(Trait.GENEROSITY) > 0) {
+        if ((method == CastingMethod.DIRECT || method == CastingMethod.STAFF) && ShieldSpell.CAST_ON.get(getTraits()) == CastOn.LOCATION) {
             return toPlaceable();
         }
         return this;
@@ -148,7 +145,7 @@ public class HydrophobicSpell extends AbstractSpell {
      */
     public double getRange(Caster<?> source) {
         float multiplier = 1;
-        float min = (source instanceof Pony ? 4 : 6) + getTraits().get(Trait.POWER);
+        float min = (source instanceof Pony ? 0 : 2) + ShieldSpell.RANGE.get(getTraits());
         boolean isLimitedRange = source instanceof Pony || source instanceof MagicProjectileEntity;
         double range = (min + (source.getLevel().getScaled(isLimitedRange ? 4 : 40) * (isLimitedRange ? 2 : 10))) / multiplier;
         return range;

@@ -8,6 +8,9 @@ import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -21,7 +24,7 @@ import com.minelittlepony.unicopia.util.VecHelper;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 
 public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileDelegate.HitListener {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
@@ -31,10 +34,9 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
             .with(Trait.ORDER, 25)
             .build();
 
-    public static void appendTooltip(CustomisedSpellType<? extends LightSpell> type, List<Text> tooltip) {
-        TimedSpell.appendDurationTooltip(type, tooltip);
-        tooltip.add(SpellAttributes.of(SpellAttributes.ORB_COUNT, 2 + (int)(type.relativeTraits().get(Trait.LIFE, 10, 20) / 10F)));
-    }
+    private static final SpellAttribute<Integer> ORB_COUNT = SpellAttribute.create(SpellAttributes.ORB_COUNT, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.LIFE, life -> 2 + (int)(MathHelper.clamp(life, 10, 20) / 10F));
+
+    static final TooltipFactory TOOLTIP = TooltipFactory.of(TIME, ORB_COUNT);
 
     private final Timer timer;
 
@@ -42,7 +44,7 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
 
     protected LightSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer(BASE_DURATION + TimedSpell.getExtraDuration(getTraits()));
+        timer = new Timer(TIME.get(getTraits()));
     }
 
     @Override
@@ -65,7 +67,7 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
 
         if (!caster.isClient()) {
             if (lights.isEmpty()) {
-                int size = 2 + caster.asWorld().random.nextInt(2) + (int)(getTraits().get(Trait.LIFE, 10, 20) - 10)/10;
+                int size = caster.asWorld().random.nextInt(2) + ORB_COUNT.get(getTraits());
                 while (lights.size() < size) {
                     lights.add(new EntityReference<>());
                 }

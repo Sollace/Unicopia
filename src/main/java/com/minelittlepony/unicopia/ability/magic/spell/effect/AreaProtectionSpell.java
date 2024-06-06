@@ -1,11 +1,10 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import java.util.List;
-
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
@@ -16,7 +15,6 @@ import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -26,11 +24,7 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
             .with(Trait.STRENGTH, 30)
             .build();
 
-
-    static void appendTooltip(CustomisedSpellType<AreaProtectionSpell> type, List<Text> tooltip) {
-        tooltip.add(SpellAttributes.CAST_ON_LOCATION);
-        tooltip.add(SpellAttributes.of(SpellAttributes.RANGE, 4 + type.traits().get(Trait.POWER)));
-    }
+    static final TooltipFactory TOOLTIP = TooltipFactory.of(TooltipFactory.of(SpellAttributes.CAST_ON_LOCATION), RANGE);
 
     protected AreaProtectionSpell(CustomisedSpellType<?> type) {
         super(type);
@@ -71,7 +65,7 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
 
     private double getRange(Caster<?> source) {
         float multiplier = source instanceof Pony pony && pony.asEntity().isSneaking() ? 1 : 2;
-        float min = 4 + getAdditionalRange();
+        float min = RANGE.get(getTraits());
         double range = (min + (source.getLevel().getScaled(4) * 2)) / multiplier;
         if (source instanceof Pony && range > 2) {
             range = Math.sqrt(range);

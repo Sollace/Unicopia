@@ -1,17 +1,19 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.CastOn;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
@@ -38,7 +40,6 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -50,31 +51,18 @@ public class ShieldSpell extends AbstractSpell {
             .with(Trait.AIR, 9)
             .build();
 
-    static void appendTooltip(CustomisedSpellType<? extends ShieldSpell> type, List<Text> tooltip) {
-        AbstractAreaEffectSpell.appendRangeTooltip(type, tooltip);
-        appendValidTargetsTooltip(type, tooltip);
-        appendCastLocationTooltip(type, tooltip);
-    }
+    static final SpellAttribute<Float> RANGE = SpellAttribute.create(SpellAttributes.RANGE, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.POWER, power -> Math.max(0, 4 + power));
+    protected static final SpellAttribute<CastOn> CAST_ON = SpellAttribute.createEnumerated(SpellAttributes.CAST_ON, Trait.GENEROSITY, generosity -> generosity > 0 ? CastOn.LOCATION : CastOn.SELF);
 
-    static void appendValidTargetsTooltip(CustomisedSpellType<? extends ShieldSpell> type, List<Text> tooltip) {
-        if (type.traits().get(Trait.KNOWLEDGE) > 10) {
-            tooltip.add(SpellAttributes.PERMIT_ITEMS);
-        } else {
-            if (type.traits().get(Trait.LIFE) > 0) {
-                tooltip.add(SpellAttributes.PERMIT_PASSIVE);
-            }
-            if (type.traits().get(Trait.BLOOD) > 0) {
-                tooltip.add(SpellAttributes.PERMIT_HOSTILE);
-            }
-            if (type.traits().get(Trait.ICE) > 0) {
-                tooltip.add(SpellAttributes.PERMIT_PLAYER);
-            }
-        }
-    }
+    static final SpellAttribute<Boolean> TARGET_ITEMS = SpellAttribute.createConditional(SpellAttributes.PERMIT_ITEMS, Trait.KNOWLEDGE, knowledge -> knowledge > 10);
+    static final SpellAttribute<Boolean> PERMIT_PASSIVE = SpellAttribute.createConditional(SpellAttributes.PERMIT_PASSIVE, Trait.LIFE, l -> l > 0);
+    static final SpellAttribute<Boolean> PERMIT_HOSTILE = SpellAttribute.createConditional(SpellAttributes.PERMIT_HOSTILE, Trait.BLOOD, l -> l > 0);
+    static final SpellAttribute<Boolean> PERMIT_PLAYER = SpellAttribute.createConditional(SpellAttributes.PERMIT_PLAYER, Trait.ICE, l -> l > 0);
 
-    static void appendCastLocationTooltip(CustomisedSpellType<?> type, List<Text> tooltip) {
-        tooltip.add(type.traits().get(Trait.GENEROSITY) > 0 ? SpellAttributes.CAST_ON_LOCATION : SpellAttributes.CAST_ON_PERSON);
-    }
+    static final TooltipFactory PERMIT_ENTITY = TooltipFactory.of(PERMIT_PASSIVE, PERMIT_HOSTILE, PERMIT_PLAYER);
+    static final TooltipFactory TARGET = (type, tooltip) -> (TARGET_ITEMS.get(type.traits()) ? TARGET_ITEMS : PERMIT_ENTITY).appendTooltip(type, tooltip);
+
+    static final TooltipFactory TOOLTIP = TooltipFactory.of(RANGE, TARGET, CAST_ON);
 
     protected final TargetSelecter targetSelecter = new TargetSelecter(this).setFilter(this::isValidTarget);
 
@@ -90,7 +78,7 @@ public class ShieldSpell extends AbstractSpell {
 
     @Override
     public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
-        return method == CastingMethod.STAFF || getTraits().get(Trait.GENEROSITY) > 0 ? toPlaceable() : this;
+        return method == CastingMethod.STAFF || CAST_ON.get(getTraits()) == CastOn.LOCATION ? toPlaceable() : this;
     }
 
     @Override
@@ -176,7 +164,7 @@ public class ShieldSpell extends AbstractSpell {
      * Calculates the maximum radius of the shield. aka The area of effect.
      */
     public double getDrawDropOffRange(Caster<?> source) {
-        float min = (source instanceof Pony ? 4 : 6) + getTraits().get(Trait.POWER);
+        float min = (source instanceof Pony ? 0 : 2) + RANGE.get(getTraits());
         double range = (min + (source.getLevel().getScaled(source instanceof Pony ? 4 : 40) * (source instanceof Pony ? 2 : 10))) / rangeMultiplier.getValue();
 
         return range;
@@ -184,7 +172,7 @@ public class ShieldSpell extends AbstractSpell {
 
     protected boolean isValidTarget(Caster<?> source, Entity entity) {
 
-        if (getTraits().get(Trait.KNOWLEDGE) > 10) {
+        if (TARGET_ITEMS.get(getTraits())) {
             return entity instanceof ItemEntity;
         }
 
@@ -198,13 +186,13 @@ public class ShieldSpell extends AbstractSpell {
                 || entity instanceof BoatEntity
         );
 
-        if (getTraits().get(Trait.LIFE) > 0) {
+        if (PERMIT_PASSIVE.get(getTraits())) {
             valid &= !(entity instanceof PassiveEntity);
         }
-        if (getTraits().get(Trait.BLOOD) > 0) {
+        if (PERMIT_HOSTILE.get(getTraits())) {
             valid &= !(entity instanceof HostileEntity);
         }
-        if (getTraits().get(Trait.ICE) > 0) {
+        if (PERMIT_PLAYER.get(getTraits())) {
             valid &= !(entity instanceof PlayerEntity);
         }
         return valid;

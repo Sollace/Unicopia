@@ -13,14 +13,14 @@ import net.minecraft.util.Util;
 public interface SpellAttributes {
     Text CAST_ON_LOCATION = of(Unicopia.id("cast_on_location"));
     Text CAST_ON_PERSON = of(Unicopia.id("cast_on_person"));
-    Text TARGET_ENTITY = of(Unicopia.id("focused_entity"));
-    Text FOLLOWS_TARGET = of(Unicopia.id("follows_target"));
+    Identifier FOLLOWS_TARGET = Unicopia.id("follows_target");
 
-    Text PERMIT_ITEMS = of(Unicopia.id("permit_items"));
-    Text PERMIT_PASSIVE = of(Unicopia.id("permit_passive"));
-    Text PERMIT_HOSTILE = of(Unicopia.id("permit_hostile"));
-    Text PERMIT_PLAYER = of(Unicopia.id("permit_player"));
+    Identifier PERMIT_ITEMS = Unicopia.id("permit_items");
+    Identifier PERMIT_PASSIVE = Unicopia.id("permit_passive");
+    Identifier PERMIT_HOSTILE = Unicopia.id("permit_hostile");
+    Identifier PERMIT_PLAYER = Unicopia.id("permit_player");
 
+    Identifier FOCUSED_ENTITY = Unicopia.id("focused_entity");
     Identifier RANGE = Unicopia.id("range");
     Identifier DURATION = Unicopia.id("duration");
     Identifier STRENGTH = Unicopia.id("strength");
@@ -38,15 +38,20 @@ public interface SpellAttributes {
     Identifier ORB_COUNT = Unicopia.id("orb_count");
     Identifier WAVE_SIZE = Unicopia.id("wave_size");
     Identifier FOLLOW_RANGE = Unicopia.id("follow_range");
+    Identifier LIGHT_TARGET = Unicopia.id("light_target");
+    Identifier STICK_TO_TARGET = Unicopia.id("stick_to_target");
     Identifier SOAPINESS = Unicopia.id("soapiness");
+    Identifier CAST_ON = Unicopia.id("cast_on");
 
     Identifier TARGET_PREFERENCE = Unicopia.id("target_preference");
     Identifier CASTER_PREFERENCE = Unicopia.id("caster_preference");
 
+    @Deprecated
     static Text of(Identifier id) {
         return Text.literal(" ").append(Text.translatable(Util.createTranslationKey("spell_attribute", id))).formatted(Formatting.LIGHT_PURPLE);
     }
 
+    @Deprecated
     static Text of(Identifier id, float value) {
         return Text.literal(" ").append(
                 Text.translatable("attribute.modifier.equals.0",
@@ -55,10 +60,12 @@ public interface SpellAttributes {
         ).formatted(Formatting.LIGHT_PURPLE);
     }
 
+    @Deprecated
     static Text ofRelative(Identifier id, float value) {
         return EffectUtils.formatModifierChange(Util.createTranslationKey("spell_attribute", id), value, false);
     }
 
+    @Deprecated
     static Text ofTime(Identifier id, long time) {
         return Text.literal(" ").append(Text.translatable("attribute.modifier.equals.0",
                 StringHelper.formatTicks((int)Math.abs(time)),
@@ -66,6 +73,7 @@ public interface SpellAttributes {
         ).formatted(Formatting.LIGHT_PURPLE));
     }
 
+    @Deprecated
     public enum ValueType {
         REGULAR,
         TIME,

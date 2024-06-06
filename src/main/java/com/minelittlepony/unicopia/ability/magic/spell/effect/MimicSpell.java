@@ -1,25 +1,21 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import java.util.List;
-
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
 
 public class MimicSpell extends AbstractDisguiseSpell implements HomingSpell, TimedSpell {
-    static final int BASE_DURATION = 120 * 20;
 
-    public static void appendTooltip(CustomisedSpellType<? extends MimicSpell> type, List<Text> tooltip) {
-        TimedSpell.appendDurationTooltip(type, tooltip);
-    }
+    static final TooltipFactory TOOLTIP = TimedSpell.TIME;
 
     private final Timer timer;
 
     protected MimicSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer(BASE_DURATION + TimedSpell.getExtraDuration(getTraits()));
+        timer = new Timer(TIME.get(getTraits()));
     }
 
     @Override

@@ -36,7 +36,7 @@ public class ScorchSpell extends FireSpell implements ProjectileDelegate.Configu
         BlockPos pos = PosHelper.findSolidGroundAt(source.asWorld(), source.getOrigin(), source.getPhysics().getGravitySignum());
 
         if (source.canModifyAt(pos) && StateMaps.FIRE_AFFECTED.convert(source.asWorld(), pos)) {
-            source.spawnParticles(new Sphere(false, Math.max(1, getAdditionalRange())), 5, p -> {
+            source.spawnParticles(new Sphere(false, RANGE.get(getTraits())), 5, p -> {
                 source.addParticle(ParticleTypes.SMOKE, PosHelper.offset(p, pos), Vec3d.ZERO);
             });
         }

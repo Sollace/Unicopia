@@ -1,12 +1,14 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.*;
@@ -25,7 +27,6 @@ import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.text.Text;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -50,10 +51,9 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
             .with(Trait.POWER, 1)
             .build();
 
-    static void appendTooltip(CustomisedSpellType<? extends BubbleSpell> type, List<Text> tooltip) {
-        TimedSpell.appendDurationTooltip(type, tooltip);
-        tooltip.add(SpellAttributes.of(SpellAttributes.SOAPINESS, (int)(type.traits().get(Trait.POWER) * 2)));
-    }
+    private static final SpellAttribute<Integer> SOAPINESS = SpellAttribute.create(SpellAttributes.SOAPINESS, AttributeFormat.REGULAR, Trait.POWER, power -> (int)(power * 2));
+
+    static final TooltipFactory TOOLTIP = TooltipFactory.of(TimedSpell.TIME, SOAPINESS);
 
     private final Timer timer;
 
@@ -63,9 +63,9 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
 
     protected BubbleSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer(BASE_DURATION + TimedSpell.getExtraDuration(getTraits()));
+        timer = new Timer(TIME.get(getTraits()));
         radius = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
-        struggles = dataTracker.startTracking(TrackableDataType.INT, (int)(getTraits().get(Trait.POWER) * 2));
+        struggles = dataTracker.startTracking(TrackableDataType.INT, SOAPINESS.get(getTraits()));
     }
 
     @Override

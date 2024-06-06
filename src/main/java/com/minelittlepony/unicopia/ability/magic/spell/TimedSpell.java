@@ -1,15 +1,12 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import java.util.List;
-
-import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -17,16 +14,9 @@ import net.minecraft.util.math.MathHelper;
  */
 public interface TimedSpell extends Spell {
     int BASE_DURATION = 120 * 20;
+    SpellAttribute<Integer> TIME = SpellAttribute.create(SpellAttributes.SOAPINESS, AttributeFormat.TIME, AttributeFormat.PERCENTAGE, Trait.FOCUS, focus -> BASE_DURATION + (int)(MathHelper.clamp(focus, 0, 160) * 19) * 20);
 
     Timer getTimer();
-
-    static void appendDurationTooltip(CustomisedSpellType<?> type, List<Text> tooltip) {
-        tooltip.add(SpellAttributes.ofTime(SpellAttributes.DURATION, BASE_DURATION + getExtraDuration(type.traits())));
-    }
-
-    static int getExtraDuration(SpellTraits traits) {
-        return (int)(traits.get(Trait.FOCUS, 0, 160) * 19) * 20;
-    }
 
     class Timer implements Tickable, NbtSerialisable {
         private int maxDuration;
