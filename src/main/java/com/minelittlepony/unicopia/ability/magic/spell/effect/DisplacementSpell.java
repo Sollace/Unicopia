@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -19,7 +20,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class DisplacementSpell extends AbstractSpell implements HomingSpell, ProjectileDelegate.EntityHitListener {
 
-    private static final SpellAttribute<Float> DAMAGE_TO_TARGET = SpellAttribute.create(SpellAttributes.DAMAGE_TO_TARGET, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.BLOOD, blood -> blood);
+    private static final SpellAttribute<Float> DAMAGE_TO_TARGET = SpellAttribute.create(SpellAttributeType.DAMAGE_TO_TARGET, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.BLOOD, blood -> blood);
 
     static final TooltipFactory TOOLTIP = DAMAGE_TO_TARGET;
 

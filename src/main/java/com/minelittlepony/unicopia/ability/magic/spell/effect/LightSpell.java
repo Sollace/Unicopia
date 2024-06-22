@@ -6,10 +6,10 @@ import java.util.List;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -34,7 +34,7 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
             .with(Trait.ORDER, 25)
             .build();
 
-    private static final SpellAttribute<Integer> ORB_COUNT = SpellAttribute.create(SpellAttributes.ORB_COUNT, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.LIFE, life -> 2 + (int)(MathHelper.clamp(life, 10, 20) / 10F));
+    private static final SpellAttribute<Integer> ORB_COUNT = SpellAttribute.create(SpellAttributeType.ORB_COUNT, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.LIFE, life -> 2 + (int)(MathHelper.clamp(life, 10, 20) / 10F));
 
     static final TooltipFactory TOOLTIP = TooltipFactory.of(TIME, ORB_COUNT);
 

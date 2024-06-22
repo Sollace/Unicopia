@@ -56,7 +56,7 @@ public enum AttributeFormat {
         return Text.translatable("spell_attribute.unicopia.added_trait." + ((value > 0) ? "plus" : "take"), name, count).formatted(Formatting.DARK_AQUA);
     }
 
-    static MutableText formatAttributeLine(Text attributeName) {
+    public static MutableText formatAttributeLine(Text attributeName) {
         return Text.literal(" ").append(attributeName).formatted(Formatting.LIGHT_PURPLE);
     }
 

@@ -9,6 +9,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import net.minecraft.text.Text;
 
 public interface TooltipFactory {
+    TooltipFactory EMPTY = (type, tooltip) -> {};
+
     void appendTooltip(CustomisedSpellType<?> type, List<Text> tooltip);
 
     static TooltipFactory of(TooltipFactory...lines) {

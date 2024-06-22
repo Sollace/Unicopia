@@ -4,9 +4,9 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -36,12 +36,12 @@ public class FireBoltSpell extends AbstractSpell implements HomingSpell,
             .with(Trait.FIRE, 60)
             .build();
 
-    private static final SpellAttribute<Float> VELOCITY = SpellAttribute.create(SpellAttributes.VELOCITY, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.STRENGTH, strength -> 1.3F + (strength / 11F));
-    private static final SpellAttribute<Integer> PROJECTILE_COUNT = SpellAttribute.create(SpellAttributes.PROJECTILE_COUNT, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.EARTH, earth -> 11 + (int)earth * 3);
-    private static final SpellAttribute<Boolean> FOLLOWS_TARGET = SpellAttribute.createConditional(SpellAttributes.FOLLOWS_TARGET, Trait.FOCUS, focus -> focus >= 50);
-    private static final SpellAttribute<Float> FOLLOW_RANGE = SpellAttribute.create(SpellAttributes.FOLLOW_RANGE, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.FOCUS, focus -> Math.max(0F, focus - 49));
-    private static final SpellAttribute<Float> MAX_EXPLOSION_STRENGTH = SpellAttribute.create(SpellAttributes.EXPLOSION_STRENGTH, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.FOCUS, focus -> focus >= 50 ? 10F : 1F);
-    private static final SpellAttribute<Float> EXPLOSION_STRENGTH = SpellAttribute.create(SpellAttributes.EXPLOSION_STRENGTH, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.POWER, (traits, focus) -> MathHelper.clamp(focus / 50, 0, MAX_EXPLOSION_STRENGTH.get(traits)));
+    private static final SpellAttribute<Float> VELOCITY = SpellAttribute.create(SpellAttributeType.VELOCITY, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.STRENGTH, strength -> 1.3F + (strength / 11F));
+    private static final SpellAttribute<Integer> PROJECTILE_COUNT = SpellAttribute.create(SpellAttributeType.PROJECTILE_COUNT, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.EARTH, earth -> 11 + (int)earth * 3);
+    private static final SpellAttribute<Boolean> FOLLOWS_TARGET = SpellAttribute.createConditional(SpellAttributeType.FOLLOWS_TARGET, Trait.FOCUS, focus -> focus >= 50);
+    private static final SpellAttribute<Float> FOLLOW_RANGE = SpellAttribute.create(SpellAttributeType.FOLLOW_RANGE, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.FOCUS, focus -> Math.max(0F, focus - 49));
+    private static final SpellAttribute<Float> MAX_EXPLOSION_STRENGTH = SpellAttribute.create(SpellAttributeType.EXPLOSION_STRENGTH, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.FOCUS, focus -> focus >= 50 ? 10F : 1F);
+    private static final SpellAttribute<Float> EXPLOSION_STRENGTH = SpellAttribute.create(SpellAttributeType.EXPLOSION_STRENGTH, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.POWER, (traits, focus) -> MathHelper.clamp(focus / 50, 0, MAX_EXPLOSION_STRENGTH.get(traits)));
 
     static final TooltipFactory TOOLTIP = TooltipFactory.of(MAX_EXPLOSION_STRENGTH, EXPLOSION_STRENGTH, VELOCITY, PROJECTILE_COUNT, FOLLOWS_TARGET, FOLLOW_RANGE.conditionally(FOLLOWS_TARGET::get));
 

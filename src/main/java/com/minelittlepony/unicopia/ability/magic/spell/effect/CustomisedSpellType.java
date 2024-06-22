@@ -94,7 +94,7 @@ public record CustomisedSpellType<T extends Spell> (
         lines.addAll(TextHelper.wrap(lore, 180).toList());
         float corruption = ((int)traits().getCorruption() * 10) + type().getAffinity().getCorruption();
         List<Text> modifiers = new ArrayList<>();
-        type.getTooltip().accept(this, modifiers);
+        type.getTooltip().appendTooltip(this, modifiers);
         if (corruption != 0) {
             modifiers.add(EffectUtils.formatModifierChange("affinity.unicopia.corruption", corruption, true));
         }

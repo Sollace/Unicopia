@@ -8,10 +8,10 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.Affects;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -49,11 +49,11 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
     private static final float HORIZONTAL_VARIANCE = 0.25F;
     private static final float MAX_STRENGTH = 120;
 
-    private static final SpellAttribute<Float> LAUNCH_SPEED = SpellAttribute.create(SpellAttributes.VERTICAL_VELOCITY, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.STRENGTH, strength -> 0.1F + (MathHelper.clamp(strength, -MAX_STRENGTH, MAX_STRENGTH) - 40) / 16F);
-    private static final SpellAttribute<Float> HANG_TIME = SpellAttribute.create(SpellAttributes.HANG_TIME, AttributeFormat.TIME, AttributeFormat.PERCENTAGE, Trait.AIR, air -> 50 + (int)MathHelper.clamp(air, 0, 10) * 20F);
-    private static final SpellAttribute<Float> PUSHING_POWER = SpellAttribute.create(SpellAttributes.PUSHING_POWER, AttributeFormat.REGULAR, Trait.POWER, power -> 1 + MathHelper.clamp(power, 0, 10) / 10F);
-    private static final SpellAttribute<Boolean> CAUSES_LEVITATION = SpellAttribute.createConditional(SpellAttributes.CAUSES_LEVITATION, Trait.FOCUS, focus -> focus > 50);
-    private static final SpellAttribute<Affects> AFFECTS = SpellAttribute.createEnumerated(SpellAttributes.AFFECTS, Trait.ORDER, order -> {
+    private static final SpellAttribute<Float> LAUNCH_SPEED = SpellAttribute.create(SpellAttributeType.VERTICAL_VELOCITY, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.STRENGTH, strength -> 0.1F + (MathHelper.clamp(strength, -MAX_STRENGTH, MAX_STRENGTH) - 40) / 16F);
+    private static final SpellAttribute<Float> HANG_TIME = SpellAttribute.create(SpellAttributeType.HANG_TIME, AttributeFormat.TIME, AttributeFormat.PERCENTAGE, Trait.AIR, air -> 50 + (int)MathHelper.clamp(air, 0, 10) * 20F);
+    private static final SpellAttribute<Float> PUSHING_POWER = SpellAttribute.create(SpellAttributeType.PUSHING_POWER, AttributeFormat.REGULAR, Trait.POWER, power -> 1 + MathHelper.clamp(power, 0, 10) / 10F);
+    private static final SpellAttribute<Boolean> CAUSES_LEVITATION = SpellAttribute.createConditional(SpellAttributeType.CAUSES_LEVITATION, Trait.FOCUS, focus -> focus > 50);
+    private static final SpellAttribute<Affects> AFFECTS = SpellAttribute.createEnumerated(SpellAttributeType.AFFECTS, Trait.ORDER, order -> {
         if (order <= 0) {
             return Affects.BOTH;
         } else if (order <= 10) {

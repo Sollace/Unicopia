@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -22,8 +23,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSpell, ProjectileDelegate.EntityHitListener {
-    static final SpellAttribute<Boolean> TARGET_FOCUSED_ENTITY = SpellAttribute.createConditional(SpellAttributes.FOCUSED_ENTITY, Trait.ORDER, order -> order >= 20);
-    static final SpellAttribute<Boolean> STICK_TO_TARGET = SpellAttribute.createConditional(SpellAttributes.STICK_TO_TARGET, Trait.CHAOS, chaos -> chaos > 0);
+    static final SpellAttribute<Boolean> TARGET_FOCUSED_ENTITY = SpellAttribute.createConditional(SpellAttributeType.FOCUSED_ENTITY, Trait.ORDER, order -> order >= 20);
+    static final SpellAttribute<Boolean> STICK_TO_TARGET = SpellAttribute.createConditional(SpellAttributeType.STICK_TO_TARGET, Trait.CHAOS, chaos -> chaos > 0);
     static final TooltipFactory TARGET = (type, tooltip) -> (TARGET_FOCUSED_ENTITY.get(type.traits()) ? TARGET_FOCUSED_ENTITY : ShieldSpell.TARGET).appendTooltip(type, tooltip);
     static final TooltipFactory TOOLTIP = TooltipFactory.of(TIME, RANGE, TARGET, STICK_TO_TARGET, CAST_ON);
 

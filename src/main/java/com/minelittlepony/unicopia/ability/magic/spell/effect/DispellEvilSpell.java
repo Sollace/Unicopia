@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -21,7 +22,7 @@ public class DispellEvilSpell extends AbstractSpell implements ProjectileDelegat
             .with(Trait.POWER, 1)
             .build();
 
-    private static final SpellAttribute<Double> RANGE = SpellAttribute.create(SpellAttributes.RANGE, AttributeFormat.TIME, AttributeFormat.PERCENTAGE, Trait.POWER, power -> (1 + power) * 10D);
+    private static final SpellAttribute<Double> RANGE = SpellAttribute.create(SpellAttributeType.RANGE, AttributeFormat.TIME, AttributeFormat.PERCENTAGE, Trait.POWER, power -> (1 + power) * 10D);
 
     static final TooltipFactory TOOLTIP = RANGE;
 

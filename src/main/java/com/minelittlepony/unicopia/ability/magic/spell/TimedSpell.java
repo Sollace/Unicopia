@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell;
 
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
@@ -14,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
  */
 public interface TimedSpell extends Spell {
     int BASE_DURATION = 120 * 20;
-    SpellAttribute<Integer> TIME = SpellAttribute.create(SpellAttributes.SOAPINESS, AttributeFormat.TIME, AttributeFormat.PERCENTAGE, Trait.FOCUS, focus -> BASE_DURATION + (int)(MathHelper.clamp(focus, 0, 160) * 19) * 20);
+    SpellAttribute<Integer> TIME = SpellAttribute.create(SpellAttributeType.SOAPINESS, AttributeFormat.TIME, AttributeFormat.PERCENTAGE, Trait.FOCUS, focus -> BASE_DURATION + (int)(MathHelper.clamp(focus, 0, 160) * 19) * 20);
 
     Timer getTimer();
 

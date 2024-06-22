@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -51,7 +52,7 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
             .with(Trait.POWER, 1)
             .build();
 
-    private static final SpellAttribute<Integer> SOAPINESS = SpellAttribute.create(SpellAttributes.SOAPINESS, AttributeFormat.REGULAR, Trait.POWER, power -> (int)(power * 2));
+    private static final SpellAttribute<Integer> SOAPINESS = SpellAttribute.create(SpellAttributeType.SOAPINESS, AttributeFormat.REGULAR, Trait.POWER, power -> (int)(power * 2));
 
     static final TooltipFactory TOOLTIP = TooltipFactory.of(TimedSpell.TIME, SOAPINESS);
 

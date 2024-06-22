@@ -9,10 +9,10 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.CastOn;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -51,13 +51,13 @@ public class ShieldSpell extends AbstractSpell {
             .with(Trait.AIR, 9)
             .build();
 
-    static final SpellAttribute<Float> RANGE = SpellAttribute.create(SpellAttributes.RANGE, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.POWER, power -> Math.max(0, 4 + power));
-    protected static final SpellAttribute<CastOn> CAST_ON = SpellAttribute.createEnumerated(SpellAttributes.CAST_ON, Trait.GENEROSITY, generosity -> generosity > 0 ? CastOn.LOCATION : CastOn.SELF);
+    static final SpellAttribute<Float> RANGE = SpellAttribute.create(SpellAttributeType.RANGE, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.POWER, power -> Math.max(0, 4 + power));
+    protected static final SpellAttribute<CastOn> CAST_ON = SpellAttribute.createEnumerated(SpellAttributeType.CAST_ON, Trait.GENEROSITY, generosity -> generosity > 0 ? CastOn.LOCATION : CastOn.SELF);
 
-    static final SpellAttribute<Boolean> TARGET_ITEMS = SpellAttribute.createConditional(SpellAttributes.PERMIT_ITEMS, Trait.KNOWLEDGE, knowledge -> knowledge > 10);
-    static final SpellAttribute<Boolean> PERMIT_PASSIVE = SpellAttribute.createConditional(SpellAttributes.PERMIT_PASSIVE, Trait.LIFE, l -> l > 0);
-    static final SpellAttribute<Boolean> PERMIT_HOSTILE = SpellAttribute.createConditional(SpellAttributes.PERMIT_HOSTILE, Trait.BLOOD, l -> l > 0);
-    static final SpellAttribute<Boolean> PERMIT_PLAYER = SpellAttribute.createConditional(SpellAttributes.PERMIT_PLAYER, Trait.ICE, l -> l > 0);
+    static final SpellAttribute<Boolean> TARGET_ITEMS = SpellAttribute.createConditional(SpellAttributeType.PERMIT_ITEMS, Trait.KNOWLEDGE, knowledge -> knowledge > 10);
+    static final SpellAttribute<Boolean> PERMIT_PASSIVE = SpellAttribute.createConditional(SpellAttributeType.PERMIT_PASSIVE, Trait.LIFE, l -> l > 0);
+    static final SpellAttribute<Boolean> PERMIT_HOSTILE = SpellAttribute.createConditional(SpellAttributeType.PERMIT_HOSTILE, Trait.BLOOD, l -> l > 0);
+    static final SpellAttribute<Boolean> PERMIT_PLAYER = SpellAttribute.createConditional(SpellAttributeType.PERMIT_PLAYER, Trait.ICE, l -> l > 0);
 
     static final TooltipFactory PERMIT_ENTITY = TooltipFactory.of(PERMIT_PASSIVE, PERMIT_HOSTILE, PERMIT_PLAYER);
     static final TooltipFactory TARGET = (type, tooltip) -> (TARGET_ITEMS.get(type.traits()) ? TARGET_ITEMS : PERMIT_ENTITY).appendTooltip(type, tooltip);

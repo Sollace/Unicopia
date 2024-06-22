@@ -2,8 +2,12 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.CastOn;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -24,16 +28,18 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
             .with(Trait.STRENGTH, 30)
             .build();
 
-    static final TooltipFactory TOOLTIP = TooltipFactory.of(TooltipFactory.of(SpellAttributes.CAST_ON_LOCATION), RANGE);
+    private static final SpellAttribute<CastOn> CAST_ON = SpellAttribute.createEnumerated(SpellAttributeType.CAST_ON, Trait.FOCUS, focus -> focus > 0 ? CastOn.SELF : CastOn.LOCATION);
+
+    static final TooltipFactory TOOLTIP = TooltipFactory.of(CAST_ON, RANGE);
 
     protected AreaProtectionSpell(CustomisedSpellType<?> type) {
         super(type);
     }
 
-    /*@Override
+    @Override
     public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
-        return method == CastingMethod.STAFF || getTraits().get(Trait.GENEROSITY) > 0 ? toPlaceable() : this;
-    }*/
+        return method == CastingMethod.STAFF || CAST_ON.get(getTraits()) == CastOn.LOCATION ? toPlaceable() : this;
+    }
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {

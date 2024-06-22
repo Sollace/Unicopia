@@ -8,9 +8,9 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.SpellAttributes;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.Creature;
@@ -83,7 +83,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
         return e -> e.getType() == type;
     }
 
-    static final SpellAttribute<Integer> WAVE_SIZE = SpellAttribute.create(SpellAttributes.WAVE_SIZE, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.CHAOS, chaos -> 10 + (int)MathHelper.clamp(chaos, 0, 10));
+    static final SpellAttribute<Integer> WAVE_SIZE = SpellAttribute.create(SpellAttributeType.WAVE_SIZE, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.CHAOS, chaos -> 10 + (int)MathHelper.clamp(chaos, 0, 10));
     static final TooltipFactory TOOLTIP = TooltipFactory.of(RANGE, WAVE_SIZE);
 
     private final List<EntityReference<LivingEntity>> summonedEntities = new ArrayList<>();

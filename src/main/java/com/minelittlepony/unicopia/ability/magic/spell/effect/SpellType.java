@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import java.util.List;
-import java.util.function.BiConsumer;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Suppliers;
@@ -69,7 +67,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     public static final SpellType<DisperseIllusionSpell> REVEALING = register("reveal", builder(DisperseIllusionSpell::new).color(0xFFFFAF).shape(GemstoneItem.Shape.CROSS).tooltip(DisperseIllusionSpell.TOOLTIP));
     public static final SpellType<AwkwardSpell> AWKWARD = register("awkward", builder(AwkwardSpell::new).affinity(Affinity.NEUTRAL).color(0x3A59FF).shape(GemstoneItem.Shape.ICE));
     public static final SpellType<TransformationSpell> TRANSFORMATION = register("transformation", builder(TransformationSpell::new).color(0x19E48E).shape(GemstoneItem.Shape.BRUSH));
-    public static final SpellType<FeatherFallSpell> FEATHER_FALL = register("feather_fall", builder(FeatherFallSpell::new).color(0x00EEFF).shape(GemstoneItem.Shape.LAMBDA).traits(FeatherFallSpell.DEFAULT_TRAITS).tooltip(FeatherFallSpell::appendTooltip));
+    public static final SpellType<FeatherFallSpell> FEATHER_FALL = register("feather_fall", builder(FeatherFallSpell::new).color(0x00EEFF).shape(GemstoneItem.Shape.LAMBDA).traits(FeatherFallSpell.DEFAULT_TRAITS).tooltip(FeatherFallSpell.TOOLTIP));
     public static final SpellType<CatapultSpell> CATAPULT = register("catapult", builder(CatapultSpell::new).color(0x22FF00).shape(GemstoneItem.Shape.ROCKET).traits(CatapultSpell.DEFAULT_TRAITS).tooltip(CatapultSpell.TOOLTIP));
     public static final SpellType<FireBoltSpell> FIRE_BOLT = register("fire_bolt", builder(FireBoltSpell::new).color(0xFF8811).shape(GemstoneItem.Shape.FLAME).traits(FireBoltSpell.DEFAULT_TRAITS).tooltip(FireBoltSpell.TOOLTIP));
     public static final SpellType<LightSpell> LIGHT = register("light", builder(LightSpell::new).color(0xEEFFAA).shape(GemstoneItem.Shape.STAR).traits(LightSpell.DEFAULT_TRAITS).tooltip(LightSpell.TOOLTIP));
@@ -100,9 +98,9 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     private final ItemStack defaultStack;
 
-    private final BiConsumer<CustomisedSpellType<T>, List<Text>> tooltipFunction;
+    private final TooltipFactory tooltipFunction;
 
-    private SpellType(Identifier id, Affinity affinity, int color, boolean obtainable, boolean stackable, GemstoneItem.Shape shape, SpellTraits traits, BiConsumer<CustomisedSpellType<T>, List<Text>> tooltipFunction, Factory<T> factory) {
+    private SpellType(Identifier id, Affinity affinity, int color, boolean obtainable, boolean stackable, GemstoneItem.Shape shape, SpellTraits traits, TooltipFactory tooltipFunction, Factory<T> factory) {
         this.id = id;
         this.affinity = affinity;
         this.color = color;
@@ -175,7 +173,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         return factory;
     }
 
-    public BiConsumer<CustomisedSpellType<T>, List<Text>> getTooltip() {
+    public TooltipFactory getTooltip() {
         return tooltipFunction;
     }
 
@@ -240,7 +238,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         private boolean stackable = false;
         private GemstoneItem.Shape shape = GemstoneItem.Shape.ROUND;
         private SpellTraits traits = SpellTraits.EMPTY;
-        private BiConsumer<CustomisedSpellType<T>, List<Text>> tooltipFunction = (t, l) -> {};
+        private TooltipFactory tooltipFunction = TooltipFactory.EMPTY;
 
         Builder(Factory<T> factory) {
             this.factory = factory;
@@ -277,12 +275,6 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         }
 
         public Builder<T> tooltip(TooltipFactory tooltipFunction) {
-            this.tooltipFunction = tooltipFunction::appendTooltip;
-            return this;
-        }
-
-        @Deprecated
-        public Builder<T> tooltip(BiConsumer<CustomisedSpellType<T>, List<Text>> tooltipFunction) {
             this.tooltipFunction = tooltipFunction;
             return this;
         }
