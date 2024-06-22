@@ -23,6 +23,9 @@ import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
+import it.unimi.dsi.fastutil.objects.Object2FloatMap;
+import it.unimi.dsi.fastutil.objects.Object2FloatMaps;
+import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -56,13 +59,13 @@ import net.minecraft.world.World.ExplosionSourceType;
 
 public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackable, ItemImpl.ClingyItem, ItemImpl.GroundTickCallback {
     private static final UUID EFFECT_UUID = UUID.fromString("c0a870f5-99ef-4716-a23e-f320ee834b26");
-    private static final Map<EntityAttribute, Float> EFFECT_SCALES = Map.of(
+    private static final Object2FloatMap<EntityAttribute> EFFECT_SCALES = Object2FloatMaps.unmodifiable(new Object2FloatOpenHashMap<>(Map.of(
             EntityAttributes.GENERIC_ATTACK_DAMAGE, 0.2F,
             EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.05F,
             EntityAttributes.GENERIC_ATTACK_SPEED, 0.2F,
             EntityAttributes.GENERIC_ARMOR_TOUGHNESS, 0.001F,
             EntityAttributes.GENERIC_ARMOR, 0.01F
-    );
+    )));
     private static final Float2ObjectFunction<EntityAttributeModifier> EFFECT_FACTORY = v -> {
         return new EntityAttributeModifier(EFFECT_UUID, "Alicorn Amulet Modifier", v, EntityAttributeModifier.Operation.ADDITION);
     };
@@ -173,8 +176,8 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
     }
 
     public static void updateAttributes(Living<?> wearer, float effectScale) {
-        EFFECT_SCALES.entrySet().forEach(attribute -> {
-            wearer.updateAttributeModifier(EFFECT_UUID, attribute.getKey(), attribute.getValue() * effectScale, EFFECT_FACTORY, false);
+        EFFECT_SCALES.object2FloatEntrySet().forEach(entry -> {
+            wearer.updateAttributeModifier(EFFECT_UUID, entry.getKey(), entry.getFloatValue() * effectScale, EFFECT_FACTORY, false);
         });
     }
 

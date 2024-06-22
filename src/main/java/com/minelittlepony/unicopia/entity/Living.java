@@ -40,7 +40,6 @@ import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 import com.minelittlepony.unicopia.server.world.DragonBreathStore;
 import com.minelittlepony.unicopia.util.*;
 
-import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
@@ -48,7 +47,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.mob.HostileEntity;
@@ -73,7 +71,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T> {
+public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T>, AttributeContainer {
     protected final T entity;
 
     private final SpellInventory spells;
@@ -253,29 +251,9 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         transportation.tick();
     }
 
-    public void updateAttributeModifier(UUID id, EntityAttribute attribute, float desiredValue, Float2ObjectFunction<EntityAttributeModifier> modifierSupplier, boolean permanent) {
-        @Nullable
-        EntityAttributeInstance instance = asEntity().getAttributeInstance(attribute);
-        if (instance == null) {
-            return;
-        }
-
-        @Nullable
-        EntityAttributeModifier modifier = instance.getModifier(id);
-
-        if (!MathHelper.approximatelyEquals(desiredValue, modifier == null ? 0 : modifier.getValue())) {
-            if (modifier != null) {
-                instance.removeModifier(modifier);
-            }
-
-            if (desiredValue != 0) {
-                if (permanent) {
-                    instance.addPersistentModifier(modifierSupplier.get(desiredValue));
-                } else {
-                    instance.addTemporaryModifier(modifierSupplier.get(desiredValue));
-                }
-            }
-        }
+    @Override
+    public final @Nullable EntityAttributeInstance getAttributeInstance(EntityAttribute attribute) {
+        return asEntity().getAttributeInstance(attribute);
     }
 
     public boolean canBeSeenBy(Entity entity) {

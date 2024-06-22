@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.*;
+import com.minelittlepony.unicopia.entity.AttributeContainer;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.track.DataTracker;
@@ -22,7 +23,6 @@ import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.nbt.NbtCompound;
@@ -86,12 +86,8 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
 
         Entity entity = source.asEntity();
 
-        if (entity instanceof LivingEntity l) {
-            MODIFIERS.forEach((attribute, modifier) -> {
-                if (!l.getAttributes().hasAttribute(attribute)) {
-                    l.getAttributeInstance(attribute).addPersistentModifier(modifier);
-                }
-            });
+        if (source instanceof AttributeContainer l) {
+            l.applyAttributeModifiers(MODIFIERS, false, true);
         }
         radius.set(Math.max(entity.getHeight(), entity.getWidth()) * 1.2F);
         source.playSound(USounds.ENTITY_PLAYER_UNICORN_TELEPORT, 1);
@@ -148,12 +144,8 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
     @Override
     protected void onDestroyed(Caster<?> source) {
         super.onDestroyed(source);
-        if (source.asEntity() instanceof LivingEntity l) {
-            MODIFIERS.forEach((attribute, modifier) -> {
-                if (l.getAttributes().hasAttribute(attribute)) {
-                    l.getAttributeInstance(attribute).removeModifier(modifier);
-                }
-            });
+        if (source instanceof AttributeContainer l) {
+            l.applyAttributeModifiers(MODIFIERS, false, false);
         }
         source.playSound(USounds.ENTITY_PLAYER_UNICORN_TELEPORT, 1);
     }
