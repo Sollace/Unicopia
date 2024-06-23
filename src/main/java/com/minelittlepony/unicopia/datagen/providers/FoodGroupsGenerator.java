@@ -61,9 +61,9 @@ public class FoodGroupsGenerator {
                 new StatusEffectAffliction(UEffects.FOOD_POISONING, Range.of(100), Range.of(2), 12)
         )));
         exporter.accept(Unicopia.id("foraging/dangerous"), new FoodGroupEffects.Builder().tag(UTags.Items.FORAGE_DANGEROUS).food(3, 0.3F).ailment(new StatusEffectAffliction(UEffects.FOOD_POISONING, Range.of(250), Range.of(2), 4)));
-        exporter.accept(Unicopia.id("foraging/edible_filling"), new FoodGroupEffects.Builder().tag(UTags.Items.FORAGE_FILLING).food(17, 0.6F));
+        exporter.accept(Unicopia.id("foraging/edible_filling"), new FoodGroupEffects.Builder().tag(UTags.Items.FORAGE_FILLING).food(7, 0.1F));
         exporter.accept(Unicopia.id("foraging/edible"), new FoodGroupEffects.Builder().tag(UTags.Items.FORAGE_SAFE).food(2, 1));
-        exporter.accept(Unicopia.id("foraging/leafy_greens"), new FoodGroupEffects.Builder().tag(ItemTags.LEAVES).food(1, 1.4F));
+        exporter.accept(Unicopia.id("foraging/leafy_greens"), new FoodGroupEffects.Builder().tag(ItemTags.LEAVES).food(1, 0));
         exporter.accept(Unicopia.id("foraging/nauseating"), new FoodGroupEffects.Builder().tag(UTags.Items.FORAGE_NAUSEATING).food(5, 0.5F).ailment(CompoundAffliction.of(
                 new StatusEffectAffliction(StatusEffects.WEAKNESS, Range.of(200), Range.of(1), 30),
                 new StatusEffectAffliction(UEffects.FOOD_POISONING, Range.of(200), Range.of(2), 0)
