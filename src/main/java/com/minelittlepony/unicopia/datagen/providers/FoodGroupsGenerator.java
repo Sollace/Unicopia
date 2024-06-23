@@ -39,7 +39,7 @@ public class FoodGroupsGenerator {
         ))));
         exporter.accept(Unicopia.id("nuts_and_seeds"), new FoodGroupEffects.Builder()
                 .tag(UConventionalTags.Items.GRAIN).tag(UConventionalTags.Items.NUTS).tag(UConventionalTags.Items.SEEDS)
-                .food(UFoodComponents.BANANA)
+                .food(UFoodComponents.SEEDS)
         );
         exporter.accept(Unicopia.id("pinecone"), new FoodGroupEffects.Builder().tag(UConventionalTags.Items.PINECONES).food(UFoodComponents.PINECONE).ailment(new HealingAffliction(1)));
 
