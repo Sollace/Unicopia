@@ -484,6 +484,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             AmuletSelectors.PEARL_NECKLACE.test(entity) ? suppressedRace.or(Race.SEAPONY) : null
         );
         UCriteria.PLAYER_CHANGE_RACE.trigger(entity);
+
+        var hasNecklace = AmuletSelectors.PEARL_NECKLACE.test(entity);
+        System.out.println(hasNecklace);
     }
 
     @Override
@@ -526,7 +529,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         if (getObservedSpecies() == Race.BAT && !entity.hasPortalCooldown()) {
-            boolean hasShades = TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE).anyMatch(s -> s.isIn(UTags.Items.SHADES));
+            boolean hasShades = TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE).anyMatch(s -> s.stack().isIn(UTags.Items.SHADES));
             if (!this.hasShades && hasShades && getObservedSpecies() == Race.BAT) {
                 UCriteria.WEAR_SHADES.trigger(entity);
             }

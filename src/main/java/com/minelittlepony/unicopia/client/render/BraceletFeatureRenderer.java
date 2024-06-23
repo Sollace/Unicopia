@@ -48,11 +48,11 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
 
     @Override
     public void render(MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch) {
-        FriendshipBraceletItem.getWornBangles(entity, TrinketsDelegate.MAINHAND).findFirst().ifPresent(bangle -> {
-            renderBangleThirdPerson(bangle, stack, renderContext, lightUv, entity, limbDistance, limbAngle, tickDelta, age, headYaw, headPitch, entity.getMainArm());
+        FriendshipBraceletItem.getWornBangles(entity, TrinketsDelegate.MAIN_GLOVE).findFirst().ifPresent(bangle -> {
+            renderBangleThirdPerson(bangle.stack(), stack, renderContext, lightUv, entity, limbDistance, limbAngle, tickDelta, age, headYaw, headPitch, entity.getMainArm());
         });
-        FriendshipBraceletItem.getWornBangles(entity, TrinketsDelegate.OFFHAND).findFirst().ifPresent(bangle -> {
-            renderBangleThirdPerson(bangle, stack, renderContext, lightUv, entity, limbDistance, limbAngle, tickDelta, age, headYaw, headPitch, entity.getMainArm().getOpposite());
+        FriendshipBraceletItem.getWornBangles(entity, TrinketsDelegate.SECONDARY_GLOVE).findFirst().ifPresent(bangle -> {
+            renderBangleThirdPerson(bangle.stack(), stack, renderContext, lightUv, entity, limbDistance, limbAngle, tickDelta, age, headYaw, headPitch, entity.getMainArm().getOpposite());
         });
     }
 
@@ -82,14 +82,14 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
 
     @Override
     public void renderArm(MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, E entity, ModelPart armModel, Arm side) {
-        FriendshipBraceletItem.getWornBangles(entity, side == entity.getMainArm() ? TrinketsDelegate.MAINHAND : TrinketsDelegate.OFFHAND).findFirst().ifPresent(item -> {
-            int j = ((DyeableItem)item.getItem()).getColor(item);
+        FriendshipBraceletItem.getWornBangles(entity, side == entity.getMainArm() ? TrinketsDelegate.MAIN_GLOVE : TrinketsDelegate.SECONDARY_GLOVE).findFirst().ifPresent(item -> {
+            int j = ((DyeableItem)item.stack().getItem()).getColor(item.stack());
 
             boolean alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getModel().startsWith("slim");
 
             BraceletModel model = alex ? alexModel : steveModel;
 
-            boolean glowing = ((GlowableItem)item.getItem()).isGlowing(item);
+            boolean glowing = ((GlowableItem)item.stack().getItem()).isGlowing(item.stack());
 
             if (MineLPDelegate.getInstance().getPlayerPonyRace((ClientPlayerEntity)entity).isEquine()) {
                 stack.translate(side == Arm.LEFT ? 0.06 : -0.06, 0.3, 0);

@@ -25,13 +25,12 @@ public class GlassesItem extends WearableItem {
     }
 
     public boolean isApplicable(LivingEntity entity) {
-        return getForEntity(entity).getItem() == this;
+        return getForEntity(entity).stack().isOf(this);
     }
 
-    public static ItemStack getForEntity(LivingEntity entity) {
-        return TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE)
-                .filter(stack -> stack.getItem() instanceof GlassesItem)
+    public static TrinketsDelegate.EquippedStack getForEntity(LivingEntity entity) {
+        return TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE, stack -> stack.getItem() instanceof GlassesItem)
                 .findFirst()
-                .orElse(ItemStack.EMPTY);
+                .orElse(TrinketsDelegate.EquippedStack.EMPTY);
     }
 }

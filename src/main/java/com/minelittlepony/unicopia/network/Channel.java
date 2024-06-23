@@ -37,6 +37,7 @@ public interface Channel {
     S2CPacketType<MsgSkyAngle> SERVER_SKY_ANGLE = SimpleNetworking.serverToClient(Unicopia.id("sky_angle"), MsgSkyAngle::new);
     S2CPacketType<MsgConfigurationChange> CONFIGURATION_CHANGE = SimpleNetworking.serverToClient(Unicopia.id("config"), MsgConfigurationChange::new);
     S2CPacketType<MsgZapAppleStage> SERVER_ZAP_STAGE = SimpleNetworking.serverToClient(Unicopia.id("zap_stage"), MsgZapAppleStage::new);
+    S2CPacketType<MsgTrinketBroken> SERVER_TRINKET_BROKEN = SimpleNetworking.serverToClient(Unicopia.id("trinket_broken"), MsgTrinketBroken::new);
 
     static void bootstrap() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {

@@ -214,8 +214,8 @@ public class UHud {
 
         boolean hasEffect = client.player.hasStatusEffect(UEffects.SUN_BLINDNESS);
 
-        ItemStack glasses = GlassesItem.getForEntity(client.player);
-        boolean hasSunglasses = glasses.getItem() == UItems.SUNGLASSES;
+        ItemStack glasses = GlassesItem.getForEntity(client.player).stack();
+        boolean hasSunglasses = glasses.isOf(UItems.SUNGLASSES);
 
         if (hasEffect || (!hasSunglasses && pony.getObservedSpecies() == Race.BAT && SunBlindnessStatusEffect.hasSunExposure(client.player))) {
             float i = hasEffect ? (client.player.getStatusEffect(UEffects.SUN_BLINDNESS).getDuration() - tickDelta) / SunBlindnessStatusEffect.MAX_DURATION : 0;

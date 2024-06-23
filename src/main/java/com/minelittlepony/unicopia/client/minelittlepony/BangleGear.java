@@ -67,8 +67,8 @@ class BangleGear implements IGear {
     public void pose(IModel model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
         alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getModel().startsWith("slim");
         FriendshipBraceletItem.getWornBangles((LivingEntity)entity, slot).findFirst().ifPresent(bracelet -> {
-            color = ((DyeableItem)bracelet.getItem()).getColor(bracelet);
-            glowing = ((GlowableItem)bracelet.getItem()).isGlowing(bracelet);
+            color = ((DyeableItem)bracelet.stack().getItem()).getColor(bracelet.stack());
+            glowing = ((GlowableItem)bracelet.stack().getItem()).isGlowing(bracelet.stack());
         });
         BraceletModel m = alex ? alexModel : steveModel;
 
@@ -76,7 +76,7 @@ class BangleGear implements IGear {
             m.setAngles(biped);
         }
         Arm mainArm = ((LivingEntity)entity).getMainArm();
-        m.setVisible(slot == TrinketsDelegate.MAINHAND ? mainArm : mainArm.getOpposite());
+        m.setVisible(slot == TrinketsDelegate.MAIN_GLOVE ? mainArm : mainArm.getOpposite());
     }
 
     @Override

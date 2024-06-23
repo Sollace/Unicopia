@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.compat.ad_astra.OxygenApi;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
@@ -38,12 +39,10 @@ import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
 import net.minecraft.block.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -499,8 +498,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
     private void tickArtificialFlight(MutableVector velocity) {
         if (ticksInAir % 10 == 0 && !entity.getWorld().isClient) {
-            ItemStack stack = AmuletItem.getForEntity(entity);
-            if (ChargeableItem.getEnergy(stack) < 9) {
+            TrinketsDelegate.EquippedStack stack = AmuletItem.get(entity);
+            if (ChargeableItem.getEnergy(stack.stack()) < 9) {
                 playSound(USounds.ITEM_ICARUS_WINGS_WARN, 0.13F, 0.5F);
             }
 
@@ -517,10 +516,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 minDamage *= 3;
             }
 
-            ChargeableItem.consumeEnergy(stack, energyConsumed);
+            ChargeableItem.consumeEnergy(stack.stack(), energyConsumed);
 
             if (entity.getWorld().random.nextInt(damageInterval) == 0) {
-                stack.damage(minDamage + entity.getWorld().random.nextInt(50), entity, e -> e.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+                stack.stack().damage(minDamage + entity.getWorld().random.nextInt(50), (LivingEntity)entity, stack.breakStatusSender());
             }
 
             if (!lastFlightType.canFly()) {

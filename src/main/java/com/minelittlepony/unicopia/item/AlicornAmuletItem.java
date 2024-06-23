@@ -247,7 +247,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
             // bind to the player after 3 days
             if (daysAttached >= 3 && !pony.asEntity().isCreative()) {
-                stack = living.getArmour().getEquippedStack(TrinketsDelegate.NECKLACE);
+                stack = living.getArmour().getEquippedStack(TrinketsDelegate.NECKLACE).stack();
                 if (stack.getItem() == this && !EnchantmentHelper.hasBindingCurse(stack)) {
                     pony.playSound(USounds.ITEM_ALICORN_AMULET_HALLUCINATION, 3, 1);
                     stack = stack.copy();

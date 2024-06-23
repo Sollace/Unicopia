@@ -371,8 +371,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             }
 
             if (magical.isIn(UTags.DamageTypes.BREAKS_SUNGLASSES)) {
-                ItemStack glasses = GlassesItem.getForEntity(entity);
-                if (glasses.getItem() == UItems.SUNGLASSES) {
+                ItemStack glasses = GlassesItem.getForEntity(entity).stack();
+                if (glasses.isOf(UItems.SUNGLASSES)) {
                     ItemStack broken = UItems.BROKEN_SUNGLASSES.getDefaultStack();
                     broken.setNbt(glasses.getNbt());
                     TrinketsDelegate.getInstance(entity).setEquippedStack(entity, TrinketsDelegate.FACE, broken);
@@ -417,7 +417,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             return StreamSupport.stream(entity.getArmorItems().spliterator(), false);
         }
         return Stream.concat(
-                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.NECKLACE),
+                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.NECKLACE).map(TrinketsDelegate.EquippedStack::stack),
                 StreamSupport.stream(entity.getArmorItems().spliterator(), false)
         );
     }

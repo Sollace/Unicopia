@@ -28,7 +28,7 @@ class GlassesGear extends GlassesModel implements IGear {
 
     @Override
     public boolean canRender(IModel model, Entity entity) {
-        return entity instanceof LivingEntity living && !GlassesItem.getForEntity(living).isEmpty();
+        return entity instanceof LivingEntity living && !GlassesItem.getForEntity(living).stack().isEmpty();
     }
 
     @Override
@@ -38,7 +38,7 @@ class GlassesGear extends GlassesModel implements IGear {
 
     @Override
     public <T extends Entity> Identifier getTexture(T entity, Context<T, ?> context) {
-        return textures.computeIfAbsent(Registries.ITEM.getId(GlassesItem.getForEntity((LivingEntity)entity).getItem()), id -> new Identifier(id.getNamespace(), "textures/models/armor/" + id.getPath() + ".png"));
+        return textures.computeIfAbsent(Registries.ITEM.getId(GlassesItem.getForEntity((LivingEntity)entity).stack().getItem()), id -> new Identifier(id.getNamespace(), "textures/models/armor/" + id.getPath() + ".png"));
     }
 
     @Override

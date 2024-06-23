@@ -42,7 +42,7 @@ public class PlayerPoser {
         boolean liftLeftArm = mainArm == Arm.LEFT || !ponyRace.isEquine();
         boolean liftRightArm = mainArm == Arm.RIGHT || !ponyRace.isEquine();
 
-        ItemStack glasses = GlassesItem.getForEntity(player);
+        ItemStack glasses = GlassesItem.getForEntity(player).stack();
         ModelPart head = model.getHead();
 
         if (context == Context.THIRD_PERSON && !player.isSneaking()) {

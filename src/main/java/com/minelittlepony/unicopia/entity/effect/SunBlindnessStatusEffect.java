@@ -11,7 +11,6 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -72,9 +71,7 @@ public class SunBlindnessStatusEffect extends StatusEffect {
             return true;
         }
 
-        if (entity.getEquippedStack(EquipmentSlot.HEAD).isIn(UTags.Items.SHADES)
-            || TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE).anyMatch(i -> i.isIn(UTags.Items.SHADES))
-            || entity.isSubmergedInWater()) {
+        if (entity.isSubmergedInWater() || TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE, i -> i.isIn(UTags.Items.SHADES)).findAny().isPresent()) {
             return false;
         }
 

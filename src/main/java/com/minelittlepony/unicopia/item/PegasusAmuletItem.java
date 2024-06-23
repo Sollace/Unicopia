@@ -26,11 +26,6 @@ public class PegasusAmuletItem extends AmuletItem implements ItemTracker.Trackab
     }
 
     @Override
-    public boolean isApplicable(ItemStack stack) {
-        return super.isApplicable(stack);
-    }
-
-    @Override
     public int getDefaultCharge() {
         return getMaxCharge() / 2;
     }

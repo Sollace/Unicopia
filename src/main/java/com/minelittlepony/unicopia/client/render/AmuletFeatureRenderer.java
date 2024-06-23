@@ -42,7 +42,7 @@ public class AmuletFeatureRenderer<E extends LivingEntity> implements AccessoryF
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch) {
 
-        ItemStack stack = AmuletItem.getForEntity(entity);
+        ItemStack stack = AmuletItem.get(entity).stack();
 
         if (!stack.isEmpty()) {
             Identifier texture = textures.computeIfAbsent(Registries.ITEM.getId(stack.getItem()), id -> new Identifier(id.getNamespace(), "textures/models/armor/" + id.getPath() + ".png"));
