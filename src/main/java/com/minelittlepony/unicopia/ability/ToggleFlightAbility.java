@@ -27,7 +27,7 @@ public class ToggleFlightAbility implements Ability<Hit> {
     @Nullable
     @Override
     public Optional<Hit> prepare(Pony player) {
-        return Hit.of(!player.asEntity().isCreative() && !player.getPhysics().getFlightType().isGrounded());
+        return Hit.of(!player.asEntity().hasVehicle() && !player.asEntity().isCreative() && !player.getPhysics().getFlightType().isGrounded());
     }
 
     @Override
