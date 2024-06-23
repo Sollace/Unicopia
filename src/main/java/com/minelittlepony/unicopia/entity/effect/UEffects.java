@@ -24,6 +24,9 @@ public interface UEffects {
      */
     StatusEffect BUTTER_FINGERS = register("butter_fingers", new ButterfingersStatusEffect(0x888800));
 
+    StatusEffect SEAPONYS_GRACE = register("seaponys_grace", new SimpleStatusEffect(StatusEffectCategory.BENEFICIAL, 0x0000EE, false));
+    StatusEffect SEAPONYS_IRE = register("seaponys_ire", new SimpleStatusEffect(StatusEffectCategory.HARMFUL, 0xEE00EE, false));
+
     private static StatusEffect register(String name, StatusEffect effect) {
         return Registry.register(Registries.STATUS_EFFECT, Unicopia.id(name), effect);
     }

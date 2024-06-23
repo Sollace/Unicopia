@@ -107,6 +107,7 @@ public interface UTags {
         TagKey<Block> MIMIC_CHESTS = block("mimic_chests");
 
         TagKey<Block> BUTTERFLIES_SPAWNABLE_ON = block("butterflies_spawn_on");
+        TagKey<Block> ANGERS_GUARDIANS = block("angers_guardians");
 
         private static TagKey<Block> block(String name) {
             return TagKey.of(RegistryKeys.BLOCK, Unicopia.id(name));

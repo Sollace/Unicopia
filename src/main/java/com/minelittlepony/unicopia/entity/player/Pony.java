@@ -24,6 +24,7 @@ import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.effect.MetamorphosisStatusEffect;
+import com.minelittlepony.unicopia.entity.effect.SeaponyGraceStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
@@ -414,6 +415,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         powers.tick();
         acrobatics.tick();
 
+        SeaponyGraceStatusEffect.update(entity);
+
         if (getObservedSpecies() == Race.KIRIN) {
             var charge = getMagicalReserves().getCharge();
 
@@ -484,9 +487,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             AmuletSelectors.PEARL_NECKLACE.test(entity) ? suppressedRace.or(Race.SEAPONY) : null
         );
         UCriteria.PLAYER_CHANGE_RACE.trigger(entity);
-
-        var hasNecklace = AmuletSelectors.PEARL_NECKLACE.test(entity);
-        System.out.println(hasNecklace);
     }
 
     @Override
