@@ -172,6 +172,16 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         }
 
         public void tick() {
+            Optional<Ability<?>> activeAbility = getActiveAbility();
+
+            if (activeAbility.isEmpty()) {
+                if (warmup > 0) {
+                    warmup--;
+                }
+                if (cooldown > 0) {
+                    cooldown--;
+                }
+            }
             getActiveAbility().ifPresent(ability -> {
                 if (warmup > 0) {
                     warmup--;

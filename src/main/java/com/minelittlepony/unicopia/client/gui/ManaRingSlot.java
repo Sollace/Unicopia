@@ -23,8 +23,6 @@ class ManaRingSlot extends Slot {
     protected void renderContents(DrawContext context, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
         MatrixStack matrices = context.getMatrices();
 
-
-
         matrices.push();
         matrices.translate(24.125, 24.75, 0);
 
