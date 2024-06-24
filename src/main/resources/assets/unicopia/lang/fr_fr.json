@@ -534,7 +534,7 @@
   "spell_attribute.unicopia.permit_items": "Permits Items",
   "spell_attribute.unicopia.permit_passive": "Permits Passive Mobs",
   "spell_attribute.unicopia.permit_hostile": "Permits Hostile Mobs",
-  "spell_attribute.unicopia.permit_player": " Permits Other Players",
+  "spell_attribute.unicopia.permit_player": "Permits Other Players",
   "spell_attribute.unicopia.range": "Effect Range",
   "spell_attribute.unicopia.duration": "Effect Duration",
   "spell_attribute.unicopia.strength": "Effect Strength",
