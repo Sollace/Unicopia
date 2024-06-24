@@ -67,14 +67,14 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
             generateParticles(source);
         }
 
-        return new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER))).translate(source.getOrigin()).getBlockPositions().reduce(false,
+        return new Sphere(false, RANGE.get(getTraits())).translate(source.getOrigin()).getBlockPositions().reduce(false,
                 (r, i) -> source.canModifyAt(i) && applyBlocks(source.asWorld(), i),
                 (a, b) -> a || b)
                 || applyEntities(source, source.getOriginVector());
     }
 
     protected void generateParticles(Caster<?> source) {
-        source.spawnParticles(new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER))), (int)(1 + source.getLevel().getScaled(8)) * 6, pos -> {
+        source.spawnParticles(new Sphere(false, RANGE.get(getTraits())), (int)(1 + source.getLevel().getScaled(8)) * 6, pos -> {
             source.addParticle(ParticleTypes.LARGE_SMOKE, pos, Vec3d.ZERO);
         });
     }
@@ -121,8 +121,12 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
         return false;
     }
 
+    protected float getEntityEffectRange() {
+        return Math.max(0, RANGE.get(getTraits()) - 1);
+    }
+
     protected boolean applyEntities(Caster<?> source, Vec3d pos) {
-        return source.findAllEntitiesInRange(Math.max(0, 3 + getTraits().get(Trait.POWER)), e -> {
+        return source.findAllEntitiesInRange(getEntityEffectRange(), e -> {
             LivingEntity master = source.getMaster();
             return (!(e.equals(source.asEntity()) || e.equals(master)) ||
                     (master instanceof PlayerEntity && !EquinePredicates.PLAYER_UNICORN.test(master))) && !(e instanceof ItemEntity)

@@ -17,8 +17,12 @@ import com.minelittlepony.unicopia.entity.ai.BreakHeartGoal;
 import com.minelittlepony.unicopia.entity.ai.DynamicTargetGoal;
 import com.minelittlepony.unicopia.entity.ai.EatMuffinGoal;
 import com.minelittlepony.unicopia.entity.ai.FleeExplosionGoal;
+import com.minelittlepony.unicopia.entity.ai.PrioritizedActiveTargetGoal;
+import com.minelittlepony.unicopia.entity.ai.TargettingUtil;
 import com.minelittlepony.unicopia.entity.ai.WantItTakeItGoal;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -26,9 +30,6 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
@@ -37,13 +38,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.MathHelper;
 
 public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutable<LivingEntity> {
-    private static final TrackedData<NbtCompound> EFFECT = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
-    private static final TrackedData<NbtCompound> MASTER = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
-    public static final TrackedData<Float> GRAVITY = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
-    private static final TrackedData<Integer> EATING = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Boolean> DISCORDED = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Boolean> SMITTEN = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-
     public static void boostrap() {}
 
     private final EntityPhysics<LivingEntity> physics;
@@ -67,26 +61,25 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
                 .isEmpty();
     });
 
+    protected final DataTracker.Entry<Integer> eating;
+    protected final DataTracker.Entry<Boolean> discorded;
+    protected final DataTracker.Entry<Boolean> smitten;
+
     public Creature(LivingEntity entity) {
-        super(entity, EFFECT);
-        physics = new EntityPhysics<>(entity, GRAVITY);
+        super(entity);
+        physics = new EntityPhysics<>(entity);
         addTicker(physics);
         addTicker(this::updateConsumption);
-    }
 
-    @Override
-    public void initDataTracker() {
-        super.initDataTracker();
-        entity.getDataTracker().startTracking(MASTER, owner.toNBT());
-        entity.getDataTracker().startTracking(EATING, 0);
-        entity.getDataTracker().startTracking(DISCORDED, false);
-        entity.getDataTracker().startTracking(SMITTEN, false);
+        tracker.startTracking(owner);
+        eating = tracker.startTracking(TrackableDataType.INT, 0);
+        discorded = tracker.startTracking(TrackableDataType.BOOLEAN, false);
+        smitten = tracker.startTracking(TrackableDataType.BOOLEAN, false);
     }
 
     @Override
     public void setMaster(LivingEntity owner) {
         this.owner.set(owner);
-        entity.getDataTracker().set(MASTER, this.owner.toNBT());
         if (owner != null) {
             targets.ifPresent(this::initMinionAi);
         }
@@ -97,20 +90,20 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     }
 
     public boolean isDiscorded() {
-        return entity.getDataTracker().get(DISCORDED);
+        return discorded.get();
     }
 
     public boolean isSmitten() {
-        return entity.getDataTracker().get(SMITTEN);
+        return smitten.get();
     }
 
     public void setSmitten(boolean smitten) {
         smittenTicks = smitten ? 20 : 0;
-        entity.getDataTracker().set(SMITTEN, smitten);
+        this.smitten.set(smitten);
     }
 
     public void setDiscorded(boolean discorded) {
-        entity.getDataTracker().set(DISCORDED, discorded);
+        this.discorded.set(discorded);
         discordedChanged = true;
     }
 
@@ -122,10 +115,6 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     @Override
     public EntityReference<LivingEntity> getMasterReference() {
-        if (entity.getDataTracker().containsKey(MASTER)) {
-            NbtCompound data = entity.getDataTracker().get(MASTER);
-            owner.fromNBT(data);
-        }
         return owner;
     }
 
@@ -152,6 +141,9 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         }
         if (entity.getType().getSpawnGroup() == SpawnGroup.MONSTER) {
             goals.add(3, new BreakHeartGoal((MobEntity)entity, targetter));
+            if (entity instanceof AbstractSkeletonEntity) {
+                targets.add(1, new PrioritizedActiveTargetGoal<>((MobEntity)entity, PlayerEntity.class, TargettingUtil.FLYING_PREFERRED, true));
+            }
         }
         if (entity instanceof PigEntity pig) {
             eatMuffinGoal = new EatMuffinGoal(pig, targetter);
@@ -234,10 +226,10 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     private void updateConsumption() {
         if (isClient()) {
-            eatTimer = entity.getDataTracker().get(EATING);
+            eatTimer = eating.get();
         } else if (eatMuffinGoal != null) {
             eatTimer = eatMuffinGoal.getTimer();
-            entity.getDataTracker().set(EATING, eatTimer);
+            eating.set(eatTimer);
         }
     }
 
@@ -281,12 +273,12 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     @Override
     public LevelStore getLevel() {
-        return Levelled.EMPTY;
+        return Levelled.ZERO;
     }
 
     @Override
     public LevelStore getCorruption() {
-        return Levelled.EMPTY;
+        return Levelled.ZERO;
     }
 
     @Override
@@ -310,7 +302,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
-        getSpellSlot().get(true).ifPresent(effect -> {
+        getSpellSlot().get().ifPresent(effect -> {
             compound.put("effect", Spell.writeNbt(effect));
         });
         compound.put("master", getMasterReference().toNBT());
@@ -326,9 +318,6 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
         }
         if (compound.contains("master", NbtElement.COMPOUND_TYPE)) {
             owner.fromNBT(compound.getCompound("master"));
-            if (entity.getDataTracker().containsKey(MASTER)) {
-                entity.getDataTracker().set(MASTER, owner.toNBT());
-            }
             if (owner.isSet()) {
                 targets.ifPresent(this::initMinionAi);
             }

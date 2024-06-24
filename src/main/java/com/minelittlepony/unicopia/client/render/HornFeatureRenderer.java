@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.client.render;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher.Stat;
-import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.Model;
@@ -55,7 +55,9 @@ public class HornFeatureRenderer<E extends LivingEntity> implements AccessoryFea
                 return pony.getAbilities().getActiveStat()
                         .flatMap(Stat::getActiveAbility)
                         .map(ability -> ability.getColor(pony))
-                        .filter(i -> i != -1).or(() -> pony.getSpellSlot().get(SpellPredicate.IS_NOT_PLACED, false).map(spell -> spell.getType().getColor()));
+                        .filter(i -> i != -1).or(() -> pony.getSpellSlot()
+                                .get(SpellType.PLACE_CONTROL_SPELL.negate())
+                                .map(spell -> spell.getTypeAndTraits().type().getColor()));
             }).ifPresent(color -> {
                 model.setState(true);
                 model.render(stack, ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayers.getMagicColored((0x99 << 24) | color), false, false), lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);

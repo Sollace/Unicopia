@@ -1,6 +1,9 @@
 package com.minelittlepony.unicopia.entity;
 
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.Trackable;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.Tickable;
 
@@ -8,7 +11,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.BlockTags;
@@ -18,15 +20,17 @@ import net.minecraft.util.math.Vec3d;
 
 public class EntityPhysics<T extends Entity> implements Physics, Copyable<EntityPhysics<T>>, Tickable {
 
-    private final TrackedData<Float> gravity;
-
     protected final T entity;
 
     private float lastGravity = 1;
 
-    public EntityPhysics(T entity, TrackedData<Float> gravity) {
+    private final DataTracker tracker;
+    protected final DataTracker.Entry<Float> gravity;
+
+    public EntityPhysics(T entity) {
         this.entity = entity;
-        this.gravity = gravity;
+        this.tracker = Trackable.of(entity).getDataTrackers().getPrimaryTracker();
+        gravity = tracker.startTracking(TrackableDataType.FLOAT, 1F);
     }
 
     @Override
@@ -91,12 +95,12 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
 
     @Override
     public void setBaseGravityModifier(float constant) {
-        entity.getDataTracker().set(gravity, constant);
+        gravity.set(constant);
     }
 
     @Override
     public float getBaseGravityModifier() {
-        return entity.getDataTracker().get(gravity);
+        return gravity.get();
     }
 
     @Override

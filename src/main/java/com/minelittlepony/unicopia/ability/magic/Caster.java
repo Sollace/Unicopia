@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.Ability;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.AreaProtectionSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.damage.UDamageSources;
@@ -40,7 +41,7 @@ public interface Caster<E extends Entity> extends
 
     Physics getPhysics();
 
-    SpellContainer getSpellSlot();
+    SpellSlots getSpellSlot();
 
     /**
      * Removes the desired amount of mana or health from this caster in exchange for a spell's benefits.
@@ -111,7 +112,19 @@ public interface Caster<E extends Entity> extends
     }
 
     default boolean canCastAt(Vec3d pos) {
-        return !Ether.get(asWorld()).anyMatch(SpellType.ARCANE_PROTECTION, (spell, caster) -> spell.blocksMagicFor(caster, this, pos));
+        return !Ether.get(asWorld()).anyMatch(SpellType.ARCANE_PROTECTION, entry -> {
+            var target = entry.entity.getTarget().orElse(null);
+            if (target != null && target.pos().distanceTo(pos) <= entry.getRadius()) {
+                Caster<?> caster = entry.getCaster();
+                if (caster != null) {
+                    AreaProtectionSpell spell = entry.getSpell();
+                    if (spell != null) {
+                        return spell.blocksMagicFor(caster, this, pos);
+                    }
+                }
+            }
+            return false;
+        });
     }
 
     default boolean canUse(Ability<?> ability) {

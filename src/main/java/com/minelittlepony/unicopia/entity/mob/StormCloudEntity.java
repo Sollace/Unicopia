@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
+import com.minelittlepony.unicopia.util.PosHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
@@ -38,7 +39,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
@@ -148,7 +148,7 @@ public class StormCloudEntity extends Entity implements MagicImmune {
         }
 
         if (isLogicalSideForUpdatingMovement()) {
-            float groundY = findSurfaceBelow(getWorld(), getBlockPos()).getY();
+            float groundY = PosHelper.findNearestSurface(getWorld(), getBlockPos()).getY();
             float targetY = isStormy() ? STORMY_TARGET_ALTITUDE : CLEAR_TARGET_ALTITUDE;
             float cloudY = (float)getY() - targetY;
 
@@ -271,22 +271,8 @@ public class StormCloudEntity extends Entity implements MagicImmune {
 
     private void pickRandomPoints(int count, Consumer<BlockPos> action) {
         BlockPos.iterateRandomly(random, 3, getBlockPos(), getSizeInBlocks()).forEach(pos -> {
-            action.accept(findSurfaceBelow(getWorld(), pos));
+            action.accept(PosHelper.findNearestSurface(getWorld(), pos));
         });
-    }
-
-    public static BlockPos findSurfaceBelow(World world, BlockPos pos) {
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        mutable.set(pos);
-        while (mutable.getY() > world.getBottomY() && world.isAir(mutable)) {
-            mutable.move(Direction.DOWN);
-        }
-        while (world.isInBuildLimit(mutable) && !world.isAir(mutable)) {
-            mutable.move(Direction.UP);
-        }
-        mutable.move(Direction.DOWN);
-
-        return mutable;
     }
 
     private void spawnLightningStrike(BlockPos pos, boolean cosmetic, boolean infect) {

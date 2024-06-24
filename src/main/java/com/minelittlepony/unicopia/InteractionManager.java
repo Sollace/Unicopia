@@ -77,6 +77,10 @@ public class InteractionManager {
         return 0;
     }
 
+    public float getTickRate() {
+        return 20;
+    }
+
     public void openScreen(int type) {
     }
 

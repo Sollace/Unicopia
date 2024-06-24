@@ -154,6 +154,11 @@ public class ClientInteractionManager extends InteractionManager {
     }
 
     @Override
+    public float getTickRate() {
+        return client.world == null ? 20 : client.world.getTickManager().getTickRate();
+    }
+
+    @Override
     public ParticleSpawner createBoundParticle(UUID id) {
         return new ClientBoundParticleSpawner(id);
     }

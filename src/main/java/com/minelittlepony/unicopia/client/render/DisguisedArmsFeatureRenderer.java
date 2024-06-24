@@ -114,7 +114,7 @@ public class DisguisedArmsFeatureRenderer<E extends LivingEntity> implements Acc
     }
 
     private Entity getAppearance(E entity) {
-        return Caster.of(entity).flatMap(caster -> caster.getSpellSlot().get(SpellPredicate.IS_DISGUISE, false)).map(Disguise.class::cast)
+        return Caster.of(entity).flatMap(caster -> caster.getSpellSlot().get(SpellPredicate.IS_DISGUISE)).map(Disguise.class::cast)
                 .flatMap(Disguise::getAppearance)
                 .map(EntityAppearance::getAppearance)
                 .orElse(null);

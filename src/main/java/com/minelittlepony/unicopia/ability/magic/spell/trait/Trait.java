@@ -60,7 +60,8 @@ public enum Trait implements CommandArgumentEnum<Trait> {
     BLOOD(TraitGroup.DARKNESS);
 
     private static final Map<Identifier, Trait> IDS = Arrays.stream(values()).collect(Collectors.toMap(Trait::getId, Function.identity()));
-    public static final EnumCodec<Trait> CODEC = StringIdentifiable.createCodec(Trait::values, n -> n.toLowerCase(Locale.ROOT));
+    private static final EnumCodec<Trait> NAME_CODEC = StringIdentifiable.createCodec(Trait::values, n -> n.toLowerCase(Locale.ROOT));
+    public static final Codec<Trait> CODEC = Identifier.CODEC.xmap(id -> IDS.get(id), Trait::getId);
     public static final Codec<Set<Trait>> SET_CODEC = CODEC.listOf().xmap(
             l -> l.stream().distinct().collect(Collectors.toSet()),
             s -> s.stream().toList()
@@ -165,7 +166,11 @@ public enum Trait implements CommandArgumentEnum<Trait> {
 
     @Deprecated
     public static Optional<Trait> fromName(String name) {
-        return Optional.ofNullable(CODEC.byId(name));
+        Trait trait = NAME_CODEC.byId(name);
+        if (trait == null) {
+            Unicopia.LOGGER.error("Unknown trait: " + name);
+        }
+        return Optional.ofNullable(trait);
     }
 
     public static EnumArgumentType<Trait> argument() {
@@ -174,7 +179,7 @@ public enum Trait implements CommandArgumentEnum<Trait> {
 
     public static class ArgumentType extends EnumArgumentType<Trait> {
         protected ArgumentType() {
-            super(CODEC, Trait::values);
+            super(NAME_CODEC, Trait::values);
         }
     }
 }

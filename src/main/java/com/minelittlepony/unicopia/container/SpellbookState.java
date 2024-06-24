@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.container;
 import java.util.*;
 import java.util.function.Consumer;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.network.datasync.Synchronizable;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
@@ -13,6 +14,10 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 public class SpellbookState extends Synchronizable<SpellbookState> implements NbtSerialisable {
+    public static final Identifier CRAFTING_ID = Unicopia.id("crafting");
+    public static final Identifier PROFILE_ID = Unicopia.id("profile");
+    public static final Identifier TRAIT_DEX_ID = Unicopia.id("traits");
+
     private Optional<Identifier> currentPageId = Optional.empty();
 
     private boolean dirty;

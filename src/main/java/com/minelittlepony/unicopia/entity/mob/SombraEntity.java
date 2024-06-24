@@ -11,11 +11,11 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.AmuletSelectors;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.ai.ArenaAttackGoal;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleSource;
@@ -63,7 +63,6 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
@@ -484,9 +483,10 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
                     player.sendMessage(Text.translatable("entity.unicopia.sombra.taunt"));
                 }
             }
-            ItemStack amulet = AmuletItem.getForEntity(player);
-            if (amulet.isOf(UItems.ALICORN_AMULET)) {
-                amulet.decrement(1);
+            TrinketsDelegate.EquippedStack amulet = UItems.ALICORN_AMULET.getForEntity(player);
+            if (!amulet.stack().isEmpty()) {
+                amulet.stack().decrement(1);
+                amulet.sendUpdate();
             }
         }
         boolean damaged = super.damage(source, amount);

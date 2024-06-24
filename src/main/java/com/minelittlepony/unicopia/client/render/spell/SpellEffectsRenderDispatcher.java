@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.SpellContainer.Operation;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.Living;
@@ -47,7 +47,6 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
     }
 
     static {
-        register(SpellType.PLACED_SPELL, PlacedSpellRenderer::new);
         register(SpellType.SHIELD, ShieldSpellRenderer::new);
         register(SpellType.DARK_VORTEX, DarkVortexSpellRenderer::new);
         register(SpellType.BUBBLE, BubbleSpellRenderer::new);
@@ -68,7 +67,7 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
 
     @SuppressWarnings("unchecked")
     public <S extends Spell> SpellRenderer<S> getRenderer(S spell) {
-        return (SpellRenderer<S>)renderers.getOrDefault(spell.getType(), SpellRenderer.DEFAULT);
+        return (SpellRenderer<S>)renderers.getOrDefault(spell.getTypeAndTraits().type(), SpellRenderer.DEFAULT);
     }
 
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, Spell spell, Caster<?> caster, int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
@@ -86,10 +85,9 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
             return;
         }
 
-        caster.getSpellSlot().forEach(spell -> {
+        caster.getSpellSlot().stream().forEach(spell -> {
             render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
-            return Operation.SKIP;
-        }, false);
+        });
 
         if (client.getEntityRenderDispatcher().shouldRenderHitboxes()
                 && !client.hasReducedDebugInfo()
@@ -124,11 +122,11 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
                         caster.asEntity().getDisplayName().copy().append(" (" + Registries.ENTITY_TYPE.getId(caster.asEntity().getType()) + ")"),
                         caster.getMaster() != null ? Text.literal("Master: ").append(caster.getMaster().getDisplayName()) : Text.empty()
                 ),
-                caster.getSpellSlot().stream(AllSpells.INSTANCE, false).flatMap(spell ->
+                caster.getSpellSlot().stream(SpellPredicate.ALL).flatMap(spell ->
                     Stream.of(
                             Text.literal("UUID: " + spell.getUuid()),
-                            Text.literal("|>Type: ").append(Text.literal(spell.getType().getId().toString()).styled(s -> s.withColor(spell.getType().getColor()))),
-                            Text.of("|>Traits: " + spell.getTraits()),
+                            Text.literal("|>Type: ").append(Text.literal(spell.getTypeAndTraits().type().getId().toString()).styled(s -> s.withColor(spell.getTypeAndTraits().type().getColor()))),
+                            Text.of("|>Traits: " + spell.getTypeAndTraits().traits()),
                             Text.literal("|>HasRenderer: ").append(Text.literal((getRenderer(spell) != null) + "").formatted(getRenderer(spell) != null ? Formatting.GREEN : Formatting.RED))
                     )
                 )

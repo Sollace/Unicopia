@@ -64,11 +64,10 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
     @SuppressWarnings("unchecked")
     default boolean update(Caster<?> caster, boolean tick) {
 
-        if (!(caster instanceof Living)) {
+        if (!(caster instanceof Living<?> source)) {
             return false;
         }
 
-        Living<?> source = (Living<?>)caster;
         LivingEntity owner = source.asEntity();
 
         if (owner == null) {
@@ -89,8 +88,8 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
 
         entity.noClip = true;
 
-        if (entity instanceof MobEntity) {
-            ((MobEntity)entity).setAiDisabled(true);
+        if (entity instanceof MobEntity mob) {
+            mob.setAiDisabled(true);
         }
 
         entity.setInvisible(false);
@@ -117,9 +116,7 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
 
         behaviour.update(source, entity, this);
 
-        if (source instanceof Pony) {
-            Pony player = (Pony)source;
-
+        if (source instanceof Pony player) {
             source.asEntity().setInvisible(true);
             player.setInvisible(true);
 

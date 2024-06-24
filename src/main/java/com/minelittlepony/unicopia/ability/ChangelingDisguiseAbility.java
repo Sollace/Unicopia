@@ -51,7 +51,7 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
 
         player.getEntityWorld().playSound(null, player.getBlockPos(), USounds.ENTITY_PLAYER_CHANGELING_TRANSFORM, SoundCategory.PLAYERS, 1.4F, 0.4F);
 
-        Disguise currentDisguise = iplayer.getSpellSlot().get(SpellType.CHANGELING_DISGUISE, true)
+        Disguise currentDisguise = iplayer.getSpellSlot().get(SpellType.CHANGELING_DISGUISE)
             .orElseGet(() -> SpellType.CHANGELING_DISGUISE.withTraits().apply(iplayer, CastingMethod.INNATE));
 
         if (currentDisguise.isOf(looked)) {
@@ -64,7 +64,6 @@ public class ChangelingDisguiseAbility extends ChangelingFeedAbility {
         }
 
         player.calculateDimensions();
-        iplayer.setDirty();
         return true;
     }
 

@@ -14,7 +14,6 @@ import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
-import com.minelittlepony.unicopia.client.TextHelper;
 import com.minelittlepony.unicopia.client.gui.*;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketSlotBackSprites;
@@ -52,12 +51,11 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
     private final RecipeBookWidget recipeBook = new RecipeBookWidget();
 
-    private final Chapter craftingChapter;
     private final SpellbookTraitDexPageContent traitDex = new SpellbookTraitDexPageContent(this);
     private final SpellbookChapterList chapters = new SpellbookChapterList(this,
-        craftingChapter = new Chapter(SpellbookChapterList.CRAFTING_ID, TabSide.LEFT, 0, 0, Optional.of(new SpellbookCraftingPageContent(this))),
-        new Chapter(SpellbookChapterList.PROFILE_ID, TabSide.LEFT, 1, 0, Optional.of(new SpellbookProfilePageContent(this))),
-        new Chapter(SpellbookChapterList.TRAIT_DEX_ID, TabSide.LEFT, 3, 0, Optional.of(traitDex))
+        new Chapter(SpellbookState.CRAFTING_ID, TabSide.LEFT, 0, 0, Optional.of(new SpellbookCraftingPageContent(this))),
+        new Chapter(SpellbookState.PROFILE_ID, TabSide.LEFT, 1, 0, Optional.of(new SpellbookProfilePageContent(this))),
+        new Chapter(SpellbookState.TRAIT_DEX_ID, TabSide.LEFT, 3, 0, Optional.of(traitDex))
     );
     private final SpellbookTabBar tabs = new SpellbookTabBar(this, chapters);
 
@@ -68,13 +66,6 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
         backgroundWidth = 405;
         backgroundHeight = 219;
         contentBounds = new Bounds(CONTENT_PADDING, CONTENT_PADDING, backgroundWidth - CONTENT_PADDING * 2, backgroundHeight - CONTENT_PADDING * 3 - 2);
-
-        handler.addSlotShowingCondition(slotType -> {
-            if (slotType == SlotType.INVENTORY) {
-                return chapters.getCurrentChapter().content().filter(Content::showInventory).isPresent();
-            }
-            return chapters.getCurrentChapter() == craftingChapter;
-        });
         handler.getSpellbookState().setSynchronizer(state -> {
             Channel.CLIENT_SPELLBOOK_UPDATE.sendToServer(MsgSpellbookStateChanged.create(handler, state));
         });
@@ -218,8 +209,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
         List<Text> tooltip = new ArrayList<>();
         tooltip.add(spell.type().getName());
-        tooltip.addAll(TextHelper.wrap(Text.translatable(spell.type().getTranslationKey() + ".lore").formatted(spell.type().getAffinity().getColor()), 180).toList());
-
+        spell.appendTooltip(tooltip);
 
         context.drawTooltip(textRenderer, tooltip, x, y);
         context.getMatrices().pop();

@@ -28,10 +28,11 @@ public abstract class AbstractDisguiseSpell extends AbstractSpell implements Dis
 
     @Override
     protected void onDestroyed(Caster<?> caster) {
+        super.onDestroyed(caster);
         caster.asEntity().calculateDimensions();
         caster.asEntity().setInvisible(false);
-        if (caster instanceof Pony) {
-            ((Pony) caster).setInvisible(false);
+        if (caster instanceof Pony pony) {
+            pony.setInvisible(false);
         }
         disguise.remove();
     }
@@ -71,7 +72,7 @@ public abstract class AbstractDisguiseSpell extends AbstractSpell implements Dis
     public static Entity getAppearance(Entity e) {
         return e instanceof PlayerEntity ? Pony.of((PlayerEntity)e)
                 .getSpellSlot()
-                .get(SpellPredicate.IS_DISGUISE, true)
+                .get(SpellPredicate.IS_DISGUISE)
                 .map(AbstractDisguiseSpell::getDisguise)
                 .map(EntityAppearance::getAppearance)
                 .orElse(e) : e;

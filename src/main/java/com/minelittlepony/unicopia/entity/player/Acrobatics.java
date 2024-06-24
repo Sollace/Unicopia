@@ -7,16 +7,14 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation.Recipient;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
-import com.minelittlepony.unicopia.entity.mob.StormCloudEntity;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.Tickable;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SideShapeType;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.BlockTags;
@@ -28,8 +26,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class Acrobatics implements Tickable, NbtSerialisable {
-    static final TrackedData<Optional<BlockPos>> HANGING_POSITION = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS);
-
     private int ticksHanging;
 
     private Direction attachDirection;
@@ -38,14 +34,13 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     private final Pony pony;
     private final PlayerEntity entity;
 
-    public Acrobatics(Pony pony) {
+    private final DataTracker.Entry<Optional<BlockPos>> hangingPos;
+
+    public Acrobatics(Pony pony, DataTracker tracker) {
         this.pony = pony;
         this.entity = pony.asEntity();
+        this.hangingPos = tracker.startTracking(TrackableDataType.OPTIONAL_POS, Optional.empty());
         pony.addTicker(this::checkDislodge);
-    }
-
-    public void initDataTracker() {
-        entity.getDataTracker().startTracking(HANGING_POSITION, Optional.empty());
     }
 
     public boolean isImmobile() {
@@ -56,7 +51,7 @@ public class Acrobatics implements Tickable, NbtSerialisable {
         if (entity.isCreative() && entity.getAbilities().flying) {
             return false;
         }
-        return pony.getCompositeRace().any(Race::isFish) && !entity.isTouchingWater() && !entity.getWorld().isWater(StormCloudEntity.findSurfaceBelow(entity.getWorld(), entity.getBlockPos()));
+        return pony.getCompositeRace().any(Race::isFish) && !entity.isTouchingWater() && !entity.getWorld().isWater(PosHelper.findNearestSurface(entity.getWorld(), entity.getBlockPos()));
     }
 
     @Override
@@ -147,7 +142,7 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     }
 
     public Optional<BlockPos> getHangingPosition() {
-        return entity.getDataTracker().get(HANGING_POSITION);
+        return hangingPos.get();
     }
 
     public boolean isHanging() {
@@ -155,13 +150,13 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     }
 
     public void stopHanging() {
-        entity.getDataTracker().set(HANGING_POSITION, Optional.empty());
+        hangingPos.set(Optional.empty());
         entity.calculateDimensions();
         ticksHanging = 0;
     }
 
     public void startHanging(BlockPos pos) {
-        entity.getDataTracker().set(HANGING_POSITION, Optional.of(pos));
+        hangingPos.set(Optional.of(pos));
         entity.teleport(pos.getX() + 0.5, pos.getY() - 1, pos.getZ() + 0.5);
         entity.setVelocity(Vec3d.ZERO);
         entity.setSneaking(false);
@@ -202,6 +197,6 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     @Override
     public void fromNBT(NbtCompound compound) {
         ticksHanging = compound.getInt("ticksHanging");
-        pony.asEntity().getDataTracker().set(HANGING_POSITION, NbtSerialisable.BLOCK_POS.readOptional("hangingPosition", compound));
+        hangingPos.set(NbtSerialisable.BLOCK_POS.readOptional("hangingPosition", compound));
     }
 }

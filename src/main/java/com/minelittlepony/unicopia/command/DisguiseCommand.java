@@ -80,7 +80,7 @@ public class DisguiseCommand {
         }
 
         Pony iplayer = Pony.of(player);
-        iplayer.getSpellSlot().get(SpellType.CHANGELING_DISGUISE, true)
+        iplayer.getSpellSlot().get(SpellType.CHANGELING_DISGUISE)
             .orElseGet(() -> SpellType.CHANGELING_DISGUISE.withTraits().apply(iplayer, CastingMethod.INNATE))
             .setDisguise(entity);
 
@@ -109,7 +109,7 @@ public class DisguiseCommand {
 
     static int reveal(ServerCommandSource source, PlayerEntity player) {
         Pony iplayer = Pony.of(player);
-        iplayer.getSpellSlot().removeIf(SpellPredicate.IS_DISGUISE, true);
+        iplayer.getSpellSlot().removeIf(SpellPredicate.IS_DISGUISE);
 
         if (source.getEntity() == player) {
             source.sendFeedback(() -> Text.translatable("commands.disguise.removed.self"), true);

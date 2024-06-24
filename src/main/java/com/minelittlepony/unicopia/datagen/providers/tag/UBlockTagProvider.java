@@ -49,6 +49,12 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 Blocks.COMMAND_BLOCK, Blocks.CHAIN_COMMAND_BLOCK, Blocks.REPEATING_COMMAND_BLOCK,
                 Blocks.LIGHT, Blocks.JIGSAW, Blocks.BARRIER, Blocks.BEDROCK
         ).forceAddTag(BlockTags.DOORS).forceAddTag(BlockTags.TRAPDOORS);
+        getOrCreateTagBuilder(UTags.Blocks.ANGERS_GUARDIANS).add(
+                Blocks.PRISMARINE, Blocks.PRISMARINE_SLAB, Blocks.PRISMARINE_STAIRS, Blocks.PRISMARINE_WALL,
+                Blocks.PRISMARINE_BRICKS, Blocks.PRISMARINE_BRICK_SLAB, Blocks.PRISMARINE_BRICK_STAIRS,
+                Blocks.DARK_PRISMARINE, Blocks.DARK_PRISMARINE_SLAB, Blocks.DARK_PRISMARINE_STAIRS,
+                Blocks.SEA_LANTERN, Blocks.SPONGE
+        );
         getOrCreateTagBuilder(UTags.Blocks.BUTTERFLIES_SPAWNABLE_ON).forceAddTag(BlockTags.ANIMALS_SPAWNABLE_ON).forceAddTag(BlockTags.LEAVES).forceAddTag(BlockTags.FLOWERS).forceAddTag(BlockTags.FLOWER_POTS);
         getOrCreateTagBuilder(UTags.Blocks.JARS).add(UBlocks.JAR, UBlocks.CLOUD_JAR, UBlocks.STORM_JAR, UBlocks.LIGHTNING_JAR, UBlocks.ZAP_JAR);
         getOrCreateTagBuilder(BlockTags.CROPS).add(crops);
@@ -60,6 +66,7 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(BlockTags.FIRE).add(UBlocks.SPECTRAL_FIRE);
         getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(UBlocks.HAY_BLOCK).addOptional(Unicopia.id("rice_block")).addOptional(Unicopia.id("straw_block"));
         getOrCreateTagBuilder(BlockTags.SHOVEL_MINEABLE).add(UBlocks.WORM_BLOCK);
+        getOrCreateTagBuilder(BlockTags.REPLACEABLE_BY_TREES).add(UBlocks.GREEN_APPLE, UBlocks.SOUR_APPLE, UBlocks.GOLDEN_APPLE, UBlocks.SWEET_APPLE, UBlocks.ZAP_APPLE, UBlocks.ZAP_BULB);
 
         addZapWoodset();
         addPalmWoodset();

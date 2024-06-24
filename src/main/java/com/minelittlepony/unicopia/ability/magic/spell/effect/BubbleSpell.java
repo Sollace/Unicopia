@@ -6,18 +6,24 @@ import java.util.UUID;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.*;
+import com.minelittlepony.unicopia.entity.AttributeContainer;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.nbt.NbtCompound;
@@ -46,17 +52,21 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
             .with(Trait.POWER, 1)
             .build();
 
+    private static final SpellAttribute<Integer> SOAPINESS = SpellAttribute.create(SpellAttributeType.SOAPINESS, AttributeFormat.REGULAR, Trait.POWER, power -> (int)(power * 2));
+
+    static final TooltipFactory TOOLTIP = TooltipFactory.of(TimedSpell.TIME, SOAPINESS);
+
     private final Timer timer;
 
-    private int struggles;
-
     private float prevRadius;
-    private float radius;
+    private DataTracker.Entry<Float> radius;
+    private DataTracker.Entry<Integer> struggles;
 
     protected BubbleSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer((120 + (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19)) * 20);
-        struggles = (int)(getTraits().get(Trait.POWER) * 2);
+        timer = new Timer(TIME.get(getTraits()));
+        radius = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
+        struggles = dataTracker.startTracking(TrackableDataType.INT, SOAPINESS.get(getTraits()));
     }
 
     @Override
@@ -65,27 +75,22 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
     }
 
     public float getRadius(float tickDelta) {
-        return MathHelper.lerp(tickDelta, prevRadius, radius);
+        return MathHelper.lerp(tickDelta, prevRadius, radius.get());
     }
 
     @Override
     public boolean apply(Caster<?> source) {
 
-        if (getType().isOn(source)) {
-            source.getSpellSlot().removeWhere(getType(), true);
+        if (source.getSpellSlot().removeWhere(getType())) {
             return false;
         }
 
         Entity entity = source.asEntity();
 
-        if (entity instanceof LivingEntity l) {
-            MODIFIERS.forEach((attribute, modifier) -> {
-                if (l.getAttributes().hasAttribute(attribute)) {
-                    l.getAttributeInstance(attribute).addPersistentModifier(modifier);
-                }
-            });
+        if (source instanceof AttributeContainer l) {
+            l.applyAttributeModifiers(MODIFIERS, false, true);
         }
-        radius = Math.max(entity.getHeight(), entity.getWidth()) * 1.2F;
+        radius.set(Math.max(entity.getHeight(), entity.getWidth()) * 1.2F);
         source.playSound(USounds.ENTITY_PLAYER_UNICORN_TELEPORT, 1);
         entity.addVelocity(0, 0.2F * source.getPhysics().getGravitySignum(), 0);
         Living.updateVelocity(entity);
@@ -105,15 +110,13 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
 
         boolean done = timer.getTicksRemaining() <= 0;
 
-        source.spawnParticles(source.getOriginVector().add(0, 1, 0), new Sphere(true, radius * (done ? 0.25F : 0.5F)), done ? 13 : 1, pos -> {
+        source.spawnParticles(source.getOriginVector().add(0, 1, 0), new Sphere(true, radius.get() * (done ? 0.25F : 0.5F)), done ? 13 : 1, pos -> {
             source.addParticle(done ? ParticleTypes.BUBBLE_POP : UParticles.BUBBLE, pos, Vec3d.ZERO);
         });
 
         if (done) {
             return false;
         }
-
-        setDirty();
 
         source.asEntity().addVelocity(
                 MathHelper.sin(source.asEntity().age / 6F) / 50F,
@@ -123,13 +126,14 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
 
         source.asEntity().fallDistance = 0;
 
-        prevRadius = radius;
+        prevRadius = radius.get();
 
         if (source instanceof Pony pony && pony.sneakingChanged() && pony.asEntity().isSneaking()) {
-            setDirty();
-            radius += 0.5F;
+            radius.set(radius.get() + 0.5F);
             source.playSound(USounds.SPELL_BUBBLE_DISTURB, 1);
-            if (struggles-- <= 0) {
+            int s = struggles.get() - 1;
+            struggles.set(s);
+            if (s <= 0) {
                 setDead();
                 return false;
             }
@@ -140,12 +144,9 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
 
     @Override
     protected void onDestroyed(Caster<?> source) {
-        if (source.asEntity() instanceof LivingEntity l) {
-            MODIFIERS.forEach((attribute, modifier) -> {
-                if (l.getAttributes().hasAttribute(attribute)) {
-                    l.getAttributeInstance(attribute).removeModifier(modifier.getId());
-                }
-            });
+        super.onDestroyed(source);
+        if (source instanceof AttributeContainer l) {
+            l.applyAttributeModifiers(MODIFIERS, false, false);
         }
         source.playSound(USounds.ENTITY_PLAYER_UNICORN_TELEPORT, 1);
     }
@@ -161,16 +162,16 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
-        compound.putInt("struggles", struggles);
-        compound.putFloat("radius", radius);
+        compound.putInt("struggles", struggles.get());
+        compound.putFloat("radius", radius.get());
         timer.toNBT(compound);
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
-        struggles = compound.getInt("struggles");
-        radius = compound.getFloat("radius");
+        struggles.set(compound.getInt("struggles"));
+        radius.set(compound.getFloat("radius"));
         timer.fromNBT(compound);
     }
 }

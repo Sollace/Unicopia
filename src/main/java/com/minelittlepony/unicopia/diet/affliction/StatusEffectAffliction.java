@@ -43,6 +43,9 @@ public record StatusEffectAffliction(StatusEffect effect, Range seconds, Range a
 
     @Override
     public void afflict(PlayerEntity player, ItemStack stack) {
+        if (player.getWorld().isClient) {
+            return;
+        }
         if (chance > 0 && player.getWorld().random.nextInt(chance) > 0) {
             return;
         }

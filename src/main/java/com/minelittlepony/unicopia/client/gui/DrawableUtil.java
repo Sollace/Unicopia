@@ -72,25 +72,39 @@ public interface DrawableUtil {
     }
 
     /**
+     * Renders a colored arc with notches.
+     *
+     * @param mirrorHorizontally Whether or not the arc must be mirrored across the horizontal plane. Will produce a bar that grows from the middle filling both sides.
+     */
+    static void drawNotchedArc(MatrixStack matrices, double innerRadius, double outerRadius, double startAngle, double arcAngle, double notchAngle, double notchSpacing, int color) {
+        double notchBegin = startAngle;
+        double endAngle = startAngle + arcAngle;
+        while (notchBegin < endAngle) {
+            double notchEnd = Math.min(notchBegin + notchAngle, endAngle);
+            if (notchEnd <= notchBegin) {
+                return;
+            }
+            drawArc(matrices, innerRadius, outerRadius, notchBegin, notchEnd - notchBegin, color);
+            notchBegin += notchAngle + notchSpacing;
+        }
+
+    }
+
+    /**
      * Renders a colored arc.
      *
      * @param mirrorHorizontally Whether or not the arc must be mirrored across the horizontal plane. Will produce a bar that grows from the middle filling both sides.
      */
-    static void drawArc(MatrixStack matrices, double innerRadius, double outerRadius, double startAngle, double arcAngle, int color, boolean mirrorHorizontally) {
+    static void drawArc(MatrixStack matrices, double innerRadius, double outerRadius, double startAngle, double arcAngle, int color) {
+        if (arcAngle < INCREMENT) {
+            return;
+        }
         float r = (color >> 24 & 255) / 255F;
         float g = (color >> 16 & 255) / 255F;
         float b = (color >> 8 & 255) / 255F;
         float k = (color & 255) / 255F;
 
-        if (arcAngle < INCREMENT) {
-            return;
-        }
-
         final double maxAngle = MathHelper.clamp(startAngle + arcAngle, 0, TAU - INCREMENT);
-
-        if (!mirrorHorizontally) {
-            startAngle = -startAngle;
-        }
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
@@ -102,7 +116,7 @@ public interface DrawableUtil {
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
-        for (double angle = startAngle; angle >= -maxAngle; angle -= INCREMENT) {
+        for (double angle = -startAngle; angle >= -maxAngle; angle -= INCREMENT) {
             // center
             cylendricalVertex(bufferBuilder, model, innerRadius, angle, r, g, b, k);
             // point one
@@ -111,70 +125,6 @@ public interface DrawableUtil {
             cylendricalVertex(bufferBuilder, model, outerRadius, angle + INCREMENT, r, g, b, k);
             // back to center
             cylendricalVertex(bufferBuilder, model, innerRadius, angle + INCREMENT, r, g, b, k);
-        }
-
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-    }
-
-    /**
-     * Renders hollow circle
-     *
-     * @param mirrorHorizontally Whether or not the arc must be mirrored across the horizontal plane. Will produce a bar that grows from the middle filling both sides.
-     */
-    static void drawArc(MatrixStack matrices, double radius, double startAngle, double arcAngle, int color, boolean mirrorHorizontally) {
-        drawCircle(matrices, radius, startAngle, arcAngle, color, mirrorHorizontally, VertexFormat.DrawMode.DEBUG_LINES);
-    }
-
-    /**
-     * Renders a filled circle.
-     *
-     * @param mirrorHorizontally Whether or not the arc must be mirrored across the horizontal plane. Will produce a bar that grows from the middle filling both sides.
-     */
-    static void drawCircle(MatrixStack matrices, double radius, double startAngle, double arcAngle, int color, boolean mirrorHorizontally) {
-        drawCircle(matrices, radius, startAngle, arcAngle, color, mirrorHorizontally, VertexFormat.DrawMode.QUADS);
-    }
-
-    private static void drawCircle(MatrixStack matrices, double radius, double startAngle, double arcAngle, int color, boolean mirrorHorizontally, VertexFormat.DrawMode mode) {
-        float r = (color >> 24 & 255) / 255F;
-        float g = (color >> 16 & 255) / 255F;
-        float b = (color >> 8 & 255) / 255F;
-        float k = (color & 255) / 255F;
-
-        if (arcAngle < INCREMENT) {
-            return;
-        }
-
-        final double maxAngle = MathHelper.clamp(startAngle + arcAngle, 0, TAU - INCREMENT);
-
-        if (!mirrorHorizontally) {
-            startAngle = -startAngle;
-        }
-
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-
-        Matrix4f model = matrices.peek().getPositionMatrix();
-
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(mode, VertexFormats.POSITION_COLOR);
-
-        boolean joinEnds = mode == VertexFormat.DrawMode.QUADS;
-
-        // center
-
-        for (double angle = startAngle; angle >= -maxAngle; angle -= INCREMENT) {
-            if (joinEnds) {
-                bufferBuilder.vertex(model, 0, 0, 0).color(r, g, b, k).next();
-            }
-            // point one
-            cylendricalVertex(bufferBuilder, model, radius, angle, r, g, b, k);
-            // point two
-            cylendricalVertex(bufferBuilder, model, radius, angle + INCREMENT, r, g, b, k);
-            if (joinEnds) {
-                bufferBuilder.vertex(model, 0, 0, 0).color(r, g, b, k).next();
-            }
         }
 
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());

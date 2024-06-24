@@ -76,6 +76,7 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
         super(type, world);
         setPersistent();
         setAltered(world.random.nextInt(3) == 0);
+        state.setCurrentPageId(SpellbookState.CRAFTING_ID);
         if (!world.isClient) {
             state.setSynchronizer(state -> {
                 getWorld().getPlayers().forEach(player -> {

@@ -2,27 +2,35 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.UUID;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
+import com.minelittlepony.unicopia.server.world.Ether;
 
 import net.minecraft.nbt.NbtCompound;
 
 public abstract class AbstractSpell implements Spell {
 
-    private boolean dead;
-    private boolean dying;
-    private boolean dirty;
-    private boolean hidden;
-    private boolean destroyed;
-
-    private CustomisedSpellType<?> type;
-
     private UUID uuid = UUID.randomUUID();
+    private final CustomisedSpellType<?> type;
+
+    protected final DataTracker dataTracker = new DataTracker(0);
+
+    private final DataTracker.Entry<Boolean> dead = dataTracker.startTracking(TrackableDataType.BOOLEAN, false);
+    private final DataTracker.Entry<Boolean> dying = dataTracker.startTracking(TrackableDataType.BOOLEAN, false);
+    private boolean dirty;
+    private final DataTracker.Entry<Boolean> hidden = dataTracker.startTracking(TrackableDataType.BOOLEAN, false);
+    private boolean destroyed;
 
     protected AbstractSpell(CustomisedSpellType<?> type) {
         this.type = type;
+    }
+
+    @Override
+    public final DataTracker getDataTracker() {
+        return dataTracker;
     }
 
     @Override
@@ -30,41 +38,41 @@ public abstract class AbstractSpell implements Spell {
         return uuid;
     }
 
-    @Override
-    public final SpellType<?> getType() {
+    protected final SpellType<?> getType() {
         return type.type();
     }
 
+    @Override
     public final CustomisedSpellType<?> getTypeAndTraits() {
         return type;
     }
 
-    @Override
-    public final SpellTraits getTraits() {
+    protected final SpellTraits getTraits() {
         return type.traits();
     }
 
     @Override
     public final void setDead() {
-        dying = true;
-        setDirty();
+        dying.set(true);
     }
 
     @Override
     public final boolean isDead() {
-        return dead;
+        return dead.get();
     }
 
     @Override
     public final boolean isDying() {
-        return dying;
+        return dying.get();
     }
 
+    @Deprecated
     @Override
     public final boolean isDirty() {
         return dirty;
     }
 
+    @Deprecated
     @Override
     public final void setDirty() {
         dirty = true;
@@ -72,25 +80,17 @@ public abstract class AbstractSpell implements Spell {
 
     @Override
     public final boolean isHidden() {
-        return hidden;
+        return hidden.get();
     }
 
     @Override
     public final void setHidden(boolean hidden) {
-        this.hidden = hidden;
-    }
-
-    @Override
-    public Affinity getAffinity() {
-        return getType().getAffinity();
-    }
-
-    protected void onDestroyed(Caster<?> caster) {
+        this.hidden.set(hidden);
     }
 
     @Override
     public void tickDying(Caster<?> caster) {
-        dead = true;
+        dead.set(true);
     }
 
     @Override
@@ -103,11 +103,17 @@ public abstract class AbstractSpell implements Spell {
         onDestroyed(caster);
     }
 
+    protected void onDestroyed(Caster<?> caster) {
+        if (!caster.isClient()) {
+            Ether.get(caster.asWorld()).remove(this, caster);
+        }
+    }
+
     @Override
     public void toNBT(NbtCompound compound) {
-        compound.putBoolean("dying", dying);
-        compound.putBoolean("dead", dead);
-        compound.putBoolean("hidden", hidden);
+        compound.putBoolean("dying", dying.get());
+        compound.putBoolean("dead", dead.get());
+        compound.putBoolean("hidden", hidden.get());
         compound.putUuid("uuid", uuid);
         compound.put("traits", getTraits().toNbt());
     }
@@ -118,12 +124,9 @@ public abstract class AbstractSpell implements Spell {
         if (compound.containsUuid("uuid")) {
             uuid = compound.getUuid("uuid");
         }
-        dying = compound.getBoolean("dying");
-        dead = compound.getBoolean("dead");
-        hidden = compound.getBoolean("hidden");
-        if (compound.contains("traits")) {
-            type = type.type().withTraits(SpellTraits.fromNbt(compound.getCompound("traits")).orElse(SpellTraits.EMPTY));
-        }
+        dying.set(compound.getBoolean("dying"));
+        dead.set(compound.getBoolean("dead"));
+        hidden.set(compound.getBoolean("hidden"));
     }
 
     @Override

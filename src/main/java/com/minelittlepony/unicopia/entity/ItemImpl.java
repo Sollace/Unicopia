@@ -5,16 +5,15 @@ import java.util.List;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.enchantment.WantItNeedItEnchantment;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.DataTrackerManager;
+import com.minelittlepony.unicopia.network.track.Trackable;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.VecHelper;
-
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -29,24 +28,22 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 
 public class ItemImpl implements Equine<ItemEntity> {
-    private static final TrackedData<String> ITEM_RACE = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.STRING);
-    static final TrackedData<Float> ITEM_GRAVITY = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.FLOAT);
-
     private final ItemEntity entity;
 
     private final ItemPhysics physics;
 
-    private Race serverRace;
+    private final DataTrackerManager trackers;
+    protected final DataTracker tracker;
+
+    private final DataTracker.Entry<Race> race;
 
     public ItemImpl(ItemEntity owner) {
         this.entity = owner;
+        this.trackers = Trackable.of(entity).getDataTrackers();
+        this.tracker = trackers.getPrimaryTracker();
         this.physics = new ItemPhysics(owner);
-    }
 
-    @Override
-    public void initDataTracker() {
-        entity.getDataTracker().startTracking(ITEM_GRAVITY, 1F);
-        entity.getDataTracker().startTracking(ITEM_RACE, Race.REGISTRY.getId(Race.HUMAN).toString());
+        race = tracker.startTracking(Race.TRACKABLE_TYPE, Race.HUMAN);
     }
 
     @Override
@@ -58,13 +55,6 @@ public class ItemImpl implements Equine<ItemEntity> {
     public boolean beforeUpdate() {
 
         if (!entity.getWorld().isClient) {
-            Race race = getSpecies();
-            if (race != serverRace) {
-                serverRace = race;
-                setSpecies(Race.HUMAN);
-                setSpecies(race);
-            }
-
             if (WantItNeedItEnchantment.getLevel(entity) > 0) {
                 var random = entity.getWorld().random;
 
@@ -150,12 +140,12 @@ public class ItemImpl implements Equine<ItemEntity> {
 
     @Override
     public Race getSpecies() {
-        return Race.fromName(entity.getDataTracker().get(ITEM_RACE), Race.HUMAN);
+        return race.get();
     }
 
     @Override
     public void setSpecies(Race race) {
-        entity.getDataTracker().set(ITEM_RACE, Race.REGISTRY.getId(race).toString());
+        this.race.set(race);
     }
 
     @Override
@@ -165,7 +155,7 @@ public class ItemImpl implements Equine<ItemEntity> {
 
     @Override
     public void toNBT(NbtCompound compound) {
-        compound.putString("owner_race", Race.REGISTRY.getId(getSpecies()).toString());
+        compound.putString("owner_race", getSpecies().getId().toString());
         physics.toNBT(compound);
     }
 

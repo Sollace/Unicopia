@@ -3,6 +3,10 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
@@ -15,6 +19,10 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 
 public class DisplacementSpell extends AbstractSpell implements HomingSpell, ProjectileDelegate.EntityHitListener {
+
+    private static final SpellAttribute<Float> DAMAGE_TO_TARGET = SpellAttribute.create(SpellAttributeType.DAMAGE_TO_TARGET, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.BLOOD, blood -> blood);
+
+    static final TooltipFactory TOOLTIP = DAMAGE_TO_TARGET;
 
     private final EntityReference<Entity> target = new EntityReference<>();
 
@@ -71,7 +79,7 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pro
         entity.setGlowing(false);
         entity.playSound(USounds.SPELL_DISPLACEMENT_TELEPORT, 1, 1);
 
-        float damage = getTraits().get(Trait.BLOOD);
+        float damage = DAMAGE_TO_TARGET.get(getTraits());
         if (damage > 0) {
             entity.damage(source.damageOf(UDamageTypes.EXHAUSTION, source), damage);
         }
@@ -90,6 +98,7 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pro
 
     @Override
     protected void onDestroyed(Caster<?> caster) {
+        super.onDestroyed(caster);
         caster.getOriginatingCaster().asEntity().setGlowing(false);
         target.ifPresent(caster.asWorld(), e -> e.setGlowing(false));
     }

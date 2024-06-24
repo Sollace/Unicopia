@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -78,7 +79,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
     }
 
     @Override
-    public void setMaster(LivingEntity owner) {
+    public final void setMaster(LivingEntity owner) {
         setOwner(owner);
     }
 
@@ -86,13 +87,13 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
     public void setOwner(@Nullable Entity entity) {
         super.setOwner(entity);
         if (entity instanceof LivingEntity l) {
-            getMasterReference().set(l);
+            WeaklyOwned.Mutable.super.setMaster(l);
         }
     }
 
     @Override
     @Nullable
-    public Entity getOwner() {
+    public final Entity getOwner() {
         return getMaster();
     }
 
@@ -207,7 +208,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
     protected void onEntityHit(EntityHitResult hit) {
         Entity entity = hit.getEntity();
 
-        if (EquinePredicates.IS_MAGIC_IMMUNE.test(entity)) {
+        if (!(entity instanceof FallingBlockEntity) && EquinePredicates.IS_MAGIC_IMMUNE.test(entity)) {
             return;
         }
 

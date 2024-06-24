@@ -43,8 +43,8 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
     public void onInitializeClient() {
         INSTANCE = this;
         PonyModelPrepareCallback.EVENT.register(this::onPonyModelPrepared);
-        Gear.register(() -> new BangleGear(TrinketsDelegate.MAINHAND));
-        Gear.register(() -> new BangleGear(TrinketsDelegate.OFFHAND));
+        Gear.register(() -> new BangleGear(TrinketsDelegate.MAIN_GLOVE));
+        Gear.register(() -> new BangleGear(TrinketsDelegate.SECONDARY_GLOVE));
         Gear.register(HeldEntityGear::new);
         Gear.register(BodyPartGear::pegasusWings);
         Gear.register(BodyPartGear::batWings);

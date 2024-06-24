@@ -83,6 +83,9 @@ public class URecipeProvider extends FabricRecipeProvider {
             .input(ConventionalItemTags.GLASS_BLOCKS)
             .input(UItems.SUNGLASSES).criterion("has_broken_sunglasses", conditionsFromItem(UItems.BROKEN_SUNGLASSES))
             .offerTo(exporter, convertBetween(UItems.SUNGLASSES, UItems.BROKEN_SUNGLASSES));
+
+        // farmers delight
+        //offerFarmersDelightCuttingRecipes(withConditions(exporter, DefaultResourceConditions.allModsLoaded("farmersdelight")));
     }
 
     private void generateVanillaRecipeExtensions(RecipeExporter exporter) {
@@ -689,6 +692,44 @@ public class URecipeProvider extends FabricRecipeProvider {
         PatternTemplate.FOUR_COLOR.offerTo(exporter, UItems.RAINBOW_PBG_BED_SHEETS, Items.PURPLE_WOOL, Items.WHITE_WOOL, Items.LIGHT_GRAY_WOOL, Items.BLACK_WOOL);
         PatternTemplate.SEVEN_COLOR.offerTo(exporter, UItems.RAINBOW_BED_SHEETS, UItems.RAINBOW_BED_SHEETS, Items.LIGHT_BLUE_WOOL, Items.RED_WOOL, Items.ORANGE_WOOL, Items.YELLOW_WOOL, Items.BLUE_WOOL, Items.GREEN_WOOL, Items.PURPLE_WOOL);
     }
+
+    /*
+    private void offerFarmersDelightCuttingRecipes(RecipeExporter exporter) {
+
+        // unwaxing
+        UBlockFamilies.WAXED_ZAP.getVariants().forEach((variant, waxed) -> {
+            if (variant == Variant.WALL_SIGN) return;
+            var unwaxed = UBlockFamilies.ZAP.getVariant(variant);
+            CuttingBoardRecipeJsonBuilder.create(unwaxed, ItemTags.AXES)
+                .input(waxed).criterion(hasItem(waxed), conditionsFromItem(waxed))
+                .result(Items.HONEYCOMB)
+                .offerTo(exporter, getItemPath(unwaxed) + "_from_waxed");
+        });
+        List.of(UBlockFamilies.ZAP, UBlockFamilies.PALM).forEach(family -> {
+            family.getVariants().forEach((variant, block) -> {
+                if (variant == Variant.WALL_SIGN) return;
+                CuttingBoardRecipeJsonBuilder.create(family.getBaseBlock(), ItemTags.AXES)
+                    .input(block).criterion(hasItem(block), conditionsFromItem(block))
+                    .offerTo(exporter, getItemPath(block));
+            });
+        });
+        CuttingBoardRecipeJsonBuilder.create(UBlocks.PALM_PLANKS, ItemTags.AXES)
+            .input(UBlocks.PALM_HANGING_SIGN).criterion(hasItem(UBlocks.PALM_HANGING_SIGN), conditionsFromItem(UBlocks.PALM_HANGING_SIGN))
+            .offerTo(exporter);
+
+        Map.of(
+                UBlocks.PALM_LOG, UBlocks.STRIPPED_PALM_LOG,
+                UBlocks.PALM_WOOD, UBlocks.STRIPPED_PALM_WOOD,
+                UBlocks.ZAP_LOG, UBlocks.STRIPPED_ZAP_LOG,
+                UBlocks.ZAP_WOOD, UBlocks.STRIPPED_ZAP_WOOD
+        ).forEach((unstripped, stripped) -> {
+            CuttingBoardRecipeJsonBuilder.create(stripped, ItemTags.AXES)
+                .input(unstripped).criterion(hasItem(unstripped), conditionsFromItem(unstripped))
+                .result(new Identifier("farmersdelight:tree_bark"))
+                .offerTo(exporter, convertBetween(stripped, unstripped));
+        });
+    }
+    */
 
     public static void offerCompactingRecipe(RecipeExporter exporter, RecipeCategory category, ItemConvertible output, ItemConvertible input, int resultCount) {
         offerCompactingRecipe(exporter, category, output, input, hasItem(input), resultCount);
