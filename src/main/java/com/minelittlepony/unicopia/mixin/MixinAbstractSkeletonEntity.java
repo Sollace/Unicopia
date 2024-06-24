@@ -18,7 +18,7 @@ import net.minecraft.util.math.Vec3d;
 abstract class MixinAbstractSkeletonEntity extends HostileEntity {
     MixinAbstractSkeletonEntity() { super(null, null); }
 
-    @ModifyArg(method = "attack", at = @At(value = "INVOKE", target = "net/minecraft/world/World.spawnEntity(Lnet/minecraft/entity/Entity;)Z"))
+    @ModifyArg(method = "shootAt(Lnet/minecraft/entity/LivingEntity;F)V", at = @At(value = "INVOKE", target = "net/minecraft/world/World.spawnEntity(Lnet/minecraft/entity/Entity;)Z"))
     private Entity modifyAccuracy(Entity entity) {
         if (entity instanceof PersistentProjectileEntity projectile && getTarget() instanceof PlayerEntity player && Pony.of(player).getPhysics().isFlying()) {
             Vec3d targetPos = TargettingUtil.getProjectedPos(player)

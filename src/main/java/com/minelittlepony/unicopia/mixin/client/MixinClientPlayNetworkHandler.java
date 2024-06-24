@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.mixin.client;
 
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,7 +14,7 @@ import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.track.Trackable;
 
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientCommonNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
@@ -23,9 +22,13 @@ import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 
 @Mixin(ClientPlayNetworkHandler.class)
-abstract class MixinClientPlayNetworkHandler {
-    @Shadow private @Final MinecraftClient client;
+abstract class MixinClientPlayNetworkHandler extends ClientCommonNetworkHandler {
+    protected MixinClientPlayNetworkHandler() { super(null, null, null); }
+
     @Shadow private ClientWorld world;
+
+    @Nullable
+    private ClientPlayerEntity oldPlayer;
 
     @Inject(method = "onEntityStatus", at = @At("TAIL"))
     private void onOnEntityStatus(EntityStatusS2CPacket packet, CallbackInfo info) {
@@ -40,9 +43,6 @@ abstract class MixinClientPlayNetworkHandler {
                 });
         }
     }
-
-    @Nullable
-    private ClientPlayerEntity oldPlayer;
 
     @Inject(method = "onPlayerRespawn", at = @At("HEAD"))
     public void beforeOnPlayerRespawn(PlayerRespawnS2CPacket packet, CallbackInfo info) {
