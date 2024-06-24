@@ -46,7 +46,6 @@ public interface NbtSerialisable {
     }
 
     static Vec3d readVector(NbtList list) {
-
         return new Vec3d(list.getDouble(0), list.getDouble(1), list.getDouble(2));
     }
 
@@ -70,14 +69,31 @@ public interface NbtSerialisable {
     }
 
     static <K, V> Map<K, V> readMap(NbtCompound nbt, Function<String, K> keyFunction, Function<NbtElement, V> valueFunction) {
-        return nbt.getKeys().stream().collect(Collectors.toMap(keyFunction, k -> valueFunction.apply(nbt.get(k))));
+        return readMap(nbt, keyFunction, (k, v) -> valueFunction.apply(v));
+    }
+
+    static <K, V> Map<K, V> readMap(NbtCompound nbt, Function<String, K> keyFunction, BiFunction<K, NbtElement, V> valueFunction) {
+        return nbt.getKeys().stream().map(k -> {
+            K key = keyFunction.apply(k);
+            if (key == null) {
+                return null;
+            }
+            V value = valueFunction.apply(key, nbt.get(k));
+            if (value == null) {
+                return null;
+            }
+            return Map.entry(key, value);
+        })
+        .filter(Objects::nonNull)
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     static <K, V> NbtCompound writeMap(Map<K, V> map, Function<K, String> keyFunction, Function<V, ? extends NbtElement> valueFunction) {
-        NbtCompound nbt = new NbtCompound();
-        map.forEach((k, v) -> {
-            nbt.put(keyFunction.apply(k), valueFunction.apply(v));
-        });
+        return writeMap(new NbtCompound(), map, keyFunction, valueFunction);
+    }
+
+    static <K, V> NbtCompound writeMap(NbtCompound nbt, Map<K, V> map, Function<K, String> keyFunction, Function<V, ? extends NbtElement> valueFunction) {
+        map.forEach((k, v) -> nbt.put(keyFunction.apply(k), valueFunction.apply(v)));
         return nbt;
     }
 

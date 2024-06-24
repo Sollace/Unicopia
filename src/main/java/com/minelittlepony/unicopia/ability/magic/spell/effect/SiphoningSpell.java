@@ -15,6 +15,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -37,6 +39,7 @@ import net.minecraft.util.math.Vec3d;
 public class SiphoningSpell extends AbstractAreaEffectSpell {
     static final Predicate<Entity> TARGET_PREDICATE = EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(EntityPredicates.VALID_LIVING_ENTITY);
 
+    private final DataTracker.Entry<Boolean> upset = dataTracker.startTracking(TrackableDataType.BOOLEAN, false);
     private int ticksUpset;
 
     protected SiphoningSpell(CustomisedSpellType<?> type) {
@@ -51,12 +54,12 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
 
-        if (ticksUpset > 0) {
-            ticksUpset--;
+        if (ticksUpset > 0 && --ticksUpset <= 0) {
+            upset.set(false);
         }
 
         if (source.isClient()) {
-            float radius = 4 + source.getLevel().getScaled(5);
+            float radius = source.getLevel().getScaled(5) + RANGE.get(getTraits());
             int direction = isFriendlyTogether(source) ? 1 : -1;
 
             source.spawnParticles(new Sphere(true, radius, 1, 0, 1), 1, pos -> {
@@ -102,7 +105,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
                 } else {
                     e.damage(damage, e.getHealth() / 4);
                     ticksUpset = 100;
-                    setDirty();
+                    upset.set(true);
                 }
             } else {
                 e.heal((float)Math.min(source.getLevel().getScaled(e.getHealth()) / 2F, maxHealthGain * 0.6));
@@ -168,5 +171,8 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         ticksUpset = compound.getInt("upset");
+        if (ticksUpset > 0) {
+            upset.set(true);
+        }
     }
 }

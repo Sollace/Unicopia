@@ -18,6 +18,8 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.*;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
+import com.minelittlepony.unicopia.container.SpellbookState;
+
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
@@ -324,7 +326,7 @@ public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         @Override
         public void onClick() {
             if (MinecraftClient.getInstance().currentScreen instanceof SpellbookScreen spellbook) {
-                spellbook.getState().setCurrentPageId(SpellbookChapterList.TRAIT_DEX_ID);
+                spellbook.getState().setCurrentPageId(SpellbookState.TRAIT_DEX_ID);
                 spellbook.getTraitDex().pageTo(spellbook, trait);
             }
         }

@@ -159,6 +159,8 @@ public interface UItems {
 
     Item PALM_BOAT = ItemGroupRegistry.register(TerraformBoatItemHelper.registerBoatItem(Unicopia.id("palm_boat"), UWoodTypes.PALM_BOAT_TYPE, false), ItemGroups.FUNCTIONAL);
     Item PALM_CHEST_BOAT = ItemGroupRegistry.register(TerraformBoatItemHelper.registerBoatItem(Unicopia.id("palm_chest_boat"), UWoodTypes.PALM_BOAT_TYPE, true), ItemGroups.FUNCTIONAL);
+    Item PALM_SIGN = register("palm_sign", new SignItem(new Item.Settings(), UBlocks.PALM_SIGN, UBlocks.PALM_WALL_SIGN), ItemGroups.FUNCTIONAL);
+    Item PALM_HANGING_SIGN = register("palm_hanging_sign", new HangingSignItem(UBlocks.PALM_HANGING_SIGN, UBlocks.PALM_WALL_HANGING_SIGN, new Item.Settings()), ItemGroups.FUNCTIONAL);
 
     Item SPELLBOOK = register("spellbook", new SpellbookItem(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
 
@@ -218,6 +220,7 @@ public interface UItems {
             .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
     AmuletItem PEARL_NECKLACE = register("pearl_necklace", new AmuletItem(new FabricItemSettings()
             .maxCount(1)
+            .maxDamage(4)
             .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
 
     GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);

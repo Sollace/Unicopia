@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.server.world;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
@@ -15,6 +16,7 @@ import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import net.minecraft.nbt.*;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
@@ -35,7 +37,7 @@ public class Ether extends PersistentState {
         this.world = world;
         this.endpoints = NbtSerialisable.readMap(compound.getCompound("endpoints"), Identifier::tryParse, typeNbt -> {
             return NbtSerialisable.readMap((NbtCompound)typeNbt, UUID::fromString, entityNbt -> {
-                return NbtSerialisable.readMap((NbtCompound)entityNbt, UUID::fromString, Entry::new);
+                return NbtSerialisable.readMap((NbtCompound)entityNbt, UUID::fromString, nbt -> new Entry<>(nbt));
             });
         });
     }
@@ -62,7 +64,7 @@ public class Ether extends PersistentState {
     public <T extends Spell> Entry<T> getOrCreate(T spell, Caster<?> caster) {
         synchronized (locker) {
             Entry<T> entry = (Entry<T>)endpoints
-                    .computeIfAbsent(spell.getType().getId(), typeId -> new HashMap<>())
+                    .computeIfAbsent(spell.getTypeAndTraits().type().getId(), typeId -> new HashMap<>())
                     .computeIfAbsent(caster.asEntity().getUuid(), entityId -> new HashMap<>())
                     .computeIfAbsent(spell.getUuid(), spellid -> {
                         markDirty();
@@ -104,7 +106,7 @@ public class Ether extends PersistentState {
 
     @SuppressWarnings("unchecked")
     public <T extends Spell> Entry<T> get(T spell, Caster<?> caster) {
-        return get((SpellType<T>)spell.getType(), caster.asEntity().getUuid(), spell.getUuid());
+        return get((SpellType<T>)spell.getTypeAndTraits().type(), caster.asEntity().getUuid(), spell.getUuid());
     }
 
     public <T extends Spell> Entry<T> get(SpellType<T> spell, EntityReference.EntityValues<?> entityId, @Nullable UUID spellId) {
@@ -113,7 +115,7 @@ public class Ether extends PersistentState {
 
     @SuppressWarnings("unchecked")
     @Nullable
-    private <T extends Spell> Entry<T> get(SpellType<T> spell, UUID entityId, @Nullable UUID spellId) {
+    public <T extends Spell> Entry<T> get(SpellType<T> spell, UUID entityId, @Nullable UUID spellId) {
         if (spellId == null) {
             return null;
         }
@@ -166,11 +168,13 @@ public class Ether extends PersistentState {
         private WeakReference<T> spell;
 
         private boolean removed;
-        private boolean taken;
 
-        public float pitch;
-        public float yaw;
-        public float radius;
+        private float pitch;
+        private final AtomicBoolean changed = new AtomicBoolean(true);
+        private float yaw;
+        private float radius;
+
+        private final Set<UUID> claimants = new HashSet<>();
 
         private Entry(NbtElement nbt) {
             this.entity = new EntityReference<>();
@@ -184,7 +188,47 @@ public class Ether extends PersistentState {
             spellId = spell.getUuid();
         }
 
-        boolean isAlive() {
+        public boolean hasChanged() {
+            return changed.getAndSet(false);
+        }
+
+        public float getPitch() {
+            return pitch;
+        }
+
+        public void setPitch(float pitch) {
+            if (!MathHelper.approximatelyEquals(this.pitch, pitch)) {
+                this.pitch = pitch;
+                changed.set(true);
+            }
+            markDirty();
+        }
+
+        public float getYaw() {
+            return yaw;
+        }
+
+        public void setYaw(float yaw) {
+            if (!MathHelper.approximatelyEquals(this.yaw, yaw)) {
+                this.yaw = yaw;
+                changed.set(true);
+            }
+            markDirty();
+        }
+
+        public float getRadius() {
+            return radius;
+        }
+
+        public void setRadius(float radius) {
+            if (!MathHelper.approximatelyEquals(this.radius, radius)) {
+                this.radius = radius;
+                changed.set(true);
+            }
+            markDirty();
+        }
+
+        public boolean isAlive() {
             return !isDead();
         }
 
@@ -203,6 +247,7 @@ public class Ether extends PersistentState {
         public void markDead() {
             Unicopia.LOGGER.debug("Marking " + entity.getTarget().orElse(null) + " as dead");
             removed = true;
+            claimants.clear();
             markDirty();
         }
 
@@ -210,25 +255,22 @@ public class Ether extends PersistentState {
             return entity.getTarget().filter(target -> uuid.equals(target.uuid())).isPresent();
         }
 
-        public boolean isAvailable() {
-            return !isDead() && !taken && entity.isSet();
-        }
-
-        public void setTaken(boolean taken) {
-            this.taken = taken;
+        public void claim(UUID claimant) {
+            claimants.add(claimant);
             markDirty();
         }
 
-        public void release() {
-            setTaken(false);
+        public void release(UUID claimant) {
+            claimants.remove(claimant);
+            markDirty();
         }
 
-        public boolean claim() {
-            if (isAvailable()) {
-                setTaken(true);
-                return true;
-            }
-            return false;
+        public boolean isClaimedBy(UUID claimant) {
+            return claimants.contains(claimant);
+        }
+
+        public boolean hasClaimant() {
+            return !claimants.isEmpty();
         }
 
         @Nullable
@@ -242,7 +284,7 @@ public class Ether extends PersistentState {
                     spell = entity
                             .getOrEmpty(world)
                             .flatMap(Caster::of)
-                            .flatMap(caster -> caster.getSpellSlot().<T>get(s -> s.getUuid().equals(spellId), true))
+                            .flatMap(caster -> caster.getSpellSlot().<T>get(s -> s.getUuid().equals(spellId)))
                             .orElse(null);
 
                     if (spell != null) {
@@ -272,24 +314,34 @@ public class Ether extends PersistentState {
         public void toNBT(NbtCompound compound) {
             entity.toNBT(compound);
             compound.putBoolean("removed", removed);
-            compound.putBoolean("taken", taken);
             compound.putFloat("pitch", pitch);
             compound.putFloat("yaw", yaw);
             compound.putFloat("radius", radius);
             if (spellId != null) {
                 compound.putUuid("spellId", spellId);
             }
+            NbtList list = new NbtList();
+            claimants.forEach(claimant -> {
+                list.add(NbtHelper.fromUuid(claimant));
+            });
+            compound.put("claimants", list);
         }
 
         @Override
         public void fromNBT(NbtCompound compound) {
             entity.fromNBT(compound);
             removed = compound.getBoolean("removed");
-            taken = compound.getBoolean("taken");
             pitch = compound.getFloat("pitch");
             yaw = compound.getFloat("yaw");
             radius = compound.getFloat("radius");
             spellId = compound.containsUuid("spellid") ? compound.getUuid("spellId") : null;
+
+            claimants.clear();
+            if (compound.contains("claimants", NbtElement.LIST_TYPE)) {
+                compound.getList("claimants", NbtElement.INT_ARRAY_TYPE).forEach(el -> {
+                    claimants.add(NbtHelper.toUuid(el));
+                });
+            }
         }
 
         @Override

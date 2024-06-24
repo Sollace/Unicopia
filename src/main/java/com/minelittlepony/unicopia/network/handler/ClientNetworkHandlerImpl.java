@@ -20,8 +20,14 @@ import com.minelittlepony.unicopia.network.*;
 import com.minelittlepony.unicopia.network.MsgCasterLookRequest.Reply;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.particle.ItemStackParticleEffect;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 
 public class ClientNetworkHandlerImpl {
     private final MinecraftClient client = MinecraftClient.getInstance();
@@ -36,6 +42,7 @@ public class ClientNetworkHandlerImpl {
         Channel.SERVER_ZAP_STAGE.receiver().addPersistentListener(this::handleZapStage);
         Channel.SERVER_PLAYER_ANIMATION_CHANGE.receiver().addPersistentListener(this::handlePlayerAnimation);
         Channel.SERVER_REQUEST_PLAYER_LOOK.receiver().addPersistentListener(this::handleCasterLookRequest);
+        Channel.SERVER_TRINKET_BROKEN.receiver().addPersistentListener(this::handleTrinketBroken);
         Channel.CONFIGURATION_CHANGE.receiver().addPersistentListener(this::handleConfigurationChange);
     }
 
@@ -94,6 +101,37 @@ public class ClientNetworkHandlerImpl {
         }
 
         Channel.CLIENT_CASTER_LOOK.sendToServer(new Reply(packet.spellId(), Rot.of(player)));
+    }
+
+    private void handleTrinketBroken(PlayerEntity player, MsgTrinketBroken packet) {
+        if (player.getWorld().getEntityById(packet.entityId()) instanceof LivingEntity sender) {
+            ItemStack stack = packet.stack();
+            if (!stack.isEmpty()) {
+                if (!sender.isSilent()) {
+                    sender.getWorld().playSound(
+                            sender.getX(), sender.getY(), sender.getZ(),
+                            SoundEvents.ENTITY_ITEM_BREAK, sender.getSoundCategory(),
+                            0.8F,
+                            0.8F + sender.getWorld().random.nextFloat() * 0.4F,
+                            false
+                    );
+                }
+
+                int count = 5;
+
+                for (int i = 0; i < count; ++i) {
+                    Vec3d vec3d = new Vec3d((sender.getWorld().random.nextFloat() - 0.5) * 0.1, Math.random() * 0.1 + 0.1, 0.0);
+                    vec3d = vec3d.rotateX(-sender.getPitch() * (float) (Math.PI / 180.0));
+                    vec3d = vec3d.rotateY(-sender.getYaw() * (float) (Math.PI / 180.0));
+                    double d = (-sender.getWorld().random.nextFloat()) * 0.6 - 0.3;
+                    Vec3d vec3d2 = new Vec3d((sender.getWorld().random.nextFloat() - 0.5) * 0.3, d, 0.6);
+                    vec3d2 = vec3d2.rotateX(-sender.getPitch() * (float) (Math.PI / 180.0));
+                    vec3d2 = vec3d2.rotateY(-sender.getYaw() * (float) (Math.PI / 180.0));
+                    vec3d2 = vec3d2.add(sender.getX(), sender.getEyeY(), sender.getZ());
+                    sender.getWorld().addParticle(new ItemStackParticleEffect(ParticleTypes.ITEM, stack), vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y + 0.05, vec3d.z);
+                }
+            }
+        }
     }
 
     private void handleConfigurationChange(PlayerEntity sender, MsgConfigurationChange packet) {

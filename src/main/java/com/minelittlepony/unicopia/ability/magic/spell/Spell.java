@@ -1,17 +1,20 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.UUID;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.include.com.google.common.base.Objects;
 
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.NbtCompound;
@@ -24,14 +27,20 @@ public interface Spell extends NbtSerialisable, Affine {
     Serializer<Spell> SERIALIZER = Serializer.of(Spell::readNbt, Spell::writeNbt);
 
     /**
-     * Returns the registered type of this spell.
+     * Returns the full type that describes this spell.
      */
-    SpellType<?> getType();
+    CustomisedSpellType<?> getTypeAndTraits();
 
-    /**
-     * Gets the traits of this spell.
-     */
-    SpellTraits getTraits();
+    DataTracker getDataTracker();
+
+    default boolean isOf(SpellType<?> type) {
+        return getTypeAndTraits().type() == type;
+    }
+
+    @Override
+    default Affinity getAffinity() {
+        return getTypeAndTraits().type().getAffinity();
+    }
 
     /**
      * The unique id of this particular spell instance.
@@ -48,8 +57,9 @@ public interface Spell extends NbtSerialisable, Affine {
     /**
      * Returns an optional containing the spell that matched the given predicate.
      */
-    default Stream<Spell> findMatches(Predicate<Spell> predicate) {
-        return predicate.test(this) ? Stream.of(this) : Stream.empty();
+    @SuppressWarnings("unchecked")
+    default <T extends Spell> Stream<T> findMatches(SpellPredicate<T> predicate) {
+        return predicate == null || predicate.test(this) ? Stream.of((T)this) : Stream.empty();
     }
 
     /**
@@ -67,7 +77,14 @@ public interface Spell extends NbtSerialisable, Affine {
     /**
      * Returns true if this effect has changes that need to be sent to the client.
      */
+    @Deprecated
     boolean isDirty();
+
+    /**
+     * Marks this effect as dirty.
+     */
+    @Deprecated
+    void setDirty();
 
     /**
      * Applies this spell to the supplied caster.
@@ -75,6 +92,9 @@ public interface Spell extends NbtSerialisable, Affine {
      */
     default boolean apply(Caster<?> caster) {
         caster.getSpellSlot().put(this);
+        if (!caster.isClient()) {
+            Ether.get(caster.asWorld()).getOrCreate(this, caster);
+        }
         return true;
     }
 
@@ -100,11 +120,6 @@ public interface Spell extends NbtSerialisable, Affine {
      */
     void tickDying(Caster<?> caster);
 
-    /**
-     * Marks this effect as dirty.
-     */
-    void setDirty();
-
     boolean isHidden();
 
     void setHidden(boolean hidden);
@@ -117,8 +132,8 @@ public interface Spell extends NbtSerialisable, Affine {
     /**
      * Converts this spell into a placeable spell.
      */
-    default PlaceableSpell toPlaceable() {
-        return SpellType.PLACED_SPELL.withTraits().create().setSpell(this);
+    default PlacementControlSpell toPlaceable() {
+        return new PlacementControlSpell(this);
     }
 
     /**
@@ -126,21 +141,14 @@ public interface Spell extends NbtSerialisable, Affine {
      * @return
      */
     default ThrowableSpell toThrowable() {
-        return SpellType.THROWN_SPELL.withTraits().create().setSpell(this);
+        return new ThrowableSpell(this);
     }
 
     @Nullable
     static <T extends Spell> T readNbt(@Nullable NbtCompound compound) {
         try {
-            if (compound != null && compound.contains("effect_id")) {
-                @SuppressWarnings("unchecked")
-                T effect = (T)SpellType.getKey(compound).withTraits().create();
-
-                if (effect != null) {
-                    effect.fromNBT(compound);
-                }
-
-                return effect;
+            if (compound != null) {
+                return CustomisedSpellType.<T>fromNBT(compound).create(compound);
             }
         } catch (Exception e) {
             Unicopia.LOGGER.fatal("Invalid spell nbt {}", e);
@@ -153,9 +161,16 @@ public interface Spell extends NbtSerialisable, Affine {
         return compound == null || !compound.containsUuid("uuid") ? Util.NIL_UUID :  compound.getUuid("uuid");
     }
 
-    static NbtCompound writeNbt(Spell effect) {
+    static NbtCompound writeNbt(@Nullable Spell effect) {
+        if (effect == null) {
+            return new NbtCompound();
+        }
         NbtCompound compound = effect.toNBT();
-        effect.getType().toNbt(compound);
+        effect.getTypeAndTraits().toNbt(compound);
         return compound;
+    }
+
+    static <T extends Spell> Spell copy(T spell) {
+        return readNbt(writeNbt(spell));
     }
 }

@@ -1,8 +1,6 @@
 package com.minelittlepony.unicopia.container;
 
 import java.util.*;
-import java.util.function.Predicate;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
@@ -55,8 +53,6 @@ public class SpellbookScreenHandler extends ScreenHandler {
     private final PlayerInventory inventory;
 
     private final ScreenHandlerContext context;
-
-    private Predicate<SlotType> canShowSlots;
 
     private final SpellbookState state;
 
@@ -152,8 +148,8 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
         TrinketsDelegate.getInstance(inv.player).createSlot(this, inv.player, TrinketsDelegate.FACE, 0, rightHandX, inventoryY + slotSpacing * 6).ifPresent(this::addSlot);
         TrinketsDelegate.getInstance(inv.player).createSlot(this, inv.player, TrinketsDelegate.NECKLACE, 0, leftHandX, equipmentY + slotSpacing).ifPresent(this::addSlot);
-        TrinketsDelegate.getInstance(inv.player).createSlot(this, inv.player, TrinketsDelegate.MAINHAND, 0, leftHandX, equipmentY).ifPresent(this::addSlot);
-        TrinketsDelegate.getInstance(inv.player).createSlot(this, inv.player, TrinketsDelegate.OFFHAND, 0, rightHandX, equipmentY).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance(inv.player).createSlot(this, inv.player, TrinketsDelegate.MAIN_GLOVE, 0, leftHandX, equipmentY).ifPresent(this::addSlot);
+        TrinketsDelegate.getInstance(inv.player).createSlot(this, inv.player, TrinketsDelegate.SECONDARY_GLOVE, 0, rightHandX, equipmentY).ifPresent(this::addSlot);
 
         addSlot(outputSlot = new OutputSlot(this, inventory.player, input, result, 0, gemPos.get(0)));
 
@@ -167,12 +163,13 @@ public class SpellbookScreenHandler extends ScreenHandler {
         return state;
     }
 
-    public void addSlotShowingCondition(Predicate<SlotType> canShowSlots) {
-        this.canShowSlots = canShowSlots;
-    }
-
     public boolean canShowSlots(SlotType type) {
-        return canShowSlots == null || canShowSlots.test(type);
+        Identifier pageId = state.getCurrentPageId().orElse(null);
+        boolean isCraftingPage = SpellbookState.CRAFTING_ID.equals(pageId);
+        return switch (type) {
+            case INVENTORY -> isCraftingPage ? state.getState(pageId).getOffset() == 0 : SpellbookState.PROFILE_ID.equals(pageId);
+            case CRAFTING -> isCraftingPage;
+        };
     }
 
     public int getOutputSlotId() {
@@ -215,10 +212,15 @@ public class SpellbookScreenHandler extends ScreenHandler {
     }
 
     @Override
+    public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
+        return slot != null && slot.canInsert(stack) && slot.isEnabled();
+    }
+
+    @Override
     public ItemStack quickMove(PlayerEntity player, int index) {
         Slot sourceSlot = slots.get(index);
 
-        if (sourceSlot == null || !sourceSlot.hasStack()) {
+        if (sourceSlot == null || !sourceSlot.hasStack() || (sourceSlot instanceof SpellSlot)) {
             return ItemStack.EMPTY;
         }
 
@@ -230,35 +232,69 @@ public class SpellbookScreenHandler extends ScreenHandler {
         }
 
         if (index >= HOTBAR_START && !(sourceSlot instanceof OutputSlot || sourceSlot instanceof InputSlot)) {
-            if (!gemSlot.hasStack() && gemSlot.canInsert(stack)) {
-                if (insertItem(transferredStack, GEM_SLOT_INDEX, GEM_SLOT_INDEX + 1, false)) {
+            // hotbar or inventory -> crafting grid
+            if (canShowSlots(SlotType.CRAFTING)) {
+                if (!gemSlot.hasStack() && gemSlot.canInsert(stack)) {
+                    if (insertItem(transferredStack, GEM_SLOT_INDEX, GEM_SLOT_INDEX + 1, false)) {
+                        onContentChanged(input);
+                        return ItemStack.EMPTY;
+                    }
+                }
+
+                if (insertItem(transferredStack, 0, GEM_SLOT_INDEX, false)) {
+                    sourceSlot.onQuickTransfer(transferredStack, stack);
                     onContentChanged(input);
                     return ItemStack.EMPTY;
                 }
             }
 
-            if (insertItem(transferredStack, 0, GEM_SLOT_INDEX, false)) {
-                sourceSlot.onQuickTransfer(transferredStack, stack);
-                onContentChanged(input);
-                return ItemStack.EMPTY;
+            if (index < HOTBAR_END) {
+                if (canShowSlots(SlotType.INVENTORY)) {
+                    // hotbar -> inventory
+                    // insert into inventory - armor
+                    if (insertItem(transferredStack, HOTBAR_END + 27, HOTBAR_END + 27 + 4, false)) {
+                        sourceSlot.onQuickTransfer(transferredStack, stack);
+                        onContentChanged(input);
+                        return ItemStack.EMPTY;
+                    }
+
+                    // insert into inventory - inventory
+                    if (insertItem(transferredStack, HOTBAR_END, HOTBAR_END + 27, false)) {
+                        sourceSlot.onQuickTransfer(transferredStack, stack);
+                        onContentChanged(input);
+                        return ItemStack.EMPTY;
+                    }
+                }
+            } else {
+                // inventory -> hotbar
+                if (insertItem(transferredStack, HOTBAR_START, HOTBAR_END, true)) {
+                    sourceSlot.onQuickTransfer(transferredStack, stack);
+                    onContentChanged(input);
+                    return ItemStack.EMPTY;
+                }
             }
         } else {
+            // crafting grid -> hotbar
             if (insertItem(transferredStack, HOTBAR_START, HOTBAR_END, true)) {
                 sourceSlot.onQuickTransfer(transferredStack, stack);
                 onContentChanged(input);
                 return ItemStack.EMPTY;
             }
 
-            if (insertItem(transferredStack, HOTBAR_END + 27, HOTBAR_END + 27 + 4, false)) {
-                sourceSlot.onQuickTransfer(transferredStack, stack);
-                onContentChanged(input);
-                return ItemStack.EMPTY;
-            }
+            if (canShowSlots(SlotType.INVENTORY)) {
+                // crafting grid -> armor
+                if (insertItem(transferredStack, HOTBAR_END + 27, HOTBAR_END + 27 + 4, false)) {
+                    sourceSlot.onQuickTransfer(transferredStack, stack);
+                    onContentChanged(input);
+                    return ItemStack.EMPTY;
+                }
 
-            if (insertItem(transferredStack, HOTBAR_END, HOTBAR_END + 27, false)) {
-                sourceSlot.onQuickTransfer(transferredStack, stack);
-                onContentChanged(input);
-                return ItemStack.EMPTY;
+                // crafting grid -> inventory
+                if (insertItem(transferredStack, HOTBAR_END, HOTBAR_END + 27, false)) {
+                    sourceSlot.onQuickTransfer(transferredStack, stack);
+                    onContentChanged(input);
+                    return ItemStack.EMPTY;
+                }
             }
         }
 

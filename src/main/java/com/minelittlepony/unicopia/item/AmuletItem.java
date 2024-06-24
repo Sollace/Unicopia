@@ -86,7 +86,13 @@ public class AmuletItem extends WearableItem implements ChargeableItem {
     }
 
     public final boolean isApplicable(LivingEntity entity) {
-        return isApplicable(getForEntity(entity));
+        return !getForEntity(entity).stack().isEmpty();
+    }
+
+    public TrinketsDelegate.EquippedStack getForEntity(LivingEntity entity) {
+        return TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.NECKLACE, this::isApplicable)
+                .findFirst()
+                .orElse(TrinketsDelegate.EquippedStack.EMPTY);
     }
 
     @Override
@@ -94,11 +100,10 @@ public class AmuletItem extends WearableItem implements ChargeableItem {
         return maxEnergy;
     }
 
-    public static ItemStack getForEntity(LivingEntity entity) {
+    public static TrinketsDelegate.EquippedStack get(LivingEntity entity) {
         return TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.NECKLACE)
-                .filter(stack -> stack.getItem() instanceof AmuletItem)
                 .findFirst()
-                .orElse(ItemStack.EMPTY);
+                .orElse(TrinketsDelegate.EquippedStack.EMPTY);
     }
 
     public static class ModifiersBuilder {

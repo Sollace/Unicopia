@@ -8,6 +8,10 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -79,6 +83,9 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
         return e -> e.getType() == type;
     }
 
+    static final SpellAttribute<Integer> WAVE_SIZE = SpellAttribute.create(SpellAttributeType.WAVE_SIZE, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.CHAOS, chaos -> 10 + (int)MathHelper.clamp(chaos, 0, 10));
+    static final TooltipFactory TOOLTIP = TooltipFactory.of(RANGE, WAVE_SIZE);
+
     private final List<EntityReference<LivingEntity>> summonedEntities = new ArrayList<>();
 
     private int spawnCountdown;
@@ -90,7 +97,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
 
-        float radius = 4 + source.getLevel().getScaled(4) * 4 + getTraits().get(Trait.POWER);
+        float radius = source.getLevel().getScaled(4) * 4 + RANGE.get(getTraits());
 
         if (radius <= 0) {
             return false;
@@ -122,15 +129,16 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
             return true;
         }).isEmpty());
 
-        float additional = source.asWorld().getLocalDifficulty(source.getOrigin()).getLocalDifficulty() + getTraits().get(Trait.CHAOS, 0, 10);
-
-        setDirty();
         if (--spawnCountdown > 0 && !summonedEntities.isEmpty()) {
             return true;
         }
+        // TODO: refactory speed attribute
+        // TODO: weather resistant attribute
         spawnCountdown = 1200 + source.asWorld().random.nextInt(rainy ? 2000 : 1000);
 
-        if (summonedEntities.size() > 10 + additional) {
+        float additional = source.asWorld().getLocalDifficulty(source.getOrigin()).getLocalDifficulty() + WAVE_SIZE.get(getTraits());
+
+        if (summonedEntities.size() > additional) {
             return true;
         }
 
@@ -153,6 +161,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
 
     @Override
     protected void onDestroyed(Caster<?> caster) {
+        super.onDestroyed(caster);
         if (caster.isClient()) {
             return;
         }
@@ -205,7 +214,6 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
 
         source.asWorld().spawnEntity(minion);
         summonedEntities.add(new EntityReference<>(minion));
-        setDirty();
     }
 
     @Override

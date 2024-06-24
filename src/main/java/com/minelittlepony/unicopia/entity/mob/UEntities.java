@@ -50,7 +50,7 @@ public interface UEntities {
             .trackRangeBlocks(200)
             .disableSummon()
             .dimensions(EntityDimensions.fixed(1, 1)));
-    EntityType<CastSpellEntity> CAST_SPELL = register("cast_spell", FabricEntityTypeBuilder.create(SpawnGroup.MISC, CastSpellEntity::new)
+    EntityType<CastSpellEntity> CAST_SPELL = register("cast_spell", FabricEntityTypeBuilder.<CastSpellEntity>create(SpawnGroup.MISC, CastSpellEntity::new)
             .trackRangeBlocks(200)
             .disableSummon()
             .dimensions(EntityDimensions.changing(4, 4)));
@@ -86,13 +86,13 @@ public interface UEntities {
             .trackRangeChunks(8)
             .dimensions(EntityDimensions.fixed(3, 2)));
     EntityType<SpecterEntity> SPECTER = register("specter", FabricEntityTypeBuilder.createMob().spawnGroup(SpawnGroup.MONSTER).entityFactory(SpecterEntity::new)
-            .spawnRestriction(Location.ON_GROUND, Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnIgnoreLightLevel)
+            .spawnRestriction(Location.ON_GROUND, Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark)
             .fireImmune()
             .spawnableFarFromPlayer()
             .dimensions(EntityDimensions.fixed(1, 2)));
     EntityType<MimicEntity> MIMIC = register("mimic", FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, MimicEntity::new)
             .fireImmune()
-            //.disableSummon()
+            .disableSummon()
             .dimensions(EntityDimensions.changing(0.875F, 0.875F)));
 
     static <T extends Entity> EntityType<T> register(String name, FabricEntityTypeBuilder<T> builder) {

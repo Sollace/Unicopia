@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.mob.MimicEntity;
 
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,7 +23,7 @@ import net.minecraft.util.Identifier;
 abstract class MixinLootableContainerBlockEntity extends LockableContainerBlockEntity implements MimicEntity.MimicGeneratable {
     private Identifier mimicLootTable;
     private boolean allowMimics = true;
-    private boolean isMimic;
+    private TriState isMimic = TriState.DEFAULT;
 
     @Shadow
     @Nullable
@@ -32,24 +33,25 @@ abstract class MixinLootableContainerBlockEntity extends LockableContainerBlockE
 
     @Inject(method = "deserializeLootTable", at = @At("HEAD"))
     private void deserializeMimic(NbtCompound nbt, CallbackInfoReturnable<Boolean> info) {
-        isMimic = nbt.getBoolean("mimic");
+        isMimic = nbt.contains("mimic") ? TriState.of(nbt.getBoolean("mimic")) : TriState.DEFAULT;
     }
 
     @Inject(method = "serializeLootTable", at = @At("HEAD"))
     private void serializeMimic(NbtCompound nbt, CallbackInfoReturnable<Boolean> info) {
-        nbt.putBoolean("mimic", isMimic);
+        if (isMimic != TriState.DEFAULT) {
+            nbt.putBoolean("mimic", isMimic.get());
+        }
     }
 
     @Override
     public void setAllowMimics(boolean allowMimics) {
         this.allowMimics = allowMimics;
-        this.isMimic &= allowMimics;
         markDirty();
     }
 
     @Override
     public void setMimic(boolean mimic) {
-        isMimic = mimic;
+        isMimic = TriState.of(mimic);
         markDirty();
     }
 
@@ -68,10 +70,16 @@ abstract class MixinLootableContainerBlockEntity extends LockableContainerBlockE
                 shift = Shift.AFTER
     ), cancellable = true)
     private void onCreateMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player, CallbackInfoReturnable<ScreenHandler> info) {
-        if (player != null && (isMimic || (allowMimics && MimicEntity.shouldConvert(player.getWorld(), getPos(), player, mimicLootTable)))) {
-            var mimic = MimicEntity.spawnFromChest(player.getWorld(), getPos());
-            if (mimic != null) {
-                info.setReturnValue(mimic.createScreenHandler(syncId, playerInventory, player));
+        if (player != null && allowMimics) {
+            if (isMimic == TriState.DEFAULT) {
+                isMimic = TriState.of(MimicEntity.shouldConvert(player.getWorld(), getPos(), player, mimicLootTable));
+            }
+
+            if (isMimic.get()) {
+                var mimic = MimicEntity.spawnFromChest(player.getWorld(), getPos());
+                if (mimic != null) {
+                    info.setReturnValue(mimic.createScreenHandler(syncId, playerInventory, player));
+                }
             }
             mimicLootTable = null;
         }

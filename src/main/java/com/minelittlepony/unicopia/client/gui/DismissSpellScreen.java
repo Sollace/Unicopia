@@ -2,14 +2,13 @@ package com.minelittlepony.unicopia.client.gui;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.joml.Vector4f;
 
+import com.google.common.base.MoreObjects;
 import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
-import com.minelittlepony.unicopia.client.TextHelper;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
@@ -41,11 +40,11 @@ public class DismissSpellScreen extends GameGui {
         double azimuth = 0;
         double ring = 2;
 
-        List<PlaceableSpell> placeableSpells = new ArrayList<>();
+        List<PlacementControlSpell> placeableSpells = new ArrayList<>();
 
-        for (Spell spell : pony.getSpellSlot().stream(true).filter(SpellPredicate.IS_VISIBLE).toList()) {
+        for (Spell spell : pony.getSpellSlot().stream().filter(SpellPredicate.IS_VISIBLE).toList()) {
 
-            if (spell instanceof PlaceableSpell placeable) {
+            if (spell instanceof PlacementControlSpell placeable) {
                 if (placeable.getPosition().isPresent()) {
                     placeableSpells.add(placeable);
                     continue;
@@ -58,15 +57,16 @@ public class DismissSpellScreen extends GameGui {
         }
 
         double minimalDistance = 75 * (ring - 1) - 25;
-        Vec3d origin = pony.getOriginVector();
+        Vec3d origin = pony.asEntity().getPos();
 
         placeableSpells.forEach(placeable -> {
             placeable.getPosition().ifPresent(position -> {
-                Vec3d relativePos = position.subtract(origin);
+                Vec3d relativePos = position.subtract(origin).multiply(1, 0, 1);
+                float yaw = client.gameRenderer.getCamera().getYaw();
                 Vec3d cartesian = relativePos
                         .normalize()
-                        .multiply(minimalDistance + relativePos.length())
-                        .rotateY((pony.asEntity().getYaw() - 180) * MathHelper.RADIANS_PER_DEGREE);
+                        .multiply(minimalDistance + relativePos.horizontalLength())
+                        .rotateY((180 + yaw) * MathHelper.RADIANS_PER_DEGREE);
                 addDrawableChild(new Entry(placeable).ofCartesian(cartesian));
             });
         });
@@ -84,8 +84,8 @@ public class DismissSpellScreen extends GameGui {
         matrices.push();
         matrices.translate(width - mouseX, height - mouseY, 0);
         DrawableUtil.drawLine(matrices, 0, 0, relativeMouseX, relativeMouseY, 0xFFFFFF88);
-        DrawableUtil.drawArc(matrices, 40, 80, 0, DrawableUtil.TAU, 0x00000010, false);
-        DrawableUtil.drawArc(matrices, 160, 1600, 0, DrawableUtil.TAU, 0x00000020, false);
+        DrawableUtil.drawArc(matrices, 40, 80, 0, DrawableUtil.TAU, 0x00000010);
+        DrawableUtil.drawArc(matrices, 160, 1600, 0, DrawableUtil.TAU, 0x00000020);
 
         super.render(context, mouseX, mouseY, delta);
         DrawableUtil.renderRaceIcon(context, pony.getObservedSpecies(), 0, 0, 16);
@@ -137,17 +137,16 @@ public class DismissSpellScreen extends GameGui {
         }
 
         private Spell getActualSpell() {
-            if (spell instanceof AbstractDelegatingSpell) {
-                return ((AbstractDelegatingSpell)spell).getDelegates().stream().findFirst().orElse(spell);
-            }
-            return spell;
+            return spell instanceof AbstractDelegatingSpell s ? MoreObjects.firstNonNull(s.getDelegate(), s)
+                : spell instanceof PlacementControlSpell s ? MoreObjects.firstNonNull(s.getDelegate(), s)
+                : spell;
         }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             if (isMouseOver(relativeMouseX, relativeMouseY)) {
                 remove(this);
-                pony.getSpellSlot().removeIf(spell -> spell == this.spell, true);
+                pony.getSpellSlot().removeIf(spell -> spell == this.spell);
                 Channel.REMOVE_SPELL.sendToServer(new MsgRemoveSpell(spell));
                 playClickEffect();
                 return true;
@@ -164,38 +163,45 @@ public class DismissSpellScreen extends GameGui {
         public void render(DrawContext context, int mouseX, int mouseY, float tickDelta) {
             MatrixStack matrices = context.getMatrices();
 
-            var type = actualSpell.getType().withTraits(actualSpell.getTraits());
+            var type = actualSpell.getTypeAndTraits();
 
             copy.set(mouseX - width * 0.5F - x * 0.5F, mouseY - height * 0.5F - y * 0.5F, 0, 0);
 
             DrawableUtil.drawLine(matrices, 0, 0, (int)x, (int)y, actualSpell.getAffinity().getColor().getColorValue());
-            DrawableUtil.renderItemIcon(context, actualSpell.isDead() ? UItems.BOTCHED_GEM.getDefaultStack() : type.getDefaultStack(),
-                    x - 8 - copy.x * 0.2F,
-                    y - 8 - copy.y * 0.2F,
-                    1
-            );
 
-            int color = actualSpell.getType().getColor() << 2;
+
+            int color = type.type().getColor() << 2;
 
             matrices.push();
             matrices.translate(x, y, 0);
 
-            DrawableUtil.drawArc(matrices, 7, 8, 0, DrawableUtil.TAU, color | 0x00000088, false);
+            matrices.push();
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(((MinecraftClient.getInstance().player.age + tickDelta) * 2) % 360));
+            DrawableUtil.renderItemIcon(context, actualSpell.isDead() ? UItems.BOTCHED_GEM.getDefaultStack() : type.getDefaultStack(),
+                    -8,
+                    -8,
+                    1
+            );
+            matrices.pop();
 
-            if (isMouseOver(relativeMouseX, relativeMouseY)) {
-                DrawableUtil.drawArc(matrices, 0, 8, 0, DrawableUtil.TAU, color | 0x000000FF, false);
+            boolean hovered = isMouseOver(relativeMouseX, relativeMouseY);
+            double radius = (hovered ? 9 + MathHelper.sin((MinecraftClient.getInstance().player.age + tickDelta) / 9F) : 7);
+
+            DrawableUtil.drawArc(matrices, radius, radius + 1, 0, DrawableUtil.TAU, color | 0x00000088);
+
+            if (hovered) {
+                DrawableUtil.drawArc(matrices, 0, 8, 0, DrawableUtil.TAU, color | 0x000000FF);
 
                 List<Text> tooltip = new ArrayList<>();
 
-                MutableText name = actualSpell.getType().getName().copy();
-                color = actualSpell.getType().getColor();
+                MutableText name = type.type().getName().copy();
+                color = type.type().getColor();
                 name.setStyle(name.getStyle().withColor(color == 0 ? 0xFFAAAAAA : color));
                 tooltip.add(Text.translatable("gui.unicopia.dispell_screen.spell_type", name));
-                actualSpell.getType().getTraits().appendTooltip(tooltip);
+                type.traits().appendTooltip(tooltip);
                 tooltip.add(ScreenTexts.EMPTY);
-                tooltip.add(Text.translatable("gui.unicopia.dispell_screen.affinity", actualSpell.getAffinity().name()).formatted(actualSpell.getAffinity().getColor()));
+                type.appendTooltip(tooltip);
                 tooltip.add(ScreenTexts.EMPTY);
-                tooltip.addAll(TextHelper.wrap(Text.translatable(actualSpell.getType().getTranslationKey() + ".lore").formatted(actualSpell.getAffinity().getColor()), 180).toList());
                 if (spell instanceof TimedSpell timed) {
                     tooltip.add(ScreenTexts.EMPTY);
                     tooltip.add(Text.translatable("gui.unicopia.dispell_screen.time_left", StringHelper.formatTicks(timed.getTimer().getTicksRemaining())));

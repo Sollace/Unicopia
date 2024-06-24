@@ -1,11 +1,16 @@
 package com.minelittlepony.unicopia.compat.trinkets;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
+import com.minelittlepony.unicopia.network.Channel;
+import com.minelittlepony.unicopia.network.MsgTrinketBroken;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 import dev.emi.trinkets.TrinketSlot;
 import dev.emi.trinkets.api.*;
@@ -80,8 +85,16 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
     }
 
     @Override
-    public Stream<ItemStack> getEquipped(LivingEntity entity, Identifier slot) {
-        return getInventory(entity, slot).stream().flatMap(InventoryUtil::stream).filter(s -> !s.isEmpty());
+    public Stream<EquippedStack> getEquipped(LivingEntity entity, Identifier slot, @Nullable Predicate<ItemStack> predicate) {
+        return getInventory(entity, slot).stream().flatMap(inventory -> {
+            return InventoryUtil.stream(inventory).filter(s -> !s.isEmpty() && (predicate == null || predicate.test(s))).map(stack -> {
+                ItemStack oldStack = stack.copy();
+                return new EquippedStack(stack, inventory::markUpdate, l -> {
+                    inventory.markUpdate();
+                    Channel.SERVER_TRINKET_BROKEN.sendToSurroundingPlayers(new MsgTrinketBroken(oldStack, l.getId()), l);
+                });
+            });
+        });
     }
 
     @Override

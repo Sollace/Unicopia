@@ -27,7 +27,7 @@ public class ShieldSpellRenderer extends SpellRenderer<ShieldSpell> {
         double height = caster.asEntity().getEyeY() - caster.getOriginVector().y;
         matrices.translate(0, height, 0);
 
-        int typeColor = spell.getType().getColor();
+        int typeColor = spell.getTypeAndTraits().type().getColor();
         int ponyColor = MineLPDelegate.getInstance().getMagicColor(caster.getOriginatingCaster().asEntity());
 
         int color = ColorHelper.lerp(caster.getCorruption().getScaled(1) * (tickDelta / (1 + caster.asWorld().random.nextFloat())),

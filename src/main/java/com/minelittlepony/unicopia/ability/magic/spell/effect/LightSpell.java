@@ -7,6 +7,10 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -20,6 +24,7 @@ import com.minelittlepony.unicopia.util.VecHelper;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.util.math.MathHelper;
 
 public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileDelegate.HitListener {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
@@ -29,13 +34,17 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
             .with(Trait.ORDER, 25)
             .build();
 
+    private static final SpellAttribute<Integer> ORB_COUNT = SpellAttribute.create(SpellAttributeType.ORB_COUNT, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.LIFE, life -> 2 + (int)(MathHelper.clamp(life, 10, 20) / 10F));
+
+    static final TooltipFactory TOOLTIP = TooltipFactory.of(TIME, ORB_COUNT);
+
     private final Timer timer;
 
     private final List<EntityReference<FairyEntity>> lights = new ArrayList<>();
 
     protected LightSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer((120 + (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19)) * 20);
+        timer = new Timer(TIME.get(getTraits()));
     }
 
     @Override
@@ -56,11 +65,9 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
             return false;
         }
 
-        setDirty();
-
         if (!caster.isClient()) {
             if (lights.isEmpty()) {
-                int size = 2 + caster.asWorld().random.nextInt(2) + (int)(getTraits().get(Trait.LIFE, 10, 20) - 10)/10;
+                int size = caster.asWorld().random.nextInt(2) + ORB_COUNT.get(getTraits());
                 while (lights.size() < size) {
                     lights.add(new EntityReference<>());
                 }
@@ -76,7 +83,6 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
                     entity.getWorld().spawnEntity(entity);
 
                     ref.set(entity);
-                    setDirty();
                 }
             });
         }
@@ -91,6 +97,7 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
 
     @Override
     protected void onDestroyed(Caster<?> caster) {
+        super.onDestroyed(caster);
         if (caster.isClient()) {
             return;
         }

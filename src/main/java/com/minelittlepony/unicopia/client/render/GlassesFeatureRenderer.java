@@ -36,7 +36,7 @@ public class GlassesFeatureRenderer<E extends LivingEntity> implements Accessory
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch) {
 
-        ItemStack stack = GlassesItem.getForEntity(entity);
+        ItemStack stack = GlassesItem.getForEntity(entity).stack();
 
         if (!stack.isEmpty()) {
             Identifier texture = textures.computeIfAbsent(Registries.ITEM.getId(stack.getItem()), id -> new Identifier(id.getNamespace(), "textures/models/armor/" + id.getPath() + ".png"));

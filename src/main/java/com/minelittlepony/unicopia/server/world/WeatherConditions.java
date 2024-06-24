@@ -212,7 +212,15 @@ public class WeatherConditions extends PersistentState implements Tickable {
         }
 
         if (state.getFluidState().isIn(FluidTags.WATER)) {
-            return MeteorlogicalUtil.getSunIntensity(world);
+            float sunIntensity = MeteorlogicalUtil.getSunIntensity(world);
+            int depth = 0;
+            BlockPos.Mutable mutable = pos.mutableCopy();
+            while (depth < 15 && world.getFluidState(mutable).isIn(FluidTags.WATER)) {
+                mutable.move(Direction.DOWN);
+                depth++;
+            }
+
+            return sunIntensity * (depth / 15F);
         }
 
         return 0;

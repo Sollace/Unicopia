@@ -6,16 +6,10 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.unicopia.Debug;
-import com.minelittlepony.unicopia.Unicopia;
-
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 
 public class SpellbookChapterList {
-    public static final Identifier CRAFTING_ID = Unicopia.id("crafting");
-    public static final Identifier PROFILE_ID = Unicopia.id("profile");
-    public static final Identifier TRAIT_DEX_ID = Unicopia.id("traits");
-
     private final SpellbookScreen screen;
 
     private final Chapter craftingChapter;
@@ -72,10 +66,6 @@ public class SpellbookChapterList {
         void init(SpellbookScreen screen, Identifier pageId);
 
         default void copyStateFrom(Content old) {}
-
-        default boolean showInventory() {
-            return false;
-        }
 
         default Identifier getIcon(Chapter chapter, Identifier icon) {
             return icon;

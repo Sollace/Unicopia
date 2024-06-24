@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.mixin;
+package com.minelittlepony.unicopia.mixin.server;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;

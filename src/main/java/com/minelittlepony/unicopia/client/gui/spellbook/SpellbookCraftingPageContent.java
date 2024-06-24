@@ -59,11 +59,6 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
         init(this::initPageContent);
     }
 
-    @Override
-    public boolean showInventory() {
-        return state.getOffset() == 0;
-    }
-
     private void initPageContent() {
         getContentPadding().setVertical(10);
         getContentPadding().bottom = 30;

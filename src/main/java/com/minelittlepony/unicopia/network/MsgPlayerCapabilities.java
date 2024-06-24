@@ -1,20 +1,12 @@
 package com.minelittlepony.unicopia.network;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.UUID;
-
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.serialization.PacketCodec;
 import com.sollace.fabwork.api.packets.HandledPacket;
 
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.ByteBufOutputStream;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtIo;
 
 /**
  * Sent to the client to update various data pertaining to a particular player.
@@ -23,46 +15,32 @@ import net.minecraft.nbt.NbtIo;
  */
 public class MsgPlayerCapabilities implements HandledPacket<PlayerEntity> {
 
-    protected final UUID playerId;
+    protected final int playerId;
 
     private final NbtCompound compoundTag;
 
     MsgPlayerCapabilities(PacketByteBuf buffer) {
-        playerId = buffer.readUuid();
-        try (InputStream in = new ByteBufInputStream(buffer)) {
-            compoundTag = NbtIo.readCompressed(in);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        playerId = buffer.readInt();
+        compoundTag = PacketCodec.COMPRESSED_NBT.read(buffer);
     }
 
     public MsgPlayerCapabilities(Pony player) {
-        playerId = player.asEntity().getUuid();
+        playerId = player.asEntity().getId();
         compoundTag = new NbtCompound();
         player.toSyncronisedNbt(compoundTag);
     }
 
     @Override
     public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeUuid(playerId);
-        try (OutputStream out = new ByteBufOutputStream(buffer)) {
-            NbtIo.writeCompressed(compoundTag, out);
-        } catch (IOException e) {
-        }
+        buffer.writeInt(playerId);
+        PacketCodec.COMPRESSED_NBT.write(buffer, compoundTag);
     }
 
     @Override
     public void handle(PlayerEntity sender) {
-        Pony player = getRecipient(sender);
-        if (player == null) {
-            Unicopia.LOGGER.warn("Skipping capabilities for unknown player " + playerId.toString());
-            return;
+        Pony player = Pony.of(sender.getWorld().getEntityById(playerId)).orElse(null);
+        if (player != null) {
+            player.fromSynchronizedNbt(compoundTag);
         }
-
-        player.fromSynchronizedNbt(compoundTag);
-    }
-
-    protected Pony getRecipient(PlayerEntity sender) {
-        return Pony.of(sender);
     }
 }

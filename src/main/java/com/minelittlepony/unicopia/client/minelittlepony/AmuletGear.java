@@ -30,7 +30,7 @@ class AmuletGear extends AmuletModel implements Gear {
 
     @Override
     public boolean canRender(PonyModel<?> model, Entity entity) {
-        return entity instanceof LivingEntity living && !AmuletItem.getForEntity(living).isEmpty();
+        return entity instanceof LivingEntity living && !AmuletItem.get(living).stack().isEmpty();
     }
 
     @Override
@@ -40,7 +40,7 @@ class AmuletGear extends AmuletModel implements Gear {
 
     @Override
     public <T extends Entity> Identifier getTexture(T entity, Context<T, ?> context) {
-        return textures.computeIfAbsent(Registries.ITEM.getId(AmuletItem.getForEntity((LivingEntity)entity).getItem()), id -> new Identifier(id.getNamespace(), "textures/models/armor/" + id.getPath() + ".png"));
+        return textures.computeIfAbsent(Registries.ITEM.getId(AmuletItem.get((LivingEntity)entity).stack().getItem()), id -> new Identifier(id.getNamespace(), "textures/models/armor/" + id.getPath() + ".png"));
     }
 
     @Override

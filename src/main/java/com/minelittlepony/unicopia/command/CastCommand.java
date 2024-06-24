@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
-import com.minelittlepony.unicopia.ability.magic.spell.PlaceableSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.PlacementControlSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -98,11 +98,11 @@ public class CastCommand {
 
     private static int placed(CommandContext<ServerCommandSource> source, TraitsFunc traits, Optional<Vec3d> position, Vec2f rotation) throws CommandSyntaxException {
         ServerPlayerEntity player = source.getSource().getPlayerOrThrow();
-        PlaceableSpell spell = getSpell(source, traits).create().toPlaceable();
+        PlacementControlSpell spell = getSpell(source, traits).create().toPlaceable();
         Caster<?> caster = Caster.of(player).orElseThrow();
 
-        spell.setOrientation(rotation.x, rotation.y);
-        position.ifPresent(pos -> spell.setPosition(caster, pos));
+        spell.setOrientation(caster, rotation.x, rotation.y);
+        position.ifPresent(spell::setPosition);
         spell.apply(caster);
 
         return 0;

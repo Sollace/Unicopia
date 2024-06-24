@@ -12,7 +12,8 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.SpellContainer;
+import com.minelittlepony.unicopia.ability.magic.SpellInventory;
+import com.minelittlepony.unicopia.ability.magic.SpellSlots;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
@@ -23,7 +24,6 @@ import com.minelittlepony.unicopia.entity.behaviour.Guest;
 import com.minelittlepony.unicopia.entity.damage.MagicalDamageSource;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.effect.CorruptInfluenceStatusEffect;
-import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.input.Heuristic;
@@ -31,14 +31,15 @@ import com.minelittlepony.unicopia.input.Interactable;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
-import com.minelittlepony.unicopia.network.datasync.EffectSync;
-import com.minelittlepony.unicopia.network.datasync.Transmittable;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.DataTrackerManager;
+import com.minelittlepony.unicopia.network.track.Trackable;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 import com.minelittlepony.unicopia.server.world.DragonBreathStore;
 import com.minelittlepony.unicopia.util.*;
 
-import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
@@ -46,10 +47,8 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
-import net.minecraft.entity.data.*;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -65,25 +64,21 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T>, Transmittable {
-    private static final TrackedData<Optional<UUID>> CARRIER_ID = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
-
+public abstract class Living<T extends LivingEntity> implements Equine<T>, Caster<T>, AttributeContainer {
     protected final T entity;
 
-    private final EffectSync effectDelegate;
+    private final SpellInventory spells;
 
     private final Interactable sneakingHeuristic;
     private final Interactable landedHeuristic;
     private final Interactable jumpingHeuristic;
-
-    @Nullable
-    private Runnable landEvent;
 
     private boolean invisible = false;
 
@@ -98,24 +93,26 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     private final List<Tickable> tickers = new ArrayList<>();
 
+    private final LandingEventHandler landEvent = addTicker(new LandingEventHandler(this));
     private final Enchantments enchants = addTicker(new Enchantments(this));
     private final ItemTracker armour = addTicker(new ItemTracker(this));
-    //private final Transportation<T> transportation = new Transportation<>(this);
     private final Transportation<T> transportation = new Transportation<>(this);
 
-    protected Living(T entity, TrackedData<NbtCompound> effect) {
+    protected final DataTrackerManager trackers;
+    protected final DataTracker tracker;
+
+    protected final DataTracker.Entry<UUID> carrierId;
+
+    protected Living(T entity) {
         this.entity = entity;
-        this.effectDelegate = new EffectSync(this, effect);
+        this.trackers = Trackable.of(entity).getDataTrackers();
+        this.tracker = trackers.getPrimaryTracker();
+        this.spells = SpellSlots.ofUnbounded(this);
         this.sneakingHeuristic = addTicker(new Interactable(entity::isSneaking));
         this.landedHeuristic = addTicker(new Interactable(entity::isOnGround));
         this.jumpingHeuristic = addTicker(new Interactable(((LivingEntityDuck)entity)::isJumping));
-    }
 
-    @Override
-    public void initDataTracker() {
-        effectDelegate.initDataTracker();
-        entity.getDataTracker().startTracking(Creature.GRAVITY, 1F);
-        entity.getDataTracker().startTracking(CARRIER_ID, Optional.empty());
+        carrierId = tracker.startTracking(TrackableDataType.UUID, Util.NIL_UUID);
     }
 
     public <Q extends Tickable> Q addTicker(Q tickable) {
@@ -131,12 +128,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         this.invisible = invisible;
     }
 
-    public void waitForFall(Runnable action) {
-        if (entity.isOnGround()) {
-            action.run();
-        } else {
-            landEvent = action;
-        }
+    public void waitForFall(LandingEventHandler.Callback callback) {
+        landEvent.setCallback(callback);
     }
 
     public boolean sneakingChanged() {
@@ -152,8 +145,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     @Override
-    public SpellContainer getSpellSlot() {
-        return effectDelegate;
+    public SpellSlots getSpellSlot() {
+        return spells.getSlots();
     }
 
     public Enchantments getEnchants() {
@@ -174,15 +167,16 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     public Optional<UUID> getCarrierId() {
-        return entity.getDataTracker().get(CARRIER_ID);
+        UUID carrierId = this.carrierId.get();
+        return carrierId == Util.NIL_UUID ? Optional.empty() : Optional.of(carrierId);
     }
 
     public void setCarrier(UUID carrier) {
-        entity.getDataTracker().set(CARRIER_ID, Optional.ofNullable(carrier));
+        carrierId.set(carrier == null ? Util.NIL_UUID : carrier);
     }
 
     public void setCarrier(Entity carrier) {
-        entity.getDataTracker().set(CARRIER_ID, Optional.ofNullable(carrier).map(Entity::getUuid));
+        setCarrier(carrier == null ? Util.NIL_UUID : carrier.getUuid());
     }
 
     @Nullable
@@ -206,7 +200,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public boolean beforeUpdate() {
-        if (EffectUtils.getAmplifier(entity, UEffects.PARALYSIS) > 1 && entity.getVelocity().horizontalLengthSquared() > 0) {
+        landEvent.beforeTick();
+        if (entity.hasStatusEffect(UEffects.PARALYSIS) && entity.getVelocity().horizontalLengthSquared() > 0) {
             entity.setVelocity(entity.getVelocity().multiply(0, 1, 0));
             updateVelocity();
         }
@@ -217,7 +212,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     @Override
     public void tick() {
         tickers.forEach(Tickable::tick);
-        effectDelegate.tick(Situation.BODY);
+        spells.tick(Situation.BODY);
 
         if (!(entity instanceof PlayerEntity)) {
             if (!entity.hasVehicle() && getCarrierId().isPresent() && !asWorld().isClient && entity.age % 10 == 0) {
@@ -234,11 +229,6 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
         if (invinsibilityTicks > 0) {
             invinsibilityTicks--;
-        }
-
-        if (landEvent != null && entity.isOnGround() && landedChanged()) {
-            landEvent.run();
-            landEvent = null;
         }
 
         if (entity.hasStatusEffect(UEffects.PARALYSIS) && entity.getVelocity().horizontalLengthSquared() > 0) {
@@ -261,33 +251,15 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         transportation.tick();
     }
 
-    public void updateAttributeModifier(UUID id, EntityAttribute attribute, float desiredValue, Float2ObjectFunction<EntityAttributeModifier> modifierSupplier, boolean permanent) {
-        @Nullable
-        EntityAttributeInstance instance = asEntity().getAttributeInstance(attribute);
-        if (instance == null) {
-            return;
-        }
-
-        @Nullable
-        EntityAttributeModifier modifier = instance.getModifier(id);
-
-        if (!MathHelper.approximatelyEquals(desiredValue, modifier == null ? 0 : modifier.getValue())) {
-            instance.removeModifier(id);
-
-            if (desiredValue != 0) {
-                if (permanent) {
-                    instance.addPersistentModifier(modifierSupplier.get(desiredValue));
-                } else {
-                    instance.addTemporaryModifier(modifierSupplier.get(desiredValue));
-                }
-            }
-        }
+    @Override
+    public final @Nullable EntityAttributeInstance getAttributeInstance(EntityAttribute attribute) {
+        return asEntity().getAttributeInstance(attribute);
     }
 
     public boolean canBeSeenBy(Entity entity) {
         return !isInvisible()
             && getSpellSlot()
-            .get(SpellPredicate.IS_DISGUISE, true)
+            .get(SpellPredicate.IS_DISGUISE)
             .filter(spell -> spell.getDisguise().getAppearance() == entity)
             .isEmpty();
     }
@@ -399,8 +371,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             }
 
             if (magical.isIn(UTags.DamageTypes.BREAKS_SUNGLASSES)) {
-                ItemStack glasses = GlassesItem.getForEntity(entity);
-                if (glasses.getItem() == UItems.SUNGLASSES) {
+                ItemStack glasses = GlassesItem.getForEntity(entity).stack();
+                if (glasses.isOf(UItems.SUNGLASSES)) {
                     ItemStack broken = UItems.BROKEN_SUNGLASSES.getDefaultStack();
                     broken.setNbt(glasses.getNbt());
                     TrinketsDelegate.getInstance(entity).setEquippedStack(entity, TrinketsDelegate.FACE, broken);
@@ -421,7 +393,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     public Optional<BlockPos> chooseClimbingPos() {
-        return getSpellSlot().get(SpellPredicate.IS_DISGUISE, false)
+        return getSpellSlot().get(SpellPredicate.IS_DISGUISE)
                 .map(AbstractDisguiseSpell::getDisguise)
                 .filter(EntityAppearance::canClimbWalls)
                 .map(v -> entity.getBlockPos());
@@ -445,7 +417,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             return StreamSupport.stream(entity.getArmorItems().spliterator(), false);
         }
         return Stream.concat(
-                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.NECKLACE),
+                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.NECKLACE).map(TrinketsDelegate.EquippedStack::stack),
                 StreamSupport.stream(entity.getArmorItems().spliterator(), false)
         );
     }
@@ -456,17 +428,24 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public boolean onProjectileImpact(ProjectileEntity projectile) {
-        return getSpellSlot().get(true)
+        return getSpellSlot().get()
                 .filter(effect -> !effect.isDead()
                         && effect instanceof ProjectileImpactListener
                         && ((ProjectileImpactListener)effect).onProjectileImpact(projectile))
                 .isPresent();
     }
 
-    protected void handleFall(float distance, float damageMultiplier, DamageSource cause) {
-        getSpellSlot().get(SpellPredicate.IS_DISGUISE, false).ifPresent(spell -> {
-            spell.getDisguise().onImpact(this, distance, damageMultiplier, cause);
+    public float onImpact(float distance, float damageMultiplier, DamageSource cause) {
+        float fallDistance = landEvent.fire(getEffectiveFallDistance(distance));
+
+        getSpellSlot().get(SpellPredicate.IS_DISGUISE).ifPresent(spell -> {
+            spell.getDisguise().onImpact(this, fallDistance, damageMultiplier, cause);
         });
+        return fallDistance;
+    }
+
+    protected float getEffectiveFallDistance(float distance) {
+        return distance;
     }
 
     @Override
@@ -478,32 +457,27 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     @Override
-    public void setDirty() {}
-
-    @Override
     public void toNBT(NbtCompound compound) {
         enchants.toNBT(compound);
-        effectDelegate.toNBT(compound);
+        spells.getSlots().toNBT(compound);
+        getCarrierId().ifPresent(id -> compound.putUuid("carrier", id));
         toSyncronisedNbt(compound);
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         enchants.fromNBT(compound);
-        effectDelegate.fromNBT(compound);
+        spells.getSlots().fromNBT(compound);
+        setCarrier(compound.containsUuid("carrier") ? compound.getUuid("carrier") : null);
         fromSynchronizedNbt(compound);
     }
 
-    @Override
     public void toSyncronisedNbt(NbtCompound compound) {
         compound.put("armour", armour.toNBT());
-        getCarrierId().ifPresent(id -> compound.putUuid("carrier", id));
     }
 
-    @Override
     public void fromSynchronizedNbt(NbtCompound compound) {
         armour.fromNBT(compound.getCompound("armour"));
-        setCarrier(compound.containsUuid("carrier") ? compound.getUuid("carrier") : null);
     }
 
     public void updateVelocity() {

@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.client.TextHelper;
 import com.minelittlepony.unicopia.entity.player.PlayerCharmTracker;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.group.MultiItem;
@@ -17,9 +16,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -80,15 +77,7 @@ public class GemstoneItem extends Item implements MultiItem, EnchantableItem {
         super.appendTooltip(stack, world, lines, tooltipContext);
 
         if (EnchantableItem.isEnchanted(stack)) {
-            SpellType<?> key = EnchantableItem.getSpellKey(stack);
-
-            MutableText line = Text.translatable(key.getTranslationKey() + ".lore").formatted(key.getAffinity().getColor());
-
-            if (!InteractionManager.getInstance().getClientSpecies().canCast()) {
-                line = line.formatted(Formatting.OBFUSCATED);
-            }
-
-            lines.addAll(TextHelper.wrap(line, 180).toList());
+            getSpellEffect(stack).appendTooltip(lines);
         }
     }
 

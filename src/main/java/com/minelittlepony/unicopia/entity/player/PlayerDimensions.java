@@ -39,7 +39,7 @@ public final class PlayerDimensions {
     }
 
     Optional<Provider> getPredicate() {
-        return pony.getSpellSlot().get(true)
+        return pony.getSpellSlot().get()
                 .filter(effect -> !effect.isDead() && effect instanceof Provider)
                 .map(effect -> (Provider)effect);
     }

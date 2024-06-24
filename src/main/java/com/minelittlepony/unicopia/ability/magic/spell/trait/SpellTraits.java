@@ -67,6 +67,10 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         });
     }
 
+    public static SpellTraits empty() {
+        return EMPTY;
+    }
+
     public static Map<Identifier, SpellTraits> all() {
         return new HashMap<>(REGISTRY);
     }
@@ -292,7 +296,8 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return fromString(traits, " ");
     }
 
-    public static Optional<SpellTraits> fromString(String traits, String delimiter) {
+    @Deprecated
+    private static Optional<SpellTraits> fromString(String traits, String delimiter) {
         return fromEntries(Arrays.stream(traits.split(delimiter)).map(a -> a.split(":")).map(pair -> {
             Trait key = Trait.fromName(pair[0]).orElse(null);
             if (key == null) {

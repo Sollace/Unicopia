@@ -5,6 +5,10 @@ import java.util.List;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.state.StateMaps;
@@ -12,7 +16,6 @@ import com.minelittlepony.unicopia.block.state.StatePredicate;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
-import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.*;
@@ -33,8 +36,9 @@ public class IceSpell extends AbstractSpell {
             .with(Trait.ICE, 15)
             .build();
 
-    private static final int RADIUS = 3;
-    private static final Shape OUTER_RANGE = new Sphere(false, RADIUS);
+    private static final SpellAttribute<Float> RANGE = SpellAttribute.create(SpellAttributeType.RANGE, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.POWER, power -> Math.max(0, 3 + power));
+
+    static final TooltipFactory TOOLTIP = RANGE;
 
     protected IceSpell(CustomisedSpellType<?> type) {
         super(type);
@@ -43,11 +47,12 @@ public class IceSpell extends AbstractSpell {
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
         boolean submerged = source.asEntity().isSubmergedInWater() || source.asEntity().isSubmergedIn(FluidTags.LAVA);
+        float radius = RANGE.get(getTraits());
 
-        long blocksAffected = OUTER_RANGE.translate(source.getOrigin()).getBlockPositions().filter(i -> {
+        long blocksAffected = new Sphere(false, radius).translate(source.getOrigin()).getBlockPositions().filter(i -> {
             if (source.canModifyAt(i) && applyBlockSingle(source.asEntity(), source.asWorld(), i, situation)) {
 
-                if (submerged & source.getOrigin().isWithinDistance(i, RADIUS - 1)) {
+                if (submerged & source.getOrigin().isWithinDistance(i, RANGE.get(getTraits()) - 1)) {
                     BlockState state = source.asWorld().getBlockState(i);
                     if (state.isIn(BlockTags.ICE) || state.isOf(Blocks.OBSIDIAN)) {
                         source.asWorld().setBlockState(i, Blocks.AIR.getDefaultState(), Block.NOTIFY_NEIGHBORS);

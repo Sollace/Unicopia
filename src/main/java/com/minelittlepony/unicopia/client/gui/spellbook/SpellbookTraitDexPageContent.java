@@ -73,7 +73,7 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
             return;
         }
         page /= 2;
-        state = screen.getState().getState(SpellbookChapterList.TRAIT_DEX_ID);
+        state = screen.getState().getState(SpellbookState.TRAIT_DEX_ID);
         state.setOffset(page);
         leftPage.verticalScrollbar.scrollBy(leftPage.verticalScrollbar.getScrubber().getPosition());
         rightPage.verticalScrollbar.scrollBy(rightPage.verticalScrollbar.getScrubber().getPosition());
@@ -84,7 +84,7 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
 
     @Override
     public void onRecipesChanged() {
-        init(screen, SpellbookChapterList.TRAIT_DEX_ID);
+        init(screen, SpellbookState.TRAIT_DEX_ID);
     }
 
     private final class DexPage extends ScrollContainer {

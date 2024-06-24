@@ -11,6 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.duck.LavaAffine;
+import com.minelittlepony.unicopia.network.track.DataTrackerManager;
+import com.minelittlepony.unicopia.network.track.Trackable;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -19,7 +21,6 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.Entity.PositionUpdater;
@@ -28,12 +29,13 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 @Mixin(Entity.class)
-abstract class MixinEntity implements EntityDuck {
+abstract class MixinEntity implements EntityDuck, Trackable {
     @Nullable
     private transient Caster<?> host;
+
+    private DataTrackerManager dataTrackerManager;
 
     @Override
     @Nullable
@@ -44,6 +46,20 @@ abstract class MixinEntity implements EntityDuck {
     @Override
     public void setHost(Caster<?> host) {
         this.host = host;
+    }
+
+    @Override
+    public DataTrackerManager getDataTrackers() {
+        synchronized (this) {
+            if (dataTrackerManager == null) {
+                dataTrackerManager = new DataTrackerManager((Entity)(Object)this);
+                // ensure lazy registration happens
+                if (this instanceof Equine.Container<?> eq) {
+                    eq.get();
+                }
+            }
+            return dataTrackerManager;
+        }
     }
 
     @Override
@@ -66,14 +82,6 @@ abstract class MixinEntity implements EntityDuck {
     public boolean isLavaAffine() {
         Entity self = (Entity)(Object)this;
         return self.hasVehicle() && self.getVehicle() instanceof LavaAffine affine && affine.isLavaAffine();
-    }
-
-
-    @Inject(method = "<init>", at = @At(value = "INVOKE", target = "net/minecraft/entity/Entity.initDataTracker()V"))
-    private void onInstanceInit(EntityType<?> type, World world, CallbackInfo info) {
-        if (this instanceof Equine.Container c) {
-            c.get().initDataTracker();
-        }
     }
 
     @Inject(method = "isFireImmune", at = @At("HEAD"), cancellable = true)

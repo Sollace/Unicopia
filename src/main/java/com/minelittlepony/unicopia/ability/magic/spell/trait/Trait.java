@@ -165,7 +165,11 @@ public enum Trait implements CommandArgumentEnum<Trait> {
 
     @Deprecated
     public static Optional<Trait> fromName(String name) {
-        return Optional.ofNullable(CODEC.byId(name));
+        Trait trait = CODEC.byId(name);
+        if (trait == null) {
+            Unicopia.LOGGER.error("Unknown trait: " + name);
+        }
+        return Optional.ofNullable(trait);
     }
 
     public static EnumArgumentType<Trait> argument() {

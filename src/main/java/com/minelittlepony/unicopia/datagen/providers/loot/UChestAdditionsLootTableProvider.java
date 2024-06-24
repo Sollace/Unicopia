@@ -16,6 +16,7 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.entry.TagEntry;
 import net.minecraft.loot.function.SetCountLootFunction;
+import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.util.Identifier;
 
@@ -115,34 +116,28 @@ public class UChestAdditionsLootTableProvider extends SimpleFabricLootTableProvi
                 .with(ItemEntry.builder(UItems.MUSIC_DISC_CRUSADE).weight(1))
         ));
         exporter.accept(LootTables.OCEAN_RUIN_WARM_ARCHAEOLOGY, LootTable.builder().pool(LootPool.builder()
-                .rolls(UniformLootNumberProvider.create(1, 4))
-                .with(TagEntry.expandBuilder(UTags.Items.SHELLS).weight(1))
+                .rolls(UniformLootNumberProvider.create(1, 2))
+                .with(TagEntry.expandBuilder(UTags.Items.SHELLS).weight(2))
                 .with(ItemEntry.builder(UItems.PEARL_NECKLACE).weight(1))
-                .with(TagEntry.expandBuilder(UConventionalTags.Items.ROTTEN_FISH).weight(1))
+                .with(TagEntry.expandBuilder(UConventionalTags.Items.ROTTEN_FISH).weight(2))
         ));
 
         exporter.accept(LootTables.FISHING_GAMEPLAY, LootTable.builder().pool(LootPool.builder()
-                .rolls(UniformLootNumberProvider.create(1, 4))
+                .rolls(UniformLootNumberProvider.create(1, 2))
                 .with(TagEntry.expandBuilder(UTags.Items.SHELLS).weight(2))
                 .with(TagEntry.expandBuilder(UConventionalTags.Items.ROTTEN_FISH).weight(1))
         ));
 
         exporter.accept(LootTables.FISHING_JUNK_GAMEPLAY, LootTable.builder().pool(LootPool.builder()
-                .rolls(UniformLootNumberProvider.create(1, 4))
+                .rolls(UniformLootNumberProvider.create(1, 2))
                 .with(ItemEntry.builder(UItems.BROKEN_SUNGLASSES).weight(2))
                 .with(ItemEntry.builder(UItems.WHEAT_WORMS).weight(2))
                 .with(TagEntry.expandBuilder(UConventionalTags.Items.ROTTEN_FISH).weight(1))
                 .with(ItemEntry.builder(UItems.BOTCHED_GEM).weight(4))
         ));
 
-        exporter.accept(LootTables.FISHING_TREASURE_GAMEPLAY, LootTable.builder().pool(LootPool.builder()
-                .rolls(UniformLootNumberProvider.create(1, 4))
-                .with(ItemEntry.builder(UItems.PEARL_NECKLACE).weight(1))
-                .with(ItemEntry.builder(UItems.SHELLY).weight(1))
-        ));
-
         exporter.accept(LootTables.HERO_OF_THE_VILLAGE_FISHERMAN_GIFT_GAMEPLAY, LootTable.builder().pool(LootPool.builder()
-                .rolls(UniformLootNumberProvider.create(1, 4))
+                .rolls(ConstantLootNumberProvider.create(1))
                 .with(ItemEntry.builder(UItems.PEARL_NECKLACE).weight(1))
                 .with(ItemEntry.builder(UItems.SHELLY).weight(1))
         ));

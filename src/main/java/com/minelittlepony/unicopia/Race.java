@@ -10,6 +10,7 @@ import com.google.common.base.Strings;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.magic.Affine;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -44,6 +45,7 @@ public record Race (
     public static final String DEFAULT_ID = "unicopia:unset";
     public static final Registry<Race> REGISTRY = RegistryUtils.createDefaulted(Unicopia.id("race"), DEFAULT_ID);
     public static final Registry<Race> COMMAND_REGISTRY = RegistryUtils.createDefaulted(Unicopia.id("race/grantable"), DEFAULT_ID);
+    public static final TrackableDataType<Race> TRACKABLE_TYPE = TrackableDataType.RACE;
     public static final RegistryKey<? extends Registry<Race>> REGISTRY_KEY = REGISTRY.getKey();
     private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("commands.race.fail", id));
     private static final Function<Race, Composite> COMPOSITES = Util.memoize(race -> new Composite(race, null, null));

@@ -89,10 +89,15 @@ class Slot {
             bSwap &= abilities.isFilled(bSlot);
         }
 
+        int page = Unicopia.getConfig().hudPage.get();
         AbilityDispatcher.Stat stat = abilities.getStat(bSwap ? bSlot : aSlot);
 
-        if (stat.getAbility(Unicopia.getConfig().hudPage.get()).isEmpty()) {
-            return;
+        if (stat.getAbility(page).isEmpty()) {
+            if (aSlot != AbilitySlot.PRIMARY
+                    || (!abilities.getStat(AbilitySlot.SECONDARY).getAbility(page).isEmpty()
+                    && !abilities.getStat(AbilitySlot.TERTIARY).getAbility(page).isEmpty())) {
+                return;
+            }
         }
 
         RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -103,8 +108,6 @@ class Slot {
 
         // background
         context.drawTexture(UHud.HUD_TEXTURE, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
-
-
 
         int iconPosition = ((size - iconSize + slotPadding + 1) / 2);
         int sz = iconSize - slotPadding;

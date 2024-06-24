@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia.compat.trinkets;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -16,16 +18,17 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 
 public interface TrinketsDelegate {
-    Identifier MAINHAND = new Identifier("hand:glove");
-    Identifier OFFHAND = new Identifier("offhand:glove");
+    Identifier MAIN_GLOVE = new Identifier("hand:glove");
+    Identifier SECONDARY_GLOVE = new Identifier("offhand:glove");
     Identifier NECKLACE = new Identifier("chest:necklace");
     Identifier FACE = new Identifier("head:face");
 
-    Set<Identifier> ALL = new TreeSet<>(List.of(MAINHAND, OFFHAND, NECKLACE, FACE));
+    Set<Identifier> ALL = new TreeSet<>(List.of(MAIN_GLOVE, SECONDARY_GLOVE, NECKLACE, FACE));
 
     TrinketsDelegate EMPTY = new TrinketsDelegate() {};
 
@@ -61,8 +64,8 @@ public interface TrinketsDelegate {
     default void setEquippedStack(LivingEntity entity, Identifier slot, ItemStack stack) {
         EquipmentSlot eq = slot == FACE ? EquipmentSlot.HEAD
                 : slot == NECKLACE ? EquipmentSlot.CHEST
-                : slot == MAINHAND ? EquipmentSlot.CHEST
-                : slot == OFFHAND ? EquipmentSlot.OFFHAND
+                : slot == MAIN_GLOVE ? EquipmentSlot.CHEST
+                : slot == SECONDARY_GLOVE ? EquipmentSlot.OFFHAND
                 : null;
         if (eq != null) {
             entity.equipStack(eq, stack);
@@ -70,19 +73,27 @@ public interface TrinketsDelegate {
     }
 
     default Set<Identifier> getAvailableTrinketSlots(LivingEntity entity, Set<Identifier> probedSlots) {
-        return probedSlots.stream().filter(slot -> getEquipped(entity, slot).anyMatch(ItemStack::isEmpty)).collect(Collectors.toSet());
+        return probedSlots.stream().filter(slot -> getEquipped(entity, slot).map(EquippedStack::stack).anyMatch(ItemStack::isEmpty)).collect(Collectors.toSet());
     }
 
-    default Stream<ItemStack> getEquipped(LivingEntity entity, Identifier slot) {
+    default Stream<EquippedStack> getEquipped(LivingEntity entity, Identifier slot, TagKey<Item> tag) {
+        return getEquipped(entity, slot, stack -> stack.isIn(tag));
+    }
 
-        if (slot == FACE) {
-            return Stream.of(entity.getEquippedStack(EquipmentSlot.HEAD));
+    default Stream<EquippedStack> getEquipped(LivingEntity entity, Identifier slot) {
+        return getEquipped(entity, slot, (Predicate<ItemStack>)null);
+    }
+
+    default Stream<EquippedStack> getEquipped(LivingEntity entity, Identifier slot, @Nullable Predicate<ItemStack> predicate) {
+
+        if (slot == FACE && (predicate == null || predicate.test(entity.getEquippedStack(EquipmentSlot.HEAD)))) {
+            return Stream.of(new EquippedStack(entity, EquipmentSlot.HEAD));
         }
-        if (slot == NECKLACE || slot == MAINHAND) {
-            return Stream.of(entity.getEquippedStack(EquipmentSlot.CHEST));
+        if ((slot == NECKLACE || slot == MAIN_GLOVE) && (predicate == null || predicate.test(entity.getEquippedStack(EquipmentSlot.CHEST)))) {
+            return Stream.of(new EquippedStack(entity, EquipmentSlot.CHEST));
         }
-        if (slot == OFFHAND) {
-            return Stream.of(entity.getOffHandStack());
+        if (slot == SECONDARY_GLOVE && (predicate == null || predicate.test(entity.getEquippedStack(EquipmentSlot.OFFHAND)))) {
+            return Stream.of(new EquippedStack(entity, EquipmentSlot.OFFHAND));
         }
 
         return Stream.empty();
@@ -102,16 +113,24 @@ public interface TrinketsDelegate {
 
     interface Inventory extends EntityConvertable<LivingEntity> {
 
-        default Stream<ItemStack> getEquippedStacks(Identifier slot) {
+        default Stream<EquippedStack> getEquippedStacks(Identifier slot) {
             return TrinketsDelegate.getInstance(asEntity()).getEquipped(asEntity(), slot);
         }
 
-        default ItemStack getEquippedStack(Identifier slot) {
-            return getEquippedStacks(slot).findFirst().orElse(ItemStack.EMPTY);
+        default EquippedStack getEquippedStack(Identifier slot) {
+            return getEquippedStacks(slot).findFirst().orElse(EquippedStack.EMPTY);
         }
 
         default void equipStack(Identifier slot, ItemStack stack) {
             TrinketsDelegate.getInstance(asEntity()).setEquippedStack(asEntity(), slot, stack);
+        }
+    }
+
+    record EquippedStack(ItemStack stack, Runnable sendUpdate, Consumer<LivingEntity> breakStatusSender) {
+        public static EquippedStack EMPTY = new EquippedStack(ItemStack.EMPTY, () -> {}, l -> {});
+
+        EquippedStack(LivingEntity entity, EquipmentSlot slot) {
+            this(entity.getEquippedStack(slot), () -> {}, l -> l.sendEquipmentBreakStatus(slot));
         }
     }
 }

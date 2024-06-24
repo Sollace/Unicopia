@@ -67,6 +67,7 @@ public interface UFoodComponents {
     FoodComponent ACORN = builder(1, 0.01F).snack().alwaysEdible().build();
     FoodComponent MANGO = builder(8, 0.8F).alwaysEdible().build();
     FoodComponent BANANA = builder(6, 0.9F).build();
+    FoodComponent SEEDS = builder(1, 0.2F).build();
 
     FoodComponent CANDY = builder(7, 0.9F).alwaysEdible().build();
     FoodComponent SALT_CUBE = builder(0, 2.9F).alwaysEdible().build();

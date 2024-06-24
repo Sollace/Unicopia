@@ -37,16 +37,6 @@ abstract class MixinChunkBlockLightProvider extends ChunkLightProvider {
         }
     }
 
-    /*
-    @Inject(method = "getLightSourceLuminance", at = @At("RETURN"), cancellable = true)
-    private void onGetLightSourceLuminance(long blockPos, BlockState blockState, CallbackInfoReturnable<Integer> info) {
-        int x = ChunkSectionPos.getSectionCoord(BlockPos.unpackLongX(blockPos));
-        int z = ChunkSectionPos.getSectionCoord(BlockPos.unpackLongZ(blockPos));
-        if (chunkProvider.getChunk(x, z) instanceof WorldChunk chunk) {
-            info.setReturnValue(Math.max(info.getReturnValue(), LightSources.get(chunk.getWorld()).getLuminance(blockPos)));
-        }
-    }*/
-
     @Inject(method = "method_51529", at = @At("TAIL"))
     private void onMethod_51529(long blockPos, CallbackInfo info) {
         long sectionPos = ChunkSectionPos.fromBlockPos(blockPos);

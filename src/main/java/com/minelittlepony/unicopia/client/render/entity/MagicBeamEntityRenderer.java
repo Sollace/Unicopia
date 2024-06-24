@@ -56,8 +56,8 @@ public class MagicBeamEntityRenderer extends EntityRenderer<MagicBeamEntity> {
                 -entity.getPitch(tickDelta) * MathHelper.RADIANS_PER_DEGREE
         );
 
-        RenderLayer layer = entity.getSpellSlot().get(true)
-                .map(spell -> (0x99 << 24) | spell.getType().getColor())
+        RenderLayer layer = entity.getSpellSlot().get()
+                .map(spell -> (0x99 << 24) | spell.getTypeAndTraits().type().getColor())
                 .map(RenderLayers::getMagicColored)
                 .orElseGet(RenderLayers::getMagicColored);
 

@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
@@ -120,28 +121,36 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
 
     public static boolean isComrade(Owned<?> caster, Entity entity) {
         return entity instanceof LivingEntity l && caster.getMasterId()
-                .filter(id -> getWornBangles(l).anyMatch(stack -> isSignedBy(stack, id)))
+                .filter(id -> getWornBangles(l).anyMatch(stack -> isSignedBy(stack.stack(), id)))
                 .isPresent();
     }
 
     public static boolean isComrade(UUID signator, Entity entity) {
-        return entity instanceof LivingEntity l && getWornBangles(l).anyMatch(stack -> isSignedBy(stack, signator));
+        return entity instanceof LivingEntity l && getWornBangles(l, stack -> isSignedBy(stack, signator)).findAny().isPresent();
     }
 
     public static Stream<Pony> getPartyMembers(Caster<?> caster, double radius) {
         return Pony.stream(caster.findAllEntitiesInRange(radius, entity -> isComrade(caster, entity)));
     }
 
-    public static Stream<ItemStack> getWornBangles(LivingEntity entity) {
+    private static final Predicate<ItemStack> IS_BANGLE = stack -> stack.isOf(UItems.FRIENDSHIP_BRACELET);
+
+    public static Stream<TrinketsDelegate.EquippedStack> getWornBangles(LivingEntity entity) {
         return Stream.concat(
-                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.MAINHAND),
-                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.OFFHAND)
-        ).filter(stack -> stack.getItem() == UItems.FRIENDSHIP_BRACELET);
+                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.MAIN_GLOVE, IS_BANGLE),
+                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.SECONDARY_GLOVE, IS_BANGLE)
+        );
     }
 
-    public static Stream<ItemStack> getWornBangles(LivingEntity entity, Identifier slot) {
-        return TrinketsDelegate.getInstance(entity)
-                .getEquipped(entity, slot)
-                .filter(stack -> stack.getItem() == UItems.FRIENDSHIP_BRACELET);
+    public static Stream<TrinketsDelegate.EquippedStack> getWornBangles(LivingEntity entity, @Nullable Predicate<ItemStack> predicate) {
+        predicate = predicate == null ? IS_BANGLE : IS_BANGLE.and(predicate);
+        return Stream.concat(
+                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.MAIN_GLOVE, predicate),
+                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.SECONDARY_GLOVE, predicate)
+        );
+    }
+
+    public static Stream<TrinketsDelegate.EquippedStack> getWornBangles(LivingEntity entity, Identifier slot) {
+        return TrinketsDelegate.getInstance(entity).getEquipped(entity, slot, IS_BANGLE);
     }
 }

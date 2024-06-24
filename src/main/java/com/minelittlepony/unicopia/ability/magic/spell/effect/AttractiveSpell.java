@@ -2,6 +2,9 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.Living;
@@ -13,7 +16,6 @@ import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.hit.EntityHitResult;
@@ -21,6 +23,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSpell, ProjectileDelegate.EntityHitListener {
+    static final SpellAttribute<Boolean> TARGET_FOCUSED_ENTITY = SpellAttribute.createConditional(SpellAttributeType.FOCUSED_ENTITY, Trait.ORDER, order -> order >= 20);
+    static final SpellAttribute<Boolean> STICK_TO_TARGET = SpellAttribute.createConditional(SpellAttributeType.STICK_TO_TARGET, Trait.CHAOS, chaos -> chaos > 0);
+    static final TooltipFactory TARGET = (type, tooltip) -> (TARGET_FOCUSED_ENTITY.get(type.traits()) ? TARGET_FOCUSED_ENTITY : ShieldSpell.TARGET).appendTooltip(type, tooltip);
+    static final TooltipFactory TOOLTIP = TooltipFactory.of(TIME, RANGE, TARGET, STICK_TO_TARGET, CAST_ON);
 
     private final EntityReference<Entity> target = new EntityReference<>();
 
@@ -28,7 +34,8 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
 
     protected AttractiveSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer((120 + (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19)) * 20);
+        timer = new Timer(TIME.get(getTraits()));
+        dataTracker.startTracking(target);
     }
 
     @Override
@@ -38,14 +45,10 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
 
     @Override
     public boolean tick(Caster<?> caster, Situation situation) {
-        if (getType() != SpellType.DARK_VORTEX) {
-            timer.tick();
+        timer.tick();
 
-            if (timer.getTicksRemaining() <= 0) {
-                return false;
-            }
-
-            setDirty();
+        if (timer.getTicksRemaining() <= 0) {
+            return false;
         }
 
         target.getOrEmpty(caster.asWorld())
@@ -74,16 +77,8 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
     }
 
     @Override
-    public double getDrawDropOffRange(Caster<?> caster) {
-        return 10 + (caster.getLevel().getScaled(8) * 2);
-    }
-
-    @Override
     protected boolean isValidTarget(Caster<?> source, Entity entity) {
-        if (target.referenceEquals(entity)) {
-            return true;
-        }
-        return getTraits().get(Trait.KNOWLEDGE) > 10 ? entity instanceof ItemEntity : super.isValidTarget(source, entity);
+        return target.referenceEquals(entity) || super.isValidTarget(source, entity);
     }
 
     @Override
@@ -133,7 +128,7 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
 
     @Override
     public boolean setTarget(Entity target) {
-        if (getTraits().get(Trait.ORDER) >= 20) {
+        if (TARGET_FOCUSED_ENTITY.get(getTraits())) {
             this.target.set(target);
             target.setGlowing(true);
             return true;
@@ -149,7 +144,7 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
 
     @Override
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
-        if (!isDead() && getTraits().get(Trait.CHAOS) > 0) {
+        if (!isDead() && STICK_TO_TARGET.get(getTraits())) {
             setDead();
             Caster.of(hit.getEntity()).ifPresent(caster -> getTypeAndTraits().apply(caster, CastingMethod.INDIRECT));
         }

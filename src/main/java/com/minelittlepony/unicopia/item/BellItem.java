@@ -69,7 +69,7 @@ public class BellItem extends Item implements ChargeableItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-        ItemStack offhandStack = AmuletItem.getForEntity(player);
+        ItemStack offhandStack = AmuletItem.get(player).stack();
 
         if (!(offhandStack.getItem() instanceof ChargeableItem)) {
             offhandStack = player.getStackInHand(hand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND);

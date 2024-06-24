@@ -6,9 +6,11 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
+import com.minelittlepony.unicopia.entity.LandingEventHandler;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -80,7 +82,9 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     @Override
     public Optional<Hit> prepare(Pony player) {
         if (player.asEntity().getVelocity().y * player.getPhysics().getGravitySignum() < 0
-                && !player.asEntity().getAbilities().flying) {
+                && !player.asEntity().getAbilities().flying
+                && !player.asEntity().isFallFlying()
+                && !player.asEntity().isUsingRiptide()) {
             thrustDownwards(player);
             return Hit.INSTANCE;
         }
@@ -104,72 +108,88 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
     @Override
     public boolean apply(Pony iplayer, Hit data) {
-        PlayerEntity player = iplayer.asEntity();
+        final PlayerEntity player = iplayer.asEntity();
+        final double initialY = player.getY() + 5;
 
-        Runnable r = () -> {
-            BlockPos center = PosHelper.findSolidGroundAt(player.getEntityWorld(), player.getBlockPos(), iplayer.getPhysics().getGravitySignum());
-
-            float heavyness = 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, player);
-
-            iplayer.asWorld().getOtherEntities(player, areaOfEffect.offset(iplayer.getOriginVector())).forEach(i -> {
-                double dist = Math.sqrt(center.getSquaredDistance(i.getBlockPos()));
-
-                if (dist <= rad + 3) {
-                    double inertia = 2 / dist;
-
-                    if (i instanceof LivingEntity) {
-                        inertia *= 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, (LivingEntity)i);
-                    }
-                    inertia /= heavyness;
-
-                    double liftAmount = Math.sin(Math.PI * dist / rad) * 12 * iplayer.getPhysics().getGravitySignum();
-
-                    i.addVelocity(
-                            -(player.getX() - i.getX()) / inertia,
-                            -(player.getY() - i.getY() - liftAmount) / inertia + (dist < 1 ? dist : 0),
-                            -(player.getZ() - i.getZ()) / inertia);
-
-                    double amount = (1.5F * player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue() + heavyness * 0.4) / (float)(dist * 1.3F);
-
-                    if (i instanceof PlayerEntity) {
-                        Race.Composite race = Pony.of((PlayerEntity)i).getCompositeRace();
-                        if (race.canUseEarth()) {
-                            amount /= 3;
-                        }
-
-                        if (race.canFly()) {
-                            amount *= 4;
-                        }
-                    }
-
-                    if (i instanceof LivingEntity) {
-                        amount /= 1 + (EnchantmentHelper.getEquipmentLevel(UEnchantments.PADDED, (LivingEntity)i) / 6F);
-                    }
-
-                    i.damage(iplayer.damageOf(UDamageTypes.SMASH, iplayer), (float)amount);
-                    Living.updateVelocity(i);
+        var r = new LandingEventHandler.Callback() {
+            @Override
+            public float dispatch(float fallDistance) {
+                // fail if landing above the starting position
+                if (player.getY() > initialY) {
+                    return fallDistance;
                 }
-            });
 
-            double radius = rad + heavyness * 0.3;
+                player.fallDistance = 0;
+                BlockPos center = PosHelper.findSolidGroundAt(player.getEntityWorld(), player.getBlockPos(), iplayer.getPhysics().getGravitySignum());
 
-            spawnEffectAround(player, center, radius, rad);
+                float heavyness = 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, player);
 
-            ParticleUtils.spawnParticle(player.getWorld(), UParticles.GROUND_POUND, player.getX(), player.getY() - 1, player.getZ(), 0, 0, 0);
-            BlockState steppingState = player.getSteppingBlockState();
-            if (steppingState.isIn(UTags.Blocks.KICKS_UP_DUST)) {
-                ParticleUtils.spawnParticle(player.getWorld(), new BlockStateParticleEffect(UParticles.DUST_CLOUD, steppingState), player.getBlockPos().down().toCenterPos(), Vec3d.ZERO);
+                iplayer.asWorld().getOtherEntities(player, areaOfEffect.offset(iplayer.getOriginVector())).forEach(i -> {
+                    double dist = Math.sqrt(center.getSquaredDistance(i.getBlockPos()));
+
+                    if (dist <= rad + 3) {
+                        double inertia = 2 / dist;
+
+                        if (i instanceof LivingEntity) {
+                            inertia *= 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, (LivingEntity)i);
+                        }
+                        inertia /= heavyness;
+
+                        double liftAmount = Math.sin(Math.PI * dist / rad) * 12 * iplayer.getPhysics().getGravitySignum();
+
+                        i.addVelocity(
+                                -(player.getX() - i.getX()) / inertia,
+                                -(player.getY() - i.getY() - liftAmount) / inertia + (dist < 1 ? dist : 0),
+                                -(player.getZ() - i.getZ()) / inertia);
+
+                        double amount = (1.5F * player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue() + heavyness * 0.4) / (float)(dist * 1.3F);
+
+                        if (i instanceof PlayerEntity) {
+                            Race.Composite race = Pony.of((PlayerEntity)i).getCompositeRace();
+                            if (race.canUseEarth()) {
+                                amount /= 3;
+                            }
+
+                            if (race.canFly()) {
+                                amount *= 4;
+                            }
+                        }
+
+                        if (i instanceof LivingEntity) {
+                            amount /= 1 + (EnchantmentHelper.getEquipmentLevel(UEnchantments.PADDED, (LivingEntity)i) / 6F);
+                        }
+
+                        i.damage(iplayer.damageOf(UDamageTypes.SMASH, iplayer), (float)amount);
+                        Living.updateVelocity(i);
+                    }
+                });
+
+                double radius = rad + heavyness * 0.3;
+
+                spawnEffectAround(player, center, radius, rad);
+
+                ParticleUtils.spawnParticle(player.getWorld(), UParticles.GROUND_POUND, player.getX(), player.getY() - 1, player.getZ(), 0, 0, 0);
+                BlockState steppingState = player.getSteppingBlockState();
+                if (steppingState.isIn(UTags.Blocks.KICKS_UP_DUST)) {
+                    ParticleUtils.spawnParticle(player.getWorld(), new BlockStateParticleEffect(UParticles.DUST_CLOUD, steppingState), player.getBlockPos().down().toCenterPos(), Vec3d.ZERO);
+                }
+
+                iplayer.subtractEnergyCost(rad);
+                iplayer.asEntity().addExhaustion(3);
+                return 0F;
             }
 
-            iplayer.subtractEnergyCost(rad);
-            iplayer.asEntity().addExhaustion(3);
+            @Override
+            public void onCancelled() {
+                iplayer.playSound(USounds.GUI_ABILITY_FAIL, 1F);
+            }
         };
 
         if (iplayer.asEntity().isOnGround()) {
             iplayer.setAnimation(Animation.STOMP, Animation.Recipient.ANYONE, 10);
             iplayer.asEntity().jump();
             iplayer.updateVelocity();
-            AwaitTickQueue.scheduleTask(iplayer.asWorld(), w -> r.run(), 5);
+            AwaitTickQueue.scheduleTask(iplayer.asWorld(), w -> r.dispatch(0F), 5);
         } else {
             thrustDownwards(iplayer);
             iplayer.waitForFall(r);

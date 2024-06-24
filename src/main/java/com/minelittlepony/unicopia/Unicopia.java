@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
@@ -22,6 +23,7 @@ import com.minelittlepony.unicopia.container.UScreenHandlers;
 import com.minelittlepony.unicopia.diet.DietsLoader;
 import com.minelittlepony.unicopia.diet.affliction.AfflictionType;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
+import com.minelittlepony.unicopia.entity.effect.SeaponyGraceStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UPotions;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
@@ -76,6 +78,7 @@ public class Unicopia implements ModInitializer {
                 Debug.runTests(w);
             }
         });
+        PlayerBlockBreakEvents.AFTER.register(SeaponyGraceStatusEffect::processBlockChange);
         NocturnalSleepManager.bootstrap();
 
         registerServerDataReloaders(ResourceManagerHelper.get(ResourceType.SERVER_DATA));

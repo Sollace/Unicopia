@@ -10,6 +10,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.RotationAxis;
 
 public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
@@ -29,7 +30,9 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
         SphereModel.DISK.render(matrices, buff, light, 0, 2F * strength, 1, 1, 1, 1);
         matrices.pop();
 
-        if (Unicopia.getConfig().simplifiedPortals.get() || !spell.isLinked()) {
+        EntityReference<Entity> destination = spell.getDestinationReference();
+
+        if (Unicopia.getConfig().simplifiedPortals.get() || !destination.isSet()) {
             matrices.push();
             matrices.translate(0, -0.02, 0);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
@@ -52,7 +55,7 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
         matrices.push();
         matrices.scale(strength, strength, strength);
 
-        spell.getTarget().ifPresent(target -> {
+        destination.getTarget().ifPresent(target -> {
             float grown = Math.min(caster.asEntity().age, 20) / 20F;
             matrices.push();
             matrices.translate(0, -0.01, 0);

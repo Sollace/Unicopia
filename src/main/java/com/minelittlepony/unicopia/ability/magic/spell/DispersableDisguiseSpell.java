@@ -9,6 +9,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellTyp
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
 import net.minecraft.entity.Entity;
@@ -21,6 +23,7 @@ import net.minecraft.nbt.NbtCompound;
  */
 public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements IllusionarySpell {
 
+    private final DataTracker.Entry<Boolean> suppressed = dataTracker.startTracking(TrackableDataType.BOOLEAN, false);
     private int suppressionCounter;
 
     public DispersableDisguiseSpell(CustomisedSpellType<?> type) {
@@ -36,8 +39,8 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
     @Override
     public void onSuppressed(Caster<?> otherSource, float time) {
         time /= getTraits().getOrDefault(Trait.STRENGTH, 1);
-        suppressionCounter = (int)(100 * time);
-        setDirty();
+        suppressionCounter = (int)time;
+        suppressed.set(true);
     }
 
     @Override
@@ -64,7 +67,9 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
         Entity appearance = getDisguise().getAppearance();
 
         if (isSuppressed()) {
-            suppressionCounter--;
+            if (--suppressionCounter <= 0) {
+                suppressed.set(false);
+            }
 
             owner.setInvisible(false);
             if (source instanceof Pony) {
@@ -92,6 +97,9 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         suppressionCounter = compound.getInt("suppressionCounter");
+        if (suppressionCounter > 0) {
+            suppressed.set(true);
+        }
     }
 
     @Override

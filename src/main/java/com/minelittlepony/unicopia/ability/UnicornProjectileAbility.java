@@ -24,7 +24,7 @@ import net.minecraft.util.TypedActionResult;
 public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
     @Override
     public int getWarmupTime(Pony player) {
-        return 8;
+        return 1;
     }
 
     @Override
