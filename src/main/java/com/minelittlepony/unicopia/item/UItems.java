@@ -220,7 +220,7 @@ public interface UItems {
             .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
     AmuletItem PEARL_NECKLACE = register("pearl_necklace", new AmuletItem(new FabricItemSettings()
             .maxCount(1)
-            .maxDamage(4)
+            .maxDamage(16)
             .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
 
     GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
