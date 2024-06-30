@@ -6,6 +6,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -51,20 +52,36 @@ public record SpellAttribute<T> (
     }
 
     public static <T extends @NotNull Number> SpellAttribute<T> create(SpellAttributeType id, AttributeFormat baseFormat, AttributeFormat relativeFormat, Trait trait, BiFunction<SpellTraits, Float, @NotNull T> valueGetter, boolean detrimental) {
-        return new SpellAttribute<>(trait, valueGetter, (CustomisedSpellType<?> type, List<Text> tooltip) -> {
+        return createRanged(id, baseFormat, relativeFormat, trait, null, valueGetter, detrimental);
+    }
+
+    public static <T extends Number> SpellAttribute<T> createRanged(SpellAttributeType id, AttributeFormat baseFormat, AttributeFormat relativeFormat, Trait trait,
+            @Nullable SpellAttribute<T> maxValueGetter,
+            BiFunction<SpellTraits, Float, @NotNull T> valueGetter,
+            boolean detrimental) {
+        final BiFunction<SpellTraits, Float, @NotNull T> clampedValueGetter = maxValueGetter == null ? valueGetter : (traits, f) -> {
+            T t = valueGetter.apply(traits, f);
+            T max = maxValueGetter.get(traits);
+            return max.floatValue() > 0 && t.floatValue() > max.floatValue() ? max : t;
+        };
+        return new SpellAttribute<>(trait, clampedValueGetter, (CustomisedSpellType<?> type, List<Text> tooltip) -> {
             float traitAmount = type.traits().get(trait);
             float traitDifference = type.relativeTraits().get(trait);
-            float value = valueGetter.apply(type.traits(), traitAmount).floatValue();
+            float max = maxValueGetter == null ? 0 : maxValueGetter.get(type.traits()).floatValue();
+            float value = clampedValueGetter.apply(type.traits(), traitAmount).floatValue();
 
-            var b = baseFormat.getBase(id.name(), value, "equals", Formatting.LIGHT_PURPLE);
+            var b = max > 0
+                    ? baseFormat.getBase(id.name(), value, max, "equals", Formatting.LIGHT_PURPLE)
+                    : baseFormat.getBase(id.name(), value, "equals", Formatting.LIGHT_PURPLE);
             if (traitDifference != 0) {
-                tooltip.add(b.append(relativeFormat.getRelative(Text.empty(), valueGetter.apply(type.traits(), traitAmount - traitDifference).floatValue(), value, detrimental)));
+                tooltip.add(b.append(relativeFormat.getRelative(valueGetter.apply(type.traits(), traitAmount - traitDifference).floatValue(), value, detrimental)));
                 tooltip.add(AttributeFormat.formatTraitDifference(trait, traitDifference));
             } else {
                 tooltip.add(b);
             }
         });
     }
+
 
     public static SpellAttribute<Boolean> createConditional(SpellAttributeType id, Trait trait, Float2ObjectFunction<Boolean> valueGetter) {
         return createConditional(id, trait, (traits, value) -> valueGetter.get(value.floatValue()));
