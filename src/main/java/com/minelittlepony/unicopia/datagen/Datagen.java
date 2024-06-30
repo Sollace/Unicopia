@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.datagen.providers.loot.UChestAdditionsLootTab
 import com.minelittlepony.unicopia.datagen.providers.loot.UChestLootTableProvider;
 import com.minelittlepony.unicopia.datagen.providers.loot.UEntityAdditionsLootTableProvider;
 import com.minelittlepony.unicopia.datagen.providers.loot.UEntityLootTableProvider;
+import com.minelittlepony.unicopia.datagen.providers.recipe.CuttingBoardRecipeJsonBuilder;
 import com.minelittlepony.unicopia.datagen.providers.recipe.URecipeProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UBlockTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UDamageTypeProvider;
@@ -76,6 +77,7 @@ public class Datagen implements DataGeneratorEntrypoint {
 
     @Override
     public void buildRegistry(RegistryBuilder builder) {
+        CuttingBoardRecipeJsonBuilder.CuttingBoardRecipe.bootstrap();
         builder.addRegistry(RegistryKeys.BIOME, UWorldGen.REGISTRY);
         builder.addRegistry(RegistryKeys.DAMAGE_TYPE, UDamageTypes.REGISTRY);
     }
