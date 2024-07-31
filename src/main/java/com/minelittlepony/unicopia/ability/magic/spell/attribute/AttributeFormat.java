@@ -32,6 +32,14 @@ public enum AttributeFormat {
 
     public abstract String formatValue(float value);
 
+    public MutableText getBase(Text attributeName, float value, float max, String comparison, Formatting color) {
+        return formatAttributeLine(Text.translatable(
+                "attribute.modifier." + comparison + ".0",
+                Text.translatable("item.unicopia.magic_staff.enchanted", formatValue(value), formatValue(max)),
+                attributeName
+        ).formatted(color));
+    }
+
     public MutableText getBase(Text attributeName, float value, String comparison, Formatting color) {
         return formatAttributeLine(Text.translatable("attribute.modifier." + comparison + ".0", formatValue(value), attributeName).formatted(color));
     }
@@ -40,7 +48,7 @@ public enum AttributeFormat {
         return getBase(attributeName, value, "equals", Formatting.LIGHT_PURPLE);
     }
 
-    public Text getRelative(Text attributeName, float baseValue, float currentValue, boolean detrimental) {
+    public Text getRelative(float baseValue, float currentValue, boolean detrimental) {
         float difference = currentValue - baseValue;
         return Text.literal(" (" + (difference > 0 ? "+" : "-") + formatValue(this == PERCENTAGE ? difference / baseValue : difference) + ")").formatted((detrimental ? difference : -difference) < 0 ? Formatting.DARK_GREEN : Formatting.RED);
     }
