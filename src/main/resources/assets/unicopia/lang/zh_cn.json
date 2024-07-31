@@ -1368,7 +1368,7 @@
   "race.unicopia.seapony": "海马",
   "race.unicopia.seapony.alt": "海马们",
   "death.attack.unicopia.generic.and_also": "%1$s 和 %2$s",
-  "death.attack.unicopia.generic.whilst_flying": "%1$s而死于飞行途中",
+  "death.attack.unicopia.generic.whilst_flying": "在飞行途中%1$s",
   "death.attack.unicopia.tribe_swap": "%1$s 以另一个物种重生了",
   "death.attack.unicopia.tribe_swap.self": "%1$s 被自己变成了另一个物种",
   "death.attack.unicopia.tribe_swap.player": "%1$s 被 %2$s 变成了另一个物种",
