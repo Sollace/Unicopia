@@ -5,6 +5,7 @@
 [![Crowdin](https://badges.crowdin.net/unicopia/localized.svg)](https://crowdin.com/project/unicopia)
 ![](https://img.shields.io/badge/api-fabric-orange.svg)
 
+[![es](https://img.shields.io/badge/lang-es-d52b1e.svg)](README_ES.md)
 [![ru](https://img.shields.io/badge/lang-ru-d52b1e.svg)](README_RU.md)
 [![cn](https://img.shields.io/badge/lang-cn-de2910.svg)](README_CN.md)
 
