@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.data.Numeric;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
@@ -126,8 +127,10 @@ public class ScreechAbility implements Ability<Numeric> {
 
     @Override
     public void coolDown(Pony player, AbilitySlot slot) {
+        Vec3d eyePos = player.asEntity().getPos().add(0, MineLPDelegate.getInstance().getPonyHeight(player.asEntity()) * 0.8, 0);
+
         for (int i = 0; i < 20; i++) {
-            player.addParticle(ParticleTypes.BUBBLE_POP, player.asEntity().getEyePos(),
+            player.addParticle(ParticleTypes.BUBBLE_POP, eyePos,
                     VecHelper.supply(() -> (player.asWorld().getRandom().nextGaussian() - 0.5) * 0.3)
             );
         }
