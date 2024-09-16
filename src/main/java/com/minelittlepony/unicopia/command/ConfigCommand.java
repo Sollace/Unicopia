@@ -23,7 +23,6 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -63,10 +62,8 @@ public class ConfigCommand {
                     })))
             )
             .then(CommandManager.literal("list").executes(source -> ConfigCommand.<Set<String>>getProperty(configName, values -> {
-                    ServerPlayerEntity player = source.getSource().getPlayerOrThrow();
-
-                    player.sendMessage(Text.translatable("command.unicopia.config.list", configName, values.size()), false);
-                    values.forEach(line -> player.sendMessage(Text.literal(line)));
+                    source.getSource().sendFeedback(() -> Text.translatable("command.unicopia.config.list", configName, values.size()), false);
+                    values.forEach(line -> source.getSource().sendFeedback(() -> Text.literal(line), false));
                 }))
             );
     }

@@ -50,17 +50,19 @@ class GravityCommand {
             l.getPhysics().setBaseGravityModifier(gravity);
             if (l.asEntity() instanceof PlayerEntity player) {
                 if (source.getEntity() == player) {
-                    player.sendMessage(Text.translatable("commands.gravity.set.self", gravity));
-                } else if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                    player.sendMessage(Text.translatable("commands.gravity.set.other", l.asEntity().getDisplayName(), gravity));
+                    source.sendFeedback(() -> Text.translatable("commands.gravity.set.self", gravity), true);
+                } else {
+                    if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
+                        player.sendMessage(Text.translatable("commands.gravity.set", gravity));
+                    }
+
+                    source.sendFeedback(() -> Text.translatable("commands.gravity.set.other", l.asEntity().getDisplayName(), gravity), true);
                 }
             }
             return (Entity)l.asEntity();
         }).toList();
 
-        if (affected.size() == 1) {
-            source.sendFeedback(() -> Text.translatable("commands.gravity.set.other", affected.get(0).getDisplayName()), true);
-        } else {
+        if (affected.size() > 1) {
             source.sendFeedback(() -> Text.translatable("commands.gravity.set.multiple", affected.size()), true);
         }
         return 0;
