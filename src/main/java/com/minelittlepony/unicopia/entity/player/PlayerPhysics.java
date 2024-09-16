@@ -530,7 +530,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     private void playSound(SoundEvent sound, float volume, float pitch) {
-        entity.getWorld().playSoundFromEntity(entity, entity, sound, SoundCategory.PLAYERS, volume, pitch);
+        entity.getWorld().playSoundFromEntity(entity.getWorld().isClient ? entity : null, entity, sound, SoundCategory.PLAYERS, volume, pitch);
     }
 
     private void tickNaturalFlight(MutableVector velocity) {
