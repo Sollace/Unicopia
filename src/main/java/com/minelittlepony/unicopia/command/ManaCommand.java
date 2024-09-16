@@ -24,7 +24,7 @@ public class ManaCommand {
                 var pony = Pony.of(source.getSource().getPlayer());
                 var bar = type.getBar(pony.getMagicalReserves());
 
-                source.getSource().getPlayer().sendMessage(Text.literal(type.name() + " is " + bar.get() + "/" + bar.getMax()));
+                source.getSource().sendFeedback(() -> Text.literal(type.name() + " is " + bar.get() + "/" + bar.getMax()), true);
                 return 0;
             })
             .then(CommandManager.argument("value", FloatArgumentType.floatArg()).executes(source -> {
@@ -48,7 +48,8 @@ public class ManaCommand {
                     pony.asWorld().playSound(null, pony.getOrigin(), USounds.Vanilla.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 1, 2);
                 }
                 bar.set(value);
-                source.getSource().getPlayer().sendMessage(Text.literal("Set " + type.name() + " to " + bar.get() + "/" + bar.getMax()));
+                var t = type;
+                source.getSource().sendFeedback(() -> Text.literal("Set " + t.name() + " to " + bar.get() + "/" + bar.getMax()), true);
                 return 0;
             })));
     }

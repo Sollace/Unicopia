@@ -13,6 +13,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
 import net.minecraft.util.Hand;
+import net.minecraft.world.GameRules;
 
 class TraitCommand {
     static LiteralArgumentBuilder<ServerCommandSource> create() {
@@ -78,7 +79,9 @@ class TraitCommand {
         float gravity = iplayer.getPhysics().getGravityModifier();
 
         if (source.getPlayer() == player) {
-            player.sendMessage(Text.translatable(translationKey, gravity), false);
+            if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
+                player.sendMessage(Text.translatable(translationKey, gravity), false);
+            }
         } else {
             source.sendFeedback(() -> Text.translatable(translationKey + ".other", player.getName(), gravity), true);
         }
