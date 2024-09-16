@@ -30,15 +30,16 @@ public record ItemsJarContents (
         TileData tile,
         List<ItemStack> stacks
     ) implements JarContents, SidedInventory {
-    private static final int[] SLOTS = IntStream.range(0, 16).toArray();
+    private static final int MAX_SIZE = 16;
+    private static final int[] SLOTS = IntStream.range(0, MAX_SIZE).toArray();
 
     public ItemsJarContents(TileData tile) {
-        this(tile, new ArrayList<>());
+        this(tile, new ArrayList<>(MAX_SIZE));
     }
 
     public ItemsJarContents(TileData tile, NbtCompound compound) {
         this(tile, NbtSerialisable.ITEM_STACK.readAll(compound.getList("items", NbtElement.COMPOUND_TYPE))
-                .limit(15)
+                .limit(MAX_SIZE)
                 .collect(Collectors.toList()));
     }
 
@@ -115,7 +116,7 @@ public record ItemsJarContents (
 
     @Override
     public int size() {
-        return 15;
+        return MAX_SIZE;
     }
 
     @Override
