@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
+import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.util.*;
 
 import net.minecraft.block.BeehiveBlock;
@@ -98,7 +99,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                     }
 
                     BlockPos pos = kickLocation.pos();
-                    EarthPonyStompAbility.stompBlock(w, pos, 10 * (1 + player.getLevel().getScaled(5)) * w.getBlockState(pos).calcBlockBreakingDelta(player.asEntity(), w, pos));
+                    EarthPonyStompAbility.stompBlock(player, w, pos, 10 * (1 + player.getLevel().getScaled(5)) * w.getBlockState(pos).calcBlockBreakingDelta(player.asEntity(), w, pos));
                     player.setAnimation(Animation.KICK, Animation.Recipient.ANYONE);
                 });
             }
@@ -165,10 +166,16 @@ public class EarthPonyKickAbility implements Ability<Pos> {
 
             if (BlockDestructionManager.of(player.getWorld()).getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
                 if (player.getWorld().random.nextInt(30) == 0) {
-                    tree.logs().forEach(player.getWorld(), (w, state, p) -> w.breakBlock(p, true));
+                    tree.logs().forEach(player.getWorld(), (w, state, p) -> {
+                        if (iplayer.canModifyAt(p, ModificationType.PHYSICAL)) {
+                            w.breakBlock(p, true);
+                        }
+                    });
                     tree.leaves().forEach(player.getWorld(), (w, state, p) -> {
-                        Block.dropStacks(w.getBlockState(p), w, p);
-                        w.setBlockState(p, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+                        if (iplayer.canModifyAt(p, ModificationType.PHYSICAL)) {
+                            Block.dropStacks(w.getBlockState(p), w, p);
+                            w.setBlockState(p, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+                        }
                     });
                 }
 

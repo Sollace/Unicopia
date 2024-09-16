@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.recipe.TransformCropsRecipe;
 import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
+import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -70,7 +71,9 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
             for (BlockPos pos : BlockPos.iterate(
                     data.pos().add(-2, -2, -2),
                     data.pos().add( 2,  2,  2))) {
-                count += applySingle(player, player.asWorld(), player.asWorld().getBlockState(pos), pos);
+                if (player.canModifyAt(pos, ModificationType.PHYSICAL)) {
+                    count += applySingle(player, player.asWorld(), player.asWorld().getBlockState(pos), pos);
+                }
             }
         } else {
             count = 1;
