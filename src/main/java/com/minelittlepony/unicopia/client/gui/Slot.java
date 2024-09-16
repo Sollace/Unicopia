@@ -14,6 +14,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 
@@ -145,10 +146,7 @@ class Slot {
             return;
         }
 
-        MutableText label = KeyBindingsHandler.INSTANCE.getBinding(aSlot).getLabel().copy().formatted(Formatting.BOLD);
-
-        MatrixStack matrices = context.getMatrices();
-        matrices.push();
+        MutableText label = KeyBindingsHandler.INSTANCE.getBinding(aSlot).getLabel().copy();
 
         int x = getX();
         if (uHud.xDirection > 0) {
@@ -158,9 +156,6 @@ class Slot {
             x -= uHud.client.textRenderer.getWidth(label)/2;
         }
 
-        matrices.translate(x, getY() + labelY, 0);
-        matrices.scale(0.5F, 0.5F, 0.5F);
-
         ActivationType activation = KeyBindingsHandler.INSTANCE.getForcedActivationType();
         if (activation.isResult()) {
             label = label.append("+T" + activation.getTapCount());
@@ -169,8 +164,6 @@ class Slot {
             }
         }
 
-        context.drawText(uHud.font, label, 0, 0, 0xFFFFFF, true);
-
-        matrices.pop();
+        DrawableUtil.drawScaledText(context, label, x, getY() + labelY, 0.5F, Colors.WHITE);
     }
 }
