@@ -20,6 +20,8 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Position;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class SpellbookItem extends BookItem implements Dispensable {
@@ -29,15 +31,18 @@ public class SpellbookItem extends BookItem implements Dispensable {
     }
 
     @Override
-    public TypedActionResult<ItemStack> dispenseStack(BlockPointer source, ItemStack stack) {
-        Direction facing = source.getBlockState().get(DispenserBlock.FACING);
-        BlockPos pos = source.getPos().offset(facing);
+    public TypedActionResult<ItemStack> dispenseStack(BlockPointer pointer, ItemStack stack) {
+        Direction facing = pointer.getBlockState().get(DispenserBlock.FACING);
+        Position pos = DispenserBlock.getOutputLocation(pointer);
 
         float yaw = facing.getOpposite().asRotation();
-        placeBook(stack, source.getWorld(), pos.getX(), pos.getY(), pos.getZ(), yaw, null);
-        stack.decrement(1);
+        if (placeBook(stack, pointer.getWorld(), pos, yaw, null)) {
+            stack.decrement(1);
 
-        return new TypedActionResult<>(ActionResult.SUCCESS, stack);
+            return new TypedActionResult<>(ActionResult.SUCCESS, stack);
+        }
+
+        return new TypedActionResult<>(ActionResult.FAIL, stack);
     }
 
     @Override
@@ -49,23 +54,27 @@ public class SpellbookItem extends BookItem implements Dispensable {
         if (!context.getWorld().isClient) {
             BlockPos pos = context.getBlockPos().offset(context.getSide());
 
-            placeBook(context.getStack(), context.getWorld(), pos.getX(), pos.getY(), pos.getZ(), context.getPlayerYaw() + 180, player);
+            if (placeBook(context.getStack(), context.getWorld(), Vec3d.ofBottomCenter(pos), context.getPlayerYaw() + 180, player)) {
+                if (!player.getAbilities().creativeMode) {
+                    player.getStackInHand(context.getHand()).decrement(1);
+                }
 
-            if (!player.getAbilities().creativeMode) {
-                player.getStackInHand(context.getHand()).decrement(1);
+                return ActionResult.SUCCESS;
             }
-
-            return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
     }
 
-    private static void placeBook(ItemStack stack, World world, int x, int y, int z, float yaw, @Nullable Entity placer) {
+    private static boolean placeBook(ItemStack stack, World world, Position pos, float yaw, @Nullable Entity placer) {
         SpellbookEntity book = UEntities.SPELLBOOK.create(world);
 
-        book.refreshPositionAndAngles(x + 0.5, y, z + 0.5, 0, 0);
+        book.refreshPositionAndAngles(pos.getX(), pos.getY(), pos.getZ(), 0, 0);
         book.setHeadYaw(yaw);
         book.setYaw(yaw);
+
+        if (!book.canSpawn(world)) {
+            return false;
+        }
 
         @Nullable
         NbtCompound tag = stack.getSubNbt("spellbookState");
@@ -80,6 +89,8 @@ public class SpellbookItem extends BookItem implements Dispensable {
             altar.generateDecorations(world);
             UCriteria.LIGHT_ALTAR.trigger(placer);
         });
+
+        return true;
     }
 }
 
