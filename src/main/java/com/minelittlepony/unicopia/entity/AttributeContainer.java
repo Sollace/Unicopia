@@ -26,9 +26,7 @@ public interface AttributeContainer {
         EntityAttributeModifier modifier = instance.getModifier(id);
 
         if (!MathHelper.approximatelyEquals(desiredValue, modifier == null ? 0 : modifier.getValue())) {
-            if (modifier != null) {
-                instance.removeModifier(modifier);
-            }
+            instance.removeModifier(id);
 
             if (desiredValue != 0) {
                 if (permanent) {
