@@ -51,8 +51,8 @@ public class UHud {
 
     private final List<Slot> slots = List.of(
         new ManaRingSlot(this, AbilitySlot.PRIMARY, AbilitySlot.PASSIVE, 0, 0),
-        new Slot(this, AbilitySlot.SECONDARY, AbilitySlot.SECONDARY, 30, -8),
-        new Slot(this, AbilitySlot.TERTIARY, AbilitySlot.TERTIARY, 40, 18)
+        new Slot(this, AbilitySlot.SECONDARY, AbilitySlot.SECONDARY, 30, -10),
+        new Slot(this, AbilitySlot.TERTIARY, AbilitySlot.TERTIARY, 43, 10)
     );
 
     @Nullable
@@ -137,9 +137,11 @@ public class UHud {
 
         slots.forEach(slot -> slot.renderBackground(context, abilities, swap, tickDelta));
 
+        int currentPage = Unicopia.getConfig().hudPage.get();
+        int maxPages = pony.getAbilities().getMaxPage();
 
         Ability<?> ability = pony.getAbilities().getStat(AbilitySlot.PRIMARY)
-                .getAbility(Unicopia.getConfig().hudPage.get())
+                .getAbility(currentPage)
                 .orElse(null);
         boolean canCast = ability == Abilities.CAST || ability == Abilities.KIRIN_CAST || ability == Abilities.SHOOT;
 
@@ -168,6 +170,14 @@ public class UHud {
 
         slots.forEach(slot -> slot.renderLabel(context, abilities, tickDelta));
 
+        //if (maxPages > 0) {
+            DrawableUtil.drawScaledText(context, Text.literal((currentPage + 1) + "/" + (maxPages + 1)), 44, 38, 0.5F, Colors.WHITE);
+            //down
+            context.drawTexture(HUD_TEXTURE, 42, 43, 52, currentPage == 0 ? 6 : 0, 6, 6, 128, 128);
+            //up
+            context.drawTexture(HUD_TEXTURE, 48, 43, 57, currentPage < maxPages ? 0 : 6, 8, 6, 128, 128);
+        //}
+
         matrices.pop();
 
         if (canCast) {
@@ -188,7 +198,7 @@ public class UHud {
         int progress = Math.min(255, (int)(time * 255F / 20F));
 
         if (progress > 8) {
-            int color = 0xFFFFFF;
+            int color = Colors.WHITE;
             int alpha = progress << 24 & -16777216;
 
             color |= alpha;
