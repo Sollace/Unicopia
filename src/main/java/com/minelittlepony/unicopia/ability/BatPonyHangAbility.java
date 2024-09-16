@@ -37,7 +37,7 @@ public class BatPonyHangAbility implements Ability<Multi> {
         }
 
         return TraceHelper.findBlock(player.asEntity(), 5, 1)
-                .map(BlockPos::down)
+                .map(pos -> pos.down(player.getPhysics().getGravitySignum()))
                 .filter(player.getAcrobatics()::canHangAt)
                 .map(pos -> new Multi(pos, 1));
     }

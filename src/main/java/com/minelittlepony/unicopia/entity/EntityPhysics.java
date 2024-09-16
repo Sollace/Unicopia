@@ -10,12 +10,12 @@ import com.minelittlepony.unicopia.util.Tickable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class EntityPhysics<T extends Entity> implements Physics, Copyable<EntityPhysics<T>>, Tickable {
@@ -75,18 +75,17 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
 
     @Override
     public BlockPos getHeadPosition() {
-
-        BlockPos pos = new BlockPos(
-                MathHelper.floor(entity.getX()),
-                MathHelper.floor(entity.getY() + entity.getHeight() + 0.20000000298023224D),
-                MathHelper.floor(entity.getZ())
+        BlockPos pos = BlockPos.ofFloored(
+                entity.getX(),
+                entity.getY() + entity.getEyeHeight(EntityPose.STANDING),
+                entity.getZ()
         );
 
         if (entity.getWorld().getBlockState(pos).isAir()) {
             BlockPos below = pos.down();
             BlockState block = entity.getWorld().getBlockState(below);
             if (block.isIn(BlockTags.FENCES) || block.isIn(BlockTags.WALLS) || block.getBlock() instanceof FenceGateBlock) {
-                return below;
+               // return below;
             }
         }
 
