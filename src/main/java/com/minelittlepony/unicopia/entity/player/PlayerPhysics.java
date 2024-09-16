@@ -464,7 +464,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             entity.damage(entity.getDamageSources().generic(), 0.5F);
         }
 
-        if (type.isAvian()) {
+        if (type.isAvian() && !entity.getWorld().isClient) {
             if (pony.getObservedSpecies() != Race.BAT && entity.getWorld().random.nextInt(9000) == 0) {
                 entity.dropItem(pony.getObservedSpecies() == Race.HIPPOGRIFF ? UItems.GRYPHON_FEATHER : UItems.PEGASUS_FEATHER);
                 playSound(USounds.ENTITY_PLAYER_PEGASUS_MOLT, 0.3F, 1);
