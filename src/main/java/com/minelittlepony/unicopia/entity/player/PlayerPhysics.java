@@ -50,6 +50,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.*;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
 
@@ -823,15 +824,17 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         entity.addVelocity(orientation.x, orientation.y, orientation.z);
 
         boolean isEarthPonySmash = pony.getObservedSpecies().canUseEarth() && !isFlying();
-        int damage = TraceHelper.findBlocks(entity, speed + 4, 1, state -> (isEarthPonySmash && !state.isAir()) || state.isIn(ConventionalBlockTags.GLASS_PANES)).stream()
+        int damage = TraceHelper.findBlocks(entity, speed + (isEarthPonySmash ? 2 : 4), 1, state -> (isEarthPonySmash && !state.isAir()) || state.isIn(ConventionalBlockTags.GLASS_PANES)).stream()
             .flatMap(pos -> BlockPos.streamOutwards(pos, 2, 2, 2))
-            .filter(pos -> (isEarthPonySmash && !entity.getWorld().isAir(pos)) || entity.getWorld().getBlockState(pos).isIn(ConventionalBlockTags.GLASS_PANES))
+            .filter(pos -> (isEarthPonySmash && !entity.getWorld().isAir(pos) && pos.getY() >= entity.getBlockY()) || entity.getWorld().getBlockState(pos).isIn(ConventionalBlockTags.GLASS_PANES))
             .reduce(0, (u, pos) -> {
                 if (pony.canModifyAt(pos, ModificationType.PHYSICAL)) {
                     if (isEarthPonySmash) {
-                        BlockDestructionManager.of(entity.getWorld()).damageBlock(pos, (int)entity.getWorld().getRandom().nextTriangular(5, 3));
-                        if (BlockDestructionManager.of(entity.getWorld()).getBlockDestruction(pos) >= 9) {
+                        float destruction = BlockDestructionManager.of(entity.getWorld()).damageBlock(pos, (int)entity.getWorld().getRandom().nextTriangular(5, 3));
+                        if (destruction >= 9) {
                             entity.getWorld().breakBlock(pos, true);
+                        } else {
+                            entity.getWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(entity.getWorld().getBlockState(pos)));
                         }
                     } else {
                         entity.getWorld().breakBlock(pos, true);
@@ -852,7 +855,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         if (isEarthPonySmash) {
             DamageSource damageSource = pony.damageOf(UDamageTypes.STEAMROLLER);
-            pony.findAllEntitiesInRange(speed + 4, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR).forEach(e -> e.damage(damageSource, 50));
+            pony.findAllEntitiesInRange(speed + 4, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(EntityPredicates.VALID_LIVING_ENTITY)).forEach(e -> e.damage(damageSource, 50));
         }
 
         pony.updateVelocity();
