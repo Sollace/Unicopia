@@ -807,7 +807,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public ActionResult canSleepNow() {
         if (asWorld().getGameRules().getBoolean(UGameRules.DO_NOCTURNAL_BAT_PONIES) && getSpecies().isNocturnal()) {
-            return asWorld().isDay() ? ActionResult.SUCCESS : ActionResult.FAIL;
+            return asWorld().isDay() || asWorld().getAmbientDarkness() >= 4 ? ActionResult.SUCCESS : ActionResult.FAIL;
         }
 
         return ActionResult.PASS;
