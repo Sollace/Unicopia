@@ -52,4 +52,9 @@ abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHan
     private void onUpdateKilledAdvancementCriterion(Entity entityKilled, int score, DamageSource damageSource, CallbackInfo info) {
         get().onKill(entityKilled, damageSource);
     }
+
+    @Inject(method = "startRiding(Lnet/minecraft/entity/Entity;Z)Z", at = @At("HEAD"))
+    private void onStartRiding(Entity entity, boolean force, CallbackInfoReturnable<Boolean> info) {
+        get().getPhysics().cancelFlight(true);
+    }
 }

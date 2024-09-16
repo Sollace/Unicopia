@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 
 public class ToggleFlightAbility implements Ability<Hit> {
 
@@ -27,7 +28,7 @@ public class ToggleFlightAbility implements Ability<Hit> {
     @Nullable
     @Override
     public Optional<Hit> prepare(Pony player) {
-        return Hit.of(!player.asEntity().hasVehicle() && !player.asEntity().isCreative() && !player.getPhysics().getFlightType().isGrounded());
+        return Hit.of(!player.asEntity().isCreative() && !player.getPhysics().getFlightType().isGrounded());
     }
 
     @Override
@@ -59,6 +60,11 @@ public class ToggleFlightAbility implements Ability<Hit> {
         player.subtractEnergyCost(1);
 
         if (!player.getPhysics().isFlying()) {
+            if (player.asEntity().hasVehicle()) {
+                Vec3d pos = player.asEntity().getPos();
+                player.asEntity().stopRiding();
+                player.asEntity().setPosition(pos.getX(), pos.getY() + 0.25, pos.getZ());
+            }
             player.asEntity().addVelocity(0, player.getPhysics().getGravitySignum() * 0.7F, 0);
             Living.updateVelocity(player.asEntity());
             player.getPhysics().startFlying(true);
