@@ -49,7 +49,9 @@ public class AmuletFeatureRenderer<E extends LivingEntity> implements AccessoryF
 
             VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(texture), false, false);
 
-            model.setAngles(entity, context.getModel());
+            if (context.getModel() instanceof BipedEntityModel) {
+                model.setAngles(entity, context.getModel());
+            }
             model.render(matrices, consumer, lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
         }
     }
