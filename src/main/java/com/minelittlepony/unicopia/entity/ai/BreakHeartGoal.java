@@ -49,6 +49,7 @@ public class BreakHeartGoal extends Goal {
     public void stop() {
         targetter.stop();
         mob.getNavigation().stop();
+        mob.setTarget(null);
     }
 
     @Override
