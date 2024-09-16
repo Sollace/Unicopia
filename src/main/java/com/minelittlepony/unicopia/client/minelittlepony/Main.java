@@ -117,7 +117,9 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
 
     @Override
     public float getPonyHeight(Entity entity) {
-        return super.getPonyHeight(entity) * IPony.getManager().getPony(entity).map(pony -> pony.metadata().getSize().getScaleFactor() + 0.1F).orElse(1F);
+        return super.getPonyHeight(entity) * IPony.getManager().getPony(entity)
+                .map(pony -> pony.race().isHuman() ? 1 : pony.metadata().getSize().getScaleFactor() + 0.1F)
+                .orElse(1F);
     }
 
     private static Race toUnicopiaRace(com.minelittlepony.api.pony.meta.Race race) {
