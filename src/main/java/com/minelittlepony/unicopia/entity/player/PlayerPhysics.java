@@ -829,8 +829,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             .reduce(0, (u, pos) -> {
                 if (pony.canModifyAt(pos, ModificationType.PHYSICAL)) {
                     if (isEarthPonySmash) {
-                        BlockDestructionManager.of(entity.getWorld()).damageBlock(pos, (int)entity.getWorld().getRandom().nextTriangular(5, 3));
-                        if (BlockDestructionManager.of(entity.getWorld()).getBlockDestruction(pos) >= 9) {
+                        float destruction = BlockDestructionManager.of(entity.getWorld()).damageBlock(pos, (int)entity.getWorld().getRandom().nextTriangular(5, 3));
+                        if (destruction >= BlockDestructionManager.MAX_DAMAGE - 1 && pony.canModifyAt(pos, ModificationType.PHYSICAL)) {
                             entity.getWorld().breakBlock(pos, true);
                         }
                     } else {
@@ -862,7 +862,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (isFlying()) {
             playSound(USounds.ENTITY_PLAYER_PEGASUS_DASH, 1, 1);
         } else {
-            playSound(USounds.ENTITY_PLAYER_EARTHPONY_DASH, 2, 0.3F);
+            playSound(USounds.ENTITY_PLAYER_EARTHPONY_DASH, 2, 1.3F);
         }
     }
 

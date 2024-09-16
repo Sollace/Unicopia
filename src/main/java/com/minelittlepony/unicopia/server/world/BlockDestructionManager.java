@@ -17,6 +17,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class BlockDestructionManager implements Tickable {
@@ -54,7 +55,7 @@ public class BlockDestructionManager implements Tickable {
         if (amount == 0) {
             return getBlockDestruction(pos);
         }
-        amount = Math.max(getBlockDestruction(pos), 0) + amount;
+        amount = MathHelper.clamp(Math.max(getBlockDestruction(pos), 0) + amount, 0, MAX_DAMAGE);
         setBlockDestruction(pos, amount);
         return amount;
     }

@@ -703,7 +703,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         if (EffectUtils.hasExtraDefenses(entity)) {
             double radius = distance / 10;
             if (radius > 0) {
-                EarthPonyStompAbility.spawnEffectAround(entity, entity.getSteppingPos(), radius, radius);
+                EarthPonyStompAbility.spawnEffectAround(this, entity, entity.getSteppingPos(), radius, radius);
             }
         }
 

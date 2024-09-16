@@ -19,6 +19,7 @@ import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
+import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
@@ -166,7 +167,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
                 double radius = rad + heavyness * 0.3;
 
-                spawnEffectAround(player, center, radius, rad);
+                spawnEffectAround(iplayer, player, center, radius, rad);
 
                 ParticleUtils.spawnParticle(player.getWorld(), UParticles.GROUND_POUND, player.getX(), player.getY() - 1, player.getZ(), 0, 0, 0);
                 BlockState steppingState = player.getSteppingBlockState();
@@ -198,17 +199,17 @@ public class EarthPonyStompAbility implements Ability<Hit> {
         return true;
     }
 
-    public static void spawnEffectAround(Entity source, BlockPos center, double radius, double range) {
+    public static void spawnEffectAround(Pony pony, Entity source, BlockPos center, double radius, double range) {
         BlockPos.stream(new BlockBox(center).expand(MathHelper.ceil(radius))).forEach(i -> {
             double dist = Math.sqrt(i.getSquaredDistance(source.getX(), source.getY(), source.getZ()));
 
             if (dist <= radius) {
-                spawnEffect(source.getWorld(), i, dist, range);
+                spawnEffect(pony, source.getWorld(), i, dist, range);
             }
         });
     }
 
-    public static void spawnEffect(World w, BlockPos pos, double dist, double rad) {
+    public static void spawnEffect(Pony pony, World w, BlockPos pos, double dist, double rad) {
         if (w.getBlockState(pos.up()).isAir()) {
             BlockState state = w.getBlockState(pos);
 
@@ -216,18 +217,18 @@ public class EarthPonyStompAbility implements Ability<Hit> {
             float scaledHardness = (1 - hardness / 70);
             float damage = hardness < 0 ? 0 : MathHelper.clamp((int)((1 - dist / rad) * 9 * scaledHardness), 0, BlockDestructionManager.MAX_DAMAGE - 1);
 
-            stompBlock(w, pos, damage);
+            stompBlock(pony, w, pos, damage);
         }
     }
 
-    public static void stompBlock(World w, BlockPos pos, float damage) {
+    public static void stompBlock(Pony pony, World w, BlockPos pos, float damage) {
         BlockState state = w.getBlockState(pos);
 
         if (state.isAir() || damage <= 0) {
             return;
         }
 
-        if (BlockDestructionManager.of(w).damageBlock(pos, damage) >= BlockDestructionManager.MAX_DAMAGE) {
+        if (BlockDestructionManager.of(w).damageBlock(pos, damage) >= BlockDestructionManager.MAX_DAMAGE && pony.canModifyAt(pos, ModificationType.PHYSICAL)) {
             w.breakBlock(pos, true);
 
             if (w instanceof ServerWorld) {
