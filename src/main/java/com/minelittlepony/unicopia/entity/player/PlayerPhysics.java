@@ -243,7 +243,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     public void tick() {
         super.tick();
 
-        if (pony.isClientPlayer() && isFlying() && (pony.getJumpingHeuristic().hasChanged(Heuristic.ONCE) || pony.sneakingChanged())) {
+        if (pony.isClientPlayer() && (pony.getJumpingHeuristic().hasChanged(Heuristic.ONCE) || pony.sneakingChanged())) {
             Channel.FLIGHT_CONTROLS_INPUT.sendToServer(new MsgPlayerFlightControlsInput(pony));
         }
 
@@ -370,7 +370,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     pony.getMagicalReserves().getCharge().set(0);
                 }
 
-                if (!creative) {
+                if (!creative && !pony.isClient()) {
                     checkAvianTakeoffConditions(velocity);
                 }
             }
