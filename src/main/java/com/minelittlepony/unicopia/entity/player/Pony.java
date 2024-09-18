@@ -597,7 +597,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             float lightScale = light / 15F;
             float approachFactor = ((velocityScale + lightScale) / 2F);
 
-            if (approachFactor < (entity.isSneaking() ? 0.8F : 0.6F)) {
+            if (approachFactor < (entity.isSneaking() ? 0.8F : 0.3F)) {
                 return false;
             }
         }
