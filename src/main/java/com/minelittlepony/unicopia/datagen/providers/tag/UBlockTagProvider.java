@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.server.world.Tree;
+import com.minelittlepony.unicopia.server.world.UTreeGen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
@@ -103,6 +104,30 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         ).forceAddTag(TagKey.of(RegistryKeys.BLOCK, new Identifier("c", "concrete_powders")));
 
         getOrCreateTagBuilder(UTags.Blocks.UNAFFECTED_BY_GROW_ABILITY).add(Blocks.GRASS_BLOCK);
+        addSeasonalCrops();
+    }
+
+    private void addSeasonalCrops() {
+        getOrCreateTagBuilder(SereneSeasonsTags.Blocks.AUTUMN_CROPS).add(
+                UBlocks.GREEN_APPLE_LEAVES, UBlocks.GREEN_APPLE_SPROUT, UTreeGen.GREEN_APPLE_TREE.sapling().get(),
+                UBlocks.SOUR_APPLE_LEAVES, UBlocks.SOUR_APPLE_SPROUT, UTreeGen.SOUR_APPLE_TREE.sapling().get(),
+                UBlocks.OATS_CROWN, UBlocks.OATS_STEM, UBlocks.OATS,
+                UBlocks.ROCKS
+        );
+        getOrCreateTagBuilder(SereneSeasonsTags.Blocks.WINTER_CROPS).add(UBlocks.ROCKS);
+        getOrCreateTagBuilder(SereneSeasonsTags.Blocks.SPRING_CROPS).add(
+                UBlocks.SWEET_APPLE_LEAVES, UBlocks.SWEET_APPLE_SPROUT, UTreeGen.SWEET_APPLE_TREE.sapling().get(),
+                UBlocks.GOLDEN_OAK_LEAVES, UBlocks.GOLDEN_OAK_SPROUT, UTreeGen.GOLDEN_APPLE_TREE.sapling().get(),
+                UBlocks.PALM_LEAVES, UBlocks.BANANAS, UTreeGen.BANANA_TREE.sapling().get(),
+                UBlocks.PINEAPPLE,
+                UBlocks.ROCKS
+        );
+        getOrCreateTagBuilder(SereneSeasonsTags.Blocks.SUMMER_CROPS).add(
+                UBlocks.SWEET_APPLE_LEAVES, UBlocks.SWEET_APPLE_SPROUT, UTreeGen.SWEET_APPLE_TREE.sapling().get(),
+                UBlocks.MANGO_LEAVES, UTreeGen.MANGO_TREE.sapling().get(),
+                UBlocks.OATS_CROWN, UBlocks.OATS_STEM, UBlocks.OATS,
+                UBlocks.ROCKS
+        );
     }
 
     private void addFruitTrees() {
