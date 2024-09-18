@@ -35,9 +35,13 @@ public class UDamageTypeProvider extends FabricTagProvider<DamageType> {
                 UDamageTypes.EXHAUSTION, UDamageTypes.GAVITY_WELL_RECOIL, UDamageTypes.ALICORN_AMULET,
                 UDamageTypes.ZAP_APPLE, UDamageTypes.KICK, UDamageTypes.SMASH, UDamageTypes.BAT_SCREECH,
                 UDamageTypes.LOVE_DRAINING, UDamageTypes.LIFE_DRAINING, UDamageTypes.STEAMROLLER, UDamageTypes.RAINBOOM,
-                UDamageTypes.SUN, UDamageTypes.SUNLIGHT, UDamageTypes.PETRIFIED
+                UDamageTypes.SUN, UDamageTypes.SUNLIGHT, UDamageTypes.PETRIFIED, UDamageTypes.TRIBE_SWAP
         );
         getOrCreateTagBuilder(DamageTypeTags.BYPASSES_INVULNERABILITY).add(UDamageTypes.TRIBE_SWAP);
+        getOrCreateTagBuilder(DamageTypeTags.BYPASSES_COOLDOWN).add(UDamageTypes.TRIBE_SWAP);
+        getOrCreateTagBuilder(DamageTypeTags.BYPASSES_EFFECTS).add(UDamageTypes.TRIBE_SWAP);
+        getOrCreateTagBuilder(DamageTypeTags.BYPASSES_RESISTANCE).add(UDamageTypes.TRIBE_SWAP);
+        getOrCreateTagBuilder(DamageTypeTags.BYPASSES_ENCHANTMENTS).add(UDamageTypes.TRIBE_SWAP);
         getOrCreateTagBuilder(DamageTypeTags.BYPASSES_SHIELD).add(
                 UDamageTypes.EXHAUSTION, UDamageTypes.BAT_SCREECH, UDamageTypes.ALICORN_AMULET,
                 UDamageTypes.LOVE_DRAINING, UDamageTypes.LIFE_DRAINING,
