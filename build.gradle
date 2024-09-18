@@ -78,7 +78,12 @@ dependencies {
     include "com.sollace:Romanizer:Romanizer:1.0.2"
 
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
-    modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
+
+    if (project.use_trinkets == '1') {
+      modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
+    } else {
+      modCompileOnly "dev.emi:trinkets-dummy:${project.trinkets_version}"
+    }
 
     modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
     include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
