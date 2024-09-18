@@ -77,9 +77,13 @@ dependencies {
     include "com.sollace:Romanizer:Romanizer:1.0.2"
 
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
-    modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
-        modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.3.0"
-        modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0"
+    if (project.use_trinkets == '1') {
+      modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
+      modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.3.0"
+      modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0"
+    } else {
+      modCompileOnly "dev.emi:trinkets-dummy:${project.trinkets_version}"
+    }
 
     modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
     include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
