@@ -19,19 +19,22 @@ public class BubbleSpellRenderer extends SpellRenderer<BubbleSpell> {
         super.render(matrices, vertices, spell, caster, light, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
 
         matrices.push();
-        double height = caster.asEntity().getEyeY() - caster.getOriginVector().y;
-        matrices.translate(0, height * 0.5F, 0);
+        double height = caster.asEntity().getEyeY() - caster.getOriginVector().getY();
 
-        float radius = spell.getRadius(tickDelta) * 0.7F;
 
-        VertexConsumer buffer = vertices.getBuffer(RenderLayers.getMagicNoColor());
+        float radius = spell.getRadius(tickDelta) * 1.5F;
+
+        matrices.translate(0, radius * 0.5F + height, 0);
+
+        VertexConsumer buffer = vertices.getBuffer(RenderLayers.getMagicShield());
 
         Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
 
         matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-45));
-        matrices.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(45 + cameraEntity.getYaw(tickDelta)));
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-cameraEntity.getPitch(tickDelta)));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
+        matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(cameraEntity.getYaw(tickDelta) - 25));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-cameraEntity.getPitch(tickDelta)));
+
 
         new SphereModel(40, 40, DrawableUtil.PI * 0.25F).render(matrices, buffer, light, 0, radius - 0.1F, 0.9F, 0.9F, 1, 0.3F);
         matrices.pop();
