@@ -75,8 +75,8 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pro
 
     @Override
     public void onImpact(MagicProjectileEntity projectile) {
-        if (projectile.getMaster() instanceof Entity owner) {
-            owner.setGlowing(false);
+        if (projectile.getMaster() != null) {
+            projectile.getMaster().setGlowing(false);
         }
         target.ifPresent(projectile.asWorld(), e -> e.setGlowing(false));
     }
