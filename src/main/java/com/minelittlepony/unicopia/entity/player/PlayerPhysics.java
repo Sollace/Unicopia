@@ -377,16 +377,17 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             tickGrounded();
         }
 
-        if (!entity.isOnGround()) {
-            float heavyness = 1 - EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.015F;
-            velocity.x /= heavyness;
-            velocity.z /= heavyness;
-        }
-
         float maximum = 1.5F;
         velocity.x = MathHelper.clamp(velocity.x, -maximum, maximum);
         velocity.y = MathHelper.clamp(velocity.y, -maximum, maximum);
         velocity.z = MathHelper.clamp(velocity.z, -maximum, maximum);
+
+        if (!entity.isOnGround()) {
+            float heavyness = 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.009F;
+            velocity.x /= heavyness;
+            velocity.z /= heavyness;
+        }
+
         entity.setVelocity(velocity.toImmutable());
 
         if (isFlying() && !entity.isFallFlying() && !pony.getAcrobatics().isHanging() && pony.isClient()) {
