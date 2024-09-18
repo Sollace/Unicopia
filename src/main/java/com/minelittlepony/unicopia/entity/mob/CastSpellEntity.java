@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.ability.magic.SpellSlots;
 import com.minelittlepony.unicopia.ability.magic.spell.PlacementControlSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.ability.magic.spell.PlacementControlSpell.PlacementDelegate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -70,8 +71,12 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
         this.controllingEntityUuid = caster.asEntity().getUuid();
         this.controllingSpellUuid = control.getUuid();
         setCaster(caster);
-        Spell spell = Spell.copy(control.getDelegate());
-        spells.getSlots().put(spell);
+
+        if (control.getDelegate() instanceof PlacementDelegate delegate) {
+            delegate.onPlaced(caster, control);
+        }
+
+        spells.getSlots().put(Spell.copy(control.getDelegate()));
     }
 
     public CastSpellEntity(EntityType<?> type, World world) {

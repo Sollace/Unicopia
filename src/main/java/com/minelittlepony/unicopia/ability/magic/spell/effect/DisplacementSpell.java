@@ -18,13 +18,13 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 
-public class DisplacementSpell extends AbstractSpell implements HomingSpell, ProjectileDelegate.EntityHitListener {
+public class DisplacementSpell extends AbstractSpell implements HomingSpell, ProjectileDelegate.HitListener {
 
     private static final SpellAttribute<Float> DAMAGE_TO_TARGET = SpellAttribute.create(SpellAttributeType.DAMAGE_TO_TARGET, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.BLOOD, blood -> blood);
 
     static final TooltipFactory TOOLTIP = DAMAGE_TO_TARGET;
 
-    private final EntityReference<Entity> target = new EntityReference<>();
+    private final EntityReference<Entity> target = dataTracker.startTracking(new EntityReference<>());
 
     private int ticks = 10;
 
@@ -34,7 +34,7 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pro
 
     @Override
     public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
-        return toPlaceable();
+        return method.isIndirectCause() ? this : toPlaceable();
     }
 
     @Override
@@ -43,14 +43,23 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pro
 
         originator.asEntity().setGlowing(true);
 
+        if (situation == Situation.PROJECTILE) {
+            return !isDead();
+        }
+
         ticks--;
 
         if (originator.isClient()) {
             return !isDead() || ticks >= -10;
         }
 
-        if (ticks == 0) {
-            target.ifPresent(originator.asWorld(), target -> apply(originator, target));
+        if (!originator.isClient()) {
+            target.ifPresent(originator.asWorld(), target -> {
+                target.setGlowing(true);
+                if (ticks == 0) {
+                    apply(originator, target);
+                }
+            });
         }
 
         return ticks >= -10;
@@ -58,7 +67,18 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pro
 
     @Override
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
-        Caster.of(projectile.getMaster()).ifPresent(originator -> apply(originator, hit.getEntity()));
+        HitListener.super.onImpact(projectile, hit);
+        Caster.of(projectile.getMaster()).ifPresent(originator -> {
+            apply(originator, hit.getEntity());
+        });
+    }
+
+    @Override
+    public void onImpact(MagicProjectileEntity projectile) {
+        if (projectile.getMaster() instanceof Entity owner) {
+            owner.setGlowing(false);
+        }
+        target.ifPresent(projectile.asWorld(), e -> e.setGlowing(false));
     }
 
     private void apply(Caster<?> originator, Entity target) {
@@ -107,11 +127,13 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pro
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
         compound.putInt("ticks", ticks);
+        compound.put("target", target.toNBT());
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         ticks = compound.getInt("ticks");
+        target.fromNBT(compound.getCompound("target"));
     }
 }

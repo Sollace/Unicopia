@@ -77,39 +77,38 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
 
     @Override
     public boolean apply(Caster<?> caster) {
-        if (delegate == null) {
-            return false;
-        }
-        boolean result = super.apply(caster);
-        if (result) {
-            if (dimension.isEmpty()) {
-                setDimension(caster.asWorld().getRegistryKey());
-            }
-            if (position.isEmpty()) {
-                setPosition(caster.asEntity().getPos());
-            }
-            if (delegate instanceof PlacementDelegate) {
-                ((PlacementDelegate)delegate).onPlaced(caster, this);
-            }
-
-            CastSpellEntity entity = new CastSpellEntity(caster.asWorld(), caster, this);
-
-            Vec3d pos = position.get();
-            Vec3d rot = orientation.orElse(Vec3d.ZERO);
-
-            entity.updatePositionAndAngles(pos.x, pos.y, pos.z, (float)rot.y, (float)rot.x);
-            entity.getWorld().spawnEntity(entity);
-
-            placedEntityId = entity.getUuid();
-        }
-        return result;
+        return delegate != null && super.apply(caster);
     }
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        if (!source.isClient() && getConnection(source) == null) {
-            setDead();
+        if (!source.isClient()) {
+
+            if (placedEntityId == null) {
+                if (dimension.isEmpty()) {
+                    setDimension(source.asWorld().getRegistryKey());
+                }
+                if (position.isEmpty()) {
+                    setPosition(source.asEntity().getPos());
+                }
+                System.out.println("Creating placed spell");
+                CastSpellEntity entity = new CastSpellEntity(source.asWorld(), source, this);
+
+                Vec3d pos = position.get();
+                Vec3d rot = orientation.orElse(Vec3d.ZERO);
+
+                entity.updatePositionAndAngles(pos.x, pos.y, pos.z, (float)rot.y, (float)rot.x);
+                entity.getWorld().spawnEntity(entity);
+
+                placedEntityId = entity.getUuid();
+                setDirty();
+            } else {
+                if (getConnection(source) == null) {
+                    setDead();
+                }
+            }
         }
+
         return !isDead();
     }
 
