@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.entity.damage.DamageType;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -25,7 +26,11 @@ public class UDamageTypeProvider extends FabricTagProvider<DamageType> {
         ).forceAddTag(DamageTypeTags.IS_FALL).forceAddTag(DamageTypeTags.IS_FREEZING).forceAddTag(DamageTypeTags.IS_LIGHTNING).forceAddTag(DamageTypeTags.IS_PROJECTILE);
         getOrCreateTagBuilder(UTags.DamageTypes.FROM_ROCKS).add(UDamageTypes.ROCK);
         getOrCreateTagBuilder(UTags.DamageTypes.FROM_HORSESHOES).add(UDamageTypes.HORSESHOE);
-        getOrCreateTagBuilder(UTags.DamageTypes.BREAKS_SUNGLASSES).add(UDamageTypes.BAT_SCREECH, UDamageTypes.RAINBOOM);
+        getOrCreateTagBuilder(UTags.DamageTypes.BREAKS_SUNGLASSES).add(
+                UDamageTypes.BAT_SCREECH, UDamageTypes.RAINBOOM,
+                DamageTypes.FLY_INTO_WALL, DamageTypes.FALLING_ANVIL, DamageTypes.FALLING_BLOCK,
+                DamageTypes.SONIC_BOOM
+        ).forceAddTag(DamageTypeTags.IS_EXPLOSION);
 
         getOrCreateTagBuilder(DamageTypeTags.AVOIDS_GUARDIAN_THORNS).add(
                 UDamageTypes.EXHAUSTION, UDamageTypes.ALICORN_AMULET, UDamageTypes.ZAP_APPLE, UDamageTypes.KICK, UDamageTypes.SMASH,
