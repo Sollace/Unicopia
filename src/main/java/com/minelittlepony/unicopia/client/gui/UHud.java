@@ -84,7 +84,7 @@ public class UHud {
         Pony pony = Pony.of(client.player);
 
         matrices.push();
-        matrices.translate(0, 0, hotbarZ);
+        matrices.translate(0, 0, hotbarZ - 9800);
         renderViewEffects(pony, context, scaledWidth, scaledHeight, tickDelta);
         matrices.pop();
 
