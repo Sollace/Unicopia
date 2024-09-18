@@ -175,6 +175,11 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         copy(UTags.Blocks.CLOUD_STAIRS, UTags.Items.CLOUD_STAIRS);
         copy(UTags.Blocks.CLOUD_BLOCKS, UTags.Items.CLOUD_BLOCKS);
         copy(UTags.Blocks.CHITIN_BLOCKS, UTags.Items.CHITIN_BLOCKS);
+
+        copy(SereneSeasonsTags.Blocks.AUTUMN_CROPS, SereneSeasonsTags.Items.AUTUMN_CROPS);
+        copy(SereneSeasonsTags.Blocks.WINTER_CROPS, SereneSeasonsTags.Items.WINTER_CROPS);
+        copy(SereneSeasonsTags.Blocks.SPRING_CROPS, SereneSeasonsTags.Items.SPRING_CROPS);
+        copy(SereneSeasonsTags.Blocks.SUMMER_CROPS, SereneSeasonsTags.Items.SUMMER_CROPS);
     }
 
     private void exportForagingTags() {
