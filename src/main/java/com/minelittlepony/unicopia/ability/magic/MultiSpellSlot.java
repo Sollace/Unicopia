@@ -114,8 +114,10 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
             } else {
                 Spell s = spell.get();
                 if (s != null) {
-                    s.setDead();
                     s.tickDying(owner);
+                    if (s.isDead()) {
+                        s.destroy(owner);
+                    }
                 }
             }
         }
