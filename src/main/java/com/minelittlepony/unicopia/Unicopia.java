@@ -31,6 +31,7 @@ import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
+import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.server.world.NocturnalSleepManager;
 import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.unicopia.server.world.UWorldGen;
@@ -71,6 +72,7 @@ public class Unicopia implements ModInitializer {
             ((BlockDestructionManager.Source)w).getDestructionManager().tick();
             ZapAppleStageStore.get(w).tick();
             WeatherConditions.get(w).tick();
+            Ether.get(w).tick();
             if (Debug.SPELLBOOK_CHAPTERS) {
                 SpellbookChapterLoader.INSTANCE.sendUpdate(w.getServer());
             }

@@ -13,14 +13,18 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.server.world.chunk.PositionalDataMap;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.Tickable;
+
 import net.minecraft.nbt.*;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
-public class Ether extends PersistentState {
+public class Ether extends PersistentState implements Tickable {
     private static final Identifier ID = Unicopia.id("ether");
 
     public static Ether get(World world) {
@@ -28,6 +32,7 @@ public class Ether extends PersistentState {
     }
 
     private final Map<Identifier, Map<UUID, Map<UUID, Entry<?>>>> endpoints;
+    private final PositionalDataMap<Entry<?>> positionData = new PositionalDataMap<>();
 
     private final Object locker = new Object();
 
@@ -70,23 +75,36 @@ public class Ether extends PersistentState {
                         markDirty();
                         return new Entry<>(spell, caster);
                     });
-            if (entry.removed) {
-                entry.removed = false;
-                markDirty();
-            }
+
             if (entry.spell.get() != spell) {
                 entry.spell = new WeakReference<>(spell);
+                markDirty();
+            }
+            if (entry.removed) {
+                entry.removed = false;
+                positionData.update(entry);
                 markDirty();
             }
             return entry;
         }
     }
 
+    @Override
+    public void tick() {
+        endpoints.values().forEach(byType -> {
+            byType.values().forEach(entries -> {
+                entries.values().forEach(Entry::update);
+            });
+        });
+    }
+
     public <T extends Spell> void remove(SpellType<T> spellType, UUID entityId) {
         synchronized (locker) {
             endpoints.computeIfPresent(spellType.getId(), (typeId, entries) -> {
-                if (entries.remove(entityId) != null) {
+                Map<UUID, Entry<?>> data = entries.remove(entityId);
+                if (data != null) {
                     markDirty();
+                    data.values().forEach(positionData::remove);
                 }
                 return entries.isEmpty() ? null : entries;
             });
@@ -150,6 +168,10 @@ public class Ether extends PersistentState {
         return false;
     }
 
+    public Set<Entry<?>> getAtPosition(BlockPos pos) {
+        return world.isClient() ? Set.of() : positionData.getState(pos);
+    }
+
     private void pruneNodes() {
         this.endpoints.values().removeIf(entities -> {
             entities.values().removeIf(spells -> {
@@ -160,7 +182,7 @@ public class Ether extends PersistentState {
         });
     }
 
-    public class Entry<T extends Spell> implements NbtSerialisable {
+    public class Entry<T extends Spell> implements PositionalDataMap.Hotspot, NbtSerialisable {
         public final EntityReference<?> entity;
 
         @Nullable
@@ -176,6 +198,9 @@ public class Ether extends PersistentState {
 
         private final Set<UUID> claimants = new HashSet<>();
 
+        private BlockPos currentPos = BlockPos.ORIGIN;
+        private BlockPos previousPos = BlockPos.ORIGIN;
+
         private Entry(NbtElement nbt) {
             this.entity = new EntityReference<>();
             this.spell = new WeakReference<>(null);
@@ -186,6 +211,15 @@ public class Ether extends PersistentState {
             this.entity = new EntityReference<>(caster.asEntity());
             this.spell = new WeakReference<>(spell);
             spellId = spell.getUuid();
+            update();
+        }
+
+        void update() {
+            previousPos = currentPos;
+            currentPos = entity.getTarget().map(t -> BlockPos.ofFloored(t.pos())).orElse(BlockPos.ORIGIN);
+            if (!currentPos.equals(previousPos)) {
+                positionData.update(this);
+            }
         }
 
         public boolean hasChanged() {
@@ -216,6 +250,13 @@ public class Ether extends PersistentState {
             markDirty();
         }
 
+
+        @Override
+        public BlockPos getCenter() {
+            return currentPos;
+        }
+
+        @Override
         public float getRadius() {
             return radius;
         }
@@ -223,6 +264,9 @@ public class Ether extends PersistentState {
         public void setRadius(float radius) {
             if (!MathHelper.approximatelyEquals(this.radius, radius)) {
                 this.radius = radius;
+                if ((int)radius != (int)this.radius) {
+                    positionData.update(this);
+                }
                 changed.set(true);
             }
             markDirty();
@@ -247,6 +291,7 @@ public class Ether extends PersistentState {
         public void markDead() {
             Unicopia.LOGGER.debug("Marking " + entity.getTarget().orElse(null) + " as dead");
             removed = true;
+            positionData.remove(this);
             claimants.clear();
             markDirty();
         }
