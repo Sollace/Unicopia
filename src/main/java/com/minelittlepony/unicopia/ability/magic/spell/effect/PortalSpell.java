@@ -46,7 +46,7 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
     private final DataTracker.Entry<UUID> targetPortalId = dataTracker.startTracking(TrackableDataType.UUID, Util.NIL_UUID);
     private final DataTracker.Entry<Float> targetPortalPitch = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
     private final DataTracker.Entry<Float> targetPortalYaw = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
-    private final EntityReference<Entity> teleportationTarget = new EntityReference<>();
+    private final EntityReference<Entity> teleportationTarget = dataTracker.startTracking(new EntityReference<>());
 
     private final DataTracker.Entry<Float> pitch = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
     private final DataTracker.Entry<Float> yaw = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);

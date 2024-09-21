@@ -59,11 +59,10 @@ public class FeatherFallSpell extends AbstractSpell implements TimedSpell {
             .with(Trait.ORDER, 15)
             .build();
 
-    private final Timer timer;
+    private final Timer timer = new Timer(DURATION.get(getTraits()));
 
     protected FeatherFallSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer(DURATION.get(getTraits()));
     }
 
     @Override

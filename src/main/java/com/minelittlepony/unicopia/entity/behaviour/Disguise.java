@@ -24,8 +24,6 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
 
     EntityAppearance getDisguise();
 
-    void setDirty();
-
     boolean isDead();
 
     default Optional<EntityAppearance> getAppearance() {
@@ -57,7 +55,6 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
         }
 
         getDisguise().setAppearance(entity);
-        setDirty();
         return this;
     }
 

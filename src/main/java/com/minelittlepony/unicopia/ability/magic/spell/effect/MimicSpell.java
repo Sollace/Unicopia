@@ -11,11 +11,10 @@ public class MimicSpell extends AbstractDisguiseSpell implements HomingSpell, Ti
 
     static final TooltipFactory TOOLTIP = TimedSpell.TIME;
 
-    private final Timer timer;
+    private final Timer timer = new Timer(TIME.get(getTraits()));
 
     protected MimicSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer(TIME.get(getTraits()));
     }
 
     @Override

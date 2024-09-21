@@ -131,7 +131,7 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
                 return hasValue ? Status.NEW : Status.REMOVED;
             }
 
-            return spell.hasDirtySpell() ? Status.UPDATED : Status.DEFAULT;
+            return Status.DEFAULT;
         }
 
         @Override

@@ -56,17 +56,14 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
 
     static final TooltipFactory TOOLTIP = TooltipFactory.of(TimedSpell.TIME, SOAPINESS);
 
-    private final Timer timer;
+    private final Timer timer = new Timer(TIME.get(getTraits()));
 
     private float prevRadius;
-    private DataTracker.Entry<Float> radius;
-    private DataTracker.Entry<Integer> struggles;
+    private DataTracker.Entry<Float> radius = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
+    private DataTracker.Entry<Integer> struggles = dataTracker.startTracking(TrackableDataType.INT, SOAPINESS.get(getTraits()));
 
     protected BubbleSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer(TIME.get(getTraits()));
-        radius = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
-        struggles = dataTracker.startTracking(TrackableDataType.INT, SOAPINESS.get(getTraits()));
     }
 
     @Override

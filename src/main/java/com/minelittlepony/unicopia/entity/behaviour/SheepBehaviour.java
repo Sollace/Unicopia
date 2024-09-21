@@ -65,7 +65,7 @@ public class SheepBehaviour extends EntityBehaviour<SheepEntity> {
                         }
                     } while (dropAmount-- > 0);
                 }
-                spell.setDirty();
+                spell.getAppearance().ifPresent(EntityAppearance::markDirty);
             }
         }
     }

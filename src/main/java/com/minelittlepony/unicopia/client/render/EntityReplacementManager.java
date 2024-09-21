@@ -68,10 +68,6 @@ class EntityReplacementManager implements Disguise {
     }
 
     @Override
-    public void setDirty() {
-    }
-
-    @Override
     public boolean isDead() {
         return false;
     }

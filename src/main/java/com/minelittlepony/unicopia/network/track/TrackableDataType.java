@@ -11,8 +11,10 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public record TrackableDataType<T>(int id, PacketCodec<T> codec) {
     private static final Int2ObjectMap<TrackableDataType<?>> REGISTRY = new Int2ObjectOpenHashMap<>();
@@ -26,7 +28,15 @@ public record TrackableDataType<T>(int id, PacketCodec<T> codec) {
     public static final TrackableDataType<Optional<PacketByteBuf>> RAW_BYTES = of(new Identifier("raw_bytes"), PacketCodec.RAW_BYTES.asOptional());
 
     public static final TrackableDataType<Optional<BlockPos>> OPTIONAL_POS = of(new Identifier("optional_pos"), PacketCodec.OPTIONAL_POS);
+    public static final TrackableDataType<Optional<Vec3d>> OPTIONAL_VECTOR = of(new Identifier("optional_vector"), PacketCodec.OPTIONAL_VECTOR);
+    private static final TrackableDataType<Optional<RegistryKey<?>>> OPTIONAL_REGISTRY_KEY = of(new Identifier("optional_registry_key"), PacketCodec.OPTIONAL_REGISTRY_KEY);
+
     public static final TrackableDataType<Race> RACE = TrackableDataType.of(Unicopia.id("race"), PacketCodec.ofRegistry(Race.REGISTRY));
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> TrackableDataType<Optional<RegistryKey<T>>> ofRegistryKey() {
+        return (TrackableDataType)OPTIONAL_REGISTRY_KEY;
+    }
 
     @SuppressWarnings("unchecked")
     public static <T> TrackableDataType<T> of(PacketByteBuf buffer) {
