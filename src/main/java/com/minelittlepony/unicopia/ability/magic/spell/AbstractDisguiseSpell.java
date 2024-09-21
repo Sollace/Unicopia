@@ -20,7 +20,7 @@ import net.minecraft.nbt.NbtCompound;
  */
 public abstract class AbstractDisguiseSpell extends AbstractSpell implements Disguise, ProjectileImpactListener {
 
-    private final EntityAppearance disguise = new EntityAppearance();
+    private final EntityAppearance disguise = dataTracker.startTracking(new EntityAppearance());
 
     public AbstractDisguiseSpell(CustomisedSpellType<?> type) {
         super(type);

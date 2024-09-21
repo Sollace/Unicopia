@@ -45,20 +45,12 @@ public final class EmptySpell implements Spell {
     }
 
     @Override
-    public boolean isDirty() {
-        return false;
-    }
-
-    @Override
     public boolean tick(Caster<?> caster, Situation situation) {
         return false;
     }
 
     @Override
     public void tickDying(Caster<?> caster) { }
-
-    @Override
-    public void setDirty() { }
 
     @Override
     public boolean isHidden() {

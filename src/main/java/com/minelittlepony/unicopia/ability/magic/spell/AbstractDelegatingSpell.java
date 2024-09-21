@@ -80,18 +80,6 @@ public abstract class AbstractDelegatingSpell implements Spell {
         return getOrEmpty().isDying();
     }
 
-    @Deprecated
-    @Override
-    public boolean isDirty() {
-        return delegate.hasDirtySpell();
-    }
-
-    @Deprecated
-    @Override
-    public void setDirty() {
-        getOrEmpty().setDirty();
-    }
-
     @Override
     public boolean isHidden() {
         return getOrEmpty().isHidden();

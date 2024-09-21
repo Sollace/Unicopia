@@ -25,11 +25,6 @@ public final class SpellReference<T extends Spell> implements NbtSerialisable {
         set(spell, null);
     }
 
-    @Deprecated
-    public boolean hasDirtySpell() {
-        return spell != null && spell.isDirty();
-    }
-
     public boolean set(T spell, @Nullable Caster<?> owner) {
         spell = spell == null || spell.isDead() ? null : spell;
         if (spell == this.spell) {

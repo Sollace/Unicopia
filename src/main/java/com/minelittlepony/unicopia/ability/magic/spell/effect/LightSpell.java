@@ -38,13 +38,12 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
 
     static final TooltipFactory TOOLTIP = TooltipFactory.of(TIME, ORB_COUNT);
 
-    private final Timer timer;
+    private final Timer timer = new Timer(TIME.get(getTraits()));
 
     private final List<EntityReference<FairyEntity>> lights = new ArrayList<>();
 
     protected LightSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer(TIME.get(getTraits()));
     }
 
     @Override

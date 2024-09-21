@@ -47,7 +47,7 @@ public class FireBoltSpell extends AbstractSpell implements HomingSpell,
 
     static final TooltipFactory TOOLTIP = TooltipFactory.of(EXPLOSION_STRENGTH, VELOCITY, PROJECTILE_COUNT, FOLLOWS_TARGET, FOLLOW_RANGE.conditionally(FOLLOWS_TARGET::get));
 
-    private final EntityReference<Entity> target = new EntityReference<>();
+    private final EntityReference<Entity> target = dataTracker.startTracking(new EntityReference<>());
 
     protected FireBoltSpell(CustomisedSpellType<?> type) {
         super(type);
