@@ -4,8 +4,10 @@ import java.util.function.Function;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.InteractionManager;
+import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
+import com.minelittlepony.unicopia.ability.magic.spell.DispersableDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.authlib.GameProfile;
@@ -81,7 +83,13 @@ public class DisguiseCommand {
 
         Pony iplayer = Pony.of(player);
         iplayer.getSpellSlot().get(SpellType.CHANGELING_DISGUISE)
-            .orElseGet(() -> SpellType.CHANGELING_DISGUISE.withTraits().apply(iplayer, CastingMethod.INNATE))
+            .orElseGet(() -> {
+                DispersableDisguiseSpell spell = SpellType.CHANGELING_DISGUISE.withTraits().apply(iplayer, CastingMethod.INNATE);
+                if (!iplayer.canUse(Abilities.DISGUISE)) {
+                    spell.setForced();
+                }
+                return spell;
+            })
             .setDisguise(entity);
 
         if (source.getEntity() == player) {

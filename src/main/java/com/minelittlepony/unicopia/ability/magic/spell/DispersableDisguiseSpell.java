@@ -26,9 +26,16 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
     private final DataTracker.Entry<Boolean> suppressed = dataTracker.startTracking(TrackableDataType.BOOLEAN, false);
     private int suppressionCounter;
 
+    private boolean forced;
+
     public DispersableDisguiseSpell(CustomisedSpellType<?> type) {
         super(type);
         setHidden(true);
+    }
+
+    public void setForced() {
+        forced = true;
+        setHidden(false);
     }
 
     @Override
@@ -59,7 +66,7 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
             }
         }
 
-        if (!source.canUse(Abilities.DISGUISE)) {
+        if (!forced && !source.canUse(Abilities.DISGUISE)) {
             setDead();
         }
 
@@ -91,12 +98,14 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
         compound.putInt("suppressionCounter", suppressionCounter);
+        compound.putBoolean("forced", forced);
     }
 
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
         suppressionCounter = compound.getInt("suppressionCounter");
+        forced = compound.getBoolean("forced");
         if (suppressionCounter > 0) {
             suppressed.set(true);
         }
