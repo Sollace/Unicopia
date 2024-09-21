@@ -11,7 +11,6 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.WeaklyOwned;
 import com.minelittlepony.unicopia.ability.magic.*;
-import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.TargetSelecter;
 import com.minelittlepony.unicopia.entity.ai.BreakHeartGoal;
 import com.minelittlepony.unicopia.entity.ai.DynamicTargetGoal;
@@ -302,9 +301,6 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     @Override
     public void toNBT(NbtCompound compound) {
         super.toNBT(compound);
-        getSpellSlot().get().ifPresent(effect -> {
-            compound.put("effect", Spell.writeNbt(effect));
-        });
         compound.put("master", getMasterReference().toNBT());
         physics.toNBT(compound);
         compound.putBoolean("discorded", isDiscorded());
@@ -313,9 +309,6 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     @Override
     public void fromNBT(NbtCompound compound) {
         super.fromNBT(compound);
-        if (compound.contains("effect")) {
-            getSpellSlot().put(Spell.readNbt(compound.getCompound("effect")));
-        }
         if (compound.contains("master", NbtElement.COMPOUND_TYPE)) {
             owner.fromNBT(compound.getCompound("master"));
             if (owner.isSet()) {
