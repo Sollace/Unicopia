@@ -102,7 +102,12 @@ dependencies {
     if (project.use_sodium == '1') {
       modCompileOnly "maven.modrinth:indium:${project.indium_version}", { exclude group: "net.fabricmc.fabric-api" }
       modCompileOnly "maven.modrinth:sodium:${project.sodium_version}", { exclude group: "net.fabricmc.fabric-api" }
-     // modCompileOnly "maven.modrinth:iris:${project.iris_version}", { exclude group: "net.fabricmc.fabric-api" }
+      if (project.use_iris == '1') {
+        modCompileOnly "maven.modrinth:iris:${project.iris_version}", { exclude group: "net.fabricmc.fabric-api" }
+        modImplementation "org.anarres:jcpp:1.4.14"
+        modImplementation "org.antlr:antlr4-runtime:4.13.1"
+        modImplementation "io.github.douira:glsl-transformer:2.0.1"
+      }
     }
 
     if (project.tmi_type == 'emi') {
