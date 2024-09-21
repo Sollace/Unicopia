@@ -102,11 +102,6 @@ public class DismissSpellScreen extends GameGui {
     }
 
     @Override
-    public void renderInGameBackground(DrawContext context) {
-
-    }
-
-    @Override
     public boolean shouldPause() {
         return false;
     }
