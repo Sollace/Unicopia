@@ -225,6 +225,11 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     @Override
+    public boolean collidesWithClouds() {
+        return getCompositeRace().canInteractWithClouds() || entity.isCreative();
+    }
+
+    @Override
     public void setSpecies(Race race) {
         race = race.validate(entity);
         Race current = getSpecies();
