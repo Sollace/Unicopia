@@ -19,9 +19,6 @@
     ]
   },
   {
-      "processor_type": "unicopia:cave_carving"
-  },
-  {
     "processor_type": "unicopia:surface_growth",
     "input_predicate": {
       "predicate_type": "block_match",

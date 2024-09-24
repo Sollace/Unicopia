@@ -1,0 +1,50 @@
+{
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/floor_decoration/empty",
+        "processors": [],
+        "projection": "rigid"
+      },
+      "weight": 6
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/floor_decoration/slime_1",
+        "processors": [],
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/floor_decoration/slime_2",
+        "processors": [],
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/floor_decoration/slime_3",
+        "processors": [],
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/floor_decoration/spikes",
+        "processors": [],
+        "projection": "rigid"
+      },
+      "weight": 3
+    }
+  ],
+  "fallback": "unicopia:changeling_hive/floor_additions_termination"
+}

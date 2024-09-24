@@ -6,7 +6,9 @@ import java.util.function.Consumer;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.ShellsBlock;
 import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.server.world.gen.CaveCarvingStructureProcessor;
 import com.minelittlepony.unicopia.server.world.gen.OverworldBiomeSelectionCallback;
+import com.minelittlepony.unicopia.server.world.gen.SurfaceGrowthStructureProcessor;
 import com.minelittlepony.unicopia.util.registry.DynamicRegistry;
 
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
@@ -23,6 +25,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
@@ -119,6 +122,9 @@ public interface UWorldGen {
                         .build())
                 .build();
     });
+
+    StructureProcessorType<SurfaceGrowthStructureProcessor> SURFACE_GROWTH_STRUCTURE_PROCESSOR = Registry.register(Registries.STRUCTURE_PROCESSOR, Unicopia.id("surface_growth"), () -> SurfaceGrowthStructureProcessor.CODEC);
+    StructureProcessorType<CaveCarvingStructureProcessor> CAVE_CARVING_STRUCTURE_PROCESSOR = Registry.register(Registries.STRUCTURE_PROCESSOR, Unicopia.id("cave_carving"), () -> CaveCarvingStructureProcessor.CODEC);
 
     @SafeVarargs
     static <T> T applyAll(T t, Consumer<T> ...consumers) {

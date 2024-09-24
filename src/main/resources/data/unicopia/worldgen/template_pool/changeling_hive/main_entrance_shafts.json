@@ -3,11 +3,11 @@
     {
       "element": {
         "element_type": "minecraft:single_pool_element",
-        "location": "unicopia:changeling_hive/entrance_large_upper",
-        "processors": "unicopia:changeling_hive_entrance_decay",
+        "location": "unicopia:changeling_hive/entrance_large_lower",
+        "processors": [],
         "projection": "rigid"
       },
-      "weight": 1
+      "weight": 6
     }
   ],
   "fallback": "minecraft:empty"
