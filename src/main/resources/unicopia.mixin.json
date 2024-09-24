@@ -17,6 +17,7 @@
     "MixinChunkBlockLightProvider",
     "MutableBlockLightStorage",
     "MixinDamageSource",
+    "MixinEnchantment",
     "MixinEnchantmentHelper",
     "MixinFallLocation",
     "MixinEntity",
