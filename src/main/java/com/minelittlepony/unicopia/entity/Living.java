@@ -381,7 +381,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             }
         }
 
-        if (entity instanceof HostileEntity mob && mob.hasStatusEffect(UEffects.CORRUPT_INFLUENCE) && mob.getRandom().nextInt(4) == 0) {
+        if (entity instanceof HostileEntity mob && mob.hasStatusEffect(UEffects.CORRUPT_INFLUENCE) && mob.getRandom().nextInt(4000) == 0) {
             CorruptInfluenceStatusEffect.reproduce(mob);
         }
 
