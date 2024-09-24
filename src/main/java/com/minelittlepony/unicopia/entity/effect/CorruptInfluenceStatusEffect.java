@@ -89,6 +89,9 @@ public class CorruptInfluenceStatusEffect extends StatusEffect {
             }
         }
 
+        if (mob.getRandom().nextInt(4) != 0) {
+            clone.clearStatusEffects();
+        }
         mob.getWorld().spawnEntity(clone);
 
         if (!mob.isSilent()) {
