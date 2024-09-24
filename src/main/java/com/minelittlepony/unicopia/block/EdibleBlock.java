@@ -205,7 +205,7 @@ public class EdibleBlock extends HayBlock {
             if (world.random.nextInt(10) == 0) {
                 player.playSound(USounds.Vanilla.ENTITY_PLAYER_BURP, 1, player.getSoundPitch());
             }
-            player.getHungerManager().add(4, 2.3F);
+            player.getHungerManager().add(2, 1.3F);
         }
         return ActionResult.SUCCESS;
     }
