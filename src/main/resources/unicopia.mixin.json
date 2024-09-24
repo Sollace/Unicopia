@@ -28,6 +28,7 @@
     "MixinFallingBlockEntity",
     "MixinFlowableFluid",
     "MixinGuardianTargetPredicate",
+    "MixinHeightmap",
     "MixinItem",
     "MixinItemEntity",
     "MixinItemStack",
