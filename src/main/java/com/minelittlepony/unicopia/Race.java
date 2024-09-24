@@ -70,7 +70,7 @@ public record Race (
      * This is used if there are no other races.
      */
     public static final Race UNSET = register("unset", new Builder().availability(Availability.COMMANDS));
-    public static final Race HUMAN = register("human", new Builder().availability(Availability.COMMANDS));
+    public static final Race HUMAN = register("human", new Builder());
     public static final Race EARTH = register("earth", new Builder().foraging().earth()
             .abilities(Abilities.HUG, Abilities.STOMP, Abilities.KICK, Abilities.GROW)
     );
