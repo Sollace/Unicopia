@@ -1,0 +1,32 @@
+{
+  "elements": [
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/roof_decoration/empty",
+        "processors": [],
+        "projection": "rigid"
+      },
+      "weight": 6
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/roof_decoration/slime",
+        "processors": [],
+        "projection": "rigid"
+      },
+      "weight": 1
+    },
+    {
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "unicopia:changeling_hive/roof_decoration/spikes",
+        "processors": [],
+        "projection": "rigid"
+      },
+      "weight": 3
+    }
+  ],
+  "fallback": "unicopia:changeling_hive/roof_additions_termination"
+}

@@ -4,9 +4,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/chamber_decoration/nothing",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_surfacing",
         "projection": "rigid"
       },
       "weight": 7
@@ -24,9 +22,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/chamber_decoration/spiders",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_surfacing",
         "projection": "rigid"
       },
       "weight": 4
@@ -35,9 +31,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/chamber_decoration/spiked",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_surfacing",
         "projection": "rigid"
       },
       "weight": 2
@@ -46,9 +40,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/chamber_decoration/slime",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_surfacing",
         "projection": "rigid"
       },
       "weight": 2
