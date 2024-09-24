@@ -105,10 +105,9 @@ public class CloudBlock extends Block implements CloudLike {
                 entity.addVelocity(0, 0.07, 0);
                 entity.setOnGround(true);
             }
-            entity.setVelocity(entity.getVelocity().multiply(0.9F, 1, 0.9F));
-        } else {
-            entity.setVelocity(entity.getVelocity().multiply(0.9F));
         }
+
+        entity.setVelocity(entity.getVelocity().multiply(0.9F, 1, 0.9F));
     }
 
     @Override
