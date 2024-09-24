@@ -146,12 +146,12 @@ public interface UItems {
     Item COPPER_HORSE_SHOE = register("copper_horse_shoe", new HorseShoeItem(new Item.Settings().maxDamage(250), 6, 0.5F, 0.8F), ItemGroups.COMBAT);
     Item NETHERITE_HORSE_SHOE = register("netherite_horse_shoe", new HorseShoeItem(new Item.Settings().maxDamage(800), 3, 0.7F, 1.2F), ItemGroups.COMBAT);
 
-    Item WOODEN_POLEARM = register("wooden_polearm", new PolearmItem(ToolMaterials.WOOD, 2, -3.6F, 2, new Item.Settings()), ItemGroups.COMBAT);
-    Item STONE_POLEARM = register("stone_polearm", new PolearmItem(ToolMaterials.STONE, 2, -3.6F, 2, new Item.Settings()), ItemGroups.COMBAT);
-    Item IRON_POLEARM = register("iron_polearm", new PolearmItem(ToolMaterials.IRON, 2, -3.6F, 3, new Item.Settings()), ItemGroups.COMBAT);
-    Item GOLDEN_POLEARM = register("golden_polearm", new PolearmItem(ToolMaterials.GOLD, 2, -3.6F, 4, new Item.Settings()), ItemGroups.COMBAT);
-    Item DIAMOND_POLEARM = register("diamond_polearm", new PolearmItem(ToolMaterials.DIAMOND, 2, -3.6F, 5, new Item.Settings()), ItemGroups.COMBAT);
-    Item NETHERITE_POLEARM = register("netherite_polearm", new PolearmItem(ToolMaterials.NETHERITE, 2, -3.6F, 5, new Item.Settings().fireproof()), ItemGroups.COMBAT);
+    Item WOODEN_POLEARM = register("wooden_polearm", new PolearmItem(ToolMaterials.WOOD, 2, -3.2F, 2, new Item.Settings()), ItemGroups.COMBAT);
+    Item STONE_POLEARM = register("stone_polearm", new PolearmItem(ToolMaterials.STONE, 2, -3.2F, 2, new Item.Settings()), ItemGroups.COMBAT);
+    Item IRON_POLEARM = register("iron_polearm", new PolearmItem(ToolMaterials.IRON, 2, -3.1F, 3, new Item.Settings()), ItemGroups.COMBAT);
+    Item GOLDEN_POLEARM = register("golden_polearm", new PolearmItem(ToolMaterials.GOLD, 3, -3F, 4, new Item.Settings()), ItemGroups.COMBAT);
+    Item DIAMOND_POLEARM = register("diamond_polearm", new PolearmItem(ToolMaterials.DIAMOND, 3, -3F, 5, new Item.Settings()), ItemGroups.COMBAT);
+    Item NETHERITE_POLEARM = register("netherite_polearm", new PolearmItem(ToolMaterials.NETHERITE, 3, -3F, 6, new Item.Settings().fireproof()), ItemGroups.COMBAT);
 
     Item LOOT_BUG_SPAWN_EGG = register("loot_bug_spawn_egg", new SpawnEggItem(UEntities.LOOT_BUG, 0x3C9D14, 0xE66F16, new Item.Settings()), ItemGroups.SPAWN_EGGS);
     Item BUTTERFLY_SPAWN_EGG = register("butterfly_spawn_egg", new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xAAEEFF, new Item.Settings()), ItemGroups.SPAWN_EGGS);
