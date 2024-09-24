@@ -353,6 +353,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(UConventionalTags.Items.WORMS).add(UItems.WHEAT_WORMS);
         getOrCreateTagBuilder(UConventionalTags.Items.STICKS).add(Items.STICK);
         getOrCreateTagBuilder(UConventionalTags.Items.ROCKS).add(UItems.ROCK);
+        getOrCreateTagBuilder(UConventionalTags.Items.GEMS).add(UItems.GEMSTONE, UItems.BOTCHED_GEM);
         getOrCreateTagBuilder(UConventionalTags.Items.PINECONES).add(UItems.PINECONE);
         getOrCreateTagBuilder(UConventionalTags.Items.PINEAPPLES).add(UItems.PINEAPPLE);
         getOrCreateTagBuilder(UConventionalTags.Items.MANGOES).add(UItems.MANGO);

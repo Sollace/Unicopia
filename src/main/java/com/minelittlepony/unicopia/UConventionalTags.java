@@ -46,6 +46,7 @@ public interface UConventionalTags {
         TagKey<Item> FRUITS = item("fruits");
         TagKey<Item> WORMS = item("worms");
         TagKey<Item> ROCKS = item("rocks");
+        TagKey<Item> GEMS = item("gems");
 
         TagKey<Item> RAW_INSECT = item("raw_insect");
         TagKey<Item> COOKED_INSECT = item("cooked_insect");
