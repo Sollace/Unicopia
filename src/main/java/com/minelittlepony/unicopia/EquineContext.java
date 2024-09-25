@@ -22,7 +22,7 @@ public interface EquineContext {
     }
 
     default boolean collidesWithClouds() {
-        return getCompositeRace().canInteractWithClouds();
+        return getCompositeRace().canInteractWithClouds() || getCloudWalkingStrength() >= 1;
     }
 
     default boolean hasFeatherTouch() {
