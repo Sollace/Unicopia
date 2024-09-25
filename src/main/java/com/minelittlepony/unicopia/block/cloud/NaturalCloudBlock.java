@@ -12,8 +12,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -25,7 +23,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class NaturalCloudBlock extends PoreousCloudBlock {
@@ -42,26 +39,13 @@ public class NaturalCloudBlock extends PoreousCloudBlock {
             @Nullable Supplier<Soakable> soggyBlock,
             Supplier<Block> compactedBlock,
             Settings settings) {
-        super(meltable, soggyBlock, settings.nonOpaque().allowsSpawning((state, world, pos, type) -> {
-            return type == EntityType.PHANTOM || type == EntityType.PARROT || type.getSpawnGroup() == SpawnGroup.AMBIENT;
-        }));
+        super(meltable, soggyBlock, settings.nonOpaque());
         this.compactedBlock = compactedBlock;
     }
 
     @Override
     public MapCodec<NaturalCloudBlock> getCodec() {
         return CODEC;
-    }
-
-    @Override
-    @Deprecated
-    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
-        return 0.9F;
-    }
-
-    @Override
-    public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
-        return true;
     }
 
     @Override

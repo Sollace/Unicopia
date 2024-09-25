@@ -85,7 +85,7 @@ public class CloudChestBlock extends ChestBlock implements CloudLike {
     };
 
     public CloudChestBlock(BlockState baseState, Settings settings) {
-        super(settings.dynamicBounds(), () -> UBlockEntities.CLOUD_CHEST);
+        super(CloudLike.applyCloudProperties(settings), () -> UBlockEntities.CLOUD_CHEST);
         this.baseState = baseState;
         this.baseBlock = (CloudBlock)baseState.getBlock();
     }

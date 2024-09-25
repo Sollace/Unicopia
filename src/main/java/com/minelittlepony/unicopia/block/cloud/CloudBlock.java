@@ -39,13 +39,24 @@ public class CloudBlock extends Block implements CloudLike {
     protected final boolean meltable;
 
     public CloudBlock(boolean meltable, Settings settings) {
-        super((meltable ? settings.ticksRandomly() : settings).nonOpaque().dynamicBounds());
+        super(CloudLike.applyCloudProperties(meltable ? settings.ticksRandomly() : settings));
         this.meltable = meltable;
     }
 
     @Override
     public MapCodec<? extends CloudBlock> getCodec() {
         return CODEC;
+    }
+
+    @Override
+    @Deprecated
+    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+        return 0.9F;
+    }
+
+    @Override
+    public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+        return true;
     }
 
     @Override

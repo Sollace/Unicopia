@@ -2,12 +2,18 @@ package com.minelittlepony.unicopia.server.world.gen;
 
 import java.util.function.Function;
 
+import org.apache.commons.lang3.mutable.MutableBoolean;
+
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.mojang.serialization.Codec;
+
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.biome.Biome;
@@ -23,6 +29,8 @@ import net.minecraft.world.gen.densityfunction.DensityFunction.NoisePos;
 public class CloudCarver extends CaveCarver {
 
     private Random random;
+
+    private final LongSet topWrittenPositions = new LongOpenHashSet();
 
     public CloudCarver(Codec<CaveCarverConfig> codec) {
         super(codec);
@@ -55,7 +63,7 @@ public class CloudCarver extends CaveCarver {
             CarvingMask carvingMask
         ) {
         this.random = random;
-        return super.carve(context, config, chunk, function, random, new AquiferSampler() {
+        boolean result = super.carve(context, config, chunk, function, random, new AquiferSampler() {
             @Override
             public BlockState apply(NoisePos pos, double density) {
                 BlockState state = sampler.apply(pos, density);
@@ -68,6 +76,12 @@ public class CloudCarver extends CaveCarver {
             }
 
         }, chunkPos, carvingMask);
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        topWrittenPositions.forEach(l -> {
+            processSurfaceBlocks(mutable.set(l), context, config, chunk, random);
+        });
+        topWrittenPositions.clear();
+        return result;
     }
 
     @Override
@@ -138,5 +152,34 @@ public class CloudCarver extends CaveCarver {
             }
         }
         //super.carveTunnels(context, config, chunk, posToBiome, seed, aquiferSampler, x, y, z, horizontalScale, verticalScale, w, yaw, pitch, branchStartIndex, branchCount, yawPitchRatio, mask, skipPredicate);
+    }
+
+    @Override
+    protected boolean carveAtPoint(
+            CarverContext context,
+            CaveCarverConfig config,
+            Chunk chunk,
+            Function<BlockPos, RegistryEntry<Biome>> posToBiome,
+            CarvingMask mask,
+            BlockPos.Mutable pos,
+            BlockPos.Mutable tmp,
+            AquiferSampler aquiferSampler,
+            MutableBoolean replacedGrassy
+        ) {
+        if (super.carveAtPoint(context, config, chunk, posToBiome, mask, pos, tmp, aquiferSampler, replacedGrassy)) {
+            topWrittenPositions.remove(tmp.set(pos).move(Direction.DOWN).asLong());
+            topWrittenPositions.add(pos.asLong());
+            if (chunk.getBlockState(tmp).isOf(UBlocks.SOGGY_CLOUD)) {
+                chunk.setBlockState(tmp, UBlocks.CLOUD.getDefaultState(), false);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    protected void processSurfaceBlocks(BlockPos.Mutable pos, CarverContext context, CaveCarverConfig config, Chunk chunk, Random random) {
+        if (chunk.getBlockState(pos.move(Direction.UP)).isAir()) {
+            chunk.setBlockState(pos.move(Direction.DOWN), UBlocks.SOGGY_CLOUD.getDefaultState(), false);
+        }
     }
 }

@@ -82,7 +82,7 @@ public interface Soakable {
                 if (moisture < 7) {
                     world.setBlockState(pos, soakable.getStateWithMoisture(state, moisture + 1));
                 }
-            } else {
+            } else if (!world.isAir(pos.up())) {
                 if (moisture > 1) {
                     BlockPos neighborPos = pos.offset(Util.getRandom(Soakable.DIRECTIONS, random));
                     BlockState neighborState = world.getBlockState(neighborPos);

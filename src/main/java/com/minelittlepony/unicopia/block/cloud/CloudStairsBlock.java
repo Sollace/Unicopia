@@ -28,13 +28,24 @@ public class CloudStairsBlock extends StairsBlock implements CloudLike {
     private final CloudBlock baseBlock;
 
     public CloudStairsBlock(BlockState baseState, Settings settings) {
-        super(baseState, settings.dynamicBounds());
+        super(baseState, CloudLike.applyCloudProperties(settings));
         this.baseBlock = (CloudBlock)baseState.getBlock();
     }
 
     @Override
     public MapCodec<? extends StairsBlock> getCodec() {
         return CODEC;
+    }
+
+    @Override
+    @Deprecated
+    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+        return baseBlock.getAmbientOcclusionLightLevel(state, world, pos);
+    }
+
+    @Override
+    public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+        return baseBlock.isTransparent(state, world, pos);
     }
 
     @Override
