@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.block.UBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
@@ -139,7 +140,7 @@ public class CloudChestBlock extends ChestBlock implements CloudLike {
     @Override
     @Deprecated
     public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
-        return true;
+        return type != NavigationType.LAND || !InteractionManager.getInstance().getPathingEquineContext().collidesWithClouds();
     }
 
     public static class TileData extends ChestBlockEntity {

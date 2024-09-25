@@ -97,6 +97,6 @@ public class CloudStairsBlock extends StairsBlock implements CloudLike {
     @Override
     @Deprecated
     public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
-        return true;
+        return baseBlock.canPathfindThrough(state, world, pos, type);
     }
 }

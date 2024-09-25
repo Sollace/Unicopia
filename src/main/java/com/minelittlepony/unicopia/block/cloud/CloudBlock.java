@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.block.cloud;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.block.Block;
@@ -173,7 +174,8 @@ public class CloudBlock extends Block implements CloudLike {
     @Override
     @Deprecated
     public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
-        return true;
+        System.out.println(InteractionManager.getInstance().getPathingEquineContext().collidesWithClouds());
+        return type != NavigationType.LAND || !InteractionManager.getInstance().getPathingEquineContext().collidesWithClouds();
     }
 
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context, EquineContext equineContext) {
