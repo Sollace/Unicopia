@@ -9,7 +9,6 @@ import com.google.common.collect.*;
 import com.google.gson.JsonSyntaxException;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
@@ -52,11 +51,7 @@ public class ViewportShader implements SynchronousResourceReloader, Identifiable
             }
         }
 
-        if (shaderId == null) {
-            return;
-        }
-
-        if (Unicopia.getConfig().disableShaders.get()) {
+        if (shaderId == null || Unicopia.getConfig().disableShaders.get()) {
             return;
         }
 
@@ -81,29 +76,23 @@ public class ViewportShader implements SynchronousResourceReloader, Identifiable
         }
 
         if (shader != null && client.player != null) {
-            RenderSystem.disableBlend();
-            RenderSystem.disableDepthTest();
-            RenderSystem.resetTextureMatrix();
-
             Pony pony = Pony.of(client.player);
 
             float corruption = pony.getCorruption().getScaled(0.9F);
-            corruption = pony.getInterpolator().interpolate("corruption", corruption, 10);
+            if (!MathHelper.approximatelyEquals(corruption, 0)) {
+                corruption = pony.getInterpolator().interpolate("corruption", corruption, 10);
 
-            corruption = 1 - corruption + 0.05F;
+                corruption = 1 - corruption + 0.05F;
 
-            shader.setUniformValue("color_convolve", "Saturation", corruption);
-            shader.render(tickDelta);
+                shader.setUniformValue("color_convolve", "Saturation", corruption);
+                shader.render(tickDelta);
+            }
         }
     }
 
     @Override
     public void reload(ResourceManager var1) {
-        if (shader != null) {
-            loadShader(shader.id);
-        } else {
-            loadShader(DESATURATION_SHADER);
-        }
+        loadShader(shader != null ? shader.id : DESATURATION_SHADER);
     }
 
     static class LoadedShader extends PostEffectProcessor {
