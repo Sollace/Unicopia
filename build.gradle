@@ -4,7 +4,7 @@ buildscript {
     }
 }
 plugins {
-    id 'fabric-loom' version '1.5-SNAPSHOT'
+    id 'fabric-loom' version '1.7-SNAPSHOT'
     id 'com.modrinth.minotaur' version '2.+'
     id 'org.ajoberstar.reckon' version '0.13.1'
 }
@@ -43,13 +43,12 @@ reckon {
 repositories {
     mavenLocal()
     flatDir { dirs 'lib' }
-    maven { name 'entity-reach-attributes'; url 'https://maven.jamieswhiteshirt.com/libs-release'; content { includeGroup "com.jamieswhiteshirt" } }
     maven { name 'trinkets'; url 'https://maven.ladysnake.org/releases' }
     maven { name 'mod-menu'; url 'https://maven.terraformersmc.com/' }
     maven { name 'minelp-snapshot'; url 'https://repo.minelittlepony-mod.com/maven/snapshot' }
     maven { name 'minelp-releases'; url 'https://repo.minelittlepony-mod.com/maven/release' }
     maven { name 'TerraformersMC'; url 'https://maven.terraformersmc.com/' }
-    maven { name 'Nodium'; url 'https://maven.cafeteria.dev/releases/' }
+    maven { name 'Iris Deps'; url "https://maven.covers1624.net/" }
     maven { name 'Greenhouse Maven For Farmers delight'; url 'https://maven.greenhouseteam.dev/releases/' }
     maven { name 'Porting Lib For Farmers delight'; url = 'https://mvn.devos.one/releases/' }
     maven { name 'Modrinth'; url 'https://api.modrinth.com/maven' }
@@ -67,9 +66,6 @@ dependencies {
     modApi "com.minelittlepony:kirin:${project.kirin_version}"
     include "com.minelittlepony:kirin:${project.kirin_version}"
 
-    modApi "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_attributes_version}"
-    include "com.jamieswhiteshirt:reach-entity-attributes:${project.reach_attributes_version}"
-
     modApi "com.sollace:fabwork:${project.fabwork_version}"
     include "com.sollace:fabwork:${project.fabwork_version}"
 
@@ -77,6 +73,13 @@ dependencies {
     include "com.sollace:Romanizer:Romanizer:1.0.2"
 
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+
+    modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
+    include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
+
+    modImplementation "com.github.MattiDragon:TlaApi:${project.tla_version}"
+    include "com.github.MattiDragon:TlaApi:${project.tla_version}"
+
     if (project.use_trinkets == '1') {
       modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
       modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.3.0"
@@ -85,15 +88,11 @@ dependencies {
       modCompileOnly "dev.emi:trinkets-dummy:${project.trinkets_version}"
     }
 
-    modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
-    include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
-
-    modImplementation "me.luligabi:NoIndium:${project.nodium_version}"
-    include "me.luligabi:NoIndium:${project.nodium_version}"
-
-    //modImplementation "vectorwing:FarmersDelight-Refabricated:${project.farmers_delight_version}", {
-    //  exclude group: "net.fabricmc"
-    //}
+    if (project.use_farmers_delight == '1') {
+      modImplementation "vectorwing:FarmersDelight-Refabricated:${project.farmers_delight_version}", {
+        exclude group: "net.fabricmc"
+      }
+    }
     if (project.use_pehkui == '1') {
       modCompileOnly "maven.modrinth:pehkui:${project.pehkui_version}", { exclude group: "net.fabricmc.fabric-api" }
       modCompileOnly "com.github.Virtuoel:KanosConfig:0.4.1", { exclude group: "net.fabricmc.fabric-api" }
@@ -112,8 +111,13 @@ dependencies {
 
     if (project.tmi_type == 'emi') {
       modCompileOnly "dev.emi:emi-fabric:${project.emi_version}"
-    } else {
-      modCompileOnly "dev.emi:emi-fabric-dummy:${project.emi_version}"
+    }
+    if (project.tmi_type == 'rei') {
+      modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${project.rei_version}"
+      modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+      modCompileOnly "dev.architectury:architectury-fabric:${project.rei_architectury_version}"
+      modCompileOnly "me.shedaniel.cloth:basic-math:${project.rei_cloth_basic_math_version}"
+      modCompileOnly "me.shedaniel.cloth:cloth-config-fabric:${project.rei_cloth_config_version}"
     }
 }
 
