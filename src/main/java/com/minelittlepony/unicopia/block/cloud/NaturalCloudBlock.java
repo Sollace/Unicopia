@@ -6,8 +6,6 @@ import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.ItemTags;
@@ -18,7 +16,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class NaturalCloudBlock extends PoreousCloudBlock {
@@ -28,21 +25,8 @@ public class NaturalCloudBlock extends PoreousCloudBlock {
     public NaturalCloudBlock(Settings settings, boolean meltable,
             @Nullable Supplier<Soakable> soggyBlock,
             Supplier<Block> compactedBlock) {
-        super(settings.nonOpaque().allowsSpawning((state, world, pos, type) -> {
-            return type == EntityType.PHANTOM || type == EntityType.PARROT || type.getSpawnGroup() == SpawnGroup.AMBIENT;
-        }), meltable, soggyBlock);
+        super(settings, meltable, soggyBlock);
         this.compactedBlock = compactedBlock;
-    }
-
-    @Override
-    @Deprecated
-    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
-        return 0.9F;
-    }
-
-    @Override
-    public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
-        return true;
     }
 
     @Override

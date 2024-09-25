@@ -24,7 +24,7 @@ public class CloudBedBlock extends FancyBedBlock implements CloudLike {
     private final CloudBlock baseBlock;
 
     public CloudBedBlock(String base, BlockState baseState, Settings settings) {
-        super(base, settings.dynamicBounds());
+        super(base, CloudLike.applyCloudProperties(settings));
         this.baseState = baseState;
         this.baseBlock = (CloudBlock)baseState.getBlock();
     }
