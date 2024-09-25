@@ -92,6 +92,6 @@ public class CloudBedBlock extends FancyBedBlock implements CloudLike {
     @Override
     @Deprecated
     public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
-        return true;
+        return baseState.canPathfindThrough(world, pos, type);
     }
 }

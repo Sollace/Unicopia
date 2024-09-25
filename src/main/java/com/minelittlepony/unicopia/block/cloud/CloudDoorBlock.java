@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.block.cloud;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquineContext;
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -12,6 +13,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.util.ActionResult;
@@ -94,5 +96,11 @@ public class CloudDoorBlock extends DoorBlock implements CloudLike {
         if (!baseBlock.canInteract(baseState, world, pos, context)) {
             entity.setVelocity(entity.getVelocity().multiply(0.5F, 1, 0.5F));
         }
+    }
+
+    @Override
+    @Deprecated
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+        return !InteractionManager.getInstance().getPathingEquineContext().collidesWithClouds() || super.canPathfindThrough(state, world, pos, type);
     }
 }

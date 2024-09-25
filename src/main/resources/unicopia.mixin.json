@@ -55,6 +55,7 @@
     "MixinWorld",
     "PointOfInterestTypesAccessor",
     "server.MixinEntityTrackerEntry",
+    "server.MixinPathNodeMaker",
     "server.MixinPlayerManager",
     "server.MixinServerPlayerEntity",
     "server.MixinServerPlayNetworkHandler",

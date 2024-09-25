@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Stack;
 import java.util.UUID;
 
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +38,7 @@ public class InteractionManager {
     @Nullable
     private SyncedConfig config;
 
-    private EquineContext equineContext = EquineContext.ABSENT;
+    private final Stack<EquineContext> equineContext = new Stack<>();
 
     public static InteractionManager getInstance() {
         return INSTANCE;
@@ -113,11 +114,21 @@ public class InteractionManager {
     }
 
     public void setEquineContext(EquineContext context) {
-        equineContext = context;
+        equineContext.push(context);
+    }
+
+    public void clearEquineContext() {
+        if (!equineContext.isEmpty()) {
+            equineContext.pop();
+        }
     }
 
     public EquineContext getEquineContext() {
-        return getClientPony().map(EquineContext.class::cast).orElse(equineContext);
+        return getClientPony().map(EquineContext.class::cast).orElseGet(this::getPathingEquineContext);
+    }
+
+    public EquineContext getPathingEquineContext() {
+        return equineContext.isEmpty() ? EquineContext.ABSENT : equineContext.peek();
     }
 
     public Optional<Pony> getClientPony() {

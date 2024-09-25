@@ -44,6 +44,6 @@ abstract class MixinPlayerManager {
 
     @Inject(method = "respawnPlayer", at = @At("RETURN"))
     private void afterRespawnPlayer(ServerPlayerEntity player, boolean alive, CallbackInfoReturnable<ServerPlayerEntity> info) {
-        InteractionManager.getInstance().setEquineContext(EquineContext.ABSENT);
+        InteractionManager.getInstance().clearEquineContext();
     }
 }
