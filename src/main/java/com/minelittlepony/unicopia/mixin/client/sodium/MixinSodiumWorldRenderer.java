@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.client.ClientBlockDestructionManager;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
+import net.minecraft.entity.player.BlockBreakingInfo;
 
 @Pseudo
 @Mixin(

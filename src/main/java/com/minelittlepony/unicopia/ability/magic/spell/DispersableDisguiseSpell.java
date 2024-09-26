@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 /**
  * Shapeshifts the player.
@@ -95,15 +96,15 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
         compound.putInt("suppressionCounter", suppressionCounter);
         compound.putBoolean("forced", forced);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         suppressionCounter = compound.getInt("suppressionCounter");
         forced = compound.getBoolean("forced");
         if (suppressionCounter > 0) {

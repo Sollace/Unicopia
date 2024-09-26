@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 
@@ -94,7 +95,8 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pro
     }
 
     private void teleport(Caster<?> source, Entity entity, Vec3d pos, Vec3d vel) {
-        entity.teleport(pos.x, pos.y, pos.z);
+        // TODO: teleport -> requestTeleport
+        entity.requestTeleport(pos.x, pos.y, pos.z);
         entity.setVelocity(vel);
         entity.setGlowing(false);
         entity.playSound(USounds.SPELL_DISPLACEMENT_TELEPORT, 1, 1);
@@ -124,16 +126,16 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pro
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
         compound.putInt("ticks", ticks);
-        compound.put("target", target.toNBT());
+        compound.put("target", target.toNBT(lookup));
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         ticks = compound.getInt("ticks");
-        target.fromNBT(compound.getCompound("target"));
+        target.fromNBT(compound.getCompound("target"), lookup);
     }
 }

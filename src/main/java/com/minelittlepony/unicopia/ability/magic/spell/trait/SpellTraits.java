@@ -35,6 +35,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -51,6 +53,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
             map -> DataResult.success(fromEntries(map.entrySet().stream()).orElse(EMPTY)),
             traits -> DataResult.success(traits.traits)
     );
+    public static final PacketCodec<PacketByteBuf, SpellTraits> PACKET_CODEC = PacketCodec.ofStatic((a, b) -> b.write(a), SpellTraits::fromPacket);
 
     public static void load(Map<Identifier, SpellTraits> newRegistry) {
         REGISTRY = newRegistry;
@@ -169,6 +172,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return nbt;
     }
 
+    @Deprecated
     public void write(PacketByteBuf buf) {
         buf.writeInt(traits.size());
         traits.forEach((trait, value) -> {
@@ -264,10 +268,12 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return CODEC.decode(NbtOps.INSTANCE, traits).result().map(Pair::getFirst);
     }
 
+    @Deprecated
     public static Optional<SpellTraits> fromPacketOrEmpty(PacketByteBuf buf) {
         return buf.readOptional(SpellTraits::fromPacket).filter(SpellTraits::isPresent);
     }
 
+    @Deprecated
     public static SpellTraits fromPacket(PacketByteBuf buf) {
         Map<Trait, Float> entries = new HashMap<>();
         int count = buf.readInt();

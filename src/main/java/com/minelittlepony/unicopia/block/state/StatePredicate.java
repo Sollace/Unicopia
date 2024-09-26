@@ -12,7 +12,7 @@ import com.google.common.base.Predicates;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.*;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
@@ -55,7 +55,7 @@ public abstract class StatePredicate implements Predicate<BlockState> {
             predicates.add(ofState(JsonHelper.getString(o, "state")));
         }
         if (o.has("tag")) {
-            Optional.of(JsonHelper.getString(o, "tag")).map(s -> TagKey.of(RegistryKeys.BLOCK, new Identifier(s))).ifPresent(tag -> {
+            Optional.of(JsonHelper.getString(o, "tag")).map(s -> TagKey.of(RegistryKeys.BLOCK, Identifier.of(s))).ifPresent(tag -> {
                 predicates.add(new StatePredicate() {
                     @Override
                     public StateChange getInverse() {
@@ -137,7 +137,7 @@ public abstract class StatePredicate implements Predicate<BlockState> {
     }
 
     public static Predicate<BlockState> ofState(String state) {
-        Identifier id = new Identifier(state.split("\\{")[0]);
+        Identifier id = Identifier.of(state.split("\\{")[0]);
         List<PropertyOp> properties = Optional.of(state)
                 .filter(s -> s.contains("{"))
                 .stream()

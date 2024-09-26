@@ -20,7 +20,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 public class AdvancementDisplayBuilder {
-    private static final Identifier BACKGROUND = new Identifier("textures/gui/advancements/backgrounds/stone.png");
+    private static final Identifier BACKGROUND = Identifier.ofVanilla("textures/gui/advancements/backgrounds/stone.png");
 
     public static AdvancementDisplayBuilder create(ItemConvertible icon) {
         return new AdvancementDisplayBuilder(icon, Advancement.Builder.create(), false, false, false);

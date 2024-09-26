@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.server.world.Ether;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public abstract class AbstractSpell implements Spell {
 
@@ -97,7 +98,7 @@ public abstract class AbstractSpell implements Spell {
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         compound.putBoolean("dying", dying.get());
         compound.putBoolean("dead", dead.get());
         compound.putBoolean("hidden", hidden.get());
@@ -106,7 +107,7 @@ public abstract class AbstractSpell implements Spell {
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         if (compound.containsUuid("uuid")) {
             uuid = compound.getUuid("uuid");
         }

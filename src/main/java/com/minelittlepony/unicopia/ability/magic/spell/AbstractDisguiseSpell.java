@@ -14,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 /**
  * Base implementation for a spell that changes the player's appearance.
@@ -53,14 +54,14 @@ public abstract class AbstractDisguiseSpell extends AbstractSpell implements Dis
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
         disguise.toNBT(compound);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         disguise.fromNBT(compound);
     }
 

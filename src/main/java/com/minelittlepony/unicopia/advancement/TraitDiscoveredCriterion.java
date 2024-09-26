@@ -14,7 +14,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class TraitDiscoveredCriterion extends AbstractCriterion<TraitDiscoveredCriterion.Conditions> {
     @Override
@@ -34,7 +33,7 @@ public class TraitDiscoveredCriterion extends AbstractCriterion<TraitDiscoveredC
 
     public record Conditions(Optional<LootContextPredicate> player, Set<Trait> traits)  implements AbstractCriterion.Conditions {
         public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(Conditions::player),
+                EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(Conditions::player),
                 Trait.SET_CODEC.fieldOf("traits").forGetter(Conditions::traits)
             ).apply(instance, Conditions::new));
 

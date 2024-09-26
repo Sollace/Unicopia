@@ -7,7 +7,7 @@ import net.minecraft.block.ButtonBlock;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.PillarBlock;
-import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityType;
 import net.minecraft.sound.BlockSoundGroup;
@@ -29,11 +29,11 @@ public interface BlockConstructionUtils {
     }
 
     static PillarBlock createLogBlock(MapColor topMapColor, MapColor sideMapColor) {
-        return new PillarBlock(AbstractBlock.Settings.create().mapColor(state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor).instrument(Instrument.BASS).strength(2.0f).sounds(BlockSoundGroup.WOOD).burnable());
+        return new PillarBlock(AbstractBlock.Settings.create().mapColor(state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor).instrument(NoteBlockInstrument.BASS).strength(2.0f).sounds(BlockSoundGroup.WOOD).burnable());
     }
 
     static PillarBlock createWoodBlock(MapColor mapColor) {
-        return new PillarBlock(AbstractBlock.Settings.create().mapColor(mapColor).instrument(Instrument.BASS).strength(2.0f).sounds(BlockSoundGroup.WOOD).burnable());
+        return new PillarBlock(AbstractBlock.Settings.create().mapColor(mapColor).instrument(NoteBlockInstrument.BASS).strength(2.0f).sounds(BlockSoundGroup.WOOD).burnable());
     }
 
     static LeavesBlock createLeavesBlock(BlockSoundGroup soundGroup) {

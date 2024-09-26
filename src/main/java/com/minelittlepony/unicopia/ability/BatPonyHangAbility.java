@@ -6,6 +6,8 @@ import com.minelittlepony.unicopia.ability.data.Multi;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.TraceHelper;
 
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -43,8 +45,8 @@ public class BatPonyHangAbility implements Ability<Multi> {
     }
 
     @Override
-    public Multi.Serializer<Multi> getSerializer() {
-        return Multi.SERIALIZER;
+    public PacketCodec<? extends ByteBuf, Multi> getSerializer() {
+        return Multi.CODEC;
     }
 
     @Override

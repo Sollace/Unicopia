@@ -40,6 +40,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -303,14 +304,14 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
         compound.putFloat("accumulatedMass", accumulatedMass.get());
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         accumulatedMass.set(compound.getFloat("accumulatedMass"));
     }
 }

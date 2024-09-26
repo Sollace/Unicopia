@@ -14,14 +14,12 @@ public interface GradientUtil {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        fillVerticalGradient(matrices.peek().getPositionMatrix(), bufferBuilder, startX, startY, stopY, endX, endY, z, colorStart, colorStop, colorEnd);
-        tessellator.draw();
+        fillVerticalGradient(matrices.peek().getPositionMatrix(), Tessellator.getInstance(), startX, startY, stopY, endX, endY, z, colorStart, colorStop, colorEnd);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.disableBlend();
     }
 
-    private static void fillVerticalGradient(Matrix4f matrix, BufferBuilder builder, int startX, int startY, int stopY, int endX, int endY, int z, int colorStart, int colorStop, int colorEnd) {
+    private static void fillVerticalGradient(Matrix4f matrix, Tessellator tessellator, int startX, int startY, int stopY, int endX, int endY, int z, int colorStart, int colorStop, int colorEnd) {
         final float fromA = (colorStart >> 24 & 0xFF) / 255F;
         final float fromR = (colorStart >> 16 & 0xFF) / 255F;
         final float fromG = (colorStart >> 8 & 0xFF) / 255F;
@@ -37,28 +35,26 @@ public interface GradientUtil {
         final float toG = (colorEnd >> 8 & 0xFF) / 255F;
         final float toB = (colorEnd & 0xFF) / 255F;
 
-        builder.begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
-
-        builder.vertex(matrix, endX, stopY, z).color(stopR, stopG, stopB, stopA).next();
-        builder.vertex(matrix, endX, startY, z).color(fromR, fromG, fromB, fromA).next();
-        builder.vertex(matrix, startX, startY, z).color(fromR, fromG, fromB, fromA).next();
-        builder.vertex(matrix, startX, stopY, z).color(stopR, stopG, stopB, stopA).next();
-        builder.vertex(matrix, startX, endY, z).color(toR, toG, toB, toA).next();
-        builder.vertex(matrix, endX, endY, z).color(stopR, toG, toB, toA).next();
+        BufferBuilder builder = tessellator.begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
+        builder.vertex(matrix, endX, stopY, z).color(stopR, stopG, stopB, stopA);
+        builder.vertex(matrix, endX, startY, z).color(fromR, fromG, fromB, fromA);
+        builder.vertex(matrix, startX, startY, z).color(fromR, fromG, fromB, fromA);
+        builder.vertex(matrix, startX, stopY, z).color(stopR, stopG, stopB, stopA);
+        builder.vertex(matrix, startX, endY, z).color(toR, toG, toB, toA);
+        builder.vertex(matrix, endX, endY, z).color(stopR, toG, toB, toA);
+        BufferRenderer.drawWithGlobalProgram(builder.end());
     }
 
     static void fillRadialGradient(MatrixStack matrices, int startX, int startY, int endX, int endY, int colorStart, int colorEnd, int z, float radius) {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-        Tessellator tessellator = Tessellator.getInstance();
-        if (fillRadials(matrices.peek().getPositionMatrix(), tessellator.getBuffer(), startX, startY, endX, endY, z, colorStart, colorEnd, radius)) {
-            tessellator.draw();
-        }
+        fillRadials(matrices.peek().getPositionMatrix(), Tessellator.getInstance(), startX, startY, endX, endY, z, colorStart, colorEnd, radius);
+        RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.disableBlend();
     }
 
-    private static boolean fillRadials(Matrix4f matrix, BufferBuilder builder, int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd, float radius) {
+    private static void fillRadials(Matrix4f matrix, Tessellator tessellator, int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd, float radius) {
         final float fromA = (colorStart >> 24 & 0xFF) / 255F;
         final float fromR = (colorStart >> 16 & 0xFF) / 255F;
         final float fromG = (colorStart >> 8 & 0xFF) / 255F;
@@ -77,14 +73,14 @@ public interface GradientUtil {
 
         float innerRadius = outerRadius * (1 - radius);
 
-        builder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferBuilder builder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         for (double angle = 0; angle < DrawableUtil.TAU; angle += increment) {
-            clampedVertex(builder, matrix, innerRadius, angle + increment, z, startX, endX, startY, endY).color(toR, toG, toB, toA).next();
-            clampedVertex(builder, matrix, innerRadius, angle, z, startX, endX, startY, endY).color(toR, toG, toB, toA).next();
-            clampedVertex(builder, matrix, outerRadius, angle, z, startX, endX, startY, endY).color(fromR, fromG, fromB, fromA).next();
-            clampedVertex(builder, matrix, outerRadius, angle + increment, z, startX, endX, startY, endY).color(fromR, fromG, fromB, fromA).next();
+            clampedVertex(builder, matrix, innerRadius, angle + increment, z, startX, endX, startY, endY).color(toR, toG, toB, toA);
+            clampedVertex(builder, matrix, innerRadius, angle, z, startX, endX, startY, endY).color(toR, toG, toB, toA);
+            clampedVertex(builder, matrix, outerRadius, angle, z, startX, endX, startY, endY).color(fromR, fromG, fromB, fromA);
+            clampedVertex(builder, matrix, outerRadius, angle + increment, z, startX, endX, startY, endY).color(fromR, fromG, fromB, fromA);
         }
-        return true;
+        BufferRenderer.drawWithGlobalProgram(builder.end());
     }
 
     static float getX(double radius, double angle) {

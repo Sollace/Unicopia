@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.sollace.fabwork.api.packets.HandledPacket;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
@@ -26,15 +27,16 @@ public record MsgPlayerAbility<T extends Hit> (
         Ability<T> power = (Ability<T>) Abilities.REGISTRY.get(buffer.readIdentifier());
         return new MsgPlayerAbility<>(
             power,
-            buffer.readOptional(power.getSerializer().read()),
+            buffer.readOptional(b -> ((PacketCodec<PacketByteBuf, T>)power.getSerializer()).decode(b)),
             ActivationType.of(buffer.readInt())
         );
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeIdentifier(Abilities.REGISTRY.getId(power));
-        buffer.writeOptional(data, power.getSerializer().write());
+        buffer.writeOptional(data, (b, d) -> ((PacketCodec<PacketByteBuf, T>)power.getSerializer()).encode(b, d));
         buffer.writeInt(type.ordinal());
     }
 

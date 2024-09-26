@@ -17,13 +17,17 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.server.world.Ether;
+import com.minelittlepony.unicopia.util.CodecUtils;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.shape.*;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.*;
 import net.minecraft.fluid.*;
 import net.minecraft.nbt.*;
 import net.minecraft.state.property.Properties;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -129,16 +133,16 @@ public class HydrophobicSpell extends AbstractSpell {
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        compound.put("storedFluidPositions", Entry.SERIALIZER.writeAll(storedFluidPositions));
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        compound.put("storedFluidPositions", NbtSerialisable.encode(Entry.SET_CODEC, storedFluidPositions));
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         storedFluidPositions.clear();
-        storedFluidPositions.addAll(Entry.SERIALIZER.readAll(compound.getList("storedFluidPositions", NbtElement.COMPOUND_TYPE)).toList());
+        NbtSerialisable.decode(Entry.SET_CODEC, compound.getList("storedFluidPositions", NbtElement.COMPOUND_TYPE)).ifPresent(storedFluidPositions::addAll);
     }
     /**
      * Calculates the maximum radius of the shield. aka The area of effect.
@@ -152,15 +156,11 @@ public class HydrophobicSpell extends AbstractSpell {
     }
 
     record Entry (BlockPos pos, BlockState blockState) {
-        public static final Serializer<Entry> SERIALIZER = Serializer.of(compound -> new Entry(
-            NbtSerialisable.BLOCK_POS.read(compound.getCompound("pos")),
-            NbtSerialisable.decode(BlockState.CODEC, compound.get("blockState")).orElse(Blocks.AIR.getDefaultState())
-        ), entry -> {
-            NbtCompound compound = new NbtCompound();
-            compound.put("pos", NbtSerialisable.BLOCK_POS.write(entry.pos));
-            compound.put("blockState", NbtSerialisable.encode(BlockState.CODEC, entry.blockState));
-            return compound;
-        });
+        public static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            BlockPos.CODEC.fieldOf("pos").forGetter(Entry::pos),
+            BlockState.CODEC.optionalFieldOf("blockState", Blocks.AIR.getDefaultState()).forGetter(Entry::blockState)
+        ).apply(instance, Entry::new));
+        public static final Codec<Set<Entry>> SET_CODEC = CodecUtils.setOf(CODEC);
 
         void restore(World world) {
             BlockState state = world.getBlockState(pos);

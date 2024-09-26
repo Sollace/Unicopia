@@ -16,6 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Vec3d;
@@ -31,11 +32,11 @@ import net.minecraft.world.World;
  * @param <T> The type of the entity this reference points to.
  */
 public class EntityReference<T extends Entity> implements NbtSerialisable, TrackableObject<EntityReference<T>> {
-    private static final Serializer<?> SERIALIZER = Serializer.of(EntityReference::new);
+    private static final Serializer<NbtCompound, ?> SERIALIZER = Serializer.of(EntityReference::new);
 
     @SuppressWarnings("unchecked")
-    public static <T extends Entity> Serializer<EntityReference<T>> getSerializer() {
-        return (Serializer<EntityReference<T>>)SERIALIZER;
+    public static <T extends Entity> Serializer<NbtCompound, EntityReference<T>> getSerializer() {
+        return (Serializer<NbtCompound, EntityReference<T>>)SERIALIZER;
     }
 
     @Nullable
@@ -51,8 +52,8 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
         set(entity);
     }
 
-    public EntityReference(NbtCompound nbt) {
-        fromNBT(nbt);
+    public EntityReference(NbtCompound nbt, WrapperLookup lookup) {
+        fromNBT(nbt, lookup);
     }
 
     @SuppressWarnings("unchecked")
@@ -110,12 +111,12 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
     }
 
     @Override
-    public void toNBT(NbtCompound tag) {
+    public void toNBT(NbtCompound tag, WrapperLookup lookup) {
         getTarget().ifPresent(ref -> ref.toNBT(tag));
     }
 
     @Override
-    public void fromNBT(NbtCompound tag) {
+    public void fromNBT(NbtCompound tag, WrapperLookup lookup) {
         this.reference = tag.contains("uuid") ? new EntityValues<>(tag) : null;
         this.dirty = true;
     }
@@ -135,13 +136,13 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
     }
 
     @Override
-    public NbtCompound writeTrackedNbt() {
-        return toNBT();
+    public NbtCompound writeTrackedNbt(WrapperLookup lookup) {
+        return toNBT(lookup);
     }
 
     @Override
-    public void readTrackedNbt(NbtCompound compound) {
-        fromNBT(compound);
+    public void readTrackedNbt(NbtCompound compound, WrapperLookup lookup) {
+        fromNBT(compound, lookup);
     }
 
     @Override

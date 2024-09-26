@@ -1,9 +1,9 @@
 package com.minelittlepony.unicopia.item;
 
+import net.minecraft.component.type.FoodComponent;
+import net.minecraft.component.type.FoodComponents;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.FoodComponent;
-import net.minecraft.item.FoodComponents;
 
 public interface UFoodComponents {
     FoodComponent OATS = builder(1, 0.7F).build();
@@ -32,12 +32,11 @@ public interface UFoodComponents {
     FoodComponent FRIED_EGG = builder(4, 0.4F).build();
 
     FoodComponent ROTTEN_PUFFERFISH = new FoodComponent.Builder()
-            .hunger(4)
+            .nutrition(4)
             .saturationModifier(0.1F)
             .statusEffect(new StatusEffectInstance(StatusEffects.POISON, 1200, 1), 1)
             .statusEffect(new StatusEffectInstance(StatusEffects.HUNGER, 300, 2), 1)
             .statusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 300, 0), 1)
-            .meat()
             .build();
     FoodComponent COOKED_PUFFERFISH = builder(5, 0.6F)
             .statusEffect(new StatusEffectInstance(StatusEffects.POISON, 1200, 1), 0.2F)
@@ -45,7 +44,7 @@ public interface UFoodComponents {
             .statusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 300, 0), 0.4F)
             .build();
 
-    FoodComponent WORMS = builder(1, 1.5F).alwaysEdible().meat().build();
+    FoodComponent WORMS = builder(1, 1.5F).alwaysEdible().build();
     FoodComponent INSECTS = builder(1, 0).alwaysEdible().build();
 
     FoodComponent TOAST = builder(1, 0.6F).alwaysEdible().snack().build();
@@ -79,7 +78,7 @@ public interface UFoodComponents {
 
     static FoodComponent.Builder builder(int hunger, float saturation) {
         return new FoodComponent.Builder()
-                .hunger(hunger)
+                .nutrition(hunger)
                 .saturationModifier(saturation);
     }
 }

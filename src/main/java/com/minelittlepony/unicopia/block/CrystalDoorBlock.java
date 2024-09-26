@@ -24,13 +24,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -98,33 +99,32 @@ public class CrystalDoorBlock extends DoorBlock implements BlockEntityProvider {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!shouldProvideAccess(world, pos, player)) {
-            if (isLocked(world, pos) || !player.getStackInHand(hand).isOf(UItems.MEADOWBROOKS_STAFF)) {
+            if (isLocked(world, pos) || !stack.isOf(UItems.MEADOWBROOKS_STAFF)) {
                 playOpenCloseSound(player, world, pos, false);
                 setOnGuard(state, world, pos, true);
-                return ActionResult.CONSUME;
+                return ItemActionResult.CONSUME;
             } else {
                 world.playSound(player, pos, USounds.ENTITY_CRYSTAL_SHARDS_AMBIENT, SoundCategory.BLOCKS, 1, world.getRandom().nextFloat() * 0.1F + 0.9F);
             }
         } else if (!isLocked(world, pos)) {
-            ItemStack heldStack = player.getStackInHand(hand);
-            if (heldStack.isOf(UItems.FRIENDSHIP_BRACELET)) {
+            if (stack.isOf(UItems.FRIENDSHIP_BRACELET)) {
                 @Nullable
-                UUID signator = FriendshipBraceletItem.getSignatorId(heldStack);
+                UUID signator = FriendshipBraceletItem.getSignatorId(stack);
                 if (signator != null) {
                     BlockEntityUtil.getOrCreateBlockEntity(world, state.get(HALF) == DoubleBlockHalf.LOWER ? pos.up() : pos, UBlockEntities.CRYSTAL_DOOR).ifPresent(data -> {
                         data.setSignator(signator);
                         setOnGuard(state, world, pos, true);
                         world.playSound(player, pos, USounds.ENTITY_CRYSTAL_SHARDS_AMBIENT, SoundCategory.BLOCKS, 1, world.getRandom().nextFloat() * 0.1F + 0.9F);
                     });
-                    return ActionResult.SUCCESS;
+                    return ItemActionResult.SUCCESS;
                 }
             } else {
                 setOnGuard(state, world, pos, false);
             }
         }
-        return super.onUse(state, world, pos, player, hand, hit);
+        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
     }
 
     private void setOnGuard(BlockState state, World world, BlockPos pos, boolean locked) {
@@ -178,12 +178,12 @@ public class CrystalDoorBlock extends DoorBlock implements BlockEntityProvider {
         }
 
         @Override
-        public void readNbt(NbtCompound nbt) {
+        public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
             signator = nbt.containsUuid("signator") ? nbt.getUuid("signator") : null;
         }
 
         @Override
-        protected void writeNbt(NbtCompound nbt) {
+        protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
             if (signator != null) {
                 nbt.putUuid("signator", signator);
             }

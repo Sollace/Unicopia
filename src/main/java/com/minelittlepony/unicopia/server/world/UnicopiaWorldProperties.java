@@ -12,6 +12,7 @@ import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -81,7 +82,7 @@ public class UnicopiaWorldProperties extends PersistentState {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
+    public NbtCompound writeNbt(NbtCompound tag, WrapperLookup lookup) {
         tag.putString("defaultRace", Race.REGISTRY.getId(defaultRace).toString());
         tag.putFloat("tangentalSkyAngle", tangentalSkyAngle);
         tag.put("activeAltars", NbtSerialisable.BLOCK_POS.writeAll(activeAltarPositions));
@@ -90,7 +91,7 @@ public class UnicopiaWorldProperties extends PersistentState {
 
     public static UnicopiaWorldProperties forWorld(ServerWorld world) {
         return world.getPersistentStateManager().getOrCreate(
-                new Type<>(() -> new UnicopiaWorldProperties(world), nbt -> new UnicopiaWorldProperties(world, nbt), DataFixTypes.LEVEL), "unicopia_tribes"
+                new Type<>(() -> new UnicopiaWorldProperties(world), (nbt, lookup) -> new UnicopiaWorldProperties(world, nbt), DataFixTypes.LEVEL), "unicopia_tribes"
         );
     }
 }

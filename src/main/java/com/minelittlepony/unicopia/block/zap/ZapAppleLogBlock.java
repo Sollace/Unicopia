@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.*;
-import net.minecraft.block.enums.Instrument;
+import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.sound.BlockSoundGroup;
@@ -24,7 +24,7 @@ public class ZapAppleLogBlock extends PillarBlock implements ElectrifiedBlock {
     public static Settings settings(MapColor topMapColor, MapColor sideMapColor) {
         return Settings.create()
             .mapColor(state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor)
-            .instrument(Instrument.BASS)
+            .instrument(NoteBlockInstrument.BASS)
             .strength(2.0f)
             .sounds(BlockSoundGroup.WOOD)
             .burnable();

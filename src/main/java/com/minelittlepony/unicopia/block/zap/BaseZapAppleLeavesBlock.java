@@ -72,7 +72,7 @@ public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock,
     @Override
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
         if (state.get(PERSISTENT)) {
-            return Blocks.OAK_LEAVES.calcBlockBreakingDelta(Blocks.OAK_LEAVES.getDefaultState(), player, world, pos);
+            return Blocks.OAK_LEAVES.getDefaultState().calcBlockBreakingDelta(player, world, pos);
         }
 
         float delta = super.calcBlockBreakingDelta(state, player, world, pos);

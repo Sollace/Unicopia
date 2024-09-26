@@ -24,7 +24,7 @@ abstract class MixinTrinketInventory implements Inventory {
 
         int combinedCount = stack.getCount();
 
-        if (ItemStack.canCombine(existingStack, stack)) {
+        if (ItemStack.areItemsAndComponentsEqual(existingStack, stack)) {
             combinedCount += existingStack.getCount();
         }
 

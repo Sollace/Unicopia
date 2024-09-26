@@ -24,6 +24,7 @@ import com.minelittlepony.unicopia.util.VecHelper;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
 
 public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileDelegate.HitListener {
@@ -109,26 +110,26 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        timer.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        timer.toNBT(compound, lookup);
         if (!lights.isEmpty()) {
             NbtList list = new NbtList();
             lights.forEach(light -> {
-                list.add(light.toNBT());
+                list.add(light.toNBT(lookup));
             });
             compound.put("lights", list);
         }
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        timer.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
+        timer.fromNBT(compound, lookup);
         lights.clear();
         if (compound.contains("lights", NbtElement.LIST_TYPE)) {
             compound.getList("lights", NbtElement.COMPOUND_TYPE).forEach(nbt -> {
-                lights.add(new EntityReference<>((NbtCompound)nbt));
+                lights.add(new EntityReference<>((NbtCompound)nbt, lookup));
             });
         }
     }

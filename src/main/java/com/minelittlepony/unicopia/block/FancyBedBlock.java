@@ -24,6 +24,7 @@ import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.DyeColor;
@@ -150,18 +151,18 @@ public class FancyBedBlock extends BedBlock {
         }
 
         @Override
-        public void readNbt(NbtCompound nbt) {
+        public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
             pattern = SheetPattern.byId(nbt.getString("pattern"));
         }
 
         @Override
-        protected void writeNbt(NbtCompound nbt) {
+        protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
             nbt.putString("pattern", pattern.asString());
         }
 
         @Override
-        public NbtCompound toInitialChunkDataNbt() {
-            return createNbt();
+        public NbtCompound toInitialChunkDataNbt(WrapperLookup lookup) {
+            return createNbt(lookup);
         }
 
         public String getBase() {

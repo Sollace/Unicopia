@@ -15,8 +15,11 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
 public class IngredientWithSpell implements Predicate<ItemStack> {
@@ -26,6 +29,11 @@ public class IngredientWithSpell implements Predicate<ItemStack> {
     public static final Codec<IngredientWithSpell> CODEC = CodecUtils.extend(Ingredient.ALLOW_EMPTY_CODEC, SpellType.REGISTRY.getCodec().fieldOf("spell")).xmap(
         pair -> new IngredientWithSpell(pair.getFirst(), pair.getSecond()),
         ingredient -> new Pair<>(ingredient.stack, ingredient.spell)
+    );
+    public static final PacketCodec<RegistryByteBuf, IngredientWithSpell> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.optional(Ingredient.PACKET_CODEC), i -> i.stack,
+            PacketCodecs.optional(Identifier.PACKET_CODEC.xmap(SpellType::getKey, SpellType::getId)), i -> i.spell,
+            IngredientWithSpell::new
     );
 
     public static final Codec<DefaultedList<IngredientWithSpell>> LIST_CODEC = CODEC.listOf().xmap(
@@ -74,17 +82,5 @@ public class IngredientWithSpell implements Predicate<ItemStack> {
 
     public boolean isEmpty() {
         return stack.filter(INGREDIENT_IS_PRESENT).isEmpty() && spell.isEmpty();
-    }
-
-    public void write(PacketByteBuf buf) {
-        buf.writeOptional(stack, (b, i) -> i.write(b));
-        buf.writeOptional(spell.map(SpellType::getId), PacketByteBuf::writeIdentifier);
-    }
-
-    public static IngredientWithSpell fromPacket(PacketByteBuf buf) {
-        return new IngredientWithSpell(
-            buf.readOptional(Ingredient::fromPacket),
-            buf.readOptional(PacketByteBuf::readIdentifier).flatMap(SpellType.REGISTRY::getOrEmpty)
-        );
     }
 }

@@ -13,11 +13,13 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -44,8 +46,8 @@ public class SeaponySonarPulseAbility implements Ability<Hit> {
     }
 
     @Override
-    public Hit.Serializer<Hit> getSerializer() {
-        return Hit.SERIALIZER;
+    public PacketCodec<? extends ByteBuf, Hit> getSerializer() {
+        return Hit.CODEC;
     }
 
     @Override
@@ -58,7 +60,7 @@ public class SeaponySonarPulseAbility implements Ability<Hit> {
         player.setAnimation(Animation.ARMS_UP, Animation.Recipient.ANYONE);
 
         for (Entity target : player.findAllEntitiesInRange(64, e -> {
-            return (e instanceof LivingEntity && (e instanceof HostileEntity || ((LivingEntity)e).getGroup() == EntityGroup.AQUATIC)) && e.isSubmergedInWater();
+            return (e instanceof LivingEntity && (e instanceof HostileEntity || isWaterCreature(((LivingEntity)e).getType().getSpawnGroup()))) && e.isSubmergedInWater();
         }).sorted(Comparator.comparing(e -> e.distanceTo(player.asEntity()))).toList()) {
             Vec3d offset = target.getPos().subtract(player.getOriginVector());
             float distance = target.distanceTo(player.asEntity());
@@ -105,4 +107,12 @@ public class SeaponySonarPulseAbility implements Ability<Hit> {
     @Override
     public void coolDown(Pony player, AbilitySlot slot) {
     }
+
+    private static boolean isWaterCreature(SpawnGroup group) {
+        return switch (group) {
+            case AXOLOTLS, UNDERGROUND_WATER_CREATURE, WATER_CREATURE, WATER_AMBIENT -> true;
+            default -> false;
+        };
+    }
+
 }

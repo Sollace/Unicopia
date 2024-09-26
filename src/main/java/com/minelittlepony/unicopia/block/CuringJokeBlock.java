@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.block;
 
-import java.util.List;
-
 import com.minelittlepony.unicopia.ability.EarthPonyGrowAbility.Growable;
 import com.minelittlepony.unicopia.entity.mob.IgnominiousBulbEntity;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
@@ -10,8 +8,9 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowerBlock;
-import net.minecraft.block.SuspiciousStewIngredient;
-import net.minecraft.client.util.ParticleUtil;
+import net.minecraft.component.type.SuspiciousStewEffectsComponent;
+import net.minecraft.particle.ParticleUtil;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.util.math.BlockPos;
@@ -24,11 +23,11 @@ public class CuringJokeBlock extends FlowerBlock implements Growable {
             FlowerBlock.createSettingsCodec()
     ).apply(instance, CuringJokeBlock::new));
 
-    public CuringJokeBlock(StatusEffect suspiciousStewEffect, int effectDuration, Settings settings) {
+    public CuringJokeBlock(RegistryEntry<StatusEffect> suspiciousStewEffect, int effectDuration, Settings settings) {
         super(suspiciousStewEffect, effectDuration, settings);
     }
 
-    protected CuringJokeBlock(List<SuspiciousStewIngredient.StewEffect> effects, Settings settings) {
+    protected CuringJokeBlock(SuspiciousStewEffectsComponent effects, Settings settings) {
         super(effects, settings);
     }
 

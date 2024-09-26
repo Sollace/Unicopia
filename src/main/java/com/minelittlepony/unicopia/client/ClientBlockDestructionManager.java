@@ -6,7 +6,7 @@ import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.minecraft.client.render.BlockBreakingInfo;
+import net.minecraft.entity.player.BlockBreakingInfo;
 import net.minecraft.util.math.BlockPos;
 
 public class ClientBlockDestructionManager {

@@ -34,7 +34,6 @@ public record AltarRecipeMatch(
 
     public void craft() {
         ItemStack clockStack = result.copyWithCount(target.getStack().getCount());
-        clockStack.setNbt(target.getStack().getNbt());
         target.setStack(clockStack);
         target.setInvulnerable(true);
         ingredients.forEach(Entity::discard);

@@ -18,6 +18,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.hit.EntityHitResult;
 
 public class FireBoltSpell extends AbstractSpell implements HomingSpell,
@@ -112,14 +113,14 @@ public class FireBoltSpell extends AbstractSpell implements HomingSpell,
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        compound.put("target", target.toNBT());
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        compound.put("target", target.toNBT(lookup));
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        target.fromNBT(compound.getCompound("target"));
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
+        target.fromNBT(compound.getCompound("target"), lookup);
     }
 }

@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.item.UItems;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
@@ -28,7 +29,7 @@ public class DragonBreathStore extends PersistentState {
         this(world);
         compound.getKeys().forEach(key -> {
             compound.getList(key, NbtElement.COMPOUND_TYPE).forEach(entry -> {
-                put(key, new Entry((NbtCompound)entry));
+                put(key, new Entry((NbtCompound)entry, world.getRegistryManager()));
             });
         });
     }
@@ -38,7 +39,7 @@ public class DragonBreathStore extends PersistentState {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound compound) {
+    public NbtCompound writeNbt(NbtCompound compound, WrapperLookup lookup) {
         synchronized (locker) {
             payloads.forEach((id, uuids) -> {
                 NbtList list = new NbtList();
@@ -83,17 +84,14 @@ public class DragonBreathStore extends PersistentState {
     public void put(String recipient, ItemStack payload) {
 
         if (payload.getItem() == UItems.OATS) {
-            ItemStack oats = UItems.IMPORTED_OATS.getDefaultStack();
-            oats.setNbt(payload.getNbt());
-            oats.setCount(payload.getCount());
-            put(recipient, oats);
+            put(recipient, payload.withItem(UItems.IMPORTED_OATS));
             return;
         }
 
         synchronized (locker) {
             doPurge();
             if (peekEntries(recipient).stream().noneMatch(i -> {
-               if (ItemStack.canCombine(i.payload(), payload)) {
+               if (ItemStack.areItemsAndComponentsEqual(i.payload(), payload)) {
                    int combinedCount = i.payload().getCount() + payload.getCount();
                    if (combinedCount <= i.payload().getMaxCount()) {
                        i.payload().setCount(combinedCount);
@@ -126,13 +124,13 @@ public class DragonBreathStore extends PersistentState {
             long created,
             ItemStack payload) {
 
-        public Entry(NbtCompound compound) {
-            this(compound.getLong("created"), ItemStack.fromNbt(compound.getCompound("payload")));
+        public Entry(NbtCompound compound, WrapperLookup lookup) {
+            this(compound.getLong("created"), ItemStack.fromNbtOrEmpty(lookup, compound.getCompound("payload")));
         }
 
         public NbtCompound toNBT(NbtCompound compound) {
             compound.putLong("created", created);
-            compound.put("payload", payload().writeNbt(new NbtCompound()));
+            compound.put("payload", ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, payload()).getOrThrow());
             return compound;
         }
     }

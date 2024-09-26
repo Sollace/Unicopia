@@ -20,8 +20,8 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
@@ -80,39 +80,38 @@ public class PieBlock extends Block implements Waterloggable {
 
     @Deprecated
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ItemStack itemStack = player.getStackInHand(hand);
+    public ItemActionResult onUseWithItem(ItemStack itemStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
         if (world.isClient) {
 
             if (itemStack.isIn(UTags.Items.CAN_CUT_PIE)) {
-                return ActionResult.SUCCESS;
+                return ItemActionResult.SUCCESS;
             }
 
             if (tryEat(world, pos, state, player).isAccepted()) {
-                return ActionResult.SUCCESS;
+                return ItemActionResult.SUCCESS;
             }
 
             if (itemStack.isEmpty()) {
-                return ActionResult.CONSUME;
+                return ItemActionResult.CONSUME;
             }
         }
 
         if (itemStack.isIn(UTags.Items.CAN_CUT_PIE)) {
             SoundEmitter.playSoundAt(player, USounds.BLOCK_PIE_SLICE, SoundCategory.NEUTRAL, 1, 1);
             removeSlice(world, pos, state, player);
-            itemStack.damage(1, player, p -> p.sendToolBreakStatus(hand));
+            itemStack.damage(1, player, LivingEntity.getSlotForHand(hand));
             SoundEmitter.playSoundAt(player, USounds.BLOCK_PIE_SLICE_POP, SoundCategory.NEUTRAL, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
             Block.dropStack(world, pos, sliceItem.asItem().getDefaultStack());
-            return ActionResult.SUCCESS;
+            return ItemActionResult.SUCCESS;
         }
 
         return tryEat(world, pos, state, player);
     }
 
-    protected ActionResult tryEat(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {
+    protected ItemActionResult tryEat(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (!player.canConsume(false)) {
-            return ActionResult.PASS;
+            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         player.incrementStat(Stats.EAT_CAKE_SLICE);
         player.getHungerManager().add(state.get(STOMPED) ? 1 : 2, 0.1f);
@@ -126,7 +125,7 @@ public class PieBlock extends Block implements Waterloggable {
         }
 
         removeSlice(world, pos, state, player);
-        return ActionResult.SUCCESS;
+        return ItemActionResult.SUCCESS;
     }
 
     protected void removeSlice(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {
@@ -232,7 +231,7 @@ public class PieBlock extends Block implements Waterloggable {
     }
 
     @Override
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+    public boolean canPathfindThrough(BlockState state, NavigationType type) {
         return false;
     }
 }

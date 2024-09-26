@@ -5,26 +5,44 @@ import java.util.Set;
 
 import com.minelittlepony.unicopia.block.state.StateUtil;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SingleStackInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.PlacementArea> {
+    public static final MapCodec<TransformCropsRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Registries.BLOCK.getCodec().fieldOf("target").forGetter(recipe -> recipe.target),
+            BlockState.CODEC.fieldOf("consume").forGetter(recipe -> recipe.catalyst),
+            BlockState.CODEC.fieldOf("output").forGetter(recipe -> recipe.output)
+    ).apply(instance, TransformCropsRecipe::new));
+    private static final PacketCodec<ByteBuf, BlockState> STATE_PACKET_CODEC = PacketCodecs.INTEGER.xmap(Block::getStateFromRawId, Block::getRawIdFromState);
+    public static final PacketCodec<RegistryByteBuf, TransformCropsRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.registryValue(RegistryKeys.BLOCK), recipe -> recipe.target,
+            STATE_PACKET_CODEC, recipe -> recipe.catalyst,
+            STATE_PACKET_CODEC, recipe -> recipe.output,
+            TransformCropsRecipe::new
+    );
+
     public static final int RADIUS = 3;
     public static final int SIDE_LENGTH = (2 * RADIUS) + 1;
     public static final int AREA = (SIDE_LENGTH * SIDE_LENGTH) - 1;
@@ -76,12 +94,12 @@ public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.Placeme
     }
 
     @Override
-    public ItemStack craft(PlacementArea inventory, DynamicRegistryManager manager) {
+    public ItemStack craft(PlacementArea inventory, WrapperLookup manager) {
         return getResult(manager);
     }
 
     @Override
-    public ItemStack getResult(DynamicRegistryManager manager) {
+    public ItemStack getResult(WrapperLookup manager) {
         return output.getBlock().asItem().getDefaultStack();
     }
 
@@ -109,36 +127,7 @@ public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.Placeme
         return width >= SIDE_LENGTH && height >= SIDE_LENGTH;
     }
 
-    public static class Serializer implements RecipeSerializer<TransformCropsRecipe> {
-        private static final Codec<TransformCropsRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Registries.BLOCK.getCodec().fieldOf("target").forGetter(recipe -> recipe.target),
-                BlockState.CODEC.fieldOf("consume").forGetter(recipe -> recipe.catalyst),
-                BlockState.CODEC.fieldOf("output").forGetter(recipe -> recipe.output)
-        ).apply(instance, TransformCropsRecipe::new));
-
-        @Override
-        public Codec<TransformCropsRecipe> codec() {
-            return CODEC;
-        }
-
-        @Override
-        public TransformCropsRecipe read(PacketByteBuf buffer) {
-            return new TransformCropsRecipe(
-                    buffer.readRegistryValue(Registries.BLOCK),
-                    Block.getStateFromRawId(buffer.readInt()),
-                    Block.getStateFromRawId(buffer.readInt())
-            );
-        }
-
-        @Override
-        public void write(PacketByteBuf buffer, TransformCropsRecipe recipe) {
-            buffer.writeRegistryValue(Registries.BLOCK, recipe.target);
-            buffer.writeInt(Block.getRawIdFromState(recipe.catalyst));
-            buffer.writeInt(Block.getRawIdFromState(recipe.output));
-        }
-    }
-
-    public static record PlacementArea (Pony pony, BlockPos position) implements SingleStackInventory {
+    public static record PlacementArea (Pony pony, BlockPos position) implements SingleStackInventory, RecipeInput {
         @Override
         public void markDirty() { }
 
@@ -156,8 +145,23 @@ public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.Placeme
         public void setStack(ItemStack var1) { }
 
         @Override
-        public BlockEntity asBlockEntity() {
-            return null;
+        public boolean isEmpty() {
+            return SingleStackInventory.super.isEmpty();
+        }
+
+        @Override
+        public boolean canPlayerUse(PlayerEntity player) {
+            return false;
+        }
+
+        @Override
+        public ItemStack getStackInSlot(int slot) {
+            return getStack(slot);
+        }
+
+        @Override
+        public int getSize() {
+            return size();
         }
     }
 

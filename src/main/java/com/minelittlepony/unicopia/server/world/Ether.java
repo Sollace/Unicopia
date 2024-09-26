@@ -18,6 +18,7 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.nbt.*;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -42,7 +43,7 @@ public class Ether extends PersistentState implements Tickable {
         this.world = world;
         this.endpoints = NbtSerialisable.readMap(compound.getCompound("endpoints"), Identifier::tryParse, typeNbt -> {
             return NbtSerialisable.readMap((NbtCompound)typeNbt, UUID::fromString, entityNbt -> {
-                return NbtSerialisable.readMap((NbtCompound)entityNbt, UUID::fromString, nbt -> new Entry<>(nbt));
+                return NbtSerialisable.readMap((NbtCompound)entityNbt, UUID::fromString, nbt -> new Entry<>(nbt, world.getRegistryManager()));
             });
         });
     }
@@ -53,12 +54,12 @@ public class Ether extends PersistentState implements Tickable {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound compound) {
+    public NbtCompound writeNbt(NbtCompound compound, WrapperLookup lookup) {
         synchronized (locker) {
             pruneNodes();
             compound.put("endpoints", NbtSerialisable.writeMap(endpoints, Identifier::toString, entities -> {
                 return NbtSerialisable.writeMap(entities, UUID::toString, spells -> {
-                    return NbtSerialisable.writeMap(spells, UUID::toString, Entry::toNBT);
+                    return NbtSerialisable.writeMap(spells, UUID::toString, e -> e.toNBT(lookup));
                 });
             }));
             return compound;
@@ -201,10 +202,10 @@ public class Ether extends PersistentState implements Tickable {
         private BlockPos currentPos = BlockPos.ORIGIN;
         private BlockPos previousPos = BlockPos.ORIGIN;
 
-        private Entry(NbtElement nbt) {
+        private Entry(NbtElement nbt, WrapperLookup lookup) {
             this.entity = new EntityReference<>();
             this.spell = new WeakReference<>(null);
-            this.fromNBT((NbtCompound)nbt);
+            this.fromNBT((NbtCompound)nbt, lookup);
         }
 
         public Entry(T spell, Caster<?> caster) {
@@ -356,7 +357,7 @@ public class Ether extends PersistentState implements Tickable {
         }
 
         @Override
-        public void toNBT(NbtCompound compound) {
+        public void toNBT(NbtCompound compound, WrapperLookup lookup) {
             entity.toNBT(compound);
             compound.putBoolean("removed", removed);
             compound.putFloat("pitch", pitch);
@@ -373,7 +374,7 @@ public class Ether extends PersistentState implements Tickable {
         }
 
         @Override
-        public void fromNBT(NbtCompound compound) {
+        public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
             entity.fromNBT(compound);
             removed = compound.getBoolean("removed");
             pitch = compound.getFloat("pitch");

@@ -12,7 +12,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -128,7 +127,9 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
 
         String count = value > 99 ? "99+" : Math.round(value) == value ? (int)value + "" : ((Math.round(value * 10) / 10F) + "");
 
-        VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
+        VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEffectVertexConsumers();
+                // TODO: Before 1.21 was using tessellator's buffer but we can't get it without calling begin()
+                //VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
         textRenderer.draw(count, 0, 0, 16777215, true, matrices.peek().getPositionMatrix(), immediate, TextLayerType.SEE_THROUGH, 0, 15728880);
         immediate.draw();
         matrices.pop();

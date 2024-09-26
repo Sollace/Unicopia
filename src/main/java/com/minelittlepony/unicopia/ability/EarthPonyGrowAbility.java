@@ -18,6 +18,7 @@ import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -26,6 +27,7 @@ import net.minecraft.block.FarmlandBlock;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -54,8 +56,8 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
     }
 
     @Override
-    public Hit.Serializer<Pos> getSerializer() {
-        return Pos.SERIALIZER;
+    public PacketCodec<? extends ByteBuf, Pos> getSerializer() {
+        return Pos.CODEC;
     }
 
     @Override

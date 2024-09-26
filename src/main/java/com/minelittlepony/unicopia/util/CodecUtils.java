@@ -14,11 +14,9 @@ import com.mojang.serialization.Decoder;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Encoder;
 import com.mojang.serialization.MapCodec;
-
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
-import net.minecraft.util.dynamic.Codecs;
 
 public interface CodecUtils {
     Codec<ItemConvertible> ITEM = Registries.ITEM.getCodec().xmap(i -> () -> i, ItemConvertible::asItem);
@@ -71,7 +69,7 @@ public interface CodecUtils {
     }
 
     static <K> Codec<K> xor(Codec<K> left, Codec<K> right) {
-        return Codecs.xor(left, right).xmap(either -> either.left().or(either::right).get(), Either::left);
+        return Codec.xor(left, right).xmap(either -> either.left().or(either::right).get(), Either::left);
     }
 
     static <K> Codec<Set<K>> setOf(Codec<K> codec) {

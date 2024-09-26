@@ -6,9 +6,10 @@ import com.minelittlepony.unicopia.util.InventoryUtil;
 
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.screen.slot.Slot;
 
-public class SpellbookInventory extends CraftingInventory {
+public class SpellbookInventory extends CraftingInventory implements RecipeInput {
     private final SpellbookScreenHandler handler;
 
     public SpellbookInventory(SpellbookScreenHandler handler, int width, int height) {
@@ -39,5 +40,15 @@ public class SpellbookInventory extends CraftingInventory {
                 .map(slot -> SpellTraits.of(getStack(slot)).multiply(getFactor(slot)))
                 .toArray(SpellTraits[]::new)
         );
+    }
+
+    @Override
+    public ItemStack getStackInSlot(int slot) {
+        return this.getStack(slot);
+    }
+
+    @Override
+    public int getSize() {
+        return size();
     }
 }

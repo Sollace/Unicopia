@@ -12,7 +12,7 @@ apply plugin: 'io.github.dexman545.outlet'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
     withSourcesJar()
 }

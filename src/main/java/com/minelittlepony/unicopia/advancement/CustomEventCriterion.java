@@ -16,7 +16,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion.Conditions> {
     @Override
@@ -61,7 +60,7 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
             TriState flying,
             int repeatCount) implements AbstractCriterion.Conditions {
         public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(Conditions::player),
+                EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(Conditions::player),
                 Codec.STRING.fieldOf("event").forGetter(Conditions::event),
                 RacePredicate.CODEC.optionalFieldOf("races", RacePredicate.EMPTY).forGetter(Conditions::races),
                 CodecUtils.tristateOf("flying").forGetter(Conditions::flying),

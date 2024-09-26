@@ -18,16 +18,16 @@ import net.minecraft.util.Identifier;
 
 interface ItemModels {
     Model GENERATED = net.minecraft.data.client.Models.GENERATED;
-    Model CHEST = item(new Identifier("chest"), TextureKey.PARTICLE);
-    Model BUILTIN_ENTITY = new Model(Optional.of(new Identifier("builtin/entity")), Optional.empty());
+    Model CHEST = item(Identifier.ofVanilla("chest"), TextureKey.PARTICLE);
+    Model BUILTIN_ENTITY = new Model(Optional.of(Identifier.ofVanilla("builtin/entity")), Optional.empty());
     Model TEMPLATE_AMULET = item("template_amulet", TextureKey.LAYER0);
     Model TEMPLATE_EYEWEAR = item("template_eyewear", TextureKey.LAYER0);
-    Model TEMPLATE_SPAWN_EGG = item(new Identifier("template_spawn_egg"));
+    Model TEMPLATE_SPAWN_EGG = item(Identifier.ofVanilla("template_spawn_egg"));
     Model TEMPLATE_MUG = item("template_mug", TextureKey.LAYER0);
     Model TEMPLATE_PILLAR = item("template_pillar", TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.END);
     Model HANDHELD_STAFF = item("handheld_staff", TextureKey.LAYER0);
-    Model TRIDENT_THROWING = item(new Identifier("trident_throwing"), TextureKey.LAYER0);
-    Model TRIDENT_IN_HAND = item(new Identifier("trident_in_hand"), TextureKey.LAYER0);
+    Model TRIDENT_THROWING = item(Identifier.ofVanilla("trident_throwing"), TextureKey.LAYER0);
+    Model TRIDENT_IN_HAND = item(Identifier.ofVanilla("trident_in_hand"), TextureKey.LAYER0);
 
     static Model item(String parent, TextureKey ... requiredTextureKeys) {
         return new Model(Optional.of(Unicopia.id("item/" + parent)), Optional.empty(), requiredTextureKeys);

@@ -31,6 +31,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
@@ -56,7 +57,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
     private RegistryKey<DamageType> damageType = UDamageTypes.ROCK;
 
     public PhysicsBodyProjectileEntity(EntityType<PhysicsBodyProjectileEntity> type, World world, ItemStack stack) {
-        super(type, world, stack);
+        super(type, 0, 0, 0, world, stack, null);
     }
 
     public PhysicsBodyProjectileEntity(World world, ItemStack stack) {
@@ -64,18 +65,20 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
     }
 
     public PhysicsBodyProjectileEntity(World world, @Nullable LivingEntity thrower, ItemStack stack) {
-        super(UEntities.MUFFIN, thrower, world, stack);
+        super(UEntities.MUFFIN, thrower, world, stack, null);
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        getDataTracker().startTracking(ITEM, ItemStack.EMPTY);
-        getDataTracker().startTracking(BOUNCY, false);
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(ITEM, ItemStack.EMPTY)
+            .add(BOUNCY, false);
     }
 
+    @Override
     public void setStack(ItemStack stack) {
         getDataTracker().set(ITEM, stack);
+        super.setStack(stack);
     }
 
     @Override
@@ -273,7 +276,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
         super.writeCustomDataToNbt(nbt);
         ItemStack stack = getStack();
         if (!stack.isEmpty()) {
-            nbt.put("Item", stack.writeNbt(new NbtCompound()));
+            ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, stack).result().ifPresent(item -> nbt.put("Item", item));
         }
         nbt.putString("damageType", damageType.getValue().toString());
     }
@@ -281,7 +284,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        setStack(ItemStack.fromNbt(nbt.getCompound("Item")));
+        setStack(ItemStack.fromNbtOrEmpty(getWorld().getRegistryManager(), nbt.getCompound("Item")));
         if (nbt.contains("damageType", NbtElement.STRING_TYPE)) {
             Optional.ofNullable(Identifier.tryParse(nbt.getString("damageType"))).ifPresent(id -> {
                 setDamageType(RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id));

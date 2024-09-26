@@ -22,6 +22,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
@@ -47,11 +48,13 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
         return getInventory(entity, slot).map(inventory -> {
             for (int position = 0; position < inventory.size(); position++) {
                 if (inventory.getStack(position).isEmpty() && TrinketSlot.canInsert(stack, new SlotReference(inventory, position), entity)) {
-                    SoundEvent soundEvent = stack.getItem() instanceof Equipment q ? q.getEquipSound() : null;
+
+                    Equipment q = Equipment.fromStack(stack);
+                    RegistryEntry<SoundEvent> soundEvent = q == null ? null : q.getEquipSound();
                     inventory.setStack(position, stack.split(1));
                     if (soundEvent != null) {
                        entity.emitGameEvent(GameEvent.EQUIP);
-                       entity.playSound(soundEvent, 1, 1);
+                       entity.playSound(soundEvent.value(), 1, 1);
                     }
                     return true;
                 }
@@ -63,12 +66,13 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
     @Override
     public void setEquippedStack(LivingEntity entity, Identifier slot, ItemStack stack) {
         getInventory(entity, slot).ifPresent(inventory -> {
-            SoundEvent soundEvent = stack.getItem() instanceof Equipment q ? q.getEquipSound() : null;
+            Equipment q = Equipment.fromStack(stack);
+            RegistryEntry<SoundEvent> soundEvent = q == null ? null : q.getEquipSound();
             inventory.clear();
             inventory.setStack(0, stack);
             if (soundEvent != null) {
                 entity.emitGameEvent(GameEvent.EQUIP);
-                entity.playSound(soundEvent, 1, 1);
+                entity.playSound(soundEvent.value(), 1, 1);
             }
         });
     }
@@ -91,7 +95,7 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
                 ItemStack oldStack = stack.copy();
                 return new EquippedStack(stack, inventory::markUpdate, l -> {
                     inventory.markUpdate();
-                    Channel.SERVER_TRINKET_BROKEN.sendToSurroundingPlayers(new MsgTrinketBroken(oldStack, l.getId()), l);
+                    Channel.SERVER_TRINKET_BROKEN.sendToSurroundingPlayers(new MsgTrinketBroken(oldStack, entity.getId()), entity);
                 });
             });
         });
@@ -147,7 +151,7 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
     }
 
     private static Identifier getSlotId(SlotType slotType) {
-        return new Identifier(slotType.getGroup(), slotType.getName());
+        return Identifier.of(slotType.getGroup(), slotType.getName());
     }
 
     public static int getMaxCount(ItemStack stack, SlotReference ref, int normal) {
@@ -176,11 +180,12 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
 
         Trinket trinket = TrinketsApi.getTrinket(stack.getItem());
 
-        SoundEvent soundEvent = stack.getItem() instanceof Equipment q ? q.getEquipSound() : null;
+        Equipment q = Equipment.fromStack(stack);
+        RegistryEntry<SoundEvent> soundEvent = q == null ? null : q.getEquipSound();
         inv.setStack(i, stack.split(trinket instanceof UnicopiaTrinket ut ? ut.getMaxCount(stack, ref) : stack.getMaxCount()));
         if (!stack.isEmpty() && soundEvent != null) {
             user.emitGameEvent(GameEvent.EQUIP);
-            user.playSound(soundEvent, 1, 1);
+            user.playSound(soundEvent.value(), 1, 1);
         }
 
         return true;

@@ -12,6 +12,7 @@ import it.unimi.dsi.fastutil.objects.AbstractObject2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -44,7 +45,7 @@ public class LightSources extends PersistentState {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound compound) {
+    public NbtCompound writeNbt(NbtCompound compound, WrapperLookup lookup) {
         return compound;
     }
 

@@ -25,10 +25,13 @@ import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.text.TextColor;
 import net.minecraft.util.*;
 import net.minecraft.util.profiler.Profiler;
@@ -89,7 +92,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
     }
 
     private static Text readText(JsonElement json) {
-        return json.isJsonPrimitive() ? Text.translatable(json.getAsString()) : Text.Serialization.fromJsonTree(json);
+        return json.isJsonPrimitive() ? Text.translatable(json.getAsString()) : Text.Serialization.fromJsonTree(json, DynamicRegistryManager.EMPTY);
     }
 
     public enum Flow {
@@ -122,7 +125,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
                 .toList();
         }
 
-        public void write(PacketByteBuf buffer) {
+        public void write(RegistryByteBuf buffer) {
             buffer.writeIdentifier(id);
             buffer.writeEnumConstant(side);
             buffer.writeInt(tabY);
@@ -162,24 +165,24 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             });
         }
 
-        public void toBuffer(PacketByteBuf buffer) {
-            buffer.writeText(title);
+        public void toBuffer(RegistryByteBuf buffer) {
+            TextCodecs.PACKET_CODEC.encode(buffer, title);
             buffer.writeInt(level);
             buffer.writeInt(color);
             buffer.writeCollection(elements, Element::write);
         }
 
         public static void write(PacketByteBuf buffer, Page page) {
-            page.toBuffer(buffer);
+            page.toBuffer((RegistryByteBuf)buffer);
         }
     }
 
     private interface Element {
-        void toBuffer(PacketByteBuf buffer);
+        void toBuffer(RegistryByteBuf buffer);
 
         record Image (Identifier texture, Bounds bounds, Flow flow) implements Element {
             @Override
-            public void toBuffer(PacketByteBuf buffer) {
+            public void toBuffer(RegistryByteBuf buffer) {
                 buffer.writeByte(0);
                 buffer.writeIdentifier(texture);
                 boundsToBuffer(bounds, buffer);
@@ -189,7 +192,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
 
         record Multi(int count, Element element) implements Element {
             @Override
-            public void toBuffer(PacketByteBuf buffer) {
+            public void toBuffer(RegistryByteBuf buffer) {
                 buffer.writeVarInt(count);
                 element.toBuffer(buffer);
             }
@@ -197,7 +200,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
 
         record Id(byte id, Identifier value) implements Element {
             @Override
-            public void toBuffer(PacketByteBuf buffer) {
+            public void toBuffer(RegistryByteBuf buffer) {
                 buffer.writeByte(id);
                 buffer.writeIdentifier(value);
             }
@@ -205,18 +208,18 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
 
         record Stack (IngredientWithSpell ingredient, Bounds bounds) implements Element {
             @Override
-            public void toBuffer(PacketByteBuf buffer) {
+            public void toBuffer(RegistryByteBuf buffer) {
                 buffer.writeByte(2);
-                ingredient.write(buffer);
+                IngredientWithSpell.PACKET_CODEC.encode(buffer, ingredient);
                 boundsToBuffer(bounds, buffer);
             }
         }
 
         record TextBlock (Text text) implements Element {
             @Override
-            public void toBuffer(PacketByteBuf buffer) {
+            public void toBuffer(RegistryByteBuf buffer) {
                 buffer.writeByte(3);
-                buffer.writeText(text);
+                TextCodecs.PACKET_CODEC.encode(buffer, text);
             }
         }
 
@@ -241,14 +244,14 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             }
 
             @Override
-            public void toBuffer(PacketByteBuf buffer) {
+            public void toBuffer(RegistryByteBuf buffer) {
                 buffer.writeByte(5);
-                buffer.writeCollection(commands, (b, c) -> c.toBuffer(b));
+                buffer.writeCollection(commands, (b, c) -> c.toBuffer(buffer));
             }
 
             record Set(int x, int y, int z, BlockState state) implements Element {
                 @Override
-                public void toBuffer(PacketByteBuf buffer) {
+                public void toBuffer(RegistryByteBuf buffer) {
                     buffer.writeByte(1);
                     buffer.writeInt(x);
                     buffer.writeInt(y);
@@ -259,7 +262,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             }
             record Fill(int x1, int y1, int z1, int x2, int y2, int z2, BlockState state) implements Element {
                 @Override
-                public void toBuffer(PacketByteBuf buffer) {
+                public void toBuffer(RegistryByteBuf buffer) {
                     buffer.writeByte(2);
                     buffer.writeInt(x1);
                     buffer.writeInt(y1);
@@ -293,14 +296,14 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
             }
 
             @Override
-            public void toBuffer(PacketByteBuf buffer) {
+            public void toBuffer(RegistryByteBuf buffer) {
                 buffer.writeByte(4);
-                buffer.writeCollection(entries, (b, c) -> c.toBuffer(b));
+                buffer.writeCollection(entries, (b, c) -> c.toBuffer(buffer));
             }
         }
 
         static void write(PacketByteBuf buffer, Element element) {
-            element.toBuffer(buffer);
+            element.toBuffer((RegistryByteBuf)buffer);
         }
 
         @Deprecated
@@ -309,14 +312,14 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
                 JsonObject el = JsonHelper.asObject(json, "element");
                 if (el.has("texture")) {
                     return new Image(
-                        new Identifier(JsonHelper.getString(el, "texture")),
+                        Identifier.of(JsonHelper.getString(el, "texture")),
                         boundsFromJson(el),
                         Flow.valueOf(JsonHelper.getString(el, "flow", "RIGHT"))
                     );
                 }
 
                 if (el.has("recipe")) {
-                    return new Id((byte)1, new Identifier(JsonHelper.getString(el, "recipe")));
+                    return new Id((byte)1, Identifier.of(JsonHelper.getString(el, "recipe")));
                 }
 
                 if (el.has("item")) {

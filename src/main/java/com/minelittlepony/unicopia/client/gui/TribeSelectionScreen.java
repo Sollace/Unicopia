@@ -108,7 +108,7 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
     private void updateScolling() {
         final int itemWidth = 70 + 10;
         int x = (width - itemWidth) / 2;
-        float diff = MathHelper.lerp(client.getTickDelta(), prevScrollPosition, scrollPosition) / 4F;
+        float diff = MathHelper.lerp(client.getRenderTickCounter().getTickDelta(false), prevScrollPosition, scrollPosition) / 4F;
 
         for (int i = 0; i < options.size(); i++) {
             var option = options.get(i);
@@ -125,7 +125,7 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
         if (!options.isEmpty()) {
             var element = options.get(0);
 
-            float diff = (targetScroll - MathHelper.lerp(client.getTickDelta(), prevScrollPosition, scrollPosition)) * 7;
+            float diff = (targetScroll - MathHelper.lerp(client.getRenderTickCounter().getTickDelta(false), prevScrollPosition, scrollPosition)) * 7;
             context.drawTexture(TEXTURE, (width / 2) + 40 + (scrollPosition < targetScroll ? (int)diff : 0), element.getY() - 20, 10, 165, 153, 30, 85, 312, 312);
             context.drawTexture(TEXTURE, (width / 2) - 80 + (scrollPosition > targetScroll ? (int)diff : 0), element.getY() - 20, 10, 195, 153, 30, 85, 312, 312);
             if (element.getBounds().left < 0) {

@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -51,10 +52,10 @@ public record CustomisedSpellType<T extends Spell> (
     }
 
     @Nullable
-    public T create(NbtCompound compound) {
+    public T create(NbtCompound compound, WrapperLookup lookup) {
         T spell = create();
         if (spell != null) {
-            spell.fromNBT(compound);
+            spell.fromNBT(compound, lookup);
         }
         return spell;
     }

@@ -15,7 +15,11 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.UItems;
 
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -58,8 +62,8 @@ public class ChangeFormAbility implements Ability<Hit> {
     }
 
     @Override
-    public Hit.Serializer<Hit> getSerializer() {
-        return Hit.SERIALIZER;
+    public PacketCodec<? extends ByteBuf, Hit> getSerializer() {
+        return Hit.CODEC;
     }
 
     @Override
@@ -77,7 +81,7 @@ public class ChangeFormAbility implements Ability<Hit> {
         player.subtractEnergyCost(5 * targets.size());
         TrinketsDelegate.EquippedStack amulet = UItems.PEARL_NECKLACE.getForEntity(player.asEntity());
         if (!amulet.stack().isEmpty()) {
-            amulet.stack().damage(1, player.asEntity(), amulet.breakStatusSender());
+            amulet.stack().damage(1, (ServerWorld)player.asWorld(), (ServerPlayerEntity)player.asEntity(), amulet.breakStatusSender());
         }
 
         boolean isTransforming = player.getSuppressedRace().isUnset();

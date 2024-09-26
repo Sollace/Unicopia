@@ -3,7 +3,8 @@ package com.minelittlepony.unicopia.server.world.gen;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.server.world.UWorldGen;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.structure.processor.StructureProcessor;
@@ -13,7 +14,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldView;
 
 public class CaveCarvingStructureProcessor extends StructureProcessor {
-    public static final Codec<CaveCarvingStructureProcessor> CODEC = Codec.unit(new CaveCarvingStructureProcessor());
+    public static final MapCodec<CaveCarvingStructureProcessor> CODEC = MapCodec.unit(new CaveCarvingStructureProcessor());
 
     @Override
     protected StructureProcessorType<?> getType() {

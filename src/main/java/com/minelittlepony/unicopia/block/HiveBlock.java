@@ -34,13 +34,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -142,7 +143,7 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (EquineContext.of(player).getCompositeRace().includes(Race.CHANGELING)) {
             world.setBlockState(pos, state.with(CONSUMING, true));
             if (!world.isClient) {
@@ -214,22 +215,22 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
         }
 
         @Override
-        public void readNbt(NbtCompound nbt) {
+        public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
             opening = nbt.getBoolean("opening");
             closing = nbt.getBoolean("closing");
             storedBlocks.clear();
             if (nbt.contains("storedBlocks", NbtElement.LIST_TYPE)) {
-                Entry.SERIALIZER.readAll(nbt.getList("storedBlocks", NbtElement.COMPOUND_TYPE)).forEach(entry -> {
+                Entry.SERIALIZER.readAll(nbt.getList("storedBlocks", NbtElement.COMPOUND_TYPE), lookup).forEach(entry -> {
                     storedBlocks.put(entry.pos(), entry);
                 });
             }
         }
 
         @Override
-        protected void writeNbt(NbtCompound nbt) {
+        protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
             nbt.putBoolean("opening", opening);
             nbt.putBoolean("closing", closing);
-            nbt.put("storedBlocks", Entry.SERIALIZER.writeAll(storedBlocks.values()));
+            nbt.put("storedBlocks", Entry.SERIALIZER.writeAll(storedBlocks.values(), lookup));
         }
 
         static void tick(World world, BlockPos pos, BlockState state, TileData data) {
@@ -312,22 +313,23 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
         }
 
         record Entry (BlockPos pos, BlockState state, @Nullable BlockEntity data) {
-            public static final Serializer<Entry> SERIALIZER = Serializer.of(compound -> new Entry(
-                NbtSerialisable.BLOCK_POS.read(compound.getCompound("pos")),
+            public static final Serializer<NbtCompound, Entry> SERIALIZER = Serializer.of((compound, lookup) -> new Entry(
+                NbtSerialisable.BLOCK_POS.read(compound.getCompound("pos"), lookup),
                 NbtSerialisable.decode(BlockState.CODEC, compound.get("state")).orElse(Blocks.AIR.getDefaultState()),
-                compound.getCompound("data")
-            ), entry -> {
+                compound.getCompound("data"),
+                lookup
+            ), (entry, lookup) -> {
                 NbtCompound compound = new NbtCompound();
-                compound.put("pos", NbtSerialisable.BLOCK_POS.write(entry.pos()));
+                compound.put("pos", NbtSerialisable.BLOCK_POS.write(entry.pos(), lookup));
                 compound.put("state", NbtSerialisable.encode(BlockState.CODEC, entry.state()));
                 if (entry.data() != null) {
-                    compound.put("data", entry.data().createNbtWithId());
+                    compound.put("data", entry.data().createNbtWithId(lookup));
                 }
                 return compound;
             });
 
-            Entry(BlockPos pos, BlockState state, NbtCompound nbt) {
-                this(pos, state, BlockEntity.createFromNbt(pos, state, nbt));
+            Entry(BlockPos pos, BlockState state, NbtCompound nbt, WrapperLookup lookup) {
+                this(pos, state, BlockEntity.createFromNbt(pos, state, nbt, lookup));
             }
 
             @SuppressWarnings("deprecation")
@@ -365,7 +367,7 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
             }
 
             @Override
-            public boolean listen(ServerWorld world, GameEvent event, Emitter emitter, Vec3d emitterPos) {
+            public boolean listen(ServerWorld world, RegistryEntry<GameEvent> event, Emitter emitter, Vec3d emitterPos) {
                 if (isImportant(event) || (EquinePredicates.IS_PLAYER.test(emitter.sourceEntity()) && !EquinePredicates.CHANGELING.test(emitter.sourceEntity()))) {
                     closing = true;
                     markDirty();
@@ -374,7 +376,7 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
                 return false;
             }
 
-            private boolean isImportant(GameEvent event) {
+            private boolean isImportant(RegistryEntry<GameEvent> event) {
                 return event == GameEvent.EXPLODE
                     || event == GameEvent.PRIME_FUSE
                     || event == GameEvent.SHRIEK;

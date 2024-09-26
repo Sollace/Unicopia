@@ -10,7 +10,8 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 
 public record TraitIngredient (
         Optional<SpellTraits> min,
@@ -27,9 +28,14 @@ public record TraitIngredient (
             ingredient -> !ingredient.isEmpty() ? DataResult.success(ingredient) : DataResult.error(() -> "No min or max supplied for ingredient"),
             DataResult::success
     );
-    public static final Codec<TraitIngredient> CODEC = Codecs.xor(INLINE_CODEC, STRUCTURED_CODEC).flatXmap(
+    public static final Codec<TraitIngredient> CODEC = Codec.xor(INLINE_CODEC, STRUCTURED_CODEC).flatXmap(
             either -> either.left().or(either::right).map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Invalid traits")),
             ingredient -> DataResult.success(ingredient.max.isEmpty() ? Either.left(ingredient) : Either.right(ingredient))
+    );
+    public static final PacketCodec<PacketByteBuf, TraitIngredient> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.optional(SpellTraits.PACKET_CODEC), TraitIngredient::min,
+            PacketCodecs.optional(SpellTraits.PACKET_CODEC), TraitIngredient::max,
+            TraitIngredient::new
     );
 
     public static TraitIngredient of(SpellTraits minTraits) {
@@ -59,14 +65,5 @@ public record TraitIngredient (
         boolean minMatch = min.map(m -> t.includes(m)).orElse(true);
         boolean maxMatch = max.map(m -> m.includes(t)).orElse(true);
         return minMatch && maxMatch;
-    }
-
-    public void write(PacketByteBuf buf) {
-        buf.writeOptional(min, (b, m) -> m.write(b));
-        buf.writeOptional(max, (b, m) -> m.write(b));
-    }
-
-    public static TraitIngredient fromPacket(PacketByteBuf buf) {
-        return new TraitIngredient(SpellTraits.fromPacketOrEmpty(buf), SpellTraits.fromPacketOrEmpty(buf));
     }
 }

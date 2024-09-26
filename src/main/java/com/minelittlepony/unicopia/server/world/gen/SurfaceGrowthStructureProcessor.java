@@ -6,7 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.server.world.UWorldGen;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.BlockState;
@@ -21,7 +21,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.ServerWorldAccess;
 
 public class SurfaceGrowthStructureProcessor extends StructureProcessor {
-    public static final Codec<SurfaceGrowthStructureProcessor> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<SurfaceGrowthStructureProcessor> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
         RuleTest.TYPE_CODEC.fieldOf("input_predicate").forGetter(rule -> rule.inputPredicate),
         BlockState.CODEC.fieldOf("output_state").forGetter(rule -> rule.outputState)
     ).apply(instance, SurfaceGrowthStructureProcessor::new));

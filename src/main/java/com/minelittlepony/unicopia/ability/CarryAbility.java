@@ -11,9 +11,11 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.TraceHelper;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.world.World;
 
 /**
@@ -48,8 +50,8 @@ public class CarryAbility implements Ability<Hit> {
     }
 
     @Override
-    public Hit.Serializer<Hit> getSerializer() {
-        return Hit.SERIALIZER;
+    public PacketCodec<? extends ByteBuf, Hit> getSerializer() {
+        return Hit.CODEC;
     }
 
     @Override

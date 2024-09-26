@@ -28,6 +28,7 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -254,7 +255,8 @@ public class UHud {
 
         if (hasSunglasses) {
 
-            if (glasses.hasCustomName() && "Cool Shades".equals(glasses.getName().getString())) {
+            Text customName = glasses.get(DataComponentTypes.CUSTOM_NAME);
+            if (customName != null && "Cool Shades".equals(customName.getString())) {
                 final int delay = 7;
                 final int current = client.player.age / delay;
                 final int tint = DyeColor.byId(current % DyeColor.values().length).getSignColor();
@@ -264,7 +266,7 @@ public class UHud {
                     client.getSoundManager().play(
                             partySound = new LoopingSoundInstance<>(client.player, player -> {
                                 return UItems.SUNGLASSES.isApplicable(player) || true;
-                            }, USounds.Vanilla.MUSIC_DISC_PIGSTEP, 1, 1, client.world.random)
+                            }, USounds.Vanilla.MUSIC_DISC_PIGSTEP.value(), 1, 1, client.world.random)
                     );
                 } else if (partySound != null) {
                     partySound.setMuted(false);
@@ -337,10 +339,10 @@ public class UHud {
                 float centerX = MathHelper.sin(angle) * innerRadius;
                 float centerY = MathHelper.cos(angle) * innerRadius;
 
-                vertexConsumer.vertex(matrix4f, centerX, centerY, 0).color(1F, 1F, 1F, alpha * 0.3F).next();
-                vertexConsumer.vertex(matrix4f, MathHelper.sin(angle - wedgeAngle) * outerRadius, MathHelper.cos(angle - wedgeAngle) * outerRadius, 0).color(1F, 1F, 1F, alpha).next();
-                vertexConsumer.vertex(matrix4f, MathHelper.sin(angle + wedgeAngle) * outerRadius, MathHelper.cos(angle + wedgeAngle) * outerRadius, 0).color(1F, 1F, 1F, alpha).next();
-                vertexConsumer.vertex(matrix4f, centerX, centerY, 0).color(1F, 1F, 1F, alpha * 0.3F).next();
+                vertexConsumer.vertex(matrix4f, centerX, centerY, 0).color(1F, 1F, 1F, alpha * 0.3F);
+                vertexConsumer.vertex(matrix4f, MathHelper.sin(angle - wedgeAngle) * outerRadius, MathHelper.cos(angle - wedgeAngle) * outerRadius, 0).color(1F, 1F, 1F, alpha);
+                vertexConsumer.vertex(matrix4f, MathHelper.sin(angle + wedgeAngle) * outerRadius, MathHelper.cos(angle + wedgeAngle) * outerRadius, 0).color(1F, 1F, 1F, alpha);
+                vertexConsumer.vertex(matrix4f, centerX, centerY, 0).color(1F, 1F, 1F, alpha * 0.3F);
             }
             context.getMatrices().pop();
         }

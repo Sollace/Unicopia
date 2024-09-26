@@ -18,6 +18,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.Equipment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
@@ -59,8 +60,8 @@ public class SpellbookScreenHandler extends ScreenHandler {
     @Nullable
     public UUID entityId;
 
-    protected SpellbookScreenHandler(int syncId, PlayerInventory inv, PacketByteBuf buf) {
-        this(syncId, inv, ScreenHandlerContext.EMPTY, new SpellbookState().fromPacket(buf), null);
+    protected SpellbookScreenHandler(int syncId, PlayerInventory inv, SpellbookState state) {
+        this(syncId, inv, ScreenHandlerContext.EMPTY, state, null);
     }
 
     public SpellbookScreenHandler(int syncId, PlayerInventory inv, ScreenHandlerContext context, SpellbookState state, UUID entityId) {
@@ -121,7 +122,8 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
                 @Override
                 public boolean canInsert(ItemStack stack) {
-                    return eq == MobEntity.getPreferredEquipmentSlot(stack);
+                    Equipment equipment = Equipment.fromStack(stack);
+                    return equipment != null && eq == equipment.getSlotType();
                 }
 
                 @Override

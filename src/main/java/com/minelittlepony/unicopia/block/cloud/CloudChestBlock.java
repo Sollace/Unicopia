@@ -24,12 +24,13 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.DoubleInventory;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -137,11 +138,11 @@ public class CloudChestBlock extends ChestBlock implements CloudLike {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!baseBlock.canInteract(baseState, world, pos, EquineContext.of(player))) {
-            return ActionResult.PASS;
+            return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
-        return super.onUse(state, world, pos, player, hand, hit);
+        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
     }
 
     @Deprecated
@@ -152,7 +153,7 @@ public class CloudChestBlock extends ChestBlock implements CloudLike {
 
     @Override
     @Deprecated
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+    public boolean canPathfindThrough(BlockState state, NavigationType type) {
         return type != NavigationType.LAND || !InteractionManager.getInstance().getPathingEquineContext().collidesWithClouds();
     }
 

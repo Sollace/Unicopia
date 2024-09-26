@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public final class SpellReference<T extends Spell> implements NbtSerialisable {
     @Nullable
@@ -50,19 +51,19 @@ public final class SpellReference<T extends Spell> implements NbtSerialisable {
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         if (spell != null && !spell.isDead()) {
-            spell.toNBT(compound);
+            spell.toNBT(compound, lookup);
             spell.getTypeAndTraits().toNbt(compound);
         }
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         if (spell == null || !Objects.equals(Spell.getUuid(compound), spell.getUuid())) {
-            spell = Spell.readNbt(compound);
+            spell = Spell.readNbt(compound, lookup);
         } else  {
-            spell.fromNBT(compound);
+            spell.fromNBT(compound, lookup);
         }
     }
 }

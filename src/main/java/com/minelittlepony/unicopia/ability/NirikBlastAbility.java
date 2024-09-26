@@ -11,9 +11,11 @@ import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation.Recipient
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.ExplosionUtil;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvents;
@@ -42,8 +44,8 @@ public class NirikBlastAbility implements Ability<Hit> {
     }
 
     @Override
-    public Hit.Serializer<Hit> getSerializer() {
-        return Hit.SERIALIZER;
+    public PacketCodec<? extends ByteBuf, Hit> getSerializer() {
+        return Hit.CODEC;
     }
 
     @Override

@@ -23,6 +23,7 @@ import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -31,6 +32,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
@@ -69,7 +71,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     public Identifier getIcon(Pony player) {
         Identifier id = Abilities.REGISTRY.getId(this);
         Race race = player.getObservedSpecies();
-        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath()
+        return id.withPath(p -> "textures/gui/ability/" + p
             + "_" + (race.isHuman() ? Race.EARTH : race).getId().getPath()
             + ".png");
     }
@@ -94,8 +96,8 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     }
 
     @Override
-    public Hit.Serializer<Hit> getSerializer() {
-        return Hit.SERIALIZER;
+    public PacketCodec<? extends ByteBuf, Hit> getSerializer() {
+        return Hit.CODEC;
     }
 
     private void thrustDownwards(Pony player) {

@@ -2,21 +2,37 @@ package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.recipe.URecipes;
-import com.minelittlepony.unicopia.util.InventoryUtil;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.RawShapedRecipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.recipe.input.CraftingRecipeInput;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class SpellShapedCraftingRecipe extends ShapedRecipe {
+    public static final MapCodec<SpellShapedCraftingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.STRING.optionalFieldOf("group", "").forGetter(SpellShapedCraftingRecipe::getGroup),
+            CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(SpellShapedCraftingRecipe::getCategory),
+            RawShapedRecipe.CODEC.forGetter(recipe -> recipe.raw), ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+            Codec.BOOL.optionalFieldOf("show_notification", true).forGetter(SpellShapedCraftingRecipe::showNotification)
+    ).apply(instance, SpellShapedCraftingRecipe::new));
+    public static final PacketCodec<RegistryByteBuf, SpellShapedCraftingRecipe> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.STRING, SpellShapedCraftingRecipe::getGroup,
+            CraftingRecipeCategory.PACKET_CODEC, SpellShapedCraftingRecipe::getCategory,
+            RawShapedRecipe.PACKET_CODEC, recipe -> recipe.raw,
+            ItemStack.PACKET_CODEC, recipe -> recipe.result,
+            PacketCodecs.BOOL, SpellShapedCraftingRecipe::showNotification,
+            SpellShapedCraftingRecipe::new
+    );
+
     private final RawShapedRecipe raw;
     private final ItemStack result;
 
@@ -27,8 +43,8 @@ public class SpellShapedCraftingRecipe extends ShapedRecipe {
     }
 
     @Override
-    public ItemStack craft(RecipeInputInventory inventory, DynamicRegistryManager registries) {
-        return InventoryUtil.stream(inventory)
+    public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
+        return inventory.getStacks().stream()
             .filter(stack -> stack.getItem() instanceof EnchantableItem)
             .filter(EnchantableItem::isEnchanted)
             .map(stack -> ((EnchantableItem)stack.getItem()).getSpellEffect(stack))
@@ -40,39 +56,5 @@ public class SpellShapedCraftingRecipe extends ShapedRecipe {
     @Override
     public RecipeSerializer<?> getSerializer() {
         return URecipes.CRAFTING_MAGICAL_SERIALIZER;
-    }
-
-    public static class Serializer implements RecipeSerializer<SpellShapedCraftingRecipe> {
-        public static final Codec<SpellShapedCraftingRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codecs.createStrictOptionalFieldCodec(Codec.STRING, "group", "").forGetter(SpellShapedCraftingRecipe::getGroup),
-                CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(SpellShapedCraftingRecipe::getCategory),
-                RawShapedRecipe.CODEC.forGetter(recipe -> recipe.raw), ItemStack.RECIPE_RESULT_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
-                Codecs.createStrictOptionalFieldCodec(Codec.BOOL, "show_notification", true).forGetter(SpellShapedCraftingRecipe::showNotification)
-        ).apply(instance, SpellShapedCraftingRecipe::new));
-
-        @Override
-        public Codec<SpellShapedCraftingRecipe> codec() {
-            return CODEC;
-        }
-
-        @Override
-        public SpellShapedCraftingRecipe read(PacketByteBuf buffer) {
-            return new SpellShapedCraftingRecipe(
-                    buffer.readString(),
-                    buffer.readEnumConstant(CraftingRecipeCategory.class),
-                    RawShapedRecipe.readFromBuf(buffer),
-                    buffer.readItemStack(),
-                    buffer.readBoolean()
-            );
-        }
-
-        @Override
-        public void write(PacketByteBuf packetByteBuf, SpellShapedCraftingRecipe shapedRecipe) {
-            packetByteBuf.writeString(shapedRecipe.getGroup());
-            packetByteBuf.writeEnumConstant(shapedRecipe.getCategory());
-            shapedRecipe.raw.writeToBuf(packetByteBuf);
-            packetByteBuf.writeItemStack(shapedRecipe.result);
-            packetByteBuf.writeBoolean(shapedRecipe.showNotification());
-        }
     }
 }

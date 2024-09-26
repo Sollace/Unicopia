@@ -14,6 +14,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.*;
@@ -73,13 +74,13 @@ public class WeatherVaneBlock extends BlockWithEntity {
         }
 
         @Override
-        public void readNbt(NbtCompound nbt) {
+        public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
             angle = nbt.getFloat("angle");
             airflow = new Vec3d(nbt.getDouble("windX"), 0, nbt.getDouble("windZ"));
         }
 
         @Override
-        protected void writeNbt(NbtCompound nbt) {
+        protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
             nbt.putFloat("angle", angle);
             nbt.putDouble("windX", airflow.x);
             nbt.putDouble("windZ", airflow.z);
@@ -91,8 +92,8 @@ public class WeatherVaneBlock extends BlockWithEntity {
         }
 
         @Override
-        public NbtCompound toInitialChunkDataNbt() {
-            return createNbt();
+        public NbtCompound toInitialChunkDataNbt(WrapperLookup lookup) {
+            return createNbt(lookup);
         }
 
         public static void serverTick(World world, BlockPos pos, BlockState state, WeatherVane entity) {

@@ -23,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
+@Deprecated
 public record PacketCodec<T>(PacketByteBuf.PacketReader<T> reader, PacketByteBuf.PacketWriter<T> writer) {
     public static final PacketCodec<Boolean> BOOLEAN = new PacketCodec<>(PacketByteBuf::readBoolean, PacketByteBuf::writeBoolean);
     public static final PacketCodec<Float> FLOAT = new PacketCodec<>(PacketByteBuf::readFloat, PacketByteBuf::writeFloat);

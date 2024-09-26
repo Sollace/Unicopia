@@ -57,7 +57,7 @@ public class Unicopia implements ModInitializer {
     }
 
     public static Identifier id(String name) {
-        return new Identifier(DEFAULT_NAMESPACE, name);
+        return Identifier.of(DEFAULT_NAMESPACE, name);
     }
 
     @Override

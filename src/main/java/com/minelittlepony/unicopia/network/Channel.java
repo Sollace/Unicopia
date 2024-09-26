@@ -21,7 +21,7 @@ public interface Channel {
 
     S2CPacketType<MsgPlayerCapabilities> SERVER_PLAYER_CAPABILITIES = SimpleNetworking.serverToClient(Unicopia.id("player_capabilities"), MsgPlayerCapabilities::new);
     S2CPacketType<MsgBlockDestruction> SERVER_BLOCK_DESTRUCTION = SimpleNetworking.serverToClient(Unicopia.id("block_destruction"), MsgBlockDestruction::new);
-    S2CPacketType<MsgCancelPlayerAbility> CANCEL_PLAYER_ABILITY = SimpleNetworking.serverToClient(Unicopia.id("player_ability_cancel"), MsgCancelPlayerAbility::read);
+    S2CPacketType<MsgCancelPlayerAbility> CANCEL_PLAYER_ABILITY = SimpleNetworking.serverToClient(Unicopia.id("player_ability_cancel"), MsgCancelPlayerAbility.PACKET_CODEC);
     S2CPacketType<MsgCasterLookRequest> SERVER_REQUEST_PLAYER_LOOK = SimpleNetworking.serverToClient(Unicopia.id("request_player_look"), MsgCasterLookRequest::new);
     S2CPacketType<MsgUnlockTraits> UNLOCK_TRAITS = SimpleNetworking.serverToClient(Unicopia.id("unlock_traits"), MsgUnlockTraits::new);
 
@@ -37,7 +37,7 @@ public interface Channel {
     S2CPacketType<MsgSkyAngle> SERVER_SKY_ANGLE = SimpleNetworking.serverToClient(Unicopia.id("sky_angle"), MsgSkyAngle::new);
     S2CPacketType<MsgConfigurationChange> CONFIGURATION_CHANGE = SimpleNetworking.serverToClient(Unicopia.id("config"), MsgConfigurationChange::new);
     S2CPacketType<MsgZapAppleStage> SERVER_ZAP_STAGE = SimpleNetworking.serverToClient(Unicopia.id("zap_stage"), MsgZapAppleStage::new);
-    S2CPacketType<MsgTrinketBroken> SERVER_TRINKET_BROKEN = SimpleNetworking.serverToClient(Unicopia.id("trinket_broken"), MsgTrinketBroken::new);
+    S2CPacketType<MsgTrinketBroken> SERVER_TRINKET_BROKEN = SimpleNetworking.serverToClient(Unicopia.id("trinket_broken"), MsgTrinketBroken.PACKET_CODEC);
 
     static void bootstrap() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
@@ -48,16 +48,16 @@ public interface Channel {
                     race = Race.UNSET;
                 }
                 if (race.isUnset()) {
-                    sender.sendPacket(SERVER_SELECT_TRIBE.id(), new MsgTribeSelect(Race.allPermitted(handler.player), "gui.unicopia.tribe_selection.welcome").toBuffer());
+                    sender.sendPacket(SERVER_SELECT_TRIBE.toPacket(new MsgTribeSelect(Race.allPermitted(handler.player), "gui.unicopia.tribe_selection.welcome")));
                 } else {
                     pony.setSpecies(race);
                     Unicopia.LOGGER.info("Setting {}'s race to {} due to host setting", handler.player.getDisplayName().getString(), Race.REGISTRY.getId(race).toString());
                 }
             }
-            sender.sendPacket(SERVER_RESOURCES.id(), new MsgServerResources().toBuffer());
-            sender.sendPacket(SERVER_SKY_ANGLE.id(), new MsgSkyAngle(UnicopiaWorldProperties.forWorld(handler.getPlayer().getServerWorld()).getTangentalSkyAngle()).toBuffer());
-            sender.sendPacket(CONFIGURATION_CHANGE.id(), new MsgConfigurationChange(InteractionManager.getInstance().getSyncedConfig()).toBuffer());
-            sender.sendPacket(SERVER_ZAP_STAGE.id(), new MsgZapAppleStage(ZapAppleStageStore.get(handler.player.getServerWorld()).getStage()).toBuffer());
+            sender.sendPacket(SERVER_RESOURCES.toPacket(new MsgServerResources()));
+            sender.sendPacket(SERVER_SKY_ANGLE.toPacket(new MsgSkyAngle(UnicopiaWorldProperties.forWorld(handler.getPlayer().getServerWorld()).getTangentalSkyAngle())));
+            sender.sendPacket(CONFIGURATION_CHANGE.toPacket(new MsgConfigurationChange(InteractionManager.getInstance().getSyncedConfig())));
+            sender.sendPacket(SERVER_ZAP_STAGE.toPacket(new MsgZapAppleStage(ZapAppleStageStore.get(handler.player.getServerWorld()).getStage())));
         });
     }
 }

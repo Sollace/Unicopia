@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -44,13 +45,13 @@ public interface TimedSpell extends Spell {
         }
 
         @Override
-        public void toNBT(NbtCompound compound) {
+        public void toNBT(NbtCompound compound, WrapperLookup lookup) {
             compound.putInt("duration", duration);
             compound.putInt("maxDuration", maxDuration);
         }
 
         @Override
-        public void fromNBT(NbtCompound compound) {
+        public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
             duration = compound.getInt("duration");
             maxDuration = compound.getInt("maxDuration");
         }

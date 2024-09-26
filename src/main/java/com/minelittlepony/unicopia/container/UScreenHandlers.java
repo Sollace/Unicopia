@@ -10,7 +10,7 @@ import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.registry.Registries;
 
 public interface UScreenHandlers {
-    ScreenHandlerType<SpellbookScreenHandler> SPELL_BOOK = register("spell_book", new ExtendedScreenHandlerType<>(SpellbookScreenHandler::new));
+    ScreenHandlerType<SpellbookScreenHandler> SPELL_BOOK = register("spell_book", new ExtendedScreenHandlerType<>(SpellbookScreenHandler::new, SpellbookState.PACKET_CODEC));
     ScreenHandlerType<ShapingBenchScreenHandler> SHAPING_BENCH = register("shaping_bench", new ScreenHandlerType<>(ShapingBenchScreenHandler::new, FeatureFlags.VANILLA_FEATURES));
 
     static <T extends ScreenHandler> ScreenHandlerType<T> register(String name, ScreenHandlerType<T> type) {

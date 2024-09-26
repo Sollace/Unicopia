@@ -3,23 +3,25 @@ package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.*;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.minelittlepony.unicopia.recipe.URecipes;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.world.World;
 
 /**
  * Recipe for adding traits to an existing spell.
  */
 public record SpellEnhancingRecipe (IngredientWithSpell material) implements SpellbookRecipe {
-    public static final Codec<SpellEnhancingRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<SpellEnhancingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             IngredientWithSpell.CODEC.fieldOf("material").forGetter(recipe -> recipe.material)
     ).apply(instance, SpellEnhancingRecipe::new));
+    public static final PacketCodec<RegistryByteBuf, SpellEnhancingRecipe> PACKET_CODEC = IngredientWithSpell.PACKET_CODEC.xmap(SpellEnhancingRecipe::new, SpellEnhancingRecipe::material);
 
     public IngredientWithSpell getBaseMaterial() {
         return material;
@@ -42,7 +44,7 @@ public record SpellEnhancingRecipe (IngredientWithSpell material) implements Spe
     }
 
     @Override
-    public ItemStack craft(SpellbookInventory inventory, DynamicRegistryManager registries) {
+    public ItemStack craft(SpellbookInventory inventory, WrapperLookup registries) {
         return SpellTraits.of(inventory.getItemToModify())
                 .add(inventory.getTraits())
                 .applyTo(inventory.getItemToModify());
@@ -54,29 +56,12 @@ public record SpellEnhancingRecipe (IngredientWithSpell material) implements Spe
     }
 
     @Override
-    public ItemStack getResult(DynamicRegistryManager registries) {
+    public ItemStack getResult(WrapperLookup registries) {
         return UItems.GEMSTONE.getDefaultStack();
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
         return URecipes.TRAIT_COMBINING;
-    }
-
-    public static class Serializer implements RecipeSerializer<SpellEnhancingRecipe> {
-        @Override
-        public Codec<SpellEnhancingRecipe> codec() {
-            return CODEC;
-        }
-
-        @Override
-        public SpellEnhancingRecipe read(PacketByteBuf buf) {
-            return new SpellEnhancingRecipe(IngredientWithSpell.fromPacket(buf));
-        }
-
-        @Override
-        public void write(PacketByteBuf buf, SpellEnhancingRecipe recipe) {
-            recipe.material().write(buf);
-        }
     }
 }

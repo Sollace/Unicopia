@@ -1,18 +1,12 @@
 package com.minelittlepony.unicopia.network;
 
-import com.sollace.fabwork.api.packets.Packet;
-import net.minecraft.network.PacketByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 
 /**
  * Sent to the client when an ability fails its server-side activation checks.
  */
-public final class MsgCancelPlayerAbility implements Packet {
-    static final MsgCancelPlayerAbility INSTANCE = new MsgCancelPlayerAbility();
-
-    static MsgCancelPlayerAbility read(PacketByteBuf buffer) {
-        return INSTANCE;
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buffer) { }
+public final class MsgCancelPlayerAbility {
+    public static final MsgCancelPlayerAbility INSTANCE = new MsgCancelPlayerAbility();
+    public static final PacketCodec<ByteBuf, MsgCancelPlayerAbility> PACKET_CODEC = PacketCodec.unit(INSTANCE);
 }

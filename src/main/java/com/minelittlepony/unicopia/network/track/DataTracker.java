@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 
 public class DataTracker {
     private final List<Pair<?>> codecs = new ObjectArrayList<>();
@@ -139,6 +140,8 @@ public class DataTracker {
     }
 
     static class Pair<T> {
+        public static final PacketCodec<PacketByteBuf, Pair<?>> PACKET_CODEC = PacketCodec.ofStatic((buffer, pair) -> pair.write(buffer), Pair::new);
+
         private final TrackableDataType<T> type;
         public final int id;
         public T value;
@@ -149,13 +152,13 @@ public class DataTracker {
             this.value = value;
         }
 
-        public Pair(PacketByteBuf buffer) {
+        private Pair(PacketByteBuf buffer) {
             this.id = buffer.readInt();
             this.type = TrackableDataType.of(buffer);
             this.value = type.read(buffer);
         }
 
-        public void write(PacketByteBuf buffer) {
+        private void write(PacketByteBuf buffer) {
             buffer.writeInt(id);
             type.write(buffer, value);
         }

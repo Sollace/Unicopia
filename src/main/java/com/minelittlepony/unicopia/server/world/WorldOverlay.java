@@ -15,9 +15,10 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerChunkLoadingManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -41,7 +42,7 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
             return serverWorld.getPersistentStateManager().getOrCreate(
                     new Type<>(
                             () -> factory.apply(world),
-                            compound -> loadFunc.apply(world, compound),
+                            (compound, lookup) -> loadFunc.apply(world, compound),
                             DataFixTypes.LEVEL
                     ),
                     id.getNamespace() + "_" + id.getPath().replace('/', '_')
@@ -58,7 +59,7 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
     public static <T extends State> WorldOverlay<T> getOverlay(World world, Identifier id, Function<World, WorldOverlay<T>> overlayFactory) {
         return getPersistableStorage(world, id, (w, tag) -> {
             WorldOverlay<T> overlay = overlayFactory.apply(w);
-            overlay.readNbt(tag);
+            overlay.readNbt(tag, w.getRegistryManager());
             return overlay;
         }, overlayFactory);
     }
@@ -70,19 +71,19 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound compound) {
+    public NbtCompound writeNbt(NbtCompound compound, WrapperLookup lookup) {
         NbtCompound destructions = new NbtCompound();
         this.chunks.forEach((id, chunk) -> {
-            destructions.put(id.toString(), chunk.toNBT());
+            destructions.put(id.toString(), chunk.toNBT(lookup));
         });
         compound.put("chunks", destructions);
         return compound;
     }
 
-    public void readNbt(NbtCompound compound) {
+    public void readNbt(NbtCompound compound, WrapperLookup lookup) {
         NbtCompound d = compound.getCompound("chunks");
         d.getKeys().forEach(id -> {
-            chunks.computeIfAbsent(Long.valueOf(id), Chunk::new).fromNBT(d.getCompound(id));
+            chunks.computeIfAbsent(Long.valueOf(id), Chunk::new).fromNBT(d.getCompound(id), lookup);
         });
     }
 
@@ -159,7 +160,7 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
                 return;
             }
 
-            ThreadedAnvilChunkStorage storage = world.getChunkManager().threadedAnvilChunkStorage;
+            ServerChunkLoadingManager storage = world.getChunkManager().chunkLoadingManager;
 
             List<ServerPlayerEntity> players = storage.getPlayersWatchingChunk(new ChunkPos(pos), false);
 
@@ -169,20 +170,20 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
         }
 
         @Override
-        public void toNBT(NbtCompound compound) {
+        public void toNBT(NbtCompound compound, WrapperLookup lookup) {
             NbtCompound states = new NbtCompound();
             this.states.forEach((id, state) -> {
-                states.put(id.toString(), state.toNBT());
+                states.put(id.toString(), state.toNBT(lookup));
             });
             compound.put("states", states);
         }
 
         @Override
-        public void fromNBT(NbtCompound compound) {
+        public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
             NbtCompound d = compound.getCompound("states");
             chunks.clear();
             d.getKeys().forEach(id -> {
-                states.computeIfAbsent(Long.valueOf(id), i -> factory.get()).fromNBT(d.getCompound(id));
+                states.computeIfAbsent(Long.valueOf(id), i -> factory.get()).fromNBT(d.getCompound(id), lookup);
             });
         }
     }

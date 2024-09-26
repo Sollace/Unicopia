@@ -18,12 +18,12 @@ import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
 import com.terraformersmc.terraform.boat.api.item.TerraformBoatItemHelper;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.component.type.FoodComponents;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.sound.SoundEvent;
@@ -92,7 +92,7 @@ public interface UItems {
      */
     Item HORSE_SHOE_FRIES = register("horse_shoe_fries", new Item(new Item.Settings().maxCount(32).food(UFoodComponents.HAY_FRIES)), ItemGroups.FOOD_AND_DRINK);
 
-    Item WHEAT_WORMS = register("wheat_worms", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.WORMS)), ItemGroups.NATURAL);
+    Item WHEAT_WORMS = register("wheat_worms", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.WORMS)), ItemGroups.NATURAL); //ItemTags.WOLF_FOOD
     Item BAITED_FISHING_ROD = register("baited_fishing_rod", new BaitedFishingRodItem(new Item.Settings().maxDamage(64)), ItemGroups.TOOLS);
     Item MUFFIN = register("muffin", new MuffinItem(new Item.Settings().maxCount(32).food(FoodComponents.BREAD), 0), ItemGroups.FOOD_AND_DRINK);
     Item PINECONE = register("pinecone", new ForageableItem(new Item.Settings().food(UFoodComponents.PINECONE).maxCount(16), () -> Blocks.SPRUCE_LEAVES), ItemGroups.FOOD_AND_DRINK);
@@ -234,7 +234,7 @@ public interface UItems {
     Item ROTTEN_COD = register("rotten_cod", new Item(new Item.Settings().food(FoodComponents.ROTTEN_FLESH)), ItemGroups.FOOD_AND_DRINK);
     Item ROTTEN_SALMON = register("rotten_salmon", new Item(new Item.Settings().food(FoodComponents.ROTTEN_FLESH)), ItemGroups.FOOD_AND_DRINK);
     Item ROTTEN_TROPICAL_FISH = register("rotten_tropical_fish", new Item(new Item.Settings().food(FoodComponents.ROTTEN_FLESH)), ItemGroups.FOOD_AND_DRINK);
-    Item ROTTEN_PUFFERFISH = register("rotten_pufferfish", new Item(new Item.Settings().food(UFoodComponents.ROTTEN_PUFFERFISH)), ItemGroups.FOOD_AND_DRINK);
+    Item ROTTEN_PUFFERFISH = register("rotten_pufferfish", new Item(new Item.Settings().food(UFoodComponents.ROTTEN_PUFFERFISH)), ItemGroups.FOOD_AND_DRINK); //ItemTags.WOLF_FOOD
 
     Item COOKED_TROPICAL_FISH = register("cooked_tropical_fish", new Item(new Item.Settings().food(FoodComponents.COOKED_COD)), ItemGroups.FOOD_AND_DRINK);
     Item COOKED_PUFFERFISH = register("cooked_pufferfish", new Item(new Item.Settings().food(UFoodComponents.COOKED_PUFFERFISH)), ItemGroups.FOOD_AND_DRINK);

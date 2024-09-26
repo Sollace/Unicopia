@@ -22,13 +22,13 @@ public record MsgRequestSpeciesChange (
     ) implements HandledPacket<ServerPlayerEntity> {
 
     MsgRequestSpeciesChange(PacketByteBuf buffer) {
-        this(buffer.readBoolean(), buffer.readRegistryValue(Race.REGISTRY));
+        this(buffer.readBoolean(), Race.REGISTRY.get(buffer.readRegistryKey(Race.REGISTRY_KEY)));
     }
 
     @Override
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeBoolean(force);
-        buffer.writeRegistryValue(Race.REGISTRY, newRace);
+        buffer.writeRegistryKey(Race.REGISTRY.getKey(newRace).get());
     }
 
     @Override

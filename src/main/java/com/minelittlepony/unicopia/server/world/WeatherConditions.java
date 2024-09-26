@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.util.Tickable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.Identifier;
@@ -123,7 +124,7 @@ public class WeatherConditions extends PersistentState implements Tickable {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound compound) {
+    public NbtCompound writeNbt(NbtCompound compound, WrapperLookup lookup) {
         compound.putFloat("windYaw", windYaw);
         compound.putFloat("prevWindYaw", prevWindYaw);
         compound.putBoolean("prevDayState", prevDayState);

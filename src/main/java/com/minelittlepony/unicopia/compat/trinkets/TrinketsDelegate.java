@@ -23,10 +23,10 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 
 public interface TrinketsDelegate {
-    Identifier MAIN_GLOVE = new Identifier("hand:glove");
-    Identifier SECONDARY_GLOVE = new Identifier("offhand:glove");
-    Identifier NECKLACE = new Identifier("chest:necklace");
-    Identifier FACE = new Identifier("head:face");
+    Identifier MAIN_GLOVE = Identifier.of("hand:glove");
+    Identifier SECONDARY_GLOVE = Identifier.of("offhand:glove");
+    Identifier NECKLACE = Identifier.of("chest:necklace");
+    Identifier FACE = Identifier.of("head:face");
 
     Set<Identifier> ALL = new TreeSet<>(List.of(MAIN_GLOVE, SECONDARY_GLOVE, NECKLACE, FACE));
 
@@ -48,7 +48,7 @@ public interface TrinketsDelegate {
     }
 
     default boolean equipStack(LivingEntity entity, Identifier slot, ItemStack stack) {
-        EquipmentSlot eq = MobEntity.getPreferredEquipmentSlot(stack);
+        EquipmentSlot eq = entity.getPreferredEquipmentSlot(stack);
         if (!entity.getEquippedStack(eq).isEmpty()) {
             return false;
         }
@@ -126,11 +126,11 @@ public interface TrinketsDelegate {
         }
     }
 
-    record EquippedStack(ItemStack stack, Runnable sendUpdate, Consumer<LivingEntity> breakStatusSender) {
+    record EquippedStack(ItemStack stack, Runnable sendUpdate, Consumer<Item> breakStatusSender) {
         public static final EquippedStack EMPTY = new EquippedStack(ItemStack.EMPTY, () -> {}, l -> {});
 
         EquippedStack(LivingEntity entity, EquipmentSlot slot) {
-            this(entity.getEquippedStack(slot), () -> {}, l -> l.sendEquipmentBreakStatus(slot));
+            this(entity.getEquippedStack(slot), () -> {}, item -> entity.sendEquipmentBreakStatus(item, slot));
         }
     }
 }

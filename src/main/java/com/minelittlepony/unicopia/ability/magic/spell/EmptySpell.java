@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Util;
 
 public final class EmptySpell implements Spell {
@@ -16,10 +17,10 @@ public final class EmptySpell implements Spell {
     private EmptySpell() {}
 
     @Override
-    public void toNBT(NbtCompound compound) { }
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) { }
 
     @Override
-    public void fromNBT(NbtCompound compound) { }
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) { }
 
     @Override
     public CustomisedSpellType<?> getTypeAndTraits() {

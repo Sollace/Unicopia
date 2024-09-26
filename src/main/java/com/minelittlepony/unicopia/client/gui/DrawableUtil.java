@@ -60,13 +60,12 @@ public interface DrawableUtil {
         float g = (color >> 16 & 255) / 255F;
         float b = (color >> 8 & 255) / 255F;
         float k = (color & 255) / 255F;
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-        bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
-        bufferBuilder.vertex(matrix, x1, y1, 0).color(r, g, b, k).next();
-        bufferBuilder.vertex(matrix, x2, y2, 0).color(r, g, b, k).next();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        bufferBuilder.vertex(matrix, x1, y1, 0).color(r, g, b, k);
+        bufferBuilder.vertex(matrix, x2, y2, 0).color(r, g, b, k);
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
         RenderSystem.disableBlend();
     }
@@ -113,8 +112,7 @@ public interface DrawableUtil {
 
         Matrix4f model = matrices.peek().getPositionMatrix();
 
-        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
         for (double angle = -startAngle; angle >= -maxAngle; angle -= INCREMENT) {
             // center
@@ -133,6 +131,6 @@ public interface DrawableUtil {
     private static void cylendricalVertex(BufferBuilder bufferBuilder, Matrix4f model, double radius, double angle, float r, float g, float b, float k) {
         bufferBuilder.vertex(model,
                 (float)(radius * MathHelper.sin((float)angle)),
-                (float)(radius * MathHelper.cos((float)angle)), 0).color(r, g, b, k).normal(2, 2, 2).next();
+                (float)(radius * MathHelper.cos((float)angle)), 0).color(r, g, b, k).normal(2, 2, 2);
     }
 }

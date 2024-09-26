@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.ability;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -14,6 +13,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.Trace;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
@@ -21,6 +21,7 @@ import net.minecraft.block.PowderSnowBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
@@ -131,8 +132,8 @@ public class UnicornTeleportAbility implements Ability<Pos> {
     }
 
     @Override
-    public Hit.Serializer<Pos> getSerializer() {
-        return Pos.SERIALIZER;
+    public PacketCodec<? extends ByteBuf, Pos> getSerializer() {
+        return Pos.CODEC;
     }
 
     @Override
@@ -177,10 +178,11 @@ public class UnicornTeleportAbility implements Ability<Pos> {
                 yPos,
                 destination.z() + offset.getZ()
         );
-        participant.teleport(dest.x, dest.y, dest.z);
+        // TODO: teleport -> requestTeleport
+        participant.requestTeleport(dest.x, dest.y, dest.z);
         if (participant.getWorld().getBlockCollisions(participant, participant.getBoundingBox()).iterator().hasNext()) {
             dest = destination.vec();
-            participant.teleport(dest.x, participant.getY(), dest.z);
+            participant.requestTeleport(dest.x, participant.getY(), dest.z);
         }
         teleporter.subtractEnergyCost(distance);
 

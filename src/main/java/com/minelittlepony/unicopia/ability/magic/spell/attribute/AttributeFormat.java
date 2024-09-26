@@ -5,7 +5,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -15,7 +15,7 @@ public enum AttributeFormat {
     REGULAR {
         @Override
         public String formatValue(float value) {
-            return ItemStack.MODIFIER_FORMAT.format(value);
+            return AttributeModifiersComponent.DECIMAL_FORMAT.format(value);
         }
     },
     TIME {
@@ -27,7 +27,7 @@ public enum AttributeFormat {
     PERCENTAGE {
         @Override
         public String formatValue(float value) {
-            return ItemStack.MODIFIER_FORMAT.format((int)(Math.abs(value) * 100)) + "%";
+            return AttributeModifiersComponent.DECIMAL_FORMAT.format((int)(Math.abs(value) * 100)) + "%";
         }
     };
 
@@ -61,7 +61,7 @@ public enum AttributeFormat {
                 ? trait.getName()
                 : Text.translatable("spell_attribute.unicopia.added_trait.unknown").formatted(Formatting.YELLOW)
                 : trait.getName().copy().formatted(Formatting.OBFUSCATED, Formatting.YELLOW);
-        Text count = Text.literal(ItemStack.MODIFIER_FORMAT.format(value));
+        Text count = Text.literal(AttributeModifiersComponent.DECIMAL_FORMAT.format(value));
         return Text.translatable("spell_attribute.unicopia.added_trait." + ((value > 0) ? "plus" : "take"), name, count).formatted(Formatting.DARK_AQUA);
     }
 

@@ -11,14 +11,7 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 
 public interface RenderLayerUtil {
-    Identifier SHADOW_TEXTURE = new Identifier("textures/misc/shadow.png");
-
-    static Optional<Identifier> getTexture(RenderLayer layer) {
-        if (layer instanceof RenderLayer.MultiPhase multiphase) {
-            return multiphase.getPhases().texture.getId();
-        }
-        return Optional.empty();
-    }
+    Identifier SHADOW_TEXTURE = Identifier.ofVanilla("textures/misc/shadow.png");
 
     static void createUnionBuffer(Consumer<VertexConsumerProvider> action, VertexConsumerProvider vertices, Function<Identifier, RenderLayer> overlayFunction) {
         Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEffectVertexConsumers();

@@ -5,22 +5,24 @@ import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.*;
 import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.world.World;
 
 /**
  * A recipe for creating a new spell from input traits and items.
  */
 public record SpellDuplicatingRecipe (IngredientWithSpell material) implements SpellbookRecipe {
-    public static final Codec<SpellDuplicatingRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<SpellDuplicatingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             IngredientWithSpell.CODEC.fieldOf("material").forGetter(recipe -> recipe.material)
     ).apply(instance, SpellDuplicatingRecipe::new));
+    public static final PacketCodec<RegistryByteBuf, SpellDuplicatingRecipe> PACKET_CODEC = IngredientWithSpell.PACKET_CODEC.xmap(SpellDuplicatingRecipe::new, SpellDuplicatingRecipe::material);
 
     @Override
     public void buildCraftingTree(CraftingTreeBuilder builder) {
@@ -50,7 +52,7 @@ public record SpellDuplicatingRecipe (IngredientWithSpell material) implements S
     }
 
     @Override
-    public ItemStack craft(SpellbookInventory inventory, DynamicRegistryManager registries) {
+    public ItemStack craft(SpellbookInventory inventory, WrapperLookup registries) {
         return InventoryUtil.stream(inventory)
             .filter(i -> i.isOf(UItems.GEMSTONE))
             .filter(EnchantableItem::isEnchanted)
@@ -68,7 +70,7 @@ public record SpellDuplicatingRecipe (IngredientWithSpell material) implements S
     }
 
     @Override
-    public ItemStack getResult(DynamicRegistryManager registries) {
+    public ItemStack getResult(WrapperLookup registries) {
         ItemStack stack = UItems.GEMSTONE.getDefaultStack();
         stack.setCount(2);
         return stack;
@@ -77,22 +79,5 @@ public record SpellDuplicatingRecipe (IngredientWithSpell material) implements S
     @Override
     public RecipeSerializer<?> getSerializer() {
         return URecipes.SPELL_DUPLICATING;
-    }
-
-    public static class Serializer implements RecipeSerializer<SpellDuplicatingRecipe> {
-        @Override
-        public Codec<SpellDuplicatingRecipe> codec() {
-            return CODEC;
-        }
-
-        @Override
-        public SpellDuplicatingRecipe read(PacketByteBuf buf) {
-            return new SpellDuplicatingRecipe(IngredientWithSpell.fromPacket(buf));
-        }
-
-        @Override
-        public void write(PacketByteBuf buf, SpellDuplicatingRecipe recipe) {
-            recipe.material.write(buf);
-        }
     }
 }

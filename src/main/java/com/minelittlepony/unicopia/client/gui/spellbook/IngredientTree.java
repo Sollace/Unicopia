@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import com.minelittlepony.client.util.render.RenderLayerUtil;
 import com.minelittlepony.common.client.gui.*;
 import com.minelittlepony.common.client.gui.element.Button;
+import com.minelittlepony.common.util.render.RenderLayerUtil;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
@@ -15,7 +15,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.*;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.container.SpellbookState;
@@ -23,7 +22,9 @@ import com.minelittlepony.unicopia.container.SpellbookState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 
 public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
     private final List<IngredientTree.Entry> entries = new ArrayList<>();
@@ -252,7 +253,7 @@ public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
                 if (stack.isEmpty()) {
                     return List.of();
                 }
-                return stack.getTooltip(MinecraftClient.getInstance().player, TooltipContext.Default.BASIC);
+                return stack.getTooltip(Item.TooltipContext.create(MinecraftClient.getInstance().world), MinecraftClient.getInstance().player, TooltipType.BASIC);
             };
         }
 

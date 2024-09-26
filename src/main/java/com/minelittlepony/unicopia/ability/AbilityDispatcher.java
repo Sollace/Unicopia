@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Identifier;
 
 public class AbilityDispatcher implements Tickable, NbtSerialisable {
@@ -83,20 +84,20 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         if (compound.contains("stats")) {
             stats.clear();
             NbtCompound li = compound.getCompound("stats");
             li.getKeys().forEach(key -> {
-                getStat(AbilitySlot.valueOf(key)).fromNBT(li.getCompound(key));
+                getStat(AbilitySlot.valueOf(key)).fromNBT(li.getCompound(key), lookup);
             });
         }
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         NbtCompound li = new NbtCompound();
-        stats.forEach((key, value) -> li.put(key.name(), value.toNBT()));
+        stats.forEach((key, value) -> li.put(key.name(), value.toNBT(lookup)));
         compound.put("stats", li);
     }
 
@@ -283,7 +284,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         }
 
         @Override
-        public void toNBT(NbtCompound compound) {
+        public void toNBT(NbtCompound compound, WrapperLookup lookup) {
             compound.putInt("warmup", warmup);
             compound.putInt("cooldown", cooldown);
             compound.putInt("maxWarmup", maxWarmup);
@@ -295,13 +296,13 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         }
 
         @Override
-        public void fromNBT(NbtCompound compound) {
+        public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
             warmup = compound.getInt("warmup");
             cooldown = compound.getInt("cooldown");
             maxWarmup = compound.getInt("maxWarmup");
             maxCooldown = compound.getInt("maxCooldown");
             triggered = compound.getBoolean("triggered");
-            activeAbility = Abilities.REGISTRY.getOrEmpty(new Identifier(compound.getString("activeAbility")));
+            activeAbility = Abilities.REGISTRY.getOrEmpty(Identifier.of(compound.getString("activeAbility")));
         }
     }
 }

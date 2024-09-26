@@ -16,7 +16,7 @@ public interface UConventionalTags {
         TagKey<Block> CORALS = block("corals");
 
         private static TagKey<Block> block(String name) {
-            return TagKey.of(RegistryKeys.BLOCK, new Identifier("c", name));
+            return TagKey.of(RegistryKeys.BLOCK, Identifier.of("c", name));
         }
     }
 
@@ -65,7 +65,7 @@ public interface UConventionalTags {
         TagKey<Item> TOOL_KNIVES = item("tools/knives");
 
         private static TagKey<Item> item(String name) {
-            return TagKey.of(RegistryKeys.ITEM, new Identifier("c", name));
+            return TagKey.of(RegistryKeys.ITEM, Identifier.of("c", name));
         }
     }
 }

@@ -17,6 +17,9 @@ import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.world.event.GameEvent;
 
 public class UnicopiaTrinket implements Trinket {
 
@@ -32,8 +35,13 @@ public class UnicopiaTrinket implements Trinket {
             return;
         }
 
-        if (!(stack.getItem() instanceof ItemTracker.Trackable) && stack.getItem() instanceof Equipment q) {
-            entity.playSound(q.getEquipSound(), 1, 1);
+        if (!(stack.getItem() instanceof ItemTracker.Trackable)) {
+            Equipment q = Equipment.fromStack(stack);
+            RegistryEntry<SoundEvent> soundEvent = q == null ? null : q.getEquipSound();
+            if (soundEvent != null) {
+                entity.emitGameEvent(GameEvent.EQUIP);
+                entity.playSound(soundEvent.value(), 1, 1);
+            }
         }
     }
 
@@ -43,8 +51,11 @@ public class UnicopiaTrinket implements Trinket {
             Living<?> l = Living.living(entity);
             t.onUnequipped(l, l.getArmour().forceRemove(t));
         }
-        if (stack.getItem() instanceof Equipment q) {
-            entity.playSound(q.getEquipSound(), 1, 1);
+        Equipment q = Equipment.fromStack(stack);
+        RegistryEntry<SoundEvent> soundEvent = q == null ? null : q.getEquipSound();
+        if (soundEvent != null) {
+            entity.emitGameEvent(GameEvent.EQUIP);
+            entity.playSound(soundEvent.value(), 1, 1);
         }
     }
 

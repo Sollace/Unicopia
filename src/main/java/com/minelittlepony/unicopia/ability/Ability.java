@@ -6,6 +6,8 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -106,7 +108,7 @@ public interface Ability<T extends Hit> {
     /**
      * Gets the serializer to use for reading data over the network.
      */
-    Hit.Serializer<T> getSerializer();
+    PacketCodec<? extends ByteBuf, T> getSerializer();
 
     /**
      * Called on the client to get any data required to activate the ability.

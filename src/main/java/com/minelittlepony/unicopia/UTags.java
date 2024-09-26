@@ -137,7 +137,7 @@ public interface UTags {
         TagKey<DimensionType> HAS_NO_ATMOSPHERE = dimension("has_no_atmosphere");
 
         private static TagKey<DimensionType> dimension(String name) {
-            return TagKey.of(RegistryKeys.DIMENSION_TYPE, new Identifier("c", name));
+            return TagKey.of(RegistryKeys.DIMENSION_TYPE, Identifier.of("c", name));
         }
     }
 

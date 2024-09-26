@@ -22,7 +22,7 @@ public abstract class StateChange {
     static {
         SERIALIZERS.put(Unicopia.id("set_state"), json -> {
             final String sstate = JsonHelper.getString(json, "state");
-            final Identifier id = new Identifier(sstate);
+            final Identifier id = Identifier.of(sstate);
             final float chance = JsonHelper.getFloat(json, "chance", -1);
 
             return new StateChange() {
@@ -96,7 +96,7 @@ public abstract class StateChange {
 
     public static StateChange fromJson(JsonObject json) {
         String action = JsonHelper.getString(json, "action");
-        return Optional.of(SERIALIZERS.get(new Identifier(action))).map(serializer -> {
+        return Optional.of(SERIALIZERS.get(Identifier.of(action))).map(serializer -> {
             return serializer.apply(json);
         }).orElseThrow(() -> new IllegalArgumentException("Invalid action " + action));
     }

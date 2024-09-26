@@ -13,7 +13,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
 
 public class TrinketSlotBackSprites {
-    private static final Identifier BLANK_FACE = new Identifier("trinkets", "textures/gui/blank_back.png");
+    private static final Identifier BLANK_FACE = Identifier.of("trinkets", "textures/gui/blank_back.png");
 
     private static final Map<Identifier, Identifier> CACHE = new HashMap<>();
 

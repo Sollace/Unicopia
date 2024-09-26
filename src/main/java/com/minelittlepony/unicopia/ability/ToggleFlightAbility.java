@@ -10,6 +10,8 @@ import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
@@ -32,15 +34,14 @@ public class ToggleFlightAbility implements Ability<Hit> {
     }
 
     @Override
-    public Hit.Serializer<Hit> getSerializer() {
-        return Hit.SERIALIZER;
+    public PacketCodec<? extends ByteBuf, Hit> getSerializer() {
+        return Hit.CODEC;
     }
 
     @Override
     public Identifier getIcon(Pony player) {
-        Identifier id = Abilities.REGISTRY.getId(this);
         Race race = player.getObservedSpecies();
-        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath()
+        return Abilities.REGISTRY.getId(this).withPath(p -> "textures/gui/ability/" + p
             + (player.getPhysics().isFlying() ? "_land" : "_takeoff")
             + "_" + (race.isHuman() ? Race.EARTH : race).getId().getPath()
             + ".png");

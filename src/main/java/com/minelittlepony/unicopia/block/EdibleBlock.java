@@ -17,6 +17,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HayBlock;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -27,6 +28,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -94,10 +96,18 @@ public class EdibleBlock extends HayBlock {
             for (EdibleBlock edibleBlock : REGISTRY) {
                 Block match = edibleBlock.getBaseBlock();
                 if (match != Blocks.AIR && state.isOf(match)) {
-                    ActionResult result = StateUtil.copyState(state, edibleBlock.getDefaultState()).onUse(world, player, hand, hitResult);
+                    BlockState copiedState = StateUtil.copyState(state, edibleBlock.getDefaultState());
+                    ItemActionResult result = copiedState.onUseWithItem(player.getStackInHand(hand), world, player, hand, hitResult);
 
                     if (result.isAccepted()) {
-                        return result;
+                        return result.toActionResult();
+                    }
+
+                    if (result == ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION && hand == Hand.MAIN_HAND) {
+                        ActionResult actionResult = copiedState.onUse(world, player, hitResult);
+                        if (actionResult.isAccepted()) {
+                            return actionResult;
+                        }
                     }
                 }
             }
@@ -144,12 +154,10 @@ public class EdibleBlock extends HayBlock {
 
     @Override
     @Deprecated
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (player.isSpectator()) {
-            return ActionResult.FAIL;
+            return ItemActionResult.FAIL;
         }
-
-        ItemStack stack = player.getStackInHand(hand);
 
         if (!stack.isEmpty() && stack.isOf(Registries.ITEM.get(material))) {
             BooleanProperty segment = getHitCorner(hit, 1);
@@ -167,23 +175,23 @@ public class EdibleBlock extends HayBlock {
                 }
                 world.playSound(player, pos, getSoundGroup(state).getPlaceSound(), SoundCategory.BLOCKS);
 
-                return ActionResult.SUCCESS;
+                return ItemActionResult.SUCCESS;
             }
 
-            return ActionResult.FAIL;
+            return ItemActionResult.FAIL;
         }
 
         BooleanProperty corner = getHitCorner(hit, -1);
 
         if (!state.get(corner)) {
-            return ActionResult.PASS;
+            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
         boolean usingHoe = stack.isIn(ItemTags.HOES);
 
         if (!usingHoe) {
             if (!(player.isCreative() || player.getHungerManager().isNotFull()) || !player.isSneaking()) {
-                return ActionResult.FAIL;
+                return ItemActionResult.FAIL;
             }
         }
 
@@ -197,7 +205,7 @@ public class EdibleBlock extends HayBlock {
         }
 
         if (usingHoe) {
-            stack.damage(1, player, p -> p.sendToolBreakStatus(hand));
+            stack.damage(1, player, LivingEntity.getSlotForHand(hand));
             dropStack(world, pos, Registries.ITEM.get(material).getDefaultStack());
             player.playSound(USounds.Vanilla.ITEM_HOE_TILL, 1, 1);
         } else {
@@ -207,7 +215,7 @@ public class EdibleBlock extends HayBlock {
             }
             player.getHungerManager().add(2, 1.3F);
         }
-        return ActionResult.SUCCESS;
+        return ItemActionResult.SUCCESS;
     }
 
     static BooleanProperty getHitCorner(BlockHitResult hit, int direction) {

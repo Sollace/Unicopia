@@ -16,8 +16,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.util.ActionResult;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
@@ -79,11 +80,11 @@ public class CloudDoorBlock extends DoorBlock implements CloudLike {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!baseBlock.canInteract(baseState, world, pos, EquineContext.of(player))) {
-            return ActionResult.PASS;
+            return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
-        return super.onUse(state, world, pos, player, hand, hit);
+        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
     }
 
     @Deprecated
@@ -100,7 +101,7 @@ public class CloudDoorBlock extends DoorBlock implements CloudLike {
 
     @Override
     @Deprecated
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
-        return !InteractionManager.getInstance().getPathingEquineContext().collidesWithClouds() || super.canPathfindThrough(state, world, pos, type);
+    public boolean canPathfindThrough(BlockState state, NavigationType type) {
+        return !InteractionManager.getInstance().getPathingEquineContext().collidesWithClouds() || super.canPathfindThrough(state, type);
     }
 }

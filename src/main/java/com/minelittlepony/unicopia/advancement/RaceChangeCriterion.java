@@ -12,7 +12,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.dynamic.Codecs;
 
 public class RaceChangeCriterion extends AbstractCriterion<RaceChangeCriterion.Conditions> {
     @Override
@@ -31,7 +30,7 @@ public class RaceChangeCriterion extends AbstractCriterion<RaceChangeCriterion.C
             Race race
     ) implements AbstractCriterion.Conditions {
         public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(Conditions::player),
+                EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(Conditions::player),
                 Race.REGISTRY.getCodec().fieldOf("race").forGetter(Conditions::race)
             ).apply(instance, Conditions::new));
 

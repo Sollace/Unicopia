@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.ColorHelper.Argb;
 
 public interface ColorHelper {
     static int getRainbowColor(Entity entity, int speed, float tickDelta) {
@@ -14,12 +15,9 @@ public interface ColorHelper {
         int p = n % o;
         int q = (n + 1) % o;
         float r = (entity.age % speed + tickDelta) / 25.0f;
-        float[] fs = SheepEntity.getRgbColor(DyeColor.byId(p));
-        float[] gs = SheepEntity.getRgbColor(DyeColor.byId(q));
-        float s = fs[0] * (1.0f - r) + gs[0] * r;
-        float t = fs[1] * (1.0f - r) + gs[1] * r;
-        float u = fs[2] * (1.0f - r) + gs[2] * r;
-        return Color.argbToHex(1, s, t, u);
+        int fs = SheepEntity.getRgbColor(DyeColor.byId(p));
+        int gs = SheepEntity.getRgbColor(DyeColor.byId(q));
+        return Argb.lerp(r, fs, gs);
     }
 
     static float[] changeSaturation(float red, float green, float blue, float intensity) {

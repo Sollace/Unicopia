@@ -33,7 +33,7 @@ public record MsgCasterLookRequest (UUID spellId) implements Packet {
         ) implements HandledPacket<ServerPlayerEntity> {
 
         Reply(PacketByteBuf buffer) {
-            this(buffer.readUuid(), Rot.SERIALIZER.read().apply(buffer));
+            this(buffer.readUuid(), Rot.CODEC.decode(buffer));
         }
 
         public Reply(OrientedSpell spell, Caster<?> caster) {
@@ -43,7 +43,7 @@ public record MsgCasterLookRequest (UUID spellId) implements Packet {
         @Override
         public void toBuffer(PacketByteBuf buffer) {
             buffer.writeUuid(spellId);
-            Rot.SERIALIZER.write().accept(buffer, rotation);
+            Rot.CODEC.encode(buffer, rotation);
         }
 
         @Override

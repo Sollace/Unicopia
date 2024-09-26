@@ -17,8 +17,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.IntProperty;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -51,9 +51,8 @@ public interface Soakable {
         }
     }
 
-    static ActionResult tryCollectMoisture(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    static ItemActionResult tryCollectMoisture(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (state.getBlock() instanceof Soakable soakable) {
-            ItemStack stack = player.getStackInHand(hand);
             if (stack.getItem() == Items.GLASS_BOTTLE) {
                 if (!player.isCreative()) {
                     stack.split(1);
@@ -67,11 +66,11 @@ public interface Soakable {
                 world.emitGameEvent(player, GameEvent.FLUID_PICKUP, pos);
                 updateMoisture(soakable, state, world, pos, soakable.getMoisture(state) - 1);
 
-                return ActionResult.SUCCESS;
+                return ItemActionResult.SUCCESS;
             }
         }
 
-        return ActionResult.PASS;
+        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     static void tickMoisture(BlockState state, ServerWorld world, BlockPos pos, Random random) {

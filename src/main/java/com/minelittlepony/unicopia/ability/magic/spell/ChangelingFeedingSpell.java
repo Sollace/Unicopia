@@ -23,6 +23,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
 
 public class ChangelingFeedingSpell extends AbstractSpell {
@@ -141,22 +142,22 @@ public class ChangelingFeedingSpell extends AbstractSpell {
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
         compound.putFloat("healthToDrain", healthToDrain);
         compound.putInt("foodToDrain", foodToDrain);
         compound.putFloat("damageThisTick", damageThisTick);
-        compound.put("targets", EntityReference.<LivingEntity>getSerializer().writeAll(targets));
+        compound.put("targets", EntityReference.<LivingEntity>getSerializer().writeAll(targets, lookup));
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         healthToDrain = compound.getFloat("healthToDrain");
         foodToDrain = compound.getInt("foodToDrain");
         damageThisTick = compound.getFloat("damageThisTick");
         targets = compound.contains("targets", NbtElement.LIST_TYPE)
-                ? EntityReference.<LivingEntity>getSerializer().readAll(compound.getList("targets", NbtElement.COMPOUND_TYPE)).toList()
+                ? EntityReference.<LivingEntity>getSerializer().readAll(compound.getList("targets", NbtElement.COMPOUND_TYPE), lookup).toList()
                 : List.of();
     }
 }

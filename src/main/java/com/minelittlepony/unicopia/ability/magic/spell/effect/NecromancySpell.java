@@ -35,6 +35,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -217,24 +218,24 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
         compound.putInt("spawnCountdown", spawnCountdown);
         if (summonedEntities.size() > 0) {
             NbtList list = new NbtList();
-            summonedEntities.forEach(ref -> list.add(ref.toNBT()));
+            summonedEntities.forEach(ref -> list.add(ref.toNBT(lookup)));
             compound.put("summonedEntities", list);
         }
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         spawnCountdown = compound.getInt("spawnCountdown");
         summonedEntities.clear();
         if (compound.contains("summonedEntities")) {
             compound.getList("summonedEntities", NbtElement.COMPOUND_TYPE).forEach(tag -> {
-                summonedEntities.add(new EntityReference<>((NbtCompound)tag));
+                summonedEntities.add(new EntityReference<>((NbtCompound)tag, lookup));
             });
         }
     }

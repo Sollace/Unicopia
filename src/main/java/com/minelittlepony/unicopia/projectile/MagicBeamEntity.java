@@ -66,13 +66,13 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        dataTracker.startTracking(HYDROPHOBIC, false);
-        dataTracker.startTracking(LEVEL, 0);
-        dataTracker.startTracking(CORRUPTION, 0);
-        dataTracker.startTracking(MAX_LEVEL, 1);
-        dataTracker.startTracking(MAX_CORRUPTION, 1);
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(HYDROPHOBIC, false)
+            .add(LEVEL, 0)
+            .add(CORRUPTION, 0)
+            .add(MAX_LEVEL, 1)
+            .add(MAX_CORRUPTION, 1);
     }
 
     @Override
@@ -180,7 +180,7 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
         super.readCustomDataFromNbt(compound);
         getDataTracker().set(HYDROPHOBIC, compound.getBoolean("hydrophobic"));
         physics.fromNBT(compound);
-        spells.getSlots().fromNBT(compound);
+        spells.getSlots().fromNBT(compound, getWorld().getRegistryManager());
         var level = Levelled.fromNbt(compound.getCompound("level"));
         dataTracker.set(MAX_LEVEL, level.getMax());
         dataTracker.set(LEVEL, level.get());
@@ -196,6 +196,6 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
         compound.put("corruption", corruption.toNbt());
         compound.putBoolean("hydrophobic", getHydrophobic());
         physics.toNBT(compound);
-        spells.getSlots().toNBT(compound);
+        spells.getSlots().toNBT(compound, getWorld().getRegistryManager());
     }
 }

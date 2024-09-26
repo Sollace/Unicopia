@@ -19,6 +19,7 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -124,14 +125,14 @@ public class FeatherFallSpell extends AbstractSpell implements TimedSpell {
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        timer.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        timer.toNBT(compound, lookup);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        timer.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
+        timer.fromNBT(compound, lookup);
     }
 }

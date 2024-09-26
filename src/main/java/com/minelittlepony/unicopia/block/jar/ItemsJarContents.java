@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import net.minecraft.util.TypedActionResult;
@@ -37,8 +38,8 @@ public record ItemsJarContents (
         this(tile, new ArrayList<>(MAX_SIZE));
     }
 
-    public ItemsJarContents(TileData tile, NbtCompound compound) {
-        this(tile, NbtSerialisable.ITEM_STACK.readAll(compound.getList("items", NbtElement.COMPOUND_TYPE))
+    public ItemsJarContents(TileData tile, NbtCompound compound, WrapperLookup lookup) {
+        this(tile, NbtSerialisable.ITEM_STACK.readAll(compound.getList("items", NbtElement.COMPOUND_TYPE), lookup)
                 .limit(MAX_SIZE)
                 .collect(Collectors.toList()));
     }
@@ -197,8 +198,8 @@ public record ItemsJarContents (
     }
 
     @Override
-    public NbtCompound toNBT(NbtCompound compound) {
-        compound.put("items", NbtSerialisable.ITEM_STACK.writeAll(stacks));
+    public NbtCompound toNBT(NbtCompound compound, WrapperLookup lookup) {
+        compound.put("items", NbtSerialisable.ITEM_STACK.writeAll(stacks, lookup));
         return compound;
     }
 

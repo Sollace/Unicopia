@@ -24,7 +24,7 @@ public interface Debug {
     AtomicReference<World> LAST_TESTED_WORLD = new AtomicReference<>(null);
 
     static void runTests(World world) {
-        if (!CHECK_GAME_VALUES || !world.getDimensionKey().getValue().equals(DimensionTypes.OVERWORLD_ID) || (LAST_TESTED_WORLD.getAndSet(world) == world)) {
+        if (!CHECK_GAME_VALUES || !world.getDimensionEntry().matchesKey(DimensionTypes.OVERWORLD) || (LAST_TESTED_WORLD.getAndSet(world) == world)) {
             return;
         }
 

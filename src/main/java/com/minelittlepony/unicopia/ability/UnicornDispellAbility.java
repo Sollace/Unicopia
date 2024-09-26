@@ -14,6 +14,8 @@ import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -39,13 +41,12 @@ public class UnicornDispellAbility implements Ability<Pos> {
 
     @Override
     public Identifier getIcon(Pony player) {
-        Identifier id = Abilities.REGISTRY.getId(this);
-        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (player.getSpecies() == Race.CHANGELING ? "_changeling" : "") + ".png");
+        return Abilities.REGISTRY.getId(this).withPath(p -> "textures/gui/ability/" + p + (player.getSpecies() == Race.CHANGELING ? "_changeling" : "") + ".png");
     }
 
     @Override
-    public Pos.Serializer<Pos> getSerializer() {
-        return Pos.SERIALIZER;
+    public PacketCodec<? extends ByteBuf, Pos> getSerializer() {
+        return Pos.CODEC;
     }
 
     @Override

@@ -25,9 +25,11 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -52,11 +54,11 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (hand == Hand.OFF_HAND) {
-            return ActionResult.PASS;
+            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
-        return world.getBlockEntity(pos, UBlockEntities.ITEM_JAR).map(data -> data.interact(player, hand)).orElse(ActionResult.PASS);
+        return world.getBlockEntity(pos, UBlockEntities.ITEM_JAR).map(data -> data.interact(player, hand)).orElse(ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
     }
 
     @Deprecated
@@ -110,10 +112,10 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
             super(UBlockEntities.ITEM_JAR, pos, state);
         }
 
-        public ActionResult interact(PlayerEntity player, Hand hand) {
+        public ItemActionResult interact(PlayerEntity player, Hand hand) {
             TypedActionResult<JarContents> result = contents.interact(player, hand);
             contents = result.getValue();
-            return result.getResult();
+            return result.getResult().isAccepted() ? ItemActionResult.SUCCESS : result.getResult() == ActionResult.FAIL ? ItemActionResult.FAIL : ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
 
         public JarContents getContents() {
@@ -146,8 +148,8 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
         }
 
         @Override
-        public NbtCompound toInitialChunkDataNbt() {
-            return createNbt();
+        public NbtCompound toInitialChunkDataNbt(WrapperLookup lookup) {
+            return createNbt(lookup);
         }
 
         @Override
@@ -159,9 +161,9 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
         }
 
         @Override
-        public void readNbt(NbtCompound nbt) {
+        public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
             if (nbt.contains("items", NbtElement.COMPOUND_TYPE)) {
-                contents = new ItemsJarContents(this, nbt.getCompound("items"));
+                contents = new ItemsJarContents(this, nbt.getCompound("items"), lookup);
             } else if (nbt.contains("entity", NbtElement.COMPOUND_TYPE)) {
                 contents = new EntityJarContents(this, nbt.getCompound("entity"));
             } else if (nbt.contains("fluid", NbtElement.COMPOUND_TYPE)) {
@@ -172,14 +174,14 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
         }
 
         @Override
-        protected void writeNbt(NbtCompound nbt) {
+        protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
             var items = getItems();
             if (items != null) {
-                nbt.put("items", items.toNBT(new NbtCompound()));
+                nbt.put("items", items.toNBT(new NbtCompound(), lookup));
             } else if (getEntity() != null) {
-                nbt.put("entity", getEntity().toNBT(new NbtCompound()));
+                nbt.put("entity", getEntity().toNBT(new NbtCompound(), lookup));
             } else if (getFluid() != null) {
-                nbt.put("fluid", getFluid().toNBT(new NbtCompound()));
+                nbt.put("fluid", getFluid().toNBT(new NbtCompound(), lookup));
             } else if (getFakeFluid() != null) {
                 nbt.put("fakeFluid", getFakeFluid().toNBT(new NbtCompound()));
             }
@@ -191,7 +193,7 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
 
         void onDestroyed();
 
-        NbtCompound toNBT(NbtCompound compound);
+        NbtCompound toNBT(NbtCompound compound, WrapperLookup lookup);
 
         default void consumeAndSwap(PlayerEntity player, Hand hand, ItemStack output) {
             player.setStackInHand(hand, ItemUsage.exchangeStack(player.getStackInHand(hand), player, output.copy()));

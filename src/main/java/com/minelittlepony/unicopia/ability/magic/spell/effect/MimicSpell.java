@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class MimicSpell extends AbstractDisguiseSpell implements HomingSpell, TimedSpell {
 
@@ -40,14 +41,14 @@ public class MimicSpell extends AbstractDisguiseSpell implements HomingSpell, Ti
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        timer.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        timer.toNBT(compound, lookup);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        timer.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
+        timer.fromNBT(compound, lookup);
     }
 }

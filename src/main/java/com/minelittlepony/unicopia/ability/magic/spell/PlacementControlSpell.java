@@ -18,6 +18,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -120,9 +121,9 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        compound.put("spell", Spell.writeNbt(delegate));
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        compound.put("spell", Spell.writeNbt(delegate, lookup));
         position.get().ifPresent(pos -> compound.put("position", NbtSerialisable.writeVector(pos)));
         orientation.get().ifPresent(o -> compound.put("orientation", NbtSerialisable.writeVector(o)));
         dimension.get().ifPresent(d -> compound.putString("dimension", d.getValue().toString()));
@@ -132,9 +133,9 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        delegate = Spell.readNbt(compound.getCompound("spell"));
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
+        delegate = Spell.readNbt(compound.getCompound("spell"), lookup);
         placedEntityId.set(compound.containsUuid("placedEntityId") ? compound.getUuid("placedEntityId") : null);
         position.set(compound.contains("position") ? Optional.of(NbtSerialisable.readVector(compound.getList("position", NbtElement.DOUBLE_TYPE))) : Optional.empty());
         orientation.set(compound.contains("orientation") ? Optional.of(NbtSerialisable.readVector(compound.getList("orientation", NbtElement.DOUBLE_TYPE))) : Optional.empty());

@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.block.ItemJarBlock.FluidJarContents;
 import com.minelittlepony.unicopia.block.ItemJarBlock.JarContents;
 import com.minelittlepony.unicopia.block.ItemJarBlock.TileData;
 import com.minelittlepony.unicopia.util.FluidHelper;
+import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -11,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 
@@ -21,7 +23,7 @@ public record FluidOnlyJarContents (
 ) implements FluidJarContents {
 
     public FluidOnlyJarContents(TileData tile, NbtCompound compound) {
-        this(tile, compound.getLong("amount"), FluidVariant.fromNbt(compound.getCompound("fluid")));
+        this(tile, compound.getLong("amount"), NbtSerialisable.decode(FluidVariant.CODEC, compound.getCompound("fluid")).orElse(FluidVariant.blank()));
     }
 
     @Override
@@ -47,8 +49,8 @@ public record FluidOnlyJarContents (
     }
 
     @Override
-    public NbtCompound toNBT(NbtCompound compound) {
-        compound.put("fluid", fluid.toNbt());
+    public NbtCompound toNBT(NbtCompound compound, WrapperLookup lookup) {
+        compound.put("fluid", NbtSerialisable.encode(FluidVariant.CODEC, fluid));
         compound.putLong("amount", amount);
         return compound;
     }

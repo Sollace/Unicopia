@@ -22,10 +22,10 @@ public final class PlayerDimensions {
         return getPredicate()
                 .flatMap(e -> e.getTargetEyeHeight(pony))
                 .filter(h -> h > 0)
-                .or(() -> physics.isFlyingSurvival ? FLYING_EYE_HEIGHT : physics.isGravityNegative() ? Optional.of(dimensions.height) : Optional.empty())
+                .or(() -> physics.isFlyingSurvival ? FLYING_EYE_HEIGHT : physics.isGravityNegative() ? Optional.of(dimensions.eyeHeight()) : Optional.empty())
                 .map(h -> {
                     if (physics.isGravityNegative()) {
-                        return dimensions.height - h + 0.1F;
+                        return dimensions.eyeHeight() - h + 0.1F;
                     }
                     return h;
                 });
@@ -35,7 +35,7 @@ public final class PlayerDimensions {
         return getPredicate()
                 .flatMap(e -> e.getTargetDimensions(pony))
                  .or(() -> physics.isFlyingSurvival ? FLYING_DIMENSIONS : Optional.empty())
-                .filter(d -> d.height > 0 && d.width > 0);
+                .filter(d -> d.height() > 0 && d.width() > 0);
     }
 
     Optional<Provider> getPredicate() {

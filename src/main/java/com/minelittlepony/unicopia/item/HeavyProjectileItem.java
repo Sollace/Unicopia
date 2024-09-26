@@ -7,12 +7,13 @@ import com.minelittlepony.unicopia.projectile.PhysicsBodyProjectileEntity;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.World;
 
 public class HeavyProjectileItem extends ProjectileItem {
-    public HeavyProjectileItem(Settings settings, float projectileDamage) {
+    public HeavyProjectileItem(Item.Settings settings, float projectileDamage) {
         super(settings, projectileDamage);
     }
 

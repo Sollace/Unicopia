@@ -24,7 +24,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
 public class WaterloggableCloudBlock extends PoreousCloudBlock implements Waterloggable {
@@ -76,7 +75,7 @@ public class WaterloggableCloudBlock extends PoreousCloudBlock implements Waterl
     }
 
     @Override
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
-        return (type == NavigationType.WATER) == world.getFluidState(pos).isIn(FluidTags.WATER);
+    public boolean canPathfindThrough(BlockState state, NavigationType type) {
+        return (type == NavigationType.WATER) == state.getFluidState().isIn(FluidTags.WATER);
     }
 }

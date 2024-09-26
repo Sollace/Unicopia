@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -68,7 +69,7 @@ public record EntityJarContents (
     }
 
     @Override
-    public NbtCompound toNBT(NbtCompound compound) {
+    public NbtCompound toNBT(NbtCompound compound, WrapperLookup lookup) {
         compound.putString("entity", EntityType.getId(entityType).toString());
         return compound;
     }

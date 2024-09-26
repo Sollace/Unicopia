@@ -26,6 +26,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
@@ -226,10 +227,10 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
         compound.putUuid("targetPortalId", targetPortalId.get());
-        compound.put("teleportationTarget", teleportationTarget.toNBT());
+        compound.put("teleportationTarget", teleportationTarget.toNBT(lookup));
         compound.putFloat("pitch", getPitch());
         compound.putFloat("yaw", getYaw());
         compound.putFloat("targetPortalPitch", getTargetPitch());
@@ -237,10 +238,10 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         targetPortalId.set(compound.containsUuid("targetPortalId") ? compound.getUuid("targetPortalId") : Util.NIL_UUID);
-        teleportationTarget.fromNBT(compound.getCompound("teleportationTarget"));
+        teleportationTarget.fromNBT(compound.getCompound("teleportationTarget"), lookup);
         pitch.set(compound.getFloat("pitch"));
         yaw.set(compound.getFloat("yaw"));
         targetPortalPitch.set(compound.getFloat("targetPortalPitch"));

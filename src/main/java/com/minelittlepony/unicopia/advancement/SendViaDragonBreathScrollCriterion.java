@@ -19,7 +19,6 @@ import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.TypeFilter;
-import net.minecraft.util.dynamic.Codecs;
 
 public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendViaDragonBreathScrollCriterion.Conditions> {
     @Override
@@ -57,7 +56,7 @@ public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendVi
             RacePredicate races
     ) implements AbstractCriterion.Conditions {
         public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codecs.createStrictOptionalFieldCodec(EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC, "player").forGetter(Conditions::player),
+                EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(Conditions::player),
                 ItemPredicate.CODEC.optionalFieldOf("item").forGetter(Conditions::item),
                 Codec.BOOL.optionalFieldOf("is_receiving_end", false).forGetter(Conditions::isReceivingEnd),
                 Codec.STRING.optionalFieldOf("recipient_name").forGetter(Conditions::recipientName),

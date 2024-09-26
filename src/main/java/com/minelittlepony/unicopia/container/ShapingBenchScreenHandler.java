@@ -6,9 +6,9 @@ import com.minelittlepony.unicopia.recipe.URecipes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.input.SingleStackRecipeInput;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.StonecutterScreenHandler;
@@ -53,7 +53,7 @@ public class ShapingBenchScreenHandler extends StonecutterScreenHandler {
             setProperty(0, -1);
             slots.get(1).setStackNoCallbacks(ItemStack.EMPTY);
             if (!stack.isEmpty()) {
-                getAvailableRecipes().addAll(world.getRecipeManager().getAllMatches(URecipes.CLOUD_SHAPING, input, world));
+                getAvailableRecipes().addAll(world.getRecipeManager().getAllMatches(URecipes.CLOUD_SHAPING, new SingleStackRecipeInput(input.getStack(0)), world));
             }
         }
     }
@@ -74,7 +74,7 @@ public class ShapingBenchScreenHandler extends StonecutterScreenHandler {
                 srcSlot.onQuickTransfer(movingStack, originalStack);
             } else if (slot == 0
                     ? !insertItem(movingStack, 2, 38, false)
-                    : (world.getRecipeManager().getFirstMatch(URecipes.CLOUD_SHAPING, new SimpleInventory(movingStack), world).isPresent()
+                    : (world.getRecipeManager().getFirstMatch(URecipes.CLOUD_SHAPING, new SingleStackRecipeInput(movingStack), world).isPresent()
                             ? !insertItem(movingStack, 0, 1, false)
                             : (slot >= 2 && slot < 29
                                 ? !insertItem(movingStack, 29, 38, false)

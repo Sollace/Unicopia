@@ -6,7 +6,6 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.data.tree.TreeType;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
@@ -20,6 +19,7 @@ import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.util.*;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -30,6 +30,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -145,8 +146,8 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     }
 
     @Override
-    public Hit.Serializer<Pos> getSerializer() {
-        return Pos.SERIALIZER;
+    public PacketCodec<? extends ByteBuf, Pos> getSerializer() {
+        return Pos.CODEC;
     }
 
     @Override

@@ -34,7 +34,7 @@ public class HugAbility extends CarryAbility {
             creeper.startRiding(player, true);
             Living.getOrEmpty(creeper).ifPresent(living -> living.setCarrier(player));
         } else if (rider != null) {
-            rider.teleport(player.getX(), player.getY() + 0.5, player.getZ());
+            rider.teleport(player.getX(), player.getY() + 0.5, player.getZ(), false);
             rider.setYaw(player.getYaw() + 180);
 
             if (rider instanceof FriendlyCreeperEntity) {

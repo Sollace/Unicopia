@@ -63,7 +63,7 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
 
         int y = SpellbookScreen.TITLE_Y;
 
-        float tickDelta = client.getTickDelta();
+        float tickDelta = client.getRenderTickCounter().getTickDelta(false);
         float delta = pony.asEntity().age + tickDelta;
         int currentLevel = pony.getLevel().get();
         float currentScaledLevel = pony.getLevel().getScaled(1);

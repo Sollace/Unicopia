@@ -25,6 +25,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.world.GameMode;
@@ -192,18 +193,18 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        compound.put("counterpart", counterpart.toNBT());
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        compound.put("counterpart", counterpart.toNBT(lookup));
         compound.putBoolean("initialized", initialized);
         myStoredInventory.ifPresent(mine -> compound.put("myStoredInventory", mine.toNBT(new NbtCompound())));
         theirStoredInventory.ifPresent(mine -> compound.put("theirStoredInventory", mine.toNBT(new NbtCompound())));
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        counterpart.fromNBT(compound.getCompound("counterpart"));
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
+        counterpart.fromNBT(compound.getCompound("counterpart"), lookup);
         initialized = compound.getBoolean("initialized");
         myStoredInventory = Optional.ofNullable(compound.contains("myStoredInventory", NbtElement.COMPOUND_TYPE) ? Inventory.fromNBT(compound.getCompound("myStoredInventory")) : null);
         theirStoredInventory = Optional.ofNullable(compound.contains("theirStoredInventory", NbtElement.COMPOUND_TYPE) ? Inventory.fromNBT(compound.getCompound("theirStoredInventory")) : null);

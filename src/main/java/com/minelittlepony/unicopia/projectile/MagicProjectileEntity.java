@@ -63,9 +63,9 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        getDataTracker().startTracking(DAMAGE, 0F);
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(DAMAGE, 0F);
     }
 
     @Override
@@ -141,7 +141,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
     }
 
     private ParticleEffect getParticleParameters() {
-       ItemStack stack = getItem();
+       ItemStack stack = getStack();
 
        if (stack.isEmpty()) {
            return ParticleTypes.ITEM_SNOWBALL;
@@ -180,8 +180,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
     @Override
     public void writeCustomDataToNbt(NbtCompound compound) {
         super.writeCustomDataToNbt(compound);
-        compound.put("homingTarget", homingTarget.toNBT());
-        compound.put("owner", getMasterReference().toNBT());
+        compound.put("homingTarget", homingTarget.toNBT(getWorld().getRegistryManager()));
+        compound.put("owner", getMasterReference().toNBT(getWorld().getRegistryManager()));
         compound.putInt("maxAge", maxAge);
     }
 
@@ -225,7 +225,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
 
     protected <T extends ProjectileDelegate> void forEachDelegates(Consumer<T> consumer, Function<Object, T> predicate) {
         try {
-            Optional.ofNullable(predicate.apply(getItem().getItem())).ifPresent(consumer);
+            Optional.ofNullable(predicate.apply(getStack().getItem())).ifPresent(consumer);
         } catch (Throwable t) {
             Unicopia.LOGGER.error("Error whilst ticking spell on entity {}", getMasterReference(), t);
         }

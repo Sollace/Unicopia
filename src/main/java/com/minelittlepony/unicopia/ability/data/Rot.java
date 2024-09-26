@@ -2,15 +2,17 @@ package com.minelittlepony.unicopia.ability.data;
 
 import com.minelittlepony.unicopia.EntityConvertable;
 
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.Vec3d;
 
 public record Rot (float pitch, float yaw) implements Hit {
-    public static final Serializer<Rot> SERIALIZER = new Serializer<>(
-            buf -> new Rot(buf.readFloat(), buf.readFloat()),
-            (buf, t) -> {
-                buf.writeFloat(t.pitch());
-                buf.writeFloat(t.yaw());
-            });
+    public static final PacketCodec<PacketByteBuf, Rot> CODEC = PacketCodec.tuple(
+            PacketCodecs.FLOAT, Rot::pitch,
+            PacketCodecs.FLOAT, Rot::yaw,
+            Rot::new
+    );
 
     public Rot applyTo(EntityConvertable<?> target) {
         Vec3d pos = target.getOriginVector();

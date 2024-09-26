@@ -202,7 +202,7 @@ public record Race (
             Identifier id = Identifier.tryParse(s);
             if (id != null) {
                 if (id.getNamespace() == Identifier.DEFAULT_NAMESPACE) {
-                    id = new Identifier(Unicopia.DEFAULT_NAMESPACE, id.getPath());
+                    id = Unicopia.id(id.getPath());
                 }
                 return REGISTRY.getOrEmpty(id).orElse(def);
             }
@@ -231,7 +231,7 @@ public record Race (
         Identifier id = context.getArgument(name, RegistryKey.class).getValue();
         final Identifier idf = id;
         if (id.getNamespace() == Identifier.DEFAULT_NAMESPACE && !REGISTRY.containsId(id)) {
-            id = new Identifier(REGISTRY_KEY.getValue().getNamespace(), id.getPath());
+            id = REGISTRY_KEY.getValue().withPath(id.getPath());
         }
         return REGISTRY.getOrEmpty(id).orElseThrow(() -> UNKNOWN_RACE_EXCEPTION.create(idf));
     }

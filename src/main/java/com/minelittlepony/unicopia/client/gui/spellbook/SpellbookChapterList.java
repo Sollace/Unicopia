@@ -53,7 +53,7 @@ public class SpellbookChapterList {
         Optional<Content> content) {
 
         public static Identifier createIcon(Identifier id, String suffex) {
-            return new Identifier(id.getNamespace(), "textures/gui/container/pages/" + id.getPath() + suffex + ".png");
+            return id.withPath(p -> "textures/gui/container/pages/" + p + suffex + ".png");
         }
     }
 

@@ -19,6 +19,7 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -85,14 +86,14 @@ public class RainboomAbilitySpell extends AbstractSpell {
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
         compound.putInt("age", age);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         age = compound.getInt("age");
         boundParticle = null;
     }

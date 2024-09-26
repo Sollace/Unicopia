@@ -33,7 +33,7 @@ public class OutputSlot extends CraftingResultSlot implements SpellbookSlot {
     public void setStack(ItemStack stack) {
         if (!stack.isEmpty() && !ItemStack.areEqual(stack, getStack())) {
             BufferedExecutor.bufferExecution(player, () -> {
-                player.playSound(stack.getItem() == UItems.BOTCHED_GEM ? USounds.GUI_ABILITY_FAIL : USounds.GUI_SPELL_CRAFT_SUCCESS, SoundCategory.MASTER, 1, 0.3F);
+                player.playSoundToPlayer(stack.getItem() == UItems.BOTCHED_GEM ? USounds.GUI_ABILITY_FAIL : USounds.GUI_SPELL_CRAFT_SUCCESS, SoundCategory.MASTER, 1, 0.3F);
             });
         }
         super.setStack(stack);

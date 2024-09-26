@@ -18,13 +18,15 @@ import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Util;
 
 /**
  * Interface for a magic spells
  */
 public interface Spell extends NbtSerialisable, Affine {
-    Serializer<Spell> SERIALIZER = Serializer.of(Spell::readNbt, Spell::writeNbt);
+    @Deprecated
+    Serializer<NbtCompound, Spell> SERIALIZER = Serializer.of(Spell::readNbt, Spell::writeNbt);
 
     /**
      * Returns the full type that describes this spell.
@@ -133,7 +135,7 @@ public interface Spell extends NbtSerialisable, Affine {
     }
 
     @Nullable
-    static <T extends Spell> T readNbt(@Nullable NbtCompound compound) {
+    static <T extends Spell> T readNbt(@Nullable NbtCompound compound, WrapperLookup lookup) {
         try {
             if (compound != null) {
                 return CustomisedSpellType.<T>fromNBT(compound).create(compound);
@@ -149,16 +151,16 @@ public interface Spell extends NbtSerialisable, Affine {
         return compound == null || !compound.containsUuid("uuid") ? Util.NIL_UUID :  compound.getUuid("uuid");
     }
 
-    static NbtCompound writeNbt(@Nullable Spell effect) {
+    static NbtCompound writeNbt(@Nullable Spell effect, WrapperLookup lookup) {
         if (effect == null) {
             return new NbtCompound();
         }
-        NbtCompound compound = effect.toNBT();
+        NbtCompound compound = effect.toNBT(lookup);
         effect.getTypeAndTraits().toNbt(compound);
         return compound;
     }
 
-    static <T extends Spell> Spell copy(T spell) {
-        return readNbt(writeNbt(spell));
+    static <T extends Spell> Spell copy(T spell, WrapperLookup lookup) {
+        return readNbt(writeNbt(spell, lookup), lookup);
     }
 }

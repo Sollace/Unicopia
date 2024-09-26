@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 
 public interface Resources {
     Gson GSON = new GsonBuilder()
-            .registerTypeAdapter(Identifier.class, new ToStringAdapter<>(Identifier::new))
+            .registerTypeAdapter(Identifier.class, new ToStringAdapter<>(Identifier::of))
             .create();
 
     static Stream<Resource> getResources(ResourceManager manager, Identifier id) {
@@ -29,7 +29,7 @@ public interface Resources {
         try (InputStreamReader reader = new InputStreamReader(res.getInputStream())) {
             return (GSON.<List<Identifier>>fromJson(reader, type)).stream();
         } catch (JsonParseException e) {
-            Unicopia.LOGGER.warn(msg + res.getResourcePackName(), e);
+            Unicopia.LOGGER.warn(msg + res.getPackId(), e);
         } catch (IOException ignored) {}
 
         return Stream.empty();

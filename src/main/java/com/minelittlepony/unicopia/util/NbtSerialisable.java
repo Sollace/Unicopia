@@ -10,30 +10,33 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public interface NbtSerialisable {
-    Serializer<BlockPos> BLOCK_POS = Serializer.of(NbtHelper::toBlockPos, NbtHelper::fromBlockPos);
-    Serializer<ItemStack> ITEM_STACK = Serializer.of(ItemStack::fromNbt, stack -> stack.writeNbt(new NbtCompound()));
+    @Deprecated
+    Serializer<NbtElement, BlockPos> BLOCK_POS = Serializer.ofCodec(BlockPos.CODEC);
+    @Deprecated
+    Serializer<NbtElement, ItemStack> ITEM_STACK = Serializer.ofCodec(ItemStack.CODEC);
 
     /**
      * Called to save this to nbt to persist state on file or to transmit over the network
      *
      * @param compound  Compound tag to write to.
      */
-    void toNBT(NbtCompound compound);
+    void toNBT(NbtCompound compound, WrapperLookup lookup);
 
     /**
      * Called to load this state from nbt
      *
      * @param compound  Compound tag to read from.
      */
-    void fromNBT(NbtCompound compound);
+    void fromNBT(NbtCompound compound, WrapperLookup lookup);
 
-    default NbtCompound toNBT() {
+    default NbtCompound toNBT(WrapperLookup lookup) {
         NbtCompound compound = new NbtCompound();
-        toNBT(compound);
+        toNBT(compound, lookup);
         return compound;
     }
 
@@ -97,53 +100,56 @@ public interface NbtSerialisable {
         return nbt;
     }
 
-    interface Serializer<T> {
-        T read(NbtCompound compound);
+    @Deprecated
+    interface Serializer<N extends NbtElement, T> {
+        T read(N compound, WrapperLookup lookup);
 
-        NbtCompound write(T t);
+        N write(T t, WrapperLookup lookup);
 
-        default Optional<T> readOptional(String name, NbtCompound compound) {
+        @SuppressWarnings("unchecked")
+        default Optional<T> readOptional(String name, NbtCompound compound, WrapperLookup lookup) {
             return compound.contains(name, NbtElement.COMPOUND_TYPE)
-                    ? Optional.ofNullable(read(compound.getCompound(name)))
+                    ? Optional.ofNullable(read((N)compound.get(name), lookup))
                     : Optional.empty();
         }
 
-        default void writeOptional(String name, NbtCompound compound, Optional<T> t) {
-            t.map(this::write).ifPresent(tag -> compound.put(name, tag));
+        default void writeOptional(String name, NbtCompound compound, Optional<T> t, WrapperLookup lookup) {
+            t.map(l -> write(l, lookup)).ifPresent(tag -> compound.put(name, tag));
         }
 
-        default T read(NbtElement element) {
-            return read((NbtCompound)element);
-        }
-
-        default NbtList writeAll(Collection<? extends T> ts) {
+        default NbtList writeAll(Collection<? extends T> ts, WrapperLookup lookup) {
             NbtList list = new NbtList();
-            ts.stream().map(this::write).forEach(list::add);
+            ts.stream().map(l -> write(l, lookup)).forEach(list::add);
             return list;
         }
 
-        default Stream<T> readAll(NbtList list) {
-            return list.stream().map(this::read).filter(Objects::nonNull);
+        @SuppressWarnings("unchecked")
+        default Stream<T> readAll(NbtList list, WrapperLookup lookup) {
+            return list.stream().map(l -> read((N)l, lookup)).filter(Objects::nonNull);
         }
 
-        static <T extends NbtSerialisable> Serializer<T> of(Supplier<T> factory) {
-            return of(nbt -> {
+        static <T extends NbtSerialisable> Serializer<NbtCompound, T> of(Supplier<T> factory) {
+            return of((nbt, lookup) -> {
                 T value = factory.get();
-                value.fromNBT(nbt);
+                value.fromNBT(nbt, lookup);
                 return value;
-            }, value -> value.toNBT());
+            }, (value, lookup) -> value.toNBT(lookup));
         }
 
-        static <T> Serializer<T> of(Function<NbtCompound, T> read, Function<T, NbtCompound> write) {
+        static <T> Serializer<NbtElement, T> ofCodec(Codec<T> codec) {
+            return of((value, lookup) -> decode(codec, value).get(), (t, lookup) -> encode(codec, t));
+        }
+
+        static <N extends NbtElement, T> Serializer<N, T> of(BiFunction<N, WrapperLookup, T> read, BiFunction<T, WrapperLookup, N> write) {
             return new Serializer<>() {
                 @Override
-                public T read(NbtCompound compound) {
-                    return read.apply(compound);
+                public T read(N compound, WrapperLookup lookup) {
+                    return read.apply(compound, lookup);
                 }
 
                 @Override
-                public NbtCompound write(T t) {
-                    return write.apply(t);
+                public N write(T t, WrapperLookup lookup) {
+                    return write.apply(t, lookup);
                 }
             };
         }

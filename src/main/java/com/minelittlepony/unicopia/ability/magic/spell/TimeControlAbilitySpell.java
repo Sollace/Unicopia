@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 
 /**
@@ -75,16 +76,16 @@ public class TimeControlAbilitySpell extends AbstractSpell {
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
         compound.putBoolean("initilized", initilized);
         compound.putLong("timeOffset", timeOffset);
         compound.putFloat("angleOffset", angleOffset);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         initilized = compound.getBoolean("initilized");
         timeOffset = compound.getLong("timeOffset");
         angleOffset = compound.getFloat("angleOffset");

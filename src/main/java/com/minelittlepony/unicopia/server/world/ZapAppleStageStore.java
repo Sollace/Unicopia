@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.util.Tickable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.nbt.*;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
@@ -134,7 +135,7 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound compound) {
+    public NbtCompound writeNbt(NbtCompound compound, WrapperLookup lookup) {
         compound.putInt("stage", lastStage.ordinal());
         compound.putBoolean("stageChanged", stageChanged);
         compound.putBoolean("playedMoonEffect", playedMoonEffect);

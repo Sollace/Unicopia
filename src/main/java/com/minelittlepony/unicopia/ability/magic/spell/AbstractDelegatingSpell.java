@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.server.world.Ether;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public abstract class AbstractDelegatingSpell implements Spell {
     private UUID uuid = UUID.randomUUID();
@@ -109,17 +110,17 @@ public abstract class AbstractDelegatingSpell implements Spell {
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         compound.putUuid("uuid", uuid);
-        compound.put("spell", delegate.toNBT());
+        compound.put("spell", delegate.toNBT(lookup));
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         if (compound.contains("uuid")) {
             uuid = compound.getUuid("uuid");
         }
-        delegate.fromNBT(compound.getCompound("spell"));
+        delegate.fromNBT(compound.getCompound("spell"), lookup);
     }
 
     @Override

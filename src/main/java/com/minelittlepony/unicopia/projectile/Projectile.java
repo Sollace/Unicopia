@@ -10,29 +10,34 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ProjectileItem;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 
-public interface Projectile extends ItemConvertible {
-    static void makeDispensable(Projectile projectile) {
-        DispenserBlock.registerBehavior(projectile.asItem(), new ProjectileDispenserBehavior(){
-            @Override
-            protected ProjectileEntity createProjectile(World world, Position position, ItemStack stack) {
-                ProjectileEntity p = projectile.createProjectile(stack, world, null);
-                p.setPosition(position.getX(), position.getY(), position.getZ());
-                return p;
-            }
+public interface Projectile extends ItemConvertible, ProjectileItem {
+    ProjectileItem.Settings SETTINGS = ProjectileItem.Settings
+            .builder()
+            .uncertainty(0)
+            .build();
 
-            @Override
-            protected float getVariation() {
-                return 0;
-            }
-        });
+    static void makeDispensable(Projectile projectile) {
+        DispenserBlock.registerBehavior(projectile.asItem(), new ProjectileDispenserBehavior(projectile.asItem()));
+    }
+
+    @Override
+    default ProjectileEntity createEntity(World world, Position pos, ItemStack stack, Direction direction) {
+        return createProjectile(stack, world, null);
+    }
+
+    @Override
+    default ProjectileItem.Settings getProjectileSettings() {
+        return SETTINGS;
     }
 
     default TypedActionResult<ItemStack> triggerThrow(World world, PlayerEntity player, Hand hand) {

@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.network.track.Trackable;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 /**
  * Container for a single spell
@@ -57,13 +58,13 @@ class SingleSpellSlot implements SpellSlots, NbtSerialisable {
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        compound.put("effect", entry.spell.toNBT());
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        compound.put("effect", entry.spell.toNBT(lookup));
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        entry.spell.fromNBT(compound.getCompound("effect"));
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        entry.spell.fromNBT(compound.getCompound("effect"), lookup);
     }
 
     @Override

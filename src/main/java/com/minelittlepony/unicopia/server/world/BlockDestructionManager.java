@@ -14,6 +14,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -120,13 +121,13 @@ public class BlockDestructionManager implements Tickable {
         }
 
         @Override
-        public void toNBT(NbtCompound compound) {
+        public void toNBT(NbtCompound compound, WrapperLookup lookup) {
             compound.putFloat("destruction", amount);
             compound.putInt("age", age);
         }
 
         @Override
-        public void fromNBT(NbtCompound compound) {
+        public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
             amount = compound.getFloat("destruction");
             age = compound.getInt("age");
             dirty = true;

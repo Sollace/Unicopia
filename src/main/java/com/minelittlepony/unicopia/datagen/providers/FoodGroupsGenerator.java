@@ -15,9 +15,10 @@ import com.minelittlepony.unicopia.diet.affliction.StatusEffectAffliction;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.item.UFoodComponents;
 
+import net.minecraft.component.type.FoodComponent;
+import net.minecraft.component.type.FoodComponents;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.FoodComponent;
-import net.minecraft.item.FoodComponents;
+
 import net.minecraft.item.Item;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;

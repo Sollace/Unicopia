@@ -14,12 +14,14 @@ import com.minelittlepony.unicopia.network.track.MsgTrackedValues;
 import com.minelittlepony.unicopia.network.track.ObjectTracker;
 import com.minelittlepony.unicopia.network.track.Trackable;
 import com.minelittlepony.unicopia.network.track.TrackableObject;
+import com.minelittlepony.unicopia.network.track.MsgTrackedValues.TrackerEntries;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
-import com.minelittlepony.unicopia.util.serialization.PacketCodec;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 /**
  * Container for multiple spells
@@ -68,12 +70,12 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        compound.put("spells", NbtSerialisable.writeMap(tracker.entries(), UUID::toString, entry -> entry.spell.toNBT()));
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        compound.put("spells", NbtSerialisable.writeMap(tracker.entries(), UUID::toString, entry -> entry.spell.toNBT(lookup)));
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         tracker.load(NbtSerialisable.readMap(compound.getCompound("spells"), key -> {
             try {
                 return UUID.fromString(key);
@@ -82,7 +84,7 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
         }, (key, nbt) -> {
             try {
                 Entry<Spell> entry = new Entry<>(owner);
-                entry.spell.fromNBT((NbtCompound)nbt);
+                entry.spell.fromNBT((NbtCompound)nbt, lookup);
                 return entry;
             } catch (Throwable t) {
                 Unicopia.LOGGER.warn("Exception loading tracked object: {}", t.getMessage());
@@ -135,34 +137,34 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
         }
 
         @Override
-        public void readTrackedNbt(NbtCompound nbt) {
-            spell.fromNBT(nbt);
+        public void readTrackedNbt(NbtCompound nbt, WrapperLookup lookup) {
+            spell.fromNBT(nbt, lookup);
         }
 
         @Override
-        public NbtCompound writeTrackedNbt() {
-            return spell.toNBT();
+        public NbtCompound writeTrackedNbt(WrapperLookup lookup) {
+            return spell.toNBT(lookup);
         }
 
         @Override
-        public void read(PacketByteBuf buffer) {
+        public void read(PacketByteBuf buffer, WrapperLookup lookup) {
             byte contentType = buffer.readByte();
             if (contentType == 1) {
-                readTrackedNbt(PacketCodec.COMPRESSED_NBT.read(buffer));
+                readTrackedNbt(PacketCodecs.NBT_COMPOUND.decode(buffer), lookup);
             } else {
                 T spell = this.spell.get();
                 if (spell != null) {
-                    spell.getDataTracker().load(new MsgTrackedValues.TrackerEntries(buffer));
+                    spell.getDataTracker().load(MsgTrackedValues.TrackerEntries.PACKET_CODEC.decode(buffer));
                 }
             }
         }
 
         @Override
-        public Optional<PacketByteBuf> write(Status status) {
+        public Optional<PacketByteBuf> write(Status status, WrapperLookup lookup) {
             if (status != Status.DEFAULT) {
                 PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
                 buffer.writeByte(1);
-                PacketCodec.COMPRESSED_NBT.write(buffer, spell.toNBT());
+                PacketCodecs.NBT_COMPOUND.encode(buffer, spell.toNBT(lookup));
                 return Optional.of(buffer);
             }
             @Nullable T spell = this.spell.get();
@@ -172,7 +174,7 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
             return spell.getDataTracker().getDirtyPairs().map(entries -> {
                 PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
                 buffer.writeByte(0);
-                entries.write(buffer);
+                TrackerEntries.PACKET_CODEC.encode(buffer, entries);
                 return buffer;
             });
         }

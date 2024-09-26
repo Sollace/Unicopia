@@ -15,6 +15,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -28,8 +29,8 @@ public record FakeFluidJarContents (
 ) implements JarContents {
     public FakeFluidJarContents(TileData tile, NbtCompound compound) {
         this(tile, compound.getString("fluid"), compound.getInt("color"),
-                Registries.ITEM.get(new Identifier(compound.getString("empty"))),
-                Registries.ITEM.get(new Identifier(compound.getString("filled"))));
+                Registries.ITEM.get(Identifier.of(compound.getString("empty"))),
+                Registries.ITEM.get(Identifier.of(compound.getString("filled"))));
     }
 
     @Override
@@ -62,7 +63,7 @@ public record FakeFluidJarContents (
     }
 
     @Override
-    public NbtCompound toNBT(NbtCompound compound) {
+    public NbtCompound toNBT(NbtCompound compound, WrapperLookup lookup) {
         compound.putString("fluid", fluid);
         compound.putInt("color", color);
         compound.putString("empty", Registries.ITEM.getId(empty).toString());

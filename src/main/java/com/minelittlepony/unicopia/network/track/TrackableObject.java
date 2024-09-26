@@ -2,31 +2,31 @@ package com.minelittlepony.unicopia.network.track;
 
 import java.util.Optional;
 
-import com.minelittlepony.unicopia.util.serialization.PacketCodec;
-
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public interface TrackableObject<T extends TrackableObject<T>> {
     Status getStatus();
 
-    default void read(PacketByteBuf buffer) {
-        readTrackedNbt(PacketCodec.COMPRESSED_NBT.read(buffer));
+    default void read(PacketByteBuf buffer, WrapperLookup lookup) {
+        readTrackedNbt(PacketCodecs.NBT_COMPOUND.decode(buffer), lookup);
     }
 
-    default Optional<PacketByteBuf> write(Status status) {
+    default Optional<PacketByteBuf> write(Status status, WrapperLookup lookup) {
         if (status == Status.NEW || status == Status.UPDATED) {
             PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
-            PacketCodec.COMPRESSED_NBT.write(buffer, writeTrackedNbt());
+            PacketCodecs.NBT_COMPOUND.encode(buffer, writeTrackedNbt(lookup));
             return Optional.of(buffer);
         }
         return Optional.empty();
     }
 
-    void readTrackedNbt(NbtCompound nbt);
+    void readTrackedNbt(NbtCompound nbt, WrapperLookup lookup);
 
-    NbtCompound writeTrackedNbt();
+    NbtCompound writeTrackedNbt(WrapperLookup lookup);
 
     void discard(boolean immediate);
 

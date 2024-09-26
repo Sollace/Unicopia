@@ -187,7 +187,7 @@ public class CloudBlock extends Block implements CloudLike {
 
     @Override
     @Deprecated
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+    public boolean canPathfindThrough(BlockState state, NavigationType type) {
         System.out.println(InteractionManager.getInstance().getPathingEquineContext().collidesWithClouds());
         return type != NavigationType.LAND || !InteractionManager.getInstance().getPathingEquineContext().collidesWithClouds();
     }
@@ -200,7 +200,6 @@ public class CloudBlock extends Block implements CloudLike {
         return context.collidesWithClouds() || context.hasFeatherTouch();
     }
 
-    @SuppressWarnings("deprecation")
     protected boolean canReplace(BlockState state, ItemPlacementContext context, EquineContext equineContext) {
         return super.canReplace(state, context);
     }

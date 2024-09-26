@@ -12,7 +12,7 @@ abstract class ProjectileItem extends Item implements Projectile {
 
     private final float projectileDamage;
 
-    public ProjectileItem(Settings settings, float projectileDamage) {
+    public ProjectileItem(Item.Settings settings, float projectileDamage) {
         super(settings);
         this.projectileDamage = projectileDamage;
         Projectile.makeDispensable(this);
@@ -20,8 +20,11 @@ abstract class ProjectileItem extends Item implements Projectile {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        if (isFood() && !player.shouldCancelInteraction()) {
-            return super.use(world, player, hand);
+        if (!player.shouldCancelInteraction()) {
+            TypedActionResult<ItemStack> result = super.use(world, player, hand);
+            if (result.getResult().isAccepted()) {
+                return result;
+            }
         }
 
         return triggerThrow(world, player, hand);
