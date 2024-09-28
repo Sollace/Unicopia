@@ -47,6 +47,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.*;
@@ -521,7 +524,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             ChargeableItem.consumeEnergy(stack.stack(), energyConsumed);
 
             if (entity.getWorld().random.nextInt(damageInterval) == 0) {
-                stack.stack().damage(minDamage + entity.getWorld().random.nextInt(50), (LivingEntity)entity, stack.breakStatusSender());
+                stack.stack().damage(minDamage + entity.getWorld().random.nextInt(50), (ServerWorld)entity.getWorld(), (ServerPlayerEntity)entity, stack.breakStatusSender());
             }
 
             if (!lastFlightType.canFly()) {
@@ -871,8 +874,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
         compound.putBoolean("isFlying", isFlyingSurvival);
         compound.putBoolean("isCancelled", isCancelled);
         compound.putBoolean("isFlyingEither", isFlyingEither);
@@ -882,8 +885,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         isFlyingSurvival = compound.getBoolean("isFlying");
         isCancelled = compound.getBoolean("isCancelled");
         isFlyingEither = compound.getBoolean("isFlyingEither");

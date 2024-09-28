@@ -47,7 +47,7 @@ public class AppleItem {
             float bob = MathHelper.sin(((float)item.getAge() + 1) / 10F + entity.uniqueOffset) * 0.1F + 0.1F;
 
             for (int i = 0; i < 3; i++) {
-                entity.getWorld().addParticle(ParticleTypes.AMBIENT_ENTITY_EFFECT, entity.getX(), entity.getY() + bob, entity.getZ(),
+                entity.getWorld().addParticle(ParticleTypes.EFFECT, entity.getX(), entity.getY() + bob, entity.getZ(),
                         entity.getWorld().random.nextGaussian() - 0.5F,
                         entity.getWorld().random.nextGaussian() - 0.5F,
                         entity.getWorld().random.nextGaussian() - 0.5F);

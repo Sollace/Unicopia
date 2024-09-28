@@ -40,7 +40,7 @@ class AmuletGear extends AmuletModel implements Gear {
 
     @Override
     public <T extends Entity> Identifier getTexture(T entity, Context<T, ?> context) {
-        return textures.computeIfAbsent(Registries.ITEM.getId(AmuletItem.get((LivingEntity)entity).stack().getItem()), id -> new Identifier(id.getNamespace(), "textures/models/armor/" + id.getPath() + ".png"));
+        return textures.computeIfAbsent(Registries.ITEM.getId(AmuletItem.get((LivingEntity)entity).stack().getItem()), id -> id.withPath(p  -> "textures/models/armor/" + p + ".png"));
     }
 
     @Override
@@ -58,7 +58,7 @@ class AmuletGear extends AmuletModel implements Gear {
     }
 
     @Override
-    public void render(MatrixStack stack, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha, UUID interpolatorId) {
-        render(stack, consumer, light, overlay, red, green, blue, 1);
+    public void render(MatrixStack stack, VertexConsumer consumer, int light, int overlay, int color, UUID interpolatorId) {
+        render(stack, consumer, light, overlay, color);
     }
 }

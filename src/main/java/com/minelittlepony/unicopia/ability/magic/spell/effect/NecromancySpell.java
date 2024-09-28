@@ -172,7 +172,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
                 if (master != null) {
                     master.applyDamageEffects(master, e);
                 }
-                e.getWorld().sendEntityStatus(e, (byte)60);
+                e.getWorld().sendEntityStatus(e, EntityStatuses.ADD_DEATH_PARTICLES);
                 e.discard();
             });
         });
@@ -199,7 +199,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
         for (int i = source.asWorld().random.nextInt(GEAR.length); i < GEAR.length; i++) {
             ItemStack pick = GEAR[i][(int)(powerScale * GEAR[i].length) % GEAR[i].length].getDefaultStack();
 
-            minion.equipStack(LivingEntity.getPreferredEquipmentSlot(pick), pick);
+            minion.equipStack(minion.getPreferredEquipmentSlot(pick), pick);
 
             if (source.asWorld().random.nextFloat() > powerScale) {
                 break;

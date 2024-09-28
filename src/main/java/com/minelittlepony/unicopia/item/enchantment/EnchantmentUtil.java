@@ -1,42 +1,37 @@
 package com.minelittlepony.unicopia.item.enchantment;
 
-import java.util.Map;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.entity.Living;
 
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
 public interface EnchantmentUtil {
     String HEART_BOUND_CONSUMED_FLAG = "unicopia:heart_bound_consumed";
 
-    static boolean consumeEnchantment(Enchantment enchantment, int levels, ItemStack stack) {
+    static boolean consumeEnchantment(RegistryEntry<Enchantment> enchantment, int levels, ItemStack stack) {
         return consumeEnchantment(enchantment, levels, stack, null, 0);
     }
 
-    static boolean consumeEnchantment(Enchantment enchantment, int levels, ItemStack stack, @Nullable Random random, int chance) {
-        Map<Enchantment, Integer> enchantments = EnchantmentHelper.get(stack);
-        int level = enchantments.getOrDefault(enchantment, 0);
+    static boolean consumeEnchantment(RegistryEntry<Enchantment> enchantment, int levels, ItemStack stack, @Nullable Random random, int chance) {
+        ItemEnchantmentsComponent.Builder enchantments = new ItemEnchantmentsComponent.Builder(EnchantmentHelper.getEnchantments(stack));
+        int level = enchantments.getLevel(enchantment);
         if (level <= 0) {
             return false;
         }
 
         if (random == null || chance <= 1 || random.nextInt(chance) == 0) {
-            level = Math.max(0, level - levels);
-            if (level == 0) {
-                enchantments.remove(enchantment);
-            } else {
-                enchantments.put(enchantment, level);
-            }
-            EnchantmentHelper.set(enchantments, stack);
+            enchantments.set(enchantment, Math.max(0, level - levels));
+            EnchantmentHelper.set(stack, enchantments.build());
         }
         return true;
     }
@@ -53,7 +48,7 @@ public interface EnchantmentUtil {
         return (int)MathHelper.clamp(baseline + luckAmplifier + dolphinsGraceAmplifier - unluckAmplifier - badOmenAmplifier, -10, 10);
     }
 
-    static int getEffectAmplifier(LivingEntity entity, StatusEffect effect) {
+    static int getEffectAmplifier(LivingEntity entity, RegistryEntry<StatusEffect> effect) {
         if (!entity.hasStatusEffect(effect)) {
             return 0;
         }

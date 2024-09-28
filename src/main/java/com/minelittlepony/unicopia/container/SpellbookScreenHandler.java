@@ -11,16 +11,15 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.recipe.URecipes;
 import com.mojang.datafixers.util.Pair;
 
+import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Equipment;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -129,7 +128,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
                 @Override
                 public boolean canTakeItems(PlayerEntity playerEntity) {
                     ItemStack stack = getStack();
-                    if (!stack.isEmpty() && !playerEntity.isCreative() && EnchantmentHelper.hasBindingCurse(stack)) {
+                    if (!stack.isEmpty() && !playerEntity.isCreative() && EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)) {
                         return false;
                     }
                     return super.canTakeItems(playerEntity);
@@ -323,7 +322,7 @@ public class SpellbookScreenHandler extends ScreenHandler {
             Slot slot = getSlot(i);
             ItemStack current = slot.getStack();
 
-            if (!current.isEmpty() && ItemStack.canCombine(stack, current)) {
+            if (!current.isEmpty() && ItemStack.areItemsAndComponentsEqual(stack, current)) {
                 // abide by the slot's max item count when trying to insert stacks
                 int available = Math.min(Math.min(current.getMaxCount(), slot.getMaxItemCount(stack)) - current.getCount(), stack.getCount());
 

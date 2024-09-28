@@ -5,20 +5,26 @@ import java.util.function.Consumer;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.network.datasync.Synchronizable;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.network.PacketByteBuf;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
-public class SpellbookState extends Synchronizable<SpellbookState> implements NbtSerialisable {
-    // TODO: SpellbookState needs a packet codec
-    public static final PacketCodec<RegistryByteBuf, SpellbookState> PACKET_CODEC = null;
+public class SpellbookState extends Synchronizable<SpellbookState> {
+    public static final Codec<SpellbookState> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Identifier.CODEC.optionalFieldOf("current_page").forGetter(i -> i.currentPageId),
+            Codec.unboundedMap(Identifier.CODEC, PageState.CODEC).fieldOf("states").forGetter(i -> i.states)
+    ).apply(instance, SpellbookState::new));
+    public static final PacketCodec<RegistryByteBuf, SpellbookState> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.optional(Identifier.PACKET_CODEC), SpellbookState::getCurrentPageId,
+            PacketCodecs.map(HashMap::new, Identifier.PACKET_CODEC, PageState.PACKET_CODEC), p -> p.states,
+            SpellbookState::new
+    );
 
     public static final Identifier CRAFTING_ID = Unicopia.id("crafting");
     public static final Identifier PROFILE_ID = Unicopia.id("profile");
@@ -29,6 +35,15 @@ public class SpellbookState extends Synchronizable<SpellbookState> implements Nb
     private boolean dirty;
 
     private final Map<Identifier, PageState> states = new HashMap<>();
+
+    public SpellbookState() {}
+
+    private SpellbookState(Optional<Identifier> currentPageId, Map<Identifier, PageState> states) {
+        this.currentPageId = currentPageId;
+        states.forEach((id, state) -> {
+            getState(id).offset = state.offset;
+        });
+    }
 
     public boolean isDirty() {
         boolean isDirty = dirty;
@@ -56,48 +71,31 @@ public class SpellbookState extends Synchronizable<SpellbookState> implements Nb
         dirty = true;
     }
 
-    public void toPacket(PacketByteBuf buf) {
-        buf.writeOptional(currentPageId, PacketByteBuf::writeIdentifier);
-        buf.writeMap(states, PacketByteBuf::writeIdentifier, (b, v) -> v.toPacket(b));
-    }
-
-    public SpellbookState fromPacket(PacketByteBuf buf) {
-        currentPageId = buf.readOptional(PacketByteBuf::readIdentifier);
-        buf.readMap(PacketByteBuf::readIdentifier, b -> new PageState(page -> synchronize()).fromPacket(b)).forEach((id, state) -> {
-            getState(id).copyFrom(state);
+    public SpellbookState createCopy() {
+        SpellbookState copy = new SpellbookState();
+        copy.currentPageId = currentPageId;
+        states.forEach((id, state) -> {
+            copy.getState(id).offset = state.offset;
         });
-        return this;
+        return copy;
     }
 
-    @Override
-    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
-        currentPageId.ifPresent(id -> compound.putString("current_page", id.toString()));
-        NbtCompound states = new NbtCompound();
-        compound.put("states", states);
-        this.states.forEach((id, page) -> {
-            states.put(id.toString(), page.toNBT(lookup));
-        });
-    }
+    public static class PageState extends Synchronizable<PageState> {
+        public static final Codec<PageState> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Codec.INT.fieldOf("offset").forGetter(PageState::getOffset)
+        ).apply(instance, PageState::new));
+        public static final PacketCodec<ByteBuf, PageState> PACKET_CODEC = PacketCodecs.INTEGER.xmap(PageState::new, PageState::getOffset);
 
-    @Override
-    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-        currentPageId = compound.contains("current_page", NbtElement.STRING_TYPE) ? Optional.ofNullable(Identifier.tryParse(compound.getString("current_page"))) : Optional.empty();
-        NbtCompound states = compound.getCompound("states");
-        states.getKeys().stream().forEach(key -> {
-            Identifier id = Identifier.tryParse(key);
-            if (id != null) {
-                getState(id).fromNBT(states.getCompound(key), lookup);
-            }
-        });
-    }
-
-    public static class PageState extends Synchronizable<PageState> implements NbtSerialisable {
         private int offset;
 
         public PageState() {}
 
         PageState(Consumer<PageState> synchronizer) {
             setSynchronizer(synchronizer);
+        }
+
+        public PageState(int offset) {
+            this.offset = offset;
         }
 
         @Override
@@ -116,25 +114,6 @@ public class SpellbookState extends Synchronizable<SpellbookState> implements Nb
 
         public void swap(int incr, int max) {
             setOffset(MathHelper.clamp(getOffset() + incr, 0, max - 1));
-        }
-
-        public void toPacket(PacketByteBuf buf) {
-            buf.writeInt(offset);
-        }
-
-        public PageState fromPacket(PacketByteBuf buf) {
-            offset = buf.readInt();
-            return this;
-        }
-
-        @Override
-        public void toNBT(NbtCompound compound, WrapperLookup lookup) {
-            compound.putInt("offset", offset);
-        }
-
-        @Override
-        public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-            offset = compound.getInt("offset");
         }
     }
 }

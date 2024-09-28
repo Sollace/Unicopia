@@ -34,7 +34,7 @@ public class SeasonsModelGenerator extends UBlockStateModelGenerator {
     private static JsonObject createTextures(String season, JsonObject input) {
         JsonObject textures = new JsonObject();
         input.entrySet().forEach(entry -> {
-            textures.addProperty(entry.getKey(), new Identifier(entry.getValue().getAsString()).withPath(path -> path.replace("/", "/seasons/" + season + "/")).toString());
+            textures.addProperty(entry.getKey(), Identifier.of(entry.getValue().getAsString()).withPath(path -> path.replace("/", "/seasons/" + season + "/")).toString());
         });
         return textures;
     }

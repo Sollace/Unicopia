@@ -12,11 +12,12 @@ import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;
 import com.minelittlepony.unicopia.server.world.Altar;
 import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
-
+import com.minelittlepony.unicopia.util.NbtSerialisable;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.block.Blocks;
@@ -27,12 +28,12 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.screen.*;
@@ -62,7 +63,7 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
     private int activeTicks = TICKS_TO_SLEEP;
     private boolean prevDaytime;
 
-    private final SpellbookState state = new SpellbookState();
+    private SpellbookState state = new SpellbookState();
 
     private Optional<Altar> altar = Optional.empty();
 
@@ -91,20 +92,25 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        dataTracker.startTracking(LOCKED, (byte)1);
-        dataTracker.startTracking(ALTERED, false);
+    protected void initDataTracker(Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(LOCKED, (byte)1);
+        builder.add(ALTERED, false);
     }
 
     public SpellbookState getSpellbookState() {
         return state;
     }
 
+    public void setSpellbookState(SpellbookState state) {
+        state.copySyncronizer(this.state);
+        this.state = state;
+    }
+
     @Override
     public ItemStack getPickBlockStack() {
         ItemStack stack = UItems.SPELLBOOK.getDefaultStack();
-        stack.getOrCreateNbt().put("spellbookState", state.toNBT());
+        stack.set(UDataComponentTypes.SPELLBOOK_STATE, state.createCopy());
         return stack;
     }
 
@@ -345,7 +351,7 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
 
         if (isOpen()) {
             keepAwake();
-            player.openHandledScreen(new ExtendedScreenHandlerFactory() {
+            player.openHandledScreen(new ExtendedScreenHandlerFactory<SpellbookState>() {
                 @Override
                 public Text getDisplayName() {
                     return SpellbookEntity.this.getDisplayName();
@@ -357,8 +363,8 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
                 }
 
                 @Override
-                public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-                    state.toPacket(buf);
+                public SpellbookState getScreenOpeningData(ServerPlayerEntity player) {
+                    return state;
                 }
             });
             player.playSound(USounds.Vanilla.ITEM_BOOK_PAGE_TURN, 2, 1);
@@ -385,8 +391,8 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
         activeTicks = compound.getInt("activeTicks");
         setAltered(compound.getBoolean("altered"));
         setForcedState(compound.contains("locked") ? TriState.of(compound.getBoolean("locked")) : TriState.DEFAULT);
-        state.fromNBT(compound.getCompound("spellbookState"));
-        altar = Altar.SERIALIZER.readOptional("altar", compound);
+        state.fromNBT(compound.getCompound("spellbookState"), getWorld().getRegistryManager());
+        altar = NbtSerialisable.decode(Altar.CODEC, compound.get("altar"));
     }
 
     @Override
@@ -395,12 +401,14 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
         compound.putInt("activeTicks", activeTicks);
         compound.putBoolean("prevDaytime", prevDaytime);
         compound.putBoolean("altered", isAltered());
-        compound.put("spellbookState", state.toNBT());
+        compound.put("spellbookState", state.toNBT(getWorld().getRegistryManager()));
         getForcedState().map(t -> {
             compound.putBoolean("locked", t);
             return null;
         });
-        Altar.SERIALIZER.writeOptional("altar", compound, altar);
+        altar.ifPresent(altar -> {
+            compound.put("altar", NbtSerialisable.encode(Altar.CODEC, altar));
+        });
     }
 
     @Override

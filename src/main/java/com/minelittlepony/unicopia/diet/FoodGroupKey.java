@@ -6,8 +6,10 @@ import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.Unicopia;
 import com.mojang.serialization.Codec;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
@@ -71,8 +73,12 @@ public interface FoodGroupKey {
         };
     });
     Function<Identifier, FoodGroupKey> TAG_ID_LOOKUP = id -> TAG_LOOKUP.apply(TagKey.of(RegistryKeys.ITEM, id));
+
     Codec<FoodGroupKey> CODEC = Identifier.CODEC.xmap(LOOKUP, FoodGroupKey::id);
     Codec<FoodGroupKey> TAG_CODEC = TagKey.unprefixedCodec(RegistryKeys.ITEM).xmap(TAG_LOOKUP, k -> TagKey.of(RegistryKeys.ITEM, k.id()));
+
+    PacketCodec<ByteBuf, FoodGroupKey> PACKET_CODEC = Identifier.PACKET_CODEC.xmap(LOOKUP, FoodGroupKey::id);
+    PacketCodec<ByteBuf, FoodGroupKey> TAG_PACKET_CODEC = Identifier.PACKET_CODEC.xmap(id -> TAG_LOOKUP.apply(TagKey.of(RegistryKeys.ITEM, id)), FoodGroupKey::id);
 
     Identifier id();
 

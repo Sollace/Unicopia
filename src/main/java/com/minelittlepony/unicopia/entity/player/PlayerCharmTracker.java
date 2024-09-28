@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.util.NbtSerialisable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 
@@ -71,7 +72,7 @@ public class PlayerCharmTracker implements NbtSerialisable, Copyable<PlayerCharm
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         NbtList equippedSpells = new NbtList();
         for (CustomisedSpellType<?> spell : handSpells) {
             equippedSpells.add(spell.toNbt(new NbtCompound()));
@@ -80,7 +81,7 @@ public class PlayerCharmTracker implements NbtSerialisable, Copyable<PlayerCharm
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         if (compound.contains("handSpells", NbtElement.LIST_TYPE)) {
             NbtList list = compound.getList("handSpells", NbtElement.COMPOUND_TYPE);
             for (int i = 0; i < handSpells.length && i < list.size(); i++) {

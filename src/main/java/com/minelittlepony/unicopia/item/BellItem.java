@@ -1,8 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
 import java.util.List;
-import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.Creature;
@@ -15,7 +13,6 @@ import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.IllagerEntity;
@@ -23,6 +20,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.text.Text;
@@ -44,12 +42,12 @@ public class BellItem extends Item implements ChargeableItem {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> list, TooltipType type) {
         list.add(Text.translatable(getTranslationKey() + ".charges", (int)Math.floor(ChargeableItem.getEnergy(stack)), getMaxCharge()));
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack) {
+    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
         return 3000;
     }
 
@@ -109,7 +107,7 @@ public class BellItem extends Item implements ChargeableItem {
 
         Living.getOrEmpty(userEntity).ifPresent(user -> {
             user.getTarget().ifPresent(living -> {
-                float maxUseTime = getMaxUseTime(stack);
+                float maxUseTime = getMaxUseTime(stack, userEntity);
                 float progress = (maxUseTime - remainingUseTicks) / maxUseTime;
 
                 if (tickDraining(user, living, stack, progress)) {

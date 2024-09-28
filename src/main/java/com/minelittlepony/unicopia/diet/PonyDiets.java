@@ -1,23 +1,25 @@
 package com.minelittlepony.unicopia.diet;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.effect.FoodPoisoningStatusEffect;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.ItemDuck;
-import net.minecraft.client.item.TooltipContext;
+import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
+
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -27,11 +29,28 @@ import net.minecraft.world.World;
 
 public class PonyDiets implements DietView {
     private final Map<Race, DietProfile> diets;
-    private final Map<Identifier, Effect> effects;
+    private final Map<Identifier, FoodGroup> effects;
 
     private static PonyDiets INSTANCE = new PonyDiets(Map.of(), Map.of());
 
+    public static final PacketCodec<RegistryByteBuf, PonyDiets> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.map(HashMap::new, PacketCodecs.registryValue(Race.REGISTRY_KEY), DietProfile.PACKET_CODEC), diets -> diets.diets,
+            FoodGroup.PACKET_CODEC.collect(PacketCodecUtils.toMap(FoodGroup::id)), diets -> diets.effects,
+            PonyDiets::new
+    );
+
+    /*public static final PacketCodec<RegistryByteBuf, PonyDiets> PACKET_CODEC = PacketCodec.ofStatic((buffer, diets) -> {
+        buffer.writeMap(diets.diets, (b, r) -> b.writeRegistryKey(Race.REGISTRY.getKey(r).get()), (b, e) -> e.toBuffer(b));
+        buffer.writeCollection(diets.effects.values(), (b, e) -> e.toBuffer(b));
+    }, buffer -> {
+        return new PonyDiets(
+                buffer.readMap(b -> Race.REGISTRY.get(b.readRegistryKey(Race.REGISTRY_KEY)), DietProfile::new),
+                FoodGroup.PACKET_CODEC.collect(PacketCodecUtils.toMap(FoodGroup::id)).decode(buffer)
+        );
+    });*/
+
     public static PonyDiets getInstance() {
+
         return INSTANCE;
     }
 
@@ -44,21 +63,9 @@ public class PonyDiets implements DietView {
         INSTANCE = diets;
     }
 
-    PonyDiets(Map<Race, DietProfile> diets, Map<Identifier, Effect> effects) {
+    PonyDiets(Map<Race, DietProfile> diets, Map<Identifier, FoodGroup> effects) {
         this.diets = diets;
         this.effects = effects;
-    }
-
-    public PonyDiets(PacketByteBuf buffer) {
-        this(
-                buffer.readMap(b -> b.readRegistryValue(Race.REGISTRY), DietProfile::new),
-                buffer.readCollection(ArrayList::new, FoodGroup::new).stream().collect(Collectors.toMap(FoodGroup::id, Function.identity()))
-        );
-    }
-
-    public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeMap(diets, (b, r) -> b.writeRegistryValue(Race.REGISTRY, r), (b, e) -> e.toBuffer(b));
-        buffer.writeCollection(effects.values(), (b, e) -> e.toBuffer(b));
     }
 
     private DietProfile getDiet(Pony pony) {
@@ -66,7 +73,7 @@ public class PonyDiets implements DietView {
     }
 
     Effect getEffects(ItemStack stack) {
-        return effects.values().stream().filter(effect -> effect.test(stack)).findFirst().orElse(Effect.EMPTY);
+        return effects.values().stream().filter(effect -> effect.test(stack)).findFirst().map(Effect.class::cast).orElse(Effect.EMPTY);
     }
 
     private Effect getEffects(ItemStack stack, Pony pony) {
@@ -88,10 +95,10 @@ public class PonyDiets implements DietView {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable PlayerEntity user, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, @Nullable PlayerEntity user, List<Text> tooltip, TooltipType context) {
 
         if (initEdibility(stack, user)) {
-            if (!((ItemDuck)stack.getItem()).getOriginalFoodComponent().isEmpty() || stack.getItem().getFoodComponent() != null) {
+            if (!((ItemDuck)stack.getItem()).getOriginalFoodComponent().isEmpty() || stack.contains(DataComponentTypes.FOOD)) {
                 Pony pony = Pony.of(user);
 
                 tooltip.add(Text.translatable("unicopia.diet.information").formatted(Formatting.DARK_PURPLE));
@@ -107,14 +114,14 @@ public class PonyDiets implements DietView {
         return Pony.of(user).filter(pony -> {
             DietProfile diet = getDiet(pony);
 
-            if (!stack.isFood() && pony.getObservedSpecies().hasIronGut()) {
+            if (!stack.contains(DataComponentTypes.FOOD) && pony.getObservedSpecies().hasIronGut()) {
                 diet.findEffect(stack)
                     .flatMap(Effect::foodComponent)
                     .or(() -> getEffects(stack).foodComponent())
                     .ifPresent(item::setFoodComponent);
             }
 
-            if (stack.isFood()) {
+            if (stack.contains(DataComponentTypes.FOOD)) {
                 item.setFoodComponent(diet.getAdjustedFoodComponent(stack));
             }
 

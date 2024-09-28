@@ -5,7 +5,6 @@ import java.util.UUID;
 import com.minelittlepony.api.model.BodyPart;
 import com.minelittlepony.api.model.PonyModel;
 import com.minelittlepony.api.model.gear.Gear;
-import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer.BraceletModel;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
@@ -19,10 +18,11 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.SkinTextures.Model;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.DyeableItem;
 import net.minecraft.util.Arm;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
 class BangleGear implements Gear {
@@ -66,9 +66,11 @@ class BangleGear implements Gear {
     @Override
     public void pose(PonyModel<?> model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
         alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getSkinTextures().model() == Model.SLIM;
+        color = Colors.WHITE;
+        glowing = false;
         FriendshipBraceletItem.getWornBangles((LivingEntity)entity, slot).findFirst().ifPresent(bracelet -> {
-            color = ((DyeableItem)bracelet.stack().getItem()).getColor(bracelet.stack());
-            glowing = ((GlowableItem)bracelet.stack().getItem()).isGlowing(bracelet.stack());
+            color = DyedColorComponent.getColor(bracelet.stack(), Colors.WHITE);
+            glowing = GlowableItem.isGlowing(bracelet.stack());
         });
         BraceletModel m = alex ? alexModel : steveModel;
 
@@ -80,8 +82,8 @@ class BangleGear implements Gear {
     }
 
     @Override
-    public void render(MatrixStack stack, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha, UUID interpolatorId) {
+    public void render(MatrixStack stack, VertexConsumer consumer, int light, int overlay, int color, UUID interpolatorId) {
         BraceletModel m = alex ? alexModel : steveModel;
-        m.render(stack, consumer, glowing ? 0x0F00F0 : light, overlay, Color.r(color), Color.g(color), Color.b(color), 1);
+        m.render(stack, consumer, glowing ? 0x0F00F0 : light, overlay, this.color);
     }
 }

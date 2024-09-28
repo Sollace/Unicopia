@@ -15,11 +15,13 @@ import net.minecraft.block.TransparentBlock;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -101,7 +103,8 @@ public class JarBlock extends TransparentBlock implements Waterloggable {
     @Override
     public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
         super.afterBreak(world, player, pos, state, blockEntity, tool);
-        if (!EnchantmentHelper.hasSilkTouch(tool) && !player.shouldCancelInteraction()) {
+        // TODO: Enchantment tag
+        if (EnchantmentHelper.getLevel(world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(Enchantments.SILK_TOUCH).get(), tool) == 0 && !player.shouldCancelInteraction()) {
             if (asItem() instanceof WeatherJarItem jar) {
                 jar.releaseContents(world, pos);
             }

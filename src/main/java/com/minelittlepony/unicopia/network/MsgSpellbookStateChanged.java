@@ -6,6 +6,7 @@ import com.sollace.fabwork.api.packets.HandledPacket;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
@@ -21,14 +22,14 @@ public record MsgSpellbookStateChanged<T extends PlayerEntity> (
         return new MsgSpellbookStateChanged<>(handler.syncId, state);
     }
 
-    public MsgSpellbookStateChanged(PacketByteBuf buffer) {
-        this(buffer.readInt(), new SpellbookState().fromPacket(buffer));
+    public MsgSpellbookStateChanged(RegistryByteBuf buffer) {
+        this(buffer.readInt(), SpellbookState.PACKET_CODEC.decode(buffer));
     }
 
     @Override
     public void toBuffer(PacketByteBuf buffer) {
         buffer.writeInt(syncId);
-        state.toPacket(buffer);
+        SpellbookState.PACKET_CODEC.encode((RegistryByteBuf)buffer, state);
     }
 
     @Override

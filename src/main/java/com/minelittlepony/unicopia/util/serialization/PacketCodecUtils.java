@@ -1,6 +1,11 @@
 package com.minelittlepony.unicopia.util.serialization;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.IntFunction;
+
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -30,4 +35,40 @@ public interface PacketCodecUtils {
     );
     PacketCodec<PacketByteBuf, Optional<Vec3d>> OPTIONAL_VECTOR = PacketCodecs.optional(VECTOR);
     PacketCodec<ByteBuf, Optional<BlockPos>> OPTIONAL_POS = PacketCodecs.optional(BlockPos.PACKET_CODEC);
+
+    static <B extends ByteBuf, K, V> PacketCodec.ResultFunction<B, V, Map<K, V>> toMap(Function<V, K> keyFunction) {
+        return codec -> map(HashMap::new, codec, keyFunction, -1);
+    }
+
+    static <B extends ByteBuf, K, V, C extends Map<K, V>> PacketCodec<B, C> map(
+            IntFunction<C> factory,
+            PacketCodec<? super B, V> elementCodec,
+            Function<V, K> keyFunction,
+            int maxSize
+        ) {
+            return new PacketCodec<>() {
+                @Override
+                public C decode(B byteBuf) {
+                    int i = PacketCodecs.readCollectionSize(byteBuf, maxSize);
+                    C collection = factory.apply(Math.min(i, 65536));
+
+                    for (int j = 0; j < i; j++) {
+                        V v = elementCodec.decode(byteBuf);
+                        K k = keyFunction.apply(v);
+                        collection.put(k, v);
+                    }
+
+                    return collection;
+                }
+
+                @Override
+                public void encode(B byteBuf, C collection) {
+                    PacketCodecs.writeCollectionSize(byteBuf, collection.size(), maxSize);
+
+                    for (V object : collection.values()) {
+                        elementCodec.encode(byteBuf, object);
+                    }
+                }
+            };
+        }
 }

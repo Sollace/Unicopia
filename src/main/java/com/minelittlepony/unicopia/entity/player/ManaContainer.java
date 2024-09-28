@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
 
 class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyable<ManaContainer> {
@@ -44,13 +45,13 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        bars.forEach((key, bar) -> compound.put(key, bar.toNBT()));
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        bars.forEach((key, bar) -> compound.put(key, bar.toNBT(lookup)));
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        bars.forEach((key, bar) -> bar.fromNBT(compound.getCompound(key)));
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        bars.forEach((key, bar) -> bar.fromNBT(compound.getCompound(key), lookup));
     }
 
     @Override
@@ -227,13 +228,13 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
         }
 
         @Override
-        public void toNBT(NbtCompound compound) {
+        public void toNBT(NbtCompound compound, WrapperLookup lookup) {
             compound.putFloat("shadow", trailingValue);
             compound.putFloat("value", get());
         }
 
         @Override
-        public void fromNBT(NbtCompound compound) {
+        public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
             trailingValue = compound.getFloat("shadow");
             load(compound.getFloat("value"));
         }

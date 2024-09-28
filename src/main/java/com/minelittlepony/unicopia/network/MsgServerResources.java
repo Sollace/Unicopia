@@ -10,6 +10,9 @@ import com.minelittlepony.unicopia.diet.PonyDiets;
 import com.sollace.fabwork.api.packets.Packet;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.Identifier;
 
 public record MsgServerResources (
@@ -17,7 +20,15 @@ public record MsgServerResources (
         Map<Identifier, ?> chapters,
         Map<Identifier, TreeTypeLoader.TreeTypeDef> treeTypes,
         PonyDiets diets
-    ) implements Packet {
+    ) {
+    public static final PacketCodec<RegistryByteBuf, MsgServerResources> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.map(HashMap::new, Identifier.PACKET_CODEC, SpellTraits.PACKET_CODEC), MsgServerResources::traits,
+            PacketCodecs.map(HashMap::new, Identifier.PACKET_CODEC, null), MsgServerResources::chapters,
+            PacketCodecs.map(HashMap::new, Identifier.PACKET_CODEC, TreeTypeLoader.TreeTypeDef.PACKET_CODEC), MsgServerResources::treeTypes,
+            PonyDiets.PACKET_CODEC, MsgServerResources::diets,
+            MsgServerResources::new
+    );
+
     public MsgServerResources() {
         this(
             SpellTraits.all(),
@@ -25,22 +36,5 @@ public record MsgServerResources (
             TreeTypeLoader.INSTANCE.getEntries(),
             PonyDiets.getInstance()
         );
-    }
-
-    public MsgServerResources(PacketByteBuf buffer) {
-        this(
-            buffer.readMap(PacketByteBuf::readIdentifier, SpellTraits::fromPacket),
-            InteractionManager.getInstance().readChapters(buffer),
-            buffer.readMap(PacketByteBuf::readIdentifier, TreeTypeLoader.TreeTypeDef::new),
-            new PonyDiets(buffer)
-        );
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeMap(traits, PacketByteBuf::writeIdentifier, (r, v) -> v.write(r));
-        buffer.writeMap(chapters, PacketByteBuf::writeIdentifier, (r, v) -> ((SpellbookChapterLoader.Chapter)v).write(r));
-        buffer.writeMap(treeTypes, PacketByteBuf::writeIdentifier, (r, v) -> v.write(r));
-        diets.toBuffer(buffer);
     }
 }

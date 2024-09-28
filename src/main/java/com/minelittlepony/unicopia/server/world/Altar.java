@@ -12,15 +12,15 @@ import com.minelittlepony.unicopia.entity.mob.FloatingArtefactEntity;
 import com.minelittlepony.unicopia.entity.mob.SpellbookEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.CodecUtils;
 import com.minelittlepony.unicopia.util.PosHelper;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
@@ -43,17 +43,10 @@ public record Altar(
 ) {
     private static final Direction[] HORIZONTALS = { Direction.SOUTH, Direction.WEST, Direction.NORTH, Direction.EAST };
     private static final Predicate<Entity> IS_PARTICIPANT = EntityPredicates.VALID_ENTITY.and(e -> e instanceof FloatingArtefactEntity || e instanceof SpellbookEntity);
-    public static final NbtSerialisable.Serializer<Altar> SERIALIZER = NbtSerialisable.Serializer.of(nbt -> {
-        return new Altar(
-            NbtSerialisable.BLOCK_POS.read(nbt.getCompound("origin")),
-            new HashSet<>(NbtSerialisable.BLOCK_POS.readAll(nbt.getList("pillars", NbtElement.COMPOUND_TYPE)).toList())
-        );
-    }, altar -> {
-        NbtCompound compound = new NbtCompound();
-        compound.put("origin", NbtSerialisable.BLOCK_POS.write(altar.origin));
-        compound.put("pillars", NbtSerialisable.BLOCK_POS.writeAll(altar.pillars));
-        return compound;
-    });
+    public static final Codec<Altar> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        BlockPos.CODEC.fieldOf("origin").forGetter(Altar::origin),
+        CodecUtils.setOf(BlockPos.CODEC).fieldOf("pillars").forGetter(Altar::pillars)
+    ).apply(instance, Altar::new));
 
     private static final int INNER_RADIUS = 4;
     private static final int PILLAR_OFFSET_FROM_CENTER = 2;

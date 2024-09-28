@@ -6,21 +6,22 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import com.google.common.base.Suppliers;
-import com.minelittlepony.unicopia.diet.DietView;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.ItemImpl.GroundTickCallback;
 import com.minelittlepony.unicopia.item.ItemDuck;
-import net.minecraft.item.FoodComponent;
+
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.Item;
 
 @Mixin(Item.class)
-abstract class MixinItem implements ItemDuck, DietView.Holder {
+abstract class MixinItem implements ItemDuck {
     private final List<ItemImpl.GroundTickCallback> tickCallbacks = new ArrayList<>();
+
+    @Deprecated
     private final Supplier<Optional<FoodComponent>> originalFoodComponent = Suppliers.memoize(() -> {
-        return Optional.ofNullable(((Item)(Object)this).getFoodComponent());
+        return Optional.ofNullable(((Item)(Object)this).getComponents().get(DataComponentTypes.FOOD));
     });
 
     @Override
@@ -28,11 +29,7 @@ abstract class MixinItem implements ItemDuck, DietView.Holder {
         return tickCallbacks;
     }
 
-    @Override
-    @Mutable
-    @Accessor("foodComponent")
-    public abstract void setFoodComponent(FoodComponent food);
-
+    @Deprecated
     @Override
     public Optional<FoodComponent> getOriginalFoodComponent() {
         return originalFoodComponent.get();

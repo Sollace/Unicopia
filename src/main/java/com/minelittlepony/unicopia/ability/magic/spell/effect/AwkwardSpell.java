@@ -16,6 +16,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class AwkwardSpell extends AbstractSpell implements TimedSpell {
 
@@ -65,18 +66,20 @@ public class AwkwardSpell extends AbstractSpell implements TimedSpell {
             && type != ParticleTypes.SMOKE
             && type != ParticleTypes.EXPLOSION
             && type != ParticleTypes.EXPLOSION_EMITTER
-            && type != ParticleTypes.AMBIENT_ENTITY_EFFECT;
+            && type != ParticleTypes.ENTITY_EFFECT
+            && type != ParticleTypes.EFFECT
+            && type != ParticleTypes.INSTANT_EFFECT;
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        timer.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        timer.toNBT(compound, lookup);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        timer.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
+        timer.fromNBT(compound, lookup);
     }
 }

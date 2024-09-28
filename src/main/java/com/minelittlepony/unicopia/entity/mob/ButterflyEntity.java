@@ -1,13 +1,9 @@
 package com.minelittlepony.unicopia.entity.mob;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
@@ -15,9 +11,9 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.item.ButterflyItem;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.SpawnReason;
@@ -27,16 +23,20 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.entity.mob.AmbientEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -73,6 +73,7 @@ public class ButterflyEntity extends AmbientEntity {
     }
 
     public static boolean canSpawn(EntityType<? extends ButterflyEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        // TODO: Uncomment this
         return true;//world.getBlockState(pos.down()).isIn(UTags.Blocks.BUTTERFLIES_SPAWNABLE_ON);
     }
 
@@ -104,10 +105,10 @@ public class ButterflyEntity extends AmbientEntity {
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        getDataTracker().startTracking(VARIANT, Variant.BUTTERFLY.ordinal());
-        getDataTracker().startTracking(RESTING, false);
+    protected void initDataTracker(Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(VARIANT, Variant.BUTTERFLY.ordinal());
+        builder.add(RESTING, false);
     }
 
     @Override
@@ -331,11 +332,6 @@ public class ButterflyEntity extends AmbientEntity {
     }
 
     @Override
-    public float getEyeHeight(EntityPose pose) {
-        return getHeight() / 2;
-    }
-
-    @Override
     public ItemEntity dropStack(ItemStack stack, float yOffset) {
         return super.dropStack(ButterflyItem.setVariant(stack, getVariant()), yOffset);
     }
@@ -345,8 +341,12 @@ public class ButterflyEntity extends AmbientEntity {
         super.writeCustomDataToNbt(nbt);
         nbt.putInt("ticksResting", ticksResting);
         nbt.putInt("breedingCooldown", breedingCooldown);
-        NbtSerialisable.BLOCK_POS.writeOptional("hoveringPosition", nbt, hoveringPosition);
-        NbtSerialisable.BLOCK_POS.writeOptional("flowerPosition", nbt, flowerPosition);
+        hoveringPosition.ifPresent(pos -> {
+            nbt.put("hoveringPosition", NbtSerialisable.encode(BlockPos.CODEC, pos));
+        });
+        flowerPosition.ifPresent(pos -> {
+            nbt.put("flowerPosition", NbtSerialisable.encode(BlockPos.CODEC, pos));
+        });
         NbtCompound visited = new NbtCompound();
         this.visited.forEach((pos, time) -> {
             visited.putLong(String.valueOf(pos.asLong()), time);
@@ -359,8 +359,8 @@ public class ButterflyEntity extends AmbientEntity {
         super.readCustomDataFromNbt(nbt);
         ticksResting = nbt.getInt("ticksResting");
         breedingCooldown = nbt.getInt("breedingCooldown");
-        hoveringPosition = NbtSerialisable.BLOCK_POS.readOptional("hoveringPosition", nbt);
-        flowerPosition = NbtSerialisable.BLOCK_POS.readOptional("flowerPosition", nbt);
+        hoveringPosition = NbtSerialisable.decode(BlockPos.CODEC, nbt.get("hoveringPosition"));
+        flowerPosition = NbtSerialisable.decode(BlockPos.CODEC, nbt.get("flowerPosition"));
         NbtCompound visited = nbt.getCompound("visited");
         this.visited.clear();
         visited.getKeys().forEach(key -> {
@@ -370,7 +370,7 @@ public class ButterflyEntity extends AmbientEntity {
         });
     }
 
-    public enum Variant {
+    public enum Variant implements StringIdentifiable {
         BUTTERFLY,
         YELLOW,
         LIME,
@@ -388,9 +388,12 @@ public class ButterflyEntity extends AmbientEntity {
         BRIMSTONE;
 
         public static final Variant[] VALUES = Variant.values();
-        private static final Map<String, Variant> REGISTRY = Arrays.stream(VALUES).collect(Collectors.toMap(a -> a.name().toLowerCase(Locale.ROOT), Function.identity()));
 
-        private final Identifier skin = Unicopia.id("textures/entity/butterfly/" + name().toLowerCase(Locale.ROOT) + ".png");
+        public static final EnumCodec<Variant> CODEC = StringIdentifiable.createCodec(Variant::values);
+        public static final PacketCodec<ByteBuf, Variant> PACKET_CODEC = PacketCodecs.indexed(i -> VALUES[i], Variant::ordinal);
+
+        private final String name = name().toLowerCase(Locale.ROOT);
+        private final Identifier skin = Unicopia.id("textures/entity/butterfly/" + name + ".png");
 
         public Identifier getSkin() {
             return skin;
@@ -405,7 +408,12 @@ public class ButterflyEntity extends AmbientEntity {
         }
 
         public static Variant byName(String name) {
-            return REGISTRY.getOrDefault(name == null ? "" : name, BUTTERFLY);
+            return CODEC.byId(name, BUTTERFLY);
+        }
+
+        @Override
+        public String asString() {
+            return name;
         }
     }
 }

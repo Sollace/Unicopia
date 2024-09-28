@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 
 public abstract class Synchronizable<T extends Synchronizable<T>> {
 
-    private Optional<Consumer<T>> synchronizer = Optional.empty();
+    Optional<Consumer<T>> synchronizer = Optional.empty();
 
     @SuppressWarnings("unchecked")
     public void synchronize() {
@@ -14,6 +14,10 @@ public abstract class Synchronizable<T extends Synchronizable<T>> {
 
     public void setSynchronizer(Consumer<T> synchronizer) {
         this.synchronizer = Optional.of(synchronizer);
+    }
+
+    public void copySyncronizer(T old) {
+        synchronizer = old.synchronizer;
     }
 
     public abstract void copyFrom(T state);

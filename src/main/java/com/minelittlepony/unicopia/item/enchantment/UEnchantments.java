@@ -18,8 +18,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.Registries;
 
 public interface UEnchantments {
-
-    List<SimpleEnchantment> REGISTRY = new ArrayList<>();
+    List<RegistryEntry<Enchantment>> REGISTRY = new ArrayList<>();
 
     /**
      * Makes a sound when there are interesting blocks in your area.
@@ -136,8 +135,9 @@ public interface UEnchantments {
 
     static void bootstrap() { }
 
-    static <T extends SimpleEnchantment> T register(String name, T enchantment) {
-        REGISTRY.add(enchantment);
-        return Registry.registerReference(Registries.ENCHANTMENT, Unicopia.id(name), enchantment);
+    static <T extends SimpleEnchantment> RegistryEntry<Enchantment> register(String name, T enchantment) {
+        var entry = Registry.registerReference(Registries.ENCHANTMENT, Unicopia.id(name), enchantment);
+        REGISTRY.add(entry);
+        return entry;
     }
 }

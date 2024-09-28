@@ -2,13 +2,11 @@ package com.minelittlepony.unicopia.recipe;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.*;
-
+import com.minelittlepony.unicopia.server.world.gen.ULootTableEntryType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 
-import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
-import net.minecraft.loot.LootTable;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.CuttingRecipe;
@@ -20,7 +18,6 @@ import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
 public interface URecipes {
@@ -69,27 +66,6 @@ public interface URecipes {
     }
 
     static void bootstrap() {
-        LootTableEvents.MODIFY.register((res, manager, id, supplier, setter) -> {
-            if (!"minecraft".contentEquals(id.getNamespace())) {
-                return;
-            }
-
-            Identifier modId = new Identifier("unicopiamc", id.getPath());
-            LootTable table = manager.getLootTable(modId);
-
-            if (table != LootTable.EMPTY) {
-                if (id.getPath().startsWith("blocks/") || supplier.build().pools.isEmpty()) {
-                    for (var pool : table.pools) {
-                        supplier.pool(pool);
-                    }
-                } else {
-                    supplier.modifyPools(poolBuilder -> {
-                        for (var pool : table.pools) {
-                            poolBuilder.with(pool.entries);
-                        }
-                    });
-                }
-            }
-        });
+        ULootTableEntryType.bootstrap();
     }
 }

@@ -52,13 +52,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
 
     private static ItemStack fill(ItemStack stack) {
         Item item = ITEM_MAP.get().getOrDefault(stack.getItem(), stack.getItem());
-        if (item == stack.getItem()) {
-            return stack;
-        }
-        ItemStack newStack = item.getDefaultStack();
-        newStack.setNbt(stack.getNbt());
-        newStack.setCount(stack.getCount());
-        return newStack;
+        return item == stack.getItem() ? stack : stack.withItem(item);
     }
 
     public CrystalHeartItem(Settings settings) {

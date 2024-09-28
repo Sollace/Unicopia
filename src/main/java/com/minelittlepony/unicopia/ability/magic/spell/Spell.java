@@ -138,7 +138,7 @@ public interface Spell extends NbtSerialisable, Affine {
     static <T extends Spell> T readNbt(@Nullable NbtCompound compound, WrapperLookup lookup) {
         try {
             if (compound != null) {
-                return CustomisedSpellType.<T>fromNBT(compound).create(compound);
+                return CustomisedSpellType.<T>fromNBT(compound).create(compound, lookup);
             }
         } catch (Exception e) {
             Unicopia.LOGGER.fatal("Invalid spell nbt {}", e);

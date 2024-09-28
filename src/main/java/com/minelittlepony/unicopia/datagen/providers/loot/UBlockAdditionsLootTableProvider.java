@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.datagen.providers.loot;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import com.minelittlepony.unicopia.UTags;
@@ -31,6 +32,7 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.biome.BiomeKeys;
 
@@ -44,8 +46,8 @@ public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvid
             LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(BiomeKeys.OCEAN))
         .or(LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(BiomeKeys.BEACH)));
 
-    public UBlockAdditionsLootTableProvider(FabricDataOutput dataOutput) {
-        super(dataOutput);
+    public UBlockAdditionsLootTableProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
+        super(dataOutput, registryLookup);
     }
 
     @Override

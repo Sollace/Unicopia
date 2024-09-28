@@ -12,11 +12,10 @@ import com.minelittlepony.unicopia.server.world.UTreeGen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
@@ -101,7 +100,7 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(UTags.Blocks.KICKS_UP_DUST).forceAddTag(BlockTags.SAND).add(
                 Blocks.SUSPICIOUS_SAND,
                 Blocks.GRAVEL, Blocks.SUSPICIOUS_GRAVEL
-        ).forceAddTag(TagKey.of(RegistryKeys.BLOCK, new Identifier("c", "concrete_powders")));
+        ).forceAddTag(ConventionalBlockTags.CONCRETES);
 
         getOrCreateTagBuilder(UTags.Blocks.UNAFFECTED_BY_GROW_ABILITY).add(Blocks.GRASS_BLOCK);
         addSeasonalCrops();
@@ -252,9 +251,7 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     }
 
     private void populateConventionalTags() {
-        getOrCreateTagBuilder(UConventionalTags.Blocks.CONCRETES).add(Arrays.stream(DyeColor.values()).map(i -> Registries.BLOCK.get(new Identifier(i.getName() + "_concrete"))).toArray(Block[]::new));
-        getOrCreateTagBuilder(UConventionalTags.Blocks.CONCRETE_POWDERS).add(Arrays.stream(DyeColor.values()).map(i -> Registries.BLOCK.get(new Identifier(i.getName() + "_concrete_powder"))).toArray(Block[]::new));
-        getOrCreateTagBuilder(UConventionalTags.Blocks.GLAZED_TERRACOTTAS).add(Arrays.stream(DyeColor.values()).map(i -> Registries.BLOCK.get(new Identifier(i.getName() + "_glazed_terracotta"))).toArray(Block[]::new));
+        getOrCreateTagBuilder(UConventionalTags.Blocks.CONCRETE_POWDERS).add(Arrays.stream(DyeColor.values()).map(i -> Registries.BLOCK.get(Identifier.of(i.getName() + "_concrete_powder"))).toArray(Block[]::new));
         getOrCreateTagBuilder(UConventionalTags.Blocks.CORAL_BLOCKS).add(Blocks.TUBE_CORAL_BLOCK, Blocks.BRAIN_CORAL_BLOCK, Blocks.BUBBLE_CORAL_BLOCK, Blocks.FIRE_CORAL_BLOCK, Blocks.HORN_CORAL_BLOCK);
         getOrCreateTagBuilder(UConventionalTags.Blocks.CORAL_FANS).add(Blocks.TUBE_CORAL_FAN, Blocks.BRAIN_CORAL_FAN, Blocks.BUBBLE_CORAL_FAN, Blocks.FIRE_CORAL_FAN, Blocks.HORN_CORAL_FAN);
         getOrCreateTagBuilder(UConventionalTags.Blocks.CORALS).add(Blocks.TUBE_CORAL, Blocks.BRAIN_CORAL, Blocks.BUBBLE_CORAL, Blocks.FIRE_CORAL, Blocks.HORN_CORAL);

@@ -18,18 +18,18 @@ public class UDimensionTypeTagProvider extends FabricTagProvider<DimensionType> 
     @Override
     protected void configure(WrapperLookup lookup) {
         getOrCreateTagBuilder(UTags.DimensionTypes.HAS_NO_ATMOSPHERE)
-            .addOptional(new Identifier("ad_astra", "earth_orbit"))
-            .addOptional(new Identifier("ad_astra", "glacio_orbit"))
-            .addOptional(new Identifier("ad_astra", "mars_orbit"))
-            .addOptional(new Identifier("ad_astra", "mercury_orbit"))
-            .addOptional(new Identifier("ad_astra", "moon")).addOptional(new Identifier("adastra", "moon_orbit"))
-            .addOptional(new Identifier("ad_astra", "venus_orbit"))
+            .addOptional(Identifier.of("ad_astra", "earth_orbit"))
+            .addOptional(Identifier.of("ad_astra", "glacio_orbit"))
+            .addOptional(Identifier.of("ad_astra", "mars_orbit"))
+            .addOptional(Identifier.of("ad_astra", "mercury_orbit"))
+            .addOptional(Identifier.of("ad_astra", "moon")).addOptional(Identifier.of("adastra", "moon_orbit"))
+            .addOptional(Identifier.of("ad_astra", "venus_orbit"))
 
-            .addOptional(new Identifier("adastra", "earth_orbit"))
-            .addOptional(new Identifier("adastra", "glacio_orbit"))
-            .addOptional(new Identifier("adastra", "mars_orbit"))
-            .addOptional(new Identifier("adastra", "mercury_orbit"))
-            .addOptional(new Identifier("adastra", "moon")).addOptional(new Identifier("adastra", "moon_orbit"))
-            .addOptional(new Identifier("adastra", "venus_orbit"));
+            .addOptional(Identifier.of("adastra", "earth_orbit"))
+            .addOptional(Identifier.of("adastra", "glacio_orbit"))
+            .addOptional(Identifier.of("adastra", "mars_orbit"))
+            .addOptional(Identifier.of("adastra", "mercury_orbit"))
+            .addOptional(Identifier.of("adastra", "moon")).addOptional(Identifier.of("adastra", "moon_orbit"))
+            .addOptional(Identifier.of("adastra", "venus_orbit"));
     }
 }

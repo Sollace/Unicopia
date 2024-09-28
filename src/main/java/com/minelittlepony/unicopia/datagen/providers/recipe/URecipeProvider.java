@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
@@ -28,8 +29,8 @@ import com.mojang.datafixers.util.Either;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.fabricmc.fabric.api.resource.conditions.v1.DefaultResourceConditions;
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
+import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
@@ -49,6 +50,7 @@ import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -57,8 +59,8 @@ import net.minecraft.util.Identifier;
 
 public class URecipeProvider extends FabricRecipeProvider {
     private static final List<Item> WOOLS = List.of(Items.BLACK_WOOL, Items.BLUE_WOOL, Items.BROWN_WOOL, Items.CYAN_WOOL, Items.GRAY_WOOL, Items.GREEN_WOOL, Items.LIGHT_BLUE_WOOL, Items.LIGHT_GRAY_WOOL, Items.LIME_WOOL, Items.MAGENTA_WOOL, Items.ORANGE_WOOL, Items.PINK_WOOL, Items.PURPLE_WOOL, Items.RED_WOOL, Items.YELLOW_WOOL, Items.WHITE_WOOL);
-    public URecipeProvider(FabricDataOutput output) {
-        super(output);
+    public URecipeProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+        super(output, registriesFuture);
     }
 
     @Override
@@ -90,7 +92,7 @@ public class URecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter, convertBetween(UItems.SUNGLASSES, UItems.BROKEN_SUNGLASSES));
 
         // farmers delight
-        offerFarmersDelightCuttingRecipes(withConditions(exporter, DefaultResourceConditions.allModsLoaded("farmersdelight")));
+        offerFarmersDelightCuttingRecipes(withConditions(exporter, ResourceConditions.allModsLoaded("farmersdelight")));
     }
 
     private void generateVanillaRecipeExtensions(RecipeExporter exporter) {
@@ -732,7 +734,7 @@ public class URecipeProvider extends FabricRecipeProvider {
             CuttingBoardRecipeJsonBuilder.create(stripped, ItemTags.AXES)
                 .input(unstripped).criterion(hasItem(unstripped), conditionsFromItem(unstripped))
                 .sound(SoundEvents.ITEM_AXE_STRIP)
-                .result(new Identifier("farmersdelight:tree_bark"))
+                .result(Identifier.of("farmersdelight:tree_bark"))
                 .offerTo(exporter, convertBetween(stripped, unstripped));
         });
     }

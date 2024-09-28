@@ -2,10 +2,11 @@ package com.minelittlepony.unicopia.entity.effect;
 
 import com.minelittlepony.unicopia.InteractionManager;
 
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.StringHelper;
@@ -23,7 +24,7 @@ public interface EffectUtils {
         return getAmplifier(entity, UEffects.BROKEN_WINGS) > 1;
     }
 
-    static int getAmplifier(LivingEntity entity, StatusEffect effect) {
+    static int getAmplifier(LivingEntity entity, RegistryEntry<StatusEffect> effect) {
         return entity.hasStatusEffect(effect) ? entity.getStatusEffect(effect).getAmplifier() + 1 : 0;
     }
 
@@ -35,7 +36,7 @@ public interface EffectUtils {
         return entity.hasStatusEffect(UEffects.FORTIFICATION);
     }
 
-    static boolean applyStatusEffect(LivingEntity entity, StatusEffect effect, boolean apply) {
+    static boolean applyStatusEffect(LivingEntity entity, RegistryEntry<StatusEffect> effect, boolean apply) {
         if (entity.getWorld().isClient) {
             return false;
         }
@@ -62,14 +63,14 @@ public interface EffectUtils {
 
     static Text formatModifierChange(String modifierName, float change, boolean isDetrimental) {
         return Text.literal(" ").append(Text.translatable("attribute.modifier." + (change > 0 ? "plus" : "take") + ".0",
-                ItemStack.MODIFIER_FORMAT.format(Math.abs(change)),
+                AttributeModifiersComponent.DECIMAL_FORMAT.format(Math.abs(change)),
                 Text.translatable(modifierName)
         ).formatted((isDetrimental ? change : -change) < 0 ? Formatting.DARK_GREEN : Formatting.RED));
     }
 
     static Text formatModifierChange(Text modifierName, float change, boolean isDetrimental) {
         return Text.literal(" ").append(Text.translatable("attribute.modifier." + (change > 0 ? "plus" : "take") + ".0",
-                ItemStack.MODIFIER_FORMAT.format(Math.abs(change)),
+                AttributeModifiersComponent.DECIMAL_FORMAT.format(Math.abs(change)),
                modifierName
         ).formatted((isDetrimental ? change : -change) < 0 ? Formatting.DARK_GREEN : Formatting.RED));
     }

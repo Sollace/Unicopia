@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -32,10 +33,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -248,19 +247,16 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static Optional<SpellTraits> getEmbeddedTraits(ItemStack stack) {
-        if (!stack.hasNbt() || !stack.getNbt().contains("spell_traits", NbtElement.COMPOUND_TYPE)) {
-            return Optional.empty();
-        }
-        return fromNbt(stack.getNbt().getCompound("spell_traits"));
+        return Optional.ofNullable(stack.get(UDataComponentTypes.SPELL_TRAITS));
     }
 
     public ItemStack applyTo(ItemStack stack) {
         stack = stack.copy();
         if (isEmpty()) {
-            stack.removeSubNbt("spell_traits");
+            stack.remove(UDataComponentTypes.SPELL_TRAITS);
             return stack;
         }
-        stack.getOrCreateNbt().put("spell_traits", toNbt());
+        stack.set(UDataComponentTypes.SPELL_TRAITS, this);
         return stack;
     }
 

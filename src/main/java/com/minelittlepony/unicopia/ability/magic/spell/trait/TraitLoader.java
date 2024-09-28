@@ -52,19 +52,19 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
             profiler.push(path.toString());
             try {
                 for (Resource resource : manager.getAllResources(path)) {
-                    profiler.push(resource.getResourcePackName());
+                    profiler.push(resource.getPackId());
 
                     try (InputStreamReader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
                         JsonObject data = JsonHelper.deserialize(Resources.GSON, reader, JsonObject.class);
 
-                        TraitStream set = TraitStream.of(path, resource.getResourcePackName(), data);
+                        TraitStream set = TraitStream.of(path, resource.getPackId(), data);
 
                         if (set.replace()) {
                             prepared.removeAll(path);
                         }
                         prepared.put(path, set);
                     } catch (JsonParseException e) {
-                        Unicopia.LOGGER.error("Error reading traits file " + resource.getResourcePackName() + ":" + path, e);
+                        Unicopia.LOGGER.error("Error reading traits file " + resource.getPackId() + ":" + path, e);
                     } finally {
                         profiler.pop();
                     }

@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.compat.trinkets;
 
-import java.util.UUID;
-
 import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.entity.ItemTracker;
 import com.minelittlepony.unicopia.entity.Living;
@@ -9,16 +7,17 @@ import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.WearableItem;
 
 import dev.emi.trinkets.api.*;
-import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.event.GameEvent;
 
 public class UnicopiaTrinket implements Trinket {
@@ -75,20 +74,21 @@ public class UnicopiaTrinket implements Trinket {
     }
 
     @Override
-    public boolean canUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        return !(EnchantmentHelper.hasBindingCurse(stack) && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity));
-    }
-
-    @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         item.inventoryTick(stack, entity.getWorld(), entity, slot.index(), false);
     }
 
     @Override
-    public Multimap<EntityAttribute, EntityAttributeModifier> getModifiers(ItemStack stack, SlotReference slot, LivingEntity entity, UUID uuid) {
-        Multimap<EntityAttribute, EntityAttributeModifier> modifiers = Trinket.super.getModifiers(stack, slot, entity, uuid);
+    public Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> getModifiers(ItemStack stack, SlotReference slot, LivingEntity entity, Identifier slotIdentifier) {
+        Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> modifiers = Trinket.super.getModifiers(stack, slot, entity, slotIdentifier);
+
         if (item instanceof WearableItem wearable) {
-            item.getAttributeModifiers(wearable.getSlotType(stack));
+            EquipmentSlot es = wearable.getSlotType(stack);
+            stack.get(DataComponentTypes.ATTRIBUTE_MODIFIERS).modifiers().forEach(entry -> {
+                if (entry.slot().matches(es)) {
+                    modifiers.put(entry.attribute(), entry.modifier());
+                }
+            });
         }
         return modifiers;
     }

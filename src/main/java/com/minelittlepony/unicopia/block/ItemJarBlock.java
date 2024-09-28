@@ -183,7 +183,7 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
             } else if (getFluid() != null) {
                 nbt.put("fluid", getFluid().toNBT(new NbtCompound(), lookup));
             } else if (getFakeFluid() != null) {
-                nbt.put("fakeFluid", getFakeFluid().toNBT(new NbtCompound()));
+                nbt.put("fakeFluid", getFakeFluid().toNBT(new NbtCompound(), lookup));
             }
         }
     }

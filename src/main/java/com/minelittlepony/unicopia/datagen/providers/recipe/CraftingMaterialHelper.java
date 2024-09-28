@@ -7,11 +7,11 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.recipe.CloudShapingRecipe;
 import com.mojang.datafixers.util.Either;
 
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.data.server.recipe.RecipeProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
-import net.minecraft.data.server.recipe.SingleItemRecipeJsonBuilder;
+import net.minecraft.data.server.recipe.StonecuttingRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.VanillaRecipeProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -42,8 +42,8 @@ public interface CraftingMaterialHelper {
         }
         return Either.left(
             Registries.ITEM.getOrEmpty(id)
-                .or(() -> Registries.ITEM.getOrEmpty(new Identifier(Identifier.DEFAULT_NAMESPACE, id.getPath())))
-                .or(() -> Registries.ITEM.getOrEmpty(new Identifier(Identifier.DEFAULT_NAMESPACE, id.getPath().replace(suffex, ""))))
+                .or(() -> Registries.ITEM.getOrEmpty(Identifier.ofVanilla(id.getPath())))
+                .or(() -> Registries.ITEM.getOrEmpty(Identifier.ofVanilla(id.getPath().replace(suffex, ""))))
                 .orElseThrow(() -> new NoSuchElementException("No item with id " + id))
         );
     }
@@ -84,7 +84,7 @@ public interface CraftingMaterialHelper {
         return "has_" + spell.getId() + "_gemstone";
     }
 
-    static SingleItemRecipeJsonBuilder createCloudShaping(Ingredient input, RecipeCategory category, ItemConvertible output, int count) {
-        return new SingleItemRecipeJsonBuilder(category, CloudShapingRecipe::new, input, output, count);
+    static StonecuttingRecipeJsonBuilder createCloudShaping(Ingredient input, RecipeCategory category, ItemConvertible output, int count) {
+        return new StonecuttingRecipeJsonBuilder(category, CloudShapingRecipe::new, input, output, count);
     }
 }

@@ -76,7 +76,7 @@ public class ShellsBlock extends Block implements Waterloggable {
     }
 
     @Override
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
-        return (type == NavigationType.WATER) == world.getFluidState(pos).isIn(FluidTags.WATER);
+    public boolean canPathfindThrough(BlockState state, NavigationType type) {
+        return (type == NavigationType.WATER) == state.getFluidState().isIn(FluidTags.WATER);
     }
 }

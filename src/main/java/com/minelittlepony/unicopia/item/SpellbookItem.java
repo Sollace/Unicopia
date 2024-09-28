@@ -3,8 +3,10 @@ package com.minelittlepony.unicopia.item;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.entity.mob.SpellbookEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.server.world.Altar;
 import com.minelittlepony.unicopia.util.Dispensable;
 
@@ -14,7 +16,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
@@ -77,9 +78,9 @@ public class SpellbookItem extends BookItem implements Dispensable {
         }
 
         @Nullable
-        NbtCompound tag = stack.getSubNbt("spellbookState");
-        if (tag != null) {
-            book.getSpellbookState().fromNBT(tag);
+        SpellbookState state = stack.get(UDataComponentTypes.SPELLBOOK_STATE);
+        if (state != null) {
+            book.setSpellbookState(state);
         }
 
         world.spawnEntity(book);

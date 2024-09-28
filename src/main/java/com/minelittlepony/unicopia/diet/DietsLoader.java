@@ -33,11 +33,11 @@ public class DietsLoader implements IdentifiableResourceReloadListener {
             Profiler prepareProfiler, Profiler applyProfiler,
             Executor prepareExecutor, Executor applyExecutor) {
 
-        CompletableFuture<Map<Identifier, Effect>> foodGroupsFuture = CompletableFuture.supplyAsync(() -> {
-            Map<Identifier, Effect> foodGroups = new HashMap<>();
+        CompletableFuture<Map<Identifier, FoodGroup>> foodGroupsFuture = CompletableFuture.supplyAsync(() -> {
+            Map<Identifier, FoodGroup> foodGroups = new HashMap<>();
             for (var group : loadData(manager, prepareExecutor, "diet/food_groups").entrySet()) {
                 try {
-                    FoodGroup.CODEC.parse(JsonOps.INSTANCE, group.getValue())
+                    FoodGroup.EFFECTS_CODEC.parse(JsonOps.INSTANCE, group.getValue())
                         .resultOrPartial(error -> LOGGER.error("Could not load food group {}: {}", group.getKey(), error))
                         .ifPresent(value -> {
                             foodGroups.put(group.getKey(), new FoodGroup(group.getKey(), value));

@@ -4,12 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.FoodComponent;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -18,15 +17,12 @@ import net.minecraft.util.Util;
 public record FoodGroup(
         Identifier id,
         FoodGroupEffects attributes) implements Effect {
-    public static final Codec<FoodGroupEffects> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            FoodGroupKey.TAG_CODEC.listOf().fieldOf("tags").forGetter(FoodGroupEffects::tags),
-            FoodAttributes.CODEC.optionalFieldOf("food_component").forGetter(FoodGroupEffects::foodComponent),
-            Ailment.CODEC.fieldOf("ailment").forGetter(FoodGroupEffects::ailment)
-    ).apply(instance, FoodGroupEffects::new));
-
-    public FoodGroup(PacketByteBuf buffer) {
-        this(buffer.readIdentifier(), new FoodGroupEffects(buffer, FoodGroupKey.TAG_ID_LOOKUP));
-    }
+    public static final Codec<FoodGroupEffects> EFFECTS_CODEC = FoodGroupEffects.createCodec(FoodGroupKey.TAG_CODEC);
+    public static final PacketCodec<RegistryByteBuf, FoodGroup> PACKET_CODEC = PacketCodec.tuple(
+            Identifier.PACKET_CODEC, FoodGroup::id,
+            FoodGroupEffects.createPacketCodec(FoodGroupKey.TAG_PACKET_CODEC), FoodGroup::attributes,
+            FoodGroup::new
+    );
 
     @Override
     public List<FoodGroupKey> tags() {
@@ -43,14 +39,8 @@ public record FoodGroup(
         return attributes.ailment();
     }
     @Override
-    public void appendTooltip(ItemStack stack, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, List<Text> tooltip, TooltipType context) {
         tooltip.add(Text.literal(" ").append(Text.translatable(Util.createTranslationKey("food_group", id()))).formatted(Formatting.GRAY));
         Effect.super.appendTooltip(stack, tooltip, context);
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeIdentifier(id());
-        Effect.super.toBuffer(buffer);
     }
 }

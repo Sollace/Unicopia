@@ -6,7 +6,9 @@ import java.util.Set;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSkyAngle;
+import com.minelittlepony.unicopia.util.CodecUtils;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.mojang.serialization.Codec;
 
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.Entity;
@@ -19,6 +21,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.PersistentState;
 
 public class UnicopiaWorldProperties extends PersistentState {
+    static final Codec<Set<BlockPos>> POS_CODEC = CodecUtils.setOf(BlockPos.CODEC);
 
     private final ServerWorld world;
 
@@ -27,15 +30,21 @@ public class UnicopiaWorldProperties extends PersistentState {
 
     private final Set<BlockPos> activeAltarPositions = new HashSet<>();
 
-    public UnicopiaWorldProperties(ServerWorld world) {
+    public static UnicopiaWorldProperties forWorld(ServerWorld world) {
+        return world.getPersistentStateManager().getOrCreate(
+                new Type<>(() -> new UnicopiaWorldProperties(world), (nbt, lookup) -> new UnicopiaWorldProperties(world, nbt), DataFixTypes.LEVEL), "unicopia_tribes"
+        );
+    }
+
+    private UnicopiaWorldProperties(ServerWorld world) {
         this.world = world;
     }
 
-    public UnicopiaWorldProperties(ServerWorld world, NbtCompound tag) {
+    private UnicopiaWorldProperties(ServerWorld world, NbtCompound tag) {
         this(world);
         defaultRace = Race.fromName(tag.getString("defaultRace"), Race.HUMAN);
         tangentalSkyAngle = tag.getFloat("tangentalSkyAngle");
-        activeAltarPositions.addAll(NbtSerialisable.BLOCK_POS.readAll(tag.getList("activeAltars", NbtElement.COMPOUND_TYPE)).toList());
+        NbtSerialisable.decode(POS_CODEC, tag.getList("activeAltars", NbtElement.COMPOUND_TYPE)).ifPresent(activeAltarPositions::addAll);
     }
 
     public Race getDefaultRace() {
@@ -85,13 +94,7 @@ public class UnicopiaWorldProperties extends PersistentState {
     public NbtCompound writeNbt(NbtCompound tag, WrapperLookup lookup) {
         tag.putString("defaultRace", Race.REGISTRY.getId(defaultRace).toString());
         tag.putFloat("tangentalSkyAngle", tangentalSkyAngle);
-        tag.put("activeAltars", NbtSerialisable.BLOCK_POS.writeAll(activeAltarPositions));
+        tag.put("activeAltars", NbtSerialisable.encode(POS_CODEC, activeAltarPositions));
         return tag;
-    }
-
-    public static UnicopiaWorldProperties forWorld(ServerWorld world) {
-        return world.getPersistentStateManager().getOrCreate(
-                new Type<>(() -> new UnicopiaWorldProperties(world), (nbt, lookup) -> new UnicopiaWorldProperties(world, nbt), DataFixTypes.LEVEL), "unicopia_tribes"
-        );
     }
 }

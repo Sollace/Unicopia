@@ -6,6 +6,7 @@ import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -23,16 +24,13 @@ public class BaitedFishingRodItem extends FishingRodItem {
             if (user.fishHook != null) {
                 user.fishHook.discard();
                 ItemStack stack = user.getStackInHand(hand);
-                int lure = (EnchantmentHelper.getLure(stack) + 1) * 2;
-                int luck = (EnchantmentHelper.getLuckOfTheSea(stack) + 1) * 2;
+                int lure = (int)((EnchantmentHelper.getFishingTimeReduction((ServerWorld)world, stack, user) + 1) * 20F);
+                int luck = (EnchantmentHelper.getFishingLuckBonus((ServerWorld)world, stack, user) + 1) * 2;
                 world.spawnEntity(new FishingBobberEntity(user, world, luck, lure));
             }
 
             if (result.getValue().isOf(this)) {
-                ItemStack stack = Items.FISHING_ROD.getDefaultStack();
-                if (result.getValue().hasNbt()) {
-                    stack.setNbt(result.getValue().getNbt().copy());
-                }
+                ItemStack stack = result.getValue().withItem(Items.FISHING_ROD);
                 return TypedActionResult.success(stack, world.isClient());
             }
         }

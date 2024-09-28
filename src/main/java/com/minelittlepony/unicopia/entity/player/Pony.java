@@ -42,6 +42,8 @@ import com.google.common.collect.Streams;
 import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
 
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
@@ -55,8 +57,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.potion.PotionUtil;
-import net.minecraft.potion.Potions;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -650,13 +652,13 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return false;
     }
 
-    public int getImplicitEnchantmentLevel(Enchantment enchantment, int initial) {
+    public int getImplicitEnchantmentLevel(RegistryEntry<Enchantment> enchantment, int initial) {
 
         if ((enchantment == Enchantments.AQUA_AFFINITY
                 || enchantment == Enchantments.DEPTH_STRIDER
                 || enchantment == Enchantments.LUCK_OF_THE_SEA
                 || enchantment == Enchantments.LURE) && getCompositeRace().includes(Race.SEAPONY)) {
-            return MathHelper.clamp(initial + 3, enchantment.getMinLevel(), enchantment.getMaxLevel());
+            return MathHelper.clamp(initial + 3, enchantment.value().getMinLevel(), enchantment.value().getMaxLevel());
         }
 
         return initial;
@@ -742,7 +744,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         if (getObservedSpecies() == Race.KIRIN
-                && (stack.isIn(UTags.Items.COOLS_OFF_KIRINS) || PotionUtil.getPotion(stack) == Potions.WATER)) {
+                && (stack.isIn(UTags.Items.COOLS_OFF_KIRINS) || stack.get(DataComponentTypes.POTION_CONTENTS) == PotionContentsComponent.DEFAULT)) {
             getMagicalReserves().getCharge().multiply(0.5F);
             getSpellSlot().get(SpellType.RAGE).ifPresent(RageAbilitySpell::setExtenguishing);
         }
@@ -824,34 +826,34 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        compound.put("mana", mana.toNBT());
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        compound.put("mana", mana.toNBT(lookup));
         compound.putInt("levels", levels.get());
         compound.putInt("corruption", corruption.get());
-        super.toNBT(compound);
+        super.toNBT(compound, lookup);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         levels.set(compound.getInt("levels"));
         corruption.set(compound.getInt("corruption"));
-        mana.fromNBT(compound.getCompound("mana"));
-        super.fromNBT(compound);
+        mana.fromNBT(compound.getCompound("mana"), lookup);
+        super.fromNBT(compound, lookup);
     }
 
     @Override
-    public void toSyncronisedNbt(NbtCompound compound) {
-        super.toSyncronisedNbt(compound);
+    public void toSyncronisedNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.toSyncronisedNbt(compound, lookup);
         compound.putString("playerSpecies", Race.REGISTRY.getId(getSpecies()).toString());
         compound.putString("suppressedSpecies", Race.REGISTRY.getId(getSuppressedRace()).toString());
         compound.putFloat("magicExhaustion", magicExhaustion);
         compound.putInt("ticksInSun", ticksInSun);
         compound.putBoolean("hasShades", hasShades);
-        compound.put("acrobatics", acrobatics.toNBT());
-        compound.put("powers", powers.toNBT());
-        compound.put("gravity", gravity.toNBT());
-        compound.put("charms", charms.toNBT());
-        compound.put("discoveries", discoveries.toNBT());
+        compound.put("acrobatics", acrobatics.toNBT(lookup));
+        compound.put("powers", powers.toNBT(lookup));
+        compound.put("gravity", gravity.toNBT(lookup));
+        compound.put("charms", charms.toNBT(lookup));
+        compound.put("discoveries", discoveries.toNBT(lookup));
         compound.putInt("ticksInvulnerable", ticksInvulnerable);
         compound.putInt("ticksMetamorphising", ticksMetamorphising);
         NbtCompound progress = new NbtCompound();
@@ -862,15 +864,15 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     @Override
-    public void fromSynchronizedNbt(NbtCompound compound) {
-        super.fromSynchronizedNbt(compound);
+    public void fromSynchronizedNbt(NbtCompound compound, WrapperLookup lookup) {
+        super.fromSynchronizedNbt(compound, lookup);
         setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
         setSuppressedRace(Race.fromName(compound.getString("suppressedSpecies"), Race.UNSET));
-        powers.fromNBT(compound.getCompound("powers"));
-        gravity.fromNBT(compound.getCompound("gravity"));
-        charms.fromNBT(compound.getCompound("charms"));
-        discoveries.fromNBT(compound.getCompound("discoveries"));
-        acrobatics.fromNBT(compound.getCompound("acrobatics"));
+        powers.fromNBT(compound.getCompound("powers"), lookup);
+        gravity.fromNBT(compound.getCompound("gravity"), lookup);
+        charms.fromNBT(compound.getCompound("charms"), lookup);
+        discoveries.fromNBT(compound.getCompound("discoveries"), lookup);
+        acrobatics.fromNBT(compound.getCompound("acrobatics"), lookup);
         magicExhaustion = compound.getFloat("magicExhaustion");
         ticksInvulnerable = compound.getInt("ticksInvulnerable");
         ticksInSun = compound.getInt("ticksInSun");

@@ -3,10 +3,10 @@ package com.minelittlepony.unicopia.diet;
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -17,7 +17,7 @@ public interface DietView {
 
     void finishUsing(ItemStack stack, World world, LivingEntity entity);
 
-    void appendTooltip(ItemStack stack, @Nullable PlayerEntity user, List<Text> tooltip, TooltipContext context);
+    void appendTooltip(ItemStack stack, @Nullable PlayerEntity user, List<Text> tooltip, TooltipType context);
 
     interface Holder {
         default DietView getDiets(ItemStack stack) {

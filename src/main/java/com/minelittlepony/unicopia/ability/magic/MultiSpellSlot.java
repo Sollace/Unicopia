@@ -154,7 +154,7 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
             } else {
                 T spell = this.spell.get();
                 if (spell != null) {
-                    spell.getDataTracker().load(MsgTrackedValues.TrackerEntries.PACKET_CODEC.decode(buffer));
+                    spell.getDataTracker().load(MsgTrackedValues.TrackerEntries.PACKET_CODEC.decode(buffer), lookup);
                 }
             }
         }
@@ -171,7 +171,7 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
             if (spell == null) {
                 return Optional.empty();
             }
-            return spell.getDataTracker().getDirtyPairs().map(entries -> {
+            return spell.getDataTracker().getDirtyPairs(lookup).map(entries -> {
                 PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
                 buffer.writeByte(0);
                 TrackerEntries.PACKET_CODEC.encode(buffer, entries);

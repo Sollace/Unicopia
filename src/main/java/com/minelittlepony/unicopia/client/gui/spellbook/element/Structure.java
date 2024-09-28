@@ -23,7 +23,7 @@ public record Structure(Bounds bounds, Schematic schematic) implements PageEleme
         Immediate immediate = context.getVertexConsumers();
 
         MinecraftClient client = MinecraftClient.getInstance();
-        float tickDelta = client.player.age + client.getTickDelta();
+        float tickDelta = client.player.age + client.getRenderTickCounter().getTickDelta(false);
         float age = tickDelta % 360F;
 
         matrices.push();

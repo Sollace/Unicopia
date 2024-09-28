@@ -2,20 +2,21 @@ package com.minelittlepony.unicopia.ability.data.tree;
 
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
-import org.jetbrains.annotations.Nullable;
-
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.util.CodecUtils;
 import com.minelittlepony.unicopia.util.Resources;
 import com.minelittlepony.unicopia.util.Weighted;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -45,35 +46,47 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
         return ID;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected void apply(Map<Identifier, JsonElement> resources, ResourceManager manager, Profiler profiler) {
-        entries = resources.entrySet().stream().filter(Objects::nonNull)
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
-            try {
-                return Resources.GSON.fromJson(entry.getValue(), TreeTypeDef.class);
-            } catch (IllegalArgumentException | JsonParseException e) {
-                return null;
-            }
-        }));
+        entries = Map.ofEntries(resources.entrySet().stream()
+                .filter(Objects::nonNull)
+                .map(entry -> TreeTypeDef.CODEC.decode(JsonOps.INSTANCE, entry.getValue())
+                        .result()
+                        .map(p -> p.getFirst())
+                        .map(p -> Map.entry(entry.getKey(), p))
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .toArray(Map.Entry[]::new));
+
         TreeTypes.load(entries);
     }
 
-    public static final class TreeTypeDef {
-        final Set<Identifier> logs;
-        final Set<Identifier> leaves;
-        final Set<Drop> drops;
-        final boolean wideTrunk;
-        final int rarity;
-        final float leavesRatio;
-
-        public TreeTypeDef(PacketByteBuf buffer) {
-            logs = new HashSet<>(buffer.readList(PacketByteBuf::readIdentifier));
-            leaves = new HashSet<>(buffer.readList(PacketByteBuf::readIdentifier));
-            drops = new HashSet<>(buffer.readList(Drop::new));
-            wideTrunk = buffer.readBoolean();
-            rarity = buffer.readInt();
-            leavesRatio = buffer.readFloat();
-        }
+    public record TreeTypeDef (
+            Set<Identifier> logs,
+            Set<Identifier> leaves,
+            Set<Drop> drops,
+            boolean wideTrunk,
+            int rarity,
+            float leavesRatio
+    ) {
+        public static final Codec<TreeTypeDef> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                CodecUtils.setOf(Identifier.CODEC).fieldOf("logs").forGetter(TreeTypeDef::logs),
+                CodecUtils.setOf(Identifier.CODEC).fieldOf("leaves").forGetter(TreeTypeDef::leaves),
+                CodecUtils.setOf(Drop.CODEC).fieldOf("drops").forGetter(TreeTypeDef::drops),
+                Codec.BOOL.fieldOf("wideTrunk").forGetter(TreeTypeDef::wideTrunk),
+                Codec.INT.fieldOf("rarity").forGetter(TreeTypeDef::rarity),
+                Codec.FLOAT.fieldOf("leavesRatio").forGetter(TreeTypeDef::leavesRatio)
+        ).apply(instance, TreeTypeDef::new));
+        public static final PacketCodec<RegistryByteBuf, TreeTypeDef> PACKET_CODEC = PacketCodec.tuple(
+                Identifier.PACKET_CODEC.collect(PacketCodecs.toCollection(HashSet::new)), TreeTypeDef::logs,
+                Identifier.PACKET_CODEC.collect(PacketCodecs.toCollection(HashSet::new)), TreeTypeDef::leaves,
+                Drop.PACKET_CODEC.collect(PacketCodecs.toCollection(HashSet::new)), TreeTypeDef::drops,
+                PacketCodecs.BOOL, TreeTypeDef::wideTrunk,
+                PacketCodecs.INTEGER, TreeTypeDef::rarity,
+                PacketCodecs.FLOAT, TreeTypeDef::leavesRatio,
+                TreeTypeDef::new
+        );
 
         public TreeType toTreeType(Identifier id) {
             return new TreeTypeImpl(
@@ -87,47 +100,38 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
             );
         }
 
-        public void write(PacketByteBuf buffer) {
-            buffer.writeCollection(logs, PacketByteBuf::writeIdentifier);
-            buffer.writeCollection(leaves, PacketByteBuf::writeIdentifier);
-            buffer.writeCollection(drops, (a, b) -> b.write(a));
-            buffer.writeBoolean(wideTrunk);
-            buffer.writeInt(rarity);
-            buffer.writeFloat(leavesRatio);
-        }
-
-        static class Drop implements Weighted.Buildable<Supplier<ItemStack>> {
-            final int weight;
-            final @Nullable Identifier tag;
-            final @Nullable Identifier item;
-
-            public Drop(PacketByteBuf buffer) {
-                weight = buffer.readInt();
-                tag = buffer.readOptional(PacketByteBuf::readIdentifier).orElse(null);
-                item = buffer.readOptional(PacketByteBuf::readIdentifier).orElse(null);
-            }
+        static record Drop (
+                int weight,
+                Optional<Identifier> tag,
+                Optional<Identifier> item
+        ) implements Weighted.Buildable<Supplier<ItemStack>> {
+            public static final Codec<Drop> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                    Codec.INT.fieldOf("weight").forGetter(Drop::weight),
+                    Identifier.CODEC.optionalFieldOf("tag").forGetter(Drop::tag),
+                    Identifier.CODEC.optionalFieldOf("item").forGetter(Drop::item)
+            ).apply(instance, Drop::new));
+            public static final PacketCodec<RegistryByteBuf, Drop> PACKET_CODEC = PacketCodec.tuple(
+                    PacketCodecs.INTEGER, Drop::weight,
+                    PacketCodecs.optional(Identifier.PACKET_CODEC), Drop::tag,
+                    PacketCodecs.optional(Identifier.PACKET_CODEC), Drop::item,
+                    Drop::new
+            );
 
             @Override
             public void appendTo(Weighted.Builder<Supplier<ItemStack>> weighted) {
-                if (item != null) {
-                    Registries.ITEM.getOrEmpty(item).ifPresent(item -> {
+                if (item.isPresent()) {
+                    Registries.ITEM.getOrEmpty(item.get()).ifPresent(item -> {
                         weighted.put(weight, item::getDefaultStack);
                     });
                 } else {
                     weighted.put(weight, () -> {
-                        return Registries.ITEM.getOrCreateEntryList(TagKey.of(RegistryKeys.ITEM, tag))
+                        return Registries.ITEM.getOrCreateEntryList(TagKey.of(RegistryKeys.ITEM, tag.get()))
                                 .getRandom(Weighted.getRng())
                                 .map(RegistryEntry::value)
                                 .map(Item::getDefaultStack)
                                 .orElse(ItemStack.EMPTY);
                     });
                 }
-            }
-
-            public void write(PacketByteBuf buffer) {
-                buffer.writeInt(weight);
-                buffer.writeOptional(Optional.ofNullable(tag), PacketByteBuf::writeIdentifier);
-                buffer.writeOptional(Optional.ofNullable(item), PacketByteBuf::writeIdentifier);
             }
         }
     }

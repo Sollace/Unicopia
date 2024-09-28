@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.FoodComponent;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.UseAction;
@@ -21,27 +21,21 @@ public interface Effect extends Predicate<ItemStack> {
 
     Ailment ailment();
 
-    default void appendTooltip(ItemStack stack, List<Text> tooltip, TooltipContext context) {
+    default void appendTooltip(ItemStack stack, List<Text> tooltip, TooltipType context) {
         if (!test(stack)) {
-            if (stack.isFood()) {
+            if (stack.contains(DataComponentTypes.FOOD)) {
                 tooltip.add(Text.literal(" ").append(Text.translatable("food_group.unicopia.misc")).formatted(Formatting.GRAY));
             } else if (stack.getUseAction() == UseAction.DRINK) {
                 tooltip.add(Text.literal(" ").append(Text.translatable("food_group.unicopia.drinks")).formatted(Formatting.GRAY));
             }
         }
 
-        if (context.isAdvanced() && stack.isFood()) {
+        if (context.isAdvanced() && stack.contains(DataComponentTypes.FOOD)) {
             if (!ailment().effects().isEmpty()) {
                 tooltip.add(Text.translatable("unicopia.diet.side_effects").formatted(Formatting.DARK_PURPLE));
                 ailment().effects().appendTooltip(tooltip);
             }
         }
-    }
-
-    default void toBuffer(PacketByteBuf buffer) {
-        buffer.writeCollection(tags(), (b, t) -> b.writeIdentifier(t.id()));
-        buffer.writeOptional(foodComponent(), FoodAttributes::write);
-        ailment().toBuffer(buffer);
     }
 
     @Override

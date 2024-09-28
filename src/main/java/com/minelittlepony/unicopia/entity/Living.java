@@ -42,7 +42,6 @@ import com.minelittlepony.unicopia.util.*;
 
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.block.BlockState;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -59,6 +58,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
@@ -252,7 +254,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     @Override
-    public final @Nullable EntityAttributeInstance getAttributeInstance(EntityAttribute attribute) {
+    public final @Nullable EntityAttributeInstance getAttributeInstance(RegistryEntry<EntityAttribute> attribute) {
         return asEntity().getAttributeInstance(attribute);
     }
 
@@ -373,8 +375,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             if (magical.isIn(UTags.DamageTypes.BREAKS_SUNGLASSES)) {
                 ItemStack glasses = GlassesItem.getForEntity(entity).stack();
                 if (glasses.isOf(UItems.SUNGLASSES)) {
-                    ItemStack broken = UItems.BROKEN_SUNGLASSES.getDefaultStack();
-                    broken.setNbt(glasses.getNbt());
+                    // TODO: BreaksIntoItemComponent
+                    ItemStack broken = glasses.withItem(UItems.BROKEN_SUNGLASSES);
                     TrinketsDelegate.getInstance(entity).setEquippedStack(entity, TrinketsDelegate.FACE, broken);
                     playSound(USounds.ITEM_SUNGLASSES_SHATTER, 1, 1);
                 }
@@ -450,34 +452,35 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public float getCloudWalkingStrength() {
-        Enchantment featherFalling = net.minecraft.enchantment.Enchantments.FEATHER_FALLING;
-        int maxLevel = featherFalling.getMaxLevel();
-        int level = EnchantmentHelper.getEquipmentLevel(featherFalling, entity);
-        return MathHelper.clamp(level / (float)maxLevel, 0, 1);
+        return asWorld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(net.minecraft.enchantment.Enchantments.FEATHER_FALLING).map(featherFalling -> {
+            int maxLevel = featherFalling.value().getMaxLevel();
+            int level = EnchantmentHelper.getEquipmentLevel(featherFalling, entity);
+            return MathHelper.clamp(level / (float)maxLevel, 0, 1);
+        }).orElse(0F);
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         enchants.toNBT(compound);
-        spells.getSlots().toNBT(compound);
+        spells.getSlots().toNBT(compound, lookup);
         getCarrierId().ifPresent(id -> compound.putUuid("carrier", id));
-        toSyncronisedNbt(compound);
+        toSyncronisedNbt(compound, lookup);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         enchants.fromNBT(compound);
-        spells.getSlots().fromNBT(compound);
+        spells.getSlots().fromNBT(compound, lookup);
         setCarrier(compound.containsUuid("carrier") ? compound.getUuid("carrier") : null);
-        fromSynchronizedNbt(compound);
+        fromSynchronizedNbt(compound, lookup);
     }
 
-    public void toSyncronisedNbt(NbtCompound compound) {
-        compound.put("armour", armour.toNBT());
+    public void toSyncronisedNbt(NbtCompound compound, WrapperLookup lookup) {
+        compound.put("armour", armour.toNBT(lookup));
     }
 
-    public void fromSynchronizedNbt(NbtCompound compound) {
-        armour.fromNBT(compound.getCompound("armour"));
+    public void fromSynchronizedNbt(NbtCompound compound, WrapperLookup lookup) {
+        armour.fromNBT(compound.getCompound("armour"), lookup);
     }
 
     public void updateVelocity() {

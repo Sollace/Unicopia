@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia;
 
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.registry.RegistryKeys;
@@ -9,8 +10,8 @@ import net.minecraft.util.Identifier;
 public interface UConventionalTags {
     interface Blocks {
         TagKey<Block> CONCRETE_POWDERS = block("concrete_powders");
-        TagKey<Block> CONCRETES = block("concretes");
-        TagKey<Block> GLAZED_TERRACOTTAS = block("glazed_terracottas");
+        TagKey<Block> CONCRETES = ConventionalBlockTags.CONCRETES;
+        TagKey<Block> GLAZED_TERRACOTTAS = ConventionalBlockTags.GLAZED_TERRACOTTAS;
         TagKey<Block> CORAL_BLOCKS = block("coral_blocks");
         TagKey<Block> CORAL_FANS = block("coral_fans");
         TagKey<Block> CORALS = block("corals");

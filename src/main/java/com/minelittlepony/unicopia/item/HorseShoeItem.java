@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
@@ -14,12 +12,13 @@ import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.projectile.PhysicsBodyProjectileEntity;
 
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.component.type.AttributeModifierSlot;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -30,16 +29,14 @@ public class HorseShoeItem extends HeavyProjectileItem {
     private final float projectileInnacuracy;
     private final float baseProjectileSpeed;
 
-    private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
-
-    public HorseShoeItem(Settings settings, float projectileDamage, float projectileInnacuracy, float baseProjectileSpeed) {
-        super(settings, projectileDamage);
+    public HorseShoeItem(Item.Settings settings, float projectileDamage, float projectileInnacuracy, float baseProjectileSpeed) {
+        super(settings.attributeModifiers(AttributeModifiersComponent.builder().add(
+            UEntityAttributes.EXTENDED_ATTACK_DISTANCE,
+            new EntityAttributeModifier(PolearmItem.ATTACK_RANGE_MODIFIER_ID, -3F, EntityAttributeModifier.Operation.ADD_VALUE),
+            AttributeModifierSlot.MAINHAND
+    ).build()), projectileDamage);
         this.projectileInnacuracy = projectileInnacuracy;
         this.baseProjectileSpeed = baseProjectileSpeed;
-
-        ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
-        builder.put(UEntityAttributes.EXTENDED_ATTACK_DISTANCE, new EntityAttributeModifier(PolearmItem.ATTACK_RANGE_MODIFIER_ID, "Weapon modifier", -3F, EntityAttributeModifier.Operation.ADDITION));
-        attributeModifiers = builder.build();
     }
 
     @Override
@@ -48,7 +45,7 @@ public class HorseShoeItem extends HeavyProjectileItem {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         float degradation = (stack.getDamage() / (float)stack.getMaxDamage());
         float inaccuracy = projectileInnacuracy + degradation * 30;
         tooltip.add(Text.empty());
@@ -97,15 +94,6 @@ public class HorseShoeItem extends HeavyProjectileItem {
 
     @Override
     public SoundEvent getThrowSound(ItemStack stack) {
-        return USounds.Vanilla.ITEM_TRIDENT_THROW;
+        return USounds.Vanilla.ITEM_TRIDENT_THROW.value();
     }
-
-    @Override
-    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-        if (slot == EquipmentSlot.MAINHAND) {
-            return attributeModifiers;
-        }
-        return super.getAttributeModifiers(slot);
-    }
-
 }

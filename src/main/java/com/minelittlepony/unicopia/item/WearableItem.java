@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
@@ -13,6 +12,7 @@ import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -21,17 +21,17 @@ import net.minecraft.world.World;
 
 public abstract class WearableItem extends Item implements Equipment {
 
-    public WearableItem(FabricItemSettings settings) {
+    public WearableItem(Item.Settings settings) {
         super(configureEquipmentSlotSupplier(settings));
         DispenserBlock.registerBehavior(this, DISPENSER_BEHAVIOR);
         TrinketsDelegate.getInstance(null).registerTrinket(this);
     }
 
-    private static FabricItemSettings configureEquipmentSlotSupplier(FabricItemSettings settings) {
+    private static Item.Settings configureEquipmentSlotSupplier(Item.Settings settings) {
         if (TrinketsDelegate.hasTrinkets()) {
             return settings;
         }
-        return settings.equipmentSlot(s -> ((WearableItem)s.getItem()).getSlotType(s));
+        return settings.equipmentSlot((e, s) -> ((WearableItem)s.getItem()).getSlotType(s));
     }
 
     @Override
@@ -45,8 +45,8 @@ public abstract class WearableItem extends Item implements Equipment {
     }
 
     @Override
-    public SoundEvent getEquipSound() {
-        return ArmorMaterials.LEATHER.getEquipSound();
+    public RegistryEntry<SoundEvent> getEquipSound() {
+        return ArmorMaterials.LEATHER.value().equipSound();
     }
 
     @Deprecated

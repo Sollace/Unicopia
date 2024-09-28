@@ -27,8 +27,8 @@ public class ViewportShader implements SynchronousResourceReloader, Identifiable
 
     public static final ViewportShader INSTANCE = new ViewportShader();
 
-    public static final Identifier CREEPER_SHADER = new Identifier("shaders/post/invert.json");
-    public static final Identifier DESATURATION_SHADER = new Identifier("shaders/post/desaturate.json");
+    public static final Identifier CREEPER_SHADER = Identifier.ofVanilla("shaders/post/invert.json");
+    public static final Identifier DESATURATION_SHADER = Identifier.ofVanilla("shaders/post/desaturate.json");
 
     private final MinecraftClient client = MinecraftClient.getInstance();
 
@@ -112,8 +112,8 @@ public class ViewportShader implements SynchronousResourceReloader, Identifiable
         }
 
         @Override
-        public PostEffectPass addPass(String programName, Framebuffer source, Framebuffer dest) throws IOException {
-            PostEffectPass pass = super.addPass(programName, source, dest);
+        public PostEffectPass addPass(String programName, Framebuffer source, Framebuffer dest, boolean linear) throws IOException {
+            PostEffectPass pass = super.addPass(programName, source, dest, linear);
             if (programs == null) {
                programs = LinkedListMultimap.create();
             }

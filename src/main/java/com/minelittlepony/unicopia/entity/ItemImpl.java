@@ -23,6 +23,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -154,13 +155,13 @@ public class ItemImpl implements Equine<ItemEntity> {
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         compound.putString("owner_race", getSpecies().getId().toString());
         physics.toNBT(compound);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         if (compound.contains("owner_race", NbtElement.STRING_TYPE)) {
             setSpecies(Race.fromName(compound.getString("owner_race"), Race.HUMAN));
         }
@@ -209,7 +210,8 @@ public class ItemImpl implements Equine<ItemEntity> {
         boolean isClingy(ItemStack stack);
 
         default ParticleEffect getParticleEffect(IItemEntity entity) {
-            return ParticleTypes.AMBIENT_ENTITY_EFFECT;
+            // TODO: was AMBIENT_ENTITY_EFFECT
+            return ParticleTypes.EFFECT;
         }
 
         default float getFollowDistance(IItemEntity entity) {

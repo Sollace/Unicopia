@@ -17,36 +17,41 @@ import com.minelittlepony.unicopia.util.Tickable;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public class Enchantments implements NbtSerialisable, Tickable {
 
     private final Living<?> entity;
 
-    private final Set<Enchantment> equippedEnchantments = new HashSet<>();
+    private final Set<RegistryEntry<Enchantment>> equippedEnchantments = new HashSet<>();
 
-    private final Map<Enchantment, SimpleEnchantment.Data> data = new HashMap<>();
+    private final Map<RegistryEntry<Enchantment>, SimpleEnchantment.Data> data = new HashMap<>();
 
     Enchantments(Living<?> entity) {
         this.entity = entity;
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends SimpleEnchantment.Data> Optional<T> getOrEmpty(Enchantment enchantment) {
+    public <T extends SimpleEnchantment.Data> Optional<T> getOrEmpty(RegistryEntry<Enchantment> enchantment) {
         return Optional.ofNullable((T)data.get(enchantment));
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends SimpleEnchantment.Data> T computeIfAbsent(Enchantment enchantment, Supplier<T> factory) {
+    public <T extends SimpleEnchantment.Data> T computeIfAbsent(RegistryEntry<Enchantment> enchantment, Supplier<T> factory) {
         return (T)data.computeIfAbsent(enchantment, e -> factory.get());
     }
 
     @Nullable
     @SuppressWarnings("unchecked")
-    public <T extends SimpleEnchantment.Data> T remove(Enchantment enchantment) {
+    public <T extends SimpleEnchantment.Data> T remove(RegistryEntry<Enchantment> enchantment) {
         return (T)data.remove(enchantment);
     }
 
@@ -60,37 +65,38 @@ public class Enchantments implements NbtSerialisable, Tickable {
             if (active != equippedEnchantments.contains(ench)) {
                 if (active) {
                     equippedEnchantments.add(ench);
-                    ench.onEquipped(entity);
+                    ench.value().onEquipped(entity);
                 } else {
                     equippedEnchantments.remove(ench);
-                    ench.onUnequipped(entity);
+                    ench.value().onUnequipped(entity);
                 }
             }
 
             if (active) {
-                ench.onUserTick(entity, level);
+                ench.value().onUserTick(entity, level);
             }
         });
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         NbtList list = new NbtList();
         equippedEnchantments.forEach(enchant -> {
-            Identifier id = Registries.ENCHANTMENT.getId(enchant);
-            if (id != null) {
-                list.add(NbtString.of(id.toString()));
-            }
+            enchant.getKey().ifPresent(key -> {
+                list.add(NbtString.of(key.getValue().toString()));
+            });
         });
         compound.put("enchants", list);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         equippedEnchantments.clear();
         if (compound.contains("enchants")) {
-            compound.getList("enchants", 8).forEach(tag -> {
-                Registries.ENCHANTMENT.getOrEmpty(new Identifier(tag.asString())).ifPresent(equippedEnchantments::add);
+            compound.getList("enchants", NbtElement.STRING_TYPE).forEach(tag -> {
+                lookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT)
+                    .getOptional(RegistryKey.of(RegistryKeys.ENCHANTMENT, Identifier.of(tag.asString())))
+                    .ifPresent(equippedEnchantments::add);
             });
         }
     }

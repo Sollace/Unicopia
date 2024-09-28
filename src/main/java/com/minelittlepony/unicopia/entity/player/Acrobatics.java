@@ -17,6 +17,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.SideShapeType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -161,7 +162,7 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     public void startHanging(BlockPos pos) {
         boolean inverted = pony.getPhysics().isGravityNegative();
         hangingPos.set(Optional.of(pos));
-        entity.teleport(pos.getX() + 0.5, pos.getY() - (inverted ? 0 : 1), pos.getZ() + 0.5);
+        entity.setPosition(pos.getX() + 0.5, pos.getY() - (inverted ? 0 : 1), pos.getZ() + 0.5);
         entity.setVelocity(Vec3d.ZERO);
         entity.setSneaking(false);
         entity.stopFallFlying();
@@ -196,14 +197,14 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         compound.putInt("ticksHanging", ticksHanging);
-        BLOCK_POS.writeOptional("hangingPosition", compound, getHangingPosition());
+        BLOCK_POS.writeOptional("hangingPosition", compound, getHangingPosition(), lookup);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         ticksHanging = compound.getInt("ticksHanging");
-        hangingPos.set(NbtSerialisable.BLOCK_POS.readOptional("hangingPosition", compound));
+        hangingPos.set(NbtSerialisable.BLOCK_POS.readOptional("hangingPosition", compound, lookup));
     }
 }

@@ -75,7 +75,7 @@ public class CuringJokeItem extends BlockItem {
 
     static boolean removeEffect(LivingEntity user) {
         return user.getStatusEffects().stream().filter(effect -> {
-            return !effect.getEffectType().isBeneficial();
+            return !effect.getEffectType().value().isBeneficial();
         }).findAny().filter(effect -> {
             user.removeStatusEffect(effect.getEffectType());
             return true;
@@ -114,6 +114,6 @@ public class CuringJokeItem extends BlockItem {
             return InventoryUtil.stream(owner.getInventory());
         }
 
-        return StreamSupport.stream(entity.getItemsEquipped().spliterator(), false);
+        return StreamSupport.stream(entity.getEquippedItems().spliterator(), false);
     }
 }

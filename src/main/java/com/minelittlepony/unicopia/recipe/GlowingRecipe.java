@@ -22,7 +22,7 @@ public class GlowingRecipe extends ItemCombinationRecipe {
 
         ItemStack result = pair.getLeft().copy();
 
-        ((GlowableItem)result.getItem()).setGlowing(result, pair.getRight().getItem() == Items.GLOWSTONE_DUST);
+        GlowableItem.setGlowing(result, pair.getRight().getItem() == Items.GLOWSTONE_DUST);
 
         return result;
     }
@@ -39,7 +39,7 @@ public class GlowingRecipe extends ItemCombinationRecipe {
 
     @Override
     protected boolean isCombinationInvalid(ItemStack bangle, ItemStack dust) {
-        return (dust.getItem() == Items.GLOWSTONE_DUST) == ((GlowableItem)bangle.getItem()).isGlowing(bangle);
+        return (dust.getItem() == Items.GLOWSTONE_DUST) == GlowableItem.isGlowing(bangle);
     }
 
     @Override

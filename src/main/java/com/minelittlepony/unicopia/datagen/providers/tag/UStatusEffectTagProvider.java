@@ -17,6 +17,8 @@ public class UStatusEffectTagProvider extends FabricTagProvider<StatusEffect> {
 
     @Override
     protected void configure(WrapperLookup lookup) {
-        getOrCreateTagBuilder(UTags.StatusEffects.PINEAPPLE_EFFECTS).add(StatusEffects.REGENERATION, StatusEffects.ABSORPTION, StatusEffects.LUCK, StatusEffects.HASTE);
+        getOrCreateTagBuilder(UTags.StatusEffects.PINEAPPLE_EFFECTS).add(
+                StatusEffects.REGENERATION.value(), StatusEffects.ABSORPTION.value(), StatusEffects.LUCK.value(), StatusEffects.HASTE.value()
+        );
     }
 }

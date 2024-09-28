@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia;
 
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 
 public interface WorldConvertable {
@@ -13,5 +15,9 @@ public interface WorldConvertable {
      */
     default boolean isClient() {
         return asWorld().isClient();
+    }
+
+    default <T> RegistryEntry<T> entryFor(RegistryKey<T> key) {
+        return asWorld().getRegistryManager().get(key.getRegistryRef()).getEntry(key).orElseThrow();
     }
 }

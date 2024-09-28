@@ -9,6 +9,8 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
+import com.minelittlepony.unicopia.item.UItems;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ButtonBlock;
 import net.minecraft.block.HopperBlock;
@@ -35,6 +37,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
@@ -58,6 +61,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     public PhysicsBodyProjectileEntity(EntityType<PhysicsBodyProjectileEntity> type, World world, ItemStack stack) {
         super(type, 0, 0, 0, world, stack, null);
+        setStack(stack);
     }
 
     public PhysicsBodyProjectileEntity(World world, ItemStack stack) {
@@ -66,13 +70,13 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     public PhysicsBodyProjectileEntity(World world, @Nullable LivingEntity thrower, ItemStack stack) {
         super(UEntities.MUFFIN, thrower, world, stack, null);
+        setStack(stack);
     }
 
     @Override
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
-        builder.add(ITEM, ItemStack.EMPTY)
-            .add(BOUNCY, false);
+        builder.add(ITEM, ItemStack.EMPTY).add(BOUNCY, false);
     }
 
     @Override
@@ -84,6 +88,11 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
     @Override
     public ItemStack getStack() {
         return getDataTracker().get(ITEM);
+    }
+
+    @Override
+    protected ItemStack getDefaultItemStack() {
+        return UItems.MUFFIN.getDefaultStack();
     }
 
     public void setDamageType(RegistryKey<DamageType> damageType) {
@@ -149,9 +158,10 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
         } else {
             ItemStack stack = asItemStack();
             if (stack.isIn(UTags.Items.HORSE_SHOES)) {
-                if (stack.damage(1 + random.nextInt(10), random, null)) {
+                stack.damage(1 + random.nextInt(10), (ServerWorld)getWorld(), null, i -> {
                     playSound(USounds.Vanilla.ENTITY_ITEM_BREAK, 1, 1);
-                } else {
+                });
+                if (!stack.isEmpty()) {
                     dropStack(stack);
                 }
                 setStack(ItemStack.EMPTY);
@@ -175,10 +185,13 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
         BlockPos buttonPos = hit.getBlockPos().offset(hit.getSide());
         BlockState state = getWorld().getBlockState(buttonPos);
 
+        @Nullable
+        PlayerEntity player = this.getOwner() instanceof PlayerEntity p ? p : null;
+
         if (state.isIn(BlockTags.WOODEN_BUTTONS) && state.getBlock() instanceof ButtonBlock button) {
-            button.powerOn(state, getWorld(), buttonPos);
+            button.powerOn(state, getWorld(), buttonPos, player);
         } else if (state.getBlock() instanceof LeverBlock lever) {
-            lever.togglePower(state, getWorld(), buttonPos);
+            lever.togglePower(state, getWorld(), buttonPos, player);
         }
 
         BlockPos belowPos = buttonPos.down();
@@ -195,7 +208,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
                         break;
                     }
 
-                    if (ItemStack.canCombine(slotStack, stack) && slotStack.getCount() < slotStack.getMaxCount()) {
+                    if (ItemStack.areItemsAndComponentsEqual(slotStack, stack) && slotStack.getCount() < slotStack.getMaxCount()) {
                         slotStack.increment(1);
                         discard();
                         break;
@@ -250,8 +263,10 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
         if (!isBouncy()) {
             if (stack.isIn(UTags.Items.HORSE_SHOES)) {
-                if (stack.damage(1 + random.nextInt(10), random, null)) {
+                stack.damage(1 + random.nextInt(10), (ServerWorld)getWorld(), null, i -> {
                     playSound(USounds.Vanilla.ENTITY_ITEM_BREAK, 1, 1);
+                });
+                if (stack.isEmpty()) {
                     discard();
                     return;
                 }

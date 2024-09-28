@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.data.*;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
@@ -53,8 +54,8 @@ abstract class MixinBoatEntity extends Entity implements LavaAffine {
     }
 
     @Inject(method = "initDataTracker", at = @At("HEAD"))
-    private void onInitDataTracker(CallbackInfo info) {
-        dataTracker.startTracking(IS_LAVA_BOAT, false);
+    private void onInitDataTracker(Builder builder, CallbackInfo info) {
+        builder.add(IS_LAVA_BOAT, false);
     }
 
     @Override

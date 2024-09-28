@@ -1,64 +1,43 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.UUID;
-
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
+import java.util.List;
 import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
-import com.minelittlepony.unicopia.item.enchantment.CustomEnchantableItem;
-
 import net.minecraft.block.*;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.AttributeModifierSlot;
+import net.minecraft.component.type.ToolComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.*;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
-public class PolearmItem extends SwordItem implements CustomEnchantableItem {
-    static final UUID ATTACK_RANGE_MODIFIER_ID = UUID.fromString("A7B3659C-AA74-469C-963A-09A391DCAA0F");
-
-    private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
-
-    private final int attackRange;
+public class PolearmItem extends ToolItem {
+    static final Identifier ATTACK_RANGE_MODIFIER_ID = Unicopia.id("attack_reach_modifier");
 
     public PolearmItem(ToolMaterial material, int damage, float speed, int range, Settings settings) {
-        super(material, damage, speed, settings);
-        this.attackRange = range;
-        ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
-        builder.putAll(super.getAttributeModifiers(EquipmentSlot.MAINHAND));
-        builder.put(UEntityAttributes.EXTENDED_REACH_DISTANCE, new EntityAttributeModifier(ATTACK_RANGE_MODIFIER_ID, "Weapon modifier", attackRange, EntityAttributeModifier.Operation.ADDITION));
-        builder.put(UEntityAttributes.EXTENDED_ATTACK_DISTANCE, new EntityAttributeModifier(ATTACK_RANGE_MODIFIER_ID, "Weapon modifier", attackRange, EntityAttributeModifier.Operation.ADDITION));
-        attributeModifiers = builder.build();
+        super(material, settings.attributeModifiers(SwordItem.createAttributeModifiers(material, damage, speed).with(
+                UEntityAttributes.EXTENDED_REACH_DISTANCE, new EntityAttributeModifier(ATTACK_RANGE_MODIFIER_ID, range, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND
+        ).with(
+                UEntityAttributes.EXTENDED_ATTACK_DISTANCE, new EntityAttributeModifier(ATTACK_RANGE_MODIFIER_ID, range, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND
+        )).component(DataComponentTypes.TOOL, createToolComponent()));
     }
 
-    @Override
-    public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
-        if (state.isOf(Blocks.COBWEB)) {
-            return 1;
-        }
-        return super.getMiningSpeedMultiplier(stack, state);
-    }
-
-    @Override
-    public boolean isSuitableFor(BlockState state) {
-        return state.isIn(UTags.Blocks.POLEARM_MINEABLE);
-    }
-
-    @Override
-    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-        if (slot == EquipmentSlot.MAINHAND) {
-            return attributeModifiers;
-        }
-        return super.getAttributeModifiers(slot);
+    private static ToolComponent createToolComponent() {
+        return new ToolComponent(
+            List.of(ToolComponent.Rule.ofAlwaysDropping(List.of(Blocks.COBWEB), 15.0F), ToolComponent.Rule.of(UTags.Blocks.POLEARM_MINEABLE, 1.5F)), 1.0F, 2
+        );
     }
 
     @Override
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         boolean tooNear = target.distanceTo(attacker) <= 2;
-        stack.damage(tooNear ? 4 : 1, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
         target.takeKnockback(0.15, attacker.getX() - target.getX(), attacker.getZ() - target.getZ());
         Living.updateVelocity(target);
         if (tooNear) {
@@ -70,7 +49,13 @@ public class PolearmItem extends SwordItem implements CustomEnchantableItem {
     }
 
     @Override
-    public boolean isAcceptableEnchant(ItemStack stack, Enchantment enchantment) {
-        return enchantment != Enchantments.SWEEPING;
+    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
+        return !miner.isCreative();
+    }
+
+    @Override
+    public void postDamageEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+        boolean tooNear = target.distanceTo(attacker) <= 2;
+        stack.damage(tooNear ? 4 : 1, attacker, EquipmentSlot.MAINHAND);
     }
 }

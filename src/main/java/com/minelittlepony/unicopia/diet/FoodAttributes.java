@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 
 final class FoodAttributes {
@@ -21,12 +22,12 @@ final class FoodAttributes {
     }));
 
     @Deprecated
-    static FoodComponent read(RegistryByteBuf buffer) {
-        return FoodComponent.PACKET_CODEC.decode(buffer);
+    static FoodComponent read(PacketByteBuf buffer) {
+        return FoodComponent.PACKET_CODEC.decode((RegistryByteBuf)buffer);
     }
 
     @Deprecated
-    static void write(RegistryByteBuf buffer, FoodComponent food) {
-        FoodComponent.PACKET_CODEC.encode(buffer, food);
+    static void write(PacketByteBuf buffer, FoodComponent food) {
+        FoodComponent.PACKET_CODEC.encode((RegistryByteBuf)buffer, food);
     }
 }

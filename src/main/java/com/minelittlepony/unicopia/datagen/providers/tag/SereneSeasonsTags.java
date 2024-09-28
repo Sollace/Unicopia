@@ -14,7 +14,7 @@ public interface SereneSeasonsTags {
         TagKey<Item> SUMMER_CROPS = item("summer_crops");
 
         private static TagKey<Item> item(String name) {
-            return TagKey.of(RegistryKeys.ITEM, new Identifier("sereneseasons", name));
+            return TagKey.of(RegistryKeys.ITEM, Identifier.of("sereneseasons", name));
         }
     }
 
@@ -25,7 +25,7 @@ public interface SereneSeasonsTags {
         TagKey<Block> SUMMER_CROPS = block("summer_crops");
 
         private static TagKey<Block> block(String name) {
-            return TagKey.of(RegistryKeys.BLOCK, new Identifier("sereneseasons", name));
+            return TagKey.of(RegistryKeys.BLOCK, Identifier.of("sereneseasons", name));
         }
     }
 

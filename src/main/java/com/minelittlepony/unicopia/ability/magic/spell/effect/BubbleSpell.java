@@ -1,9 +1,8 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.Map;
-import java.util.UUID;
-
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
@@ -28,18 +27,19 @@ import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
-public class BubbleSpell extends AbstractSpell implements TimedSpell,
-        ProjectileDelegate.EntityHitListener {
-    private static final EntityAttributeModifier GRAVITY_MODIFIER =
-            new EntityAttributeModifier(UUID.fromString("9dc7818b-927b-46e0-acbe-48d31a28128f"), "Bubble Floating", 0.02D - 1D, Operation.MULTIPLY_TOTAL);
-    private static final EntityAttributeModifier SPEED_MODIFIER =
-            new EntityAttributeModifier(UUID.fromString("9dc7818b-927b-46e0-acbe-48d31a28128f"), "Bubble Floating", 0.01D - 1D, Operation.MULTIPLY_TOTAL);
+public class BubbleSpell extends AbstractSpell implements TimedSpell, ProjectileDelegate.EntityHitListener {
+    private static final Identifier EFFECT_ID = Unicopia.id("bubble_floating_modifier");
+    private static final EntityAttributeModifier GRAVITY_MODIFIER = new EntityAttributeModifier(EFFECT_ID, 0.02D - 1D, Operation.ADD_MULTIPLIED_TOTAL);
+    private static final EntityAttributeModifier SPEED_MODIFIER = new EntityAttributeModifier(EFFECT_ID, 0.01D - 1D, Operation.ADD_MULTIPLIED_TOTAL);
 
-    private static final Map<EntityAttribute, EntityAttributeModifier> MODIFIERS = Map.of(
+    private static final Map<RegistryEntry<EntityAttribute>, EntityAttributeModifier> MODIFIERS = Map.of(
             UEntityAttributes.ENTITY_GRAVITY_MODIFIER, GRAVITY_MODIFIER,
             UEntityAttributes.EXTENDED_REACH_DISTANCE, GRAVITY_MODIFIER,
             UEntityAttributes.EXTENDED_ATTACK_DISTANCE, GRAVITY_MODIFIER,
@@ -157,18 +157,18 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell,
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
         compound.putInt("struggles", struggles.get());
         compound.putFloat("radius", radius.get());
-        timer.toNBT(compound);
+        timer.toNBT(compound, lookup);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         struggles.set(compound.getInt("struggles"));
         radius.set(compound.getFloat("radius"));
-        timer.fromNBT(compound);
+        timer.fromNBT(compound, lookup);
     }
 }

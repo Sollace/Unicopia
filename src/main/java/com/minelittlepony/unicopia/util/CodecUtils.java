@@ -17,9 +17,12 @@ import com.mojang.serialization.MapCodec;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.math.BlockPos;
 
 public interface CodecUtils {
     Codec<ItemConvertible> ITEM = Registries.ITEM.getCodec().xmap(i -> () -> i, ItemConvertible::asItem);
+    Codec<Optional<BlockPos>> OPTIONAL_POS = Codecs.optional(BlockPos.CODEC);
     /**
      * Combines the result of two unrelated codecs into a single object.
      * <p>

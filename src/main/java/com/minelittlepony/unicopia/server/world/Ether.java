@@ -358,7 +358,7 @@ public class Ether extends PersistentState implements Tickable {
 
         @Override
         public void toNBT(NbtCompound compound, WrapperLookup lookup) {
-            entity.toNBT(compound);
+            entity.toNBT(compound, lookup);
             compound.putBoolean("removed", removed);
             compound.putFloat("pitch", pitch);
             compound.putFloat("yaw", yaw);
@@ -375,7 +375,7 @@ public class Ether extends PersistentState implements Tickable {
 
         @Override
         public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-            entity.fromNBT(compound);
+            entity.fromNBT(compound, lookup);
             removed = compound.getBoolean("removed");
             pitch = compound.getFloat("pitch");
             yaw = compound.getFloat("yaw");

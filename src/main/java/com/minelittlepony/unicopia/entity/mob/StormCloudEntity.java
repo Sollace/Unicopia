@@ -26,6 +26,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
@@ -33,11 +34,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -73,11 +75,11 @@ public class StormCloudEntity extends Entity implements MagicImmune {
     }
 
     @Override
-    protected void initDataTracker() {
-        dataTracker.startTracking(STORM_TICKS, 0);
-        dataTracker.startTracking(CLEAR_TICKS, 0);
-        dataTracker.startTracking(TARGET_SIZE, 1F);
-        dataTracker.startTracking(DISSIPATING, false);
+    protected void initDataTracker(DataTracker.Builder builder) {
+        builder.add(STORM_TICKS, 0);
+        builder.add(CLEAR_TICKS, 0);
+        builder.add(TARGET_SIZE, 1F);
+        builder.add(DISSIPATING, false);
     }
 
     public boolean isStormy() {
@@ -295,17 +297,17 @@ public class StormCloudEntity extends Entity implements MagicImmune {
             if (random.nextInt(35) == 0 || (source.isOf(DamageTypes.PLAYER_ATTACK) && EquineContext.of(source.getAttacker()).collidesWithClouds())) {
                 if (getSize(1) < 2) {
                     if (!getWorld().isClient() && getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-                        Identifier identifier = getType().getLootTableId();
+                        RegistryKey<LootTable> table = getType().getLootTableId();
                         LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)this.getWorld())
                                 .add(LootContextParameters.THIS_ENTITY, this)
                                 .add(LootContextParameters.ORIGIN, this.getPos())
                                 .add(LootContextParameters.DAMAGE_SOURCE, source)
-                                .addOptional(LootContextParameters.KILLER_ENTITY, source.getAttacker())
-                                .addOptional(LootContextParameters.DIRECT_KILLER_ENTITY, source.getSource());
+                                .addOptional(LootContextParameters.ATTACKING_ENTITY, source.getAttacker())
+                                .addOptional(LootContextParameters.DIRECT_ATTACKING_ENTITY, source.getSource());
                         if (source.getAttacker() instanceof PlayerEntity player) {
                             builder = builder.add(LootContextParameters.LAST_DAMAGE_PLAYER, player).luck(player.getLuck());
                         }
-                        getWorld().getServer().getLootManager().getLootTable(identifier)
+                        getWorld().getRegistryManager().get(RegistryKeys.LOOT_TABLE).get(table)
                             .generateLoot(builder.build(LootContextTypes.ENTITY), 0L, this::dropStack);
                     }
                     kill();

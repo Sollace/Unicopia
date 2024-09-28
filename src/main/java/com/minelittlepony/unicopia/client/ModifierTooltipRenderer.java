@@ -16,7 +16,6 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.enchantment.AttributedEnchantment;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -24,7 +23,9 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -32,11 +33,12 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public class ModifierTooltipRenderer implements ItemTooltipCallback {
 
     @Override
-    public void getTooltip(ItemStack stack, TooltipContext context, List<Text> lines) {
+    public void getTooltip(ItemStack stack, Item.TooltipContext tooltipContext, TooltipType tooltipType, List<Text> lines) {
 
         int flags = stack.hasNbt() && stack.getNbt().contains("HideFlags", 99) ? stack.getNbt().getInt("HideFlags") : 0;
 
@@ -60,7 +62,7 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
 
                 if (!newLines.isEmpty()) {
                     Text find = Text.translatable("item.modifiers." + slot.getName()).formatted(Formatting.GRAY);
-                    int insertPosition = getInsertPosition(stack, find, flags, lines, context.isAdvanced());
+                    int insertPosition = getInsertPosition(stack, find, flags, lines, tooltipType.isAdvanced());
                     if (insertPosition == -1) {
                         lines.add(ScreenTexts.EMPTY);
                         lines.add(find);
@@ -113,18 +115,18 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
         return lines.indexOf(category);
     }
 
-    private void describeModifiers(EntityAttribute attribute, EntityAttributeModifier modifier, @Nullable PlayerEntity player, List<Text> lines) {
-        double value = modifier.getValue();
+    private void describeModifiers(RegistryEntry<EntityAttribute> attribute, EntityAttributeModifier modifier, @Nullable PlayerEntity player, List<Text> lines) {
+        double value = modifier.value();
         boolean baseAdjusted = false;
         if (player != null) {
             value += player.getAttributeBaseValue(attribute);
             baseAdjusted = true;
         }
 
-        Operation op = modifier.getOperation();
+        Operation op = modifier.operation();
 
         double displayValue;
-        if (op != EntityAttributeModifier.Operation.MULTIPLY_BASE && op != EntityAttributeModifier.Operation.MULTIPLY_TOTAL) {
+        if (op != EntityAttributeModifier.Operation.ADD_MULTIPLIED_BASE && op != EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL) {
             displayValue = value;
         } else {
             displayValue = value * 100;

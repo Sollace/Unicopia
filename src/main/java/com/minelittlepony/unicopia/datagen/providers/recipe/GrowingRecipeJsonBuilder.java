@@ -69,7 +69,7 @@ public class GrowingRecipeJsonBuilder {
     }
 
     public void offerTo(RecipeExporter exporter, String recipePath) {
-        Identifier recipeId = new Identifier(recipePath);
+        Identifier recipeId = Identifier.of(recipePath);
         Identifier id = Registries.BLOCK.getId(output.getBlock());
         if (recipeId.equals(id)) {
             throw new IllegalStateException("Recipe " + recipePath + " should remove its 'save' argument as it is equal to default one");

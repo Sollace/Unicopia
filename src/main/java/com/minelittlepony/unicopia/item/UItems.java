@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.block.cloud.CloudBedBlock;
 import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.cloud.CloudBedItem;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.item.group.UItemGroups;
@@ -283,6 +284,7 @@ public interface UItems {
 
     static void bootstrap() {
         AppleItem.registerTickCallback(Items.APPLE);
+
         FuelRegistry.INSTANCE.add(WOODEN_POLEARM, 200);
         FuelRegistry.INSTANCE.add(MUG, 250);
         FuelRegistry.INSTANCE.add(DRAGON_BREATH_SCROLL, 20000);
@@ -316,6 +318,7 @@ public interface UItems {
         CompostingChanceRegistry.INSTANCE.add(APPLE_PIE_SLICE, 0.1F);
         CompostingChanceRegistry.INSTANCE.add(BUTTERFLY, 0.1F);
 
+        UDataComponentTypes.bootstrap();
         UEnchantments.bootstrap();
         URecipes.bootstrap();
         UItemGroups.bootstrap();

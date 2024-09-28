@@ -42,7 +42,7 @@ public class BedsheetsItem extends Item {
             FancyBedBlock.setBedPattern(world, context.getBlockPos(), pattern);
             context.getStack().decrement(1);
             PlayerEntity player = context.getPlayer();
-            world.playSound(player, pos, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC, SoundCategory.BLOCKS, 1, 1);
+            world.playSound(player, pos, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC.value(), SoundCategory.BLOCKS, 1, 1);
 
             return ActionResult.success(world.isClient);
         }

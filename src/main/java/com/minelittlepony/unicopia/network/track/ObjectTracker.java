@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.network.track.TrackableObject.Status;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class ObjectTracker<T extends TrackableObject<T>> {
     private final Map<UUID, T> trackedObjects = new Object2ObjectOpenHashMap<>();
@@ -83,14 +84,14 @@ public class ObjectTracker<T extends TrackableObject<T>> {
         destination.quickAccess = Map.copyOf(destination.trackedObjects);
     }
 
-    synchronized Optional<MsgTrackedValues.TrackerObjects> getInitialPairs() {
+    synchronized Optional<MsgTrackedValues.TrackerObjects> getInitialPairs(WrapperLookup lookup) {
         if (trackedObjects.isEmpty()) {
             return Optional.empty();
         }
 
         Map<UUID, PacketByteBuf> updates = new HashMap<>();
         quickAccess.entrySet().forEach(object -> {
-            object.getValue().write(Status.NEW).ifPresent(data -> {
+            object.getValue().write(Status.NEW, lookup).ifPresent(data -> {
                 updates.put(object.getKey(), data);
             });
         });
@@ -98,7 +99,7 @@ public class ObjectTracker<T extends TrackableObject<T>> {
         return Optional.of(new MsgTrackedValues.TrackerObjects(id, Set.of(), updates));
     }
 
-    synchronized Optional<MsgTrackedValues.TrackerObjects> getDirtyPairs() {
+    synchronized Optional<MsgTrackedValues.TrackerObjects> getDirtyPairs(WrapperLookup lookup) {
         if (!trackedObjects.isEmpty()) {
             Map<UUID, PacketByteBuf> updates = new HashMap<>();
             Set<UUID> removedTrackableObjects = new HashSet<>();
@@ -108,7 +109,7 @@ public class ObjectTracker<T extends TrackableObject<T>> {
                     removedTrackableObjects.add(object.getKey());
                     return true;
                 }
-                object.getValue().write(status).ifPresent(data -> {
+                object.getValue().write(status, lookup).ifPresent(data -> {
                     updates.put(object.getKey(), data);
                 });
                 return false;
@@ -123,7 +124,7 @@ public class ObjectTracker<T extends TrackableObject<T>> {
         return Optional.empty();
     }
 
-    synchronized void load(MsgTrackedValues.TrackerObjects objects) {
+    synchronized void load(MsgTrackedValues.TrackerObjects objects, WrapperLookup lookup) {
         objects.removedValues().forEach(removedId -> {
             T o = trackedObjects.remove(removedId);
             if (o != null) {
@@ -136,7 +137,7 @@ public class ObjectTracker<T extends TrackableObject<T>> {
                 o = constructor.get();
                 trackedObjects.put(id, o);
             }
-            o.read(data);
+            o.read(data, lookup);
         });
         quickAccess = Map.copyOf(trackedObjects);
     }

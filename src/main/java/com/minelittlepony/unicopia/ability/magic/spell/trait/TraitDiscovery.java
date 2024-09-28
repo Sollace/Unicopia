@@ -32,6 +32,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.world.World;
 
 public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery> {
@@ -120,7 +121,7 @@ public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery>
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         NbtCompound disco = new NbtCompound();
         items.forEach((key, val) -> {
             disco.put(key.toString(), val.toNbt());
@@ -137,7 +138,7 @@ public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery>
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         clear();
         NbtCompound disco = compound.getCompound("items");
         disco.getKeys().forEach(key -> {

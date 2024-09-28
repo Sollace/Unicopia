@@ -57,8 +57,8 @@ import static net.minecraft.data.client.VariantSettings.*;
 import static net.minecraft.data.client.VariantSettings.Rotation.*;
 
 public class UBlockStateModelGenerator extends BlockStateModelGenerator {
-    static final Identifier AIR_BLOCK_ID = new Identifier("block/air");
-    static final Identifier AIR_ITEM_ID = new Identifier("item/air");
+    static final Identifier AIR_BLOCK_ID = Identifier.ofVanilla("block/air");
+    static final Identifier AIR_ITEM_ID = Identifier.ofVanilla("item/air");
 
     static UBlockStateModelGenerator create(BlockStateModelGenerator modelGenerator) {
         return new UBlockStateModelGenerator(modelGenerator.blockStateCollector, modelGenerator.modelCollector, modelGenerator::excludeFromSimpleItemModelGeneration);
@@ -166,9 +166,9 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
 
         // bales
         registerAll((g, block) -> g.registerBale(Unicopia.id(block.getLeft().getPath().replace("bale", "block")), block.getLeft(), block.getRight()),
-                new Pair<>(new Identifier("hay_block"), "_top"),
-                new Pair<>(new Identifier("farmersdelight", "rice_bale"), "_top"),
-                new Pair<>(new Identifier("farmersdelight", "straw_bale"), "_end")
+                new Pair<>(Identifier.ofVanilla("hay_block"), "_top"),
+                new Pair<>(Identifier.of("farmersdelight", "rice_bale"), "_top"),
+                new Pair<>(Identifier.of("farmersdelight", "straw_bale"), "_end")
         );
         // shells
         registerAll(UBlockStateModelGenerator::registerShell, UBlocks.CLAM_SHELL, UBlocks.TURRET_SHELL, UBlocks.SCALLOP_SHELL);

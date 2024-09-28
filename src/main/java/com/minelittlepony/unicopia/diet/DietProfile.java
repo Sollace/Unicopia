@@ -16,11 +16,14 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -38,17 +41,17 @@ public record DietProfile(
                 Codec.FLOAT.fieldOf("default_multiplier").forGetter(DietProfile::defaultMultiplier),
                 Codec.FLOAT.fieldOf("foraging_multiplier").forGetter(DietProfile::foragingMultiplier),
                 Codec.list(Multiplier.CODEC).fieldOf("multipliers").forGetter(DietProfile::multipliers),
-                Codec.list(FoodGroupEffects.CODEC).fieldOf("effects").forGetter(DietProfile::effects),
-                FoodGroupEffects.CODEC.optionalFieldOf("default_effect").forGetter(DietProfile::defaultEffect)
+                Codec.list(FoodGroupEffects.createCodec(FoodGroupKey.CODEC)).fieldOf("effects").forGetter(DietProfile::effects),
+                FoodGroupEffects.createCodec(FoodGroupKey.CODEC).optionalFieldOf("default_effect").forGetter(DietProfile::defaultEffect)
     ).apply(instance, DietProfile::new));
-
-    public DietProfile(PacketByteBuf buffer) {
-        this(buffer.readFloat(), buffer.readFloat(),
-                buffer.readList(Multiplier::new),
-                buffer.readList(b -> new FoodGroupEffects(b, FoodGroupKey.LOOKUP)),
-                buffer.readOptional(b -> new FoodGroupEffects(b, FoodGroupKey.LOOKUP))
-        );
-    }
+    public static final PacketCodec<RegistryByteBuf, DietProfile> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.FLOAT, DietProfile::defaultMultiplier,
+            PacketCodecs.FLOAT, DietProfile::foragingMultiplier,
+            Multiplier.PACKET_CODEC.collect(PacketCodecs.toList()), DietProfile::multipliers,
+            FoodGroupEffects.createPacketCodec(FoodGroupKey.PACKET_CODEC).collect(PacketCodecs.toList()), DietProfile::effects,
+            PacketCodecs.optional(FoodGroupEffects.createPacketCodec(FoodGroupKey.PACKET_CODEC)), DietProfile::defaultEffect,
+            DietProfile::new
+    );
 
     public void validate(Consumer<String> issues, Predicate<Identifier> foodGroupExists) {
         multipliers.stream().flatMap(i -> i.tags().stream()).forEach(key -> {
@@ -68,14 +71,6 @@ public record DietProfile(
         });
     }
 
-    public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeFloat(defaultMultiplier);
-        buffer.writeFloat(foragingMultiplier);
-        buffer.writeCollection(multipliers, (b, t) -> t.toBuffer(b));
-        buffer.writeCollection(effects, (b, t) -> t.toBuffer(b));
-        buffer.writeOptional(defaultEffect, (b, t) -> t.toBuffer(b));
-    }
-
     public Optional<Multiplier> findMultiplier(ItemStack stack) {
         return multipliers.stream().filter(m -> m.test(stack)).findFirst();
     }
@@ -90,7 +85,7 @@ public record DietProfile(
 
     @Nullable
     public FoodComponent getAdjustedFoodComponent(ItemStack stack) {
-        var food = stack.getItem().getFoodComponent();
+        var food = stack.get(DataComponentTypes.FOOD);
         if (this == EMPTY) {
             return food;
         }
@@ -100,13 +95,17 @@ public record DietProfile(
             return null;
         }
 
-        float hunger = food.getHunger() * ratios.getFirst();
+        float hunger = food.nutrition() * ratios.getFirst();
         int baseline = (int)hunger;
 
-        return FoodAttributes.copy(food)
-            .hunger(Math.max(1, (hunger - baseline) >= 0.5F ? baseline + 1 : baseline))
-            .saturationModifier(food.getSaturationModifier() * ratios.getSecond())
-            .build();
+        return new FoodComponent(
+            Math.max(1, (hunger - baseline) >= 0.5F ? baseline + 1 : baseline),
+            food.saturation() * ratios.getSecond(),
+            food.canAlwaysEat(),
+            food.eatSeconds(),
+            food.usingConvertsTo(),
+            food.effects()
+        );
     }
 
     public boolean isInedible(ItemStack stack) {
@@ -126,8 +125,8 @@ public record DietProfile(
         return Pair.of(hungerMultiplier, saturationMultiplier);
     }
 
-    public void appendTooltip(ItemStack stack, @Nullable PlayerEntity user, List<Text> tooltip, TooltipContext context) {
-        var food = stack.getItem().getFoodComponent();
+    public void appendTooltip(ItemStack stack, @Nullable PlayerEntity user, List<Text> tooltip, TooltipType context) {
+        var food = stack.get(DataComponentTypes.FOOD);
 
         var ratios = getRatios(stack);
         if (food == null || isInedible(ratios)) {
@@ -142,8 +141,8 @@ public record DietProfile(
         if (context.isAdvanced()) {
             var nonAdjustedFood = getNonAdjustedFoodComponent(stack, user).orElse(food);
             tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.base_multiplier", baseMultiplier).formatted(Formatting.DARK_GRAY)));
-            tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.hunger.detailed", food.getHunger(), nonAdjustedFood.getHunger(), (int)(ratios.getFirst() * 100))).formatted(Formatting.DARK_GRAY));
-            tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.saturation.detailed", food.getSaturationModifier(), nonAdjustedFood.getSaturationModifier(), (int)(ratios.getSecond() * 100))).formatted(Formatting.DARK_GRAY));
+            tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.hunger.detailed", food.nutrition(), nonAdjustedFood.nutrition(), (int)(ratios.getFirst() * 100))).formatted(Formatting.DARK_GRAY));
+            tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.saturation.detailed", food.saturation(), nonAdjustedFood.saturation(), (int)(ratios.getSecond() * 100))).formatted(Formatting.DARK_GRAY));
         } else {
             tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.hunger", (int)(ratios.getFirst() * 100))).formatted(Formatting.DARK_GRAY));
             tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.saturation", (int)(ratios.getSecond() * 100))).formatted(Formatting.DARK_GRAY));
@@ -178,20 +177,16 @@ public record DietProfile(
                 Codec.FLOAT.fieldOf("hunger").forGetter(Multiplier::hunger),
                 Codec.FLOAT.fieldOf("saturation").forGetter(Multiplier::saturation)
         ).apply(instance, Multiplier::new));
-
-        public Multiplier(PacketByteBuf buffer) {
-            this(buffer.readCollection(HashSet::new, p -> FoodGroupKey.LOOKUP.apply(p.readIdentifier())), buffer.readFloat(), buffer.readFloat());
-        }
+        public static final PacketCodec<RegistryByteBuf, Multiplier> PACKET_CODEC = PacketCodec.tuple(
+                FoodGroupKey.PACKET_CODEC.collect(PacketCodecs.toCollection(HashSet::new)), Multiplier::tags,
+                PacketCodecs.FLOAT, Multiplier::hunger,
+                PacketCodecs.FLOAT, Multiplier::saturation,
+                Multiplier::new
+        );
 
         @Override
         public boolean test(ItemStack stack) {
             return tags.stream().anyMatch(tag -> tag.contains(stack));
-        }
-
-        public void toBuffer(PacketByteBuf buffer) {
-            buffer.writeCollection(tags, (p, t) -> p.writeIdentifier(t.id()));
-            buffer.writeFloat(hunger);
-            buffer.writeFloat(saturation);
         }
 
         public static final class Builder {

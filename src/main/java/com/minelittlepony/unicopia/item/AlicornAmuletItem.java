@@ -8,6 +8,7 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableMultimap;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.*;
@@ -28,9 +29,10 @@ import it.unimi.dsi.fastutil.objects.Object2FloatMaps;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.EnchantmentEffectComponentTypes;
+import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
@@ -41,10 +43,14 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -58,8 +64,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.World.ExplosionSourceType;
 
 public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackable, ItemImpl.ClingyItem, ItemImpl.GroundTickCallback {
-    private static final UUID EFFECT_UUID = UUID.fromString("c0a870f5-99ef-4716-a23e-f320ee834b26");
-    private static final Object2FloatMap<EntityAttribute> EFFECT_SCALES = Object2FloatMaps.unmodifiable(new Object2FloatOpenHashMap<>(Map.of(
+    private static final Identifier EFFECT_ID = Unicopia.id("alicorn_amulet_modifiers");
+    private static final Object2FloatMap<RegistryEntry<EntityAttribute>> EFFECT_SCALES = Object2FloatMaps.unmodifiable(new Object2FloatOpenHashMap<>(Map.of(
             EntityAttributes.GENERIC_ATTACK_DAMAGE, 0.2F,
             EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.05F,
             EntityAttributes.GENERIC_ATTACK_SPEED, 0.2F,
@@ -67,16 +73,16 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
             EntityAttributes.GENERIC_ARMOR, 0.01F
     )));
     private static final Float2ObjectFunction<EntityAttributeModifier> EFFECT_FACTORY = v -> {
-        return new EntityAttributeModifier(EFFECT_UUID, "Alicorn Amulet Modifier", v, EntityAttributeModifier.Operation.ADDITION);
+        return new EntityAttributeModifier(EFFECT_ID, v, EntityAttributeModifier.Operation.ADD_VALUE);
     };
 
-    public AlicornAmuletItem(FabricItemSettings settings) {
-        super(settings, 0, ImmutableMultimap.of());
+    public AlicornAmuletItem(Item.Settings settings) {
+        super(settings, 0);
     }
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext tooltipContext) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         Pony iplayer = Pony.of(MinecraftClient.getInstance().player);
 
         if (iplayer != null) {
@@ -177,7 +183,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
     public static void updateAttributes(Living<?> wearer, float effectScale) {
         EFFECT_SCALES.object2FloatEntrySet().forEach(entry -> {
-            wearer.updateAttributeModifier(EFFECT_UUID, entry.getKey(), entry.getFloatValue() * effectScale, EFFECT_FACTORY, false);
+            wearer.updateAttributeModifier(EFFECT_ID, entry.getKey(), entry.getFloatValue() * effectScale, EFFECT_FACTORY, false);
         });
     }
 
@@ -248,10 +254,10 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
             // bind to the player after 3 days
             if (daysAttached >= 3 && !pony.asEntity().isCreative()) {
                 stack = living.getArmour().getEquippedStack(TrinketsDelegate.NECKLACE).stack();
-                if (stack.getItem() == this && !EnchantmentHelper.hasBindingCurse(stack)) {
+                if (stack.getItem() == this && !EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)) {
                     pony.playSound(USounds.ITEM_ALICORN_AMULET_HALLUCINATION, 3, 1);
                     stack = stack.copy();
-                    stack.addEnchantment(Enchantments.BINDING_CURSE, 1);
+                    stack.addEnchantment(pony.entryFor(Enchantments.BINDING_CURSE), 1);
                     pony.getArmour().equipStack(TrinketsDelegate.NECKLACE, stack);
                 }
             }
@@ -330,14 +336,16 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
         if ((entity.age / 1000) % 10 == 0 && entity.age % 50 == 0) {
             for (Entity target : VecHelper.findInRange(entity, entity.getWorld(), entity.getPos(), 10, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
-                for (ItemStack equipment : target.getItemsEquipped()) {
-                    if (equipment.getItem() == UItems.GROGARS_BELL) {
-                        ChargeableItem chargeable = (ChargeableItem)UItems.GROGARS_BELL;
-                        if (chargeable.hasCharge(equipment)) {
-                            ChargeableItem.consumeEnergy(equipment, 3);
-                            ParticleUtils.spawnParticle(entity.getWorld(),
-                                    new FollowingParticleEffect(UParticles.HEALTH_DRAIN, entity, 0.4F)
-                                    .withChild(ParticleTypes.COMPOSTER), target.getEyePos(), Vec3d.ZERO);
+                if (target instanceof LivingEntity l) {
+                    for (ItemStack equipment : l.getEquippedItems()) {
+                        if (equipment.getItem() == UItems.GROGARS_BELL) {
+                            ChargeableItem chargeable = (ChargeableItem)UItems.GROGARS_BELL;
+                            if (chargeable.hasCharge(equipment)) {
+                                ChargeableItem.consumeEnergy(equipment, 3);
+                                ParticleUtils.spawnParticle(entity.getWorld(),
+                                        new FollowingParticleEffect(UParticles.HEALTH_DRAIN, entity, 0.4F)
+                                        .withChild(ParticleTypes.COMPOSTER), target.getEyePos(), Vec3d.ZERO);
+                            }
                         }
                     }
                 }

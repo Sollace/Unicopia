@@ -34,6 +34,7 @@ import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
 
 public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutable<LivingEntity> {
@@ -299,23 +300,23 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        compound.put("master", getMasterReference().toNBT());
-        physics.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        compound.put("master", getMasterReference().toNBT(lookup));
+        physics.toNBT(compound, lookup);
         compound.putBoolean("discorded", isDiscorded());
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         if (compound.contains("master", NbtElement.COMPOUND_TYPE)) {
-            owner.fromNBT(compound.getCompound("master"));
-            if (owner.isSet()) {
+            getMasterReference().fromNBT(compound.getCompound("master"), lookup);
+            if (getMasterReference().isSet()) {
                 targets.ifPresent(this::initMinionAi);
             }
         }
-        physics.fromNBT(compound);
+        physics.fromNBT(compound, lookup);
         setDiscorded(compound.getBoolean("discorded"));
     }
 

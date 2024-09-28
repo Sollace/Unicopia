@@ -2,49 +2,42 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-
-import org.jetbrains.annotations.Nullable;
-
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ArmorMaterials;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
+import net.minecraft.util.Identifier;
 
 public class AmuletItem extends WearableItem implements ChargeableItem {
+    public static final Identifier AMULET_MODIFIERS_ID = Unicopia.id("amulet_modifiers");
 
     private final int maxEnergy;
 
-    private final ImmutableMultimap<EntityAttribute, EntityAttributeModifier> modifiers;
-
-    public AmuletItem(FabricItemSettings settings, int maxEnergy) {
-        this(settings, maxEnergy, ImmutableMultimap.of());
-    }
-
-    public AmuletItem(FabricItemSettings settings, int maxEnergy, ImmutableMultimap<EntityAttribute, EntityAttributeModifier> modifiers) {
+    public AmuletItem(Item.Settings settings, int maxEnergy) {
         super(settings);
         this.maxEnergy = maxEnergy;
-        this.modifiers = modifiers;
+    }
+
+    public AmuletItem(Item.Settings settings, int maxEnergy, AttributeModifiersComponent modifiers) {
+        this(settings.attributeModifiers(modifiers), maxEnergy);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> list, TooltipType type) {
 
         for (StringVisitable line : MinecraftClient.getInstance().textRenderer.getTextHandler().wrapLines(
                 Text.translatable(getTranslationKey(stack) + ".lore"), 150, Style.EMPTY)) {
@@ -62,8 +55,8 @@ public class AmuletItem extends WearableItem implements ChargeableItem {
     }
 
     @Override
-    public SoundEvent getEquipSound() {
-        return ArmorMaterials.IRON.getEquipSound();
+    public RegistryEntry<SoundEvent> getEquipSound() {
+        return ArmorMaterials.IRON.value().equipSound();
     }
 
     @Override
@@ -74,11 +67,6 @@ public class AmuletItem extends WearableItem implements ChargeableItem {
     @Override
     public boolean hasGlint(ItemStack stack) {
         return !isChargable() || stack.hasEnchantments() || ChargeableItem.getEnergy(stack) > 0;
-    }
-
-    @Override
-    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-        return slot == EquipmentSlot.CHEST ? modifiers : ImmutableMultimap.of();
     }
 
     public boolean isApplicable(ItemStack stack) {
@@ -104,20 +92,5 @@ public class AmuletItem extends WearableItem implements ChargeableItem {
         return TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.NECKLACE, stack -> stack.getItem() instanceof AmuletItem)
                 .findFirst()
                 .orElse(TrinketsDelegate.EquippedStack.EMPTY);
-    }
-
-    public static class ModifiersBuilder {
-        private static final UUID SLOT_UUID = UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E");
-
-        private final ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> modifiers = new ImmutableMultimap.Builder<>();
-
-        public ModifiersBuilder add(EntityAttribute attribute, double amount) {
-            modifiers.put(attribute, new EntityAttributeModifier(SLOT_UUID, "Armor modifier", amount, EntityAttributeModifier.Operation.ADDITION));
-            return this;
-        }
-
-        public ImmutableMultimap<EntityAttribute, EntityAttributeModifier> build() {
-            return modifiers.build();
-        }
     }
 }

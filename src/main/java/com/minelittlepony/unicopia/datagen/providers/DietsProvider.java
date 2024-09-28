@@ -55,7 +55,7 @@ public class DietsProvider implements DataProvider {
                     }
                     keyToGroupId.computeIfAbsent(key.id(), i -> new HashSet<>()).add(id);
                 });
-                diets.accept(id, () -> FoodGroup.CODEC.encode(attributes, JsonOps.INSTANCE, new JsonObject()).result().get());
+                diets.accept(id, () -> FoodGroup.EFFECTS_CODEC.encode(attributes, JsonOps.INSTANCE, new JsonObject()).result().get());
             });
             var profiles = dietsCollector.prime();
             new DietProfileGenerator().generate((race, profile) -> {

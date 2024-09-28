@@ -12,6 +12,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class DataTracker {
     private final List<Pair<?>> codecs = new ObjectArrayList<>();
@@ -70,18 +71,18 @@ public class DataTracker {
         }
     }
 
-    synchronized Optional<MsgTrackedValues.TrackerEntries> getInitialPairs() {
+    synchronized Optional<MsgTrackedValues.TrackerEntries> getInitialPairs(WrapperLookup lookup) {
         initial = false;
         dirtyIndices = new IntOpenHashSet();
-        return Optional.of(new MsgTrackedValues.TrackerEntries(id, true, codecs, writePersistentObjects(true)));
+        return Optional.of(new MsgTrackedValues.TrackerEntries(id, true, codecs, writePersistentObjects(lookup, true)));
     }
 
-    public synchronized Optional<MsgTrackedValues.TrackerEntries> getDirtyPairs() {
+    public synchronized Optional<MsgTrackedValues.TrackerEntries> getDirtyPairs(WrapperLookup lookup) {
         if (initial) {
-            return getInitialPairs();
+            return getInitialPairs(lookup);
         }
 
-        Map<Integer, PacketByteBuf> updates = writePersistentObjects(false);
+        Map<Integer, PacketByteBuf> updates = writePersistentObjects(lookup, false);
 
         if (dirtyIndices.isEmpty() && updates.isEmpty()) {
             return Optional.empty();
@@ -96,18 +97,18 @@ public class DataTracker {
         return Optional.of(new MsgTrackedValues.TrackerEntries(id, false, pairs, updates));
     }
 
-    private Map<Integer, PacketByteBuf> writePersistentObjects(boolean initial) {
+    private Map<Integer, PacketByteBuf> writePersistentObjects(WrapperLookup lookup, boolean initial) {
         Map<Integer, PacketByteBuf> updates = new HashMap<>();
         for (int i = 0; i < persistentObjects.size(); i++) {
             TrackableObject<?> o = persistentObjects.get(i);
             TrackableObject.Status status = initial ? TrackableObject.Status.NEW : o.getStatus();
             int id = i;
-            o.write(status).ifPresent(data -> updates.put(id, data));
+            o.write(status, lookup).ifPresent(data -> updates.put(id, data));
         }
         return updates;
     }
 
-    public synchronized void load(MsgTrackedValues.TrackerEntries values) {
+    public synchronized void load(MsgTrackedValues.TrackerEntries values, WrapperLookup lookup) {
         if (values.wipe()) {
             codecs.clear();
             codecs.addAll(values.values());
@@ -124,7 +125,7 @@ public class DataTracker {
         for (var entry : values.objects().entrySet()) {
             TrackableObject<?> o = persistentObjects.get(entry.getKey());
             if (o != null) {
-                o.read(entry.getValue());
+                o.read(entry.getValue(), lookup);
             }
         }
     }

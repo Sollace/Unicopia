@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.datagen.providers.DietsProvider;
 import com.minelittlepony.unicopia.datagen.providers.SeasonsGrowthRatesProvider;
 import com.minelittlepony.unicopia.datagen.providers.UAdvancementsProvider;
 import com.minelittlepony.unicopia.datagen.providers.UModelProvider;
+import com.minelittlepony.unicopia.datagen.providers.UPaintingVariantProvider;
 import com.minelittlepony.unicopia.datagen.providers.loot.UBlockAdditionsLootTableProvider;
 import com.minelittlepony.unicopia.datagen.providers.loot.UBlockLootTableProvider;
 import com.minelittlepony.unicopia.datagen.providers.loot.UChestAdditionsLootTableProvider;
@@ -61,7 +62,9 @@ public class Datagen implements DataGeneratorEntrypoint {
         pack.addProvider(UEntityTypeTagProvider::new);
         pack.addProvider(UStatusEffectTagProvider::new);
         pack.addProvider(UDimensionTypeTagProvider::new);
-        pack.addProvider(UPaintingVariantTagProvider::new);
+
+        final var paintingVariantProvider = pack.addProvider(UPaintingVariantProvider::new);
+        pack.addProvider((output, registries) -> new UPaintingVariantTagProvider(output, registries, paintingVariantProvider));
 
         pack.addProvider(UModelProvider::new);
         pack.addProvider(URecipeProvider::new);

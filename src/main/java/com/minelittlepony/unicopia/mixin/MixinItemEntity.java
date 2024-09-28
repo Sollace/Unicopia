@@ -46,13 +46,13 @@ abstract class MixinItemEntity extends Entity implements IItemEntity {
 
     @Inject(method = "writeCustomDataToNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("HEAD"))
     private void onWriteCustomDataToTag(NbtCompound tag, CallbackInfo info) {
-        tag.put("unicopia_caster", get().toNBT());
+        tag.put("unicopia_caster", get().toNBT(getWorld().getRegistryManager()));
     }
 
     @Inject(method = "readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("HEAD"))
     private void onReadCustomDataFromTag(NbtCompound tag, CallbackInfo info) {
         if (tag.contains("unicopia_caster")) {
-            get().fromNBT(tag.getCompound("unicopia_caster"));
+            get().fromNBT(tag.getCompound("unicopia_caster"), getWorld().getRegistryManager());
         }
     }
 

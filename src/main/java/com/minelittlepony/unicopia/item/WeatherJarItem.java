@@ -15,6 +15,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AliasedBlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -30,7 +31,7 @@ import net.minecraft.world.WorldEvents;
 public class WeatherJarItem extends AliasedBlockItem implements Projectile, ProjectileDelegate.HitListener {
     private final Type type;
 
-    public WeatherJarItem(Block block, Settings settings, Type type) {
+    public WeatherJarItem(Block block, Item.Settings settings, Type type) {
         super(block, settings);
         this.type = type;
         Projectile.makeDispensable(this);

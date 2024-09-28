@@ -1,7 +1,9 @@
 package com.minelittlepony.unicopia.datagen.providers;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.UTags;
@@ -35,18 +37,23 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.TagPredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
+import net.minecraft.predicate.item.EnchantmentsPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.predicate.item.ItemSubPredicateTypes;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 public class UAdvancementsProvider extends FabricAdvancementProvider {
-    public UAdvancementsProvider(FabricDataOutput output) {
-        super(output);
+    public UAdvancementsProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
+        super(output, registryLookup);
     }
 
     @Override
-    public void generateAdvancement(Consumer<AdvancementEntry> consumer) {
+    public void generateAdvancement(WrapperLookup registryLookup, Consumer<AdvancementEntry> consumer) {
         AdvancementDisplayBuilder.create(UItems.ALICORN_BADGE).criterion("crafting_table", hasItems(Items.CRAFTING_TABLE)).build(consumer, "root").children(root -> {
             createTribeRootAdvancement(consumer, root, Race.EARTH).children(consumer, this::generateEarthTribeAdvancementsTree);
             createTribeRootAdvancement(consumer, root, Race.BAT).children(consumer, this::generateBatTribeAdvancementsTree);
@@ -195,7 +202,7 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
         AdvancementDisplayBuilder.create(Items.NETHERITE_SCRAP).showToast().announce()
             .criterion("enchant_with_consumption", enchant(UEnchantments.CONSUMPTION))
             .rewards(AdvancementRewards.Builder.experience(120))
-            .parent(new Identifier("story/enchant_item"))
+            .parent(Identifier.ofVanilla("story/enchant_item"))
             .group("enchanting")
             .build(consumer, "experimental")
             .child(Items.NETHERITE_PICKAXE)
@@ -207,7 +214,7 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
         AdvancementDisplayBuilder.create(Items.GOLDEN_APPLE).showToast().announce()
             .criterion("enchant_with_heart_bound", enchant(UEnchantments.HEART_BOUND))
             .rewards(AdvancementRewards.Builder.experience(120))
-            .parent(new Identifier("story/enchant_item"))
+            .parent(Identifier.ofVanilla("story/enchant_item"))
             .group("enchanting")
             .build(consumer, "hearts_stronger_than_horses")
             .child(Items.GOLDEN_PICKAXE)
@@ -218,11 +225,11 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
                 .build(consumer, "soulmate");
     }
 
-    public static AdvancementCriterion<?> enchant(Enchantment enchantment) {
+    public static AdvancementCriterion<?> enchant(RegistryEntry<Enchantment> enchantment) {
         return Criteria.ENCHANTED_ITEM.create(new EnchantedItemCriterion.Conditions(
                 Optional.empty(),
                 Optional.of(ItemPredicate.Builder.create()
-                    .enchantment(new EnchantmentPredicate(enchantment, NumberRange.IntRange.ANY))
+                    .subPredicate(ItemSubPredicateTypes.ENCHANTMENTS, EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(enchantment, NumberRange.IntRange.ANY))))
                     .build()),
                 NumberRange.IntRange.ANY
         ));

@@ -18,6 +18,7 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -67,7 +68,7 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
         source.spawnParticles(origin, new Sphere(false, range), 7, p -> {
             source.addParticle(
                     new FollowingParticleEffect(UParticles.HEALTH_DRAIN, origin, 0.4F)
-                        .withChild(ParticleTypes.AMBIENT_ENTITY_EFFECT),
+                        .withChild(ParticleTypes.EFFECT),
                     p,
                     Vec3d.ZERO
             );
@@ -149,16 +150,16 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        compound.put("target", target.toNBT());
-        timer.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        compound.put("target", target.toNBT(lookup));
+        timer.toNBT(compound, lookup);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        target.fromNBT(compound.getCompound("target"));
-        timer.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
+        target.fromNBT(compound.getCompound("target"), lookup);
+        timer.fromNBT(compound, lookup);
     }
 }

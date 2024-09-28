@@ -9,8 +9,8 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.command.CommandArgumentEnum;
 import com.mojang.serialization.Codec;
 import net.minecraft.command.argument.EnumArgumentType;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.*;
@@ -92,7 +92,7 @@ public enum Trait implements CommandArgumentEnum<Trait> {
             Text.empty(),
             Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".description").formatted(Formatting.GRAY),
             Text.empty(),
-            Text.translatable("gui.unicopia.trait.corruption", ItemStack.MODIFIER_FORMAT.format(getGroup().getCorruption())).formatted(Formatting.ITALIC, corruptionColor)
+            Text.translatable("gui.unicopia.trait.corruption", AttributeModifiersComponent.DECIMAL_FORMAT.format(getGroup().getCorruption())).formatted(Formatting.ITALIC, corruptionColor)
         );
 
         MutableText tooltipText = getName().copy();

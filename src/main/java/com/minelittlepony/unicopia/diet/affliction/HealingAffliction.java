@@ -1,26 +1,21 @@
 package com.minelittlepony.unicopia.diet.affliction;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
 
 public record HealingAffliction(float health) implements Affliction {
-    public static final Codec<HealingAffliction> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+    public static final MapCodec<HealingAffliction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.FLOAT.fieldOf("health").forGetter(HealingAffliction::health)
     ).apply(instance, HealingAffliction::new));
-
-    public HealingAffliction(PacketByteBuf buffer) {
-        this(buffer.readFloat());
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeFloat(health);
-    }
+    public static final PacketCodec<ByteBuf, HealingAffliction> PACKET_CODEC = PacketCodecs.FLOAT.xmap(HealingAffliction::new, HealingAffliction::health);
 
     @Override
     public AfflictionType<?> getType() {

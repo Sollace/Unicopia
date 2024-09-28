@@ -19,7 +19,7 @@ import com.minelittlepony.unicopia.server.world.UTreeGen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.block.Block;
 import net.minecraft.data.family.BlockFamily;
 import net.minecraft.item.Item;
@@ -67,7 +67,6 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
         getOrCreateTagBuilder(ItemTags.CHEST_BOATS).add(UItems.PALM_CHEST_BOAT);
         getOrCreateTagBuilder(ItemTags.BOATS).add(UItems.PALM_BOAT);
-        getOrCreateTagBuilder(ItemTags.MUSIC_DISCS).add(ItemFamilies.MUSIC_DISCS);
         getOrCreateTagBuilder(ItemTags.CREEPER_DROP_MUSIC_DISCS).add(UItems.MUSIC_DISC_CRUSADE, UItems.MUSIC_DISC_FUNK, UItems.MUSIC_DISC_PET, UItems.MUSIC_DISC_POPULAR);
 
         getOrCreateTagBuilder(ItemTags.SIGNS).add(UBlocks.PALM_SIGN.asItem());
@@ -75,8 +74,6 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
         getOrCreateTagBuilder(UTags.Items.HORSE_SHOES).add(ItemFamilies.HORSE_SHOES);
         getOrCreateTagBuilder(UTags.Items.POLEARMS).add(ItemFamilies.POLEARMS);
-
-        getOrCreateTagBuilder(ItemTags.TOOLS).addTag(UTags.Items.HORSE_SHOES).addTag(UTags.Items.POLEARMS);
 
         getOrCreateTagBuilder(UTags.Items.BASKETS).add(ItemFamilies.BASKETS);
         getOrCreateTagBuilder(UTags.Items.BADGES).add(Race.REGISTRY.stream()
@@ -93,7 +90,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
         // technical tags
         getOrCreateTagBuilder(ItemTags.VILLAGER_PLANTABLE_SEEDS).addTag(UTags.Items.APPLE_SEEDS);
-        getOrCreateTagBuilder(UTags.Items.CAN_CUT_PIE).forceAddTag(ConventionalItemTags.SHEARS).addOptionalTag(UConventionalTags.Items.TOOL_KNIVES);
+        getOrCreateTagBuilder(UTags.Items.CAN_CUT_PIE).forceAddTag(ConventionalItemTags.SHEAR_TOOLS).addOptionalTag(UConventionalTags.Items.TOOL_KNIVES);
         getOrCreateTagBuilder(UTags.Items.COOLS_OFF_KIRINS).add(Items.MELON_SLICE, UItems.JUICE).forceAddTag(ConventionalItemTags.WATER_BUCKETS);
         getOrCreateTagBuilder(UTags.Items.FALLS_SLOWLY).add(Items.FEATHER, UItems.CLOUD_LUMP).forceAddTag(UTags.Items.MAGIC_FEATHERS);
         getOrCreateTagBuilder(UTags.Items.IS_DELIVERED_AGGRESSIVELY).forceAddTag(ItemTags.ANVIL);
@@ -125,8 +122,8 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
                     Items.GOLDEN_PICKAXE, Items.GOLDEN_SHOVEL, Items.GOLDEN_AXE, Items.GOLDEN_SWORD, Items.GOLDEN_HOE,
                     UItems.GOLDEN_HORSE_SHOE, UItems.GOLDEN_POLEARM, UItems.GOLDEN_FEATHER, UItems.GOLDEN_WING,
                     UItems.GOLDEN_OAK_SEEDS
-            ).forceAddTag(ConventionalItemTags.GOLD_INGOTS).forceAddTag(ConventionalItemTags.RAW_GOLD_ORES).forceAddTag(ConventionalItemTags.RAW_GOLD_BLOCKS)
-            .addOptionalTag(new Identifier("farmersdelight:golden_knife"));
+            ).forceAddTag(ConventionalItemTags.GOLD_INGOTS).forceAddTag(ConventionalItemTags.GOLD_RAW_MATERIALS).forceAddTag(ConventionalItemTags.STORAGE_BLOCKS_RAW_GOLD)
+            .addOptionalTag(Identifier.of("farmersdelight:golden_knife"));
         getOrCreateTagBuilder(UTags.Items.LOOT_BUG_EPIC_DROPS).add(
                 Items.DIAMOND_BLOCK,
                 Items.DIAMOND_HELMET, Items.DIAMOND_BOOTS, Items.DIAMOND_LEGGINGS, Items.DIAMOND_CHESTPLATE,
@@ -316,10 +313,10 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(UConventionalTags.Items.APPLES)
             .add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE, UItems.ROTTEN_APPLE)
             .forceAddTag(UTags.Items.FRESH_APPLES)
-            .addOptionalTag(new Identifier("c", "pyrite_apples")) // no idea which mod add pyrite apples
+            .addOptionalTag(Identifier.of("c", "pyrite_apples")) // no idea which mod add pyrite apples
         ;
         getOrCreateTagBuilder(UConventionalTags.Items.BANANAS).add(UItems.BANANA);
-        getOrCreateTagBuilder(UConventionalTags.Items.RAW_FISH).add(Items.COD, Items.SALMON, Items.PUFFERFISH, Items.TROPICAL_FISH).addOptionalTag(new Identifier("c", "mollusks"));
+        getOrCreateTagBuilder(UConventionalTags.Items.RAW_FISH).add(Items.COD, Items.SALMON, Items.PUFFERFISH, Items.TROPICAL_FISH).addOptionalTag(Identifier.of("c", "mollusks"));
         getOrCreateTagBuilder(UConventionalTags.Items.COOKED_FISH).add(Items.COOKED_COD, Items.COOKED_SALMON, UItems.COOKED_TROPICAL_FISH, UItems.COOKED_PUFFERFISH, UItems.FRIED_AXOLOTL);
         getOrCreateTagBuilder(UConventionalTags.Items.ROTTEN_FISH).add(UItems.ROTTEN_COD, UItems.ROTTEN_TROPICAL_FISH, UItems.ROTTEN_SALMON, UItems.ROTTEN_PUFFERFISH);
         getOrCreateTagBuilder(ItemTags.FISHES).add(
@@ -328,24 +325,24 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         );
         getOrCreateTagBuilder(UConventionalTags.Items.COOKED_MEAT)
             .add(Items.COOKED_PORKCHOP, Items.COOKED_BEEF, Items.COOKED_MUTTON, Items.COOKED_RABBIT, Items.COOKED_CHICKEN, Items.RABBIT_STEW)
-            .addOptionalTag(new Identifier("c", "cooked_bacon"))
-            .addOptionalTag(new Identifier("c", "cooked_beef"))
-            .addOptionalTag(new Identifier("c", "cooked_chicken"))
-            .addOptionalTag(new Identifier("c", "cooked_mutton"))
-            .addOptionalTag(new Identifier("c", "cooked_pork"))
-            .addOptionalTag(new Identifier("c", "fried_chickens"))
-            .addOptionalTag(new Identifier("c", "hamburgers"))
-            .addOptionalTag(new Identifier("c", "pork_and_beans"))
-            .addOptionalTag(new Identifier("c", "pork_jerkies"))
-            .addOptionalTag(new Identifier("c", "protien"));
+            .addOptionalTag(Identifier.of("c", "cooked_bacon"))
+            .addOptionalTag(Identifier.of("c", "cooked_beef"))
+            .addOptionalTag(Identifier.of("c", "cooked_chicken"))
+            .addOptionalTag(Identifier.of("c", "cooked_mutton"))
+            .addOptionalTag(Identifier.of("c", "cooked_pork"))
+            .addOptionalTag(Identifier.of("c", "fried_chickens"))
+            .addOptionalTag(Identifier.of("c", "hamburgers"))
+            .addOptionalTag(Identifier.of("c", "pork_and_beans"))
+            .addOptionalTag(Identifier.of("c", "pork_jerkies"))
+            .addOptionalTag(Identifier.of("c", "protien"));
         getOrCreateTagBuilder(UConventionalTags.Items.RAW_MEAT)
             .add(Items.PORKCHOP, Items.BEEF, Items.MUTTON, Items.RABBIT, Items.CHICKEN)
-            .addOptionalTag(new Identifier("c", "raw_bacon"))
-            .addOptionalTag(new Identifier("c", "raw_beef"))
-            .addOptionalTag(new Identifier("c", "raw_chicken"))
-            .addOptionalTag(new Identifier("c", "raw_mutton"))
-            .addOptionalTag(new Identifier("c", "raw_pork"))
-            .addOptionalTag(new Identifier("c", "lemon_chickens"));
+            .addOptionalTag(Identifier.of("c", "raw_bacon"))
+            .addOptionalTag(Identifier.of("c", "raw_beef"))
+            .addOptionalTag(Identifier.of("c", "raw_chicken"))
+            .addOptionalTag(Identifier.of("c", "raw_mutton"))
+            .addOptionalTag(Identifier.of("c", "raw_pork"))
+            .addOptionalTag(Identifier.of("c", "lemon_chickens"));
         getOrCreateTagBuilder(UConventionalTags.Items.ROTTEN_MEAT).add(Items.ROTTEN_FLESH);
         getOrCreateTagBuilder(UConventionalTags.Items.ROTTEN_INSECT).add(Items.FERMENTED_SPIDER_EYE);
         getOrCreateTagBuilder(UConventionalTags.Items.COOKED_INSECT).add(UItems.COOKED_FROG_LEGS);
@@ -368,9 +365,9 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(UConventionalTags.Items.NUTS).add(UItems.BOWL_OF_NUTS)
             .addOptionalTag(UConventionalTags.Items.CROPS_PEANUTS)
             .forceAddTag(UConventionalTags.Items.ACORNS)
-            .addOptional(new Identifier("garnished", "nuts"))
-            .addOptional(new Identifier("garnished", "nut_mix"))
-            .addOptional(new Identifier("garnished", "neverable_delecacies"));
+            .addOptional(Identifier.of("garnished", "nuts"))
+            .addOptional(Identifier.of("garnished", "nut_mix"))
+            .addOptional(Identifier.of("garnished", "neverable_delecacies"));
         getOrCreateTagBuilder(UConventionalTags.Items.FRUITS)
             .add(Items.MELON_SLICE, Items.SWEET_BERRIES, Items.GLOW_BERRIES, Items.CHORUS_FRUIT)
             .add(UItems.JUICE, UItems.ZAP_APPLE, UItems.ZAP_BULB)
@@ -378,7 +375,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .forceAddTag(UConventionalTags.Items.PINEAPPLES)
             .forceAddTag(UConventionalTags.Items.APPLES)
             .forceAddTag(UConventionalTags.Items.BANANAS)
-            .addOptionalTag(new Identifier("garnished", "berries"));
+            .addOptionalTag(Identifier.of("garnished", "berries"));
         getOrCreateTagBuilder(UConventionalTags.Items.DESSERTS).add(Items.CAKE, UItems.APPLE_PIE_SLICE).forceAddTag(UTags.Items.PIES);
         getOrCreateTagBuilder(UConventionalTags.Items.CANDY).add(Items.SUGAR, UItems.ROCK_CANDY, UItems.CANDIED_APPLE);
         getOrCreateTagBuilder(UTags.Items.BAKED_GOODS).add(
@@ -391,78 +388,78 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
     private void exportFarmersDelightItems() {
         getOrCreateTagBuilder(UTags.Items.COOLS_OFF_KIRINS)
-            .addOptional(new Identifier("farmersdelight", "melon_popsicle"))
-            .addOptional(new Identifier("farmersdelight", "melon_juice"));
-        getOrCreateTagBuilder(TagKey.of(RegistryKeys.ITEM, new Identifier("farmersdelight", "cabbage_roll_ingredients"))).add(UItems.OATS, UItems.ROCK, UItems.WHEAT_WORMS);
-        getOrCreateTagBuilder(TagKey.of(RegistryKeys.ITEM, new Identifier("farmersdelight", "comfort_foods"))).add(UItems.OATMEAL, UItems.ROCK_STEW, UItems.MUFFIN);
+            .addOptional(Identifier.of("farmersdelight", "melon_popsicle"))
+            .addOptional(Identifier.of("farmersdelight", "melon_juice"));
+        getOrCreateTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("farmersdelight", "cabbage_roll_ingredients"))).add(UItems.OATS, UItems.ROCK, UItems.WHEAT_WORMS);
+        getOrCreateTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("farmersdelight", "comfort_foods"))).add(UItems.OATMEAL, UItems.ROCK_STEW, UItems.MUFFIN);
         getOrCreateTagBuilder(UConventionalTags.Items.RAW_FISH)
-            .addOptional(new Identifier("farmersdelight", "cod_roll"))
-            .addOptional(new Identifier("farmersdelight", "salmon_roll"))
-            .addOptional(new Identifier("farmersdelight", "cod_slice"))
-            .addOptional(new Identifier("farmersdelight", "salmon_slice"));
+            .addOptional(Identifier.of("farmersdelight", "cod_roll"))
+            .addOptional(Identifier.of("farmersdelight", "salmon_roll"))
+            .addOptional(Identifier.of("farmersdelight", "cod_slice"))
+            .addOptional(Identifier.of("farmersdelight", "salmon_slice"));
         getOrCreateTagBuilder(UConventionalTags.Items.COOKED_FISH)
-            .addOptional(new Identifier("farmersdelight", "fish_stew"))
-            .addOptional(new Identifier("farmersdelight", "baked_cod_stew"))
-            .addOptional(new Identifier("farmersdelight", "grilled_salmon"));
+            .addOptional(Identifier.of("farmersdelight", "fish_stew"))
+            .addOptional(Identifier.of("farmersdelight", "baked_cod_stew"))
+            .addOptional(Identifier.of("farmersdelight", "grilled_salmon"));
         getOrCreateTagBuilder(UConventionalTags.Items.RAW_MEAT)
-            .addOptional(new Identifier("farmersdelight", "ham"));
+            .addOptional(Identifier.of("farmersdelight", "ham"));
         getOrCreateTagBuilder(UConventionalTags.Items.COOKED_MEAT)
-            .addOptional(new Identifier("farmersdelight", "chicken_soup"))
-            .addOptional(new Identifier("farmersdelight", "bacon_and_eggs"))
-            .addOptional(new Identifier("farmersdelight", "pasta_with_meatballs"))
-            .addOptional(new Identifier("farmersdelight", "beef_stew"))
-            .addOptional(new Identifier("farmersdelight", "bone_broth"))
-            .addOptional(new Identifier("farmersdelight", "mutton_wrap"))
-            .addOptional(new Identifier("farmersdelight", "bacon_sandwich"))
-            .addOptional(new Identifier("farmersdelight", "hamburger"))
-            .addOptional(new Identifier("farmersdelight", "chicken_sandwich"))
-            .addOptional(new Identifier("farmersdelight", "barbecue_stick"))
-            .addOptional(new Identifier("farmersdelight", "smoked_ham"))
-            .addOptional(new Identifier("farmersdelight", "honey_glazed_ham"))
-            .addOptional(new Identifier("farmersdelight", "honey_glazed_ham_block"))
-            .addOptional(new Identifier("farmersdelight", "roast_chicken"))
-            .addOptional(new Identifier("farmersdelight", "roast_chicken_block"))
-            .addOptional(new Identifier("farmersdelight", "steak_and_potatoes"))
-            .addOptional(new Identifier("farmersdelight", "roasted_mutton_chops"))
-            .addOptional(new Identifier("farmersdelight", "pasta_with_mutton_chop"));
+            .addOptional(Identifier.of("farmersdelight", "chicken_soup"))
+            .addOptional(Identifier.of("farmersdelight", "bacon_and_eggs"))
+            .addOptional(Identifier.of("farmersdelight", "pasta_with_meatballs"))
+            .addOptional(Identifier.of("farmersdelight", "beef_stew"))
+            .addOptional(Identifier.of("farmersdelight", "bone_broth"))
+            .addOptional(Identifier.of("farmersdelight", "mutton_wrap"))
+            .addOptional(Identifier.of("farmersdelight", "bacon_sandwich"))
+            .addOptional(Identifier.of("farmersdelight", "hamburger"))
+            .addOptional(Identifier.of("farmersdelight", "chicken_sandwich"))
+            .addOptional(Identifier.of("farmersdelight", "barbecue_stick"))
+            .addOptional(Identifier.of("farmersdelight", "smoked_ham"))
+            .addOptional(Identifier.of("farmersdelight", "honey_glazed_ham"))
+            .addOptional(Identifier.of("farmersdelight", "honey_glazed_ham_block"))
+            .addOptional(Identifier.of("farmersdelight", "roast_chicken"))
+            .addOptional(Identifier.of("farmersdelight", "roast_chicken_block"))
+            .addOptional(Identifier.of("farmersdelight", "steak_and_potatoes"))
+            .addOptional(Identifier.of("farmersdelight", "roasted_mutton_chops"))
+            .addOptional(Identifier.of("farmersdelight", "pasta_with_mutton_chop"));
         getOrCreateTagBuilder(UConventionalTags.Items.FRUITS)
-            .addOptional(new Identifier("farmersdelight", "pumpkin_slice"))
-            .addOptional(new Identifier("farmersdelight", "tomato"))
-            .addOptional(new Identifier("farmersdelight", "melon_juice"))
-            .addOptional(new Identifier("farmersdelight", "fruit_salad"));
+            .addOptional(Identifier.of("farmersdelight", "pumpkin_slice"))
+            .addOptional(Identifier.of("farmersdelight", "tomato"))
+            .addOptional(Identifier.of("farmersdelight", "melon_juice"))
+            .addOptional(Identifier.of("farmersdelight", "fruit_salad"));
         getOrCreateTagBuilder(UConventionalTags.Items.DESSERTS)
-            .addOptional(new Identifier("farmersdelight", "sweet_berry_cheesecake"))
-            .addOptional(new Identifier("farmersdelight", "sweet_berry_cheesecake_slice"))
-            .addOptional(new Identifier("farmersdelight", "chocolate_pie_slice"))
-            .addOptional(new Identifier("farmersdelight", "cake_slice"))
-            .addOptional(new Identifier("farmersdelight", "apple_pie_slice"))
-            .addOptional(new Identifier("farmersdelight", "glow_berry_custard"));
+            .addOptional(Identifier.of("farmersdelight", "sweet_berry_cheesecake"))
+            .addOptional(Identifier.of("farmersdelight", "sweet_berry_cheesecake_slice"))
+            .addOptional(Identifier.of("farmersdelight", "chocolate_pie_slice"))
+            .addOptional(Identifier.of("farmersdelight", "cake_slice"))
+            .addOptional(Identifier.of("farmersdelight", "apple_pie_slice"))
+            .addOptional(Identifier.of("farmersdelight", "glow_berry_custard"));
         getOrCreateTagBuilder(UConventionalTags.Items.COOKIES)
-            .addOptional(new Identifier("farmersdelight", "sweet_berry_cookie"))
-            .addOptional(new Identifier("farmersdelight", "honey_cookie"));
+            .addOptional(Identifier.of("farmersdelight", "sweet_berry_cookie"))
+            .addOptional(Identifier.of("farmersdelight", "honey_cookie"));
         getOrCreateTagBuilder(UTags.Items.BAKED_GOODS)
-            .addOptional(new Identifier("farmersdelight", "wheat_dough"))
-            .addOptional(new Identifier("farmersdelight", "raw_pasta"))
-            .addOptional(new Identifier("farmersdelight", "pie_crust"))
-            .addOptional(new Identifier("farmersdelight", "egg_sandwich"));
+            .addOptional(Identifier.of("farmersdelight", "wheat_dough"))
+            .addOptional(Identifier.of("farmersdelight", "raw_pasta"))
+            .addOptional(Identifier.of("farmersdelight", "pie_crust"))
+            .addOptional(Identifier.of("farmersdelight", "egg_sandwich"));
         getOrCreateTagBuilder(UTags.Items.HIGH_QUALITY_SEA_VEGETABLES)
-            .addOptional(new Identifier("farmersdelight", "kelp_roll"));
+            .addOptional(Identifier.of("farmersdelight", "kelp_roll"));
         getOrCreateTagBuilder(UTags.Items.LOW_QUALITY_SEA_VEGETABLES)
-            .addOptional(new Identifier("farmersdelight", "kelp_roll_slice"));
+            .addOptional(Identifier.of("farmersdelight", "kelp_roll_slice"));
         getOrCreateTagBuilder(UTags.Items.FORAGE_FILLING)
-            .addOptional(new Identifier("farmersdelight", "horse_feed"))
-            .addOptional(new Identifier("farmersdelight", "rice_bale"))
-            .addOptional(new Identifier("farmersdelight", "straw_bale"));
+            .addOptional(Identifier.of("farmersdelight", "horse_feed"))
+            .addOptional(Identifier.of("farmersdelight", "rice_bale"))
+            .addOptional(Identifier.of("farmersdelight", "straw_bale"));
         getOrCreateTagBuilder(UTags.Items.FORAGE_SAFE)
-            .addOptional(new Identifier("farmersdelight", "sandy_shrub"))
-            .addOptional(new Identifier("farmersdelight", "wild_cabbages"))
-            .addOptional(new Identifier("farmersdelight", "wild_onions"))
-            .addOptional(new Identifier("farmersdelight", "wild_carrots"))
-            .addOptional(new Identifier("farmersdelight", "wild_beetroots"))
-            .addOptional(new Identifier("farmersdelight", "wild_rice"));
+            .addOptional(Identifier.of("farmersdelight", "sandy_shrub"))
+            .addOptional(Identifier.of("farmersdelight", "wild_cabbages"))
+            .addOptional(Identifier.of("farmersdelight", "wild_onions"))
+            .addOptional(Identifier.of("farmersdelight", "wild_carrots"))
+            .addOptional(Identifier.of("farmersdelight", "wild_beetroots"))
+            .addOptional(Identifier.of("farmersdelight", "wild_rice"));
         getOrCreateTagBuilder(UTags.Items.FORAGE_RISKY)
-            .addOptional(new Identifier("farmersdelight", "wild_tomatoes"))
-            .addOptional(new Identifier("farmersdelight", "wild_potatoes"))
-            .addOptionalTag(new Identifier("c", "meads"));
+            .addOptional(Identifier.of("farmersdelight", "wild_tomatoes"))
+            .addOptional(Identifier.of("farmersdelight", "wild_potatoes"))
+            .addOptionalTag(Identifier.of("c", "meads"));
     }
 }
