@@ -321,7 +321,7 @@ public class TentacleEntity extends AbstractDecorationEntity {
     @Override
     protected void updateAttachmentPosition() {
         visibilityBox = null;
-        Vec3d pos = attachmentPos.toCenterPos();
+        Vec3d pos = attachedBlockPos.toCenterPos();
         setPos(pos.x, pos.y, pos.z);
         setBoundingBox(Box.of(pos, 1, 1, 1).stretch(0, 2, 0));
     }

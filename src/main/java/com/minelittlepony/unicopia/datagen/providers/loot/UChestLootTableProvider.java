@@ -18,6 +18,8 @@ import net.minecraft.loot.function.SetPotionLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potion;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
 public class UChestLootTableProvider extends SimpleFabricLootTableProvider {
@@ -26,8 +28,8 @@ public class UChestLootTableProvider extends SimpleFabricLootTableProvider {
     }
 
     @Override
-    public void accept(BiConsumer<Identifier, Builder> exporter) {
-        exporter.accept(Unicopia.id("chests/changeling_hive_trap"), LootTable.builder()
+    public void accept(BiConsumer<RegistryKey<LootTable>, Builder> exporter) {
+        exporter.accept(RegistryKey.of(RegistryKeys.LOOT_TABLE, Unicopia.id("chests/changeling_hive_trap")), LootTable.builder()
                 .pool(LootPool.builder()
                 .rolls(ConstantLootNumberProvider.create(6))
 

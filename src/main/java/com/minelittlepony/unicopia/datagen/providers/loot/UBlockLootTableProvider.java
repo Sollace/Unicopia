@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.datagen.providers.loot;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.EdibleBlock;
@@ -19,7 +20,7 @@ import com.minelittlepony.unicopia.server.world.UTreeGen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
-import net.fabricmc.fabric.api.resource.conditions.v1.DefaultResourceConditions;
+import net.fabricmc.fabric.api.resource.conditions.v1.ResourceConditions;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -46,6 +47,9 @@ import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.LootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.predicate.StatePredicate;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -54,12 +58,23 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 
 public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
+    protected static final float[] SAPLING_DROP_CHANCE = new float[]{0.05F, 0.0625F, 0.083333336F, 0.1F};
+    private static final float[] LEAVES_STICK_DROP_CHANCE = new float[]{0.02F, 0.022222223F, 0.025F, 0.033333335F, 0.1F};
 
-    private static final ConditionalLootFunction.Builder<?> BASE_PRESERVING_FORTUNE_BONUS = ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.8714286F, 0);
-    private static final ConditionalLootFunction.Builder<?> CROPS_FORTUNE_BONUS = ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286F, 3);
+    public UBlockLootTableProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
+        super(output, registryLookup);
+    }
 
-    public UBlockLootTableProvider(FabricDataOutput output) {
-        super(output);
+    public <T> RegistryEntry<T> entryOf(RegistryKey<T> key) {
+        return registryLookup.getWrapperOrThrow(key.getRegistryRef()).getOrThrow(key);
+    }
+
+    private ConditionalLootFunction.Builder<?> createBasePreservingFortuneBonusCondition() {
+        return ApplyBonusLootFunction.binomialWithBonusCount(entryOf(Enchantments.FORTUNE), 0.8714286F, 0);
+    }
+
+    private ConditionalLootFunction.Builder<?> createCropsFortuneBonusCondition() {
+        return ApplyBonusLootFunction.binomialWithBonusCount(entryOf(Enchantments.FORTUNE), 0.5714286F, 3);
     }
 
     @Override
@@ -109,8 +124,8 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         });
         addDrop(UBlocks.GOLDEN_APPLE, LootTable.builder().pool(LootPool.builder()
             .rolls(exactly(1))
-            .with(applyStateCondition(UBlocks.GOLDEN_APPLE, EnchantedFruitBlock.ENCHANTED, false, applyExplosionDecay(UBlocks.GOLDEN_APPLE, ItemEntry.builder(Items.GOLDEN_APPLE))).apply(BASE_PRESERVING_FORTUNE_BONUS))
-            .with(applyStateCondition(UBlocks.GOLDEN_APPLE, EnchantedFruitBlock.ENCHANTED, true, applyExplosionDecay(UBlocks.GOLDEN_APPLE, ItemEntry.builder(Items.ENCHANTED_GOLDEN_APPLE))).apply(BASE_PRESERVING_FORTUNE_BONUS))
+            .with(applyStateCondition(UBlocks.GOLDEN_APPLE, EnchantedFruitBlock.ENCHANTED, false, applyExplosionDecay(UBlocks.GOLDEN_APPLE, ItemEntry.builder(Items.GOLDEN_APPLE))).apply(createBasePreservingFortuneBonusCondition()))
+            .with(applyStateCondition(UBlocks.GOLDEN_APPLE, EnchantedFruitBlock.ENCHANTED, true, applyExplosionDecay(UBlocks.GOLDEN_APPLE, ItemEntry.builder(Items.ENCHANTED_GOLDEN_APPLE))).apply(createBasePreservingFortuneBonusCondition()))
         ));
         List.of(UBlocks.GREEN_APPLE_LEAVES, UBlocks.SOUR_APPLE_LEAVES, UBlocks.SWEET_APPLE_LEAVES, UBlocks.GOLDEN_OAK_LEAVES).forEach(block -> addDrop(block, this::fruitLeavesDrops));
         addDrop(UBlocks.MANGO_LEAVES, block -> leavesDrops(block, UTreeGen.MANGO_TREE.sapling().get(), 0.025F, 0.027777778F, 0.03125F, 0.041666668F, 0.1F)); // same chance as jungle
@@ -126,7 +141,7 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         // jars
         List.of(
                 UBlocks.JAR, UBlocks.CLOUD_JAR, UBlocks.STORM_JAR, UBlocks.LIGHTNING_JAR, UBlocks.STORM_JAR
-        ).forEach(jar -> addDrop(jar, UBlockLootTableProvider::dropsWithSilkTouch));
+        ).forEach(jar -> addDrop(jar, this::dropsWithSilkTouch));
 
         // doors
         List.of(
@@ -148,7 +163,7 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
                 .pool(applyStateCondition(UBlocks.SLIME_PUSTULE, SlimePustuleBlock.SHAPE, SlimePustuleBlock.Shape.POD,
                         addSurvivesExplosionCondition(UBlocks.SLIME_PUSTULE, LootPool.builder()
                     .rolls(exactly(1))
-                    .with(ItemEntry.builder(UBlocks.SLIME_PUSTULE)).conditionally(WITH_SILK_TOUCH_OR_SHEARS))
+                    .with(ItemEntry.builder(UBlocks.SLIME_PUSTULE)).conditionally(createWithShearsOrSilkTouchCondition()))
         )));
         addDrop(UBlocks.MYSTERIOUS_EGG, LootTable.builder()
             .pool(addSurvivesExplosionCondition(UBlocks.MYSTERIOUS_EGG, LootPool.builder()
@@ -178,13 +193,13 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         addDrop(UBlocks.BANANAS, LootTable.builder()
             .pool(addSurvivesExplosionCondition(UBlocks.BANANAS, LootPool.builder()
                 .rolls(exactly(1))
-                .with(item(UItems.BANANA, between(6, 12F)).apply(CROPS_FORTUNE_BONUS))
+                .with(item(UItems.BANANA, between(6, 12F)).apply(createCropsFortuneBonusCondition()))
             )));
         addDrop(UBlocks.PINEAPPLE, LootTable.builder()
             .pool(addSurvivesExplosionCondition(UBlocks.PINEAPPLE, LootPool.builder()
                 .rolls(exactly(1))
                 .with(item(UItems.PINEAPPLE, between(6, 12F))
-                    .apply(BASE_PRESERVING_FORTUNE_BONUS)
+                    .apply(createBasePreservingFortuneBonusCondition())
                     .conditionally(BlockStatePropertyLootCondition.builder(UBlocks.PINEAPPLE).properties(StatePredicate.Builder.create()
                         .exactMatch(Properties.BLOCK_HALF, BlockHalf.TOP)
                         .exactMatch(Properties.AGE_7, Properties.AGE_7_MAX))))
@@ -192,8 +207,8 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         addDrop(UBlocks.ROCKS, applyExplosionDecay(UBlocks.ROCKS, LootTable.builder()
                 .pool(applyStateCondition(UBlocks.ROCKS, Properties.AGE_7, Properties.AGE_7_MAX, LootPool.builder()
                     .rolls(exactly(1))
-                    .with(ItemEntry.builder(UItems.WEIRD_ROCK).conditionally(RandomChanceLootCondition.builder(0.25F)).apply(CROPS_FORTUNE_BONUS))
-                    .with(ItemEntry.builder(UItems.ROCK).apply(CROPS_FORTUNE_BONUS))))
+                    .with(ItemEntry.builder(UItems.WEIRD_ROCK).conditionally(RandomChanceLootCondition.builder(0.25F)).apply(createCropsFortuneBonusCondition()))
+                    .with(ItemEntry.builder(UItems.ROCK).apply(createCropsFortuneBonusCondition()))))
                 .pool(LootPool.builder()
                     .rolls(exactly(1))
                     .with(ItemEntry.builder(UItems.PEBBLES)))
@@ -201,7 +216,7 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         addDrop(UBlocks.GOLD_ROOT, applyExplosionDecay(UBlocks.GOLD_ROOT, LootTable.builder()
             .pool(LootPool.builder().with(ItemEntry.builder(Items.GOLDEN_CARROT)))
             .pool(applyStateCondition(UBlocks.GOLD_ROOT, CarrotsBlock.AGE, 7, LootPool.builder())
-                    .with(ItemEntry.builder(Items.GOLDEN_CARROT).apply(CROPS_FORTUNE_BONUS)))));
+                    .with(ItemEntry.builder(Items.GOLDEN_CARROT).apply(createCropsFortuneBonusCondition())))));
         /*
         addDrop(UBlocks.PLUNDER_VINE, applyExplosionDecay(UBlocks.PLUNDER_VINE, LootTable.builder()
                 .pool(LootPool.builder().rolls(exactly(1)).conditionally(RandomChanceLootCondition.builder(0.25F))
@@ -219,9 +234,9 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         addDrop(UBlocks.SCALLOP_SHELL, shellDrops(UBlocks.SCALLOP_SHELL, UItems.SCALLOP_SHELL));
         addDrop(UBlocks.TURRET_SHELL, shellDrops(UBlocks.TURRET_SHELL, UItems.TURRET_SHELL));
 
-        var farmersDelightGenerator = withConditions(DefaultResourceConditions.allModsLoaded("farmersdelight"));
-        farmersDelightGenerator.addDrop(Datagen.getOrCreateBaleBlock(Unicopia.id("rice_block")), b -> edibleBlockDrops(b, Datagen.getOrCreateItem(new Identifier("farmersdelight", "rice_panicle"))));
-        farmersDelightGenerator.addDrop(Datagen.getOrCreateBaleBlock(Unicopia.id("straw_block")), b -> edibleBlockDrops(b, Datagen.getOrCreateItem(new Identifier("farmersdelight", "straw"))));
+        var farmersDelightGenerator = withConditions(ResourceConditions.allModsLoaded("farmersdelight"));
+        farmersDelightGenerator.addDrop(Datagen.getOrCreateBaleBlock(Unicopia.id("rice_block")), b -> edibleBlockDrops(b, Datagen.getOrCreateItem(Identifier.of("farmersdelight", "rice_panicle"))));
+        farmersDelightGenerator.addDrop(Datagen.getOrCreateBaleBlock(Unicopia.id("straw_block")), b -> edibleBlockDrops(b, Datagen.getOrCreateItem(Identifier.of("farmersdelight", "straw"))));
     }
 
     private void addTallCropDrops(SegmentedCropBlock baseCrop, ItemConvertible crop) {
@@ -231,7 +246,7 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
                 .with(ItemEntry.builder(baseCrop.getSeedsItem()))))
             .pool(applyStateCondition(baseCrop, baseCrop.getAgeProperty(), baseCrop.getMaxAge(), LootPool.builder()
                 .rolls(exactly(1))
-                .with(ItemEntry.builder(baseCrop.getSeedsItem()).apply(CROPS_FORTUNE_BONUS)))));
+                .with(ItemEntry.builder(baseCrop.getSeedsItem()).apply(createCropsFortuneBonusCondition())))));
 
         SegmentedCropBlock stage = baseCrop;
         while ((stage = stage.getNext()) != null) {
@@ -254,20 +269,20 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         return LootTable.builder()
             .pool(LootPool.builder()
                 .rolls(exactly(1))
-                .with(ItemEntry.builder(leaves).conditionally(WITH_SILK_TOUCH_OR_SHEARS)))
+                .with(ItemEntry.builder(leaves).conditionally(createWithShearsOrSilkTouchCondition())))
             .pool(applyExplosionDecay(leaves, LootPool.builder()
                 .rolls(exactly(1))
-                .conditionally(WITHOUT_SILK_TOUCH_NOR_SHEARS)
-                .with(item(Items.STICK, between(1, 2)).conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, LEAVES_STICK_DROP_CHANCE)))));
+                .conditionally(createWithoutShearsOrSilkTouchCondition())
+                .with(item(Items.STICK, between(1, 2)).conditionally(TableBonusLootCondition.builder(entryOf(Enchantments.FORTUNE), LEAVES_STICK_DROP_CHANCE)))));
     }
 
     private LootTable.Builder hullDrops(Block hull, ItemConvertible inner, ItemConvertible outer) {
         return LootTable.builder()
             .pool(addSurvivesExplosionCondition(hull, LootPool.builder()
                 .rolls(exactly(1))
-                .with(item(hull, exactly(2)).conditionally(WITHOUT_SILK_TOUCH))
-                .with(item(inner, exactly(2)).conditionally(WITHOUT_SILK_TOUCH))
-                .with(item(outer, exactly(2)).conditionally(WITH_SILK_TOUCH))));
+                .with(item(hull, exactly(2)).conditionally(createWithoutSilkTouchCondition()))
+                .with(item(inner, exactly(2)).conditionally(createWithoutSilkTouchCondition()))
+                .with(item(outer, exactly(2)).conditionally(createSilkTouchCondition()))));
     }
 
     private LootTable.Builder edibleBlockDrops(Block block, ItemConvertible drop) {
@@ -284,7 +299,7 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
     private LootTable.Builder pieDrops(Block block, Item drop, Item stomped) {
         return LootTable.builder()
             .pool(applyExplosionDecay(block, LootPool.builder()
-                .rolls(exactly(1)).conditionally(WITH_SILK_TOUCH)
+                .rolls(exactly(1)).conditionally(createSilkTouchCondition())
                 .with(applyStateCondition(block, PieBlock.STOMPED, false, ItemEntry.builder(drop)))
                 .with(applyStateCondition(block, PieBlock.STOMPED, true, ItemEntry.builder(stomped)))));
     }
@@ -295,14 +310,14 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
                 .rolls(exactly(1))
                 .with(ItemEntry.builder(shell))
                     .apply(ShellsBlock.COUNT.getValues(), count -> applyStateCondition(block, ShellsBlock.COUNT, count, SetCountLootFunction.builder(exactly(count))))
-                    .apply(BASE_PRESERVING_FORTUNE_BONUS)));
+                    .apply(createBasePreservingFortuneBonusCondition())));
     }
 
 
     public LootTable.Builder fortuneBonusDrops(ItemConvertible drop) {
         return LootTable.builder().pool(addSurvivesExplosionCondition(drop, LootPool.builder()
                 .rolls(exactly(1))
-                .with(ItemEntry.builder(drop).apply(BASE_PRESERVING_FORTUNE_BONUS))));
+                .with(ItemEntry.builder(drop).apply(createBasePreservingFortuneBonusCondition()))));
     }
 
     public static ConstantLootNumberProvider exactly(float n) {

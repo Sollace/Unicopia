@@ -23,7 +23,7 @@ public class CollaboratorEnchantment extends AttributedEnchantment {
     }
 
     private EntityAttributeModifier getModifier(Living<?> user, int level) {
-        return new EntityAttributeModifier(TEAM_STRENGTH_UUID, "Team Strength", user.getEnchants().computeIfAbsent(this, Data::new).level / 2, Operation.ADDITION);
+        return new EntityAttributeModifier(TEAM_STRENGTH_UUID, "Team Strength", user.getEnchants().computeIfAbsent(this, Data::new).level / 2, Operation.ADD_VALUE);
     }
 
     private int getTeamCollectiveLevel(Living<?> user, int radius) {

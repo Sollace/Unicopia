@@ -1,49 +1,25 @@
 package com.minelittlepony.unicopia.client;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import org.jetbrains.annotations.Nullable;
-
-import com.google.common.collect.Multimap;
-import com.minelittlepony.unicopia.entity.Equine;
-import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.enchantment.AttributedEnchantment;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntry;
 
 public class ModifierTooltipRenderer implements ItemTooltipCallback {
 
     @Override
     public void getTooltip(ItemStack stack, Item.TooltipContext tooltipContext, TooltipType tooltipType, List<Text> lines) {
 
-        int flags = stack.hasNbt() && stack.getNbt().contains("HideFlags", 99) ? stack.getNbt().getInt("HideFlags") : 0;
+        // TODO: Evaluate if we still need this
+        /*int flags = stack.hasNbt() && stack.getNbt().contains("HideFlags", 99) ? stack.getNbt().getInt("HideFlags") : 0;
 
         if (isShowing(flags, ItemStack.TooltipSection.MODIFIERS)) {
 
+            Enchantment s;
             Map<EquipmentSlot, Multimap<EntityAttribute, EntityAttributeModifier>> modifiers = new HashMap<>();
 
             Equine.<PlayerEntity, Pony>of(MinecraftClient.getInstance().player).ifPresent(eq -> {
@@ -72,13 +48,13 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
                     }
                 }
             });
-        }
+        }*/
 
         if (MinecraftClient.getInstance().player != null) {
             Pony.of(MinecraftClient.getInstance().player).getDiscoveries().appendTooltip(stack, MinecraftClient.getInstance().world, lines);
         }
     }
-
+/*
     private int getInsertPosition(ItemStack stack, Text category, int flags, List<Text> lines, boolean advanced) {
         int insertPosition = lines.indexOf(category);
 
@@ -166,5 +142,5 @@ public class ModifierTooltipRenderer implements ItemTooltipCallback {
 
         return Stream.empty();
     }
-
+*/
 }

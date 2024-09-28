@@ -352,7 +352,7 @@ public class IgnominiousBulbEntity extends MobEntity {
                 var tentacles = new HashMap<BlockPos, EntityReference<TentacleEntity>>();
                 nbt.getList("tentacles", NbtElement.COMPOUND_TYPE).forEach(tag -> {
                     var compound = (NbtCompound)tag;
-                    tentacles.put(NbtSerialisable.BLOCK_POS.read(compound.getCompound("pos")), new EntityReference<>(compound.getCompound("target")));
+                    tentacles.put(NbtSerialisable.BLOCK_POS.read(compound.getCompound("pos"), getWorld().getRegistryManager()), new EntityReference<>(compound.getCompound("target"), getWorld().getRegistryManager()));
                 });
                 this.tentacles = tentacles;
             }

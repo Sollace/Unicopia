@@ -3,10 +3,10 @@ package com.minelittlepony.unicopia.item.enchantment;
 import com.minelittlepony.unicopia.entity.Living;
 
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 
+@Deprecated
 public class SimpleEnchantment extends Enchantment {
 
     private final Options options;

@@ -9,7 +9,7 @@ import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -19,7 +19,7 @@ import net.minecraft.util.math.RotationAxis;
 public class ShockwaveParticle extends AbstractBillboardParticle {
     private static final Identifier TEXTURE = Unicopia.id("textures/particles/shockwave.png");
 
-    public ShockwaveParticle(DefaultParticleType effect, ClientWorld world, double x, double y, double z, double velocityX, double velocityY,
+    public ShockwaveParticle(SimpleParticleType effect, ClientWorld world, double x, double y, double z, double velocityX, double velocityY,
             double velocityZ) {
         super(world, x, y, z, 0, 0, 0);
         maxAge = 20;

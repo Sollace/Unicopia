@@ -48,7 +48,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.world.BiomeColors;
-import net.minecraft.client.color.world.FoliageColors;
 import net.minecraft.client.item.ClampedModelPredicateProvider;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.particle.Particle;
@@ -61,14 +60,17 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
+import net.minecraft.world.biome.FoliageColors;
 
 public interface URenderers {
     BlockEntity CHEST_RENDER_ENTITY = new CloudChestBlock.TileData(BlockPos.ORIGIN, UBlocks.CLOUD_CHEST.getDefaultState());
@@ -126,10 +128,10 @@ public interface URenderers {
         register(URenderers::renderBedItem, UItems.CLOTH_BED, UItems.CLOUD_BED);
         register(URenderers::renderChestItem, UBlocks.CLOUD_CHEST.asItem());
         PolearmRenderer.register(UItems.WOODEN_POLEARM, UItems.STONE_POLEARM, UItems.IRON_POLEARM, UItems.GOLDEN_POLEARM, UItems.DIAMOND_POLEARM, UItems.NETHERITE_POLEARM);
-        ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("affinity"), (stack, world, entity, seed) -> EnchantableItem.getSpellKey(stack).getAffinity().getAlignment());
-        ModelPredicateProviderRegistry.register(UItems.GEMSTONE, new Identifier("shape"), (stack, world, entity, seed) -> EnchantableItem.getSpellKey(stack).getGemShape().getId());
-        ModelPredicateProviderRegistry.register(UItems.ROCK_CANDY, new Identifier("count"), (stack, world, entity, seed) -> stack.getCount() / (float)stack.getMaxCount());
-        ModelPredicateProviderRegistry.register(UItems.BUTTERFLY, new Identifier("variant"), (stack, world, entity, seed) -> (float)ButterflyItem.getVariant(stack).ordinal() / ButterflyEntity.Variant.VALUES.length);
+        ModelPredicateProviderRegistry.register(UItems.GEMSTONE, Identifier.ofVanilla("affinity"), (stack, world, entity, seed) -> EnchantableItem.getSpellKey(stack).getAffinity().getAlignment());
+        ModelPredicateProviderRegistry.register(UItems.GEMSTONE, Identifier.ofVanilla("shape"), (stack, world, entity, seed) -> EnchantableItem.getSpellKey(stack).getGemShape().getId());
+        ModelPredicateProviderRegistry.register(UItems.ROCK_CANDY, Identifier.ofVanilla("count"), (stack, world, entity, seed) -> stack.getCount() / (float)stack.getMaxCount());
+        ModelPredicateProviderRegistry.register(UItems.BUTTERFLY, Identifier.ofVanilla("variant"), (stack, world, entity, seed) -> (float)ButterflyItem.getVariant(stack).ordinal() / ButterflyEntity.Variant.VALUES.length);
         ModelPredicateProviderRegistry.register(Unicopia.id("zap_cycle"), new ClampedModelPredicateProvider() {
             private double targetAngle;
             private double lastAngle;
@@ -159,7 +161,7 @@ public interface URenderers {
 
         ColorProviderRegistry.BLOCK.register(URenderers::getTintedBlockColor, TintedBlock.REGISTRY.stream().toArray(Block[]::new));
         ColorProviderRegistry.ITEM.register((stack, i) -> getTintedBlockColor(Block.getBlockFromItem(stack.getItem()).getDefaultState(), null, null, i), TintedBlock.REGISTRY.stream().map(Block::asItem).filter(i -> i != Items.AIR).toArray(Item[]::new));
-        ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack), UItems.FRIENDSHIP_BRACELET);
+        ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 ? -1 : DyedColorComponent.getColor(stack, Colors.WHITE), UItems.FRIENDSHIP_BRACELET);
         ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 || !EnchantableItem.isEnchanted(stack) ? -1 : EnchantableItem.getSpellKey(stack).getColor(), UItems.GEMSTONE);
         ColorProviderRegistry.ITEM.register((stack, i) -> i == 1 && EnchantableItem.isEnchanted(stack) ? EnchantableItem.getSpellKey(stack).getColor() : -1, UItems.MAGIC_STAFF);
 
@@ -240,11 +242,7 @@ public interface URenderers {
     }
 
     private static int getTintedBlockColor(BlockState state, @Nullable BlockRenderView view, @Nullable BlockPos pos, int color) {
-        if (view == null || pos == null) {
-            color = FoliageColors.getDefaultColor();
-        } else {
-            color = BiomeColors.getFoliageColor(view, pos);
-        }
+        color = view == null || pos == null ? FoliageColors.getDefaultColor() : BiomeColors.getFoliageColor(view, pos);
 
         if (state.getBlock() instanceof TintedBlock block) {
             return block.getTint(state, view, pos, color);

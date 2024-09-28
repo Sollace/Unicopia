@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.datagen.providers.loot;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
@@ -31,23 +32,40 @@ import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
+import net.minecraft.predicate.item.EnchantmentsPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.predicate.item.ItemSubPredicateTypes;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.biome.BiomeKeys;
 
 public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvider {
-    public static final LootCondition.Builder WITH_GEM_FINDER = MatchToolLootCondition.builder(ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(UEnchantments.GEM_FINDER, NumberRange.IntRange.atLeast(1))));
-
-    public static final LootCondition.Builder WITHOUT_SILK_TOUCH_AND_GEM_FINDER = WITHOUT_SILK_TOUCH.and(WITH_GEM_FINDER);
     public static final float[] GEMSTONES_FORTUNE_CHANCE = { 0.1F, 0.14285715F, 0.25F, 1F };
-
-    public static final LootCondition.Builder NEEDS_OCEAN_OR_BEACH_BIOME =
-            LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(BiomeKeys.OCEAN))
-        .or(LocationCheckLootCondition.builder(LocationPredicate.Builder.create().biome(BiomeKeys.BEACH)));
 
     public UBlockAdditionsLootTableProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
         super(dataOutput, registryLookup);
+    }
+
+    public LootCondition.Builder createNeedsOceanOrBeachCondition() {
+        return LocationCheckLootCondition.builder(LocationPredicate.Builder.createBiome(entryOf(BiomeKeys.OCEAN)))
+           .or(LocationCheckLootCondition.builder(LocationPredicate.Builder.createBiome(entryOf(BiomeKeys.BEACH))));
+    }
+
+    public LootCondition.Builder createWithoutSilkTouchOrGemFinderCondition() {
+        return createWithoutSilkTouchCondition().and(createWithGemFinderCondition());
+    }
+
+    public LootCondition.Builder createWithGemFinderCondition() {
+        return MatchToolLootCondition.builder(ItemPredicate.Builder.create().subPredicate(ItemSubPredicateTypes.ENCHANTMENTS, EnchantmentsPredicate.enchantments(List.of(
+            new EnchantmentPredicate(UEnchantments.GEM_FINDER, NumberRange.IntRange.atLeast(1))
+        ))));
+    }
+
+    public <T> RegistryEntry<T> entryOf(RegistryKey<T> key) {
+        return registryLookup.getWrapperOrThrow(key.getRegistryRef()).getOrThrow(key);
     }
 
     @Override
@@ -73,17 +91,17 @@ public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvid
     }
 
     private void addVanillaDrop(Block block, Function<Block, LootTable.Builder> lootTableFunction) {
-        lootTables.put(new Identifier("unicopiamc", block.getLootTableId().getPath()), lootTableFunction.apply(block));
+        lootTables.put(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of("unicopiamc", block.getLootTableKey().getValue().getPath())), lootTableFunction.apply(block));
     }
 
     public LootTable.Builder shellDrops(Block block) {
         return LootTable.builder().pool(LootPool.builder()
                 .rolls(ConstantLootNumberProvider.create(1))
-                .conditionally(WITHOUT_SILK_TOUCH.and(NEEDS_OCEAN_OR_BEACH_BIOME))
+                .conditionally(createWithoutSilkTouchCondition().and(createNeedsOceanOrBeachCondition()))
                 .with(applyExplosionDecay(block, TagEntry.builder(UTags.Items.SHELLS)
                         .apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1)))
                     )
-                    .conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, GEMSTONES_FORTUNE_CHANCE)))
+                    .conditionally(TableBonusLootCondition.builder(entryOf(Enchantments.FORTUNE), GEMSTONES_FORTUNE_CHANCE)))
                 );
     }
 
@@ -91,7 +109,7 @@ public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvid
         return LootTable.builder()
                 .pool(LootPool.builder()
                         .rolls(ConstantLootNumberProvider.create(1))
-                        .conditionally(WITHOUT_SILK_TOUCH.and(WITH_SHEARS))
+                        .conditionally(createWithoutSilkTouchCondition().and(WITH_SHEARS))
                         .with(chanceDrops(block, drop, 1, chance))
                 );
     }
@@ -100,7 +118,7 @@ public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvid
         return LootTable.builder()
                 .pool(LootPool.builder()
                         .rolls(ConstantLootNumberProvider.create(1))
-                        .conditionally(WITHOUT_SILK_TOUCH)
+                        .conditionally(createWithoutSilkTouchCondition())
                         .with(chanceDrops(block, UItems.WHEAT_WORMS, max, chance))
                 );
     }
@@ -109,7 +127,7 @@ public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvid
         return LootTable.builder()
                 .pool(LootPool.builder()
                         .rolls(ConstantLootNumberProvider.create(1))
-                        .conditionally(WITHOUT_SILK_TOUCH)
+                        .conditionally(createWithoutSilkTouchCondition())
                         .with(gemstoneDrops(block, 0.1F))
                         .with(chanceDrops(block, UItems.WHEAT_WORMS, max, chance))
                 );
@@ -119,7 +137,7 @@ public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvid
         return LootTable.builder()
             .pool(LootPool.builder()
                 .rolls(ConstantLootNumberProvider.create(1))
-                .conditionally(WITHOUT_SILK_TOUCH)
+                .conditionally(createWithoutSilkTouchCondition())
                 .with(gemstoneDrops(block, 0.1F))
             );
     }
@@ -128,10 +146,10 @@ public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvid
         return LootTable.builder()
             .pool(LootPool.builder()
                 .rolls(ConstantLootNumberProvider.create(1))
-                .conditionally(WITHOUT_SILK_TOUCH)
+                .conditionally(createWithoutSilkTouchCondition())
                 .with(applyExplosionDecay(block, ItemEntry.builder(UItems.CRYSTAL_SHARD)
                         .apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1, 2)))
-                        .apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
+                        .apply(ApplyBonusLootFunction.oreDrops(entryOf(Enchantments.FORTUNE)))
                     )
                     .conditionally(RandomChanceLootCondition.builder(0.25F))
                 )
@@ -142,19 +160,19 @@ public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvid
         return applyExplosionDecay(block, ItemEntry.builder(UItems.GEMSTONE)
                 .apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1, 2)))
             )
-            .conditionally(WITH_GEM_FINDER)
+            .conditionally(createWithGemFinderCondition())
             .conditionally(RandomChanceLootCondition.builder(0.1F))
-            .conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, GEMSTONES_FORTUNE_CHANCE));
+            .conditionally(TableBonusLootCondition.builder(entryOf(Enchantments.FORTUNE), GEMSTONES_FORTUNE_CHANCE));
     }
 
     public LootPoolEntry.Builder<?> chanceDrops(Block block, ItemConvertible drop, int max, float...chance) {
         return applyExplosionDecay(block, ItemEntry.builder(drop)
                 .apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1, max)))
             )
-            .conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, chance));
+            .conditionally(TableBonusLootCondition.builder(entryOf(Enchantments.FORTUNE), chance));
     }
 
-    public static LootTable.Builder dropsWithGemfinding(Block drop, LootPoolEntry.Builder<?> child) {
-        return BlockLootTableGenerator.drops(drop, WITHOUT_SILK_TOUCH_AND_GEM_FINDER, child);
+    public LootTable.Builder dropsWithGemfinding(Block drop, LootPoolEntry.Builder<?> child) {
+        return BlockLootTableGenerator.drops(drop, createWithoutSilkTouchOrGemFinderCondition(), child);
     }
 }

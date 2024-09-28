@@ -12,6 +12,8 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 
+// TODO: Replaced with EnchantmentEffectComponentTypes.ATTRIBUTES
+@Deprecated
 public class AttributedEnchantment extends SimpleEnchantment {
 
     private final Map<EntityAttribute, ModifierFactory> modifiers = new HashMap<>();

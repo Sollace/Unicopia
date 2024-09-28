@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 
 public class DiscoveryToast implements Toast {
     private static final long MAX_AGE = 5000L;
-    private static final Identifier TEXTURE = new Identifier("toast/advancement");
+    private static final Identifier TEXTURE = Identifier.ofVanilla("toast/advancement");
     private static final Text TITLE = Text.translatable("unicopia.toast.discoveries.title");
     private static final Text DESCRIPTION = Text.translatable("unicopia.toast.discoveries.description");
 

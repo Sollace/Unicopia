@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.datagen.providers.loot;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 import com.minelittlepony.unicopia.UConventionalTags;
@@ -18,12 +19,15 @@ import net.minecraft.loot.entry.TagEntry;
 import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 
 public class UChestAdditionsLootTableProvider extends SimpleFabricLootTableProvider {
 
-    public UChestAdditionsLootTableProvider(FabricDataOutput dataOutput) {
-        super(dataOutput, LootContextTypes.CHEST);
+    public UChestAdditionsLootTableProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
+        super(dataOutput, registryLookup, LootContextTypes.CHEST);
     }
 
     @Override
@@ -32,11 +36,11 @@ public class UChestAdditionsLootTableProvider extends SimpleFabricLootTableProvi
     }
 
     @Override
-    public void accept(BiConsumer<Identifier, Builder> exporter) {
-        acceptAdditions((id, builder) -> exporter.accept(new Identifier("unicopiamc", id.getPath()), builder));
+    public void accept(BiConsumer<RegistryKey<LootTable>, LootTable.Builder> exporter) {
+        acceptAdditions((id, builder) -> exporter.accept(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of("unicopiamc", id.getValue().getPath())), builder));
     }
 
-    public void acceptAdditions(BiConsumer<Identifier, Builder> exporter) {
+    public void acceptAdditions(BiConsumer<RegistryKey<LootTable>, Builder> exporter) {
         exporter.accept(LootTables.ABANDONED_MINESHAFT_CHEST, LootTable.builder().pool(LootPool.builder()
                 .rolls(UniformLootNumberProvider.create(2, 4))
                 .with(ItemEntry.builder(UItems.GRYPHON_FEATHER).weight(2).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1, 4))))

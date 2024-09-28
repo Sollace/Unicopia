@@ -25,34 +25,39 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World.ExplosionSourceType;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.Registries;
 
 public class RaceChangeStatusEffect extends StatusEffect {
     public static final int STAGE_DURATION = 200;
     public static final int MAX_DURATION = Stage.VALUES.length * STAGE_DURATION + 1;
 
-    private static final Map<Race, StatusEffect> REGISTRY = new HashMap<>();
+    private static final Map<Race, RegistryEntry<StatusEffect>> REGISTRY = new HashMap<>();
 
     @Nullable
-    public static StatusEffect forRace(Race race) {
+    public static RegistryEntry<StatusEffect> forRace(Race race) {
         return REGISTRY.get(race);
     }
 
-    public static final StatusEffect EARTH = register(0x886F0F, Race.EARTH);
-    public static final StatusEffect UNICORN = register(0x88FFFF, Race.UNICORN);
-    public static final StatusEffect PEGASUS = register(0x00C0ff, Race.PEGASUS);
-    public static final StatusEffect BAT = register(0x152F13, Race.BAT);
-    public static final StatusEffect CHANGELING = register(0xFFFF00, Race.CHANGELING);
-    public static final StatusEffect KIRIN = register(0xFF8800, Race.KIRIN);
-    public static final StatusEffect HIPPOGRIFF = register(0xE04F77, Race.HIPPOGRIFF);
+    public static final RegistryEntry<StatusEffect> EARTH = register(0x886F0F, Race.EARTH);
+    public static final RegistryEntry<StatusEffect> UNICORN = register(0x88FFFF, Race.UNICORN);
+    public static final RegistryEntry<StatusEffect> PEGASUS = register(0x00C0ff, Race.PEGASUS);
+    public static final RegistryEntry<StatusEffect> BAT = register(0x152F13, Race.BAT);
+    public static final RegistryEntry<StatusEffect> CHANGELING = register(0xFFFF00, Race.CHANGELING);
+    public static final RegistryEntry<StatusEffect> KIRIN = register(0xFF8800, Race.KIRIN);
+    public static final RegistryEntry<StatusEffect> HIPPOGRIFF = register(0xE04F77, Race.HIPPOGRIFF);
 
     private final Race race;
 
-    public static StatusEffect register(int color, Race race) {
+    public static RegistryEntry<StatusEffect> register(int color, Race race) {
         Identifier id = race.getId();
-        StatusEffect effect = new RaceChangeStatusEffect(color, race);
-        REGISTRY.put(race, effect);
-        return Registry.register(Registries.STATUS_EFFECT, id.withPath(p -> "change_race_" + id.getPath()), effect);
+        var reference = Registry.registerReference(
+                Registries.STATUS_EFFECT,
+                id.withPath(p -> "change_race_" + id.getPath()),
+                new RaceChangeStatusEffect(color, race)
+        );
+        REGISTRY.put(race, reference);
+        return reference;
     }
 
     private RaceChangeStatusEffect(int color, Race race) {
@@ -64,28 +69,23 @@ public class RaceChangeStatusEffect extends StatusEffect {
         return race;
     }
 
-    private void removeEffect(LivingEntity entity) {
-        entity.removeStatusEffect(this);
-        resetTicks(entity);
-    }
-
     private void resetTicks(LivingEntity entity) {
         Pony.of(entity).ifPresent(pony -> pony.setTicksmetamorphising(0));
     }
 
     @Override
-    public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-        StatusEffectInstance state = entity.getStatusEffect(this);
+    public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
+        StatusEffectInstance state = entity.getStatusEffect(forRace(race));
 
         if (state == null || entity.isDead()) {
             resetTicks(entity);
-            return;
+            return false;
         }
 
         Equine<?> eq = Equine.of(entity).orElse(null);
 
         if (eq == null) {
-            return;
+            return false;
         }
 
         int metaTicks = 0;
@@ -100,7 +100,7 @@ public class RaceChangeStatusEffect extends StatusEffect {
         Stage stage = Stage.forDuration(ticks / STAGE_DURATION);
 
         if (stage == Stage.INITIAL) {
-            return;
+            return true;
         }
 
         int progression = ticks % (stage.ordinal() * STAGE_DURATION);
@@ -109,8 +109,7 @@ public class RaceChangeStatusEffect extends StatusEffect {
             if (progression == 0 && entity instanceof PlayerEntity player && stage == Stage.CRAWLING) {
                 player.sendMessage(Stage.INITIAL.getMessage(race), true);
             }
-            removeEffect(entity);
-            return;
+            return false;
         }
 
         if (progression == 0 && stage != Stage.DEATH && entity instanceof PlayerEntity player) {
@@ -133,8 +132,6 @@ public class RaceChangeStatusEffect extends StatusEffect {
         }
 
         if (stage == Stage.DEATH) {
-            removeEffect(entity);
-
             if (eq instanceof Caster) {
                 ((Caster<?>)eq).getSpellSlot().clear();
             }
@@ -172,7 +169,11 @@ public class RaceChangeStatusEffect extends StatusEffect {
                 eq.setSpecies(race);
                 entity.getWorld().createExplosion(entity, null, ExplosionUtil.NON_DESTRUCTIVE, entity.getPos(), 5, true, ExplosionSourceType.MOB);
             }
+
+            return false;
         }
+
+        return true;
     }
 
     @Override

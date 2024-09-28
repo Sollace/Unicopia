@@ -24,8 +24,8 @@ import net.minecraft.world.WorldEvents;
 public class CorruptInfluenceStatusEffect extends StatusEffect {
     CorruptInfluenceStatusEffect(int color) {
         super(StatusEffectCategory.NEUTRAL, color);
-        addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, "6D706448-6A60-4F59-BE8A-C23A6DD2C7A9", 15, EntityAttributeModifier.Operation.ADDITION);
-        addAttributeModifier(EntityAttributes.GENERIC_ATTACK_SPEED, "6D706448-6A60-4F59-BE8A-C23A6DD2C7A9", 10, EntityAttributeModifier.Operation.ADDITION);
+        addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, "6D706448-6A60-4F59-BE8A-C23A6DD2C7A9", 15, EntityAttributeModifier.Operation.ADD_VALUE);
+        addAttributeModifier(EntityAttributes.GENERIC_ATTACK_SPEED, "6D706448-6A60-4F59-BE8A-C23A6DD2C7A9", 10, EntityAttributeModifier.Operation.ADD_VALUE);
     }
 
     @Override
@@ -81,11 +81,11 @@ public class CorruptInfluenceStatusEffect extends StatusEffect {
                 float maxHealthDifference = mob.getMaxHealth() - clone.getMaxHealth();
                 clone.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 900000, 2));
                 clone.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH)
-                    .addPersistentModifier(new EntityAttributeModifier(UUID.randomUUID(), "Corruption Strength Modifier", maxHealthDifference + 1, EntityAttributeModifier.Operation.ADDITION));
+                    .addPersistentModifier(new EntityAttributeModifier(UUID.randomUUID(), "Corruption Strength Modifier", maxHealthDifference + 1, EntityAttributeModifier.Operation.ADD_VALUE));
             }
             if (clone.getAttributes().hasAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE)) {
                 clone.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)
-                    .addPersistentModifier(new EntityAttributeModifier(UUID.randomUUID(), "Corruption Damage Modifier", mob.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) + 1, EntityAttributeModifier.Operation.ADDITION));
+                    .addPersistentModifier(new EntityAttributeModifier(UUID.randomUUID(), "Corruption Damage Modifier", mob.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE) + 1, EntityAttributeModifier.Operation.ADD_VALUE));
             }
         }
 

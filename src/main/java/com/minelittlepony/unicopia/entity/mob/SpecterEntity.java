@@ -69,7 +69,7 @@ public class SpecterEntity extends HostileEntity {
         super.tick();
 
         if (getTarget() != null) {
-            ParticleUtils.spawnParticles(ParticleTypes.AMBIENT_ENTITY_EFFECT, this, 6);
+            ParticleUtils.spawnParticles(ParticleTypes.EFFECT, this, 6);
 
             if (getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                 if (getWorld().getBlockState(getBlockPos()).isIn(BlockTags.REPLACEABLE_BY_TREES)) {

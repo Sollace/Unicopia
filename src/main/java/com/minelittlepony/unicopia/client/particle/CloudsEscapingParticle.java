@@ -4,13 +4,13 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.SimpleParticleType;
 import net.minecraft.util.math.Vec3d;
 
 public class CloudsEscapingParticle extends GroundPoundParticle {
 
-    public CloudsEscapingParticle(DefaultParticleType effect, ClientWorld world, double x, double y, double z, double dX, double dY, double dZ) {
+    public CloudsEscapingParticle(SimpleParticleType effect, ClientWorld world, double x, double y, double z, double dX, double dY, double dZ) {
         super(effect, world, x, y, z, dX, dY, dZ);
         maxAge = 200;
         collidesWithWorld = false;
