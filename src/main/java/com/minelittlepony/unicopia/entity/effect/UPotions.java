@@ -24,7 +24,7 @@ public interface UPotions {
     MorphingPotion MORPH_UNICORN = new MorphingPotion(Race.UNICORN).registerBaseRecipes(Potions.REGENERATION, UItems.BOTCHED_GEM, UItems.GEMSTONE);
     MorphingPotion MORPH_PEGASUS = new MorphingPotion(Race.PEGASUS).registerBaseRecipes(Potions.SWIFTNESS, UItems.PEGASUS_FEATHER, UItems.GRYPHON_FEATHER, Items.FEATHER);
     MorphingPotion MORPH_BAT = new MorphingPotion(Race.BAT).registerBaseRecipes(Potions.NIGHT_VISION, UItems.BUTTERFLY);
-    MorphingPotion MORPH_CHANGELING = new MorphingPotion(Race.CHANGELING).registerBaseRecipes(Potions.HARMING, UItems.CARAPACE);
+    MorphingPotion MORPH_CHANGELING = new MorphingPotion(Race.CHANGELING).registerBaseRecipes(Potions.HARMING, UItems.CARAPACE, UItems.ROTTEN_APPLE);
     MorphingPotion MORPH_KIRIN = new MorphingPotion(Race.KIRIN).registerBaseRecipes(Potions.FIRE_RESISTANCE, Items.MAGMA_CREAM);
     MorphingPotion MORPH_HIPPOGRIFF = new MorphingPotion(Race.HIPPOGRIFF).registerBaseRecipes(Potions.WATER_BREATHING, UItems.CLAM_SHELL, UItems.TURRET_SHELL, UItems.SCALLOP_SHELL);
 
