@@ -20,7 +20,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
 
 public interface UPotions {
-    MorphingPotion MORPH_EARTH_PONY = new MorphingPotion(Race.EARTH).registerBaseRecipes(Potions.STRENGTH, UItems.CURING_JOKE);
+    MorphingPotion MORPH_EARTH_PONY = new MorphingPotion(Race.EARTH).registerBaseRecipes(Potions.STRENGTH, UItems.CURING_JOKE, UItems.PEBBLES);
     MorphingPotion MORPH_UNICORN = new MorphingPotion(Race.UNICORN).registerBaseRecipes(Potions.REGENERATION, UItems.BOTCHED_GEM, UItems.GEMSTONE);
     MorphingPotion MORPH_PEGASUS = new MorphingPotion(Race.PEGASUS).registerBaseRecipes(Potions.SWIFTNESS, UItems.PEGASUS_FEATHER, UItems.GRYPHON_FEATHER, Items.FEATHER);
     MorphingPotion MORPH_BAT = new MorphingPotion(Race.BAT).registerBaseRecipes(Potions.NIGHT_VISION, UItems.BUTTERFLY);
