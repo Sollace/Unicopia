@@ -1,35 +1,34 @@
 package com.minelittlepony.unicopia.particle;
 
-import java.util.Locale;
-
 import org.joml.Vector3f;
 
 import com.minelittlepony.common.util.Color;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.particle.AbstractDustParticleEffect;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.registry.Registries;
 
 public record MagicParticleEffect (
         boolean tinted,
         Vector3f color
     ) implements ParticleEffect {
     public static final MagicParticleEffect UNICORN = new MagicParticleEffect(false, new Vector3f());
-    @SuppressWarnings("deprecation")
-    public static final ParticleEffect.Factory<MagicParticleEffect> FACTORY = ParticleFactoryHelper.of(MagicParticleEffect::new, MagicParticleEffect::new);
-
-    protected MagicParticleEffect(ParticleType<MagicParticleEffect> particleType, StringReader reader) throws CommandSyntaxException {
-        this(ParticleFactoryHelper.readBoolean(reader), AbstractDustParticleEffect.readColor(reader));
-    }
-
-    protected MagicParticleEffect(ParticleType<MagicParticleEffect> particleType, PacketByteBuf buf) {
-        this(buf.readBoolean(), AbstractDustParticleEffect.readColor(buf));
-    }
+    public static final MapCodec<MagicParticleEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.BOOL.fieldOf("tinted").forGetter(MagicParticleEffect::tinted),
+            Codecs.VECTOR_3F.fieldOf("color").forGetter(MagicParticleEffect::color)
+    ).apply(instance, MagicParticleEffect::new));
+    public static final PacketCodec<ByteBuf, MagicParticleEffect> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.BOOL, MagicParticleEffect::tinted,
+            PacketCodecs.VECTOR3F, MagicParticleEffect::color,
+            MagicParticleEffect::new
+    );
 
     public MagicParticleEffect(int tint) {
         this(true, new Vector3f(Color.r(tint), Color.g(tint), Color.b(tint)));
@@ -61,18 +60,4 @@ public record MagicParticleEffect (
     public ParticleType<?> getType() {
         return UParticles.UNICORN_MAGIC;
     }
-
-    @Override
-    public void write(PacketByteBuf buf) {
-        buf.writeBoolean(tinted);
-        buf.writeFloat(color.x);
-        buf.writeFloat(color.y);
-        buf.writeFloat(color.z);
-    }
-
-    @Override
-    public String asString() {
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f", Registries.PARTICLE_TYPE.getId(getType()), color.x, color.y, color.z);
-    }
-
 }

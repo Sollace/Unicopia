@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.client.particle;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
@@ -19,9 +18,6 @@ public abstract class AbstractBillboardParticle extends AbstractGeometryBasedPar
 
     @Override
     public void buildGeometry(VertexConsumer drawer, Camera camera, float tickDelta) {
-        Tessellator te = Tessellator.getInstance();
-        BufferBuilder buffer = te.getBuffer();
-
         RenderSystem.setShaderTexture(0, getTexture());
 
         RenderSystem.disableCull();
@@ -35,13 +31,13 @@ public abstract class AbstractBillboardParticle extends AbstractGeometryBasedPar
         float renderY = (float)(MathHelper.lerp(tickDelta, prevPosY, y) - cam.getY());
         float renderZ = (float)(MathHelper.lerp(tickDelta, prevPosZ, z) - cam.getZ());
 
-        renderQuads(te, buffer, renderX, renderY, renderZ, tickDelta);
+        renderQuads(Tessellator.getInstance(), renderX, renderY, renderZ, tickDelta);
 
         RenderSystem.enableCull();
         RenderSystem.disableDepthTest();
     }
 
-    protected abstract void renderQuads(Tessellator te, BufferBuilder buffer, float x, float y, float z, float tickDelta);
+    protected abstract void renderQuads(Tessellator te, float x, float y, float z, float tickDelta);
 
     protected abstract Identifier getTexture();
 }

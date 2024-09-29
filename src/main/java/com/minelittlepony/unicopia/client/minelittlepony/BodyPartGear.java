@@ -137,8 +137,8 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity>> implements Gear {
     }
 
     @Override
-    public void render(MatrixStack stack, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha, UUID interpolatorId) {
-        part.renderPart(stack, consumer, light, overlay, red, green, blue, alpha, model.getAttributes());
+    public void render(MatrixStack stack, VertexConsumer consumer, int light, int overlay, int color, UUID interpolatorId) {
+        part.renderPart(stack, consumer, light, overlay, color, model.getAttributes());
     }
 
     static final class WingsGearModel extends PegasusModel<LivingEntity> {

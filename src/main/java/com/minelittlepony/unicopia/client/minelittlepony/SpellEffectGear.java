@@ -50,13 +50,13 @@ class SpellEffectGear implements Gear {
     }
 
     @Override
-    public void render(MatrixStack stack, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha, UUID interpolatorId) {
+    public void render(MatrixStack stack, VertexConsumer consumer, int light, int overlay, int color, UUID interpolatorId) {
         SpellEffectsRenderDispatcher.INSTANCE.render(
             stack,
             MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers(),
             light, caster,
             limbAngle, limbDistance,
-            MinecraftClient.getInstance().getTickDelta(), animationProgress, 0, 0
+            MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false), animationProgress, 0, 0
         );
     }
 }

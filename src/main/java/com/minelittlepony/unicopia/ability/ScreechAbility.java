@@ -16,8 +16,8 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 import com.minelittlepony.unicopia.util.VecHelper;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.MathHelper;
@@ -60,7 +60,7 @@ public class ScreechAbility implements Ability<Numeric> {
     }
 
     @Override
-    public PacketCodec<? extends ByteBuf, Numeric> getSerializer() {
+    public PacketCodec<? super RegistryByteBuf, Numeric> getSerializer() {
         return Numeric.CODEC;
     }
 

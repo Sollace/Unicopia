@@ -65,10 +65,10 @@ public class FootprintParticle extends SpriteBillboardParticle {
         float minV = this.sprite.getMinV();
         float maxV = this.sprite.getMaxV();
 
-        drawer.vertex(corners[0].x, corners[0].y, corners[0].z).texture(minU, minV).color(red, green, blue, alpha).light(light).next();
-        drawer.vertex(corners[1].x, corners[1].y, corners[1].z).texture(maxU, minV).color(red, green, blue, alpha).light(light).next();
-        drawer.vertex(corners[2].x, corners[2].y, corners[2].z).texture(maxU, maxV).color(red, green, blue, alpha).light(light).next();
-        drawer.vertex(corners[3].x, corners[3].y, corners[3].z).texture(minU, maxV).color(red, green, blue, alpha).light(light).next();
+        drawer.vertex(corners[0].x, corners[0].y, corners[0].z).texture(minU, minV).color(red, green, blue, alpha).light(light);
+        drawer.vertex(corners[1].x, corners[1].y, corners[1].z).texture(maxU, minV).color(red, green, blue, alpha).light(light);
+        drawer.vertex(corners[2].x, corners[2].y, corners[2].z).texture(maxU, maxV).color(red, green, blue, alpha).light(light);
+        drawer.vertex(corners[3].x, corners[3].y, corners[3].z).texture(minU, maxV).color(red, green, blue, alpha).light(light);
     }
 
 }

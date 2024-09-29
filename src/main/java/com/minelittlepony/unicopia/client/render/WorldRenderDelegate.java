@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.ColorHelper;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.BackgroundRenderer.FogType;

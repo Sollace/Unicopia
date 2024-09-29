@@ -10,7 +10,6 @@ import com.minelittlepony.unicopia.client.render.bezier.BezierSegment;
 import com.minelittlepony.unicopia.client.render.bezier.Trail;
 import com.minelittlepony.unicopia.particle.TargetBoundParticleEffect;
 
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -35,10 +34,10 @@ public class RainbowTrailParticle extends AbstractBillboardParticle {
         this.velocityY = velocityY;
         this.velocityZ = velocityZ;
 
-        if (effect.getTargetId() <= 0) {
+        if (effect.targetId() <= 0) {
             this.target = world.getOtherEntities(null, Box.from(trail.pos)).get(0);
         } else {
-            this.target = world.getEntityById(effect.getTargetId());
+            this.target = world.getEntityById(effect.targetId());
         }
         isAbility = Caster.of(target).filter(caster -> SpellType.RAINBOOM.isOn(caster)).isPresent();
     }
@@ -54,7 +53,7 @@ public class RainbowTrailParticle extends AbstractBillboardParticle {
     }
 
     @Override
-    protected void renderQuads(Tessellator te, BufferBuilder buffer, float x, float y, float z, float tickDelta) {
+    protected void renderQuads(Tessellator te, float x, float y, float z, float tickDelta) {
         float alpha = this.alpha * (1 - (float)age / maxAge);
 
         List<Trail.Segment> segments = trail.getSegments();
@@ -67,7 +66,7 @@ public class RainbowTrailParticle extends AbstractBillboardParticle {
                 corner.position().mul(scale).add(x, y, z);
             });
 
-            renderQuad(te, buffer, corners.corners(), segments.get(i).getAlpha() * alpha, tickDelta);
+            renderQuad(te, corners.corners(), segments.get(i).getAlpha() * alpha, tickDelta);
         }
     }
 

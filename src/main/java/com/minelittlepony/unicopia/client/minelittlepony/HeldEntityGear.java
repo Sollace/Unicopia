@@ -49,13 +49,13 @@ class HeldEntityGear extends HeldEntityFeatureRenderer<LivingEntity> implements 
     }
 
     @Override
-    public void render(MatrixStack stack, VertexConsumer consumer, int light, int overlay, float red, float green, float blue, float alpha, UUID interpolatorId) {
+    public void render(MatrixStack stack, VertexConsumer consumer, int light, int overlay, int color, UUID interpolatorId) {
         render(
             stack,
             MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers(),
             light, entity,
             0, 0,
-            MinecraftClient.getInstance().getTickDelta(), 0, 0, 0
+            MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false), 0, 0, 0
         );
     }
 }

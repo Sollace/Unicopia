@@ -9,7 +9,6 @@ import com.minelittlepony.unicopia.client.render.bezier.Trail;
 import com.minelittlepony.unicopia.particle.TargetBoundParticleEffect;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -39,11 +38,11 @@ public class WindParticle extends AbstractBillboardParticle {
         this.velocityY = velocityY;
         this.velocityZ = velocityZ;
         this.attachmentTicks = (int)world.random.nextTriangular(15, 12);
-        this.passive = effect.getTargetId() <= 0;
+        this.passive = effect.targetId() <= 0;
         this.collidesWithWorld = false;
 
-        if (effect.getTargetId() > 0) {
-            this.target = world.getEntityById(effect.getTargetId());
+        if (effect.targetId() > 0) {
+            this.target = world.getEntityById(effect.targetId());
         }
         offset = target == null ? Vec3d.ZERO : new Vec3d(x, y, z).subtract(target.getPos());
     }
@@ -59,7 +58,7 @@ public class WindParticle extends AbstractBillboardParticle {
     }
 
     @Override
-    protected void renderQuads(Tessellator te, BufferBuilder buffer, float x, float y, float z, float tickDelta) {
+    protected void renderQuads(Tessellator te, float x, float y, float z, float tickDelta) {
         float alpha = this.alpha * (1 - (float)age / maxAge);
 
         List<Trail.Segment> segments = trail.getSegments();
@@ -72,7 +71,7 @@ public class WindParticle extends AbstractBillboardParticle {
                 corner.position().mul(scale).add(x, y, z);
             });
 
-            renderQuad(te, buffer, corners.corners(), segments.get(i).getAlpha() * alpha, tickDelta);
+            renderQuad(te, corners.corners(), segments.get(i).getAlpha() * alpha, tickDelta);
         }
     }
 
@@ -80,7 +79,7 @@ public class WindParticle extends AbstractBillboardParticle {
     public void tick() {
         super.tick();
 
-        float animationFrame = age + MinecraftClient.getInstance().getTickDelta();
+        float animationFrame = age + MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
 
         float sin = MathHelper.sin(animationFrame / 5F) * 0.1F;
         float cos = MathHelper.cos(animationFrame / 10F) * 0.2F;

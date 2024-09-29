@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-import io.netty.buffer.ByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 
 /**
@@ -32,7 +32,7 @@ public class FlyingDashAbility implements Ability<Hit> {
     }
 
     @Override
-    public PacketCodec<? extends ByteBuf, Hit> getSerializer() {
+    public PacketCodec<? super RegistryByteBuf, Hit> getSerializer() {
         return Hit.CODEC;
     }
 

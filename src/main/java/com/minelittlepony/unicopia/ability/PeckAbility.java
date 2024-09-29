@@ -10,13 +10,13 @@ import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.TraceHelper;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.BlockTags;
@@ -60,7 +60,7 @@ public class PeckAbility implements Ability<Hit> {
     }
 
     @Override
-    public PacketCodec<? extends ByteBuf, Hit> getSerializer() {
+    public PacketCodec<? super RegistryByteBuf, Hit> getSerializer() {
         return Hit.CODEC;
     }
 

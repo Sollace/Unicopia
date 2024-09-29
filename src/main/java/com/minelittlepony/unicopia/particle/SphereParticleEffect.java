@@ -1,19 +1,21 @@
 package com.minelittlepony.unicopia.particle;
 
-import java.util.Locale;
-
 import org.joml.Vector3f;
 
 import com.minelittlepony.common.util.Color;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.minelittlepony.unicopia.util.CodecUtils;
+import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.particle.AbstractDustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.registry.Registries;
 
 public record SphereParticleEffect (
         ParticleType<? extends SphereParticleEffect> type,
@@ -22,17 +24,24 @@ public record SphereParticleEffect (
         float radius,
         Vec3d offset
     ) implements ParticleEffect {
-    @SuppressWarnings("deprecation")
-    public static final Factory<SphereParticleEffect> FACTORY = ParticleFactoryHelper.of(SphereParticleEffect::new, SphereParticleEffect::new);
-
     private static final Vec3d DEFAULT_OFFSET = new Vec3d(0, 0.5, 0);
-
-    protected SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, StringReader reader) throws CommandSyntaxException {
-        this(type, AbstractDustParticleEffect.readColor(reader), ParticleFactoryHelper.readFloat(reader), ParticleFactoryHelper.readFloat(reader), ParticleFactoryHelper.readVector(reader));
+    public static MapCodec<SphereParticleEffect> createCodec(ParticleType<SphereParticleEffect> type) {
+        return RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codecs.VECTOR_3F.fieldOf("color").forGetter(SphereParticleEffect::color),
+            Codec.FLOAT.fieldOf("alpha").forGetter(SphereParticleEffect::alpha),
+            Codec.FLOAT.fieldOf("radius").forGetter(SphereParticleEffect::radius),
+            CodecUtils.VECTOR.fieldOf("offset").forGetter(SphereParticleEffect::offset)
+        ).apply(instance, (color, alpha, radius, offset) -> new SphereParticleEffect(type, color, alpha, radius, offset)));
     }
 
-    protected SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, PacketByteBuf buf) {
-        this(type, buf.readVector3f(), buf.readFloat(), buf.readFloat(), ParticleFactoryHelper.VECTOR_CODEC.read(buf));
+    public static final PacketCodec<RegistryByteBuf, SphereParticleEffect> createPacketCodec(ParticleType<SphereParticleEffect> type) {
+        return PacketCodec.tuple(
+                PacketCodecs.VECTOR3F, SphereParticleEffect::color,
+                PacketCodecs.FLOAT, SphereParticleEffect::alpha,
+                PacketCodecs.FLOAT, SphereParticleEffect::radius,
+                PacketCodecUtils.VECTOR, SphereParticleEffect::offset,
+                (color, alpha, radius, offset) -> new SphereParticleEffect(type, color, alpha, radius, offset)
+        );
     }
 
     public SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, int tint, float alpha, float rad) {
@@ -54,24 +63,5 @@ public record SphereParticleEffect (
     @Override
     public ParticleType<?> getType() {
         return type;
-    }
-
-    @Override
-    public void write(PacketByteBuf buf) {
-        buf.writeVector3f(color);
-        buf.writeFloat(alpha);
-        buf.writeFloat(radius);
-        ParticleFactoryHelper.VECTOR_CODEC.write(buf, offset);
-    }
-
-    @Override
-    public String asString() {
-        return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %.2f %.2f %.2f",
-                Registries.PARTICLE_TYPE.getId(getType()),
-                color.x, color.y, color.z,
-                alpha,
-                radius,
-                offset.getX(), offset.getY(), offset.getZ()
-        );
     }
 }

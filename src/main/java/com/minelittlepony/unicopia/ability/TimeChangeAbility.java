@@ -9,7 +9,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.server.world.UGameRules;
 
-import io.netty.buffer.ByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 
 public class TimeChangeAbility implements Ability<Rot> {
@@ -35,7 +35,7 @@ public class TimeChangeAbility implements Ability<Rot> {
     }
 
     @Override
-    public PacketCodec<? extends ByteBuf, Rot> getSerializer() {
+    public PacketCodec<? super RegistryByteBuf, Rot> getSerializer() {
         return Rot.CODEC;
     }
 

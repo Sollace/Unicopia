@@ -13,12 +13,12 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
@@ -46,7 +46,7 @@ public class SeaponySonarPulseAbility implements Ability<Hit> {
     }
 
     @Override
-    public PacketCodec<? extends ByteBuf, Hit> getSerializer() {
+    public PacketCodec<? super RegistryByteBuf, Hit> getSerializer() {
         return Hit.CODEC;
     }
 

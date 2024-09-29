@@ -5,7 +5,6 @@ import org.joml.Vector3f;
 
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
@@ -36,7 +35,7 @@ public abstract class OrientedBillboardParticle extends AbstractBillboardParticl
     }
 
     @Override
-    protected void renderQuads(Tessellator te, BufferBuilder buffer, float x, float y, float z, float tickDelta) {
+    protected void renderQuads(Tessellator te, float x, float y, float z, float tickDelta) {
         Vector3f[] corners = new Vector3f[]{
                 new Vector3f(-1, -1, 0),
                 new Vector3f(-1,  1, 0),
@@ -54,7 +53,7 @@ public abstract class OrientedBillboardParticle extends AbstractBillboardParticl
 
         float alpha = this.alpha * (1 - ((float)age / maxAge));
 
-        renderQuad(te, buffer, corners, alpha, tickDelta);
+        renderQuad(te, corners, alpha, tickDelta);
     }
 
 }

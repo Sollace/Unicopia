@@ -11,7 +11,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-import io.netty.buffer.ByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -38,7 +38,7 @@ public class KirinRageAbility implements Ability<Hit> {
     }
 
     @Override
-    public PacketCodec<? extends ByteBuf, Hit> getSerializer() {
+    public PacketCodec<? super RegistryByteBuf, Hit> getSerializer() {
         return Hit.CODEC;
     }
 

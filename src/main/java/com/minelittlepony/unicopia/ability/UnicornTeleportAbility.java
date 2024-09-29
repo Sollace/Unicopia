@@ -13,7 +13,6 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.Trace;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
@@ -21,6 +20,7 @@ import net.minecraft.block.PowderSnowBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
@@ -132,7 +132,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
     }
 
     @Override
-    public PacketCodec<? extends ByteBuf, Pos> getSerializer() {
+    public PacketCodec<? super RegistryByteBuf, Pos> getSerializer() {
         return Pos.CODEC;
     }
 

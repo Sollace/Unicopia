@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Dra
 import com.minelittlepony.unicopia.container.SpellbookChapterLoader.Flow;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 
@@ -45,7 +46,7 @@ public interface PageElement extends Drawable {
         return switch (type) {
             case 0 -> new Image(buffer.readIdentifier(), boundsFromBuffer(buffer), buffer.readEnumConstant(Flow.class));
             case 1 -> new Recipe(page, buffer.readIdentifier(), Bounds.empty());
-            case 2 -> new Stack(page, IngredientWithSpell.fromPacket(buffer), boundsFromBuffer(buffer));
+            case 2 -> new Stack(page, IngredientWithSpell.PACKET_CODEC.decode((RegistryByteBuf)buffer), boundsFromBuffer(buffer));
             case 3 -> new TextBlock(page, List.of(Suppliers.ofInstance(buffer.readText())));
             case 4 -> new TextBlock(page, buffer.readList(b -> {
                 int count = b.readVarInt();

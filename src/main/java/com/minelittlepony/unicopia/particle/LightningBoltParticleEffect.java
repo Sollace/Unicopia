@@ -2,10 +2,15 @@ package com.minelittlepony.unicopia.particle;
 
 import java.util.Optional;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.minelittlepony.unicopia.util.CodecUtils;
+import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.util.math.Vec3d;
@@ -18,40 +23,25 @@ public record LightningBoltParticleEffect (
         Optional<Vec3d> pathEndPoint
     ) implements ParticleEffect {
     public static final LightningBoltParticleEffect DEFAULT = new LightningBoltParticleEffect(false, 10, 6, 3, Optional.empty());
-    @SuppressWarnings("deprecation")
-    public static final ParticleEffect.Factory<LightningBoltParticleEffect> FACTORY = ParticleFactoryHelper.of(LightningBoltParticleEffect::new, LightningBoltParticleEffect::new);
 
-    protected LightningBoltParticleEffect(ParticleType<LightningBoltParticleEffect> particleType, StringReader reader) throws CommandSyntaxException {
-        this(
-                ParticleFactoryHelper.readBoolean(reader),
-                ParticleFactoryHelper.readInt(reader),
-                ParticleFactoryHelper.readInt(reader),
-                ParticleFactoryHelper.readFloat(reader),
-                ParticleFactoryHelper.readOptional(reader, ParticleFactoryHelper::readVector)
-        );
-    }
-
-    protected LightningBoltParticleEffect(ParticleType<LightningBoltParticleEffect> particleType, PacketByteBuf buf) {
-        this(buf.readBoolean(), buf.readInt(), buf.readInt(), buf.readFloat(), ParticleFactoryHelper.OPTIONAL_VECTOR_CODEC.read(buf));
-    }
+    public static final MapCodec<LightningBoltParticleEffect> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.BOOL.fieldOf("silent").forGetter(LightningBoltParticleEffect::silent),
+            Codec.INT.fieldOf("changeFrequency").forGetter(LightningBoltParticleEffect::changeFrequency),
+            Codec.INT.fieldOf("maxBranches").forGetter(LightningBoltParticleEffect::maxBranches),
+            Codec.FLOAT.fieldOf("maxDeviation").forGetter(LightningBoltParticleEffect::maxDeviation),
+            CodecUtils.VECTOR.optionalFieldOf("pathEndPoint").forGetter(LightningBoltParticleEffect::pathEndPoint)
+    ).apply(instance, LightningBoltParticleEffect::new));
+    public static final PacketCodec<RegistryByteBuf, LightningBoltParticleEffect> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.BOOL, LightningBoltParticleEffect::silent,
+            PacketCodecs.INTEGER, LightningBoltParticleEffect::changeFrequency,
+            PacketCodecs.INTEGER, LightningBoltParticleEffect::maxBranches,
+            PacketCodecs.FLOAT, LightningBoltParticleEffect::maxDeviation,
+            PacketCodecUtils.OPTIONAL_VECTOR, LightningBoltParticleEffect::pathEndPoint,
+            LightningBoltParticleEffect::new
+    );
 
     @Override
     public ParticleType<?> getType() {
         return UParticles.LIGHTNING_BOLT;
     }
-
-    @Override
-    public void write(PacketByteBuf buffer) {
-        buffer.writeBoolean(silent);
-        buffer.writeInt(changeFrequency);
-        buffer.writeInt(maxBranches);
-        buffer.writeFloat(maxDeviation);
-        ParticleFactoryHelper.OPTIONAL_VECTOR_CODEC.write(buffer, pathEndPoint);
-    }
-
-    @Override
-    public String asString() {
-        return String.format("%s %s %s %s", silent, changeFrequency, maxBranches, maxDeviation);
-    }
-
 }

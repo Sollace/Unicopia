@@ -1,17 +1,19 @@
 package com.minelittlepony.unicopia.particle;
 
-import java.util.Locale;
 import java.util.Optional;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.registry.Registries;
 
 public record FollowingParticleEffect (
         ParticleType<FollowingParticleEffect> type,
@@ -19,21 +21,20 @@ public record FollowingParticleEffect (
         float followSpeed,
         Optional<ParticleEffect> childEffect
     ) implements ParticleEffect {
-    @SuppressWarnings("deprecation")
-    public static final Factory<FollowingParticleEffect> FACTORY = ParticleFactoryHelper.of(FollowingParticleEffect::new, FollowingParticleEffect::new);
-
-    protected FollowingParticleEffect(ParticleType<FollowingParticleEffect> type, StringReader reader) throws CommandSyntaxException {
-        this(type,
-                new WeakTarget(reader),
-                ParticleFactoryHelper.readFloat(reader),
-                ParticleFactoryHelper.readOptional(reader, r -> ParticleFactoryHelper.read(r)));
+    public static MapCodec<FollowingParticleEffect> createCodec(ParticleType<FollowingParticleEffect> type) {
+        return RecordCodecBuilder.mapCodec(instance -> instance.group(
+            WeakTarget.CODEC.fieldOf("target").forGetter(FollowingParticleEffect::target),
+            Codec.FLOAT.fieldOf("follow_speed").forGetter(FollowingParticleEffect::followSpeed),
+            ParticleTypes.TYPE_CODEC.optionalFieldOf("child_effect").forGetter(FollowingParticleEffect::childEffect)
+        ).apply(instance, (target, speed, effect) -> new FollowingParticleEffect(type, target, speed, effect)));
     }
 
-    protected FollowingParticleEffect(ParticleType<FollowingParticleEffect> type, PacketByteBuf buf) {
-        this(type,
-            new WeakTarget(buf),
-            buf.readFloat(),
-            ParticleFactoryHelper.OPTIONAL_PARTICLE_EFFECT_CODEC.read(buf)
+    public static final PacketCodec<RegistryByteBuf, FollowingParticleEffect> createPacketCodec(ParticleType<FollowingParticleEffect> type) {
+        return PacketCodec.tuple(
+                WeakTarget.PACKET_CODEC, FollowingParticleEffect::target,
+                PacketCodecs.FLOAT, FollowingParticleEffect::followSpeed,
+                PacketCodecs.optional(ParticleTypes.PACKET_CODEC), FollowingParticleEffect::childEffect,
+                (target, speed, effect) -> new FollowingParticleEffect(type, target, speed, effect)
         );
     }
 
@@ -52,32 +53,5 @@ public record FollowingParticleEffect (
     @Override
     public ParticleType<?> getType() {
         return type;
-    }
-
-    @Override
-    public void write(PacketByteBuf buf) {
-        target.write(buf);
-        buf.writeFloat(followSpeed);
-        ParticleFactoryHelper.OPTIONAL_PARTICLE_EFFECT_CODEC.write(buf, childEffect());
-    }
-
-    @Override
-    public String asString() {
-        return childEffect().map(child -> {
-            return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f %s",
-                    Registries.PARTICLE_TYPE.getId(getType()),
-                    target.fixedPosition.x,
-                    target.fixedPosition.y,
-                    target.fixedPosition.z,
-                    followSpeed, child.asString());
-        }).orElseGet(() -> {
-            return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f",
-                    Registries.PARTICLE_TYPE.getId(getType()),
-                    target.fixedPosition.x,
-                    target.fixedPosition.y,
-                    target.fixedPosition.z,
-                    followSpeed);
-        });
-
     }
 }

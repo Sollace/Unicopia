@@ -5,7 +5,6 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
-import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -18,7 +17,6 @@ import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -27,6 +25,7 @@ import net.minecraft.block.FarmlandBlock;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -56,7 +55,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
     }
 
     @Override
-    public PacketCodec<? extends ByteBuf, Pos> getSerializer() {
+    public PacketCodec<? super RegistryByteBuf, Pos> getSerializer() {
         return Pos.CODEC;
     }
 

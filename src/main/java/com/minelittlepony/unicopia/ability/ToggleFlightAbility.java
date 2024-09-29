@@ -10,7 +10,7 @@ import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-import io.netty.buffer.ByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
@@ -34,7 +34,7 @@ public class ToggleFlightAbility implements Ability<Hit> {
     }
 
     @Override
-    public PacketCodec<? extends ByteBuf, Hit> getSerializer() {
+    public PacketCodec<? super RegistryByteBuf, Hit> getSerializer() {
         return Hit.CODEC;
     }
 

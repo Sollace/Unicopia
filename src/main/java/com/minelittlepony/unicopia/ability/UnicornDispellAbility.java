@@ -14,7 +14,7 @@ import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
-import io.netty.buffer.ByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -45,7 +45,7 @@ public class UnicornDispellAbility implements Ability<Pos> {
     }
 
     @Override
-    public PacketCodec<? extends ByteBuf, Pos> getSerializer() {
+    public PacketCodec<? super RegistryByteBuf, Pos> getSerializer() {
         return Pos.CODEC;
     }
 

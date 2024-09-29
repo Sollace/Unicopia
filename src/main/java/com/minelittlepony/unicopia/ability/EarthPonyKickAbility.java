@@ -19,7 +19,6 @@ import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.util.*;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -30,6 +29,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
@@ -146,7 +146,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     }
 
     @Override
-    public PacketCodec<? extends ByteBuf, Pos> getSerializer() {
+    public PacketCodec<? super RegistryByteBuf, Pos> getSerializer() {
         return Pos.CODEC;
     }
 

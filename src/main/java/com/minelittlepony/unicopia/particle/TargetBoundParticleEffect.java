@@ -1,57 +1,36 @@
 package com.minelittlepony.unicopia.particle;
 
 
-import java.util.Locale;
-
 import org.jetbrains.annotations.Nullable;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.registry.Registries;
 
-public class TargetBoundParticleEffect implements ParticleEffect {
-    @SuppressWarnings("deprecation")
-    public static final Factory<TargetBoundParticleEffect> FACTORY = ParticleFactoryHelper.of(TargetBoundParticleEffect::new, TargetBoundParticleEffect::new);
-
-    private final ParticleType<TargetBoundParticleEffect> type;
-    private final int targetId;
-
-    protected TargetBoundParticleEffect(ParticleType<TargetBoundParticleEffect> type, StringReader reader) throws CommandSyntaxException {
-        this.type = type;
-        this.targetId = -1;
+public record TargetBoundParticleEffect (
+        ParticleType<TargetBoundParticleEffect> type,
+        int targetId
+    ) implements ParticleEffect {
+    public static MapCodec<TargetBoundParticleEffect> createCodec(ParticleType<TargetBoundParticleEffect> type) {
+        return Codec.INT.fieldOf("targetId").xmap(targetId -> new TargetBoundParticleEffect(type, targetId), TargetBoundParticleEffect::targetId);
     }
 
-    protected TargetBoundParticleEffect(ParticleType<TargetBoundParticleEffect> type, PacketByteBuf buf) {
-        this.type = type;
-        this.targetId = buf.readInt();
+    public static final PacketCodec<ByteBuf, TargetBoundParticleEffect> createPacketCodec(ParticleType<TargetBoundParticleEffect> type) {
+        return PacketCodecs.INTEGER.xmap(targetId -> new TargetBoundParticleEffect(type, targetId), TargetBoundParticleEffect::targetId);
     }
 
     public TargetBoundParticleEffect(ParticleType<TargetBoundParticleEffect> type, @Nullable Entity target) {
-        this.type = type;
-        this.targetId = target == null ? -1 : target.getId();
-    }
-
-    public int getTargetId() {
-        return targetId;
+        this(type, target == null ? -1 : target.getId());
     }
 
     @Override
     public ParticleType<?> getType() {
         return type;
-    }
-
-    @Override
-    public void write(PacketByteBuf buf) {
-        buf.writeInt(targetId);
-    }
-
-    @Override
-    public String asString() {
-        return String.format(Locale.ROOT, "%s", Registries.PARTICLE_TYPE.getId(getType()), targetId);
     }
 }

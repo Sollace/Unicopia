@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.client.render.model.VertexLightSource;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -70,7 +71,7 @@ public class DustCloudParticle extends AbstractBillboardParticle {
     }
 
     @Override
-    protected void renderQuads(Tessellator te, BufferBuilder buffer, float x, float y, float z, float tickDelta) {
+    protected void renderQuads(Tessellator te, float x, float y, float z, float tickDelta) {
         float scale = getScale(tickDelta) * 0.5F;
         float alpha = this.alpha * (1 - ((float)age / maxAge));
         MatrixStack matrices = new MatrixStack();
@@ -86,9 +87,9 @@ public class DustCloudParticle extends AbstractBillboardParticle {
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((SEPARATION * i + angle)));
             float ringScale = 1 + MathHelper.sin(((i * 10) + age + tickDelta) * 0.05F) * 0.1F;
 
-            buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+            BufferBuilder buffer = te.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
             model.render(matrices, buffer, 0, scale * ringScale, 1, 1, 1, alpha);
-            te.draw();
+            BufferRenderer.drawWithGlobalProgram(buffer.end());
             matrices.pop();
         }
     }
