@@ -13,6 +13,8 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
+import static net.minecraft.entity.data.DataTracker.Builder;;
+
 public abstract class StationaryObjectEntity extends Entity implements UDamageSources, MagicImmune {
     private static final TrackedData<Float> HEALTH = DataTracker.registerData(StationaryObjectEntity.class, TrackedDataHandlerRegistry.FLOAT);
 
@@ -21,8 +23,8 @@ public abstract class StationaryObjectEntity extends Entity implements UDamageSo
     }
 
     @Override
-    protected void initDataTracker() {
-        dataTracker.startTracking(HEALTH, getMaxHealth());
+    protected void initDataTracker(Builder builder) {
+        builder.add(HEALTH, getMaxHealth());
     }
 
     public abstract float getMaxHealth();

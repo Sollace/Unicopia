@@ -73,11 +73,6 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-    }
-
-    @Override
     protected void initGoals() {
         goalSelector.add(5, new StayGoal());
         goalSelector.add(6, new FollowEntityGoal(2, 2, 30));
@@ -225,7 +220,7 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
     @Override
     public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
-        tag.put("owner", owner.toNBT());
+        tag.put("owner", owner.toNBT(getWorld().getRegistryManager()));
         stayingPos.ifPresent(pos -> {
             tag.put("stayingPos", NbtHelper.fromBlockPos(pos));
         });
@@ -235,9 +230,9 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
     public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
         if (tag.contains("owner")) {
-            owner.fromNBT(tag.getCompound("owner"));
+            owner.fromNBT(tag.getCompound("owner"), getWorld().getRegistryManager());
         }
-        stayingPos = tag.contains("stayingPos") ? Optional.of(NbtHelper.toBlockPos(tag.getCompound("stayingPos"))) : Optional.empty();
+        stayingPos = tag.contains("stayingPos") ? NbtHelper.toBlockPos(tag, "stayingPos") : Optional.empty();
     }
 
     class FollowEntityGoal extends Goal {
@@ -308,7 +303,7 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
             double speed = this.speed;
 
             if (distance > 100) {
-                teleport(
+                setPosition(
                     target.getX() + getWorld().random.nextFloat() / 2F - 0.5F,
                     target.getEyeY(),
                     target.getZ() + getWorld().random.nextFloat() / 2F - 0.5F

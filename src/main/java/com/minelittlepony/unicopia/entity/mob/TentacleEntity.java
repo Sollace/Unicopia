@@ -20,6 +20,7 @@ import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,6 +32,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
@@ -69,10 +71,9 @@ public class TentacleEntity extends AbstractDecorationEntity {
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        dataTracker.startTracking(GROWTH, 0);
-        dataTracker.startTracking(MOTION_OFFSET, 0);
+    protected void initDataTracker(Builder builder) {
+        builder.add(GROWTH, 0);
+        builder.add(MOTION_OFFSET, 0);
     }
 
     public void setBulb(IgnominiousBulbEntity bulb) {
@@ -128,16 +129,6 @@ public class TentacleEntity extends AbstractDecorationEntity {
 
     public boolean isAttacking() {
         return attackingTicks > 0;
-    }
-
-    @Override
-    public int getWidthPixels() {
-        return 9;
-    }
-
-    @Override
-    public int getHeightPixels() {
-        return 9;
     }
 
     @Override
@@ -319,11 +310,9 @@ public class TentacleEntity extends AbstractDecorationEntity {
     }
 
     @Override
-    protected void updateAttachmentPosition() {
+    protected Box calculateBoundingBox(BlockPos pos, Direction side) {
         visibilityBox = null;
-        Vec3d pos = attachedBlockPos.toCenterPos();
-        setPos(pos.x, pos.y, pos.z);
-        setBoundingBox(Box.of(pos, 1, 1, 1).stretch(0, 2, 0));
+        return Box.of(pos.toCenterPos(), 1, 1, 1).stretch(0, 2, 0);
     }
 
     @Override

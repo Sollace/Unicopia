@@ -17,6 +17,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -91,12 +92,12 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        dataTracker.startTracking(ATTACHMENT_FACE, Direction.UP);
-        dataTracker.startTracking(GROWTH, 0);
-        dataTracker.startTracking(DECAYING, false);
-        dataTracker.startTracking(CORRUPT, false);
+    protected void initDataTracker(Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(ATTACHMENT_FACE, Direction.UP);
+        builder.add(GROWTH, 0);
+        builder.add(DECAYING, false);
+        builder.add(CORRUPT, false);
     }
 
     @Override

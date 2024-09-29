@@ -3,8 +3,6 @@ package com.minelittlepony.unicopia.entity.mob;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.UUID;
-import java.util.function.Consumer;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.entity.Creature;
@@ -13,13 +11,13 @@ import com.minelittlepony.unicopia.entity.ai.FleeExplosionGoal;
 import com.minelittlepony.unicopia.entity.behaviour.Guest;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SkinOverlayOwner;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.AttackWithOwnerGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -41,6 +39,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.AbstractSkeletonEntity;
 import net.minecraft.entity.mob.Angerable;
@@ -70,7 +69,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
@@ -90,20 +88,23 @@ public class FriendlyCreeperEntity extends TameableEntity implements SkinOverlay
     private short hugTime;
     private short lastHugTime;
 
+    @Nullable
+    private UUID angerTarget;
+
     protected FriendlyCreeperEntity(EntityType<? extends FriendlyCreeperEntity> type, World world) {
         super(type, world);
-        setTamed(false);
+        setTamed(false, true);
         setPathfindingPenalty(PathNodeType.POWDER_SNOW, -1);
         setPathfindingPenalty(PathNodeType.DANGER_POWDER_SNOW, -1);
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        dataTracker.startTracking(FUSE_SPEED, -1);
-        dataTracker.startTracking(CHARGED, false);
-        dataTracker.startTracking(IGNITED, false);
-        dataTracker.startTracking(ANGER_TIME, 0);
+    protected void initDataTracker(Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(FUSE_SPEED, -1);
+        builder.add(CHARGED, false);
+        builder.add(IGNITED, false);
+        builder.add(ANGER_TIME, 0);
     }
 
     @Override
@@ -271,8 +272,8 @@ public class FriendlyCreeperEntity extends TameableEntity implements SkinOverlay
     }
 
     @Override
-    protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-        super.dropEquipment(source, lootingMultiplier, allowDrops);
+    protected void dropEquipment(ServerWorld world, DamageSource source, boolean causedByPlayer) {
+        super.dropEquipment(world, source, causedByPlayer);
         if (source.getAttacker() instanceof CreeperEntity c && c.shouldDropHead()) {
             c.onHeadDropped();
             dropItem(Items.CREEPER_HEAD);
@@ -308,11 +309,15 @@ public class FriendlyCreeperEntity extends TameableEntity implements SkinOverlay
         dataTracker.set(CHARGED, true);
     }
 
+
+    @Override
+    public boolean isBreedingItem(ItemStack stack) {
+        return stack.isOf(Items.GUNPOWDER);
+    }
+
     @Override
     public ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-
-        Consumer<PlayerEntity> statusCallback = p -> p.sendToolBreakStatus(hand);
 
         if (stack.isEmpty() && isOwner(player)) {
             setSitting(!isSitting());
@@ -329,7 +334,7 @@ public class FriendlyCreeperEntity extends TameableEntity implements SkinOverlay
                 if (!stack.isDamageable()) {
                     stack.decrement(1);
                 } else {
-                    stack.damage(1, player, statusCallback);
+                    stack.damage(1, player, getSlotForHand(hand));
                 }
             }
 
@@ -346,7 +351,7 @@ public class FriendlyCreeperEntity extends TameableEntity implements SkinOverlay
                 if (!stack.isDamageable()) {
                     stack.decrement(1);
                 } else {
-                    stack.damage(1, player, statusCallback);
+                    stack.damage(1, player, getSlotForHand(hand));
                 }
             }
 
@@ -406,23 +411,15 @@ public class FriendlyCreeperEntity extends TameableEntity implements SkinOverlay
     }
 
     @Override
-    public EntityView method_48926() {
-        return getWorld();
-    }
-
-    @Override
     public PassiveEntity createChild(ServerWorld world, PassiveEntity partner) {
         FriendlyCreeperEntity child = (FriendlyCreeperEntity)getType().create(world);
         UUID uUID = getOwnerUuid();
         if (uUID != null) {
             child.setOwnerUuid(uUID);
-            child.setTamed(true);
+            child.setTamed(true, true);
         }
         return child;
     }
-
-    @Nullable
-    private UUID angerTarget;
 
     @Override
     public int getAngerTime() {

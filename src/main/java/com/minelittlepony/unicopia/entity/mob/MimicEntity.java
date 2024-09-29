@@ -23,6 +23,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -110,10 +111,10 @@ public class MimicEntity extends PathAwareEntity {
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        dataTracker.startTracking(CHEST_DATA, new NbtCompound());
-        dataTracker.startTracking(MOUTH_OPEN, false);
+    protected void initDataTracker(Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(CHEST_DATA, new NbtCompound());
+        builder.add(MOUTH_OPEN, false);
     }
 
     @Override
@@ -327,7 +328,7 @@ public class MimicEntity extends PathAwareEntity {
     @Nullable
     private ChestBlockEntity readChestData(NbtCompound nbt) {
         BlockState state = BlockState.CODEC.decode(NbtOps.INSTANCE, nbt.getCompound("state")).result().get().getFirst();
-        if (BlockEntity.createFromNbt(getBlockPos(), state, nbt.getCompound("data")) instanceof ChestBlockEntity data) {
+        if (BlockEntity.createFromNbt(getBlockPos(), state, nbt.getCompound("data"), getWorld().getRegistryManager()) instanceof ChestBlockEntity data) {
             data.setWorld(getWorld());
             ((MimicGeneratable)data).setAllowMimics(false);
             return data;
@@ -346,7 +347,7 @@ public class MimicEntity extends PathAwareEntity {
     @Nullable
     private NbtCompound writeChestData(ChestBlockEntity chestData) {
         NbtCompound chest = new NbtCompound();
-        chest.put("data", chestData.createNbtWithId());
+        chest.put("data", chestData.createNbtWithId(getWorld().getRegistryManager()));
         chest.put("state", BlockState.CODEC.encode(chestData.getCachedState(), NbtOps.INSTANCE, new NbtCompound()).result().get());
         return chest;
     }

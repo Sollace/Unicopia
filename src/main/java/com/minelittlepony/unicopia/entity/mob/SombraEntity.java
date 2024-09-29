@@ -56,6 +56,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.FlyingEntity;
@@ -167,10 +168,10 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        dataTracker.startTracking(HOME_POS, Optional.empty());
-        dataTracker.startTracking(TARGET_SIZE, 1F);
+    protected void initDataTracker(Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(HOME_POS, Optional.empty());
+        builder.add(TARGET_SIZE, 1F);
     }
 
     @Override
@@ -234,6 +235,10 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
 
     public void setHomePos(BlockPos pos) {
         dataTracker.set(HOME_POS, Optional.of(pos));
+    }
+
+    public void setHomePos(Optional<BlockPos> pos) {
+        dataTracker.set(HOME_POS, pos);
     }
 
     public float getBiteAmount(float tickDelta) {
@@ -533,8 +538,8 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     }
 
     @Override
-    protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
-        super.dropEquipment(source, lootingMultiplier, allowDrops);
+    protected void dropEquipment(ServerWorld world, DamageSource source, boolean causedByPlayer) {
+        super.dropEquipment(world, source, causedByPlayer);
         ItemEntity itemEntity = dropItem(UItems.BROKEN_ALICORN_AMULET);
         if (itemEntity != null) {
             itemEntity.setCovetedItem();
@@ -671,7 +676,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
         getHomePos().map(NbtHelper::fromBlockPos).ifPresent(pos -> {
             nbt.put("homePos", pos);
         });
-        nbt.put("cloud", stormCloud.toNBT());
+        nbt.put("cloud", stormCloud.toNBT(getWorld().getRegistryManager()));
         nbt.putFloat("size", getScaleFactor());
     }
 
@@ -679,13 +684,13 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         if (nbt.contains("homePos", NbtElement.COMPOUND_TYPE)) {
-            setHomePos(NbtHelper.toBlockPos(nbt.getCompound("homePos")));
+            setHomePos(NbtHelper.toBlockPos(nbt, "homePos"));
         }
         if (hasCustomName()) {
             bossBar.setName(getDisplayName());
         }
         setScaleFactor(nbt.getFloat("size"));
-        stormCloud.fromNBT(nbt.getCompound("cloud"));
+        stormCloud.fromNBT(nbt.getCompound("cloud"), getWorld().getRegistryManager());
     }
 
     private static class SombraBossBar extends ServerBossBar {

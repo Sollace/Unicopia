@@ -28,6 +28,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -76,7 +77,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
             delegate.onPlaced(caster, control);
         }
 
-        spells.getSlots().put(Spell.copy(control.getDelegate()));
+        spells.getSlots().put(Spell.copy(control.getDelegate(), world.getRegistryManager()));
     }
 
     public CastSpellEntity(EntityType<?> type, World world) {
@@ -86,12 +87,12 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
     }
 
     @Override
-    protected void initDataTracker() {
-        dataTracker.startTracking(LEVEL, 0);
-        dataTracker.startTracking(CORRUPTION, 0);
-        dataTracker.startTracking(MAX_LEVEL, 1);
-        dataTracker.startTracking(MAX_CORRUPTION, 1);
-        dataTracker.startTracking(DEAD, false);
+    protected void initDataTracker(Builder builder) {
+        builder.add(LEVEL, 0);
+        builder.add(CORRUPTION, 0);
+        builder.add(MAX_LEVEL, 1);
+        builder.add(MAX_CORRUPTION, 1);
+        builder.add(DEAD, false);
     }
 
     @Override
@@ -246,11 +247,11 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
             tag.putUuid("owningSpell", controllingSpellUuid);
         }
 
-        spells.getSlots().toNBT(tag);
+        spells.getSlots().toNBT(tag, getWorld().getRegistryManager());
         tag.putInt("age", age);
         tag.putInt("prevAge", prevAge);
         tag.putBoolean("dead", isDead());
-        tag.put("owner", owner.toNBT());
+        tag.put("owner", owner.toNBT(getWorld().getRegistryManager()));
     }
 
     @Override
@@ -265,13 +266,13 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
         controllingEntityUuid = tag.containsUuid("owningEntity") ? tag.getUuid("owningEntity") : null;
         controllingSpellUuid = tag.containsUuid("owningSpell") ? tag.getUuid("owningSpell") : null;
 
-        spells.getSlots().fromNBT(tag);
+        spells.getSlots().fromNBT(tag, getWorld().getRegistryManager());
         age = tag.getInt("age");
         prevAge = tag.getInt("prevAge");
         setDead(tag.getBoolean("dead"));
 
         if (tag.contains("owner")) {
-            owner.fromNBT(tag.getCompound("owner"));
+            owner.fromNBT(tag.getCompound("owner"), getWorld().getRegistryManager());
         }
     }
 }

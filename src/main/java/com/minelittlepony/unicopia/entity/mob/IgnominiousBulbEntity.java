@@ -12,13 +12,10 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -26,6 +23,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,6 +31,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -74,10 +73,10 @@ public class IgnominiousBulbEntity extends MobEntity {
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        dataTracker.startTracking(ANGRY, false);
-        dataTracker.startTracking(AGE, 0);
+    protected void initDataTracker(Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(ANGRY, false);
+        builder.add(AGE, 0);
     }
 
     @Override
@@ -100,6 +99,11 @@ public class IgnominiousBulbEntity extends MobEntity {
 
     public float getScale(float tickDelta) {
         return Math.max(0.2F, 1 - (MathHelper.clamp(MathHelper.lerp(tickDelta, prevAge, getAge()), BABY_AGE, 0F) / BABY_AGE));
+    }
+
+    @Override
+    public float getScale() {
+        return super.getScale() * getScale(1);
     }
 
     public boolean isAngry() {
@@ -335,8 +339,8 @@ public class IgnominiousBulbEntity extends MobEntity {
         NbtList tentacles = new NbtList();
         getTentacles().forEach((pos, tentacle) -> {
             var compound = new NbtCompound();
-            compound.put("pos", NbtSerialisable.BLOCK_POS.write(pos));
-            compound.put("target", tentacle.toNBT());
+            compound.put("pos", NbtHelper.fromBlockPos(pos));
+            compound.put("target", tentacle.toNBT(getWorld().getRegistryManager()));
             tentacles.add(compound);
         });
         nbt.put("tentacles", tentacles);
@@ -352,7 +356,9 @@ public class IgnominiousBulbEntity extends MobEntity {
                 var tentacles = new HashMap<BlockPos, EntityReference<TentacleEntity>>();
                 nbt.getList("tentacles", NbtElement.COMPOUND_TYPE).forEach(tag -> {
                     var compound = (NbtCompound)tag;
-                    tentacles.put(NbtSerialisable.BLOCK_POS.read(compound.getCompound("pos"), getWorld().getRegistryManager()), new EntityReference<>(compound.getCompound("target"), getWorld().getRegistryManager()));
+                    NbtHelper.toBlockPos(compound, "pos").ifPresent(pos -> {
+                        tentacles.put(pos, new EntityReference<>(compound.getCompound("target"), getWorld().getRegistryManager()));
+                    });
                 });
                 this.tentacles = tentacles;
             }
@@ -365,10 +371,5 @@ public class IgnominiousBulbEntity extends MobEntity {
             calculateDimensions();
         }
         super.onTrackedDataSet(data);
-    }
-
-    @Override
-    public EntityDimensions getDimensions(EntityPose pose) {
-        return EntityDimensions.changing(3, 2).scaled(getScale(1));
     }
 }

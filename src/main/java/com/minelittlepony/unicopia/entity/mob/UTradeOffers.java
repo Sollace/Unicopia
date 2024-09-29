@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity.mob;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.UTags;
@@ -19,6 +21,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
+import net.minecraft.village.TradedItem;
 import net.minecraft.village.VillagerProfession;
 
 public interface UTradeOffers {
@@ -41,7 +44,7 @@ public interface UTradeOffers {
 
         TradeOfferHelper.registerWanderingTraderOffers(1, factories -> {
             factories.add(buyTiered(UItems.GEMSTONE, 30, UItems.GOLDEN_FEATHER, 1, UItems.GOLDEN_WING, 1, 30, 2, 0.05F));
-            factories.add((e, rng) -> new TradeOffer(new ItemStack(UItems.GEMSTONE, 3), EnchantableItem.enchant(UItems.GEMSTONE.getDefaultStack(), SpellType.REGISTRY.getRandom(rng).get().value()), 20, 1, 0.05F));
+            factories.add((e, rng) -> new TradeOffer(new TradedItem(UItems.GEMSTONE, 3), EnchantableItem.enchant(UItems.GEMSTONE.getDefaultStack(), SpellType.REGISTRY.getRandom(rng).get().value()), 20, 1, 0.05F));
             factories.add(buy(UItems.GEMSTONE, 20, UItems.HAY_FRIES, 5, 50, 3, 0.06F));
             factories.add(buy(Items.WHEAT, 17, UItems.HAY_BURGER, 1, 10, 6, 0.08F));
             factories.add(buy(ItemTags.SMALL_FLOWERS, 2, UItems.DAFFODIL_DAISY_SANDWICH, 1, 10, 6, 0.08F));
@@ -64,19 +67,19 @@ public interface UTradeOffers {
     }
 
     private static TradeOffers.Factory buy(Item item, int count, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {
-        return (e, rng) -> new TradeOffer(new ItemStack(item, count), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
+        return (e, rng) -> new TradeOffer(new TradedItem(item, count), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
     }
 
     private static TradeOffers.Factory buyTiered(Item item, int count, Item intermediate, int intermediatCount, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {
-        return (e, rng) -> new TradeOffer(new ItemStack(item, count), new ItemStack(intermediate, intermediatCount), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
+        return (e, rng) -> new TradeOffer(new TradedItem(item, count), Optional.of(new TradedItem(intermediate, intermediatCount)), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
     }
 
     private static TradeOffers.Factory buy(TagKey<Item> item, int count, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {
-        return (e, rng) -> new TradeOffer(new ItemStack(random(e, item, rng), count), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
+        return (e, rng) -> new TradeOffer(new TradedItem(random(e, item, rng), count), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
     }
 
     private static TradeOffers.Factory buy(Item item, int count, TagKey<Item> returnItem, int returnCount, int maxUses, int experience, float priceChange) {
-        return (e, rng) -> new TradeOffer(new ItemStack(item, count), new ItemStack(random(e, returnItem, rng), returnCount), maxUses, experience, priceChange);
+        return (e, rng) -> new TradeOffer(new TradedItem(item, count), new ItemStack(random(e, returnItem, rng), returnCount), maxUses, experience, priceChange);
     }
 
     private static Item random(Entity e, TagKey<Item> item, Random rng) {
@@ -95,7 +98,12 @@ public interface UTradeOffers {
 
             TradeOffer offer = factory.create(entity, rng);
 
-            return new TradeOffer(offer.getOriginalFirstBuyItem(), offer.getSecondBuyItem(), UItems.FILLED_JAR.withContents(offer.getSellItem()), offer.getUses(), offer.getMaxUses(), offer.getMerchantExperience(), offer.getPriceMultiplier(), offer.getDemandBonus());
+            return new TradeOffer(
+                    offer.getFirstBuyItem(),
+                    offer.getSecondBuyItem(),
+                    UItems.FILLED_JAR.withContents(offer.getSellItem()),
+                    offer.getUses(), offer.getMaxUses(), offer.getMerchantExperience(), offer.getPriceMultiplier(), offer.getDemandBonus()
+            );
         }
     }
 }

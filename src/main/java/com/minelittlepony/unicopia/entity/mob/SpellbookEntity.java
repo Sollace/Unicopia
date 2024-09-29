@@ -391,7 +391,7 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
         activeTicks = compound.getInt("activeTicks");
         setAltered(compound.getBoolean("altered"));
         setForcedState(compound.contains("locked") ? TriState.of(compound.getBoolean("locked")) : TriState.DEFAULT);
-        state.fromNBT(compound.getCompound("spellbookState"), getWorld().getRegistryManager());
+        setSpellbookState(NbtSerialisable.decode(SpellbookState.CODEC, compound.getCompound("spellbookState")).orElse(new SpellbookState()));
         altar = NbtSerialisable.decode(Altar.CODEC, compound.get("altar"));
     }
 
@@ -401,7 +401,7 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
         compound.putInt("activeTicks", activeTicks);
         compound.putBoolean("prevDaytime", prevDaytime);
         compound.putBoolean("altered", isAltered());
-        compound.put("spellbookState", state.toNBT(getWorld().getRegistryManager()));
+        compound.put("spellbookState", NbtSerialisable.encode(SpellbookState.CODEC, state));
         getForcedState().map(t -> {
             compound.putBoolean("locked", t);
             return null;

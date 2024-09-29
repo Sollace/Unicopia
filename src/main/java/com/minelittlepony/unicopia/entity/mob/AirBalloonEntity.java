@@ -1,11 +1,12 @@
 package com.minelittlepony.unicopia.entity.mob;
 
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.FurnaceBlockEntity;
 import net.minecraft.entity.*;
 import net.minecraft.entity.data.*;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -93,13 +94,13 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        dataTracker.startTracking(ASCENDING, false);
-        dataTracker.startTracking(BOOSTING, 0);
-        dataTracker.startTracking(INFLATION, 0);
-        dataTracker.startTracking(BASKET_TYPE, BasketType.DEFAULT.id().toString());
-        dataTracker.startTracking(BALLOON_DESIGN, 0);
+    protected void initDataTracker(Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(ASCENDING, false);
+        builder.add(BOOSTING, 0);
+        builder.add(INFLATION, 0);
+        builder.add(BASKET_TYPE, BasketType.DEFAULT.id().toString());
+        builder.add(BALLOON_DESIGN, 0);
     }
 
     public BasketType getBasketType() {
@@ -269,7 +270,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         }
 
         if (isLeashed()) {
-            Vec3d leashPost = getHoldingEntity().getPos();
+            Vec3d leashPost = getLeashHolder().getPos();
             Vec3d pos = getPos();
 
             if (leashPost.distanceTo(pos) >= 5) {
@@ -313,7 +314,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
                     if (isAscending()) {
                         playSound(USounds.ENTITY_HOT_AIR_BALLOON_BOOST, 1, 1);
                     }
-                    stack.damage(1, player, p -> p.sendToolBreakStatus(hand));
+                    stack.damage(1, player, getSlotForHand(hand));
                     playSound(USounds.Vanilla.ITEM_FLINTANDSTEEL_USE, 1, 1);
                     if (!player.isSneaky()) {
                         getWorld().emitGameEvent(player, GameEvent.ENTITY_INTERACT, getBlockPos());
@@ -370,7 +371,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             if (!player.getAbilities().creativeMode) {
                 stack.decrement(1);
             }
-            playSound(USounds.ENTITY_HOT_AIR_BALLOON_EQUIP_CANOPY, 1, 1);
+            playSound(USounds.ENTITY_HOT_AIR_BALLOON_EQUIP_CANOPY.value(), 1, 1);
             if (!player.isSneaky()) {
                 getWorld().emitGameEvent(player, GameEvent.EQUIP, getBlockPos());
             }
@@ -381,11 +382,11 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             return ActionResult.SUCCESS;
         }
 
-        if (stack.isIn(ConventionalItemTags.SHEARS) && hasBalloon()) {
-            stack.damage(1, player, p -> p.sendToolBreakStatus(hand));
+        if (stack.isIn(ConventionalItemTags.SHEAR_TOOLS) && hasBalloon()) {
+            stack.damage(1, player, getSlotForHand(hand));
             setDesign(BalloonDesign.NONE);
             dropItem(UItems.GIANT_BALLOON);
-            playSound(USounds.ENTITY_HOT_AIR_BALLOON_EQUIP_CANOPY, 1, 1);
+            playSound(USounds.ENTITY_HOT_AIR_BALLOON_EQUIP_CANOPY.value(), 1, 1);
             if (!player.isSneaky()) {
                 getWorld().emitGameEvent(player, GameEvent.EQUIP, getBlockPos());
             }
@@ -830,7 +831,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         }
 
         public static BasketType of(BoatEntity.Type boatType) {
-            return REGISTRY.computeIfAbsent(new Identifier(boatType.asString()), id -> new BasketType(id, boatType));
+            return REGISTRY.computeIfAbsent(Identifier.of(boatType.asString()), id -> new BasketType(id, boatType));
         }
 
         public static BasketType of(RegistryKey<TerraformBoatType> id) {

@@ -5,12 +5,14 @@ import java.util.Optional;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.server.world.Altar;
+import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
@@ -55,11 +57,11 @@ public class FloatingArtefactEntity extends StationaryObjectEntity {
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        dataTracker.startTracking(ITEM, ItemStack.EMPTY);
-        dataTracker.startTracking(STATE, (byte)0);
-        dataTracker.startTracking(TARGET_ROTATION_SPEED, 1F);
+    protected void initDataTracker(Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(ITEM, ItemStack.EMPTY);
+        builder.add(STATE, (byte)0);
+        builder.add(TARGET_ROTATION_SPEED, 1F);
     }
 
     public void setAltar(Altar altar) {
@@ -159,11 +161,11 @@ public class FloatingArtefactEntity extends StationaryObjectEntity {
     @Override
     protected void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
-        setStack(ItemStack.fromNbt(compound.getCompound("Item")));
+        setStack(ItemStack.fromNbtOrEmpty(getWorld().getRegistryManager(), compound.getCompound("Item")));
         setState(State.valueOf(compound.getInt("State")));
         setRotationSpeed(compound.getFloat("spin"), compound.getInt("spinDuration"));
         ticksUntilRegen = compound.getInt("regen");
-        altar = Altar.SERIALIZER.readOptional("altar", compound);
+        altar = NbtSerialisable.decode(Altar.CODEC, compound.get("altar"));
     }
 
     @Override
@@ -171,13 +173,13 @@ public class FloatingArtefactEntity extends StationaryObjectEntity {
         super.writeCustomDataToNbt(compound);
         ItemStack stack = getStack();
         if (!stack.isEmpty()) {
-            compound.put("Item", stack.writeNbt(new NbtCompound()));
+            compound.put("Item", NbtSerialisable.encode(ItemStack.CODEC, stack));
         }
         compound.putInt("State", getState().ordinal());
         compound.putFloat("spin", getRotationSpeed());
         compound.putInt("spinDuration", boostDuration);
         compound.putInt("regen", ticksUntilRegen);
-        Altar.SERIALIZER.writeOptional("altar", compound, altar);
+        altar.ifPresent(altar -> compound.put("altar", NbtSerialisable.encode(Altar.CODEC, altar)));
     }
 
     @Override
@@ -187,7 +189,7 @@ public class FloatingArtefactEntity extends StationaryObjectEntity {
             return false;
         }
 
-        if (isInvulnerableTo(source) || !getStack().getItem().damage(source)) {
+        if (isInvulnerableTo(source) || !getStack().takesDamageFrom(source)) {
             return false;
         }
 

@@ -24,7 +24,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
@@ -135,8 +134,8 @@ public class SpecterEntity extends HostileEntity {
 
     @Nullable
     @Override
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData data, @Nullable NbtCompound entityNbt) {
-        data = super.initialize(world, difficulty, spawnReason, data, entityNbt);
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData data) {
+        data = super.initialize(world, difficulty, spawnReason, data);
         Random random = world.getRandom();
         float diff = difficulty.getClampedLocalDifficulty();
         setCanPickUpLoot(random.nextFloat() < 0.55F * diff);
