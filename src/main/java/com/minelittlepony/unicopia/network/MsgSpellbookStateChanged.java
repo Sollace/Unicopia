@@ -2,11 +2,11 @@ package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.container.SpellbookState;
-import com.sollace.fabwork.api.packets.HandledPacket;
-
+import com.sollace.fabwork.api.packets.Handled;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
@@ -16,20 +16,20 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public record MsgSpellbookStateChanged<T extends PlayerEntity> (
         int syncId,
         SpellbookState state
-    ) implements HandledPacket<T> {
+    ) implements Handled<T> {
+    private static final PacketCodec<RegistryByteBuf, MsgSpellbookStateChanged<?>> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.INTEGER, MsgSpellbookStateChanged::syncId,
+            SpellbookState.PACKET_CODEC, MsgSpellbookStateChanged::state,
+            MsgSpellbookStateChanged::new
+    );
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T extends PlayerEntity> PacketCodec<RegistryByteBuf, MsgSpellbookStateChanged<T>> packetCodec() {
+        return (PacketCodec)PACKET_CODEC;
+    }
 
     public static <T extends PlayerEntity> MsgSpellbookStateChanged<T> create(SpellbookScreenHandler handler, SpellbookState state) {
         return new MsgSpellbookStateChanged<>(handler.syncId, state);
-    }
-
-    public MsgSpellbookStateChanged(RegistryByteBuf buffer) {
-        this(buffer.readInt(), SpellbookState.PACKET_CODEC.decode(buffer));
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeInt(syncId);
-        SpellbookState.PACKET_CODEC.encode((RegistryByteBuf)buffer, state);
     }
 
     @Override

@@ -1,19 +1,11 @@
 package com.minelittlepony.unicopia.network;
 
-import com.sollace.fabwork.api.packets.Packet;
-
-import net.minecraft.network.PacketByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 
 public record MsgSkyAngle (
         float tangentalSkyAngle
-    ) implements Packet {
-
-    public MsgSkyAngle(PacketByteBuf buffer) {
-        this(buffer.readFloat());
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeFloat(tangentalSkyAngle());
-    }
+    ) {
+    public static final PacketCodec<ByteBuf, MsgSkyAngle> PACKET_CODEC = PacketCodecs.FLOAT.xmap(MsgSkyAngle::new, MsgSkyAngle::tangentalSkyAngle);
 }

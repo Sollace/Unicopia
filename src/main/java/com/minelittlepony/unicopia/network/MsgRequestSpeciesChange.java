@@ -4,9 +4,10 @@ import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
-import com.sollace.fabwork.api.packets.HandledPacket;
-
-import net.minecraft.network.PacketByteBuf;
+import com.sollace.fabwork.api.packets.Handled;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.*;
@@ -19,17 +20,12 @@ import net.minecraft.text.*;
 public record MsgRequestSpeciesChange (
         boolean force,
         Race newRace
-    ) implements HandledPacket<ServerPlayerEntity> {
-
-    MsgRequestSpeciesChange(PacketByteBuf buffer) {
-        this(buffer.readBoolean(), Race.REGISTRY.get(buffer.readRegistryKey(Race.REGISTRY_KEY)));
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeBoolean(force);
-        buffer.writeRegistryKey(Race.REGISTRY.getKey(newRace).get());
-    }
+    ) implements Handled<ServerPlayerEntity> {
+    public static final PacketCodec<RegistryByteBuf, MsgRequestSpeciesChange> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.BOOL, MsgRequestSpeciesChange::force,
+            PacketCodecs.registryValue(Race.REGISTRY_KEY), MsgRequestSpeciesChange::newRace,
+            MsgRequestSpeciesChange::new
+    );
 
     @Override
     public void handle(ServerPlayerEntity sender) {

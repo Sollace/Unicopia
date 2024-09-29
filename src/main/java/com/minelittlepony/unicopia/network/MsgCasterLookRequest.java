@@ -7,43 +7,31 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.OrientedSpell;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.sollace.fabwork.api.packets.HandledPacket;
-import com.sollace.fabwork.api.packets.Packet;
-
+import com.sollace.fabwork.api.packets.Handled;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Uuids;
 
 /**
  * Sent to the client when the server needs to know precisely where the player is looking.
  */
-public record MsgCasterLookRequest (UUID spellId) implements Packet {
-
-    public MsgCasterLookRequest(PacketByteBuf buffer) {
-        this(buffer.readUuid());
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeUuid(spellId);
-    }
+public record MsgCasterLookRequest (UUID spellId) {
+    public static final PacketCodec<ByteBuf, MsgCasterLookRequest> PACKET_CODEC = Uuids.PACKET_CODEC.xmap(MsgCasterLookRequest::new, MsgCasterLookRequest::spellId);
 
     public record Reply (
             UUID spellId,
             Rot rotation
-        ) implements HandledPacket<ServerPlayerEntity> {
-
-        Reply(PacketByteBuf buffer) {
-            this(buffer.readUuid(), Rot.CODEC.decode(buffer));
-        }
+        ) implements Handled<ServerPlayerEntity> {
+        public static final PacketCodec<PacketByteBuf, Reply> PACKET_CODEC = PacketCodec.tuple(
+                Uuids.PACKET_CODEC, Reply::spellId,
+                Rot.CODEC, Reply::rotation,
+                Reply::new
+        );
 
         public Reply(OrientedSpell spell, Caster<?> caster) {
             this(spell.getUuid(), Rot.of(caster));
-        }
-
-        @Override
-        public void toBuffer(PacketByteBuf buffer) {
-            buffer.writeUuid(spellId);
-            Rot.CODEC.encode(buffer, rotation);
         }
 
         @Override

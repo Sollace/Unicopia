@@ -8,11 +8,15 @@ import java.util.stream.Stream;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.command.CommandArgumentEnum;
 import com.mojang.serialization.Codec;
+
+import io.netty.buffer.ByteBuf;
 import net.minecraft.command.argument.EnumArgumentType;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -59,6 +63,7 @@ public enum Trait implements CommandArgumentEnum<Trait> {
     POISON(TraitGroup.DARKNESS),
     BLOOD(TraitGroup.DARKNESS);
 
+    private static final Trait[] VALUES = values();
     private static final Map<Identifier, Trait> IDS = Arrays.stream(values()).collect(Collectors.toMap(Trait::getId, Function.identity()));
     private static final EnumCodec<Trait> NAME_CODEC = StringIdentifiable.createCodec(Trait::values, n -> n.toLowerCase(Locale.ROOT));
     public static final Codec<Trait> CODEC = Identifier.CODEC.xmap(id -> IDS.get(id), Trait::getId);
@@ -66,6 +71,7 @@ public enum Trait implements CommandArgumentEnum<Trait> {
             l -> l.stream().distinct().collect(Collectors.toSet()),
             s -> s.stream().toList()
     );
+    public static final PacketCodec<ByteBuf, Trait> PACKET_CODEC = PacketCodecs.indexed(i -> VALUES[i], Trait::ordinal);
 
     private final Identifier id;
     private final Identifier sprite;

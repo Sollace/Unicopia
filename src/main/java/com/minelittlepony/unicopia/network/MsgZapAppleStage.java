@@ -1,20 +1,11 @@
 package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
-import com.sollace.fabwork.api.packets.Packet;
-
-import net.minecraft.network.PacketByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 
 public record MsgZapAppleStage (
         ZapAppleStageStore.Stage stage
-    ) implements Packet {
-
-    public MsgZapAppleStage(PacketByteBuf buffer) {
-        this(buffer.readEnumConstant(ZapAppleStageStore.Stage.class));
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeEnumConstant(stage);
-    }
+    ) {
+    public static final PacketCodec<ByteBuf, MsgZapAppleStage> PACKET_CODEC = ZapAppleStageStore.Stage.PACKET_CODEC.xmap(MsgZapAppleStage::new, MsgZapAppleStage::stage);
 }

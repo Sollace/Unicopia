@@ -10,17 +10,22 @@ import com.minelittlepony.unicopia.command.CommandArgumentEnum;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.util.AnimationUtil;
+import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
 import com.mojang.serialization.Codec;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.command.argument.EnumArgumentType;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
@@ -34,8 +39,8 @@ public class PlayerPoser {
 
     public void applyPosing(MatrixStack matrices, PlayerEntity player, BipedEntityModel<?> model, Context context) {
         Pony pony = Pony.of(player);
-        float tickDelta = MinecraftClient.getInstance().getTickDelta();
-        float progress = pony.getAnimationProgress(MinecraftClient.getInstance().getTickDelta());
+        float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+        float progress = pony.getAnimationProgress(MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false));
         AnimationInstance animation = pony.getAnimation();
         Race ponyRace = MineLPDelegate.getInstance().getPlayerPonyRace(player);
         Arm mainArm = player.getMainArm();
@@ -72,7 +77,8 @@ public class PlayerPoser {
             }
         }
 
-        if (glasses.hasCustomName() && "Cool Shades".equals(glasses.getName().getString())) {
+        Text name = glasses.get(DataComponentTypes.CUSTOM_NAME);
+        if (name != null && "Cool Shades".equals(name.getString())) {
             final float bop = AnimationUtil.beat(player.age, HEAD_NOD_DURATION, HEAD_NOD_GAP) * 3F;
             head.pitch += bop / 10F;
 
@@ -396,6 +402,11 @@ public class PlayerPoser {
 
     public record AnimationInstance(Animation animation, Animation.Recipient recipient) {
         public static final AnimationInstance NONE = new AnimationInstance(Animation.NONE, Animation.Recipient.ANYONE);
+        public static final PacketCodec<ByteBuf, AnimationInstance> PACKET_CODEC = PacketCodec.tuple(
+                PacketCodecUtils.ofEnum(Animation.class), AnimationInstance::animation,
+                PacketCodecUtils.ofEnum(Animation.Recipient.class), AnimationInstance::recipient,
+                AnimationInstance::new
+        );
 
         public boolean isOf(Animation animation) {
             return animation() == animation;

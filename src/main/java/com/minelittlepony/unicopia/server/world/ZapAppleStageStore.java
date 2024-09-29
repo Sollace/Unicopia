@@ -14,9 +14,12 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
 import com.minelittlepony.unicopia.util.Tickable;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.nbt.*;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
@@ -153,6 +156,8 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
         static final Stage[] VALUES = values();
         static final float MAX = VALUES.length;
 
+        public static final PacketCodec<ByteBuf, Stage> PACKET_CODEC = PacketCodecs.indexed(i -> VALUES[i], Stage::ordinal);
+
         private final float ordinal = ordinal();
 
         public Stage getNext() {
@@ -180,7 +185,7 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
             return MathHelper.lerp(getStageProgress(world), ordinal, ordinal + 1) / MAX;
         }
 
-        public static Stage byId(int id) {
+        private static Stage byId(int id) {
             return VALUES[MathHelper.clamp(id, 0, VALUES.length)];
         }
 

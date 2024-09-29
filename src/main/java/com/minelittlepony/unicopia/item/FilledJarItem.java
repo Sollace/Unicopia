@@ -12,7 +12,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -127,7 +126,9 @@ public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.
             butterfly.updatePosition(projectile.getX(), projectile.getY(), projectile.getZ());
             projectile.getWorld().spawnEntity(butterfly);
         } else {
-            stack.damage(1, projectile.getWorld().random, null);
+            if (projectile.getWorld() instanceof ServerWorld sw) {
+                stack.damage(1, sw, null, i -> {});
+            }
             projectile.dropStack(stack);
         }
         projectile.getWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, projectile.getBlockPos(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));

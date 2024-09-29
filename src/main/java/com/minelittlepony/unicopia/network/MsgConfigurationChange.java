@@ -1,24 +1,9 @@
 package com.minelittlepony.unicopia.network;
 
-import java.util.HashSet;
-
 import com.minelittlepony.unicopia.SyncedConfig;
-import com.sollace.fabwork.api.packets.Packet;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 
-import net.minecraft.network.PacketByteBuf;
-
-public record MsgConfigurationChange(SyncedConfig config) implements Packet {
-    public MsgConfigurationChange(PacketByteBuf buffer) {
-        this(new SyncedConfig(
-                buffer.readCollection(HashSet::new, PacketByteBuf::readString),
-                buffer.readCollection(HashSet::new, PacketByteBuf::readString)
-        ));
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeCollection(config.wantItNeedItExcludeList(), PacketByteBuf::writeString);
-        buffer.writeCollection(config.dimensionsWithoutAtmosphere(), PacketByteBuf::writeString);
-    }
-
+public record MsgConfigurationChange(SyncedConfig config) {
+    public static final PacketCodec<ByteBuf, MsgConfigurationChange> PACKET_CODEC = SyncedConfig.PACKET_CODEC.xmap(MsgConfigurationChange::new, MsgConfigurationChange::config);
 }

@@ -1,9 +1,9 @@
 package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.sollace.fabwork.api.packets.HandledPacket;
-
-import net.minecraft.network.PacketByteBuf;
+import com.sollace.fabwork.api.packets.Handled;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -13,27 +13,26 @@ import net.minecraft.nbt.NbtCompound;
  * <p>
  * Also used by the server to notify a race change.
  */
-public class MsgPlayerCapabilities implements HandledPacket<PlayerEntity> {
+public class MsgPlayerCapabilities implements Handled<PlayerEntity> {
+    public static final PacketCodec<RegistryByteBuf, MsgPlayerCapabilities> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.INTEGER, i -> i.playerId,
+            PacketCodecs.NBT_COMPOUND, i -> i.compoundTag,
+            MsgPlayerCapabilities::new
+    );
 
     protected final int playerId;
 
     private final NbtCompound compoundTag;
 
-    MsgPlayerCapabilities(PacketByteBuf buffer) {
-        playerId = buffer.readInt();
-        compoundTag = PacketCodecs.NBT_COMPOUND.decode(buffer);
+    MsgPlayerCapabilities(int playerId, NbtCompound compoundTag) {
+        this.playerId = playerId;
+        this.compoundTag = compoundTag;
     }
 
     public MsgPlayerCapabilities(Pony player) {
         playerId = player.asEntity().getId();
         compoundTag = new NbtCompound();
         player.toSyncronisedNbt(compoundTag, player.asWorld().getRegistryManager());
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeInt(playerId);
-        PacketCodecs.NBT_COMPOUND.encode(buffer, compoundTag);
     }
 
     @Override
