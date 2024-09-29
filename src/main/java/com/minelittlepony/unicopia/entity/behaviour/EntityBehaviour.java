@@ -82,8 +82,8 @@ public class EntityBehaviour<T extends Entity> {
             return Optional.empty();
         }
 
-        double normalHeight = PlayerEntity.STANDING_DIMENSIONS.height;
-        double entityHeight = entity.getDimensions(entity.getPose()).height;
+        double normalHeight = PlayerEntity.STANDING_DIMENSIONS.height();
+        double entityHeight = entity.getDimensions(entity.getPose()).height();
 
         return Optional.of(entityHeight / normalHeight);
     }
@@ -95,10 +95,10 @@ public class EntityBehaviour<T extends Entity> {
 
         EntityDimensions dims = entity.getDimensions(entity.getPose());
 
-        float h = Math.max(0.001F, dims.height);
-        float w = Math.max(0.001F, dims.width);
+        float h = Math.max(0.001F, dims.height());
+        float w = Math.max(0.001F, dims.width());
 
-        if (current.isPresent() && h == current.get().height && w == current.get().width) {
+        if (current.isPresent() && h == current.get().height() && w == current.get().width()) {
             return current;
         }
 

@@ -12,11 +12,11 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.*;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.registry.Registries;
@@ -24,7 +24,7 @@ import net.minecraft.registry.Registries;
 public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredicateProvider {
 
     private static final PolearmRenderer INSTANCE = new PolearmRenderer();
-    private static final Identifier THROWING = new Identifier("throwing");
+    private static final Identifier THROWING = Identifier.ofVanilla("throwing");
 
     private final ModelPart model = getTexturedModelData().createModel();
 
@@ -40,9 +40,9 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
         });
     }
 
-    static ModelIdentifier getModelId(ItemConvertible item) {
+    static Identifier getModelId(ItemConvertible item) {
         Identifier id = Registries.ITEM.getId(item.asItem());
-        return new ModelIdentifier(new Identifier(id.getNamespace(), id.getPath() + "_in_inventory"), "inventory");
+        return id.withPath(p -> p + "_in_inventory");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -88,8 +88,8 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
                 matrices.scale(1, -1, -1);
             }
             Identifier id = Registries.ITEM.getId(stack.getItem());
-            Identifier texture = new Identifier(id.getNamespace(), "textures/entity/polearm/" + id.getPath() + ".png");
-            model.render(matrices, ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, RenderLayer.getEntitySolid(texture), false, stack.hasGlint()), light, overlay, 1, 1, 1, 1);
+            Identifier texture = id.withPath(p -> "textures/entity/polearm/" + p + ".png");
+            model.render(matrices, ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, RenderLayer.getEntitySolid(texture), false, stack.hasGlint()), light, overlay, Colors.WHITE);
             matrices.pop();
         }
     }

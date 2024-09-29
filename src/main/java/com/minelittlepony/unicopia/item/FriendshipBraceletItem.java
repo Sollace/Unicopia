@@ -17,22 +17,22 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeableItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Item.TooltipContext;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 
-public class FriendshipBraceletItem extends WearableItem implements DyeableItem, GlowableItem {
+public class FriendshipBraceletItem extends WearableItem {
 
-    public FriendshipBraceletItem(FabricItemSettings settings) {
+    public FriendshipBraceletItem(Item.Settings settings) {
         super(settings);
     }
 
@@ -73,12 +73,13 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
 
     @Override
     @Environment(EnvType.CLIENT)
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> lines, TooltipType type) {
+        super.appendTooltip(stack, context, lines, type);
         if (isSigned(stack)) {
-            list.add(Text.translatable("item.unicopia.friendship_bracelet.issuer", getSignatorName(stack)));
+            lines.add(Text.translatable("item.unicopia.friendship_bracelet.issuer", getSignatorName(stack)));
         }
-        if (isGlowing(stack)) {
-            list.add(Text.translatable("item.unicopia.friendship_bracelet.glowing").formatted(Formatting.ITALIC, Formatting.GRAY));
+        if (GlowableItem.isGlowing(stack)) {
+            lines.add(Text.translatable("item.unicopia.friendship_bracelet.glowing").formatted(Formatting.ITALIC, Formatting.GRAY));
         }
     }
 

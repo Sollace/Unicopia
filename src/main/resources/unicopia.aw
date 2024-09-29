@@ -14,6 +14,4 @@ accessible          field    net/minecraft/entity/mob/CreeperEntity      IGNITED
 accessible          field    net/minecraft/loot/LootTable                          pools          Ljava/util/List;
 mutable             field    net/minecraft/loot/LootTable                          pools          Ljava/util/List;
 
-#accessible          method   net/minecraft/block/entity/SkullBlockEntity           fetchProfile (Ljava/lang/String;)Ljava/util/concurrent/CompletableFuture;
-
 accessible          method   net/minecraft/entity/LightningEntity                  cleanOxidation (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;)V

@@ -2,21 +2,22 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ArmorMaterials;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 
 public class GlassesItem extends WearableItem {
-    public GlassesItem(FabricItemSettings settings) {
+    public GlassesItem(Item.Settings settings) {
         super(settings);
     }
 
     @Override
-    public SoundEvent getEquipSound() {
-        return ArmorMaterials.LEATHER.getEquipSound();
+    public RegistryEntry<SoundEvent> getEquipSound() {
+        return ArmorMaterials.LEATHER.value().equipSound();
     }
 
     @Override

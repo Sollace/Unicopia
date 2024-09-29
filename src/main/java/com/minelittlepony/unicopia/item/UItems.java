@@ -50,7 +50,7 @@ public interface UItems {
     Item MUSIC_DISC_POPULAR = register("music_disc_popular", USounds.RECORD_POPULAR, 112);
     Item MUSIC_DISC_FUNK = register("music_disc_funk", USounds.RECORD_FUNK, 91);
 
-    FriendshipBraceletItem FRIENDSHIP_BRACELET = register("friendship_bracelet", new FriendshipBraceletItem(new FabricItemSettings().rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
+    FriendshipBraceletItem FRIENDSHIP_BRACELET = register("friendship_bracelet", new FriendshipBraceletItem(new Item.Settings().rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
 
     Item PLUNDER_VINE = register("plunder_vine", new BlockItem(UBlocks.PLUNDER_VINE_BUD, new Item.Settings()));
     Item EMPTY_JAR = register("empty_jar", new EmptyJarItem(UBlocks.JAR, new Item.Settings().fireproof()), ItemGroups.FUNCTIONAL);
@@ -206,26 +206,26 @@ public interface UItems {
     Item RAINBOW_PBG_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW_PBG);
     Item RAINBOW_PWR_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW_PWR);
 
-    AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new FabricItemSettings()
+    AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new Item.Settings()
             .maxCount(1)
             .maxDamage(890)
             .rarity(Rarity.UNCOMMON), 900), ItemGroups.TOOLS);
-    AlicornAmuletItem ALICORN_AMULET = register("alicorn_amulet", new AlicornAmuletItem(new FabricItemSettings()
+    AlicornAmuletItem ALICORN_AMULET = register("alicorn_amulet", new AlicornAmuletItem(new Item.Settings()
             .maxCount(1)
             .maxDamage(1000)
             .rarity(Rarity.RARE)), ItemGroups.TOOLS);
     Item BROKEN_ALICORN_AMULET = register("broken_alicorn_amulet", new Item(new Item.Settings()), ItemGroups.TOOLS);
-    AmuletItem UNICORN_AMULET = register("unicorn_amulet", new AmuletItem(new FabricItemSettings()
+    AmuletItem UNICORN_AMULET = register("unicorn_amulet", new AmuletItem(new Item.Settings()
             .maxCount(1)
             .maxDamage(890)
             .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
-    AmuletItem PEARL_NECKLACE = register("pearl_necklace", new AmuletItem(new FabricItemSettings()
+    AmuletItem PEARL_NECKLACE = register("pearl_necklace", new AmuletItem(new Item.Settings()
             .maxCount(1)
             .maxDamage(16)
             .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
 
-    GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
-    GlassesItem BROKEN_SUNGLASSES = register("broken_sunglasses", new GlassesItem(new FabricItemSettings().maxCount(1)), ItemGroups.COMBAT);
+    GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new Item.Settings().maxCount(1)), ItemGroups.COMBAT);
+    GlassesItem BROKEN_SUNGLASSES = register("broken_sunglasses", new GlassesItem(new Item.Settings().maxCount(1)), ItemGroups.COMBAT);
 
     Item CLAM_SHELL = register("clam_shell", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
     Item SCALLOP_SHELL = register("scallop_shell", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);

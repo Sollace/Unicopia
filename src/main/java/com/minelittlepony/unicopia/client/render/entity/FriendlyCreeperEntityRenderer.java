@@ -20,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
 
 public class FriendlyCreeperEntityRenderer extends MobEntityRenderer<FriendlyCreeperEntity, FriendlyCreeperEntityRenderer.Model> {
     private static final Identifier FRIENDLY_TEXTURE = Unicopia.id("textures/entity/creeper/friendly.png");
-    private static final Identifier UNFIRENDLY_TEXTURE = new Identifier("textures/entity/creeper/creeper.png");
+    private static final Identifier UNFIRENDLY_TEXTURE = Identifier.ofVanilla("textures/entity/creeper/creeper.png");
 
     public FriendlyCreeperEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new Model(context.getPart(EntityModelLayers.CREEPER)), 0.5f);
@@ -40,10 +40,11 @@ public class FriendlyCreeperEntityRenderer extends MobEntityRenderer<FriendlyCre
     }
 
     @Override
-    protected void setupTransforms(FriendlyCreeperEntity entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta) {
-        super.setupTransforms(entity, matrices, animationProgress, bodyYaw, tickDelta);
+    protected void setupTransforms(FriendlyCreeperEntity entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta, float scale) {
+        super.setupTransforms(entity, matrices, animationProgress, bodyYaw, tickDelta, scale);
         if (entity.isSitting()) {
-            matrices.translate(0, -0.25, 0);
+            // TODO: Check if creepers are offset correctly
+            matrices.translate(0, -0.25 * scale, 0);
         }
     }
 
@@ -105,7 +106,7 @@ public class FriendlyCreeperEntityRenderer extends MobEntityRenderer<FriendlyCre
     }
 
     public static class ChargeFeature extends EnergySwirlOverlayFeatureRenderer<FriendlyCreeperEntity, Model> {
-        private static final Identifier SKIN = new Identifier("textures/entity/creeper/creeper_armor.png");
+        private static final Identifier SKIN = Identifier.ofVanilla("textures/entity/creeper/creeper_armor.png");
         private final CreeperEntityModel<FriendlyCreeperEntity> model;
 
         public ChargeFeature(FeatureRendererContext<FriendlyCreeperEntity, Model> context, EntityModelLoader loader) {

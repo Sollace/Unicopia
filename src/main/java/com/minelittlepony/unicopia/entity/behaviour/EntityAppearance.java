@@ -49,6 +49,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 
@@ -176,7 +177,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                                 nbt.getString("playerName")
                             ), source);
 
-                SkullBlockEntity.fetchProfile(nbt.getString("playerName")).thenAccept(profile -> {
+                SkullBlockEntity.fetchProfileByName(nbt.getString("playerName")).thenAccept(profile -> {
                     profile.ifPresent(p -> createPlayer(nbt, p, source));
                 });
             } else {
@@ -311,7 +312,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         compound.putString("entityId", entityId);
 
         if (entityNbt != null) {
@@ -322,7 +323,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         String newId = compound.getString("entityId");
 
         String newPlayerName = null;
@@ -379,7 +380,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                 playerNbt.remove("unicopia_caster");
                 Pony pony = Pony.of(player);
                 if (pony != null) {
-                    NbtSerialisable.subTag("unicopia_caster", playerNbt, pony::toSyncronisedNbt);
+                    NbtSerialisable.subTag("unicopia_caster", playerNbt, comp -> pony.toSyncronisedNbt(comp, pony.asEntity().getRegistryManager()));
                 }
             });
         }
@@ -410,13 +411,13 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     }
 
     @Override
-    public void readTrackedNbt(NbtCompound nbt) {
-        fromNBT(nbt);
+    public void readTrackedNbt(NbtCompound nbt, WrapperLookup lookup) {
+        fromNBT(nbt, lookup);
     }
 
     @Override
-    public NbtCompound writeTrackedNbt() {
-        return toNBT();
+    public NbtCompound writeTrackedNbt(WrapperLookup lookup) {
+        return toNBT(lookup);
     }
 
     @Override

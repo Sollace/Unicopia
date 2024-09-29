@@ -35,7 +35,7 @@ import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 import com.minelittlepony.unicopia.util.*;
 
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.*;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;

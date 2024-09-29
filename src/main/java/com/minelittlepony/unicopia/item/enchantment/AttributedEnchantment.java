@@ -11,18 +11,19 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.registry.entry.RegistryEntry;
 
 // TODO: Replaced with EnchantmentEffectComponentTypes.ATTRIBUTES
 @Deprecated
 public class AttributedEnchantment extends SimpleEnchantment {
 
-    private final Map<EntityAttribute, ModifierFactory> modifiers = new HashMap<>();
+    private final Map<RegistryEntry<EntityAttribute>, ModifierFactory> modifiers = new HashMap<>();
 
     protected AttributedEnchantment(Options options) {
         super(options);
     }
 
-    public AttributedEnchantment addModifier(EntityAttribute attribute, ModifierFactory modifierSupplier) {
+    public AttributedEnchantment addModifier(RegistryEntry<EntityAttribute> attribute, ModifierFactory modifierSupplier) {
         modifiers.put(attribute, modifierSupplier);
         return this;
     }
@@ -35,7 +36,7 @@ public class AttributedEnchantment extends SimpleEnchantment {
 
                 EntityAttributeModifier modifier = modifierSupplier.get(user, level);
 
-                instance.removeModifier(modifier.getId());
+                instance.removeModifier(modifier.id());
                 instance.addPersistentModifier(modifier);
             });
         }

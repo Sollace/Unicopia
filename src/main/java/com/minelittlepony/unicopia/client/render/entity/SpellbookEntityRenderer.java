@@ -21,7 +21,7 @@ import net.minecraft.util.math.*;
 
 public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntity, SpellbookModel> {
     private static final Identifier TEXTURE = Unicopia.id("textures/entity/spellbook/normal.png");
-    private static final Identifier ALTAR_BEAM_TEXTURE = new Identifier("textures/entity/end_crystal/end_crystal_beam.png");
+    private static final Identifier ALTAR_BEAM_TEXTURE = Identifier.ofVanilla("textures/entity/end_crystal/end_crystal_beam.png");
 
     public SpellbookEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new SpellbookModel(SpellbookModel.getTexturedModelData().createModel()), 0);

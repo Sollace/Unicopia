@@ -26,7 +26,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
 public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEntityRenderer.MimicModel> {
-    private static final Identifier TEXTURE = new Identifier("textures/entity/chest/normal.png");
+    private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/chest/normal.png");
 
     public MimicEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new MimicModel(MimicModel.getTexturedModelData().createModel()), 0);

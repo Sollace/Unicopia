@@ -49,8 +49,8 @@ public class DisguisedArmsFeatureRenderer<E extends LivingEntity> implements Acc
     private final MinecraftClient client = MinecraftClient.getInstance();
 
     private static final Map<EntityType<?>, Identifier> OVERLAY_TEXTURES = Map.of(
-        EntityType.DROWNED, new Identifier("textures/entity/zombie/drowned_outer_layer.png"),
-        EntityType.STRAY, new Identifier("textures/entity/skeleton/stray_overlay.png")
+        EntityType.DROWNED, Identifier.ofVanilla("textures/entity/zombie/drowned_outer_layer.png"),
+        EntityType.STRAY, Identifier.ofVanilla("textures/entity/skeleton/stray_overlay.png")
     );
 
     private final Function<EntityType<?>, Set<Pair<ModelPart, ModelPart>>> overlayModelCache = Util.memoize(type -> {

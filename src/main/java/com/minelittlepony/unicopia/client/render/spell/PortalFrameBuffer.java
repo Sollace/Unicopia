@@ -91,13 +91,12 @@ class PortalFrameBuffer implements AutoCloseable {
             GlStateManager._enableDepthTest();
             GlStateManager._disableCull();
             Tessellator tessellator = RenderSystem.renderThreadTesselator();
-            BufferBuilder buffer = tessellator.getBuffer();
             float uScale = (float)framebuffer.viewportWidth / (float)framebuffer.textureWidth;
             float vScale = (float)framebuffer.viewportHeight / (float)framebuffer.textureHeight;
             RenderSystem.setShader(UShaders.RENDER_TYPE_PORTAL_SURFACE);
             //RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
             RenderSystem._setShaderTexture(0, framebuffer.getColorAttachment());
-            buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
+            BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
             SphereModel.DISK.scaleUV(uScale, vScale);
 
             RenderSystem.setTextureMatrix(SphereModel.DISK.getTextureMatrix());

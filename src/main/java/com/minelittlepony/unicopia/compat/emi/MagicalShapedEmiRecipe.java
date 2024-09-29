@@ -15,12 +15,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.util.Identifier;
 
 public class MagicalShapedEmiRecipe extends EmiCraftingRecipe {
     public MagicalShapedEmiRecipe(RecipeEntry<? extends CraftingRecipe> recipe, CustomisedSpellType<?> spellEffect, ItemStack output) {
         super(padIngredients(recipe, spellEffect), EmiStack.of(output),
-                new Identifier(recipe.id().getNamespace(), recipe.id().getPath() + "/" + spellEffect.type().getId().getPath()), false);
+                recipe.id().withPath(p -> p + "/" + spellEffect.type().getId().getPath()), false);
         EmiShapedRecipe.setRemainders(input, recipe.value());
     }
 

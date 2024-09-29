@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.datagen.providers.loot;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 import com.minelittlepony.unicopia.Unicopia;
@@ -20,11 +21,12 @@ import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.potion.Potion;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public class UChestLootTableProvider extends SimpleFabricLootTableProvider {
-    public UChestLootTableProvider(FabricDataOutput output) {
-        super(output, LootContextTypes.CHEST);
+    public UChestLootTableProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
+        super(output, registryLookup, LootContextTypes.CHEST);
     }
 
     @Override
@@ -49,7 +51,7 @@ public class UChestLootTableProvider extends SimpleFabricLootTableProvider {
         ));
     }
 
-    private static ItemEntry.Builder<?> createTippedArrowEntry(Potion potion, int weight) {
+    private static ItemEntry.Builder<?> createTippedArrowEntry(RegistryEntry<Potion> potion, int weight) {
         return ItemEntry.builder(Items.TIPPED_ARROW)
                 .weight(weight)
                 .apply(SetPotionLootFunction.builder(potion))

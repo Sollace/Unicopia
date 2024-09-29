@@ -50,10 +50,19 @@ public interface RegistryUtils {
             .toList(), world.random);
     }
 
+    static <T> Optional<RegistryEntry<T>> pickRandomEntry(World world, TagKey<T> key, Predicate<RegistryEntry<T>> filter) {
+        return Util.getRandomOrEmpty(world.getRegistryManager().getOptional(key.registry())
+            .flatMap(registry -> registry.getEntryList(key))
+            .stream()
+            .flatMap(Named::stream)
+            .filter(filter)
+            .toList(), world.random);
+    }
+
     static <T> boolean isIn(World world, T obj, RegistryKey<? extends Registry<T>> registry, TagKey<T> tag) {
         return world.getRegistryManager().get(registry).getEntry(obj).isIn(tag);
     }
-    
+
     static <T> Identifier getId(World world, T obj, RegistryKey<? extends Registry<T>> registry) {
         return world.getRegistryManager().get(registry).getId(obj);
     }

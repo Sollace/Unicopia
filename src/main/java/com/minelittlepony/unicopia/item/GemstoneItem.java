@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.item;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
-import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
@@ -12,10 +11,10 @@ import com.minelittlepony.unicopia.entity.player.PlayerCharmTracker;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.group.MultiItem;
 
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -73,8 +72,8 @@ public class GemstoneItem extends Item implements MultiItem, EnchantableItem {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> lines, TooltipContext tooltipContext) {
-        super.appendTooltip(stack, world, lines, tooltipContext);
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> lines, TooltipType type) {
+        super.appendTooltip(stack, context, lines, type);
 
         if (EnchantableItem.isEnchanted(stack)) {
             getSpellEffect(stack).appendTooltip(lines);

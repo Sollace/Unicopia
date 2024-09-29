@@ -4,14 +4,14 @@ import com.minelittlepony.unicopia.entity.ItemTracker;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.entity.*;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
 
 public class PegasusAmuletItem extends AmuletItem implements ItemTracker.Trackable {
-    public PegasusAmuletItem(FabricItemSettings settings, int maxEnergy) {
+    public PegasusAmuletItem(Item.Settings settings, int maxEnergy) {
         super(settings, maxEnergy);
     }
 

@@ -1,13 +1,13 @@
 package com.minelittlepony.unicopia.item;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.StewItem;
 import net.minecraft.world.World;
 
 public class OatmealItem extends StewItem {
 
-    public OatmealItem(Settings settings) {
+    public OatmealItem(Item.Settings settings) {
         super(settings);
     }
 

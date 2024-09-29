@@ -95,7 +95,7 @@ public class Main implements EmiPlugin {
         });
 
         Stream.of(UItems.GEMSTONE, UItems.BOTCHED_GEM, UItems.MAGIC_STAFF, UItems.FILLED_JAR).forEach(item -> {
-            registry.setDefaultComparison(item, comparison -> Comparison.compareNbt());
+            registry.setDefaultComparison(item, comparison -> Comparison.compareComponents());
         });
 
         DynamicRegistryManager registries = DynamicRegistryManager.of(Registries.REGISTRIES);

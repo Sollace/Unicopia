@@ -45,7 +45,7 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
     public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch) {
         if (canRender(entity)) {
             Identifier texture = getTexture(entity);
-            VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getEntityTranslucent(texture), false, false);
+            VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getEntityTranslucent(texture), false);
 
             model.setAngles(entity, context.getModel());
             model.render(matrices, consumer, lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);

@@ -19,13 +19,13 @@ import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.group.MultiItem;
 
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
@@ -97,7 +97,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> lines, TooltipContext context) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> lines, TooltipType type) {
 
         if (EnchantableItem.isEnchanted(stack)) {
             SpellType<?> key = EnchantableItem.getSpellKey(stack);
@@ -135,13 +135,13 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
 
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity entity, int timeLeft) {
-        int i = getMaxUseTime(stack) - timeLeft;
+        int i = getMaxUseTime(stack, entity) - timeLeft;
 
         if (EnchantableItem.isEnchanted(stack) && hasCharge(stack)) {
             if (i > 20) {
                 Pony.of(entity).ifPresent(pony -> {
                     pony.subtractEnergyCost(4);
-                    stack.damage(1, pony.asEntity(), p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+                    stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
                     getSpellEffect(stack).create().toThrowable().throwProjectile(pony);
                     pony.setAnimation(Animation.ARMS_UP, Animation.Recipient.ANYONE, 10);
                 });
@@ -149,7 +149,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
             } else if (i > 5) {
                 Pony.of(entity).ifPresent(pony -> {
                     pony.subtractEnergyCost(4);
-                    stack.damage(1, pony.asEntity(), p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+                    stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
                     getSpellEffect(stack).create().toThrowable().throwProjectile(pony);
                     pony.setAnimation(Animation.ARMS_UP, Animation.Recipient.ANYONE, 10);
                 });
@@ -161,7 +161,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
     @Override
     protected boolean castContainedEffect(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (attacker.isSneaking() && hasCharge(stack)) {
-            stack.damage(50, attacker, p -> p.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+            stack.damage(50, attacker, EquipmentSlot.MAINHAND);
             Caster.of(attacker).ifPresent(c -> c.subtractEnergyCost(4));
             Caster.of(target).ifPresent(c -> getSpellEffect(stack).apply(c, CastingMethod.STAFF));
             ChargeableItem.consumeEnergy(stack, 1);
@@ -180,7 +180,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
             if (living.getActiveItem().getItem() == this) {
                 Vec3d eyes = entity.getCameraPosVec(1);
 
-                float i = getMaxUseTime(stack) - ticksRemaining;
+                float i = getMaxUseTime(stack, entity) - ticksRemaining;
 
                 world.addParticle(i > 150 ? ParticleTypes.LARGE_SMOKE : ParticleTypes.CLOUD, eyes.x, eyes.y, eyes.z,
                         (world.random.nextGaussian() - 0.5) / 10,
@@ -202,7 +202,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
     }
 
     @Override
-    public int getMaxUseTime(ItemStack stack) {
+    public int getMaxUseTime(ItemStack stack, LivingEntity user) {
         return 72000;
     }
 
