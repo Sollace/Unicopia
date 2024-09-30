@@ -49,13 +49,13 @@ public class DisguiseCommand {
     }
 
     private static ArgumentBuilder<ServerCommandSource, ?> buildEntityDisguise(Arg<ServerPlayerEntity> targetOp, CommandRegistryAccess registries) {
-        return CommandManager.argument("entity", RegistryEntryArgumentType.registryEntry(registries, RegistryKeys.ENTITY_TYPE))
+        return CommandManager.argument("entity", RegistryEntryReferenceArgumentType.registryEntry(registries, RegistryKeys.ENTITY_TYPE))
                     .suggests(SuggestionProviders.SUMMONABLE_ENTITIES)
                     .executes(context -> disguise(
                         context.getSource(),
                         targetOp.apply(context),
                         loadEntity(context.getSource(),
-                            RegistryEntryArgumentType.getSummonableEntityType(context, "entity"),
+                            RegistryEntryReferenceArgumentType.getSummonableEntityType(context, "entity"),
                             new NbtCompound())))
         .then(
                 CommandManager.argument("nbt", NbtCompoundArgumentType.nbtCompound())
@@ -63,7 +63,7 @@ public class DisguiseCommand {
                         context.getSource(),
                         targetOp.apply(context),
                         loadEntity(context.getSource(),
-                            RegistryEntryArgumentType.getSummonableEntityType(context, "entity"),
+                            RegistryEntryReferenceArgumentType.getSummonableEntityType(context, "entity"),
                             NbtCompoundArgumentType.getNbtCompound(context, "nbt"))))
         );
     }

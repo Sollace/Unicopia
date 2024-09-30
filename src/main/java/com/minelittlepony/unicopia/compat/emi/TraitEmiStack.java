@@ -3,8 +3,6 @@ package com.minelittlepony.unicopia.compat.emi;
 import java.util.List;
 
 import org.apache.commons.compress.utils.Lists;
-import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.common.client.gui.Tooltip;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -16,9 +14,9 @@ import dev.emi.emi.api.stack.EmiStack;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.component.ComponentChanges;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -40,10 +38,9 @@ public class TraitEmiStack extends EmiStack {
         return amount == 0;
     }
 
-    @Nullable
     @Override
-    public NbtCompound getNbt() {
-        return null;
+    public ComponentChanges getComponentChanges() {
+        return ComponentChanges.EMPTY;
     }
 
     @Override
