@@ -1,8 +1,12 @@
 package com.minelittlepony.unicopia.entity.ai;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.projectile.PhysicsBodyProjectileEntity;
 
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AnimalEntity;
@@ -44,8 +48,9 @@ public class EatMuffinGoal extends BreakHeartGoal {
     @Override
     protected boolean canTarget(Entity e) {
         return !e.isRemoved()
-                && e instanceof PhysicsBodyProjectileEntity
-                && ((PhysicsBodyProjectileEntity)e).getStack().getItem() == UItems.MUFFIN
+                && e instanceof PhysicsBodyProjectileEntity p
+                && p.getStack().getItem() == UItems.MUFFIN
+                && p.getStack().get(DataComponentTypes.FOOD) != null
                 && mob.getVisibilityCache().canSee(e);
     }
 
@@ -66,7 +71,11 @@ public class EatMuffinGoal extends BreakHeartGoal {
             eatingStarted = true;
 
             if (target instanceof PhysicsBodyProjectileEntity projectile) {
-                mob.eatFood(mob.getWorld(), projectile.getStack());
+                @Nullable
+                FoodComponent food = projectile.getStack().get(DataComponentTypes.FOOD);
+                if (food != null) {
+                    mob.eatFood(mob.getWorld(), projectile.getStack(), food);
+                }
                 projectile.discard();
 
                 if (mob instanceof AnimalEntity animal) {

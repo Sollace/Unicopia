@@ -68,7 +68,7 @@ public class WantItTakeItGoal extends BreakHeartGoal {
         creature.setSmitten(true);
 
         if (distance <= reach) {
-            if (target instanceof LivingEntity) {
+            if (target instanceof LivingEntity living) {
                 if (cooldown <= 0) {
                     cooldown = 20;
                     mob.tryAttack(target);
@@ -76,10 +76,10 @@ public class WantItTakeItGoal extends BreakHeartGoal {
 
                     if (mob.getWorld().random.nextInt(20) == 0) {
                         for (EquipmentSlot slot : EquipmentSlot.values()) {
-                            ItemStack stack = ((LivingEntity)target).getEquippedStack(slot);
+                            ItemStack stack = living.getEquippedStack(slot);
                             if (EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, stack) > 0) {
                                 AwaitTickQueue.scheduleTask(mob.getWorld(), w -> {
-                                    target.equipStack(slot, ItemStack.EMPTY);
+                                    living.equipStack(slot, ItemStack.EMPTY);
                                     mob.tryEquip(stack);
                                 });
                                 break;
