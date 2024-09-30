@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.server.world;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -82,17 +81,10 @@ public class BlockDestructionManager implements Tickable {
             }
         });
 
-        MsgBlockDestruction msg = new MsgBlockDestruction(values);
-
-        if (msg.toBuffer().writerIndex() > 1048576) {
-            throw new IllegalStateException("Payload may not be larger than 1048576 bytes. Here's what we were trying to send: ["
-                    + values.size() + "]\n"
-                    + Arrays.toString(values.values().stream().mapToDouble(Float::doubleValue).toArray()));
-        }
-
+        var packet = Channel.SERVER_BLOCK_DESTRUCTION.toPacket(new MsgBlockDestruction(values));
         players.forEach(player -> {
-            if (player instanceof ServerPlayerEntity) {
-                Channel.SERVER_BLOCK_DESTRUCTION.sendToPlayer(msg, player);
+            if (player instanceof ServerPlayerEntity spe) {
+                spe.networkHandler.sendPacket(packet);
             }
         });
     }

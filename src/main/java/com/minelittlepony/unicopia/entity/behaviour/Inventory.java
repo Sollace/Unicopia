@@ -3,18 +3,25 @@ package com.minelittlepony.unicopia.entity.behaviour;
 import java.util.*;
 import java.util.function.Consumer;
 
+import com.minelittlepony.unicopia.util.CodecUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.*;
 import net.minecraft.util.collection.DefaultedList;
 
 public record Inventory (
         Map<EquipmentSlot, ItemStack> equipment,
         Optional<DefaultedList<ItemStack>> mainInventory
     ) {
+    public static final Codec<Inventory> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.unboundedMap(EquipmentSlot.CODEC, ItemStack.CODEC).fieldOf("equipment").forGetter(Inventory::equipment),
+            CodecUtils.defaultedList(ItemStack.CODEC, ItemStack.EMPTY).optionalFieldOf("main").forGetter(Inventory::mainInventory)
+    ).apply(instance, Inventory::new));
 
     public static Optional<Inventory> of(LivingEntity entity) {
         Map<EquipmentSlot, ItemStack> equipment = new EnumMap<>(EquipmentSlot.class);
@@ -66,22 +73,6 @@ public record Inventory (
         return this;
     }
 
-    public NbtCompound toNBT(NbtCompound compound) {
-        NbtCompound eq = new NbtCompound();
-        equipment().forEach((slot, stack) -> {
-            eq.put(slot.getName(), stack.writeNbt(new NbtCompound()));
-        });
-        compound.put("equipment", eq);
-        mainInventory().ifPresent(main -> {
-            NbtList list = new NbtList();
-            main.forEach(stack -> {
-                list.add(stack.writeNbt(new NbtCompound()));
-            });
-            compound.put("main", list);
-        });
-        return compound;
-    }
-
     public static void swapInventories(LivingEntity me, Optional<Inventory> myInv, LivingEntity them, Optional<Inventory> theirInv,
             Consumer<Inventory> outOverflowConsumer,
             Consumer<Inventory> inOverflowConsumer) {
@@ -94,24 +85,5 @@ public record Inventory (
 
     public static Optional<Inventory> copyInventoryInto(Optional<Inventory> inventory, LivingEntity to) {
         return inventory.map(inv -> inv.copyInto(to));
-    }
-
-    public static Inventory fromNBT(NbtCompound compound) {
-        Map<EquipmentSlot, ItemStack> equipment = new EnumMap<>(EquipmentSlot.class);
-        NbtCompound eq = compound.getCompound("equipment");
-        eq.getKeys().forEach(key -> {
-            equipment.put(EquipmentSlot.byName(key), ItemStack.fromNbt(eq.getCompound(key)));
-        });
-
-        if (!compound.contains("main", NbtElement.LIST_TYPE)) {
-            return new Inventory(equipment, Optional.empty());
-        }
-
-        NbtList list = compound.getList("main", NbtElement.COMPOUND_TYPE);
-        DefaultedList<ItemStack> main = DefaultedList.ofSize(list.size(), ItemStack.EMPTY);
-        for (int i = 0; i < list.size(); i++) {
-            main.set(i, ItemStack.fromNbt(list.getCompound(i)));
-        }
-        return new Inventory(equipment, Optional.of(main));
     }
 }

@@ -197,8 +197,6 @@ public interface URenderers {
     private static void renderJarItem(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         ItemRenderer renderer = MinecraftClient.getInstance().getItemRenderer();
 
-        ChameleonItem item = (ChameleonItem)stack.getItem();
-
         // Reset stuff done in the beforelands
         matrices.pop();
 
@@ -209,7 +207,7 @@ public interface URenderers {
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         ClientWorld world = MinecraftClient.getInstance().world;
 
-        if (item.hasAppearance(stack)) {
+        if (ChameleonItem.hasAppearance(stack)) {
             matrices.push();
             if (mode.isFirstPerson()) {
                 matrices.translate(0.05, 0.06, 0.06);
@@ -224,7 +222,7 @@ public interface URenderers {
             float scale = 0.5F;
             matrices.scale(scale, scale, scale);
 
-            ItemStack appearance = item.getAppearanceStack(stack);
+            ItemStack appearance = ChameleonItem.getAppearanceStack(stack);
             renderer.renderItem(appearance, mode, light, overlay, matrices, immediate, world, 0);
             matrices.pop();
         }

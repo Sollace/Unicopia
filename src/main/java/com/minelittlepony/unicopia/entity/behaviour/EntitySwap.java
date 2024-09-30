@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 
 public interface EntitySwap {
     Swap<Entity> POSITION = Swap.of(Entity::getPos, (entity, pos) -> {
-        entity.teleport(pos.getX(), pos.getY(), pos.getZ());
+        entity.setPosition(pos.getX(), pos.getY(), pos.getZ());
         if (entity instanceof PathAwareEntity pae && !(entity instanceof PlayerEntity)) {
             pae.getNavigation().stop();
         }

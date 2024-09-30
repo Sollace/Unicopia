@@ -14,14 +14,16 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper.Argb;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 
 public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell> {
-
     private static final Identifier ACCRETION_DISK_TEXTURE = Unicopia.id("textures/spells/dark_vortex/accretion_disk.png");
+    private static final int DISTORTION_ZONE_COLOR = Argb.withAlpha(Colors.BLACK, (int)(255 * 0.9F));
 
     private static float cameraDistortion;
 
@@ -52,10 +54,11 @@ public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell> {
 
         float visualRadius = Math.min(radius * 0.8F, absDistance - 1F);
 
-        SphereModel.SPHERE.render(matrices, vertices.getBuffer(RenderLayers.getSolid()), light, 1, visualRadius, 0, 0, 0, 1);
-        SphereModel.SPHERE.render(matrices, vertices.getBuffer(RenderLayers.getMagicColored()), light, 1, visualRadius + 0.05F, 0, 0, 0, 0.9F);
-        SphereModel.SPHERE.render(matrices, vertices.getBuffer(RenderLayers.getMagicColored()), light, 1, visualRadius + 0.1F, 0, 0, 0, 0.9F);
-        SphereModel.SPHERE.render(matrices, vertices.getBuffer(RenderLayers.getMagicColored()), light, 1, visualRadius + 0.15F, 0, 0, 0, 0.9F);
+        Argb.withAlpha(Colors.BLACK, (int)(255 * 0.9F));
+        SphereModel.SPHERE.render(matrices, vertices.getBuffer(RenderLayers.getSolid()), light, 1, visualRadius, Colors.BLACK);
+        SphereModel.SPHERE.render(matrices, vertices.getBuffer(RenderLayers.getMagicColored()), light, 1, visualRadius + 0.05F, DISTORTION_ZONE_COLOR);
+        SphereModel.SPHERE.render(matrices, vertices.getBuffer(RenderLayers.getMagicColored()), light, 1, visualRadius + 0.1F, DISTORTION_ZONE_COLOR);
+        SphereModel.SPHERE.render(matrices, vertices.getBuffer(RenderLayers.getMagicColored()), light, 1, visualRadius + 0.15F, DISTORTION_ZONE_COLOR);
 
         matrices.push();
 
@@ -65,7 +68,7 @@ public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell> {
             cameraDistortion += distance;
         }
 
-        SphereModel.DISK.render(matrices, vertices.getBuffer(RenderLayers.getEndPortal()), light, 1, radius * 0.5F, 0, 0, 0, 0);
+        SphereModel.DISK.render(matrices, vertices.getBuffer(RenderLayers.getEndPortal()), light, 1, radius * 0.5F, 0);
 
         if (radius > 0.3F && absDistance > radius) {
             double g = Math.sqrt(ray.x * ray.x + ray.z * ray.z);
@@ -95,16 +98,16 @@ public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell> {
 
             VertexConsumer buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(ACCRETION_DISK_TEXTURE));
 
-            PlaneModel.INSTANCE.render(matrices, buffer, light, 0, 1, 1, 1, 1, 1);
+            PlaneModel.INSTANCE.render(matrices, buffer, light, 0, 1, Colors.WHITE);
             float secondaryScale = 0.9F + cosProcession * 0.3F;
             matrices.translate(0, 0, 0.0001F);
             matrices.scale(secondaryScale, secondaryScale, secondaryScale);
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(33));
-            PlaneModel.INSTANCE.render(matrices, buffer, light, 0, 1, 1, 1, 1, 1);
+            PlaneModel.INSTANCE.render(matrices, buffer, light, 0, 1, Colors.WHITE);
             matrices.translate(0, 0, 0.0001F);
             matrices.scale(0.9F, 0.9F, 0.9F);
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(33));
-            PlaneModel.INSTANCE.render(matrices, buffer, light, 0, 1, 1, 1, 1, 1);
+            PlaneModel.INSTANCE.render(matrices, buffer, light, 0, 1, Colors.WHITE);
         }
         matrices.pop();
         matrices.pop();

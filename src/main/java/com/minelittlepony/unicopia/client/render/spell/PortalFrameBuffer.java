@@ -5,12 +5,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix3f;
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.PortalSpell;
@@ -42,6 +43,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -94,22 +96,21 @@ class PortalFrameBuffer implements AutoCloseable {
             float uScale = (float)framebuffer.viewportWidth / (float)framebuffer.textureWidth;
             float vScale = (float)framebuffer.viewportHeight / (float)framebuffer.textureHeight;
             RenderSystem.setShader(UShaders.RENDER_TYPE_PORTAL_SURFACE);
-            //RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
             RenderSystem._setShaderTexture(0, framebuffer.getColorAttachment());
             BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
             SphereModel.DISK.scaleUV(uScale, vScale);
 
             RenderSystem.setTextureMatrix(SphereModel.DISK.getTextureMatrix());
-            SphereModel.DISK.render(matrices, buffer, 1, 2F, 1, 1, 1, 1);
-            tessellator.draw();
+            SphereModel.DISK.render(matrices, buffer, 1, 2F, Colors.WHITE);
+            buffer.end();
 
             client.getTextureManager().bindTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
             GlStateManager._enableCull();
             GlStateManager._colorMask(true, true, true, true);
             GlStateManager._depthMask(true);
         } else {
-            Vec3d skyColor = client.world.getSkyColor(client.gameRenderer.getCamera().getPos(), client.getTickDelta());
-            SphereModel.DISK.render(matrices, vertices.getBuffer(RenderLayers.getMagicShield()), 0, 0, 2, (float)skyColor.x, (float)skyColor.y, (float)skyColor.z, 1);
+            Vec3d skyColor = client.world.getSkyColor(client.gameRenderer.getCamera().getPos(), client.getRenderTickCounter().getTickDelta(false));
+            SphereModel.DISK.render(matrices, vertices.getBuffer(RenderLayers.getMagicShield()), 0, 0, 2, Color.argbToHex(1, (float)skyColor.x, (float)skyColor.y, (float)skyColor.z));
         }
     }
 
@@ -187,10 +188,9 @@ class PortalFrameBuffer implements AutoCloseable {
         height = j;
 
         Perspective perspective = client.options.getPerspective();
-        MatrixStack view = RenderSystem.getModelViewStack();
+        Matrix4fStack view = RenderSystem.getModelViewStack();
 
         Matrix4f proj = RenderSystem.getProjectionMatrix();
-        Matrix3f invView = RenderSystem.getInverseViewRotationMatrix();
 
         int fbo = client.getFramebuffer().fbo;
         Camera camera = client.gameRenderer.getCamera();
@@ -206,8 +206,8 @@ class PortalFrameBuffer implements AutoCloseable {
                 framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
             }
 
-            view.push();
-            view.loadIdentity();
+            view.pushMatrix();
+            view.identity();
             RenderSystem.applyModelViewMatrix();
 
             window.setFramebufferWidth(width);
@@ -234,7 +234,7 @@ class PortalFrameBuffer implements AutoCloseable {
 
             client.gameRenderer.setRenderHand(false);
 
-            client.gameRenderer.renderWorld(1, 0, new MatrixStack());
+            client.gameRenderer.renderWorld(client.getRenderTickCounter());
 
             // Strip transparency
             RenderSystem.colorMask(false, false, false, true);
@@ -249,10 +249,9 @@ class PortalFrameBuffer implements AutoCloseable {
             client.getFramebuffer().fbo = fbo;
             client.getFramebuffer().beginWrite(true);
 
-            view.pop();
+            view.popMatrix();
             RenderSystem.applyModelViewMatrix();
             RenderSystem.setProjectionMatrix(proj, VertexSorter.BY_Z);
-            RenderSystem.setInverseViewRotationMatrix(invView);
 
             window.setFramebufferWidth(i);
             window.setFramebufferHeight(j);

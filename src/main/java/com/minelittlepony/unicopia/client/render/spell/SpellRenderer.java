@@ -9,14 +9,14 @@ import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
 import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
-import com.minelittlepony.unicopia.util.ColorHelper;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.Colors;
+import net.minecraft.util.math.ColorHelper.Argb;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
@@ -80,7 +80,7 @@ public class SpellRenderer<T extends Spell> {
         float timeRemaining = spell.getTimer().getPercentTimeRemaining(tickDelta);
 
         DrawableUtil.drawArc(matrices, radius, radius + 0.3F, 0, DrawableUtil.TAU * timeRemaining,
-                ColorHelper.lerp(MathHelper.clamp(timeRemaining * 4, 0, 1), 0xFF0000FF, 0xFFFFFFFF)
+                Argb.lerp(MathHelper.clamp(timeRemaining * 4, 0, 1), Colors.BLUE, Colors.WHITE)
         );
     }
 

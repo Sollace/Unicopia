@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.recipe.CloudShapingRecipe;
 import com.mojang.datafixers.util.Either;
 
@@ -15,7 +16,7 @@ import net.minecraft.data.server.recipe.StonecuttingRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.VanillaRecipeProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.predicate.ComponentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.book.RecipeCategory;
@@ -71,11 +72,9 @@ public interface CraftingMaterialHelper {
     }
 
     static AdvancementCriterion<?> conditionsFromSpell(ItemConvertible gem, SpellType<?> spell) {
-        NbtCompound nbt = new NbtCompound();
-        nbt.putString("spell", spell.getId().toString());
         return RecipeProvider.conditionsFromItemPredicates(ItemPredicate.Builder.create()
                 .items(gem)
-                .nbt(nbt)
+                .component(ComponentPredicate.builder().add(UDataComponentTypes.STORED_SPELL, spell).build())
                 .build()
         );
     }

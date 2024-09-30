@@ -28,10 +28,7 @@ public class GhastBehaviour extends MobBehaviour<GhastEntity> {
 
                 Vec3d rot = player.asEntity().getRotationVec(1);
 
-                FireballEntity proj = new FireballEntity(entity.getWorld(), player.asEntity(),
-                        rot.getX(),
-                        rot.getY(),
-                        rot.getZ(),
+                FireballEntity proj = new FireballEntity(entity.getWorld(), player.asEntity(), rot,
                         (int)player.getLevel().getScaled(entity.getFireballStrength())
                 );
                 proj.updatePosition(

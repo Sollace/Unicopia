@@ -19,6 +19,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -97,5 +98,9 @@ public interface CodecUtils {
     static MapCodec<TriState> tristateOf(String fieldName) {
         return Codec.BOOL.optionalFieldOf(fieldName)
                 .<TriState>xmap(b -> b.map(TriState::of).orElse(TriState.DEFAULT), t -> Optional.ofNullable(t.get()));
+    }
+
+    static <T> Codec<DefaultedList<T>> defaultedList(Codec<T> elementCodec, T empty) {
+        return elementCodec.listOf().flatXmap(elements -> DataResult.success(new DefaultedList<>(elements, empty) {}), DataResult::success);
     }
 }

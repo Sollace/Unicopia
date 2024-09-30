@@ -27,10 +27,12 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.ColorHelper.Argb;
 
 public class WorldRenderDelegate {
     public static final WorldRenderDelegate INSTANCE = new WorldRenderDelegate();
     private static final Optional<Vec3d> RED_SKY_COLOR = Optional.of(new Vec3d(1, 0, 0));
+    private static final int DIVER_HELMET_COLOR = Argb.fromFloats(0.1F, 0.5F, 0.5F, 0.5F);
 
     private final EntityReplacementManager disguiseLookup = new EntityReplacementManager();
     private final EntityDisguiseRenderer disguiseRenderer = new EntityDisguiseRenderer(this);
@@ -108,8 +110,8 @@ public class WorldRenderDelegate {
                     RenderLayer layer = RenderLayers.getMagicColored();
                     float scale = 0.9F;
 
-                    SphereModel.SPHERE.render(matrices, immediate.getBuffer(layer), light, 0, scale, 0.5F, 0.5F, 0.5F, 0.1F);
-                    SphereModel.SPHERE.render(matrices, immediate.getBuffer(layer), light, 0, scale + 0.2F, 0.5F, 0.5F, 0.5F, 0.1F);
+                    SphereModel.SPHERE.render(matrices, immediate.getBuffer(layer), light, 0, scale, DIVER_HELMET_COLOR);
+                    SphereModel.SPHERE.render(matrices, immediate.getBuffer(layer), light, 0, scale + 0.2F, DIVER_HELMET_COLOR);
 
                     matrices.pop();
                 }

@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.particle.SphereParticleEffect;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.*;
 
 public class DiskParticle extends SphereParticle {
@@ -25,9 +26,9 @@ public class DiskParticle extends SphereParticle {
     protected void renderModel(MatrixStack matrices, VertexConsumer buffer, float scale, float tickDelta, int light) {
         matrices.multiply(rotation);
         float thickness = 0.2F;
-        SphereModel.DISK.render(matrices, buffer, light, 1, scale, 1, 1, 1, 1);
+        SphereModel.DISK.render(matrices, buffer, light, 1, scale, Colors.WHITE);
         matrices.translate(0, -thickness, 0);
-        SphereModel.DISK.render(matrices, buffer, light, 1, scale, 1, 1, 1, 1);
+        SphereModel.DISK.render(matrices, buffer, light, 1, scale, Colors.WHITE);
     }
 }
 

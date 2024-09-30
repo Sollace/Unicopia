@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.recipe;
 
+import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.EmptyJarItem;
 import com.minelittlepony.unicopia.item.UItems;
 
@@ -8,7 +9,6 @@ import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 
 public class JarInsertRecipe extends ItemCombinationRecipe {
@@ -19,9 +19,7 @@ public class JarInsertRecipe extends ItemCombinationRecipe {
 
     @Override
     public final ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
-        Pair<ItemStack, ItemStack> pair = runMatch(inventory);
-
-        return UItems.FILLED_JAR.setAppearance(UItems.FILLED_JAR.getDefaultStack(), pair.getRight());
+        return ChameleonItem.setAppearance(UItems.FILLED_JAR.getDefaultStack(), runMatch(inventory).getRight());
     }
 
     @Override

@@ -1,11 +1,8 @@
 package com.minelittlepony.unicopia.util;
 
-import com.minelittlepony.common.util.Color;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.ColorHelper.Argb;
 
 public interface ColorHelper {
@@ -45,12 +42,37 @@ public interface ColorHelper {
         return new float[] {r, g, b};
     }
 
+    static int saturate(int color, float intensity) {
+        float a = Argb.getAlpha(color) / 255F,
+                red = Argb.getRed(color) / 255F,
+                green = Argb.getGreen(color) / 255F,
+                blue = Argb.getBlue(color) / 255F;
+        float avg = (red + green + blue) / 3F;
+        float r = avg + (red - avg) * intensity,
+                g = avg + (green - avg) * intensity,
+                b = avg + (blue - avg) * intensity;
+
+        if (r > 1) {
+            g -= r - 1;
+            b -= r - 1;
+            r = 1;
+        }
+        if (g > 1) {
+            r -= g - 1;
+            b -= g - 1;
+            g = 1;
+        }
+        if (b > 1) {
+            r -= b - 1;
+            g -= b - 1;
+            b = 1;
+        }
+
+        return Argb.fromFloats(a, r, g, b);
+    }
+
+    @Deprecated
     static int lerp(float delta, int fromColor, int toColor) {
-        return Color.argbToHex(
-                MathHelper.lerp(delta, Color.a(fromColor), Color.a(toColor)),
-                MathHelper.lerp(delta, Color.r(fromColor), Color.r(toColor)),
-                MathHelper.lerp(delta, Color.g(fromColor), Color.g(toColor)),
-                MathHelper.lerp(delta, Color.b(fromColor), Color.b(toColor))
-        );
+        return Argb.lerp(delta, fromColor, toColor);
     }
 }

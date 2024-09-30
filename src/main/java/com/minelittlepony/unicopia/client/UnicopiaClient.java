@@ -158,7 +158,7 @@ public class UnicopiaClient implements ClientModInitializer {
 
     private void onWorldTick(ClientWorld world) {
         BlockPos pos = MinecraftClient.getInstance().getCameraEntity().getBlockPos();
-        float tickDelta = MinecraftClient.getInstance().getTickDelta();
+        float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
 
         Float targetRainGradient = getTargetRainGradient(world, pos, tickDelta);
 

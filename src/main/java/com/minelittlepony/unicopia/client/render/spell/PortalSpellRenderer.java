@@ -11,6 +11,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.Colors;
 import net.minecraft.util.math.RotationAxis;
 
 public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
@@ -27,7 +28,7 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
 
         matrices.push();
         matrices.translate(0, 0.02, 0);
-        SphereModel.DISK.render(matrices, buff, light, 0, 2F * strength, 1, 1, 1, 1);
+        SphereModel.DISK.render(matrices, buff, light, 0, 2F * strength, Colors.WHITE);
         matrices.pop();
 
         EntityReference<Entity> destination = spell.getDestinationReference();
@@ -36,7 +37,7 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
             matrices.push();
             matrices.translate(0, -0.02, 0);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
-            SphereModel.DISK.render(matrices, buff, light, 0, 2F * strength, 1, 1, 1, 1);
+            SphereModel.DISK.render(matrices, buff, light, 0, 2F * strength, Colors.WHITE);
             matrices.pop();
             return;
         }

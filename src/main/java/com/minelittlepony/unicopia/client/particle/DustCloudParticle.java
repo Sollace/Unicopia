@@ -16,10 +16,12 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.BlockStateParticleEffect;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.ColorHelper.Argb;
 
 public class DustCloudParticle extends AbstractBillboardParticle {
     protected static final int SEGMENTS = 20;
@@ -74,6 +76,7 @@ public class DustCloudParticle extends AbstractBillboardParticle {
     protected void renderQuads(Tessellator te, float x, float y, float z, float tickDelta) {
         float scale = getScale(tickDelta) * 0.5F;
         float alpha = this.alpha * (1 - ((float)age / maxAge));
+        int color = Argb.withAlpha((int)(alpha * 255), Colors.WHITE);
         MatrixStack matrices = new MatrixStack();
         matrices.translate(x, y, z);
         matrices.scale(1, 0.5F, 1);
@@ -88,7 +91,7 @@ public class DustCloudParticle extends AbstractBillboardParticle {
             float ringScale = 1 + MathHelper.sin(((i * 10) + age + tickDelta) * 0.05F) * 0.1F;
 
             BufferBuilder buffer = te.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
-            model.render(matrices, buffer, 0, scale * ringScale, 1, 1, 1, alpha);
+            model.render(matrices, buffer, 0, scale * ringScale, color);
             BufferRenderer.drawWithGlobalProgram(buffer.end());
             matrices.pop();
         }

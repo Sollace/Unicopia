@@ -56,13 +56,13 @@ public abstract class AbstractDisguiseSpell extends AbstractSpell implements Dis
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         super.toNBT(compound, lookup);
-        disguise.toNBT(compound);
+        disguise.toNBT(compound, lookup);
     }
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        disguise.fromNBT(compound);
+        disguise.fromNBT(compound, lookup);
     }
 
     @Override

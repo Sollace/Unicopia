@@ -73,10 +73,10 @@ public class BlazeBehaviour extends EntityBehaviour<BlazeEntity> {
                 Vec3d rot = player.asEntity().getRotationVec(1);
 
                 for (int i = 0; i < 1; ++i) {
-                   SmallFireballEntity proj = new SmallFireballEntity(entity.getWorld(), player.asEntity(),
-                           rot.getX() + entity.getRandom().nextGaussian(),
-                           rot.getY(),
-                           rot.getZ() + entity.getRandom().nextGaussian()
+                   SmallFireballEntity proj = new SmallFireballEntity(
+                           entity.getWorld(),
+                           player.asEntity(),
+                           rot.add(entity.getRandom().nextGaussian(), 0, entity.getRandom().nextGaussian())
                    );
                    proj.setPosition(proj.getX(), entity.getBodyY(0.5D) + 0.5D, proj.getZ());
                    entity.getWorld().spawnEntity(proj);
