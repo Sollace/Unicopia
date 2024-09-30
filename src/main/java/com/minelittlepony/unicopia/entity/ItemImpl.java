@@ -157,7 +157,7 @@ public class ItemImpl implements Equine<ItemEntity> {
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         compound.putString("owner_race", getSpecies().getId().toString());
-        physics.toNBT(compound);
+        physics.toNBT(compound, lookup);
     }
 
     @Override
@@ -165,7 +165,7 @@ public class ItemImpl implements Equine<ItemEntity> {
         if (compound.contains("owner_race", NbtElement.STRING_TYPE)) {
             setSpecies(Race.fromName(compound.getString("owner_race"), Race.HUMAN));
         }
-        physics.fromNBT(compound);
+        physics.fromNBT(compound, lookup);
     }
 
     @Override

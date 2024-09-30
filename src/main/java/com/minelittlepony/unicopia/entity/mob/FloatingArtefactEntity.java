@@ -161,7 +161,7 @@ public class FloatingArtefactEntity extends StationaryObjectEntity {
     @Override
     protected void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
-        setStack(ItemStack.fromNbtOrEmpty(getWorld().getRegistryManager(), compound.getCompound("Item")));
+        setStack(ItemStack.fromNbtOrEmpty(getRegistryManager(), compound.getCompound("Item")));
         setState(State.valueOf(compound.getInt("State")));
         setRotationSpeed(compound.getFloat("spin"), compound.getInt("spinDuration"));
         ticksUntilRegen = compound.getInt("regen");

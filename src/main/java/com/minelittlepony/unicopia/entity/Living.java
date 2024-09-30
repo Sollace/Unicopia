@@ -461,7 +461,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
-        enchants.toNBT(compound);
+        enchants.toNBT(compound, lookup);
         spells.getSlots().toNBT(compound, lookup);
         getCarrierId().ifPresent(id -> compound.putUuid("carrier", id));
         toSyncronisedNbt(compound, lookup);
@@ -469,7 +469,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-        enchants.fromNBT(compound);
+        enchants.fromNBT(compound, lookup);
         spells.getSlots().fromNBT(compound, lookup);
         setCarrier(compound.containsUuid("carrier") ? compound.getUuid("carrier") : null);
         fromSynchronizedNbt(compound, lookup);

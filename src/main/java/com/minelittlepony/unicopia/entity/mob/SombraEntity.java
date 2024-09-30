@@ -676,7 +676,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
         getHomePos().map(NbtHelper::fromBlockPos).ifPresent(pos -> {
             nbt.put("homePos", pos);
         });
-        nbt.put("cloud", stormCloud.toNBT(getWorld().getRegistryManager()));
+        nbt.put("cloud", stormCloud.toNBT(getRegistryManager()));
         nbt.putFloat("size", getScaleFactor());
     }
 
@@ -690,7 +690,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
             bossBar.setName(getDisplayName());
         }
         setScaleFactor(nbt.getFloat("size"));
-        stormCloud.fromNBT(nbt.getCompound("cloud"), getWorld().getRegistryManager());
+        stormCloud.fromNBT(nbt.getCompound("cloud"), getRegistryManager());
     }
 
     private static class SombraBossBar extends ServerBossBar {

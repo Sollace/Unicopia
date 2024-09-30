@@ -407,6 +407,7 @@ public class ButterflyEntity extends AmbientEntity {
             return VALUES[rand.nextInt(VALUES.length)];
         }
 
+        @Deprecated
         public static Variant byName(String name) {
             return CODEC.byId(name, BUTTERFLY);
         }

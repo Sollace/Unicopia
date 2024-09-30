@@ -340,7 +340,7 @@ public class IgnominiousBulbEntity extends MobEntity {
         getTentacles().forEach((pos, tentacle) -> {
             var compound = new NbtCompound();
             compound.put("pos", NbtHelper.fromBlockPos(pos));
-            compound.put("target", tentacle.toNBT(getWorld().getRegistryManager()));
+            compound.put("target", tentacle.toNBT(getRegistryManager()));
             tentacles.add(compound);
         });
         nbt.put("tentacles", tentacles);
@@ -357,7 +357,7 @@ public class IgnominiousBulbEntity extends MobEntity {
                 nbt.getList("tentacles", NbtElement.COMPOUND_TYPE).forEach(tag -> {
                     var compound = (NbtCompound)tag;
                     NbtHelper.toBlockPos(compound, "pos").ifPresent(pos -> {
-                        tentacles.put(pos, new EntityReference<>(compound.getCompound("target"), getWorld().getRegistryManager()));
+                        tentacles.put(pos, new EntityReference<>(compound.getCompound("target"), getRegistryManager()));
                     });
                 });
                 this.tentacles = tentacles;

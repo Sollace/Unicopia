@@ -247,11 +247,11 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
             tag.putUuid("owningSpell", controllingSpellUuid);
         }
 
-        spells.getSlots().toNBT(tag, getWorld().getRegistryManager());
+        spells.getSlots().toNBT(tag, getRegistryManager());
         tag.putInt("age", age);
         tag.putInt("prevAge", prevAge);
         tag.putBoolean("dead", isDead());
-        tag.put("owner", owner.toNBT(getWorld().getRegistryManager()));
+        tag.put("owner", owner.toNBT(getRegistryManager()));
     }
 
     @Override
@@ -266,13 +266,13 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
         controllingEntityUuid = tag.containsUuid("owningEntity") ? tag.getUuid("owningEntity") : null;
         controllingSpellUuid = tag.containsUuid("owningSpell") ? tag.getUuid("owningSpell") : null;
 
-        spells.getSlots().fromNBT(tag, getWorld().getRegistryManager());
+        spells.getSlots().fromNBT(tag, getRegistryManager());
         age = tag.getInt("age");
         prevAge = tag.getInt("prevAge");
         setDead(tag.getBoolean("dead"));
 
         if (tag.contains("owner")) {
-            owner.fromNBT(tag.getCompound("owner"), getWorld().getRegistryManager());
+            owner.fromNBT(tag.getCompound("owner"), getRegistryManager());
         }
     }
 }

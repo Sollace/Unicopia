@@ -307,7 +307,7 @@ public class StormCloudEntity extends Entity implements MagicImmune {
                         if (source.getAttacker() instanceof PlayerEntity player) {
                             builder = builder.add(LootContextParameters.LAST_DAMAGE_PLAYER, player).luck(player.getLuck());
                         }
-                        getWorld().getRegistryManager().get(RegistryKeys.LOOT_TABLE).get(table)
+                        getRegistryManager().get(RegistryKeys.LOOT_TABLE).get(table)
                             .generateLoot(builder.build(LootContextTypes.ENTITY), 0L, this::dropStack);
                     }
                     kill();

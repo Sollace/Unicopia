@@ -328,7 +328,7 @@ public class MimicEntity extends PathAwareEntity {
     @Nullable
     private ChestBlockEntity readChestData(NbtCompound nbt) {
         BlockState state = BlockState.CODEC.decode(NbtOps.INSTANCE, nbt.getCompound("state")).result().get().getFirst();
-        if (BlockEntity.createFromNbt(getBlockPos(), state, nbt.getCompound("data"), getWorld().getRegistryManager()) instanceof ChestBlockEntity data) {
+        if (BlockEntity.createFromNbt(getBlockPos(), state, nbt.getCompound("data"), getRegistryManager()) instanceof ChestBlockEntity data) {
             data.setWorld(getWorld());
             ((MimicGeneratable)data).setAllowMimics(false);
             return data;
@@ -347,7 +347,7 @@ public class MimicEntity extends PathAwareEntity {
     @Nullable
     private NbtCompound writeChestData(ChestBlockEntity chestData) {
         NbtCompound chest = new NbtCompound();
-        chest.put("data", chestData.createNbtWithId(getWorld().getRegistryManager()));
+        chest.put("data", chestData.createNbtWithId(getRegistryManager()));
         chest.put("state", BlockState.CODEC.encode(chestData.getCachedState(), NbtOps.INSTANCE, new NbtCompound()).result().get());
         return chest;
     }

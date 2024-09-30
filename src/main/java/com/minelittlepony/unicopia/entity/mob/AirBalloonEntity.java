@@ -53,7 +53,6 @@ import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.collision.MultiBoundingBoxEntity;
 import com.minelittlepony.unicopia.entity.collision.MultiBox;
 import com.minelittlepony.unicopia.item.BasketItem;
-import com.minelittlepony.unicopia.item.HotAirBalloonItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
@@ -370,7 +369,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        if (stack.getItem() instanceof HotAirBalloonItem && !hasBalloon()) {
+        if (stack.contains(UDataComponentTypes.BALLOON_DESIGN) && !hasBalloon()) {
             if (!player.getAbilities().creativeMode) {
                 stack.decrement(1);
             }

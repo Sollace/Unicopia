@@ -172,7 +172,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     @Override
     public DamageSources getDamageSources() {
-        return new DamageSources(getWorld().getRegistryManager()) {
+        return new DamageSources(getRegistryManager()) {
             @Override
             public DamageSource arrow(PersistentProjectileEntity source, @Nullable Entity attacker) {
                 return create(damageType, source, attacker);
@@ -299,7 +299,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        setStack(ItemStack.fromNbtOrEmpty(getWorld().getRegistryManager(), nbt.getCompound("Item")));
+        setStack(ItemStack.fromNbtOrEmpty(getRegistryManager(), nbt.getCompound("Item")));
         if (nbt.contains("damageType", NbtElement.STRING_TYPE)) {
             Optional.ofNullable(Identifier.tryParse(nbt.getString("damageType"))).ifPresent(id -> {
                 setDamageType(RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id));

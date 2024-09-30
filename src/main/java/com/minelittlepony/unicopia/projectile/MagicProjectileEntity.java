@@ -176,8 +176,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
     @Override
     public void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
-        homingTarget.fromNBT(compound.getCompound("homingTarget"), getWorld().getRegistryManager());
-        getMasterReference().fromNBT(compound.getCompound("owner"), getWorld().getRegistryManager());
+        homingTarget.fromNBT(compound.getCompound("homingTarget"), getRegistryManager());
+        getMasterReference().fromNBT(compound.getCompound("owner"), getRegistryManager());
         if (compound.contains("maxAge", NbtElement.INT_TYPE)) {
             maxAge = compound.getInt("maxAge");
         }
@@ -186,8 +186,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
     @Override
     public void writeCustomDataToNbt(NbtCompound compound) {
         super.writeCustomDataToNbt(compound);
-        compound.put("homingTarget", homingTarget.toNBT(getWorld().getRegistryManager()));
-        compound.put("owner", getMasterReference().toNBT(getWorld().getRegistryManager()));
+        compound.put("homingTarget", homingTarget.toNBT(getRegistryManager()));
+        compound.put("owner", getMasterReference().toNBT(getRegistryManager()));
         compound.putInt("maxAge", maxAge);
     }
 

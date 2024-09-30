@@ -220,7 +220,7 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
     @Override
     public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
-        tag.put("owner", owner.toNBT(getWorld().getRegistryManager()));
+        tag.put("owner", owner.toNBT(getRegistryManager()));
         stayingPos.ifPresent(pos -> {
             tag.put("stayingPos", NbtHelper.fromBlockPos(pos));
         });
@@ -230,7 +230,7 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
     public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
         if (tag.contains("owner")) {
-            owner.fromNBT(tag.getCompound("owner"), getWorld().getRegistryManager());
+            owner.fromNBT(tag.getCompound("owner"), getRegistryManager());
         }
         stayingPos = tag.contains("stayingPos") ? NbtHelper.toBlockPos(tag, "stayingPos") : Optional.empty();
     }

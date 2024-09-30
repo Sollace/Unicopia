@@ -179,8 +179,8 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
     public void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
         getDataTracker().set(HYDROPHOBIC, compound.getBoolean("hydrophobic"));
-        physics.fromNBT(compound);
-        spells.getSlots().fromNBT(compound, getWorld().getRegistryManager());
+        physics.fromNBT(compound, getRegistryManager());
+        spells.getSlots().fromNBT(compound, getRegistryManager());
         var level = Levelled.fromNbt(compound.getCompound("level"));
         dataTracker.set(MAX_LEVEL, level.getMax());
         dataTracker.set(LEVEL, level.get());
@@ -195,7 +195,7 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
         compound.put("level", level.toNbt());
         compound.put("corruption", corruption.toNbt());
         compound.putBoolean("hydrophobic", getHydrophobic());
-        physics.toNBT(compound);
-        spells.getSlots().toNBT(compound, getWorld().getRegistryManager());
+        physics.toNBT(compound, getRegistryManager());
+        spells.getSlots().toNBT(compound, getRegistryManager());
     }
 }
