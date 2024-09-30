@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.google.common.base.Predicates;
 import com.mojang.serialization.Lifecycle;
 
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
@@ -34,10 +35,11 @@ public interface RegistryUtils {
     }
 
     static <T> Optional<T> pickRandom(World world, TagKey<T> key) {
-        return world.getRegistryManager().getOptional(key.registry())
-            .flatMap(registry -> registry.getEntryList(key))
-            .flatMap(entries -> entries.getRandom(world.random))
-            .map(RegistryEntry::value);
+        return pickRandomEntry(world, key).map(RegistryEntry::value);
+    }
+
+    static <T> Optional<RegistryEntry<T>> pickRandomEntry(World world, TagKey<T> key) {
+        return pickRandomEntry(world, key, Predicates.alwaysTrue());
     }
 
     static <T> Optional<T> pickRandom(World world, TagKey<T> key, Predicate<T> filter) {

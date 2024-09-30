@@ -7,6 +7,7 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -146,6 +147,14 @@ public interface UTags {
 
         private static TagKey<StatusEffect> effect(String name) {
             return TagKey.of(RegistryKeys.STATUS_EFFECT, Unicopia.id(name));
+        }
+    }
+
+    interface Sounds {
+        TagKey<SoundEvent> POISON_JOKE_EVENTS = sound("poison_joke_events");
+
+        private static TagKey<SoundEvent> sound(String name) {
+            return TagKey.of(RegistryKeys.SOUND_EVENT, Unicopia.id(name));
         }
     }
 }

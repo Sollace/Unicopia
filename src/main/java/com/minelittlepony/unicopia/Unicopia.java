@@ -27,7 +27,6 @@ import com.minelittlepony.unicopia.entity.effect.SeaponyGraceStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UPotions;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
@@ -104,7 +103,6 @@ public class Unicopia implements ModInitializer {
 
     private void registerServerDataReloaders(ResourceManagerHelper registry) {
         registry.registerReloadListener(TreeTypeLoader.INSTANCE);
-        registry.registerReloadListener(UEnchantments.POISONED_JOKE);
         registry.registerReloadListener(new TraitLoader());
         registry.registerReloadListener(StateMapLoader.INSTANCE);
         registry.registerReloadListener(SpellbookChapterLoader.INSTANCE);
