@@ -64,7 +64,7 @@ public class SeaponyGraceStatusEffect {
         if (!stateBroken.isIn(UTags.Blocks.ANGERS_GUARDIANS)) {
             return;
         }
-        StructureStart start = sw.getStructureAccessor().getStructureContaining(pos, StructureKeys.MONUMENT);
+        StructureStart start = sw.getStructureAccessor().getStructureContaining(pos, key -> key == StructureKeys.MONUMENT);
         if (start.getStructure() == null) {
             return;
         }

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -13,6 +14,7 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.TypedActionResult;
 
@@ -23,12 +25,12 @@ public class FoodPoisoningStatusEffect extends StatusEffect {
     }
 
     @Override
-    public void applyUpdateEffect(LivingEntity entity, int amplifier) {
+    public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
         if (entity.getWorld().isClient) {
-            return;
+            return true;
         }
 
-        boolean showParticles = entity.getStatusEffect(this).shouldShowParticles();
+        boolean showParticles = entity.getStatusEffect(entity.getRegistryManager().get(RegistryKeys.STATUS_EFFECT).getEntry(this)).shouldShowParticles();
 
         if (!entity.hasStatusEffect(StatusEffects.NAUSEA) && entity.getRandom().nextInt(12) == 0) {
             entity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 100, 1, true, showParticles, false));
@@ -39,8 +41,10 @@ public class FoodPoisoningStatusEffect extends StatusEffect {
         }
 
         if (EffectUtils.isPoisoned(entity) && entity.getRandom().nextInt(12) == 0 && !entity.hasStatusEffect(StatusEffects.POISON)) {
-            StatusEffects.POISON.applyUpdateEffect(entity, 1);
+            StatusEffects.POISON.value().applyUpdateEffect(entity, 1);
         }
+
+        return true;
     }
 
     @Override
@@ -56,9 +60,9 @@ public class FoodPoisoningStatusEffect extends StatusEffect {
 
     public static TypedActionResult<ItemStack> apply(ItemStack stack, PlayerEntity user) {
         @Nullable
-        FoodComponent food = stack.getItem().getFoodComponent();
+        FoodComponent food = stack.get(DataComponentTypes.FOOD);
 
-        if (food == null || !user.canConsume(food.isAlwaysEdible()) || !user.hasStatusEffect(UEffects.FOOD_POISONING)) {
+        if (food == null || !user.canConsume(food.canAlwaysEat()) || !user.hasStatusEffect(UEffects.FOOD_POISONING)) {
             return TypedActionResult.pass(stack);
         }
 

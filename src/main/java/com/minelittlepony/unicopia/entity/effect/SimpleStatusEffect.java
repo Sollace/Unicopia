@@ -1,11 +1,10 @@
 package com.minelittlepony.unicopia.entity.effect;
 
-import org.jetbrains.annotations.Nullable;
-
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public class SimpleStatusEffect extends StatusEffect {
 
@@ -16,14 +15,8 @@ public class SimpleStatusEffect extends StatusEffect {
         this.instant = instant;
     }
 
-    @Override
-    public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-
-    }
-
-    @Override
-    public void applyInstantEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity) {
-
+    protected RegistryEntry<StatusEffect> getEntry(Entity entity) {
+        return entity.getRegistryManager().get(RegistryKeys.STATUS_EFFECT).getEntry(this);
     }
 
     @Override

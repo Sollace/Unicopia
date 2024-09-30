@@ -22,13 +22,14 @@ public class ButterfingersStatusEffect extends StatusEffect {
     }
 
     @Override
-    public void applyUpdateEffect(LivingEntity entity, int amplifier) {
+    public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
         amplifier = MathHelper.clamp(amplifier, 0, 5);
         final int scale = 500 + (int)(((5 - amplifier) / 5F) * 900);
 
         if (entity.getWorld().random.nextInt(scale / 4) == 0) {
             applyInstantEffect(null, null, entity, amplifier, entity.getWorld().random.nextInt(scale));
         }
+        return true;
     }
 
     @Override
