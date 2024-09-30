@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.entity;
 import java.util.List;
 
 import com.minelittlepony.unicopia.*;
+import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.enchantment.WantItNeedItEnchantment;
 import com.minelittlepony.unicopia.network.track.DataTracker;
@@ -12,7 +13,6 @@ import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.VecHelper;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -203,9 +203,7 @@ public class ItemImpl implements Equine<ItemEntity> {
     }
 
     public interface ClingyItem {
-        ClingyItem DEFAULT = stack -> {
-            return EnchantmentHelper.getLevel(UEnchantments.CLINGY, stack) > 0;
-        };
+        ClingyItem DEFAULT = stack -> EnchantmentUtil.getLevel(UEnchantments.CLINGY, stack) > 0;
 
         boolean isClingy(ItemStack stack);
 
@@ -215,11 +213,11 @@ public class ItemImpl implements Equine<ItemEntity> {
         }
 
         default float getFollowDistance(IItemEntity entity) {
-            return 6 * (1 + EnchantmentHelper.getLevel(UEnchantments.CLINGY, entity.get().asEntity().getStack()));
+            return 6 * (1 + EnchantmentUtil.getLevel(UEnchantments.CLINGY, entity.get().asEntity().getStack()));
         }
 
         default float getFollowSpeed(IItemEntity entity) {
-            return Math.min(1, 0.02F * (1 + EnchantmentHelper.getLevel(UEnchantments.CLINGY, entity.get().asEntity().getStack())));
+            return Math.min(1, 0.02F * (1 + EnchantmentUtil.getLevel(UEnchantments.CLINGY, entity.get().asEntity().getStack())));
         }
 
         default void interactWithPlayer(IItemEntity entity, PlayerEntity player) {

@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.item.enchantment.SimpleEnchantment;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
@@ -21,59 +20,61 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.util.Identifier;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 
+// TODO: Use a EnchantmentLocationBasedEffect for this instead
+@Deprecated
 public class Enchantments implements NbtSerialisable, Tickable {
 
     private final Living<?> entity;
 
-    private final Set<RegistryEntry<Enchantment>> equippedEnchantments = new HashSet<>();
+    private final Set<RegistryKey<Enchantment>> equippedEnchantments = new HashSet<>();
 
-    private final Map<RegistryEntry<Enchantment>, SimpleEnchantment.Data> data = new HashMap<>();
+    private final Map<RegistryKey<Enchantment>, Data> data = new HashMap<>();
 
     Enchantments(Living<?> entity) {
         this.entity = entity;
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends SimpleEnchantment.Data> Optional<T> getOrEmpty(RegistryEntry<Enchantment> enchantment) {
+    public <T extends Data> Optional<T> getOrEmpty(RegistryKey<Enchantment> enchantment) {
         return Optional.ofNullable((T)data.get(enchantment));
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends SimpleEnchantment.Data> T computeIfAbsent(RegistryEntry<Enchantment> enchantment, Supplier<T> factory) {
+    public <T extends Data> T computeIfAbsent(RegistryKey<Enchantment> enchantment, Supplier<T> factory) {
         return (T)data.computeIfAbsent(enchantment, e -> factory.get());
     }
 
     @Nullable
     @SuppressWarnings("unchecked")
-    public <T extends SimpleEnchantment.Data> T remove(RegistryEntry<Enchantment> enchantment) {
+    public <T extends Data> T remove(RegistryKey<Enchantment> enchantment) {
         return (T)data.remove(enchantment);
     }
 
     @Override
     public void tick() {
-        UEnchantments.REGISTRY.forEach(ench -> {
+        UEnchantments.REGISTRY.forEach(key -> {
+            var ench = entity.entryFor(key);
             int level = EnchantmentHelper.getEquipmentLevel(ench, entity.asEntity());
 
             boolean active = level > 0;
 
-            if (active != equippedEnchantments.contains(ench)) {
+            if (active != equippedEnchantments.contains(key)) {
                 if (active) {
-                    equippedEnchantments.add(ench);
-                    ench.value().onEquipped(entity);
+                    equippedEnchantments.add(key);
+                    ench.value().applyLocationBasedEffects((ServerWorld)entity.asWorld(), level, null, entity.asEntity());
                 } else {
-                    equippedEnchantments.remove(ench);
-                    ench.value().onUnequipped(entity);
+                    equippedEnchantments.remove(key);
+                    ench.value().removeLocationBasedEffects(level, null, entity.asEntity());
                 }
             }
 
             if (active) {
-                ench.value().onUserTick(entity, level);
+                ench.value().onTick((ServerWorld)entity.asWorld(), level, null, entity.asEntity());
             }
         });
     }
@@ -81,10 +82,8 @@ public class Enchantments implements NbtSerialisable, Tickable {
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         NbtList list = new NbtList();
-        equippedEnchantments.forEach(enchant -> {
-            enchant.getKey().ifPresent(key -> {
-                list.add(NbtString.of(key.getValue().toString()));
-            });
+        equippedEnchantments.forEach(key -> {
+            list.add(NbtString.of(key.getValue().toString()));
         });
         compound.put("enchants", list);
     }
@@ -94,10 +93,12 @@ public class Enchantments implements NbtSerialisable, Tickable {
         equippedEnchantments.clear();
         if (compound.contains("enchants")) {
             compound.getList("enchants", NbtElement.STRING_TYPE).forEach(tag -> {
-                lookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT)
-                    .getOptional(RegistryKey.of(RegistryKeys.ENCHANTMENT, Identifier.of(tag.asString())))
-                    .ifPresent(equippedEnchantments::add);
+                equippedEnchantments.add(RegistryKey.of(RegistryKeys.ENCHANTMENT, Identifier.of(tag.asString())));
             });
         }
+    }
+
+    public static class Data {
+        public float level;
     }
 }

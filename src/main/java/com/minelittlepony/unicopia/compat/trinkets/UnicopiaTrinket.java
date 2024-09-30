@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.entity.ItemTracker;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.WearableItem;
+import com.minelittlepony.unicopia.item.component.Issuer;
 
 import dev.emi.trinkets.api.*;
 import net.minecraft.component.DataComponentTypes;
@@ -66,7 +67,7 @@ public class UnicopiaTrinket implements Trinket {
 
     @Override
     public boolean canEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (item instanceof FriendshipBraceletItem && !FriendshipBraceletItem.isSigned(stack)) {
+        if (item instanceof FriendshipBraceletItem && !Issuer.isSigned(stack)) {
             return false;
         }
 

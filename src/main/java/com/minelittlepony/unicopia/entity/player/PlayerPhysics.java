@@ -23,6 +23,7 @@ import com.minelittlepony.unicopia.input.Heuristic;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.ChargeableItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgPlayerFlightControlsInput;
@@ -37,7 +38,6 @@ import com.minelittlepony.unicopia.util.*;
 
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.*;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
@@ -387,7 +387,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         velocity.z = MathHelper.clamp(velocity.z, -maximum, maximum);
 
         if (!entity.isOnGround()) {
-            float heavyness = 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.009F;
+            float heavyness = 1 + EnchantmentUtil.getLevel(UEnchantments.HEAVY, entity) * 0.009F;
             velocity.x /= heavyness;
             velocity.z /= heavyness;
         }
@@ -650,7 +650,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
             float distance = (float)(motion * 20 - 3);
 
-            float bouncyness = EnchantmentHelper.getEquipmentLevel(UEnchantments.PADDED, entity) * 6;
+            float bouncyness = EnchantmentUtil.getLevel(UEnchantments.PADDED, entity) * 6;
 
             if (distance > 0) {
                 wallHitCooldown = MAX_WALL_HIT_CALLDOWN;
@@ -746,7 +746,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             }
         }
 
-        float heavyness = EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity);
+        float heavyness = EnchantmentUtil.getLevel(UEnchantments.HEAVY, entity);
         float thrustStrength = 0.235F * thrustScale;
 
         if (heavyness > 0) {
@@ -787,7 +787,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             SoundEmitter.playSoundAt(entity, USounds.AMBIENT_WIND_GUST, SoundCategory.AMBIENT, 3, 1);
         }
 
-        float weight = 1 + (EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.8F) + (pony.getCompositeRace().canUseEarth() ? 1 : 0);
+        float weight = 1 + (EnchantmentUtil.getLevel(UEnchantments.HEAVY, entity) * 0.8F) + (pony.getCompositeRace().canUseEarth() ? 1 : 0);
 
         Vec3d airflow = WeatherConditions.getAirflow(entity.getBlockPos(), entity.getWorld())
                 .multiply(0.04F * effectStrength)

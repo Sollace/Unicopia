@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.network.handler;
 
-import java.util.Map;
-
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Rot;
@@ -13,12 +11,10 @@ import com.minelittlepony.unicopia.client.DiscoveryToast;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.minelittlepony.unicopia.client.gui.TribeSelectionScreen;
 import com.minelittlepony.unicopia.client.gui.spellbook.ClientChapters;
-import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Chapter;
 import com.minelittlepony.unicopia.diet.PonyDiets;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.*;
 import com.minelittlepony.unicopia.network.MsgCasterLookRequest.Reply;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,7 +22,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 public class ClientNetworkHandlerImpl {
@@ -77,10 +72,9 @@ public class ClientNetworkHandlerImpl {
         UnicopiaClient.getInstance().setZapAppleStage(packet.stage());
     }
 
-    @SuppressWarnings("unchecked")
     private void handleServerResources(PlayerEntity sender, MsgServerResources packet) {
         SpellTraits.load(packet.traits());
-        ClientChapters.load((Map<Identifier, Chapter>)packet.chapters());
+        ClientChapters.load(packet.chapters());
         TreeTypes.load(packet.treeTypes());
         PonyDiets.load(packet.diets());
     }

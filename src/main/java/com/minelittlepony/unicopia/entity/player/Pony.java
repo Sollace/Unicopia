@@ -913,7 +913,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 PlayerInventory inventory = oldPlayer.asEntity().getInventory();
                 for (int i = 0; i < inventory.size(); i++) {
                     ItemStack stack = inventory.getStack(i);
-                    if (EnchantmentUtil.consumeEnchantment(UEnchantments.HEART_BOUND, 1, stack, entity.getWorld().random, EnchantmentUtil.getLuck(3, oldPlayer.asEntity()))) {
+                    if (EnchantmentUtil.consumeEnchantment(entryFor(UEnchantments.HEART_BOUND), 1, stack, entity.getWorld().random, EnchantmentUtil.getLuck(3, oldPlayer.asEntity()))) {
                         asEntity().getInventory().setStack(i, stack);
                     }
                 }

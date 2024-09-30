@@ -1,10 +1,7 @@
 package com.minelittlepony.unicopia.client.sound;
 
-import java.util.Optional;
-
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.Living;
-import com.minelittlepony.unicopia.item.enchantment.SimpleEnchantment;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 
 import net.minecraft.sound.SoundCategory;
@@ -28,7 +25,7 @@ public class MagicAuraSoundInstance extends FadeOutSoundInstance {
 
     @Override
     protected boolean shouldKeepPlaying() {
-        Optional<SimpleEnchantment.Data> data = living.getEnchants().getOrEmpty(UEnchantments.GEM_FINDER);
+        var data = living.getEnchants().getOrEmpty(UEnchantments.GEM_FINDER);
 
         Vec3d pos = living.getOriginVector();
         x = pos.x;

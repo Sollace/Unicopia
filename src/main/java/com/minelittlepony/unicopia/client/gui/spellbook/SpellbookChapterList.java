@@ -6,6 +6,8 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.unicopia.Debug;
+import com.minelittlepony.unicopia.container.SpellbookChapter;
+
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 
@@ -19,9 +21,7 @@ public class SpellbookChapterList {
     public SpellbookChapterList(SpellbookScreen screen, Chapter craftingChapter, Chapter... builtIn) {
         this.screen = screen;
         this.craftingChapter = craftingChapter;
-        ClientChapters.getChapters().forEach(chapter -> {
-            chapters.put(chapter.id(), chapter);
-        });
+        chapters.putAll(ClientChapters.getChapters());
         chapters.put(craftingChapter.id(), craftingChapter);
         for (Chapter i : builtIn) {
             chapters.put(i.id(), i);
@@ -34,11 +34,13 @@ public class SpellbookChapterList {
 
     public Chapter getCurrentChapter() {
         if (Debug.SPELLBOOK_CHAPTERS) {
-            ClientChapters.getChapters().forEach(chapter -> {
-                Optional.ofNullable(chapters.get(chapter.id())).flatMap(Chapter::content).ifPresent(old -> {
-                    chapter.content().ifPresent(neu -> neu.copyStateFrom(old));
+            ClientChapters.getChapters().forEach((id, chapter) -> {
+                chapters.compute(id, (key, old) -> {
+                    Optional.ofNullable(old).flatMap(Chapter::content).ifPresent(o -> {
+                        chapter.content().ifPresent(neu -> neu.copyStateFrom(o));
+                    });
+                    return chapter;
                 });
-                chapters.put(chapter.id(), chapter);
             });
         }
 
@@ -50,7 +52,7 @@ public class SpellbookChapterList {
         TabSide side,
         int tabY,
         int color,
-        Optional<Content> content) {
+        Optional<Content> content) implements SpellbookChapter {
 
         public static Identifier createIcon(Identifier id, String suffex) {
             return id.withPath(p -> "textures/gui/container/pages/" + p + suffex + ".png");

@@ -39,18 +39,7 @@ public class PonyDiets implements DietView {
             PonyDiets::new
     );
 
-    /*public static final PacketCodec<RegistryByteBuf, PonyDiets> PACKET_CODEC = PacketCodec.ofStatic((buffer, diets) -> {
-        buffer.writeMap(diets.diets, (b, r) -> b.writeRegistryKey(Race.REGISTRY.getKey(r).get()), (b, e) -> e.toBuffer(b));
-        buffer.writeCollection(diets.effects.values(), (b, e) -> e.toBuffer(b));
-    }, buffer -> {
-        return new PonyDiets(
-                buffer.readMap(b -> Race.REGISTRY.get(b.readRegistryKey(Race.REGISTRY_KEY)), DietProfile::new),
-                FoodGroup.PACKET_CODEC.collect(PacketCodecUtils.toMap(FoodGroup::id)).decode(buffer)
-        );
-    });*/
-
     public static PonyDiets getInstance() {
-
         return INSTANCE;
     }
 

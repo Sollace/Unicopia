@@ -1,34 +1,32 @@
 package com.minelittlepony.unicopia.item.enchantment;
 
-import java.util.UUID;
+import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.entity.Enchantments;
 import com.minelittlepony.unicopia.entity.Living;
 
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.util.Identifier;
 import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 
-public class CollaboratorEnchantment extends AttributedEnchantment {
-    private static final UUID TEAM_STRENGTH_UUID = UUID.fromString("5f08c02d-d959-4763-ac84-16e2acfd4b62");
+public class CollaboratorEnchantment {
+    private static final Identifier TEAM_STRENGTH_ID = Unicopia.id("team_strength");
 
-    protected CollaboratorEnchantment(Options options) {
-        super(options);
-        addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, this::getModifier);
+    protected CollaboratorEnchantment() {
+        //addModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, this::getModifier);
     }
 
-    @Override
     protected boolean shouldChangeModifiers(Living<?> user, int level) {
-        return super.shouldChangeModifiers(user, getTeamCollectiveLevel(user, 2 + (level * 2)));
+        return false;//super.shouldChangeModifiers(user, getTeamCollectiveLevel(user, 2 + (level * 2)));
     }
 
     private EntityAttributeModifier getModifier(Living<?> user, int level) {
-        return new EntityAttributeModifier(TEAM_STRENGTH_UUID, "Team Strength", user.getEnchants().computeIfAbsent(this, Data::new).level / 2, Operation.ADD_VALUE);
+        return new EntityAttributeModifier(TEAM_STRENGTH_ID, user.getEnchants().computeIfAbsent(UEnchantments.HERDS, Enchantments.Data::new).level / 2, Operation.ADD_VALUE);
     }
 
-    private int getTeamCollectiveLevel(Living<?> user, int radius) {
+    private static int getTeamCollectiveLevel(Living<?> user, int radius) {
         return user.findAllEntitiesInRange(radius, e -> e instanceof LivingEntity)
-                .mapToInt(e -> EnchantmentHelper.getEquipmentLevel(this, (LivingEntity)e))
+                .mapToInt(e -> EnchantmentUtil.getLevel(UEnchantments.HERDS, (LivingEntity)e))
                 .reduce((a, b) -> a + b)
                 .orElse(0);
     }

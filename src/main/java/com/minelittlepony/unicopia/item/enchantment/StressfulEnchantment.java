@@ -7,13 +7,8 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.mob.HostileEntity;
 
-public class StressfulEnchantment extends SimpleEnchantment {
+public class StressfulEnchantment {
 
-    protected StressfulEnchantment(Options options) {
-        super(options);
-    }
-
-    @Override
     public void onUserTick(Living<?> user, int level) {
         if (user instanceof Pony pony && pony.asEntity().age % 10 == 0) {
             int range = (level + 1) * 3;
@@ -27,7 +22,7 @@ public class StressfulEnchantment extends SimpleEnchantment {
             }
 
             Bar bar = pony.getMagicalReserves().getEnergy();
-            float targetPercent = (level / (float)getMaxLevel()) * 0.05125F;
+            float targetPercent = (level / (float)user.entryFor(UEnchantments.STRESSED).value().definition().maxLevel()) * 0.05125F;
             float increase = 1F + (level * level)/100F;
             if (bar.getPercentFill() < targetPercent) {
                 bar.add(increase);

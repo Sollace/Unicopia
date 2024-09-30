@@ -52,6 +52,12 @@ public interface EnchantmentUtil {
         return (int)MathHelper.clamp(baseline + luckAmplifier + dolphinsGraceAmplifier - unluckAmplifier - badOmenAmplifier, -10, 10);
     }
 
+    static int getLevel(RegistryKey<Enchantment> enchantment, ItemStack stack) {
+        var enchantments = EnchantmentHelper.getEnchantments(stack);
+        return enchantments.getEnchantments().stream()
+                .filter(entry -> entry.matchesKey(enchantment)).map(enchantments::getLevel).findFirst().orElse(0);
+    }
+
     @Deprecated
     static int getLevel(World world, RegistryKey<Enchantment> enchantment, ItemStack stack) {
         return world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(Enchantments.LOOTING).map(entry -> {

@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -25,7 +26,6 @@ import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -125,7 +125,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                 player.fallDistance = 0;
                 BlockPos center = PosHelper.findSolidGroundAt(player.getEntityWorld(), player.getBlockPos(), iplayer.getPhysics().getGravitySignum());
 
-                float heavyness = 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, player);
+                float heavyness = 1 + EnchantmentUtil.getLevel(UEnchantments.HEAVY, player);
 
                 iplayer.asWorld().getOtherEntities(player, areaOfEffect.offset(iplayer.getOriginVector())).forEach(i -> {
                     double dist = Math.sqrt(center.getSquaredDistance(i.getBlockPos()));
@@ -134,7 +134,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                         double inertia = 2 / dist;
 
                         if (i instanceof LivingEntity) {
-                            inertia *= 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, (LivingEntity)i);
+                            inertia *= 1 + EnchantmentUtil.getLevel(UEnchantments.HEAVY, (LivingEntity)i);
                         }
                         inertia /= heavyness;
 
@@ -159,7 +159,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                         }
 
                         if (i instanceof LivingEntity) {
-                            amount /= 1 + (EnchantmentHelper.getEquipmentLevel(UEnchantments.PADDED, (LivingEntity)i) / 6F);
+                            amount /= 1 + (EnchantmentUtil.getLevel(UEnchantments.PADDED, (LivingEntity)i) / 6F);
                         }
 
                         i.damage(iplayer.damageOf(UDamageTypes.SMASH, iplayer), (float)amount);

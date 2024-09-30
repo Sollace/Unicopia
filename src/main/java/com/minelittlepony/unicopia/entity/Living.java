@@ -30,6 +30,7 @@ import com.minelittlepony.unicopia.input.Heuristic;
 import com.minelittlepony.unicopia.input.Interactable;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.DataTrackerManager;
@@ -197,7 +198,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public boolean hasFeatherTouch() {
-        return EnchantmentHelper.getEquipmentLevel(UEnchantments.FEATHER_TOUCH, entity) > 0;
+        return EnchantmentUtil.getLevel(UEnchantments.FEATHER_TOUCH, entity) > 0;
     }
 
     @Override

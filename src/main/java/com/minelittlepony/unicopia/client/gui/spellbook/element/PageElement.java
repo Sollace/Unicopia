@@ -18,6 +18,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 
 public interface PageElement extends Drawable {
     @Override
@@ -47,7 +48,7 @@ public interface PageElement extends Drawable {
             case 0 -> new Image(buffer.readIdentifier(), boundsFromBuffer(buffer), buffer.readEnumConstant(Flow.class));
             case 1 -> new Recipe(page, buffer.readIdentifier(), Bounds.empty());
             case 2 -> new Stack(page, IngredientWithSpell.PACKET_CODEC.decode((RegistryByteBuf)buffer), boundsFromBuffer(buffer));
-            case 3 -> new TextBlock(page, List.of(Suppliers.ofInstance(buffer.readText())));
+            case 3 -> new TextBlock(page, List.of(Suppliers.ofInstance(TextCodecs.PACKET_CODEC.decode(buffer))));
             case 4 -> new TextBlock(page, buffer.readList(b -> {
                 int count = b.readVarInt();
                 byte t = b.readByte();
@@ -55,8 +56,8 @@ public interface PageElement extends Drawable {
                     case 1 -> formatLine(capture(b.readIdentifier(), id -> {
                         return Registries.ITEM.get(id).getDefaultStack().getName();
                     }), "item", count);
-                    case 2 -> formatLine(Trait.fromId(b.readIdentifier()).orElseThrow()::getShortName, "trait", count);
-                    case 3 -> Suppliers.ofInstance(b.readText());
+                    case 2 -> formatLine(Trait.PACKET_CODEC.decode(b)::getShortName, "trait", count);
+                    case 3 -> Suppliers.ofInstance(TextCodecs.PACKET_CODEC.decode(b));
                     case 4 -> formatLine(SpellType.getKey(b.readIdentifier())::getName, "spell", count);
                     default -> throw new IllegalArgumentException("Unexpected value: " + t);
                 };

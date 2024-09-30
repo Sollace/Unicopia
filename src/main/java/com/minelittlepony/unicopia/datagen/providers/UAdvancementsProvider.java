@@ -41,6 +41,7 @@ import net.minecraft.predicate.item.EnchantmentsPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.predicate.item.ItemSubPredicateTypes;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -55,17 +56,17 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
     @Override
     public void generateAdvancement(WrapperLookup registryLookup, Consumer<AdvancementEntry> consumer) {
         AdvancementDisplayBuilder.create(UItems.ALICORN_BADGE).criterion("crafting_table", hasItems(Items.CRAFTING_TABLE)).build(consumer, "root").children(root -> {
-            createTribeRootAdvancement(consumer, root, Race.EARTH).children(consumer, this::generateEarthTribeAdvancementsTree);
-            createTribeRootAdvancement(consumer, root, Race.BAT).children(consumer, this::generateBatTribeAdvancementsTree);
-            createTribeRootAdvancement(consumer, root, Race.PEGASUS).children(consumer, this::generatePegasusTribeAdvancementsTree);
-            createTribeRootAdvancement(consumer, root, Race.UNICORN, Race.ALICORN).children(consumer, this::generateUnicornTribeAdvancementsTree);
-            createTribeRootAdvancement(consumer, root, Race.HIPPOGRIFF, Race.SEAPONY).children(consumer, this::generateHippogrifTribeAdvancementsTree);
+            createTribeRootAdvancement(registryLookup, consumer, root, Race.EARTH).children(consumer, this::generateEarthTribeAdvancementsTree);
+            createTribeRootAdvancement(registryLookup, consumer, root, Race.BAT).children(consumer, this::generateBatTribeAdvancementsTree);
+            createTribeRootAdvancement(registryLookup, consumer, root, Race.PEGASUS).children(consumer, this::generatePegasusTribeAdvancementsTree);
+            createTribeRootAdvancement(registryLookup, consumer, root, Race.UNICORN, Race.ALICORN).children(consumer, this::generateUnicornTribeAdvancementsTree);
+            createTribeRootAdvancement(registryLookup, consumer, root, Race.HIPPOGRIFF, Race.SEAPONY).children(consumer, this::generateHippogrifTribeAdvancementsTree);
         });
 
-        generateEnchantmentsAdvancementsTree(consumer);
+        generateEnchantmentsAdvancementsTree(registryLookup ,consumer);
     }
 
-    private AdvancementDisplayBuilder.Parent createTribeRootAdvancement(Consumer<AdvancementEntry> consumer, AdvancementDisplayBuilder.Parent root, Race race, Race...extra) {
+    private AdvancementDisplayBuilder.Parent createTribeRootAdvancement(WrapperLookup registryLookup, Consumer<AdvancementEntry> consumer, AdvancementDisplayBuilder.Parent root, Race race, Race...extra) {
         AdvancementDisplayBuilder builder = root.child(Registries.ITEM.get(race.getId().withSuffixedPath("_badge"))).showToast().announce().group(race.getId().getPath())
                 .criterion("be_" + race.getId().getPath(), UCriteria.PLAYER_CHANGE_RACE.create(new RaceChangeCriterion.Conditions(Optional.empty(), race)));
 
@@ -198,9 +199,10 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
               .child(UItems.PEARL_NECKLACE).showToast().announce().criterion("seapony_transition", UCriteria.CUSTOM_EVENT.create(new CustomEventCriterion.Conditions(Optional.empty(), "seapony_transition", RacePredicate.of(Set.of(), Set.of(Race.SEAPONY)), TriState.DEFAULT, 1))).build(consumer, "shoo_be_done");
     }
 
-    private void generateEnchantmentsAdvancementsTree(Consumer<AdvancementEntry> consumer) {
+    private void generateEnchantmentsAdvancementsTree(WrapperLookup registryLookup, Consumer<AdvancementEntry> consumer) {
+        var enchantments = registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
         AdvancementDisplayBuilder.create(Items.NETHERITE_SCRAP).showToast().announce()
-            .criterion("enchant_with_consumption", enchant(UEnchantments.CONSUMPTION))
+            .criterion("enchant_with_consumption", enchant(enchantments.getOrThrow(UEnchantments.CONSUMPTION)))
             .rewards(AdvancementRewards.Builder.experience(120))
             .parent(Identifier.ofVanilla("story/enchant_item"))
             .group("enchanting")
@@ -212,7 +214,7 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
                 .hidden()
                 .build(consumer, "xp_miner");
         AdvancementDisplayBuilder.create(Items.GOLDEN_APPLE).showToast().announce()
-            .criterion("enchant_with_heart_bound", enchant(UEnchantments.HEART_BOUND))
+            .criterion("enchant_with_heart_bound", enchant(enchantments.getOrThrow(UEnchantments.HEART_BOUND)))
             .rewards(AdvancementRewards.Builder.experience(120))
             .parent(Identifier.ofVanilla("story/enchant_item"))
             .group("enchanting")

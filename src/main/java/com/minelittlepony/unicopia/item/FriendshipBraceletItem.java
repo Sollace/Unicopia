@@ -41,7 +41,7 @@ public class FriendshipBraceletItem extends WearableItem {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        if (!isSigned(stack) && (
+        if (!Issuer.isSigned(stack) && (
                    EquinePredicates.PLAYER_UNICORN.test(player)
                 || EquinePredicates.RACE_CAN_INFLUENCE_WEATHER.test(player)
                 || AmuletSelectors.PEARL_NECKLACE.test(player)

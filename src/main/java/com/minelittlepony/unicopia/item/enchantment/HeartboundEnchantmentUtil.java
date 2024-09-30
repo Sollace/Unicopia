@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.item.enchantment;
 
 import java.util.List;
 
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
@@ -15,8 +14,8 @@ public interface HeartboundEnchantmentUtil {
             var original = combinedInventory.get(group);
             for (int i = 0; i < original.size(); i++) {
                 ItemStack stack = original.get(i);
-                if (EnchantmentHelper.getLevel(Enchantments.BINDING_CURSE, stack) == 0
-                    && EnchantmentHelper.getLevel(UEnchantments.HEART_BOUND, stack) > 0) {
+                if (EnchantmentUtil.getLevel(Enchantments.BINDING_CURSE, stack) == 0
+                    && EnchantmentUtil.getLevel(UEnchantments.HEART_BOUND, stack) > 0) {
                     original.set(i, ItemStack.EMPTY);
                     storedCombinedInventory.get(group).set(i, stack);
                     empty = false;

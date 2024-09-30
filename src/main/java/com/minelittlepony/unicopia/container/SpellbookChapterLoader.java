@@ -44,7 +44,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
     public static final SpellbookChapterLoader INSTANCE = new SpellbookChapterLoader();
 
     private boolean dirty;
-    private Map<Identifier, Chapter> chapters = new HashMap<>();
+    private Map<Identifier, SpellbookChapter> chapters = new HashMap<>();
 
     public SpellbookChapterLoader() {
         super(Resources.GSON, ID.getPath());
@@ -55,17 +55,14 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
         return ID;
     }
 
-    public Map<Identifier, Chapter> getChapters() {
+    public Map<Identifier, SpellbookChapter> getChapters() {
         return chapters;
     }
 
     public void sendUpdate(MinecraftServer server) {
         if (dirty) {
             dirty = false;
-            MsgServerResources msg = new MsgServerResources();
-            server.getWorlds().forEach(world -> {
-                Channel.SERVER_RESOURCES.sendToAllPlayers(msg, world);
-            });
+            Channel.SERVER_RESOURCES.sendToAllPlayers(new MsgServerResources(), server);
         }
     }
 
@@ -104,7 +101,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
         TabSide side,
         int tabY,
         int color,
-        List<Page> pages) {
+        List<Page> pages) implements SpellbookChapter {
         @Deprecated
         public Chapter(Identifier id, JsonObject json) {
             this(id,

@@ -6,19 +6,13 @@ import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 
-public class WantItNeedItEnchantment extends SimpleEnchantment {
+public class WantItNeedItEnchantment {
 
-    protected WantItNeedItEnchantment(Options options) {
-        super(options);
-    }
-
-    @Override
     public void onUserTick(Living<?> user, int level) {
         if (user instanceof Creature && user.asWorld().random.nextInt(10) == 0) {
             ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, user.asEntity(), 0.2F), user.asEntity(), 1);
@@ -26,8 +20,8 @@ public class WantItNeedItEnchantment extends SimpleEnchantment {
     }
 
     public static boolean prefersEquipment(ItemStack newStack, ItemStack oldStack) {
-        int newLevel = EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, newStack);
-        int oldLevel = EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, oldStack);
+        int newLevel = EnchantmentUtil.getLevel(UEnchantments.WANT_IT_NEED_IT, newStack);
+        int oldLevel = EnchantmentUtil.getLevel(UEnchantments.WANT_IT_NEED_IT, oldStack);
         return newLevel > oldLevel;
     }
 
@@ -38,12 +32,12 @@ public class WantItNeedItEnchantment extends SimpleEnchantment {
     }
 
     public static int getLevel(ItemEntity entity) {
-        return EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, entity.getStack());
+        return EnchantmentUtil.getLevel(UEnchantments.WANT_IT_NEED_IT, entity.getStack());
     }
 
     public static int getLevel(LivingEntity entity) {
-        return EnchantmentHelper.getEquipmentLevel(UEnchantments.WANT_IT_NEED_IT, entity)
-                + EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, entity.getOffHandStack())
-                + EnchantmentHelper.getLevel(UEnchantments.WANT_IT_NEED_IT, entity.getMainHandStack());
+        return EnchantmentUtil.getLevel(UEnchantments.WANT_IT_NEED_IT, entity)
+                + EnchantmentUtil.getLevel(UEnchantments.WANT_IT_NEED_IT, entity.getOffHandStack())
+                + EnchantmentUtil.getLevel(UEnchantments.WANT_IT_NEED_IT, entity.getMainHandStack());
     }
 }

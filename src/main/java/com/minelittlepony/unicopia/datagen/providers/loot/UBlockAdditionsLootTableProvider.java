@@ -60,7 +60,7 @@ public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvid
 
     public LootCondition.Builder createWithGemFinderCondition() {
         return MatchToolLootCondition.builder(ItemPredicate.Builder.create().subPredicate(ItemSubPredicateTypes.ENCHANTMENTS, EnchantmentsPredicate.enchantments(List.of(
-            new EnchantmentPredicate(UEnchantments.GEM_FINDER, NumberRange.IntRange.atLeast(1))
+            new EnchantmentPredicate(entryOf(UEnchantments.GEM_FINDER), NumberRange.IntRange.atLeast(1))
         ))));
     }
 

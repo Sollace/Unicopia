@@ -17,6 +17,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextCodecs;
 import net.minecraft.util.*;
 
 public class DynamicContent implements Content {
@@ -102,7 +103,7 @@ public class DynamicContent implements Content {
         private Bounds bounds = Bounds.empty();
 
         public Page(PacketByteBuf buffer) {
-            title = buffer.readText();
+            title = TextCodecs.PACKET_CODEC.decode(buffer);
             level = buffer.readInt();
             color = buffer.readInt();
             elements = buffer.readList(r -> PageElement.read(this, r));
