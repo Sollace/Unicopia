@@ -15,7 +15,7 @@ abstract class MixinItemModels {
             index = 1)
     private ItemStack modifyStack(ItemStack stack) {
         if (stack.getItem() instanceof ChameleonItem && ((ChameleonItem)stack.getItem()).isFullyDisguised()) {
-            return ((ChameleonItem)stack.getItem()).getAppearanceStack(stack);
+            return ChameleonItem.getAppearanceStack(stack);
         }
         return stack;
     }

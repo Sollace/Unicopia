@@ -12,11 +12,14 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.HoeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolMaterials;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundCategory;
@@ -51,11 +54,11 @@ public class ForageableItem extends Item {
                 world.playSound(player, pos, state.getSoundGroup().getHitSound(), SoundCategory.BLOCKS);
                 InteractionManager.getInstance().addBlockBreakingParticles(pos, hitResult.getSide());
 
-                int miningLevel = (stack.getItem() instanceof HoeItem hoe ? hoe.getMaterial().getMiningLevel() : 59);
+                float foragingChance = getForagingChance(stack);
 
                 for (ForageableItem item : REGISTRY) {
-                    if ((result = item.onTryForage(world, pos, state, stack, player, miningLevel)).isAccepted()) {
-                        stack.damage(1, player, p -> p.sendToolBreakStatus(hand));
+                    if ((result = item.onTryForage(world, pos, state, stack, player, foragingChance)).isAccepted()) {
+                        stack.damage(1, player, LivingEntity.getSlotForHand(hand));
                         return result;
                     }
                 }
@@ -73,21 +76,39 @@ public class ForageableItem extends Item {
         REGISTRY.add(this);
     }
 
-    public ActionResult onTryForage(World world, BlockPos pos, BlockState state, ItemStack stack, PlayerEntity player, int miningLevel) {
-        if (state.isOf(targetBlock.get())) {
-            int spawnChance = (int)((1F - MathHelper.clamp(miningLevel / (float)ToolMaterials.NETHERITE.getMiningLevel(), 0, 1)) * 32);
-            spawnChance -= EnchantmentUtil.getLuck(1, player);
-
-            if (spawnChance <= 0 || world.random.nextInt(spawnChance) == 0) {
-                Block.dropStack(world, pos, new ItemStack(this, 1 + EnchantmentHelper.getLooting(player)));
-                world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
-                if (BlockDestructionManager.of(world).damageBlock(pos, world.getRandom().nextBetween(3, 7)) >= BlockDestructionManager.MAX_DAMAGE) {
-                    world.breakBlock(pos, true);
-                }
-                return ActionResult.SUCCESS;
-            }
-            return ActionResult.FAIL;
+    public ActionResult onTryForage(World world, BlockPos pos, BlockState state, ItemStack stack, PlayerEntity player, float spawnChance) {
+        if (!state.isOf(targetBlock.get())) {
+            return ActionResult.PASS;
         }
-        return ActionResult.PASS;
+
+        spawnChance -= EnchantmentUtil.getLuck(1, player);
+
+        if (spawnChance <= 0 || world.random.nextInt((int)(spawnChance * 32)) == 0) {
+            Block.dropStack(world, pos, new ItemStack(this, 1 + EnchantmentHelper.getEquipmentLevel(player.getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(Enchantments.LOOTING).get(), player)));
+            world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
+            if (BlockDestructionManager.of(world).damageBlock(pos, world.getRandom().nextBetween(3, 7)) >= BlockDestructionManager.MAX_DAMAGE) {
+                world.breakBlock(pos, true);
+            }
+            return ActionResult.SUCCESS;
+        }
+        return ActionResult.FAIL;
+    }
+
+    static float getForagingChance(ItemStack stack) {
+        if (!(stack.getItem() instanceof HoeItem hoe)) {
+            return 0.25F;
+        }
+
+        float spawnChance = hoe.getMaterial() instanceof ToolMaterials m ? switch(m) {
+                case WOOD -> 0.25F;
+                case STONE -> 0.3F;
+                case IRON -> 0.4F;
+                case GOLD -> 0.6F;
+                case DIAMOND -> 0.7F;
+                case NETHERITE -> 0.8F;
+                default -> 0.25F;
+        } : MathHelper.clamp(hoe.getMaterial().getMiningSpeedMultiplier(), 0, 1);
+
+        return 1F - spawnChance;
     }
 }

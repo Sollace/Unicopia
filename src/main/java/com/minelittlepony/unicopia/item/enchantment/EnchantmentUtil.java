@@ -7,13 +7,17 @@ import com.minelittlepony.unicopia.entity.Living;
 import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 
 public interface EnchantmentUtil {
     String HEART_BOUND_CONSUMED_FLAG = "unicopia:heart_bound_consumed";
@@ -48,10 +52,21 @@ public interface EnchantmentUtil {
         return (int)MathHelper.clamp(baseline + luckAmplifier + dolphinsGraceAmplifier - unluckAmplifier - badOmenAmplifier, -10, 10);
     }
 
+    @Deprecated
+    static int getLevel(World world, RegistryKey<Enchantment> enchantment, ItemStack stack) {
+        return world.getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(Enchantments.LOOTING).map(entry -> {
+            return EnchantmentHelper.getLevel(entry, stack);
+        }).orElse(0);
+    }
+
+    @Deprecated
+    static int getLevel(RegistryKey<Enchantment> enchantment, LivingEntity entity) {
+        return entity.getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(Enchantments.LOOTING).map(entry -> {
+            return EnchantmentHelper.getEquipmentLevel(entry, entity);
+        }).orElse(0);
+    }
+
     static int getEffectAmplifier(LivingEntity entity, RegistryEntry<StatusEffect> effect) {
-        if (!entity.hasStatusEffect(effect)) {
-            return 0;
-        }
-        return entity.getStatusEffect(effect).getAmplifier();
+        return entity.hasStatusEffect(effect) ? entity.getStatusEffect(effect).getAmplifier() : 0;
     }
 }

@@ -10,12 +10,12 @@ import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 
 public interface EnchantableItem extends ItemConvertible {
@@ -63,7 +63,7 @@ public interface EnchantableItem extends ItemConvertible {
     }
 
     static boolean isEnchanted(ItemStack stack) {
-        return !stack.isEmpty() && stack.hasNbt() && stack.getNbt().contains("spell");
+        return !getSpellKey(stack).isEmpty();
     }
 
     static ItemStack enchant(ItemStack stack, SpellType<?> type) {
@@ -74,21 +74,23 @@ public interface EnchantableItem extends ItemConvertible {
         if (type.isEmpty()) {
             return unenchant(stack);
         }
-        stack.getOrCreateNbt().putString("spell", type.getId().toString());
+        stack.set(UDataComponentTypes.STORED_SPELL, type);
         return type.getTraits().applyTo(stack);
     }
 
     static ItemStack unenchant(ItemStack stack) {
-        stack.removeSubNbt("spell");
-        stack.removeSubNbt("spell_traits");
+        stack.remove(UDataComponentTypes.STORED_SPELL);
+        stack.remove(UDataComponentTypes.SPELL_TRAITS);
         return stack;
     }
 
     static Optional<SpellType<?>> getSpellKeyOrEmpty(ItemStack stack) {
-        return isEnchanted(stack) ? SpellType.REGISTRY.getOrEmpty(new Identifier(stack.getNbt().getString("spell"))) : Optional.empty();
+        SpellType<?> type = getSpellKey(stack);
+        return type.isEmpty() ? Optional.empty() : Optional.of(type);
     }
 
+    @SuppressWarnings("unchecked")
     static <T extends Spell> SpellType<T> getSpellKey(ItemStack stack) {
-        return SpellType.getKey(isEnchanted(stack) ? new Identifier(stack.getNbt().getString("spell")) : SpellType.EMPTY_ID);
+        return (SpellType<T>)stack.getOrDefault(UDataComponentTypes.STORED_SPELL, SpellType.empty());
     }
 }

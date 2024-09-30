@@ -12,13 +12,14 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 
 import net.minecraft.block.Block;
-import net.minecraft.enchantment.Enchantment;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.EnchantmentTags;
 import net.minecraft.world.World;
 
 public class CuringJokeItem extends BlockItem {
@@ -84,15 +85,14 @@ public class CuringJokeItem extends BlockItem {
 
     static boolean uncurseItem(LivingEntity user) {
         return getInventory(user)
-                .filter(s -> EnchantmentHelper.get(s).keySet().stream().anyMatch(Enchantment::isCursed))
-                .findAny()
                 .filter(s -> {
-                    var enchantments = EnchantmentHelper.get(s);
-                    return enchantments.keySet().stream().filter(Enchantment::isCursed).findAny().filter(e -> {
-                        enchantments.remove(e);
-                        EnchantmentHelper.set(enchantments, s);
-                        return true;
-                    }).isPresent();
+                    var enchantments = s.get(DataComponentTypes.ENCHANTMENTS);
+                    return enchantments != null && enchantments.getEnchantments().stream().anyMatch(entry -> entry.isIn(EnchantmentTags.CURSE));
+                })
+                .findAny()
+                .map(s -> {
+                    EnchantmentHelper.apply(s, builder -> builder.remove(entry -> entry.isIn(EnchantmentTags.CURSE)));
+                    return s;
                 }).isPresent();
     }
 

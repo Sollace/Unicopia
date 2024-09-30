@@ -12,10 +12,14 @@ import com.minelittlepony.unicopia.WeaklyOwned;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
+
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -28,9 +32,11 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
@@ -220,6 +226,17 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
             }
 
             forEachDelegates(effect -> effect.onImpact(this, hit), ProjectileDelegate.EntityHitListener.PREDICATE);
+        }
+    }
+
+    public void knockback(LivingEntity target, DamageSource source, ItemStack weapon) {
+        double d = weapon != null && getWorld() instanceof ServerWorld serverWorld ? EnchantmentHelper.modifyKnockback(serverWorld, weapon, target, source, 0) : 0;
+        if (d > 0) {
+            double e = Math.max(0, 1 - target.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
+            Vec3d vec3d = this.getVelocity().multiply(1, 0, 1).normalize().multiply(d * 0.6 * e);
+            if (vec3d.lengthSquared() > 0) {
+                target.addVelocity(vec3d.x, 0.1, vec3d.z);
+            }
         }
     }
 

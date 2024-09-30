@@ -12,7 +12,7 @@ public interface ChameleonItem {
         return true;
     }
 
-    default ItemStack getAppearanceStack(ItemStack stack) {
+    static ItemStack getAppearanceStack(ItemStack stack) {
         Item appearance = getAppearance(stack);
         if (appearance != Items.AIR) {
             return createAppearanceStack(stack, appearance);
@@ -20,7 +20,7 @@ public interface ChameleonItem {
         return stack;
     }
 
-    default ItemStack createAppearanceStack(ItemStack stack, Item appearance) {
+    static ItemStack createAppearanceStack(ItemStack stack, Item appearance) {
         ItemStack newAppearance = appearance.getDefaultStack();
         if (stack.hasNbt()) {
             newAppearance.setNbt(stack.getNbt().copy());
@@ -30,11 +30,11 @@ public interface ChameleonItem {
         return newAppearance;
     }
 
-    default boolean hasAppearance(ItemStack stack) {
+    static boolean hasAppearance(ItemStack stack) {
         return getAppearance(stack) != Items.AIR;
     }
 
-    default Item getAppearance(ItemStack stack) {
+    static Item getAppearance(ItemStack stack) {
         if (stack.hasNbt() && stack.getNbt().contains("appearance")) {
             return Registries.ITEM.get(new Identifier(stack.getNbt().getString("appearance")));
         }
@@ -42,7 +42,7 @@ public interface ChameleonItem {
         return Items.AIR;
     }
 
-    default ItemStack setAppearance(ItemStack stack, ItemStack appearance) {
+    static ItemStack setAppearance(ItemStack stack, ItemStack appearance) {
         ItemStack result = stack.copy();
 
         if (appearance.hasNbt()) {

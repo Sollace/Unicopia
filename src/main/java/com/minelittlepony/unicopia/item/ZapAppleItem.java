@@ -37,7 +37,7 @@ import net.minecraft.world.event.GameEvent;
 
 public class ZapAppleItem extends Item implements ChameleonItem, MultiItem {
     public ZapAppleItem(Settings settings) {
-        super(settings);
+        super(settings.rarity(Rarity.RARE));
     }
 
     @Override
@@ -105,20 +105,18 @@ public class ZapAppleItem extends Item implements ChameleonItem, MultiItem {
                 .stream()
                 .flatMap(world -> RegistryUtils.valuesForTag(world, UConventionalTags.Items.APPLES))
                 .filter(a -> a != this).map(item -> {
-            ItemStack stack = new ItemStack(this);
-            stack.getOrCreateNbt().putString("appearance", Registries.ITEM.getId(item).toString());
-            return stack;
+            return ChameleonItem.setAppearance(getDefaultStack(), item.getDefaultStack());
         }).toList();
     }
 
     @Override
     public Text getName(ItemStack stack) {
-        return hasAppearance(stack) ? getAppearanceStack(stack).getName() : super.getName(stack);
+        return ChameleonItem.hasAppearance(stack) ? ChameleonItem.getAppearanceStack(stack).getName() : super.getName(stack);
     }
 
     @Override
     public Rarity getRarity(ItemStack stack) {
-        if (hasAppearance(stack)) {
+        if (ChameleonItem.hasAppearance(stack)) {
             return Rarity.EPIC;
         }
 

@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -72,8 +73,8 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
         }
 
         if (world instanceof ServerWorld serverWorld) {
-
-            FloatingArtefactEntity entity = UEntities.FLOATING_ARTEFACT.create(serverWorld, context.getStack().getNbt(), null, blockPos, SpawnReason.SPAWN_EGG, false, true);
+            Consumer<FloatingArtefactEntity> consumer = EntityType.copier(serverWorld, context.getStack(), context.getPlayer());
+            FloatingArtefactEntity entity = UEntities.FLOATING_ARTEFACT.create(serverWorld, consumer, blockPos, SpawnReason.SPAWN_EGG, false, true);
 
             if (entity == null) {
                 return ActionResult.FAIL;

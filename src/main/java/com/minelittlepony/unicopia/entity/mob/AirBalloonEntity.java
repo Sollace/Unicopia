@@ -14,6 +14,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryKey;
@@ -22,7 +23,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
@@ -37,7 +37,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -56,8 +55,12 @@ import com.minelittlepony.unicopia.entity.collision.MultiBox;
 import com.minelittlepony.unicopia.item.BasketItem;
 import com.minelittlepony.unicopia.item.HotAirBalloonItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
+import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
 import com.terraformersmc.terraform.boat.api.TerraformBoatType;
+
+import io.netty.buffer.ByteBuf;
 
 public class AirBalloonEntity extends MobEntity implements EntityCollisions.ComplexCollidable, MultiBoundingBoxEntity, MagicImmune, EquineContext {
     private static final TrackedData<Boolean> ASCENDING = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -375,7 +378,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             if (!player.isSneaky()) {
                 getWorld().emitGameEvent(player, GameEvent.EQUIP, getBlockPos());
             }
-            setDesign(HotAirBalloonItem.getDesign(getWorld(), stack));
+            setDesign(AirBalloonEntity.BalloonDesign.of(getWorld(), stack));
             if (hasBurner() && hasBalloon()) {
                 UCriteria.CONSTRUCT_BALLOON.trigger(player);
             }
@@ -792,8 +795,9 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         STORM,
         TALE;
 
+        private static final BalloonDesign[] VALUES = values();
         public static final EnumCodec<BalloonDesign> CODEC = StringIdentifiable.createCodec(BalloonDesign::values);
-        private static final IntFunction<BalloonDesign> BY_ID = ValueLists.<BalloonDesign>createIdToValueFunction(Enum::ordinal, values(), ValueLists.OutOfBoundsHandling.ZERO);
+        public static final PacketCodec<ByteBuf, BalloonDesign> PACKET_CODEC = PacketCodecUtils.ofEnum(BalloonDesign.class);
 
         private final String name = name().toLowerCase(Locale.ROOT);
 
@@ -802,8 +806,16 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             return name;
         }
 
+        public static AirBalloonEntity.BalloonDesign of(World world, ItemStack stack) {
+            AirBalloonEntity.BalloonDesign design = stack.getOrDefault(UDataComponentTypes.BALLOON_DESIGN, NONE);
+            if (design == NONE) {
+                return VALUES[1 + world.getRandom().nextInt(VALUES.length - 1)];
+            }
+            return design;
+        }
+
         public static BalloonDesign getType(int type) {
-            return BY_ID.apply(type);
+            return VALUES[Math.abs(type) % VALUES.length];
         }
 
         public static BalloonDesign getType(String name) {

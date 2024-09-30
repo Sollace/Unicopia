@@ -177,7 +177,7 @@ public interface UItems {
     Item BAMBOO_BASKET = register("bamboo_basket", new BasketItem(AirBalloonEntity.BasketType.of(BoatEntity.Type.BAMBOO), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
     Item PALM_BASKET = register("palm_basket", new BasketItem(AirBalloonEntity.BasketType.of(UWoodTypes.PALM_BOAT_TYPE), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
 
-    Item GIANT_BALLOON = register("giant_balloon", new HotAirBalloonItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
+    Item GIANT_BALLOON = register("giant_balloon", new Item(new Item.Settings().maxCount(1).component(UDataComponentTypes.BALLOON_DESIGN, AirBalloonEntity.BalloonDesign.NONE)), ItemGroups.TOOLS);
     Item SPECTRAL_CLOCK = register("spectral_clock", new Item(new Item.Settings()), ItemGroups.TOOLS);
 
     Item WHITE_BED_SHEETS = register(CloudBedBlock.SheetPattern.WHITE);

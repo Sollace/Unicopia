@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
@@ -226,7 +224,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
 
     @Override
     public void onDischarge(ItemStack stack) {
-        if ((stack.hasNbt() && stack.getNbt().contains("energy") ? stack.getNbt().getFloat("energy") : 0) == 0) {
+        if (ChargeableItem.getEnergy(stack) == 0) {
             EnchantableItem.unenchant(stack);
         }
     }
