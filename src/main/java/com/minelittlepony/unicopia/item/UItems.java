@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.item;
 
-import com.google.common.collect.ImmutableMultimap;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.block.FancyBedBlock.SheetPattern;
 import com.minelittlepony.unicopia.block.UBlocks;
@@ -19,6 +18,9 @@ import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
 import com.terraformersmc.terraform.boat.api.item.TerraformBoatItemHelper;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.block.jukebox.JukeboxSong;
+import net.minecraft.component.type.AttributeModifierSlot;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.component.type.FoodComponents;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -27,7 +29,6 @@ import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
 import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
 import net.fabricmc.fabric.api.registry.FuelRegistry;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.UseAction;
 import net.minecraft.registry.Registry;
@@ -45,10 +46,10 @@ public interface UItems {
     Item ROTTEN_APPLE = register("rotten_apple", new RottenAppleItem(new Item.Settings().food(FoodComponents.APPLE)), ItemGroups.FOOD_AND_DRINK);
     Item COOKED_ZAP_APPLE = register("cooked_zap_apple", new Item(new Item.Settings().food(FoodComponents.APPLE)), ItemGroups.FOOD_AND_DRINK);
 
-    Item MUSIC_DISC_CRUSADE = register("music_disc_crusade", USounds.RECORD_CRUSADE, 181);
-    Item MUSIC_DISC_PET = register("music_disc_pet", USounds.RECORD_PET, 221);
-    Item MUSIC_DISC_POPULAR = register("music_disc_popular", USounds.RECORD_POPULAR, 112);
-    Item MUSIC_DISC_FUNK = register("music_disc_funk", USounds.RECORD_FUNK, 91);
+    Item MUSIC_DISC_CRUSADE = register("music_disc_crusade", UJukeboxSongs.CRUSADE);
+    Item MUSIC_DISC_PET = register("music_disc_pet", UJukeboxSongs.PET);
+    Item MUSIC_DISC_POPULAR = register("music_disc_popular", UJukeboxSongs.POPULAR);
+    Item MUSIC_DISC_FUNK = register("music_disc_funk", UJukeboxSongs.FUNK);
 
     FriendshipBraceletItem FRIENDSHIP_BRACELET = register("friendship_bracelet", new FriendshipBraceletItem(new Item.Settings().rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
 
@@ -81,7 +82,7 @@ public interface UItems {
     Item OATMEAL_COOKIE = register("oatmeal_cookie", new Item(new Item.Settings().food(UFoodComponents.OATMEAL_COOKIE)), ItemGroups.FOOD_AND_DRINK);
     Item CHOCOLATE_OATMEAL_COOKIE = register("chocolate_oatmeal_cookie", new Item(new Item.Settings().food(UFoodComponents.CHOCOLATE_OATMEAL_COOKIE)), ItemGroups.FOOD_AND_DRINK);
     Item PINECONE_COOKIE = register("pinecone_cookie", new Item(new Item.Settings().food(FoodComponents.COOKIE)), ItemGroups.FOOD_AND_DRINK);
-    Item BOWL_OF_NUTS = register("bowl_of_nuts", new StewItem(new Item.Settings().food(UFoodComponents.NUT_BOWL).recipeRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
+    Item BOWL_OF_NUTS = register("bowl_of_nuts", new Item(new Item.Settings().food(UFoodComponents.NUT_BOWL).recipeRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
     Item SCONE = register("scone", new MuffinItem(new Item.Settings().maxCount(32).food(UFoodComponents.SCONE), 0), ItemGroups.FOOD_AND_DRINK);
 
     Item DAFFODIL_DAISY_SANDWICH = register("daffodil_daisy_sandwich", new Item(new Item.Settings().food(UFoodComponents.DAFODIL_DAISY_SANDWICH)), ItemGroups.FOOD_AND_DRINK);
@@ -106,13 +107,13 @@ public interface UItems {
 
     Item PEBBLES = register("pebbles", new AliasedBlockItem(UBlocks.ROCKS, new Item.Settings()), ItemGroups.NATURAL);
     Item ROCK = register("rock", new HeavyProjectileItem(new Item.Settings(), 3), ItemGroups.NATURAL);
-    Item WEIRD_ROCK = register("weird_rock", new BluntWeaponItem(new Item.Settings(), ImmutableMultimap.of(
-            EntityAttributes.GENERIC_LUCK, new EntityAttributeModifier(BluntWeaponItem.LUCK_MODIFIER_ID, "Weapon modifier", 9, EntityAttributeModifier.Operation.ADD_VALUE)
-    )), ItemGroups.NATURAL);
-    Item TOM = register("tom", new BluntWeaponItem(new Item.Settings(), ImmutableMultimap.of(
-            EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, new EntityAttributeModifier(BluntWeaponItem.KNOCKBACK_MODIFIER_ID, "Weapon modifier", 0.9, EntityAttributeModifier.Operation.ADD_VALUE)
-    )), ItemGroups.NATURAL);
-    Item ROCK_STEW = register("rock_stew", new StewItem(new Item.Settings().food(FoodComponents.MUSHROOM_STEW).maxCount(1).recipeRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
+    Item WEIRD_ROCK = register("weird_rock", new Item(new Item.Settings().attributeModifiers(AttributeModifiersComponent.builder()
+            .add(EntityAttributes.GENERIC_LUCK, new EntityAttributeModifier(UItemModifierIds.LUCK_MODIFIER_ID, 9, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND)
+            .build())), ItemGroups.NATURAL);
+    Item TOM = register("tom", new Item(new Item.Settings().attributeModifiers(AttributeModifiersComponent.builder()
+            .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, new EntityAttributeModifier(UItemModifierIds.KNOCKBACK_MODIFIER_ID, 0.9, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND)
+            .build())), ItemGroups.NATURAL);
+    Item ROCK_STEW = register("rock_stew", new Item(new Item.Settings().food(FoodComponents.MUSHROOM_STEW).maxCount(1).recipeRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
     Item ROCK_CANDY = register("rock_candy", new Item(new Item.Settings().food(UFoodComponents.CANDY).maxCount(16)), ItemGroups.FOOD_AND_DRINK);
     Item SALT_CUBE = register("salt_cube", new Item(new Item.Settings().food(UFoodComponents.SALT_CUBE)), ItemGroups.FOOD_AND_DRINK);
 
@@ -267,11 +268,12 @@ public interface UItems {
         return ItemGroupRegistry.register(Unicopia.id(name), item);
     }
 
-    static MusicDiscItem register(String name, SoundEvent sound, int seconds) {
-        return register(name, new MusicDiscItem(1, sound, new Settings()
+    static Item register(String name, RegistryKey<JukeboxSong> song) {
+        return register(name, new Item(new Settings()
+                .jukeboxPlayable(song)
                 .maxCount(1)
-                .rarity(Rarity.RARE), seconds
-            ) {}, ItemGroups.TOOLS);
+                .rarity(Rarity.RARE)
+            ), ItemGroups.TOOLS);
     }
 
     static Item register(Race race) {

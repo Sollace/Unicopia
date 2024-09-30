@@ -4,6 +4,7 @@ import net.minecraft.component.type.FoodComponent;
 import net.minecraft.component.type.FoodComponents;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.item.Items;
 
 public interface UFoodComponents {
     FoodComponent OATS = builder(1, 0.7F).build();
@@ -12,6 +13,7 @@ public interface UFoodComponents {
             .statusEffect(new StatusEffectInstance(StatusEffects.HEALTH_BOOST, 1200, 1), 1)
             .statusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 1200, 1), 0.3F)
             .statusEffect(new StatusEffectInstance(StatusEffects.SPEED, 1200, 1), 0.2F)
+            .usingConvertsTo(Items.BOWL)
             .build();
     FoodComponent DAFODIL_DAISY_SANDWICH = builder(3, 1.4F).build();
     FoodComponent BURGER = builder(7, 1.4F).build();
@@ -24,7 +26,7 @@ public interface UFoodComponents {
     FoodComponent JUICE = builder(2, 1.8F).alwaysEdible().build();
     FoodComponent BURNED_JUICE = builder(3, 1).build();
 
-    FoodComponent NUT_BOWL = FoodComponents.BAKED_POTATO; //builder(4, 0.6F).build();
+    FoodComponent NUT_BOWL = builder(5, 0.6F).usingConvertsTo(Items.BOWL).build();//FoodComponents.BAKED_POTATO;
 
     FoodComponent OATMEAL_COOKIE = FoodComponents.COOKIE; //builder(2, 0.1F).build();
     FoodComponent CHOCOLATE_OATMEAL_COOKIE = builder(3, 0.4F).build();

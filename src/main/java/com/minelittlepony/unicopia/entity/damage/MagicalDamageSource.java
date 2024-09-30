@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -60,11 +61,11 @@ public class MagicalDamageSource extends DamageSource {
         if (attacker == target) {
             basic += ".self";
 
-            if (!item.isEmpty() && item.hasCustomName()) {
+            if (!item.isEmpty() && item.contains(DataComponentTypes.CUSTOM_NAME)) {
                 basic += ".item";
                 params.add(item.toHoverableText());
             }
-        } else if (!item.isEmpty() && item.hasCustomName()) {
+        } else if (!item.isEmpty() && item.contains(DataComponentTypes.CUSTOM_NAME)) {
             basic += ".item";
             params.add(attacker.getDisplayName());
             params.add(item.toHoverableText());

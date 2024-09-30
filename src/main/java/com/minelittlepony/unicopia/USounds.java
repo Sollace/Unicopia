@@ -148,14 +148,19 @@ public interface USounds {
     SoundEvent GUI_SPELL_CRAFT_SUCCESS = register("gui.spellcraft.success");
     RegistryEntry.Reference<SoundEvent> GUI_SPELL_EQUIP = UI_BUTTON_CLICK;
 
-    SoundEvent RECORD_CRUSADE = register("music_disc.crusade");
-    SoundEvent RECORD_PET = register("music_disc.pet");
-    SoundEvent RECORD_POPULAR = register("music_disc.popular");
-    SoundEvent RECORD_FUNK = register("music_disc.funk");
+    RegistryEntry.Reference<SoundEvent> RECORD_CRUSADE = registerReference("music_disc.crusade");
+    RegistryEntry.Reference<SoundEvent> RECORD_PET = registerReference("music_disc.pet");
+    RegistryEntry.Reference<SoundEvent> RECORD_POPULAR = registerReference("music_disc.popular");
+    RegistryEntry.Reference<SoundEvent> RECORD_FUNK = registerReference("music_disc.funk");
 
     static SoundEvent register(String name) {
         Identifier id = Unicopia.id(name);
         return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));
+    }
+
+    static RegistryEntry.Reference<SoundEvent> registerReference(String name) {
+        Identifier id = Unicopia.id(name);
+        return Registry.registerReference(Registries.SOUND_EVENT, id, SoundEvent.of(id));
     }
 
     static SoundEvent register(String name, float range) {

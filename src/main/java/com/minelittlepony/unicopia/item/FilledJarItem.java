@@ -17,6 +17,7 @@ import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -27,7 +28,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldEvents;
 
 public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.HitListener, ChameleonItem {
-    public FilledJarItem(Settings settings) {
+    public FilledJarItem(Item.Settings settings) {
         super(settings, 0);
     }
 

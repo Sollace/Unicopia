@@ -5,7 +5,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class OatmealItem extends StewItem {
+public class OatmealItem extends Item {
 
     public OatmealItem(Item.Settings settings) {
         super(settings);
