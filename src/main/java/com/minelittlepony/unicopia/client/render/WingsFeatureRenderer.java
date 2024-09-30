@@ -24,6 +24,7 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
 public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
@@ -48,7 +49,7 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
             VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getEntityTranslucent(texture), false);
 
             model.setAngles(entity, context.getModel());
-            model.render(matrices, consumer, lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
+            model.render(matrices, consumer, lightUv, OverlayTexture.DEFAULT_UV, Colors.WHITE);
         }
     }
 
@@ -106,8 +107,8 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
         }
 
         @Override
-        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
-            root.render(matrices, vertexConsumer, i, j, f, g, h, k);
+        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+            root.render(matrices, vertexConsumer, light, overlay, color);
         }
 
         static class Wing {

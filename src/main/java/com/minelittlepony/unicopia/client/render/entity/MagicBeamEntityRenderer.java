@@ -18,6 +18,7 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -61,7 +62,7 @@ public class MagicBeamEntityRenderer extends EntityRenderer<MagicBeamEntity> {
                 .map(RenderLayers::getMagicColored)
                 .orElseGet(RenderLayers::getMagicColored);
 
-        model.render(matrices, vertexConsumers.getBuffer(layer), light, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
+        model.render(matrices, vertexConsumers.getBuffer(layer), light, OverlayTexture.DEFAULT_UV, Colors.WHITE);
 
         matrices.pop();
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
@@ -94,8 +95,8 @@ public class MagicBeamEntityRenderer extends EntityRenderer<MagicBeamEntity> {
         }
 
         @Override
-        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-            part.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+            part.render(matrices, vertexConsumer, light, overlay, color);
         }
     }
 }

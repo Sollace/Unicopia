@@ -22,7 +22,6 @@ import net.minecraft.util.math.RotationAxis;
 import net.minecraft.registry.Registries;
 
 public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredicateProvider {
-
     private static final PolearmRenderer INSTANCE = new PolearmRenderer();
     private static final Identifier THROWING = Identifier.ofVanilla("throwing");
 

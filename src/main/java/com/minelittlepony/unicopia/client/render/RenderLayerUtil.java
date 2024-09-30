@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.client.render;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -16,7 +15,7 @@ public interface RenderLayerUtil {
     static void createUnionBuffer(Consumer<VertexConsumerProvider> action, VertexConsumerProvider vertices, Function<Identifier, RenderLayer> overlayFunction) {
         Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEffectVertexConsumers();
         action.accept(layer -> {
-            Identifier texture = RenderLayerUtil.getTexture(layer).orElse(null);
+            Identifier texture = com.minelittlepony.common.util.render.RenderLayerUtil.getTexture(layer).orElse(null);
 
             if (texture == null || texture.equals(SHADOW_TEXTURE) || texture.equals(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE)) {
                 return vertices.getBuffer(layer);

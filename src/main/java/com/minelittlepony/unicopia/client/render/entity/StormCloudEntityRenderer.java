@@ -9,11 +9,14 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper.Argb;
 import net.minecraft.util.math.RotationAxis;
 
 public class StormCloudEntityRenderer extends EntityRenderer<StormCloudEntity> {
     private static final Identifier TEXTURE = Unicopia.id("textures/entity/storm_cloud.png");
+    private static final int DEFAULT_COLOR = Argb.withAlpha(Colors.WHITE, (int)(255 * 0.9F));
 
     private final StormCloudEntityModel model;
 
@@ -33,10 +36,11 @@ public class StormCloudEntityRenderer extends EntityRenderer<StormCloudEntity> {
         matrices.scale(scale, scale, scale);
         matrices.translate(0, -1.45F, 0);
 
+
         model.setAngles(entity, 0, 0, 0, 0, 0);
         model.render(matrices, vertices.getBuffer(model.getLayer(getTexture(entity))),
                 entity.isStormy() ? 0 : light,
-                OverlayTexture.DEFAULT_UV, 1, 1, 1, 0.9F);
+                OverlayTexture.DEFAULT_UV, DEFAULT_COLOR);
         matrices.pop();
         super.render(entity, yaw, tickDelta, matrices, vertices, light);
     }

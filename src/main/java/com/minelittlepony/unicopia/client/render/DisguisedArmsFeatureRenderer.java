@@ -153,7 +153,7 @@ public class DisguisedArmsFeatureRenderer<E extends LivingEntity> implements Acc
         }
 
         model.animateModel(entity, 0, 0, 0);
-        model.setAngles(entity, 0, 0, 0, 0, client.getTickDelta());
+        model.setAngles(entity, 0, 0, 0, 0, client.getRenderTickCounter().getTickDelta(false));
 
         float signum = right ? 1 : -1;
         float srtSwingProgress = MathHelper.sqrt(swingProgress);

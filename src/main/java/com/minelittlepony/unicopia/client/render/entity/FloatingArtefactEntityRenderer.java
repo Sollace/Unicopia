@@ -81,8 +81,7 @@ public class FloatingArtefactEntityRenderer extends EntityRenderer<FloatingArtef
         final MatrixStack.Entry entry = matrices.peek();
         final OverlayVertexConsumer destructionOverlay = new OverlayVertexConsumer(
                 MinecraftClient.getInstance().getBufferBuilders().getEffectVertexConsumers().getBuffer(RenderLayers.getCrumbling(MathHelper.clamp(stage, 0, ModelLoader.field_32983 - 1))),
-                entry.getPositionMatrix(),
-                entry.getNormalMatrix(),
+                entry,
                 scale
         );
         return layer -> layer.hasCrumbling() ? VertexConsumers.union(destructionOverlay, vertices.getBuffer(layer)) : vertices.getBuffer(layer);

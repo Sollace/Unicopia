@@ -10,6 +10,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 
@@ -39,7 +40,7 @@ public class CrystalShardsEntityRenderer extends EntityRenderer<CrystalShardsEnt
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
 
         model.setAngles(entity, 0, 0, 0, 0, 0);
-        model.render(matrices, vertices.getBuffer(model.getLayer(getTexture(entity))), light, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
+        model.render(matrices, vertices.getBuffer(model.getLayer(getTexture(entity))), light, OverlayTexture.DEFAULT_UV, Colors.WHITE);
         matrices.pop();
         super.render(entity, yaw, tickDelta, matrices, vertices, light);
     }

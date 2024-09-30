@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.command.argument.EntityAnchorArgumentType.EntityAnchor;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
@@ -54,6 +55,8 @@ public class TentacleEntity extends AbstractDecorationEntity {
 
     private int ticksActive;
     private int prevMotionOffset;
+
+    public int hurtTime;
 
     @Nullable
     private LivingEntity target;
@@ -144,6 +147,10 @@ public class TentacleEntity extends AbstractDecorationEntity {
         }
         addActiveTicks(20 + getWorld().random.nextInt(30));
         playSound(USounds.ENTITY_TENTACLE_ROAR, 5, 1);
+
+        hurtTime = 10;
+        getWorld().sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
+
         emitGameEvent(GameEvent.RESONATE_15);
         return true;
     }
@@ -159,6 +166,11 @@ public class TentacleEntity extends AbstractDecorationEntity {
         prevGrowth = growth;
         super.tick();
         prevAttackingTicks = attackingTicks;
+
+        if (hurtTime > 0) {
+            hurtTime--;
+        }
+
         if (isAttacking()) {
             if (--attackingTicks == 12) {
                 if (target != null) {
@@ -270,6 +282,9 @@ public class TentacleEntity extends AbstractDecorationEntity {
         switch (status) {
             case ATTACK_STATUS:
                 attackingTicks = 30;
+                break;
+            case EntityStatuses.PLAY_ATTACK_SOUND:
+                hurtTime = 10;
                 break;
             default:
                 super.handleStatus(status);

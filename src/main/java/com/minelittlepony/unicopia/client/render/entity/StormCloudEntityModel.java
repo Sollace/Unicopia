@@ -116,11 +116,11 @@ public class StormCloudEntityModel extends EntityModel<StormCloudEntity> {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
 	    matrices.push();
 	    part.rotate(matrices);
-	    smallPuffs.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
-	    anvilHeads.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+	    smallPuffs.render(matrices, vertexConsumer, light, overlay, color);
+	    anvilHeads.render(matrices, vertexConsumer, light, overlay, color);
 
 
 	    int puffCount = rng.nextInt(7);
@@ -131,7 +131,7 @@ public class StormCloudEntityModel extends EntityModel<StormCloudEntity> {
 	                rng.nextGaussian(),
 	                rng.nextGaussian()
             ).mul(16));
-	        puff.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+	        puff.render(matrices, vertexConsumer, light, overlay, color);
 	    }
 	    matrices.pop();
 	}

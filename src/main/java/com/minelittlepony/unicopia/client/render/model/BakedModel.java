@@ -32,7 +32,7 @@ public class BakedModel {
         vertices.add(new RenderUtil.Vertex(x, y, z, u, v));
     }
 
-    public final void render(MatrixStack matrices, VertexConsumer buffer, int light, int overlay, float scale, float r, float g, float b, float a) {
+    public final void render(MatrixStack matrices, VertexConsumer buffer, int light, int overlay, float scale, int color) {
         scale = Math.abs(scale);
         if (scale < 0.001F) {
             return;
@@ -44,13 +44,13 @@ public class BakedModel {
         for (RenderUtil.Vertex vertex : vertices) {
             Vector4f pos = vertex.position(positionmatrix);
             Vector4f tex = vertex.texture(textureMatrix);
-            buffer.vertex(pos.x, pos.y, pos.z, r, g, b, a, tex.x, tex.y, overlay, light, 0, 0, 0);
+            buffer.vertex(pos.x, pos.y, pos.z, color, tex.x, tex.y, overlay, light, 0, 0, 0);
         }
         matrices.pop();
         textureMatrix.identity();
     }
 
-    public final void render(MatrixStack matrices, VertexConsumer buffer, int light, float scale, float r, float g, float b, float a) {
+    public final void render(MatrixStack matrices, VertexConsumer buffer, int light, float scale, int color) {
         scale = Math.abs(scale);
         if (scale < 0.001F) {
             return;
@@ -62,7 +62,7 @@ public class BakedModel {
         for (RenderUtil.Vertex vertex : vertices) {
             Vector4f pos = vertex.position(positionmatrix);
             Vector4f tex = vertex.texture(textureMatrix);
-            buffer.vertex(pos.x, pos.y, pos.z).texture(tex.x, tex.y).color(r, g, b, a).light(getLightAt(pos, light)).next();
+            buffer.vertex(pos.x, pos.y, pos.z).texture(tex.x, tex.y).color(color).light(getLightAt(pos, light));
         }
         matrices.pop();
         textureMatrix.identity();

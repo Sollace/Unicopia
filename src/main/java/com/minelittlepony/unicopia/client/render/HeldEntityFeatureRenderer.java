@@ -55,7 +55,7 @@ public class HeldEntityFeatureRenderer<E extends LivingEntity> implements Access
     @Override
     public boolean beforeRenderArms(ArmRenderer sender, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, E entity, int light) {
         return Pony.of(entity).flatMap(Pony::getEntityInArms).filter(passenger -> {
-            float swingProgress = entity.getHandSwingProgress(MinecraftClient.getInstance().getTickDelta());
+            float swingProgress = entity.getHandSwingProgress(MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false));
             float f = -0.4f * MathHelper.sin(MathHelper.sqrt(swingProgress) * (float)Math.PI);
             float g = 0.2f * MathHelper.sin(MathHelper.sqrt(swingProgress) * ((float)Math.PI * 2));
             float h = -0.2f * MathHelper.sin(swingProgress * (float)Math.PI);

@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.client.render.entity;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.client.render.model.PlaneModel;
@@ -18,6 +17,7 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper.Argb;
 import net.minecraft.util.math.RotationAxis;
 
 public class CastSpellEntityRenderer extends EntityRenderer<CastSpellEntity> {
@@ -71,10 +71,6 @@ public class CastSpellEntityRenderer extends EntityRenderer<CastSpellEntity> {
 
         int color = spell == null ? 0 : spell.getTypeAndTraits().type().getColor();
 
-        float red = Color.r(color);
-        float green = Color.g(color);
-        float blue = Color.b(color);
-
         @Nullable
         SpellRenderer<?> renderer = spell == null ? null : SpellEffectsRenderDispatcher.INSTANCE.getRenderer(spell);
 
@@ -91,7 +87,7 @@ public class CastSpellEntityRenderer extends EntityRenderer<CastSpellEntity> {
                 matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(angle * ringSpeed));
                 matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(angle * ringSpeed * dim));
                 matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(angle * ringSpeed * dim));
-                PlaneModel.INSTANCE.render(matrices, buffer, light, 0, 1, red, green, blue, scale / ((float)(dim * 3) + 1));
+                PlaneModel.INSTANCE.render(matrices, buffer, light, 0, 1, Argb.withAlpha(color, (int)(255 * (scale / ((float)(dim * 3) + 1)))));
                 matrices.pop();
             }
         }

@@ -16,6 +16,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
@@ -43,7 +44,7 @@ public class SmittenEyesRenderer {
             float scale = 1F + (1.3F + MathHelper.sin(pony.asEntity().age / 3F) * 0.06F);
             matrices.scale(scale, scale, scale);
             matrices.translate(0, 0.05F, 0);
-            model.render(matrices, buffer, light, overlay, 1, 1, 1, 1);
+            model.render(matrices, buffer, light, overlay, Colors.WHITE);
 
             if (client.getEntityRenderDispatcher().shouldRenderHitboxes()) {
                 VertexConsumer lines = vertices.getBuffer(RenderLayer.getLines());

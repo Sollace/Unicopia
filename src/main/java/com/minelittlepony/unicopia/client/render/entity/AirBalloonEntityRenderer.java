@@ -17,6 +17,7 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 
@@ -89,7 +90,7 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
                 if (texture.getPath().indexOf("sandbags") != -1) {
                     model = new AirBalloonEntityModel(AirBalloonEntityModel.getSandbagsModelData().createModel());
                 }
-                render(getModel(), model, texture, matrices, vertices, lightFunc.apply(light, entity), entity, limbAngle, limbDistance, 0, yaw, pitch, tickDelta, 1, 1, 1);
+                render(getModel(), model, texture, matrices, vertices, lightFunc.apply(light, entity), entity, limbAngle, limbDistance, 0, yaw, pitch, tickDelta, Colors.WHITE);
             }
         }
     }

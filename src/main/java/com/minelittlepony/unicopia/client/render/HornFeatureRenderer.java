@@ -49,7 +49,7 @@ public class HornFeatureRenderer<E extends LivingEntity> implements AccessoryFea
         if (canRender(entity)) {
             model.setAngles(context.getModel());
             model.setState(false);
-            model.render(stack, ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(TEXTURE), false), lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
+            model.render(stack, ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(TEXTURE), false), lightUv, OverlayTexture.DEFAULT_UV, Colors.WHITE);
 
             Pony.of(entity).flatMap(pony -> {
                 return pony.getAbilities().getActiveStat()
@@ -60,7 +60,7 @@ public class HornFeatureRenderer<E extends LivingEntity> implements AccessoryFea
                                 .map(spell -> spell.getTypeAndTraits().type().getColor()));
             }).ifPresent(color -> {
                 model.setState(true);
-                model.render(stack, ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayers.getMagicColored((0x99 << 24) | color), false), lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
+                model.render(stack, ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayers.getMagicColored((0x99 << 24) | color), false), lightUv, OverlayTexture.DEFAULT_UV, Colors.WHITE);
             });
         }
     }

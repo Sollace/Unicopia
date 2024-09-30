@@ -134,7 +134,7 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntity> {
 
     @Override
     public void setAngles(AirBalloonEntity entity, float limbDistance, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        float tickDelta = MinecraftClient.getInstance().getTickDelta();
+        float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
         inflation = entity.getInflation(tickDelta);
 
         root.yaw = MathHelper.PI;
@@ -230,15 +230,15 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntity> {
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float r, float g, float b, float a) {
+    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
         if (isBalloon) {
             matrices.push();
             matrices.translate(0, 1 * (1 - inflation), 0);
             matrices.scale(1, MathHelper.lerp(inflation, -0.05F, 1), 1);
-            root.render(matrices, vertexConsumer, light, overlay, r, g, b, a);
+            root.render(matrices, vertexConsumer, light, overlay, color);
             matrices.pop();
         } else {
-            root.render(matrices, vertexConsumer, light, overlay, r, g, b, a);
+            root.render(matrices, vertexConsumer, light, overlay, color);
         }
     }
 }

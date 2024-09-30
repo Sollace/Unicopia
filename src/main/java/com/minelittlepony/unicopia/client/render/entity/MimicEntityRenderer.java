@@ -169,8 +169,8 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
         }
 
         @Override
-        public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-            part.render(matrices, vertices, light, overlay);
+        public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
+            part.render(matrices, vertices, light, overlay, color);
         }
     }
 }

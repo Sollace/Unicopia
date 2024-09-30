@@ -42,13 +42,13 @@ public class ButterflyEntityRenderer extends MobEntityRenderer<ButterflyEntity, 
     }
 
     @Override
-    protected void setupTransforms(ButterflyEntity entity, MatrixStack matrices, float age, float yaw, float ticks) {
+    protected void setupTransforms(ButterflyEntity entity, MatrixStack matrices, float age, float yaw, float ticks, float scale) {
 
         if (!entity.isResting()) {
             matrices.translate(0, MathHelper.cos(age / 3F) / 10F, 0);
         }
 
-        super.setupTransforms(entity, matrices, age, yaw, ticks);
+        super.setupTransforms(entity, matrices, age, yaw, ticks, scale);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class ButterflyEntityRenderer extends MobEntityRenderer<ButterflyEntity, 
 
     @Override
     protected int getSkyLight(ButterflyEntity entity, BlockPos pos) {
-        return (int)(super.getSkyLight(entity, pos) * (entity.getWorld() instanceof ClientWorld w ? w.getSkyBrightness(MinecraftClient.getInstance().getTickDelta()) : 1));
+        return (int)(super.getSkyLight(entity, pos) * (entity.getWorld() instanceof ClientWorld w ? w.getSkyBrightness(MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false)) : 1));
     }
 
     public static class ButterflyEntityModel extends EntityModel<ButterflyEntity> {
@@ -96,8 +96,8 @@ public class ButterflyEntityRenderer extends MobEntityRenderer<ButterflyEntity, 
         }
 
         @Override
-        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-            body.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+            body.render(matrices, vertexConsumer, light, overlay, color);
         }
 
         @Override

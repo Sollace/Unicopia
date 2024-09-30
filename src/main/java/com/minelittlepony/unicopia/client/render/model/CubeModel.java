@@ -6,7 +6,6 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.client.render.RenderUtil;
 import com.minelittlepony.unicopia.client.render.RenderUtil.Vertex;
 
@@ -60,7 +59,6 @@ public class CubeModel {
             float x0, float y0, float z0, float x1, float y1, float z1,
             int color, int light, int overlay,
             Direction... directions) {
-        float r = Color.r(color), g = Color.g(color), b = Color.b(color);
         float du = u1 - u0, dv = v1 - v0;
         float dx = x1 - x0, dy = y1 - y0, dz = z1 - z0;
         Matrix4f position = matrices.peek().getPositionMatrix();
@@ -70,7 +68,7 @@ public class CubeModel {
                 Vector4f pos = position.transform(RenderUtil.TEMP_VECTOR.set(vertex.position(), 1).mul(dx, dy, dz, 1).add(x0, y0, z0, 0));
                 Vector2f tex = TEMP_UV_VECTOR.set(vertex.texture().x, vertex.texture().y).mul(du, dv).add(u0, v0);
                 Vector3f norm = normal.transform(RenderUtil.TEMP_NORMAL_VECTOR.set(direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ()));
-                buffer.vertex(pos.x, pos.y, pos.z, r, g, b, 1, tex.x, tex.y, overlay, light, norm.x, norm.y, norm.z);
+                buffer.vertex(pos.x, pos.y, pos.z, color, tex.x, tex.y, overlay, light, norm.x, norm.y, norm.z);
             }
         }
     }
