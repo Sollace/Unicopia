@@ -11,14 +11,12 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.ItemDuck;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.RegistryByteBuf;
@@ -80,7 +78,7 @@ public record DietProfile(
     }
 
     static boolean isForaged(ItemStack stack) {
-        return ((ItemDuck)stack.getItem()).getOriginalFoodComponent().isEmpty();
+        return stack.getComponents().get(DataComponentTypes.FOOD) == null;
     }
 
     @Nullable
@@ -125,10 +123,17 @@ public record DietProfile(
         return Pair.of(hungerMultiplier, saturationMultiplier);
     }
 
-    public void appendTooltip(ItemStack stack, @Nullable PlayerEntity user, List<Text> tooltip, TooltipType context) {
-        var food = stack.get(DataComponentTypes.FOOD);
+    public void appendTooltip(ItemStack stack, @Nullable Pony pony, List<Text> tooltip, TooltipType context) {
+        if (this == EMPTY) {
+            return;
+        }
 
+        tooltip.add(Text.translatable("unicopia.diet.information").formatted(Formatting.DARK_PURPLE));
+        findEffect(stack).orElseGet(() -> PonyDiets.getInstance().getEffects(stack)).appendTooltip(stack, tooltip, context);
+
+        var food = stack.get(DataComponentTypes.FOOD);
         var ratios = getRatios(stack);
+
         if (food == null || isInedible(ratios)) {
             if (stack.getUseAction() != UseAction.DRINK) {
                 tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.not_edible")).formatted(Formatting.DARK_GRAY));
@@ -139,7 +144,7 @@ public record DietProfile(
         float baseMultiplier = (isForaged(stack) ? foragingMultiplier() : defaultMultiplier());
 
         if (context.isAdvanced()) {
-            var nonAdjustedFood = getNonAdjustedFoodComponent(stack, user).orElse(food);
+            var nonAdjustedFood = getNonAdjustedFoodComponent(stack, pony).orElse(food);
             tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.base_multiplier", baseMultiplier).formatted(Formatting.DARK_GRAY)));
             tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.hunger.detailed", food.nutrition(), nonAdjustedFood.nutrition(), (int)(ratios.getFirst() * 100))).formatted(Formatting.DARK_GRAY));
             tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.saturation.detailed", food.saturation(), nonAdjustedFood.saturation(), (int)(ratios.getSecond() * 100))).formatted(Formatting.DARK_GRAY));
@@ -149,18 +154,20 @@ public record DietProfile(
         }
     }
 
-    private Optional<FoodComponent> getNonAdjustedFoodComponent(ItemStack stack, @Nullable PlayerEntity user) {
-        @Nullable
-        Pony pony = Pony.of(user);
-        Optional<FoodComponent> food = ((ItemDuck)stack.getItem()).getOriginalFoodComponent();
+    private Optional<FoodComponent> getNonAdjustedFoodComponent(ItemStack stack, @Nullable Pony pony) {
+        FoodComponent food = stack.getComponents().get(DataComponentTypes.FOOD);
 
-        if (food.isEmpty() && pony.getObservedSpecies().hasIronGut()) {
+        if (food != null) {
+            return Optional.ofNullable(food);
+        }
+
+        if (pony != null && pony.getObservedSpecies().hasIronGut()) {
             return findEffect(stack)
                 .flatMap(Effect::foodComponent)
                 .or(() -> PonyDiets.getInstance().getEffects(stack).foodComponent());
         }
 
-        return food;
+        return Optional.empty();
     }
 
     public record Multiplier(

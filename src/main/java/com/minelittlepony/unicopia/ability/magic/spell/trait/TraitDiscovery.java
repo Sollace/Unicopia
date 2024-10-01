@@ -9,8 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.Channel;
@@ -33,7 +31,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.world.World;
 
 public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery> {
     private final Set<Trait> unreadTraits = new HashSet<>();
@@ -114,7 +111,7 @@ public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery>
     }
 
     @Environment(EnvType.CLIENT)
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip) {
+    public void appendTooltip(ItemStack stack, List<Text> tooltip) {
         SpellTraits.getEmbeddedTraits(stack)
             .orElseGet(() -> getKnownTraits(stack.getItem()))
             .appendTooltip(tooltip);

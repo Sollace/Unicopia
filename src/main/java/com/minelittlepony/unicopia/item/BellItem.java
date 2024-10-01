@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.List;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.Creature;
@@ -22,10 +21,8 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -41,11 +38,6 @@ public class BellItem extends Item {
     @Override
     public UseAction getUseAction(ItemStack stack) {
         return UseAction.BOW;
-    }
-
-    @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> list, TooltipType type) {
-        Charges.of(stack).appendTooltip(context, list::add, type);
     }
 
     @Override

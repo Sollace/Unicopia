@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -15,19 +14,13 @@ import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.AmuletSelectors;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.component.Issuer;
-import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 
@@ -67,18 +60,6 @@ public class FriendshipBraceletItem extends WearableItem {
         }
 
         return super.use(world, player, hand);
-    }
-
-    @Override
-    @Environment(EnvType.CLIENT)
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> lines, TooltipType type) {
-        super.appendTooltip(stack, context, lines, type);
-        if (Issuer.isSigned(stack)) {
-            stack.get(UDataComponentTypes.ISSUER).appendTooltip(context, lines::add, type);
-        }
-        if (GlowableItem.isGlowing(stack)) {
-            lines.add(Text.translatable("item.unicopia.friendship_bracelet.glowing").formatted(Formatting.ITALIC, Formatting.GRAY));
-        }
     }
 
     @Override

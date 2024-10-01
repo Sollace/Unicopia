@@ -102,7 +102,6 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Mu
             SpellType<?> key = EnchantableItem.getSpellKey(stack);
             lines.add(Text.translatable(key.getTranslationKey()).formatted(key.getAffinity().getColor()));
         }
-        Charges.of(stack).appendTooltip(context, lines::add, type);
     }
 
     @Override
@@ -144,7 +143,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Mu
                     Pony.of(entity).ifPresent(pony -> {
                         pony.subtractEnergyCost(4);
                         stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
-                        getSpellEffect(stack).create().toThrowable().throwProjectile(pony);
+                        EnchantableItem.getSpellEffect(stack).create().toThrowable().throwProjectile(pony);
                         pony.setAnimation(Animation.ARMS_UP, Animation.Recipient.ANYONE, 10);
                     });
                 }
@@ -153,7 +152,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Mu
                     Pony.of(entity).ifPresent(pony -> {
                         pony.subtractEnergyCost(4);
                         stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
-                        getSpellEffect(stack).create().toThrowable().throwProjectile(pony);
+                        EnchantableItem.getSpellEffect(stack).create().toThrowable().throwProjectile(pony);
                         pony.setAnimation(Animation.ARMS_UP, Animation.Recipient.ANYONE, 10);
                     });
                 }
@@ -166,7 +165,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Mu
         if (attacker.isSneaking() && Charges.discharge(stack, 1)) {
             stack.damage(50, attacker, EquipmentSlot.MAINHAND);
             Caster.of(attacker).ifPresent(c -> c.subtractEnergyCost(4));
-            Caster.of(target).ifPresent(c -> getSpellEffect(stack).apply(c, CastingMethod.STAFF));
+            Caster.of(target).ifPresent(c -> EnchantableItem.getSpellEffect(stack).apply(c, CastingMethod.STAFF));
         }
 
         return false;
@@ -193,7 +192,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Mu
                     living.clearActiveItem();
                     living.damage(entity.getDamageSources().magic(), 1);
                     if (EnchantableItem.isEnchanted(stack) && Charges.discharge(stack, 1)) {
-                        Caster.of(entity).ifPresent(c -> getSpellEffect(stack).apply(c, CastingMethod.STAFF));
+                        Caster.of(entity).ifPresent(c -> EnchantableItem.getSpellEffect(stack).apply(c, CastingMethod.STAFF));
                     }
                 }
             }

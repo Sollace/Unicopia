@@ -94,7 +94,6 @@
     "client.MixinInGameHud",
     "client.MixinInGameHud$HeartType",
     "client.MixinItemModels",
-    "client.MixinItemStack",
     "client.MixinKeyboardInput",
     "client.MixinLivingEntityRenderer",
     "client.MixinMinecraftClient",

@@ -28,7 +28,7 @@ public record SpellDuplicatingRecipe (IngredientWithSpell material) implements S
     public void buildCraftingTree(CraftingTreeBuilder builder) {
         ItemStack[] spells = SpellType.REGISTRY.stream()
                 .filter(SpellType::isObtainable)
-                .map(UItems.GEMSTONE::getDefaultStack)
+                .map(i -> EnchantableItem.enchant(UItems.GEMSTONE.getDefaultStack(), i))
                 .toArray(ItemStack[]::new);
         builder.input(UItems.BOTCHED_GEM.getDefaultStack());
         builder.input(spells);

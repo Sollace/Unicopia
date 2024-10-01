@@ -32,6 +32,8 @@ import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item.TooltipContext;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -209,7 +211,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
         List<Text> tooltip = new ArrayList<>();
         tooltip.add(spell.type().getName());
-        spell.appendTooltip(tooltip);
+        spell.appendTooltip(TooltipContext.create(client.world), tooltip::add, TooltipType.BASIC);
 
         context.drawTooltip(textRenderer, tooltip, x, y);
         context.getMatrices().pop();

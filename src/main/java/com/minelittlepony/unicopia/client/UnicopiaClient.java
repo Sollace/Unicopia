@@ -27,7 +27,6 @@ import com.minelittlepony.unicopia.util.Lerp;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.OpenToLanScreen;
@@ -145,7 +144,6 @@ public class UnicopiaClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
         ClientTickEvents.END_WORLD_TICK.register(this::onWorldTick);
         ScreenInitCallback.EVENT.register(this::onScreenInit);
-        ItemTooltipCallback.EVENT.register(new ModifierTooltipRenderer());
 
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(ViewportShader.INSTANCE);
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(SpellEffectsRenderDispatcher.INSTANCE);

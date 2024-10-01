@@ -47,7 +47,7 @@ public class SpellShapedCraftingRecipe extends ShapedRecipe {
         return inventory.getStacks().stream()
             .filter(stack -> stack.getItem() instanceof EnchantableItem)
             .filter(EnchantableItem::isEnchanted)
-            .map(stack -> ((EnchantableItem)stack.getItem()).getSpellEffect(stack))
+            .map(stack -> EnchantableItem.getSpellEffect(stack))
             .findFirst()
             .map(spell -> spell.traits().applyTo(EnchantableItem.enchant(super.craft(inventory, registries), spell.type())))
             .orElseGet(() -> super.craft(inventory, registries));

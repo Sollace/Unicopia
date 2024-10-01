@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.diet;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
@@ -9,19 +8,14 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.effect.FoodPoisoningStatusEffect;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.ItemDuck;
 import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
 
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -57,11 +51,11 @@ public class PonyDiets implements DietView {
         this.effects = effects;
     }
 
-    private DietProfile getDiet(Pony pony) {
+    public DietProfile getDiet(Pony pony) {
         return Optional.ofNullable(diets.get(pony.getObservedSpecies())).orElse(DietProfile.EMPTY);
     }
 
-    Effect getEffects(ItemStack stack) {
+    public Effect getEffects(ItemStack stack) {
         return effects.values().stream().filter(effect -> effect.test(stack)).findFirst().map(Effect.class::cast).orElse(Effect.EMPTY);
     }
 
@@ -71,50 +65,11 @@ public class PonyDiets implements DietView {
 
     @Override
     public TypedActionResult<ItemStack> startUsing(ItemStack stack, World world, PlayerEntity user, Hand hand) {
-        return initEdibility(stack, user)
-                ? FoodPoisoningStatusEffect.apply(stack, user)
-                : TypedActionResult.fail(stack);
+        return FoodPoisoningStatusEffect.apply(stack, user);
     }
 
     @Override
     public void finishUsing(ItemStack stack, World world, LivingEntity entity) {
-        if (initEdibility(stack, entity)) {
-            Pony.of(entity).ifPresent(pony -> getEffects(stack, pony).ailment().effects().afflict(pony.asEntity(), stack));
-        }
-    }
-
-    @Override
-    public void appendTooltip(ItemStack stack, @Nullable PlayerEntity user, List<Text> tooltip, TooltipType context) {
-
-        if (initEdibility(stack, user)) {
-            if (!((ItemDuck)stack.getItem()).getOriginalFoodComponent().isEmpty() || stack.contains(DataComponentTypes.FOOD)) {
-                Pony pony = Pony.of(user);
-
-                tooltip.add(Text.translatable("unicopia.diet.information").formatted(Formatting.DARK_PURPLE));
-                getEffects(stack, pony).appendTooltip(stack, tooltip, context);
-                getDiet(pony).appendTooltip(stack, user, tooltip, context);
-            }
-        }
-    }
-
-    private boolean initEdibility(ItemStack stack, LivingEntity user) {
-        ItemDuck item = (ItemDuck)stack.getItem();
-        item.resetFoodComponent();
-        return Pony.of(user).filter(pony -> {
-            DietProfile diet = getDiet(pony);
-
-            if (!stack.contains(DataComponentTypes.FOOD) && pony.getObservedSpecies().hasIronGut()) {
-                diet.findEffect(stack)
-                    .flatMap(Effect::foodComponent)
-                    .or(() -> getEffects(stack).foodComponent())
-                    .ifPresent(item::setFoodComponent);
-            }
-
-            if (stack.contains(DataComponentTypes.FOOD)) {
-                item.setFoodComponent(diet.getAdjustedFoodComponent(stack));
-            }
-
-            return true;
-        }).isPresent();
+        Pony.of(entity).ifPresent(pony -> getEffects(stack, pony).ailment().effects().afflict(pony.asEntity(), stack));
     }
 }

@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +16,10 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.client.TextHelper;
 import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 
+import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipAppender;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.text.MutableText;
@@ -27,7 +31,7 @@ public record CustomisedSpellType<T extends Spell> (
         SpellType<T> type,
         SpellTraits traits,
         Supplier<SpellTraits> traitsDifferenceSupplier
-    ) implements SpellPredicate<T> {
+    ) implements SpellPredicate<T>, TooltipAppender {
 
     public boolean isEmpty() {
         return type.isEmpty();
@@ -86,25 +90,25 @@ public record CustomisedSpellType<T extends Spell> (
         return traits.applyTo(type.getDefualtStack());
     }
 
-    public void appendTooltip(List<Text> lines) {
+    @Override
+    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
         MutableText lore = Text.translatable(type().getTranslationKey() + ".lore").formatted(type().getAffinity().getColor());
 
         if (!InteractionManager.getInstance().getClientSpecies().canCast()) {
             lore = lore.formatted(Formatting.OBFUSCATED);
         }
-        lines.addAll(TextHelper.wrap(lore, 180).toList());
+        TextHelper.wrap(lore, 180).forEach(tooltip);
         float corruption = ((int)traits().getCorruption() * 10) + type().getAffinity().getCorruption();
         List<Text> modifiers = new ArrayList<>();
-        type.getTooltip().appendTooltip(this, modifiers);
+        type().getTooltip().appendTooltip(this, modifiers);
         if (corruption != 0) {
             modifiers.add(EffectUtils.formatModifierChange("affinity.unicopia.corruption", corruption, true));
         }
         if (!modifiers.isEmpty()) {
-            lines.add(Text.empty());
-            lines.add(Text.translatable("affinity.unicopia.when_cast").formatted(Formatting.GRAY));
-            lines.addAll(modifiers);
+            tooltip.accept(Text.empty());
+            tooltip.accept(Text.translatable("affinity.unicopia.when_cast").formatted(Formatting.GRAY));
+            modifiers.forEach(tooltip);
         }
-
     }
 
     public TypedActionResult<CustomisedSpellType<?>> toAction() {

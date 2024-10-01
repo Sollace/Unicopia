@@ -18,6 +18,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.ThrowableSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.TimeControlAbilitySpell;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.RegistryUtils;
@@ -117,7 +118,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         this.traits = traits;
         this.stackable = stackable;
         traited = new CustomisedSpellType<>(this, traits, SpellTraits::empty);
-        defaultStack = UItems.GEMSTONE.getDefaultStack(this);
+        defaultStack = EnchantableItem.enchant(UItems.GEMSTONE.getDefaultStack(), this);
     }
 
     public boolean isObtainable() {

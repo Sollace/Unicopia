@@ -41,7 +41,6 @@ public class AmuletItem extends WearableItem {
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> list, TooltipType type) {
-
         for (StringVisitable line : MinecraftClient.getInstance().textRenderer.getTextHandler().wrapLines(
                 Text.translatable(getTranslationKey(stack) + ".lore"), 150, Style.EMPTY)) {
             MutableText compiled = Text.literal("").formatted(Formatting.ITALIC, Formatting.GRAY);
@@ -51,8 +50,7 @@ public class AmuletItem extends WearableItem {
             });
             list.add(compiled);
         }
-
-        Charges.of(stack).appendTooltip(context, list::add, type);
+        super.appendTooltip(stack, context, list, type);
     }
 
     @Override

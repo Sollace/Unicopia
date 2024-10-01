@@ -19,12 +19,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 
 public interface EnchantableItem extends ItemConvertible {
-
-    default ItemStack getDefaultStack(SpellType<?> spell) {
-        return enchant(asItem().getDefaultStack(), spell);
-    }
-
-    default CustomisedSpellType<?> getSpellEffect(ItemStack stack) {
+    static CustomisedSpellType<?> getSpellEffect(ItemStack stack) {
         return EnchantableItem.getSpellKey(stack).withTraits(SpellTraits.of(stack));
     }
 

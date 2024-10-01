@@ -14,13 +14,12 @@ import com.minelittlepony.unicopia.item.group.MultiItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class GemstoneItem extends Item implements MultiItem, EnchantableItem {
+public class GemstoneItem extends Item implements MultiItem {
 
     public GemstoneItem(Settings settings) {
         super(settings);
@@ -69,15 +68,6 @@ public class GemstoneItem extends Item implements MultiItem, EnchantableItem {
         }
 
         return result;
-    }
-
-    @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> lines, TooltipType type) {
-        super.appendTooltip(stack, context, lines, type);
-
-        if (EnchantableItem.isEnchanted(stack)) {
-            getSpellEffect(stack).appendTooltip(lines);
-        }
     }
 
     @Override

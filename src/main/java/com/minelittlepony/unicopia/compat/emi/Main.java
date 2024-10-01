@@ -103,11 +103,10 @@ public class Main implements EmiPlugin {
                 .filter(recipe -> recipe.value() instanceof SpellShapedCraftingRecipe)
                 .forEach(recipe -> {
             ItemStack output = recipe.value().getResult(registries);
-            if (output.getItem() instanceof MultiItem multiItem && output.getItem() instanceof EnchantableItem enchantable) {
+            if (output.getItem() instanceof MultiItem multiItem) {
                 multiItem.getDefaultStacks().forEach(outputVariation -> {
-                    var spellEffect = enchantable.getSpellEffect(outputVariation);
-                    if (!spellEffect.isEmpty()) {
-                        registry.addRecipe(new MagicalShapedEmiRecipe(recipe, spellEffect, outputVariation));
+                    if (EnchantableItem.isEnchanted(outputVariation)) {
+                        registry.addRecipe(new MagicalShapedEmiRecipe(recipe, EnchantableItem.getSpellEffect(outputVariation), outputVariation));
                     }
                 });
             }
