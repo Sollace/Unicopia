@@ -95,8 +95,7 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pro
     }
 
     private void teleport(Caster<?> source, Entity entity, Vec3d pos, Vec3d vel) {
-        // TODO: teleport -> requestTeleport
-        entity.requestTeleport(pos.x, pos.y, pos.z);
+        entity.setPosition(pos);
         entity.setVelocity(vel);
         entity.setGlowing(false);
         entity.playSound(USounds.SPELL_DISPLACEMENT_TELEPORT, 1, 1);

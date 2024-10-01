@@ -178,8 +178,8 @@ public class UnicornTeleportAbility implements Ability<Pos> {
                 yPos,
                 destination.z() + offset.getZ()
         );
-        // TODO: teleport -> requestTeleport
-        participant.requestTeleport(dest.x, dest.y, dest.z);
+
+        participant.setPosition(dest);
         if (participant.getWorld().getBlockCollisions(participant, participant.getBoundingBox()).iterator().hasNext()) {
             dest = destination.vec();
             participant.requestTeleport(dest.x, participant.getY(), dest.z);
