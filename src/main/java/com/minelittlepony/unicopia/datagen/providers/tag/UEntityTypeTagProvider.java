@@ -26,7 +26,7 @@ public class UEntityTypeTagProvider extends FabricTagProvider<EntityType<?>> {
                 EntityType.CREEPER,
                 EntityType.VILLAGER, EntityType.WANDERING_TRADER, EntityType.PILLAGER, EntityType.ILLUSIONER, EntityType.EVOKER, EntityType.WITCH,
                 EntityType.TURTLE,
-                EntityType.BLAZE, //TODO: 1.20.5 EntityType.BREEZE,
+                EntityType.BLAZE, EntityType.BREEZE,
                 EntityType.SHEEP, EntityType.PIG, EntityType.GOAT,
                 EntityType.RABBIT, EntityType.POLAR_BEAR, EntityType.PANDA,
                 EntityType.COW, EntityType.MOOSHROOM,

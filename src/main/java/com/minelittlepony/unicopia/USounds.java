@@ -102,7 +102,7 @@ public interface USounds {
     SoundEvent ITEM_ROCK_LAND = BLOCK_STONE_HIT;
     RegistryEntry.Reference<SoundEvent> ITEM_MUFFIN_BOUNCE = BLOCK_NOTE_BLOCK_BANJO;
 
-    SoundEvent ITEM_SUNGLASSES_SHATTER = BLOCK_GLASS_BREAK;
+    RegistryEntry<SoundEvent> ITEM_SUNGLASSES_SHATTER = Registries.SOUND_EVENT.getEntry(BLOCK_GLASS_BREAK);
 
     SoundEvent ITEM_APPLE_ROT = register("item.apple.rot");
     SoundEvent ITEM_BRACELET_SIGN = register("item.bracelet.sign");

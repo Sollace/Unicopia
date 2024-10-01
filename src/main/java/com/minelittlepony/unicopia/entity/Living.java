@@ -31,6 +31,8 @@ import com.minelittlepony.unicopia.input.Heuristic;
 import com.minelittlepony.unicopia.input.Interactable;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.component.BreaksIntoItemComponent;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.track.DataTracker;
@@ -381,13 +383,18 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                 this.attacker = attacker;
             }
 
-            if (magical.isIn(UTags.DamageTypes.BREAKS_SUNGLASSES)) {
-                ItemStack glasses = GlassesItem.getForEntity(entity).stack();
-                if (glasses.isOf(UItems.SUNGLASSES)) {
-                    // TODO: BreaksIntoItemComponent
-                    ItemStack broken = glasses.withItem(UItems.BROKEN_SUNGLASSES);
-                    TrinketsDelegate.getInstance(entity).setEquippedStack(entity, TrinketsDelegate.FACE, broken);
-                    playSound(USounds.ITEM_SUNGLASSES_SHATTER, 1, 1);
+            ItemStack glasses = GlassesItem.getForEntity(entity).stack();
+            BreaksIntoItemComponent afterBroken = glasses.get(UDataComponentTypes.ITEM_AFTER_BREAKING);
+
+            if (afterBroken != null && afterBroken.damageType().contains(magical.getTypeRegistryEntry())) {
+                if (afterBroken != null) {
+                    afterBroken.getItemAfterBreaking().ifPresent(b -> {
+                        ItemStack broken = glasses.withItem(b);
+                        TrinketsDelegate.getInstance(entity).setEquippedStack(entity, TrinketsDelegate.FACE, broken);
+                        afterBroken.getBreakingSound().ifPresent(sound -> {
+                            playSound(USounds.ITEM_SUNGLASSES_SHATTER, 1, 1);
+                        });
+                    });
                 }
             }
         }

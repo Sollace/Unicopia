@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.block.cloud.CloudBedBlock;
 import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.cloud.CloudBedItem;
+import com.minelittlepony.unicopia.item.component.BreaksIntoItemComponent;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
@@ -33,6 +34,7 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.UseAction;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.Registries;
 
 public interface UItems {
@@ -225,7 +227,14 @@ public interface UItems {
             .maxDamage(16)
             .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
 
-    GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new Item.Settings().maxCount(1)), ItemGroups.COMBAT);
+    GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new Item.Settings()
+            .maxCount(1)
+            .component(UDataComponentTypes.ITEM_AFTER_BREAKING, new BreaksIntoItemComponent(
+                    UTags.DamageTypes.BREAKS_SUNGLASSES,
+                    RegistryKey.of(RegistryKeys.ITEM, Unicopia.id("broken_sunglasses")),
+                    USounds.ITEM_SUNGLASSES_SHATTER.getKey().get())
+            )
+            ), ItemGroups.COMBAT);
     GlassesItem BROKEN_SUNGLASSES = register("broken_sunglasses", new GlassesItem(new Item.Settings().maxCount(1)), ItemGroups.COMBAT);
 
     Item CLAM_SHELL = register("clam_shell", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
