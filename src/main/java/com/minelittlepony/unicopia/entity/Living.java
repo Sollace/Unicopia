@@ -386,13 +386,13 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             ItemStack glasses = GlassesItem.getForEntity(entity).stack();
             BreaksIntoItemComponent afterBroken = glasses.get(UDataComponentTypes.ITEM_AFTER_BREAKING);
 
-            if (afterBroken != null && afterBroken.damageType().contains(magical.getTypeRegistryEntry())) {
+            if (afterBroken != null && magical.isIn(afterBroken.damageType())) {
                 if (afterBroken != null) {
                     afterBroken.getItemAfterBreaking().ifPresent(b -> {
                         ItemStack broken = glasses.withItem(b);
                         TrinketsDelegate.getInstance(entity).setEquippedStack(entity, TrinketsDelegate.FACE, broken);
                         afterBroken.getBreakingSound().ifPresent(sound -> {
-                            playSound(USounds.ITEM_SUNGLASSES_SHATTER, 1, 1);
+                            playSound(sound, 1, 1);
                         });
                     });
                 }
