@@ -2,8 +2,7 @@ package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.Creature;
-import com.minelittlepony.unicopia.item.enchantment.WantItNeedItEnchantment;
-
+import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
@@ -57,6 +56,6 @@ public class SmittenEyesRenderer {
     }
 
     public boolean isSmitten(Creature pony) {
-        return pony.isSmitten() || WantItNeedItEnchantment.getLevel(pony.asEntity()) > 0;
+        return pony.isSmitten() || EnchantmentUtil.getWantItNeedItLevel(pony.asEntity()) > 0;
     }
 }

@@ -5,7 +5,6 @@ import java.util.List;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
-import com.minelittlepony.unicopia.item.enchantment.WantItNeedItEnchantment;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.DataTrackerManager;
 import com.minelittlepony.unicopia.network.track.Trackable;
@@ -56,7 +55,7 @@ public class ItemImpl implements Equine<ItemEntity> {
     public boolean beforeUpdate() {
 
         if (!entity.getWorld().isClient) {
-            if (WantItNeedItEnchantment.getLevel(entity) > 0) {
+            if (EnchantmentUtil.getWantItNeedItLevel(entity) > 0) {
                 var random = entity.getWorld().random;
 
                 if (random.nextInt(15) == 0) {

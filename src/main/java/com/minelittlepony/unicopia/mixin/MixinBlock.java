@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.minelittlepony.unicopia.item.enchantment.ConsumptionEnchantment;
+import com.minelittlepony.unicopia.item.enchantment.ConsumptionEnchantmentUtil;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -24,7 +24,7 @@ abstract class MixinBlock {
             cancellable = true
     )
     private static void dropStacks(BlockState state, World world, BlockPos pos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack stack, CallbackInfo info) {
-        if (ConsumptionEnchantment.applyConsumption(world, state, pos, blockEntity, entity, stack)) {
+        if (ConsumptionEnchantmentUtil.applyConsumption(world, state, pos, blockEntity, entity, stack)) {
             info.cancel();
         }
     }

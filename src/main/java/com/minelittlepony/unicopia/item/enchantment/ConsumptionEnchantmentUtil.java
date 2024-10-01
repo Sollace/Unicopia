@@ -20,7 +20,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class ConsumptionEnchantment {
+public class ConsumptionEnchantmentUtil {
     public static boolean applyConsumption(World w, BlockState state, BlockPos pos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack tool) {
 
         if (!(w instanceof ServerWorld world)) {

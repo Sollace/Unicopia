@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.block.jar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.minelittlepony.unicopia.USounds;
@@ -12,6 +11,7 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.mixin.MixinEntityBucketItem;
 import com.minelittlepony.unicopia.util.FluidHelper;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.mojang.serialization.Codec;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.block.Block;
@@ -20,7 +20,6 @@ import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
@@ -33,15 +32,14 @@ public record ItemsJarContents (
     ) implements JarContents, SidedInventory {
     private static final int MAX_SIZE = 16;
     private static final int[] SLOTS = IntStream.range(0, MAX_SIZE).toArray();
+    private static final Codec<List<ItemStack>> STACKS_CODEC = ItemStack.CODEC.listOf(0, MAX_SIZE);
 
     public ItemsJarContents(TileData tile) {
         this(tile, new ArrayList<>(MAX_SIZE));
     }
 
     public ItemsJarContents(TileData tile, NbtCompound compound, WrapperLookup lookup) {
-        this(tile, NbtSerialisable.ITEM_STACK.readAll(compound.getList("items", NbtElement.COMPOUND_TYPE), lookup)
-                .limit(MAX_SIZE)
-                .collect(Collectors.toList()));
+        this(tile, new ArrayList<>(NbtSerialisable.decode(STACKS_CODEC, compound.get("items")).orElse(List.of())));
     }
 
     @Override
@@ -199,7 +197,7 @@ public record ItemsJarContents (
 
     @Override
     public NbtCompound toNBT(NbtCompound compound, WrapperLookup lookup) {
-        compound.put("items", NbtSerialisable.ITEM_STACK.writeAll(stacks, lookup));
+        compound.put("items", NbtSerialisable.encode(STACKS_CODEC, stacks));
         return compound;
     }
 

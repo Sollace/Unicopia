@@ -2,6 +2,9 @@ package com.minelittlepony.unicopia.item.enchantment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistrySetupCallback;
@@ -12,6 +15,7 @@ import net.minecraft.enchantment.EnchantmentLevelBasedValue;
 import net.minecraft.enchantment.effect.AttributeEnchantmentEffect;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.attribute.EntityAttributeModifier.Operation;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -137,6 +141,7 @@ public interface UEnchantments {
     }
 
     static void bootstrap() {
+        UEnchantmentEffects.bootstrap();
         // Options.table -> EnchantmentTags.IN_ENCHANTING_TABLE
         // Optiona.curse -> EnchantmentTags.CURSE
         // Options.traded -> EnchantmentTags.TRADEABLE
@@ -153,7 +158,6 @@ public interface UEnchantments {
                         4,
                         AttributeModifierSlot.HAND
                 )));
-                // TODO: gem finder effect
 
                 register(registry, PADDED, Enchantment.builder(Enchantment.definition(
                         items.getEntryList(ItemTags.HEAD_ARMOR_ENCHANTABLE).orElseThrow(),
@@ -197,8 +201,12 @@ public interface UEnchantments {
                             1,
                             AttributeModifierSlot.MAINHAND
                     )
-                ));
-                // TODO: Herding effect
+                ).addEffect(EnchantmentEffectComponentTypes.TICK, new GroupBasedAttributeEnchantmentEffect(new AttributeEnchantmentEffect(
+                        Unicopia.id("team_strength"),
+                        EntityAttributes.GENERIC_ATTACK_DAMAGE,
+                        EnchantmentLevelBasedValue.linear(0, 1),
+                        Operation.ADD_VALUE
+                ), EnchantmentLevelBasedValue.linear(2, 2))));
 
                 register(registry, REPULSION, Enchantment.builder(
                         Enchantment.definition(
@@ -225,8 +233,8 @@ public interface UEnchantments {
                         Enchantment.constantCost(2), Enchantment.constantCost(10),
                         4,
                         AttributeModifierSlot.ANY
-                )));
-                // TODO: Want it need it effect
+                )).addEffect(EnchantmentEffectComponentTypes.TICK, new ParticleTrailEnchantmentEntityEffect(Optional.empty(), 0.2F, 1, 10)));
+
                 register(registry, POISONED_JOKE, Enchantment.builder(Enchantment.definition(
                         items.getEntryList(ItemTags.VANISHING_ENCHANTABLE).orElseThrow(),
                         Rarity.VERY_RARE,
@@ -234,8 +242,7 @@ public interface UEnchantments {
                         Enchantment.constantCost(2), Enchantment.constantCost(10),
                         4,
                         AttributeModifierSlot.ANY
-                )));
-                // TODO: Poisoned joke effect
+                )).addEffect(EnchantmentEffectComponentTypes.TICK, new AmbientSoundsEnchantmentEffect(Unicopia.id("poisoned_joke_level"), UTags.Sounds.POISON_JOKE_EVENTS)));
 
                 register(registry, CLINGY, Enchantment.builder(Enchantment.definition(
                         items.getEntryList(ItemTags.VANISHING_ENCHANTABLE).orElseThrow(),
@@ -244,8 +251,7 @@ public interface UEnchantments {
                         Enchantment.constantCost(2), Enchantment.constantCost(12),
                         4,
                         AttributeModifierSlot.ANY
-                )));
-                // TODO: Stressful effect
+                )).addEffect(EnchantmentEffectComponentTypes.TICK, DangerSensingEnchantmentEffect.INSTANCE));
 
                 register(registry, CLINGY, Enchantment.builder(Enchantment.definition(
                         items.getEntryList(ItemTags.EQUIPPABLE_ENCHANTABLE).orElseThrow(),

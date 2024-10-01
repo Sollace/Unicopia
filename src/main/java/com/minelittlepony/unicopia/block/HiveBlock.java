@@ -101,7 +101,7 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(CONSUMING)) {
             return state;
         }
@@ -116,7 +116,7 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (state.get(CONSUMING) || !state.get(AWAKE)) {
             return;
         }
@@ -142,7 +142,7 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
+    protected ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
         if (EquineContext.of(player).getCompositeRace().includes(Race.CHANGELING)) {
             world.setBlockState(pos, state.with(CONSUMING, true));
             if (!world.isClient) {
@@ -171,15 +171,13 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
         super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
     }
 
-    @Deprecated
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return EquineContext.of(context).getSpecies() == Race.CHANGELING ? VoxelShapes.empty() : super.getCollisionShape(state, world, pos, context);
     }
 
-    @Deprecated
     @Override
-    public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
+    protected float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
         float delta = super.calcBlockBreakingDelta(state, player, world, pos);
         delta *= Pony.of(player).getSpecies() == Race.CHANGELING ? 2 : 1;
         return delta;
@@ -213,6 +211,7 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
             listener = new Listener(pos);
         }
 
+        @SuppressWarnings("deprecation")
         @Override
         public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
             opening = nbt.getBoolean("opening");
@@ -225,6 +224,7 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
             }
         }
 
+        @SuppressWarnings("deprecation")
         @Override
         protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
             nbt.putBoolean("opening", opening);
@@ -312,14 +312,15 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
         }
 
         record Entry (BlockPos pos, BlockState state, @Nullable BlockEntity data) {
+            @SuppressWarnings("deprecation")
             public static final Serializer<NbtCompound, Entry> SERIALIZER = Serializer.of((compound, lookup) -> new Entry(
-                NbtSerialisable.BLOCK_POS.read(compound.getCompound("pos"), lookup),
+                NbtSerialisable.decode(BlockPos.CODEC, compound.getCompound("pos")).orElse(BlockPos.ORIGIN),
                 NbtSerialisable.decode(BlockState.CODEC, compound.get("state")).orElse(Blocks.AIR.getDefaultState()),
                 compound.getCompound("data"),
                 lookup
             ), (entry, lookup) -> {
                 NbtCompound compound = new NbtCompound();
-                compound.put("pos", NbtSerialisable.BLOCK_POS.write(entry.pos(), lookup));
+                compound.put("pos", NbtSerialisable.encode(BlockPos.CODEC, entry.pos()));
                 compound.put("state", NbtSerialisable.encode(BlockState.CODEC, entry.state()));
                 if (entry.data() != null) {
                     compound.put("data", entry.data().createNbtWithId(lookup));

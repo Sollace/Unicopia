@@ -65,6 +65,7 @@ public enum Trait implements CommandArgumentEnum<Trait> {
 
     private static final Trait[] VALUES = values();
     private static final Map<Identifier, Trait> IDS = Arrays.stream(values()).collect(Collectors.toMap(Trait::getId, Function.identity()));
+    @SuppressWarnings("deprecation")
     private static final EnumCodec<Trait> NAME_CODEC = StringIdentifiable.createCodec(Trait::values, n -> n.toLowerCase(Locale.ROOT));
     public static final Codec<Trait> CODEC = Identifier.CODEC.xmap(id -> IDS.get(id), Trait::getId);
     public static final Codec<Set<Trait>> SET_CODEC = CODEC.listOf().xmap(

@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia.client;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -18,6 +20,7 @@ import com.minelittlepony.unicopia.client.gui.spellbook.ClientChapters;
 import com.minelittlepony.unicopia.client.particle.ClientBoundParticleSpawner;
 import com.minelittlepony.unicopia.client.sound.*;
 import com.minelittlepony.unicopia.container.SpellbookChapter;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyClientPlayerEntity;
@@ -47,10 +50,10 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class ClientInteractionManager extends InteractionManager {
-
     private final MinecraftClient client = MinecraftClient.getInstance();
 
     private final Int2ObjectMap<WeakReference<TickableSoundInstance>> playingSounds = new Int2ObjectOpenHashMap<>();
+    private final Map<UUID, Int2ObjectMap<WeakReference<TickableSoundInstance>>> entitySounds = new HashMap<>();
 
     @Override
     public SpellbookChapter readChapter(PacketByteBuf buffer) {
@@ -99,11 +102,23 @@ public class ClientInteractionManager extends InteractionManager {
                         return EquinePredicates.RAGING.test(source);
                     }
                 });
+            } else if (type == SOUND_GEM_FINDING_MAGIC_HUM) {
+                play(source.getUuid(), type, () -> {
+                    return new MagicAuraSoundInstance(source.getSoundCategory(), Living.living(source), source.getWorld().getRandom());
+                });
             }
         });
     }
 
+    private void play(UUID sourceId, int type, Supplier<TickableSoundInstance> soundSupplier) {
+        play(entitySounds.computeIfAbsent(sourceId, id -> new Int2ObjectOpenHashMap<>()), type, soundSupplier);
+    }
+
     private void play(int type, Supplier<TickableSoundInstance> soundSupplier) {
+        play(playingSounds, type, soundSupplier);
+    }
+
+    private void play(Int2ObjectMap<WeakReference<TickableSoundInstance>> playingSounds, int type, Supplier<TickableSoundInstance> soundSupplier) {
         WeakReference<TickableSoundInstance> activeSound = playingSounds.get(type);
         TickableSoundInstance existing;
         if (activeSound == null || (existing = activeSound.get()) == null || existing.isDone()) {

@@ -5,7 +5,6 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
-import com.minelittlepony.unicopia.item.enchantment.WantItNeedItEnchantment;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -40,7 +39,7 @@ public class WantItTakeItGoal extends BreakHeartGoal {
     protected boolean canTarget(Entity e) {
         return e != null && !e.isRemoved() && (
                   (e instanceof LivingEntity l && predicate.test(mob, l)
-               || (e instanceof ItemEntity i && WantItNeedItEnchantment.getLevel(i) > 0)
+               || (e instanceof ItemEntity i && EnchantmentUtil.getWantItNeedItLevel(i) > 0)
             )
         );
     }

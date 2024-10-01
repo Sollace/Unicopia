@@ -6,8 +6,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.MagicImmune;
-import com.minelittlepony.unicopia.item.enchantment.WantItNeedItEnchantment;
-
+import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import net.minecraft.entity.*;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -44,7 +43,7 @@ public interface EquinePredicates {
     Predicate<Entity> EXCEPT_MAGIC_IMMUNE = IS_MAGIC_IMMUNE.negate();
     Predicate<Entity> VALID_LIVING_AND_NOT_MAGIC_IMMUNE = EntityPredicates.VALID_LIVING_ENTITY.and(EXCEPT_MAGIC_IMMUNE);
 
-    Predicate<LivingEntity> LIVING_HAS_WANT_IT_NEED_IT = e -> WantItNeedItEnchantment.getLevel(e) > 0;
+    Predicate<LivingEntity> LIVING_HAS_WANT_IT_NEED_IT = e -> EnchantmentUtil.getWantItNeedItLevel(e) > 0;
     Predicate<Entity> VALID_FOR_DISGUISE = EntityPredicates.EXCEPT_SPECTATOR.and(e -> !(e instanceof LightningEntity || e instanceof AbstractDecorationEntity));
 
     static Predicate<Entity> ofRace(Race race) {

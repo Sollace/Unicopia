@@ -6,6 +6,7 @@ import java.util.stream.StreamSupport;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
@@ -40,6 +41,8 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 import com.minelittlepony.unicopia.server.world.DragonBreathStore;
 import com.minelittlepony.unicopia.util.*;
+import com.minelittlepony.unicopia.util.serialization.NbtMap;
+import com.mojang.serialization.Codec;
 
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.block.BlockState;
@@ -67,6 +70,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -97,7 +101,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     private final List<Tickable> tickers = new ArrayList<>();
 
     private final LandingEventHandler landEvent = addTicker(new LandingEventHandler(this));
-    private final Enchantments enchants = addTicker(new Enchantments(this));
+    private final NbtMap<Identifier, Float> enchants = NbtMap.of(Identifier.CODEC, Codec.FLOAT);
     private final ItemTracker armour = addTicker(new ItemTracker(this));
     private final Transportation<T> transportation = new Transportation<>(this);
 
@@ -152,7 +156,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return spells.getSlots();
     }
 
-    public Enchantments getEnchants() {
+    public NbtMap<Identifier, Float> getEnchants() {
         return enchants;
     }
 
@@ -250,6 +254,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         }
 
         updateDragonBreath();
+
+        if (EnchantmentUtil.getLevel(UEnchantments.GEM_FINDER, entity) > 0) {
+            InteractionManager.getInstance().playLoopingSound(entity, InteractionManager.SOUND_GEM_FINDING_MAGIC_HUM, 0);
+        }
 
         transportation.tick();
     }

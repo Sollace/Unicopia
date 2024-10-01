@@ -29,6 +29,7 @@ public class InteractionManager {
     public static final int SOUND_MAGIC_BEAM = 5;
     public static final int SOUND_HEART_BEAT = 6;
     public static final int SOUND_KIRIN_RAGE = 7;
+    public static final int SOUND_GEM_FINDING_MAGIC_HUM = 8;
 
     public static final int SCREEN_DISPELL_ABILITY = 0;
 

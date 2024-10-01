@@ -8,6 +8,8 @@ import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
@@ -38,6 +40,27 @@ public interface EnchantmentUtil {
             EnchantmentHelper.set(stack, enchantments.build());
         }
         return true;
+    }
+
+
+    static boolean prefersEquipment(ItemStack newStack, ItemStack oldStack) {
+        int newLevel = EnchantmentUtil.getLevel(UEnchantments.WANT_IT_NEED_IT, newStack);
+        int oldLevel = EnchantmentUtil.getLevel(UEnchantments.WANT_IT_NEED_IT, oldStack);
+        return newLevel > oldLevel;
+    }
+
+    static int getWantItNeedItLevel(Entity entity) {
+        return entity instanceof LivingEntity l ? getWantItNeedItLevel(l)
+             : entity instanceof ItemEntity i ? getWantItNeedItLevel(i)
+             : 0;
+    }
+
+    static int getWantItNeedItLevel(ItemEntity entity) {
+        return getLevel(UEnchantments.WANT_IT_NEED_IT, entity.getStack());
+    }
+
+    static int getWantItNeedItLevel(LivingEntity entity) {
+        return getLevel(UEnchantments.WANT_IT_NEED_IT, entity);
     }
 
     static int getLuck(int baseline, LivingEntity entity) {

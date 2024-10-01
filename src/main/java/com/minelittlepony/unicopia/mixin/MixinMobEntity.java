@@ -9,8 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.*;
-import com.minelittlepony.unicopia.item.enchantment.WantItNeedItEnchantment;
-
+import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.GoalSelector;
@@ -35,7 +34,7 @@ abstract class MixinMobEntity extends LivingEntity implements Equine.Container<C
     @Inject(method = "prefersNewEquipment(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)Z",
             at = @At("HEAD"), cancellable = true)
     private void onPrefersNewEquipment(ItemStack newStack, ItemStack oldStack, CallbackInfoReturnable<Boolean> info) {
-        if (WantItNeedItEnchantment.prefersEquipment(newStack, oldStack)) {
+        if (EnchantmentUtil.prefersEquipment(newStack, oldStack)) {
             info.setReturnValue(true);
         }
     }

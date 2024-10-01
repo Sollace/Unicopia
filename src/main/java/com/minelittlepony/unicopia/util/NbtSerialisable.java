@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.BlockPos;
@@ -17,8 +16,6 @@ import net.minecraft.util.math.Vec3d;
 public interface NbtSerialisable {
     @Deprecated
     Serializer<NbtElement, BlockPos> BLOCK_POS = Serializer.ofCodec(BlockPos.CODEC);
-    @Deprecated
-    Serializer<NbtElement, ItemStack> ITEM_STACK = Serializer.ofCodec(ItemStack.CODEC);
 
     /**
      * Called to save this to nbt to persist state on file or to transmit over the network
