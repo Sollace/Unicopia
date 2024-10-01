@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
-import com.minelittlepony.unicopia.entity.ItemTracker;
-import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.item.component.Charges;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 
 import net.minecraft.entity.*;
@@ -10,24 +10,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
 
-public class PegasusAmuletItem extends AmuletItem implements ItemTracker.Trackable {
+public class PegasusAmuletItem extends AmuletItem {
     public PegasusAmuletItem(Item.Settings settings, int maxEnergy) {
-        super(settings, maxEnergy);
-    }
-
-    @Override
-    public void onUnequipped(Living<?> living, long timeWorn) {
-
-    }
-
-    @Override
-    public void onEquipped(Living<?> living) {
-
-    }
-
-    @Override
-    public int getDefaultCharge() {
-        return getMaxCharge() / 2;
+        super(settings.component(UDataComponentTypes.CHARGES, Charges.of(maxEnergy / 2, maxEnergy)));
     }
 
     @Override

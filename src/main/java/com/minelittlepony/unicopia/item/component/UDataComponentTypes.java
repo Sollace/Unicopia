@@ -23,6 +23,8 @@ public interface UDataComponentTypes {
     ComponentType<ButterflyEntity.Variant> BUTTERFLY_VARIANT = register("butterfly_variant", builder -> builder.codec(ButterflyEntity.Variant.CODEC).packetCodec(ButterflyEntity.Variant.PACKET_CODEC));
     ComponentType<AirBalloonEntity.BalloonDesign> BALLOON_DESIGN = register("balloon_design", builder -> builder.codec(AirBalloonEntity.BalloonDesign.CODEC).packetCodec(AirBalloonEntity.BalloonDesign.PACKET_CODEC));
     ComponentType<Issuer> ISSUER = register("issuer", builder -> builder.codec(Issuer.CODEC).packetCodec(Issuer.PACKET_CODEC).cache());
+    ComponentType<Charges> CHARGES = register("charges", builder -> builder.codec(Charges.CODEC).packetCodec(Charges.PACKET_CODEC));
+    ComponentType<Appearance> APPEARANCE = register("appearance", builder -> builder.codec(Appearance.CODEC).packetCodec(Appearance.PACKET_CODEC));
 
     private static <T> ComponentType<T> register(String name, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
         return Registry.register(Registries.DATA_COMPONENT_TYPE, Unicopia.id(name), builderOperator.apply(ComponentType.builder()).build());

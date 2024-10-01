@@ -2,10 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.*;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.google.common.base.Predicates;
-import com.google.common.collect.ImmutableMultimap;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
@@ -17,6 +14,7 @@ import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.mob.SombraEntity;
 import com.minelittlepony.unicopia.entity.mob.SpellbookEntity;
 import com.minelittlepony.unicopia.entity.player.*;
+import com.minelittlepony.unicopia.item.component.Charges;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -30,9 +28,7 @@ import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
-import net.minecraft.component.type.ItemEnchantmentsComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
@@ -49,7 +45,6 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
@@ -63,7 +58,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.World.ExplosionSourceType;
 
-public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackable, ItemImpl.ClingyItem, ItemImpl.GroundTickCallback {
+public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackable, ItemImpl.ClingyItem, ItemImpl.GroundTickCallback, DamageChecker {
     private static final Identifier EFFECT_ID = Unicopia.id("alicorn_amulet_modifiers");
     private static final Object2FloatMap<RegistryEntry<EntityAttribute>> EFFECT_SCALES = Object2FloatMaps.unmodifiable(new Object2FloatOpenHashMap<>(Map.of(
             EntityAttributes.GENERIC_ATTACK_DAMAGE, 0.2F,
@@ -104,7 +99,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
     }
 
     @Override
-    public boolean damage(DamageSource source) {
+    public boolean takesDamageFrom(DamageSource source) {
         return source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY);
     }
 
@@ -338,10 +333,8 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
             for (Entity target : VecHelper.findInRange(entity, entity.getWorld(), entity.getPos(), 10, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
                 if (target instanceof LivingEntity l) {
                     for (ItemStack equipment : l.getEquippedItems()) {
-                        if (equipment.getItem() == UItems.GROGARS_BELL) {
-                            ChargeableItem chargeable = (ChargeableItem)UItems.GROGARS_BELL;
-                            if (chargeable.hasCharge(equipment)) {
-                                ChargeableItem.consumeEnergy(equipment, 3);
+                        if (equipment.isOf(UItems.GROGARS_BELL)) {
+                            if (Charges.discharge(equipment, 3)) {
                                 ParticleUtils.spawnParticle(entity.getWorld(),
                                         new FollowingParticleEffect(UParticles.HEALTH_DRAIN, entity, 0.4F)
                                         .withChild(ParticleTypes.COMPOSTER), target.getEyePos(), Vec3d.ZERO);

@@ -389,6 +389,7 @@ public class ButterflyEntity extends AmbientEntity {
 
         public static final Variant[] VALUES = Variant.values();
 
+        @SuppressWarnings("deprecation")
         public static final EnumCodec<Variant> CODEC = StringIdentifiable.createCodec(Variant::values);
         public static final PacketCodec<ByteBuf, Variant> PACKET_CODEC = PacketCodecs.indexed(i -> VALUES[i], Variant::ordinal);
 

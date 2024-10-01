@@ -3,8 +3,8 @@ package com.minelittlepony.unicopia.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.component.Appearance;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
@@ -21,8 +21,8 @@ public class ZapAppleRecipe extends ShapelessRecipe {
             Codec.STRING.optionalFieldOf("group", "").forGetter(ZapAppleRecipe::getGroup),
             CraftingRecipeCategory.CODEC.optionalFieldOf("category", CraftingRecipeCategory.MISC).forGetter(ZapAppleRecipe::getCategory),
             Registries.ITEM.getCodec().xmap(
-                item -> ChameleonItem.setAppearance(UItems.ZAP_APPLE.getDefaultStack(), item.getDefaultStack()),
-                stack -> ChameleonItem.getAppearance(stack)
+                item -> Appearance.set(UItems.ZAP_APPLE.getDefaultStack(), item.getDefaultStack()),
+                stack -> Appearance.upwrapAppearance(stack).getItem()
             ).fieldOf("appearance").forGetter(recipe -> recipe.getResult(null)),
             URecipes.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(ZapAppleRecipe::getIngredients)
         ).apply(instance, ZapAppleRecipe::new));

@@ -5,6 +5,7 @@ import net.minecraft.client.sound.MovingSoundInstance;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 
 public abstract class FadeOutSoundInstance extends MovingSoundInstance {
@@ -28,6 +29,12 @@ public abstract class FadeOutSoundInstance extends MovingSoundInstance {
         this.repeat = true;
         this.volume = volume;
         setTargetVolume(volume);
+    }
+
+    protected void setPosition(Vec3d pos) {
+        x = pos.x;
+        y = pos.y;
+        z = pos.z;
     }
 
     @Override

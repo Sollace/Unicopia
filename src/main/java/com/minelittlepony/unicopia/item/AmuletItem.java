@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
+import com.minelittlepony.unicopia.item.component.Charges;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.type.AttributeModifiersComponent;
@@ -22,14 +24,15 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-public class AmuletItem extends WearableItem implements ChargeableItem {
+public class AmuletItem extends WearableItem {
     public static final Identifier AMULET_MODIFIERS_ID = Unicopia.id("amulet_modifiers");
 
-    private final int maxEnergy;
-
     public AmuletItem(Item.Settings settings, int maxEnergy) {
+        super(settings.component(UDataComponentTypes.CHARGES, Charges.of(maxEnergy, maxEnergy)));
+    }
+
+    public AmuletItem(Item.Settings settings) {
         super(settings);
-        this.maxEnergy = maxEnergy;
     }
 
     public AmuletItem(Item.Settings settings, int maxEnergy, AttributeModifiersComponent modifiers) {
@@ -49,9 +52,7 @@ public class AmuletItem extends WearableItem implements ChargeableItem {
             list.add(compiled);
         }
 
-        if (isChargable()) {
-            list.add(Text.translatable("item.unicopia.amulet.energy", (int)Math.floor(ChargeableItem.getEnergy(stack)), getMaxCharge()));
-        }
+        Charges.of(stack).appendTooltip(context, list::add, type);
     }
 
     @Override
@@ -66,11 +67,11 @@ public class AmuletItem extends WearableItem implements ChargeableItem {
 
     @Override
     public boolean hasGlint(ItemStack stack) {
-        return !isChargable() || stack.hasEnchantments() || ChargeableItem.getEnergy(stack) > 0;
+        return stack.hasEnchantments() || Charges.of(stack).maximum() == 0 || Charges.of(stack).energy() > 0;
     }
 
     public boolean isApplicable(ItemStack stack) {
-        return stack.getItem() == this && (!isChargable() || ChargeableItem.getEnergy(stack) > 0);
+        return stack.getItem() == this && (Charges.of(stack).maximum() == 0 || Charges.of(stack).energy() > 0);
     }
 
     public final boolean isApplicable(LivingEntity entity) {
@@ -81,11 +82,6 @@ public class AmuletItem extends WearableItem implements ChargeableItem {
         return TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.NECKLACE, this::isApplicable)
                 .findFirst()
                 .orElse(TrinketsDelegate.EquippedStack.EMPTY);
-    }
-
-    @Override
-    public int getMaxCharge() {
-        return maxEnergy;
     }
 
     public static TrinketsDelegate.EquippedStack get(LivingEntity entity) {

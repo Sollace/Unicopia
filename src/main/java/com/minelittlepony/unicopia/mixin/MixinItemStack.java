@@ -6,7 +6,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.diet.DietView;
+import com.minelittlepony.unicopia.item.DamageChecker;
+
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
@@ -29,5 +32,13 @@ abstract class MixinItemStack {
     private void onFinishUsing(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> info) {
         ItemStack self = (ItemStack)(Object)this;
         ((DietView.Holder)self.getItem()).getDiets(self).finishUsing(self, world, user);
+    }
+
+    @Inject(method = "takesDamageFrom", at = @At("HEAD"))
+    private void onTakesDamageFrom(DamageSource source, CallbackInfoReturnable<Boolean> info) {
+        ItemStack self = (ItemStack)(Object)this;
+        if (self.getItem() instanceof DamageChecker checker) {
+            info.setReturnValue(checker.takesDamageFrom(source));
+        }
     }
 }

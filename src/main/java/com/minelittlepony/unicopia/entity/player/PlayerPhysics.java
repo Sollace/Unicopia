@@ -21,8 +21,8 @@ import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.input.Heuristic;
 import com.minelittlepony.unicopia.item.AmuletItem;
-import com.minelittlepony.unicopia.item.ChargeableItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.component.Charges;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.Channel;
@@ -504,7 +504,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private void tickArtificialFlight(MutableVector velocity) {
         if (ticksInAir % 10 == 0 && !entity.getWorld().isClient) {
             TrinketsDelegate.EquippedStack stack = AmuletItem.get(entity);
-            if (ChargeableItem.getEnergy(stack.stack()) < 9) {
+            Charges charges = Charges.of(stack.stack());
+            if (charges.canHoldCharge() && charges.getPercentage() < 0.1F) {
                 playSound(USounds.ITEM_ICARUS_WINGS_WARN, 0.13F, 0.5F);
             }
 
@@ -521,7 +522,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 minDamage *= 3;
             }
 
-            ChargeableItem.consumeEnergy(stack.stack(), energyConsumed);
+            if (charges.canHoldCharge()) {
+                Charges.discharge(stack.stack(), (int)energyConsumed);
+            }
 
             if (entity.getWorld().random.nextInt(damageInterval) == 0) {
                 stack.stack().damage(minDamage + entity.getWorld().random.nextInt(50), (ServerWorld)entity.getWorld(), (ServerPlayerEntity)entity, stack.breakStatusSender());

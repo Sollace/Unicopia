@@ -8,7 +8,6 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.client.gui.*;
 import com.minelittlepony.unicopia.entity.player.*;
-import com.minelittlepony.unicopia.util.ColorHelper;
 import com.sollace.romanizer.api.Romanizer;
 
 import net.minecraft.client.MinecraftClient;
@@ -17,6 +16,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper.Argb;
 import net.minecraft.util.math.MathHelper;
 
 public class SpellbookProfilePageContent implements SpellbookChapterList.Content {
@@ -74,8 +74,8 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
                 currentScaledLevel,
                 currentCorruption
         ), SpellbookScreen.TITLE_X, y + 13, 0.8F,
-                ColorHelper.lerp(currentCorruption,
-                        ColorHelper.lerp(currentScaledLevel, 0xAA0040FF, 0xAAA0AA40),
+                Argb.lerp(currentCorruption,
+                        Argb.lerp(currentScaledLevel, 0xAA0040FF, 0xAAA0AA40),
                         0xAAFF0000
                 )
         );
@@ -106,7 +106,7 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
         int xpColor = 0xAA0040FF | ((int)((0.3F + 0.7F * xpPercentage) * 0xFF) & 0xFF) << 16;
         int manaColor = 0xFF00F040;
         if (pony.getSpellSlot().get(SpellPredicate.IS_CORRUPTING).isPresent()) {
-            manaColor = ColorHelper.lerp(Math.abs(MathHelper.sin(pony.asEntity().age / 15F)), manaColor, 0xFF0030F0);
+            manaColor = Argb.lerp(Math.abs(MathHelper.sin(pony.asEntity().age / 15F)), manaColor, 0xFF0030F0);
         }
         manaColor |= (int)((0.3F + 0.7F * alphaF) * 0x40) << 16;
 
@@ -120,10 +120,10 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
 
             growth = MathHelper.sin(delta / 10F) * 2;
 
-            int bandAColor = ColorHelper.lerp(currentCorruption, 0xAAFFAA60, 0xFF000030);
-            int bandBColor = ColorHelper.lerp(currentCorruption, 0xFFFFFF40, 0x00000020);
+            int bandAColor = Argb.lerp(currentCorruption, 0xAAFFAA60, 0xFF000030);
+            int bandBColor = Argb.lerp(currentCorruption, 0xFFFFFF40, 0x00000020);
 
-            float glowSize = ColorHelper.lerp(currentCorruption, 8, -8);
+            float glowSize = Argb.lerp(currentCorruption, 8, -8);
 
             for (int i = 0; i < rayCount; i++) {
                 double rad = (radius + glowSize) * 0.8F + growth - (i % 2) * 5;

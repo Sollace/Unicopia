@@ -15,6 +15,8 @@ import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.component.Charges;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.item.group.MultiItem;
 
 import net.minecraft.entity.Entity;
@@ -34,9 +36,9 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class EnchantedStaffItem extends StaffItem implements EnchantableItem, ChargeableItem, MultiItem {
-
+public class EnchantedStaffItem extends StaffItem implements EnchantableItem, MultiItem, Charges.ChargeChangeCallback {
     private static final Map<EntityType<?>, SpellType<?>> ENTITY_TYPE_TO_SPELL = new HashMap<>();
+
     public static <T extends Spell> SpellType<T> register(EntityType<?> entityType, SpellType<T> spellType) {
         ENTITY_TYPE_TO_SPELL.put(entityType, spellType);
         return spellType;
@@ -83,7 +85,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
     }
 
     public EnchantedStaffItem(Settings settings) {
-        super(settings.maxDamage(500));
+        super(settings.component(UDataComponentTypes.CHARGES, new Charges(3, 3, 3, true)).maxDamage(500));
     }
 
     @Override
@@ -96,12 +98,11 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> lines, TooltipType type) {
-
         if (EnchantableItem.isEnchanted(stack)) {
             SpellType<?> key = EnchantableItem.getSpellKey(stack);
             lines.add(Text.translatable(key.getTranslationKey()).formatted(key.getAffinity().getColor()));
-            lines.add(Text.translatable(getTranslationKey(stack) + ".charges", (int)Math.floor(ChargeableItem.getEnergy(stack)), getMaxCharge()));
         }
+        Charges.of(stack).appendTooltip(context, lines::add, type);
     }
 
     @Override
@@ -119,7 +120,9 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
                 target.setHealth(1);
                 target.setFrozenTicks(9000);
             }
-            player.setStackInHand(hand, recharge(EnchantableItem.enchant(stack, type)));
+            stack = EnchantableItem.enchant(stack, type);
+            Charges.recharge(stack);
+            player.setStackInHand(hand, stack);
         }
         return ActionResult.SUCCESS;
     }
@@ -135,36 +138,35 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity entity, int timeLeft) {
         int i = getMaxUseTime(stack, entity) - timeLeft;
 
-        if (EnchantableItem.isEnchanted(stack) && hasCharge(stack)) {
+        if (EnchantableItem.isEnchanted(stack)) {
             if (i > 20) {
-                Pony.of(entity).ifPresent(pony -> {
-                    pony.subtractEnergyCost(4);
-                    stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
-                    getSpellEffect(stack).create().toThrowable().throwProjectile(pony);
-                    pony.setAnimation(Animation.ARMS_UP, Animation.Recipient.ANYONE, 10);
-                });
-                ChargeableItem.consumeEnergy(stack, 1);
+                if (Charges.discharge(stack, 1)) {
+                    Pony.of(entity).ifPresent(pony -> {
+                        pony.subtractEnergyCost(4);
+                        stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
+                        getSpellEffect(stack).create().toThrowable().throwProjectile(pony);
+                        pony.setAnimation(Animation.ARMS_UP, Animation.Recipient.ANYONE, 10);
+                    });
+                }
             } else if (i > 5) {
-                Pony.of(entity).ifPresent(pony -> {
-                    pony.subtractEnergyCost(4);
-                    stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
-                    getSpellEffect(stack).create().toThrowable().throwProjectile(pony);
-                    pony.setAnimation(Animation.ARMS_UP, Animation.Recipient.ANYONE, 10);
-                });
-                ChargeableItem.consumeEnergy(stack, 1);
+                if (Charges.discharge(stack, 1)) {
+                    Pony.of(entity).ifPresent(pony -> {
+                        pony.subtractEnergyCost(4);
+                        stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
+                        getSpellEffect(stack).create().toThrowable().throwProjectile(pony);
+                        pony.setAnimation(Animation.ARMS_UP, Animation.Recipient.ANYONE, 10);
+                    });
+                }
             }
         }
     }
 
     @Override
     protected boolean castContainedEffect(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        if (attacker.isSneaking() && hasCharge(stack)) {
+        if (attacker.isSneaking() && Charges.discharge(stack, 1)) {
             stack.damage(50, attacker, EquipmentSlot.MAINHAND);
             Caster.of(attacker).ifPresent(c -> c.subtractEnergyCost(4));
             Caster.of(target).ifPresent(c -> getSpellEffect(stack).apply(c, CastingMethod.STAFF));
-            ChargeableItem.consumeEnergy(stack, 1);
-
-            return true;
         }
 
         return false;
@@ -190,9 +192,8 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
                 if (i > 200) {
                     living.clearActiveItem();
                     living.damage(entity.getDamageSources().magic(), 1);
-                    if (EnchantableItem.isEnchanted(stack) && hasCharge(stack)) {
+                    if (EnchantableItem.isEnchanted(stack) && Charges.discharge(stack, 1)) {
                         Caster.of(entity).ifPresent(c -> getSpellEffect(stack).apply(c, CastingMethod.STAFF));
-                        ChargeableItem.consumeEnergy(stack, 1);
                     }
                 }
             }
@@ -205,18 +206,8 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
     }
 
     @Override
-    public int getMaxCharge() {
-        return 3;
-    }
-
-    @Override
-    public int getDefaultCharge() {
-        return 3;
-    }
-
-    @Override
     public Text getName(ItemStack stack) {
-        if (EnchantableItem.isEnchanted(stack) && hasCharge(stack)) {
+        if (EnchantableItem.isEnchanted(stack) && Charges.of(stack).energy() > 0) {
             return Text.translatable(this.getTranslationKey(stack) + ".enchanted", super.getName(stack), EnchantableItem.getSpellKey(stack).getName());
         }
         return super.getName(stack);
@@ -224,7 +215,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Ch
 
     @Override
     public void onDischarge(ItemStack stack) {
-        if (ChargeableItem.getEnergy(stack) == 0) {
+        if (Charges.of(stack).energy() == 0) {
             EnchantableItem.unenchant(stack);
         }
     }

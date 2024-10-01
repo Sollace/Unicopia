@@ -100,7 +100,6 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
         }
     }
 
-    @Deprecated
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(CONSUMING)) {

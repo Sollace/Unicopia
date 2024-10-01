@@ -11,7 +11,6 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.ColorHelper.Argb;
 
 public class FairyEntityRenderer extends MobEntityRenderer<FairyEntity, FairyEntityRenderer.Model> {

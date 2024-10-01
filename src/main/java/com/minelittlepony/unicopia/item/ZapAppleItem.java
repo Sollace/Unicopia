@@ -8,12 +8,15 @@ import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.component.Appearance;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.item.group.MultiItem;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -31,13 +34,12 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.registry.Registries;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class ZapAppleItem extends Item implements ChameleonItem, MultiItem {
+public class ZapAppleItem extends Item implements MultiItem, Appearance.AppearanceChangeCallback {
     public ZapAppleItem(Settings settings) {
-        super(settings.rarity(Rarity.RARE));
+        super(settings.rarity(Rarity.RARE).component(UDataComponentTypes.APPEARANCE, Appearance.DEFAULT_FULLY_DISGUISED));
     }
 
     @Override
@@ -105,21 +107,18 @@ public class ZapAppleItem extends Item implements ChameleonItem, MultiItem {
                 .stream()
                 .flatMap(world -> RegistryUtils.valuesForTag(world, UConventionalTags.Items.APPLES))
                 .filter(a -> a != this).map(item -> {
-            return ChameleonItem.setAppearance(getDefaultStack(), item.getDefaultStack());
+            return Appearance.set(getDefaultStack(), item.getDefaultStack());
         }).toList();
     }
 
     @Override
     public Text getName(ItemStack stack) {
-        return ChameleonItem.hasAppearance(stack) ? ChameleonItem.getAppearanceStack(stack).getName() : super.getName(stack);
+        Appearance appearance = stack.get(UDataComponentTypes.APPEARANCE);
+        return appearance != null ? appearance.item().getName() : super.getName(stack);
     }
 
     @Override
-    public Rarity getRarity(ItemStack stack) {
-        if (ChameleonItem.hasAppearance(stack)) {
-            return Rarity.EPIC;
-        }
-
-        return Rarity.RARE;
+    public void onAppearanceSet(ItemStack stack, Appearance appearance) {
+        stack.set(DataComponentTypes.RARITY, appearance.item().isEmpty() ? stack.getDefaultComponents().get(DataComponentTypes.RARITY) : Rarity.EPIC);
     }
 }

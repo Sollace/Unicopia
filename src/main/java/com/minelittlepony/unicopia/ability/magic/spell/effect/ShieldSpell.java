@@ -23,7 +23,6 @@ import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.server.world.Ether;
-import com.minelittlepony.unicopia.util.ColorHelper;
 import com.minelittlepony.unicopia.util.Lerp;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
@@ -40,6 +39,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.util.math.ColorHelper.Argb;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -91,7 +91,7 @@ public class ShieldSpell extends AbstractSpell {
 
         source.spawnParticles(origin, new Sphere(true, radius.getValue()), (int)(radius.getValue() * 2), pos -> {
             int hornColor = MineLPDelegate.getInstance().getMagicColor(source.getOriginatingCaster().asEntity());
-            source.addParticle(new MagicParticleEffect(ColorHelper.lerp(0.6F, getType().getColor(), hornColor)), pos, Vec3d.ZERO);
+            source.addParticle(new MagicParticleEffect(Argb.lerp(0.6F, getType().getColor(), hornColor)), pos, Vec3d.ZERO);
 
             if (source.asWorld().random.nextInt(10) == 0 && source.asWorld().random.nextFloat() < source.getCorruption().getScaled(1)) {
                 ParticleUtils.spawnParticle(source.asWorld(), new LightningBoltParticleEffect(true, 3, 2, 0.1F, Optional.empty()), pos, Vec3d.ZERO);

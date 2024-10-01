@@ -7,6 +7,8 @@ import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.component.Charges;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -31,9 +33,9 @@ import net.minecraft.util.UseAction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class BellItem extends Item implements ChargeableItem {
+public class BellItem extends Item {
     public BellItem(Settings settings) {
-        super(settings);
+        super(settings.component(UDataComponentTypes.CHARGES, Charges.of(1000, 1000)));
     }
 
     @Override
@@ -43,7 +45,7 @@ public class BellItem extends Item implements ChargeableItem {
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> list, TooltipType type) {
-        list.add(Text.translatable(getTranslationKey() + ".charges", (int)Math.floor(ChargeableItem.getEnergy(stack)), getMaxCharge()));
+        Charges.of(stack).appendTooltip(context, list::add, type);
     }
 
     @Override
@@ -69,23 +71,28 @@ public class BellItem extends Item implements ChargeableItem {
         ItemStack stack = player.getStackInHand(hand);
         ItemStack offhandStack = AmuletItem.get(player).stack();
 
-        if (!(offhandStack.getItem() instanceof ChargeableItem)) {
+        if (!Charges.of(offhandStack).canHoldCharge()) {
             offhandStack = player.getStackInHand(hand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND);
         }
 
         Pony pony = Pony.of(player);
 
-        if (hasCharge(stack)) {
+        Charges charges = Charges.of(stack);
+
+        if (charges.energy() > 0) {
             pony.playSound(USounds.ITEM_GROGAR_BELL_CHARGE, 0.6F, 1);
             pony.getCorruption().add(player.getRandom().nextBetween(1, 10));
-            if (offhandStack.getItem() instanceof ChargeableItem chargeable) {
-                float maxChargeBy = chargeable.getMaxCharge() - ChargeableItem.getEnergy(offhandStack);
-                float energyTransferred = Math.min(ChargeableItem.getEnergy(stack), maxChargeBy);
-                chargeable.recharge(offhandStack, energyTransferred);
-                ChargeableItem.consumeEnergy(stack, energyTransferred);
+
+            Charges offhandCharges = Charges.of(offhandStack);
+
+            if (offhandCharges.canHoldCharge()) {
+                int maxChargeBy = charges.maximum() - offhandCharges.energy();
+                int energyTransferred = Math.min(charges.energy(), maxChargeBy);
+                Charges.recharge(offhandStack, energyTransferred);
+                Charges.discharge(stack, energyTransferred);
             } else {
-                pony.getMagicalReserves().getMana().add(ChargeableItem.getEnergy(stack));
-                ChargeableItem.setEnergy(stack, 0);
+                pony.getMagicalReserves().getMana().add(charges.energy());
+                stack.set(UDataComponentTypes.CHARGES, charges.withEnergy(0));
             }
 
             pony.spawnParticles(pony.getPhysics().getHeadPosition().toCenterPos(), new Sphere(false, 0.5F), 7, p -> {
@@ -166,18 +173,18 @@ public class BellItem extends Item implements ChargeableItem {
                 return true;
             }
         }
-        ChargeableItem.consumeEnergy(stack, -amountDrawn);
+        if (Charges.discharge(stack, -(int)amountDrawn)) {
+            user.playSound(USounds.ITEM_GROGAR_BELL_DRAIN, 0.2F, progress);
 
-        user.playSound(USounds.ITEM_GROGAR_BELL_DRAIN, 0.2F, progress);
-
-        for (int i = 0; i < 4; i++) {
-            living.addParticle(
-                    new FollowingParticleEffect(UParticles.HEALTH_DRAIN, user.asEntity(), 0.4F)
-                        .withChild(particleType),
-                    living.getOriginVector().add(0, living.getPhysics().getGravitySignum() * living.asEntity().getHeight() / 2, 0)
-                        .add(VecHelper.supply(() -> user.asWorld().random.nextTriangular(0, 0.2))),
-                    Vec3d.ZERO
-            );
+            for (int i = 0; i < 4; i++) {
+                living.addParticle(
+                        new FollowingParticleEffect(UParticles.HEALTH_DRAIN, user.asEntity(), 0.4F)
+                            .withChild(particleType),
+                        living.getOriginVector().add(0, living.getPhysics().getGravitySignum() * living.asEntity().getHeight() / 2, 0)
+                            .add(VecHelper.supply(() -> user.asWorld().random.nextTriangular(0, 0.2))),
+                        Vec3d.ZERO
+                );
+            }
         }
 
         return false;
@@ -204,11 +211,6 @@ public class BellItem extends Item implements ChargeableItem {
 
     @Override
     public boolean hasGlint(ItemStack stack) {
-        return stack.hasEnchantments() || ChargeableItem.getEnergy(stack) > 0;
-    }
-
-    @Override
-    public int getMaxCharge() {
-        return 1000;
+        return super.hasGlint(stack) || Charges.of(stack).energy() > 0;
     }
 }

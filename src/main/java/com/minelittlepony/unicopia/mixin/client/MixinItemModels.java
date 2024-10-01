@@ -4,7 +4,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
-import com.minelittlepony.unicopia.item.ChameleonItem;
+import com.minelittlepony.unicopia.item.component.Appearance;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
+
 import net.minecraft.client.render.item.ItemModels;
 import net.minecraft.item.ItemStack;
 
@@ -14,8 +16,9 @@ abstract class MixinItemModels {
             at = @At("HEAD"),
             index = 1)
     private ItemStack modifyStack(ItemStack stack) {
-        if (stack.getItem() instanceof ChameleonItem && ((ChameleonItem)stack.getItem()).isFullyDisguised()) {
-            return ChameleonItem.getAppearanceStack(stack);
+        Appearance appearance = stack.get(UDataComponentTypes.APPEARANCE);
+        if (appearance != null && appearance.replaceFully()) {
+            return Appearance.upwrapAppearance(stack);
         }
         return stack;
     }

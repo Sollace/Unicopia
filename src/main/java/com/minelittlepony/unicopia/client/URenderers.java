@@ -31,10 +31,10 @@ import com.minelittlepony.unicopia.client.render.spell.SpellRendererFactory;
 import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.ButterflyItem;
-import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.FancyBedItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.component.Appearance;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.terraformersmc.terraform.boat.api.client.TerraformBoatClientHelper;
 
@@ -207,7 +207,7 @@ public interface URenderers {
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         ClientWorld world = MinecraftClient.getInstance().world;
 
-        if (ChameleonItem.hasAppearance(stack)) {
+        if (Appearance.hasAppearance(stack)) {
             matrices.push();
             if (mode.isFirstPerson()) {
                 matrices.translate(0.05, 0.06, 0.06);
@@ -221,9 +221,7 @@ public interface URenderers {
 
             float scale = 0.5F;
             matrices.scale(scale, scale, scale);
-
-            ItemStack appearance = ChameleonItem.getAppearanceStack(stack);
-            renderer.renderItem(appearance, mode, light, overlay, matrices, immediate, world, 0);
+            renderer.renderItem(Appearance.upwrapAppearance(stack), mode, light, overlay, matrices, immediate, world, 0);
             matrices.pop();
         }
         renderer.renderItem(UItems.EMPTY_JAR.getDefaultStack(), mode, light, overlay, matrices, vertices, world, 0);

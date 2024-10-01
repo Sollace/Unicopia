@@ -2,8 +2,8 @@ package com.minelittlepony.unicopia.recipe;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.component.Appearance;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
@@ -45,14 +45,14 @@ public class JarExtractRecipe extends SpecialCraftingRecipe {
                 return ItemStack.EMPTY;
             }
 
-            if (!ChameleonItem.hasAppearance(stack)) {
+            if (!Appearance.hasAppearance(stack)) {
                 return ItemStack.EMPTY;
             }
 
             jar = stack;
         }
 
-        return ChameleonItem.getAppearanceStack(jar);
+        return Appearance.upwrapAppearance(jar);
     }
 
     @Override

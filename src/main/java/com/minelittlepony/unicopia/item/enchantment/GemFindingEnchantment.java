@@ -5,8 +5,6 @@ import com.minelittlepony.unicopia.client.sound.MagicAuraSoundInstance;
 import com.minelittlepony.unicopia.entity.Enchantments;
 import com.minelittlepony.unicopia.entity.Living;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 

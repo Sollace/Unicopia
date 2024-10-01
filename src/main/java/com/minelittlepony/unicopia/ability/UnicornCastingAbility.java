@@ -12,7 +12,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
-import com.minelittlepony.unicopia.item.ChargeableItem;
+import com.minelittlepony.unicopia.item.component.Charges;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
@@ -56,7 +56,7 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
         if (amulet.getResult().isAccepted()) {
             float manaLevel = player.getMagicalReserves().getMana().get();
 
-            return Math.min(manaLevel, ((AmuletItem)amulet.getValue().getItem()).getChargeRemainder(amulet.getValue()));
+            return Math.min(manaLevel, Charges.of(amulet.getValue()).energy());
         }
 
         TypedActionResult<CustomisedSpellType<?>> spell = player.getCharms().getSpellInHand(false);
@@ -84,13 +84,11 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
 
         if (amulet.getResult().isAccepted()) {
             ItemStack stack = amulet.getValue();
-            ChargeableItem item = (ChargeableItem)stack.getItem();
-
-            if (item.canCharge(stack)) {
-                float amount = -Math.min(player.getMagicalReserves().getMana().get(), item.getChargeRemainder(stack));
+            if (Charges.of(stack).canHoldCharge()) {
+                int amount = -(int)Math.min(player.getMagicalReserves().getMana().get(), Charges.of(stack).energy());
 
                 if (amount < 0) {
-                    ChargeableItem.consumeEnergy(stack, amount);
+                    Charges.discharge(stack, amount);
                     player.getMagicalReserves().getMana().add(amount);
                     player.asWorld().playSoundFromEntity(null, player.asEntity(), USounds.ITEM_AMULET_RECHARGE, SoundCategory.PLAYERS, 1, 1);
                 }
@@ -144,7 +142,7 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
         ItemStack stack = player.asEntity().getStackInHand(Hand.MAIN_HAND);
 
         if (stack.getItem() instanceof AmuletItem) {
-            if (((AmuletItem)stack.getItem()).isChargable()) {
+            if (Charges.of(stack).canHoldCharge()) {
                 return TypedActionResult.consume(stack);
             }
 

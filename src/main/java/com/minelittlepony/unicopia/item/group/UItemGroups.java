@@ -3,15 +3,17 @@ package com.minelittlepony.unicopia.item.group;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.UTags;
-import com.minelittlepony.unicopia.item.ChameleonItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.component.Appearance;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
+
 import net.minecraft.item.*;
 import net.minecraft.registry.RegistryKey;
 
 public interface UItemGroups {
     RegistryKey<ItemGroup> ALL_ITEMS = ItemGroupRegistry.createDynamic("items", UItems.CRYSTAL_HEART::getDefaultStack, () -> {
         return Stream.concat(Stream.of(Items.APPLE), ItemGroupRegistry.ITEMS.stream()
-                .filter(item -> !(item instanceof ChameleonItem) || ((ChameleonItem)item).isFullyDisguised()));
+                .filter(item -> !item.getComponents().getOrDefault(UDataComponentTypes.APPEARANCE, Appearance.DEFAULT).replaceFully()));
     });
     RegistryKey<ItemGroup> FORAGING_ITEMS = ItemGroupRegistry.createGroupFromTag("foraging", UTags.Items.GROUP_FORAGING, Items.HAY_BLOCK::getDefaultStack);
     RegistryKey<ItemGroup> EARTH_PONY_ITEMS = ItemGroupRegistry.createGroupFromTag("earth_pony", UTags.Items.GROUP_EARTH_PONY, UItems.EARTH_BADGE::getDefaultStack);

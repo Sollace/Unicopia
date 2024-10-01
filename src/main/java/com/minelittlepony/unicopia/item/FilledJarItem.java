@@ -3,6 +3,8 @@ package com.minelittlepony.unicopia.item;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
+import com.minelittlepony.unicopia.item.component.Appearance;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
@@ -22,7 +24,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.world.WorldEvents;
 
-public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.HitListener, ChameleonItem {
+public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.HitListener {
     public FilledJarItem(Item.Settings settings) {
         super(settings, 0);
     }
@@ -34,12 +36,8 @@ public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.
 
     @Override
     public Text getName(ItemStack stack) {
-        return ChameleonItem.hasAppearance(stack) ? Text.translatable(getTranslationKey(stack), ChameleonItem.getAppearanceStack(stack).getName()) : UItems.EMPTY_JAR.getName(UItems.EMPTY_JAR.getDefaultStack());
-    }
-
-    @Override
-    public boolean isFullyDisguised() {
-        return false;
+        Appearance appearance = stack.get(UDataComponentTypes.APPEARANCE);
+        return appearance != null ? Text.translatable(getTranslationKey(stack), appearance.item().getName()) : UItems.EMPTY_JAR.getName(UItems.EMPTY_JAR.getDefaultStack());
     }
 
     @Override
@@ -50,7 +48,7 @@ public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.
             return;
         }
 
-        ItemStack stack = ChameleonItem.getAppearanceStack(((FlyingItemEntity)projectile).getStack());
+        ItemStack stack = Appearance.upwrapAppearance(((FlyingItemEntity)projectile).getStack());
 
         boolean onFire = false;
 
@@ -81,7 +79,7 @@ public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.
 
     @Override
     public void onImpact(MagicProjectileEntity projectile) {
-        ItemStack stack = ChameleonItem.getAppearanceStack(projectile.getStack());
+        ItemStack stack = Appearance.upwrapAppearance(projectile.getStack());
 
         if (stack.isOf(UItems.BUTTERFLY)) {
             ButterflyEntity butterfly = UEntities.BUTTERFLY.create(projectile.getWorld());
@@ -98,6 +96,6 @@ public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.
     }
 
     public ItemStack withContents(ItemStack contents) {
-        return ChameleonItem.setAppearance(getDefaultStack(), contents);
+        return Appearance.set(getDefaultStack(), contents);
     }
 }

@@ -70,9 +70,4 @@ public interface ColorHelper {
 
         return Argb.fromFloats(a, r, g, b);
     }
-
-    @Deprecated
-    static int lerp(float delta, int fromColor, int toColor) {
-        return Argb.lerp(delta, fromColor, toColor);
-    }
 }
