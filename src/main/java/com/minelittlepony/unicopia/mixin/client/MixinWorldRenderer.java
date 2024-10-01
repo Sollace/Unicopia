@@ -15,6 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.minelittlepony.unicopia.client.ClientBlockDestructionManager;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
+import com.minelittlepony.unicopia.server.world.WeatherAccess;
+
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.WorldRenderer;
@@ -22,7 +24,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.BlockBreakingInfo;
 import net.minecraft.resource.SynchronousResourceReloader;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.Biome.Precipitation;
 
 @Mixin(value = WorldRenderer.class, priority = 1001)
 abstract class MixinWorldRenderer implements SynchronousResourceReloader, AutoCloseable, ClientBlockDestructionManager.Source {
@@ -79,5 +84,14 @@ abstract class MixinWorldRenderer implements SynchronousResourceReloader, AutoCl
     private void onRenderSky(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback, CallbackInfo info) {
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(UnicopiaClient.getInstance().getSkyAngleDelta(tickDelta)));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(UnicopiaClient.getInstance().tangentalSkyAngle.getValue()));
+    }
+
+    @Redirect(method = "renderWeather", at = @At(value = "INVOKE", target = "net/minecraft/world/biome/Biome.getPrecipitation(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome$Precipitation;"))
+    private Biome.Precipitation modifyPrecipitation(Biome biome, BlockPos pos) {
+        Biome.Precipitation precipitation = biome.getPrecipitation(pos);
+        if (!((WeatherAccess)world).isBelowClientCloudLayer(pos)) {
+            return Precipitation.NONE;
+        }
+        return precipitation;
     }
 }

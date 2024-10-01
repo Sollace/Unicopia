@@ -24,8 +24,21 @@ import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
 public class WeatherConditions extends PersistentState implements Tickable {
+    public static final double FIRE_UPDRAFT = 0.13;
+    public static final double SAND_UPDRAFT = 0.03;
+    public static final double SOUL_SAND_UPDRAFT = -0.03;
+    public static final double ICE_UPDRAFT = 0;
+    public static final double VOID_UPDRAFT = -0.23;
+
+    public static final float MAX_UPDRAFT_HEIGHT = 20;
+    public static final float MAX_TERRAIN_HEIGHT = 50;
+    public static final float MAX_WIND_HEIGHT = 70;
+
     public static final Plane HEIGHT_MAP_FIELD = (world, pos) -> world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, pos.getX(), pos.getZ());
-    public static final Plane THERMAL_FIELD = (world, pos) -> (float)getUpdraft(pos, world);
+    public static final Plane THERMAL_FIELD = (world, pos) -> {
+        double factor = 1 - getScaledDistanceFromTerrain(pos, world, MAX_UPDRAFT_HEIGHT);
+        return (float)(factor * getMaterialSurfaceTemperature(pos, world));
+    };
     public static final Plane LOCAL_ALTITUDE_FIELD = (world, pos) -> {
         if (!world.isAir(pos)) {
             return 0;
@@ -36,16 +49,6 @@ public class WeatherConditions extends PersistentState implements Tickable {
         } while (world.isAir(pos) && world.isInBuildLimit(pos));
         return y - pos.getY();
     };
-
-    public static final double FIRE_UPDRAFT = 0.13;
-    public static final double SAND_UPDRAFT = 0.03;
-    public static final double SOUL_SAND_UPDRAFT = -0.03;
-    public static final double ICE_UPDRAFT = 0;
-    public static final double VOID_UPDRAFT = -0.23;
-
-    public static final float MAX_UPDRAFT_HEIGHT = 20;
-    public static final float MAX_TERRAIN_HEIGHT = 50;
-    public static final float MAX_WIND_HEIGHT = 70;
 
     private static final Identifier ID = Unicopia.id("weather_conditions");
 
@@ -175,11 +178,6 @@ public class WeatherConditions extends PersistentState implements Tickable {
                 .add(wind)
                 .normalize()
                 .multiply(windFactor);
-    }
-
-    public static double getUpdraft(BlockPos.Mutable pos, World world) {
-        double factor = 1 - getScaledDistanceFromTerrain(pos, world, MAX_UPDRAFT_HEIGHT);
-        return factor * getMaterialSurfaceTemperature(pos, world);
     }
 
     private static float getScaledDistanceFromTerrain(BlockPos.Mutable pos, World world, float maxDistance) {
