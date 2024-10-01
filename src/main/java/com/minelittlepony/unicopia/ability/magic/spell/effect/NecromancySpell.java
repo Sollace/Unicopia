@@ -23,6 +23,7 @@ import com.minelittlepony.unicopia.util.Weighted;
 import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -36,6 +37,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -169,8 +171,8 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
         LivingEntity master = caster.getMaster();
         summonedEntities.forEach(ref -> {
             ref.ifPresent(caster.asWorld(), e -> {
-                if (master != null) {
-                    master.applyDamageEffects(master, e);
+                if (caster.asWorld() instanceof ServerWorld sw) {
+                    EnchantmentHelper.onTargetDamaged(sw, e, e.getDamageSources().indirectMagic(e, master));
                 }
                 e.getWorld().sendEntityStatus(e, EntityStatuses.ADD_DEATH_PARTICLES);
                 e.discard();
