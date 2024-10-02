@@ -26,6 +26,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
@@ -71,7 +72,7 @@ public class UHud {
     private boolean prevReplacing;
     private SpellType<?> focusedType = SpellType.empty();
 
-    public void render(InGameHud hud, DrawContext context, float tickDelta) {
+    public void render(InGameHud hud, DrawContext context, RenderTickCounter tickCounter) {
         final int hotbarZ = -90;
 
         if (client.player == null) {
@@ -83,6 +84,8 @@ public class UHud {
         MatrixStack matrices = context.getMatrices();
 
         Pony pony = Pony.of(client.player);
+
+        float tickDelta = tickCounter.getTickDelta(false);
 
         matrices.push();
         matrices.translate(0, 0, hotbarZ - 9800);

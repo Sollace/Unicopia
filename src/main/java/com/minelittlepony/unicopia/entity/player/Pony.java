@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
+import com.minelittlepony.unicopia.diet.PonyDiets;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.AnimationInstance;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.*;
@@ -43,6 +44,7 @@ import com.minelittlepony.common.util.animation.Interpolator;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -76,7 +78,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private final AbilityDispatcher powers = new AbilityDispatcher(this);
     private final PlayerPhysics gravity = addTicker(new PlayerPhysics(this, tracker));
     private final PlayerCharmTracker charms = new PlayerCharmTracker(this);
-    private final PlayerCamera camera = new PlayerCamera(this);
+    private final PlayerCamera camera = new PlayerCameraImpl(this);
     private final TraitDiscovery discoveries = new TraitDiscovery(this);
     private final Acrobatics acrobatics = new Acrobatics(this, tracker);
     private final CorruptionHandler corruptionHandler = new CorruptionHandler(this);
@@ -738,9 +740,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return Math.max(0, distance);
     }
 
-    public void onEat(ItemStack stack) {
+    public FoodComponent onEat(ItemStack stack, FoodComponent food) {
         if (isClient()) {
-            return;
+            return food;
         }
 
         if (getObservedSpecies() == Race.KIRIN
@@ -748,6 +750,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             getMagicalReserves().getCharge().multiply(0.5F);
             getSpellSlot().get(SpellType.RAGE).ifPresent(RageAbilitySpell::setExtenguishing);
         }
+
+        PonyDiets.getInstance().getEffects(stack, this).ailment().effects().afflict(asEntity(), stack);
+
+        return food;
     }
 
     public void onKill(Entity killedEntity, DamageSource damage) {

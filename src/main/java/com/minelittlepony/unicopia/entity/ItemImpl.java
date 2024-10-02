@@ -1,8 +1,7 @@
 package com.minelittlepony.unicopia.entity;
 
-import java.util.List;
-
 import com.minelittlepony.unicopia.*;
+import com.minelittlepony.unicopia.item.ItemDuck;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.track.DataTracker;
@@ -13,17 +12,14 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.VecHelper;
 import net.minecraft.entity.*;
-import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 
@@ -68,16 +64,14 @@ public class ItemImpl implements Equine<ItemEntity> {
 
         ItemStack stack = entity.getStack();
         IItemEntity i = (IItemEntity)entity;
+        ItemDuck duck = ItemDuck.of(stack);
 
         if (!stack.isEmpty()) {
 
-            Item item = stack.getItem();
-            ClingyItem clingy = item instanceof ClingyItem ? (ClingyItem)item : ClingyItem.DEFAULT;
-
-            if (clingy.isClingy(stack)) {
+            if (duck.isClingy(stack)) {
                 Random rng = entity.getWorld().random;
 
-                entity.getWorld().addParticle(clingy.getParticleEffect((IItemEntity)entity),
+                entity.getWorld().addParticle(duck.getParticleEffect(i),
                         entity.getX() + rng.nextFloat() - 0.5,
                         entity.getY() + rng.nextFloat() - 0.5,
                         entity.getZ() + rng.nextFloat() - 0.5,
@@ -85,19 +79,19 @@ public class ItemImpl implements Equine<ItemEntity> {
                 );
 
                 Vec3d position = entity.getPos();
-                VecHelper.findInRange(entity, entity.getWorld(), entity.getPos(), clingy.getFollowDistance(i), e -> e instanceof PlayerEntity)
+                VecHelper.findInRange(entity, entity.getWorld(), entity.getPos(), duck.getFollowDistance(i), e -> e instanceof PlayerEntity)
                     .stream()
                     .sorted((a, b) -> (int)(a.getPos().distanceTo(position) - b.getPos().distanceTo(position)))
                     .findFirst()
                     .ifPresent(player -> {
                         double distance = player.getPos().distanceTo(entity.getPos());
 
-                        entity.move(MovementType.SELF,  player.getPos().subtract(entity.getPos()).multiply(distance < 0.3 ? 1 : clingy.getFollowSpeed(i)));
+                        entity.move(MovementType.SELF,  player.getPos().subtract(entity.getPos()).multiply(distance < 0.3 ? 1 : duck.getFollowSpeed(i)));
                         if (entity.horizontalCollision) {
                             entity.move(MovementType.SELF, new Vec3d(0, entity.verticalCollision ? -0.3 : 0.3, 0));
                         }
 
-                        clingy.interactWithPlayer(i, (PlayerEntity)player);
+                        duck.interactWithPlayer(i, (PlayerEntity)player);
                     });
             }
 
@@ -119,9 +113,7 @@ public class ItemImpl implements Equine<ItemEntity> {
                 }
             }
 
-            if (stack.getItem() instanceof GroundTickCallback) {
-                return ((GroundTickCallback)stack.getItem()).onGroundTick(i).isAccepted();
-            }
+            return duck.onGroundTick(i).isAccepted();
         }
 
 
@@ -172,39 +164,10 @@ public class ItemImpl implements Equine<ItemEntity> {
         return entity;
     }
 
-    public static <T extends Item> T registerTickCallback(T item, GroundTickCallback callback) {
-        ((ItemImpl.TickableItem)item).addGroundTickCallback(callback);
-        return item;
-    }
-
-    public interface TickableItem extends GroundTickCallback {
-
-        List<GroundTickCallback> getCallbacks();
-
-        default void addGroundTickCallback(GroundTickCallback callback) {
-            getCallbacks().add(callback);
-        }
-
-        @Override
-        default ActionResult onGroundTick(IItemEntity entity) {
-            for (var callback : getCallbacks()) {
-                ActionResult result = callback.onGroundTick(entity);
-                if (result.isAccepted()) {
-                    return result;
-                }
-            }
-            return ActionResult.PASS;
-        }
-    }
-
-    public interface GroundTickCallback {
-        ActionResult onGroundTick(IItemEntity entity);
-    }
-
     public interface ClingyItem {
-        ClingyItem DEFAULT = stack -> EnchantmentUtil.getLevel(UEnchantments.CLINGY, stack) > 0;
-
-        boolean isClingy(ItemStack stack);
+        default boolean isClingy(ItemStack stack) {
+            return EnchantmentUtil.getLevel(UEnchantments.CLINGY, stack) > 0;
+        }
 
         default ParticleEffect getParticleEffect(IItemEntity entity) {
             // TODO: was AMBIENT_ENTITY_EFFECT
@@ -220,10 +183,6 @@ public class ItemImpl implements Equine<ItemEntity> {
         }
 
         default void interactWithPlayer(IItemEntity entity, PlayerEntity player) {
-
-        }
-
-        default void inFrameTick(ItemFrameEntity entity) {
 
         }
     }

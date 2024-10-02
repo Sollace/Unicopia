@@ -31,10 +31,12 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
@@ -43,7 +45,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -62,7 +63,7 @@ public class MimicEntity extends PathAwareEntity {
     private int openTicks;
     private final Set<PlayerEntity> observingPlayers = new HashSet<>();
 
-    public static boolean shouldConvert(World world, BlockPos pos, PlayerEntity player, Identifier lootTable) {
+    public static boolean shouldConvert(World world, BlockPos pos, PlayerEntity player, RegistryKey<LootTable> lootTable) {
         if (!shouldGenerateMimic(lootTable)
                 || !world.getBlockState(pos).isIn(UTags.Blocks.MIMIC_CHESTS)
                 || !(world.getBlockEntity(pos) instanceof ChestBlockEntity be)
@@ -97,12 +98,12 @@ public class MimicEntity extends PathAwareEntity {
         return mimic;
     }
 
-    public static boolean shouldGenerateMimic(@Nullable Identifier lootTable) {
+    public static boolean shouldGenerateMimic(@Nullable RegistryKey<LootTable> lootTable) {
         return lootTable != null
-             && lootTable.getPath().indexOf("village") == -1
-             && lootTable.getPath().indexOf("bastion") == -1
-             && lootTable.getPath().indexOf("underwater") == -1
-             && lootTable.getPath().indexOf("shipwreck") == -1;
+             && lootTable.getValue().getPath().indexOf("village") == -1
+             && lootTable.getValue().getPath().indexOf("bastion") == -1
+             && lootTable.getValue().getPath().indexOf("underwater") == -1
+             && lootTable.getValue().getPath().indexOf("shipwreck") == -1;
     }
 
     MimicEntity(EntityType<? extends MimicEntity> type, World world) {

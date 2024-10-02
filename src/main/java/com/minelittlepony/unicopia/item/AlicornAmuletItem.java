@@ -58,7 +58,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.World.ExplosionSourceType;
 
-public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackable, ItemImpl.ClingyItem, ItemImpl.GroundTickCallback, DamageChecker {
+public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackable, ItemImpl.ClingyItem, TickableItem, DamageChecker {
     private static final Identifier EFFECT_ID = Unicopia.id("alicorn_amulet_modifiers");
     private static final Object2FloatMap<RegistryEntry<EntityAttribute>> EFFECT_SCALES = Object2FloatMaps.unmodifiable(new Object2FloatOpenHashMap<>(Map.of(
             EntityAttributes.GENERIC_ATTACK_DAMAGE, 0.2F,
@@ -78,10 +78,10 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
     @Environment(EnvType.CLIENT)
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        Pony iplayer = Pony.of(MinecraftClient.getInstance().player);
+        Pony pony = Pony.of(MinecraftClient.getInstance().player);
 
-        if (iplayer != null) {
-            long ticks = iplayer.getArmour().getTicks(this);
+        if (pony != null) {
+            long ticks = pony.getArmour().getTicks(this);
             if (ticks > 0) {
                 tooltip.add(Text.literal(ItemTracker.formatTicks(ticks).formatted(Formatting.GRAY)));
             }

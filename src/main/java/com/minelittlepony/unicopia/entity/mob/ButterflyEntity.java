@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.item.ButterflyItem;
+import com.minelittlepony.unicopia.item.component.BufferflyVariantComponent;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 
 import io.netty.buffer.ByteBuf;
@@ -333,7 +333,7 @@ public class ButterflyEntity extends AmbientEntity {
 
     @Override
     public ItemEntity dropStack(ItemStack stack, float yOffset) {
-        return super.dropStack(ButterflyItem.setVariant(stack, getVariant()), yOffset);
+        return super.dropStack(BufferflyVariantComponent.set(stack, new BufferflyVariantComponent(getVariant(), true)), yOffset);
     }
 
     @Override

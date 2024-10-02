@@ -6,25 +6,16 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.entity.effect.FoodPoisoningStatusEffect;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.world.World;
 
-public class PonyDiets implements DietView {
-    private final Map<Race, DietProfile> diets;
-    private final Map<Identifier, FoodGroup> effects;
-
+public record PonyDiets (Map<Race, DietProfile> diets, Map<Identifier, FoodGroup> effects) {
     private static PonyDiets INSTANCE = new PonyDiets(Map.of(), Map.of());
 
     public static final PacketCodec<RegistryByteBuf, PonyDiets> PACKET_CODEC = PacketCodec.tuple(
@@ -46,11 +37,6 @@ public class PonyDiets implements DietView {
         INSTANCE = diets;
     }
 
-    PonyDiets(Map<Race, DietProfile> diets, Map<Identifier, FoodGroup> effects) {
-        this.diets = diets;
-        this.effects = effects;
-    }
-
     public DietProfile getDiet(Pony pony) {
         return Optional.ofNullable(diets.get(pony.getObservedSpecies())).orElse(DietProfile.EMPTY);
     }
@@ -59,17 +45,7 @@ public class PonyDiets implements DietView {
         return effects.values().stream().filter(effect -> effect.test(stack)).findFirst().map(Effect.class::cast).orElse(Effect.EMPTY);
     }
 
-    private Effect getEffects(ItemStack stack, Pony pony) {
+    public Effect getEffects(ItemStack stack, Pony pony) {
         return getDiet(pony).findEffect(stack).orElseGet(() -> getEffects(stack));
-    }
-
-    @Override
-    public TypedActionResult<ItemStack> startUsing(ItemStack stack, World world, PlayerEntity user, Hand hand) {
-        return FoodPoisoningStatusEffect.apply(stack, user);
-    }
-
-    @Override
-    public void finishUsing(ItemStack stack, World world, LivingEntity entity) {
-        Pony.of(entity).ifPresent(pony -> getEffects(stack, pony).ailment().effects().afflict(pony.asEntity(), stack));
     }
 }

@@ -30,11 +30,11 @@ import com.minelittlepony.unicopia.client.render.shader.UShaders;
 import com.minelittlepony.unicopia.client.render.spell.SpellRendererFactory;
 import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
-import com.minelittlepony.unicopia.item.ButterflyItem;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.FancyBedItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.component.Appearance;
+import com.minelittlepony.unicopia.item.component.BufferflyVariantComponent;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.terraformersmc.terraform.boat.api.client.TerraformBoatClientHelper;
 
@@ -131,20 +131,21 @@ public interface URenderers {
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, Identifier.ofVanilla("affinity"), (stack, world, entity, seed) -> EnchantableItem.getSpellKey(stack).getAffinity().getAlignment());
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, Identifier.ofVanilla("shape"), (stack, world, entity, seed) -> EnchantableItem.getSpellKey(stack).getGemShape().getId());
         ModelPredicateProviderRegistry.register(UItems.ROCK_CANDY, Identifier.ofVanilla("count"), (stack, world, entity, seed) -> stack.getCount() / (float)stack.getMaxCount());
-        ModelPredicateProviderRegistry.register(UItems.BUTTERFLY, Identifier.ofVanilla("variant"), (stack, world, entity, seed) -> (float)ButterflyItem.getVariant(stack).ordinal() / ButterflyEntity.Variant.VALUES.length);
+        ModelPredicateProviderRegistry.register(UItems.BUTTERFLY, Identifier.ofVanilla("variant"), (stack, world, entity, seed) -> (float)BufferflyVariantComponent.get(stack).variant().ordinal() / ButterflyEntity.Variant.VALUES.length);
         ModelPredicateProviderRegistry.register(Unicopia.id("zap_cycle"), new ClampedModelPredicateProvider() {
             private double targetAngle;
             private double lastAngle;
             private long lastTick;
 
             @Override
-            public float unclampedCall(ItemStack stack, ClientWorld world, LivingEntity e, int var4) {
-                Entity entity = e != null ? e : stack.getHolder();
+            public float unclampedCall(ItemStack stack, ClientWorld world, @Nullable LivingEntity holder, int seed) {
+                @Nullable
+                Entity entity = holder != null ? holder : stack.getHolder();
                 if (entity == null) {
                     return 0;
                 }
-                if (world == null && entity.getWorld() instanceof ClientWorld) {
-                    world = (ClientWorld)entity.getWorld();
+                if (world == null && entity.getWorld() instanceof ClientWorld cw) {
+                    world = cw;
                 }
 
                 if (world == null) {

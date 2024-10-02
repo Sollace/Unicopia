@@ -36,11 +36,6 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
     }
 
     @Override
-    default Optional<Float> getTargetEyeHeight(Pony player) {
-        return getAppearance().flatMap(d -> d.getTargetEyeHeight(player));
-    }
-
-    @Override
     default Optional<EntityDimensions> getTargetDimensions(Pony player) {
         return getAppearance().flatMap(d -> d.getTargetDimensions(player));
     }

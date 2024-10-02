@@ -6,8 +6,9 @@ import net.minecraft.entity.EntityDimensions;
 
 public final class PlayerDimensions {
     private static final float FLYING_HEIGHT = 0.6F;
-    private static final Optional<EntityDimensions> FLYING_DIMENSIONS = Optional.of(EntityDimensions.changing(FLYING_HEIGHT, FLYING_HEIGHT));
-    private static final Optional<Float> FLYING_EYE_HEIGHT = Optional.of(FLYING_HEIGHT * 0.6F);
+    private static final Optional<EntityDimensions> FLYING_DIMENSIONS = Optional.of(
+            EntityDimensions.changing(FLYING_HEIGHT, FLYING_HEIGHT).withEyeHeight(FLYING_HEIGHT * 0.6F)
+    );
 
     private final PlayerPhysics physics;
 
@@ -18,24 +19,18 @@ public final class PlayerDimensions {
         this.physics = gravity;
     }
 
-    public Optional<Float> calculateActiveEyeHeight(EntityDimensions dimensions) {
-        return getPredicate()
-                .flatMap(e -> e.getTargetEyeHeight(pony))
-                .filter(h -> h > 0)
-                .or(() -> physics.isFlyingSurvival ? FLYING_EYE_HEIGHT : physics.isGravityNegative() ? Optional.of(dimensions.eyeHeight()) : Optional.empty())
-                .map(h -> {
-                    if (physics.isGravityNegative()) {
-                        return dimensions.eyeHeight() - h + 0.1F;
-                    }
-                    return h;
-                });
-    }
-
-    public Optional<EntityDimensions> calculateDimensions() {
-        return getPredicate()
+    public EntityDimensions calculateDimensions(EntityDimensions original) {
+        EntityDimensions dimensions = getPredicate()
                 .flatMap(e -> e.getTargetDimensions(pony))
                  .or(() -> physics.isFlyingSurvival ? FLYING_DIMENSIONS : Optional.empty())
-                .filter(d -> d.height() > 0 && d.width() > 0);
+                .filter(d -> d.height() > 0 && d.width() > 0)
+                .orElse(original);
+
+        if (physics.isGravityNegative()) {
+            return dimensions.withEyeHeight(dimensions.eyeHeight() - original.eyeHeight() + 0.1F);
+        }
+
+        return dimensions;
     }
 
     Optional<Provider> getPredicate() {
@@ -45,8 +40,6 @@ public final class PlayerDimensions {
     }
 
     public interface Provider {
-        Optional<Float> getTargetEyeHeight(Pony player);
-
         Optional<EntityDimensions> getTargetDimensions(Pony player);
     }
 }

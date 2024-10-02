@@ -23,8 +23,8 @@ public interface ItemGroupRegistry {
     Map<RegistryKey<ItemGroup>, Set<Item>> REGISTRY = new HashMap<>();
 
     static List<ItemStack> getVariations(Item item) {
-        if (item instanceof MultiItem) {
-            return ((MultiItem)item).getDefaultStacks();
+        if (item instanceof MultiItem m) {
+            return m.getDefaultStacks();
         }
         return List.of(item.getDefaultStack());
     }

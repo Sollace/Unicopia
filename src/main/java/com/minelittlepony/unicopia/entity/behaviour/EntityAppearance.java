@@ -54,8 +54,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 
 public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provider, FlightType.Provider, EntityCollisions.ComplexCollidable, TrackableObject<EntityAppearance> {
-    private static final Optional<Float> BLOCK_HEIGHT = Optional.of(0.5F);
-
     @NotNull
     private transient String entityId = "";
 
@@ -264,18 +262,6 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         return FlightType.NONE;
     }
 
-    @Override
-    public Optional<Float> getTargetEyeHeight(Pony player) {
-        if (entity != null) {
-            if (entity instanceof FallingBlockEntity) {
-                return BLOCK_HEIGHT;
-            }
-
-            return Optional.of(PehkUtil.ignoreScaleFor(entity, Entity::getStandingEyeHeight));
-        }
-        return Optional.empty();
-    }
-
     public float getHeight() {
         if (entity != null) {
             if (entity instanceof FallingBlockEntity) {
@@ -287,7 +273,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         return -1;
     }
 
-    public Optional<Double> getDistance(Pony player) {
+    public Optional<Float> getDistance(Pony player) {
         return PehkUtil.ignoreScaleFor(entity, e -> EntityBehaviour.forEntity(e).getCameraDistance(e, player));
     }
 

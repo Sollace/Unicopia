@@ -39,8 +39,8 @@ abstract class MixinModelPart implements Hookable {
         isHeadPart = true;
     }
 
-    @Inject(method = "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V", at = @At("HEAD"))
-    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha, CallbackInfo info) {
+    @Inject(method = "render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;III)V", at = @At("HEAD"))
+    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color, CallbackInfo info) {
         if (visible && isHeadPart) {
             ModelPartHooks.onHeadRendered((ModelPart)(Object)this, matrices);
         }

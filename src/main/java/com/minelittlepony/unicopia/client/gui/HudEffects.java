@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,9 +23,9 @@ public class HudEffects {
     private static boolean addedHunger;
     private static Set<TagKey<Fluid>> originalTags = null;
 
-    public static void tryApply(@Nullable PlayerEntity player, float tickDelta, boolean on) {
+    public static void tryApply(@Nullable PlayerEntity player, RenderTickCounter tickCounter, boolean on) {
         if (player != null) {
-            apply(Pony.of(player), tickDelta, on);
+            apply(Pony.of(player), tickCounter.getTickDelta(false), on);
         }
     }
 

@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.component.Appearance;
+import com.minelittlepony.unicopia.item.component.BufferflyVariantComponent;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
@@ -80,10 +81,11 @@ public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.
     @Override
     public void onImpact(MagicProjectileEntity projectile) {
         ItemStack stack = Appearance.upwrapAppearance(projectile.getStack());
+        BufferflyVariantComponent butterflyVariant = stack.get(UDataComponentTypes.BUTTERFLY_VARIANT);
 
-        if (stack.isOf(UItems.BUTTERFLY)) {
+        if (butterflyVariant != null) {
             ButterflyEntity butterfly = UEntities.BUTTERFLY.create(projectile.getWorld());
-            butterfly.setVariant(ButterflyItem.getVariant(stack));
+            butterfly.setVariant(butterflyVariant.variant());
             butterfly.updatePosition(projectile.getX(), projectile.getY(), projectile.getZ());
             projectile.getWorld().spawnEntity(butterfly);
         } else {

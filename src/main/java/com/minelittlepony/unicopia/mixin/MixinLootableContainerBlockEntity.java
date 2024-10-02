@@ -16,19 +16,21 @@ import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.LootableInventory;
+import net.minecraft.loot.LootTable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.util.Identifier;
 
 @Mixin(LootableContainerBlockEntity.class)
 abstract class MixinLootableContainerBlockEntity extends LockableContainerBlockEntity implements MimicEntity.MimicGeneratable {
-    private Identifier mimicLootTable;
+    @Nullable
+    private RegistryKey<LootTable> mimicLootTable;
     private boolean allowMimics = true;
     private TriState isMimic = TriState.DEFAULT;
 
     @Shadow
     @Nullable
-    private Identifier lootTableId;
+    protected RegistryKey<LootTable> lootTable;
 
     MixinLootableContainerBlockEntity() { super(null, null, null); }
 
@@ -46,8 +48,8 @@ abstract class MixinLootableContainerBlockEntity extends LockableContainerBlockE
 
     @Override
     public void configureMimic(@Nullable PlayerEntity player) {
-        if (player != null && allowMimics && lootTableId != null) {
-            mimicLootTable = lootTableId;
+        if (player != null && allowMimics && lootTable != null) {
+            mimicLootTable = lootTable;
         }
     }
 

@@ -35,6 +35,7 @@ public class ModifierTooltipRenderer {
 
         appendTooltip(stack, UDataComponentTypes.CHARGES, context, textConsumer, type);
         appendTooltip(stack, UDataComponentTypes.ISSUER, context, textConsumer, type);
+        appendTooltip(stack, UDataComponentTypes.BUTTERFLY_VARIANT, context, textConsumer, type);
         EnchantableItem.getSpellEffect(stack).appendTooltip(context, textConsumer, type);
         if (GlowableItem.isGlowing(stack)) {
             lines.add(Text.translatable("item.unicopia.friendship_bracelet.glowing").formatted(Formatting.ITALIC, Formatting.GRAY));

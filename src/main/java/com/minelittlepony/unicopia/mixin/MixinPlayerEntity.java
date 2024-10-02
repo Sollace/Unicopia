@@ -1,13 +1,10 @@
 package com.minelittlepony.unicopia.mixin;
 
-import java.util.Map;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.duck.PlayerEntityDuck;
@@ -18,6 +15,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.datafixers.util.Either;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.ItemEntity;
@@ -53,9 +51,9 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
         return get().modifyDamage(source, amount).orElse(amount);
     }
 
-    @Inject(method = "eatFood(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;)Lnet/minecraft/item/ItemStack;", at = @At("HEAD"))
-    private void onEatFood(World world, ItemStack stack, CallbackInfoReturnable<ItemStack> info) {
-        get().onEat(stack);
+    @ModifyVariable(method = "eatFood(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;Lnet/minecraft/component/type/FoodComponent;)Lnet/minecraft/item/ItemStack;", at = @At("HEAD"), argsOnly = true)
+    private FoodComponent onEatFood(FoodComponent initial, World world, ItemStack stack, FoodComponent food, CallbackInfoReturnable<ItemStack> info) {
+        return get().onEat(stack, food);
     }
 
     @Inject(method = "trySleep(Lnet/minecraft/util/math/BlockPos;)Lcom/mojang/datafixers/util/Either;",
@@ -79,19 +77,7 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
 
     @ModifyReturnValue(method = "getBaseDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;", at = @At("RETURN"))
     private EntityDimensions modifyEyeHeight(EntityDimensions dimensions, EntityPose pose) {
-        return get().getMotion().getDimensions().calculateActiveEyeHeight(dimensions).map(eyeHeight -> {
-            return dimensions.withEyeHeight(eyeHeight);
-        }).orElse(dimensions);
-    }
-
-    @Redirect(method = "getDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;",
-            at = @At(
-                value = "INVOKE",
-                target = "Ljava/util/Map;getOrDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;",
-                remap = false
-            ))
-    private Object redirect_onGetDimensions(Map<EntityPose, EntityDimensions> self, Object key, Object def) {
-        return get().getMotion().getDimensions().calculateDimensions().orElse(self.getOrDefault((EntityPose)key, (EntityDimensions)def));
+        return get().getMotion().getDimensions().calculateDimensions(dimensions);
     }
 
     @Inject(method = "getBlockBreakingSpeed(Lnet/minecraft/block/BlockState;)F",

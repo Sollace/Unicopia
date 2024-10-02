@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.client;
 
-import java.util.Optional;
-
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -52,33 +50,25 @@ public class UnicopiaClient implements ClientModInitializer {
         return Pony.of(MinecraftClient.getInstance().player);
     }
 
-    private final Lerp rainGradient = new Lerp(0);
-    private final Lerp thunderGradient = new Lerp(0);
-
     public final Lerp tangentalSkyAngle = new Lerp(0, true);
     public final Lerp skyAngle = new Lerp(0, true);
 
     private ZapAppleStageStore.Stage zapAppleStage = ZapAppleStageStore.Stage.HIBERNATING;
 
-    public static Optional<PlayerCamera> getCamera() {
-        return Optional.ofNullable(getNullableCamera());
-    }
-
-    @Nullable
-    private static PlayerCamera getNullableCamera() {
+    public static PlayerCamera getCamera() {
         PlayerEntity player = MinecraftClient.getInstance().player;
 
         if (player != null && MinecraftClient.getInstance().cameraEntity == player) {
             return Pony.of(player).getCamera();
         }
 
-        return null;
+        return PlayerCamera.DEFAULT;
     }
 
 
     public static Vec3d getAdjustedSoundPosition(Vec3d pos) {
-        PlayerCamera cam = getNullableCamera();
-        if (cam == null) {
+        PlayerCamera cam = getCamera();
+        if (cam == PlayerCamera.DEFAULT) {
             return pos;
         }
         Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
@@ -100,10 +90,6 @@ public class UnicopiaClient implements ClientModInitializer {
         }
 
         return Unicopia.getConfig().preferredRace.get();
-    }
-
-    public static float getWorldBrightness(float initial) {
-        return 0.6F;
     }
 
     public UnicopiaClient() {

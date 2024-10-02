@@ -15,6 +15,7 @@
     "MixinBlockItem",
     "MixinBoatEntity",
     "MixinChunkBlockLightProvider",
+    "MixinComponentHolder",
     "MutableBlockLightStorage",
     "MixinDamageSource",
     "MixinEnchantment",

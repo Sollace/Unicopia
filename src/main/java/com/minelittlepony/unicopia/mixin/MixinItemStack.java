@@ -11,10 +11,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.diet.PonyDiets;
+import com.minelittlepony.unicopia.entity.effect.FoodPoisoningStatusEffect;
 import com.minelittlepony.unicopia.item.DamageChecker;
 import com.minelittlepony.unicopia.item.ItemStackDuck;
 import com.minelittlepony.unicopia.item.component.TransientComponentMap;
+
+import net.minecraft.component.ComponentHolder;
 import net.minecraft.component.ComponentType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -46,7 +48,7 @@ abstract class MixinItemStack implements ItemStackDuck {
     @Inject(method = "use", at = @At("HEAD"), cancellable = true)
     private void onUse(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> info) {
         transientComponents.setCarrier(user);
-        TypedActionResult<ItemStack> result = PonyDiets.getInstance().startUsing((ItemStack)(Object)this, world, user, hand);
+        TypedActionResult<ItemStack> result = FoodPoisoningStatusEffect.apply((ItemStack)(Object)this, user);
         if (result.getResult() != ActionResult.PASS) {
             info.setReturnValue(result);
         }
@@ -55,12 +57,6 @@ abstract class MixinItemStack implements ItemStackDuck {
     @Inject(method = "onStoppedUsing", at = @At("RETURN"))
     public void onOnStoppedUsing(World world, LivingEntity user, int remainingUseTicks, CallbackInfo info) {
         transientComponents.setCarrier(null);
-    }
-
-    @Inject(method = "finishUsing", at = @At("HEAD"))
-    private void beforeFinishUsing(World world, LivingEntity user, CallbackInfoReturnable<ItemStack> info) {
-        transientComponents.setCarrier(user);
-        PonyDiets.getInstance().finishUsing((ItemStack)(Object)this, world, user);
     }
 
     @Inject(method = "finishUsing", at = @At("RETURN"))
@@ -93,9 +89,12 @@ abstract class MixinItemStack implements ItemStackDuck {
             info.setReturnValue(checker.takesDamageFrom(source));
         }
     }
+}
 
+@Mixin(ComponentHolder.class)
+interface MixinComponentHolder {
     @Inject(method = "get", at = @At("RETURN"))
-    private <T> void unicopia_onGet(ComponentType<? extends T> type, CallbackInfoReturnable<T> info) {
+    default <T> void unicopia_onGet(ComponentType<? extends T> type, CallbackInfoReturnable<T> info) {
         Object o = this;
         if (o instanceof ItemStack stack) {
             info.setReturnValue(ItemStackDuck.of(stack).getTransientComponents().get(type, stack, info.getReturnValue()));
@@ -103,7 +102,7 @@ abstract class MixinItemStack implements ItemStackDuck {
     }
 
     @Inject(method = "getOrDefault", at = @At("RETURN"))
-    private <T> void unicopia_onGetOrDefault(ComponentType<? extends T> type, T fallback, CallbackInfoReturnable<T> info) {
+    default <T> void unicopia_onGetOrDefault(ComponentType<? extends T> type, T fallback, CallbackInfoReturnable<T> info) {
         Object o = this;
         if (o instanceof ItemStack stack) {
             info.setReturnValue(ItemStackDuck.of(stack).getTransientComponents().get(type, stack, info.getReturnValue()));
@@ -111,7 +110,7 @@ abstract class MixinItemStack implements ItemStackDuck {
     }
 
     @Inject(method = "contains", at = @At("RETURN"))
-    private void unicopia_onContains(ComponentType<?> type, CallbackInfoReturnable<Boolean> info) {
+    default void unicopia_onContains(ComponentType<?> type, CallbackInfoReturnable<Boolean> info) {
         Object o = this;
         if (o instanceof ItemStack stack && ItemStackDuck.of(stack).getTransientComponents().get(type, stack, null) != null) {
             info.setReturnValue(true);

@@ -13,6 +13,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.minelittlepony.unicopia.client.ClientBlockDestructionManager;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.minelittlepony.unicopia.server.world.WeatherAccess;
@@ -50,16 +52,10 @@ abstract class MixinWorldRenderer implements SynchronousResourceReloader, AutoCl
     @Accessor("ticks")
     public abstract int getTicks();
 
-    @Redirect(method = "render("
-            + "Lnet/minecraft/client/util/math/MatrixStack;"
-            + "FJZ"
-            + "Lnet/minecraft/client/render/Camera;"
-            + "Lnet/minecraft/client/render/GameRenderer;"
-            + "Lnet/minecraft/client/render/LightmapTextureManager;"
-            + "Lorg/joml/Matrix4f;"
-            + ")V",
-            at = @At(value = "FIELD", target = "Lnet/minecraft/client/render/WorldRenderer;blockBreakingProgressions:Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;")
-    )
+    @Redirect(method = "render", at = @At(
+            value = "FIELD",
+            target = "Lnet/minecraft/client/render/WorldRenderer;blockBreakingProgressions:Lit/unimi/dsi/fastutil/longs/Long2ObjectMap;"
+    ))
     private Long2ObjectMap<SortedSet<BlockBreakingInfo>> redirectGetDamagesMap(WorldRenderer sender) {
         return destructions.getCombinedDestructions(blockBreakingProgressions);
     }
@@ -69,24 +65,21 @@ abstract class MixinWorldRenderer implements SynchronousResourceReloader, AutoCl
         destructions.tick(blockBreakingProgressions);
     }
 
-    @Inject(method = "renderSky("
-            + "Lnet/minecraft/client/util/math/MatrixStack;"
-            + "Lorg/joml/Matrix4f;"
-            + "F"
-            + "Lnet/minecraft/client/render/Camera;"
-            + "Z"
-            + "Ljava/lang/Runnable;"
-            + ")V", at = @At(
-                value = "INVOKE",
-                target = "net/minecraft/client/world/ClientWorld.getSkyAngle(F)F",
-                ordinal = 1
-            ))
-    private void onRenderSky(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback, CallbackInfo info) {
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(UnicopiaClient.getInstance().getSkyAngleDelta(tickDelta)));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(UnicopiaClient.getInstance().tangentalSkyAngle.getValue()));
+    @Inject(method = "renderSky", at = @At(
+        value = "INVOKE",
+        target = "net/minecraft/client/world/ClientWorld.getSkyAngle(F)F",
+        ordinal = 1
+    ))
+    private void onRenderSky(Matrix4f matrix4f, Matrix4f projectionMatrix, float tickDelta, Camera camera, boolean thickFog, Runnable fogCallback,
+            CallbackInfo info, @Local LocalRef<MatrixStack> matrices) {
+        matrices.get().multiply(RotationAxis.POSITIVE_X.rotationDegrees(UnicopiaClient.getInstance().getSkyAngleDelta(tickDelta)));
+        matrices.get().multiply(RotationAxis.POSITIVE_Y.rotationDegrees(UnicopiaClient.getInstance().tangentalSkyAngle.getValue()));
     }
 
-    @Redirect(method = "renderWeather", at = @At(value = "INVOKE", target = "net/minecraft/world/biome/Biome.getPrecipitation(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome$Precipitation;"))
+    @Redirect(method = "renderWeather", at = @At(
+            value = "INVOKE",
+            target = "net/minecraft/world/biome/Biome.getPrecipitation(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/world/biome/Biome$Precipitation;"
+    ))
     private Biome.Precipitation modifyPrecipitation(Biome biome, BlockPos pos) {
         Biome.Precipitation precipitation = biome.getPrecipitation(pos);
         if (!((WeatherAccess)world).isBelowClientCloudLayer(pos)) {
