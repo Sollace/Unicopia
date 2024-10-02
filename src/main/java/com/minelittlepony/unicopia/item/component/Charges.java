@@ -21,7 +21,7 @@ public record Charges(int energy, int maximum, int baseline, boolean showInToolt
             Codec.INT.fieldOf("energy").forGetter(Charges::energy),
             Codec.INT.optionalFieldOf("maximum", 0).forGetter(Charges::maximum),
             Codec.INT.optionalFieldOf("baseline", 0).forGetter(Charges::baseline),
-            Codec.BOOL.fieldOf("showInTooltip").forGetter(Charges::showInTooltip)
+            Codec.BOOL.fieldOf("show_in_tooltip").forGetter(Charges::showInTooltip)
     ).apply(instance, Charges::new));
     public static final PacketCodec<ByteBuf, Charges> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.INTEGER, Charges::energy,

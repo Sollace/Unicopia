@@ -202,7 +202,7 @@ public interface UEnchantments {
                             AttributeModifierSlot.MAINHAND
                     )
                 ).addEffect(EnchantmentEffectComponentTypes.TICK, new GroupBasedAttributeEnchantmentEffect(new AttributeEnchantmentEffect(
-                        Unicopia.id("team_strength"),
+                        Unicopia.id("enchantment.team.strength"),
                         EntityAttributes.GENERIC_ATTACK_DAMAGE,
                         EnchantmentLevelBasedValue.linear(0, 1),
                         Operation.ADD_VALUE

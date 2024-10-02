@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.duck.PlayerEntityDuck;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -76,11 +77,11 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
         get().onDropItem(info.getReturnValue());
     }
 
-    @Inject(method = "getActiveEyeHeight(Lnet/minecraft/entity/EntityPose;Lnet/minecraft/entity/EntityDimensions;)F",
-            at = @At("RETURN"),
-            cancellable = true)
-    private void onGetActiveEyeHeight(EntityPose pose, EntityDimensions dimensions, CallbackInfoReturnable<Float> info) {
-        get().getMotion().getDimensions().calculateActiveEyeHeight(dimensions).ifPresent(info::setReturnValue);
+    @ModifyReturnValue(method = "getBaseDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;", at = @At("RETURN"))
+    private EntityDimensions modifyEyeHeight(EntityDimensions dimensions, EntityPose pose) {
+        return get().getMotion().getDimensions().calculateActiveEyeHeight(dimensions).map(eyeHeight -> {
+            return dimensions.withEyeHeight(eyeHeight);
+        }).orElse(dimensions);
     }
 
     @Redirect(method = "getDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;",

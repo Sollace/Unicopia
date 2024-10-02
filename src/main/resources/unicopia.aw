@@ -6,12 +6,18 @@ accessible          class    net/minecraft/client/render/item/HeldItemRenderer$H
 accessible          class    net/minecraft/client/render/VertexConsumers$Union
 accessible          class    net/minecraft/client/gui/hud/InGameHud$HeartType
 
-#accessible          method   net/minecraft/world/gen/foliage/FoliagePlacerType <init>             (Lcom/mojang/serialization/Codec;)V
+#accessible         method   net/minecraft/world/gen/foliage/FoliagePlacerType <init>             (Lcom/mojang/serialization/Codec;)V
 
-accessible          field    net/minecraft/entity/mob/CreeperEntity      CHARGED                  Lnet/minecraft/entity/data/TrackedData;
-accessible          field    net/minecraft/entity/mob/CreeperEntity      IGNITED                  Lnet/minecraft/entity/data/TrackedData;
+accessible          field    net/minecraft/entity/mob/CreeperEntity               CHARGED         Lnet/minecraft/entity/data/TrackedData;
+accessible          field    net/minecraft/entity/mob/CreeperEntity               IGNITED         Lnet/minecraft/entity/data/TrackedData;
 
 accessible          field    net/minecraft/loot/LootTable                          pools          Ljava/util/List;
 mutable             field    net/minecraft/loot/LootTable                          pools          Ljava/util/List;
 
 accessible          method   net/minecraft/entity/LightningEntity                  cleanOxidation (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;)V
+
+accessible          class    net/minecraft/datafixer/fix/ItemStackComponentizationFix$StackData
+accessible          field    net/minecraft/datafixer/fix/AttributeIdFix            UUID_TO_ID     Ljava/util/Map;
+mutable             field    net/minecraft/datafixer/fix/AttributeIdFix            UUID_TO_ID     Ljava/util/Map;
+accessible          field    net/minecraft/datafixer/fix/AttributeIdFix            NAME_TO_ID     Ljava/util/Map;
+mutable             field    net/minecraft/datafixer/fix/AttributeIdFix            NAME_TO_ID     Ljava/util/Map;

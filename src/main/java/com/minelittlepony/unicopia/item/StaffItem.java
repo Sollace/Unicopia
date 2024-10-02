@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.List;
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 
 import net.minecraft.block.Blocks;
@@ -23,15 +22,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class StaffItem extends SwordItem {
-
-    protected static final Identifier ATTACK_REACH_MODIFIER_ID = Unicopia.id("attack_reach");
-
     public StaffItem(Settings settings) {
         super(ToolMaterials.WOOD, settings.attributeModifiers(createAttributeModifiers(2, 3)));
     }
@@ -47,7 +42,7 @@ public class StaffItem extends SwordItem {
             )
             .add(
                 UEntityAttributes.EXTENDED_ATTACK_DISTANCE,
-                new EntityAttributeModifier(ATTACK_REACH_MODIFIER_ID, attackReach, EntityAttributeModifier.Operation.ADD_VALUE),
+                new EntityAttributeModifier(UItemModifierIds.ATTACK_RANGE_MODIFIER_ID, attackReach, EntityAttributeModifier.Operation.ADD_VALUE),
                 AttributeModifierSlot.MAINHAND
             )
             .build();

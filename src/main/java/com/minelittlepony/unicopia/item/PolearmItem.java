@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.List;
 import com.minelittlepony.unicopia.UTags;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import net.minecraft.block.*;
@@ -14,18 +13,15 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class PolearmItem extends ToolItem {
-    static final Identifier ATTACK_RANGE_MODIFIER_ID = Unicopia.id("attack_reach_modifier");
-
     public PolearmItem(ToolMaterial material, int damage, float speed, int range, Settings settings) {
         super(material, settings.attributeModifiers(SwordItem.createAttributeModifiers(material, damage, speed).with(
-                UEntityAttributes.EXTENDED_REACH_DISTANCE, new EntityAttributeModifier(ATTACK_RANGE_MODIFIER_ID, range, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND
+                UEntityAttributes.EXTENDED_REACH_DISTANCE, new EntityAttributeModifier(UItemModifierIds.ATTACK_RANGE_MODIFIER_ID, range, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND
         ).with(
-                UEntityAttributes.EXTENDED_ATTACK_DISTANCE, new EntityAttributeModifier(ATTACK_RANGE_MODIFIER_ID, range, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND
+                UEntityAttributes.EXTENDED_ATTACK_DISTANCE, new EntityAttributeModifier(UItemModifierIds.ATTACK_RANGE_MODIFIER_ID, range, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND
         )).component(DataComponentTypes.TOOL, createToolComponent()));
     }
 

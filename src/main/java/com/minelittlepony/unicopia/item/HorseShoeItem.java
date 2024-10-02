@@ -32,7 +32,7 @@ public class HorseShoeItem extends HeavyProjectileItem {
     public HorseShoeItem(Item.Settings settings, float projectileDamage, float projectileInnacuracy, float baseProjectileSpeed) {
         super(settings.attributeModifiers(AttributeModifiersComponent.builder().add(
             UEntityAttributes.EXTENDED_ATTACK_DISTANCE,
-            new EntityAttributeModifier(PolearmItem.ATTACK_RANGE_MODIFIER_ID, -3F, EntityAttributeModifier.Operation.ADD_VALUE),
+            new EntityAttributeModifier(UItemModifierIds.ATTACK_RANGE_MODIFIER_ID, -3F, EntityAttributeModifier.Operation.ADD_VALUE),
             AttributeModifierSlot.MAINHAND
     ).build()), projectileDamage);
         this.projectileInnacuracy = projectileInnacuracy;

@@ -18,7 +18,7 @@ public record Appearance(ItemStack item, boolean replaceFully) {
             CodecUtils.xor(
                     ItemStack.CODEC,
                     Registries.ITEM.getCodec().xmap(Item::getDefaultStack, ItemStack::getItem)
-            ).fieldOf("stack").forGetter(Appearance::item),
+            ).fieldOf("item").forGetter(Appearance::item),
             Codec.BOOL.fieldOf("replace_fully").forGetter(Appearance::replaceFully)
     ).apply(instance, Appearance::of));
     public static final PacketCodec<RegistryByteBuf, Appearance> PACKET_CODEC = PacketCodec.tuple(
