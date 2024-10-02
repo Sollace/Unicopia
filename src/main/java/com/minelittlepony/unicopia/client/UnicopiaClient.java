@@ -53,9 +53,6 @@ public class UnicopiaClient implements ClientModInitializer {
         return Pony.of(MinecraftClient.getInstance().player);
     }
 
-    private final Lerp rainGradient = new Lerp(0);
-    private final Lerp thunderGradient = new Lerp(0);
-
     public final Lerp tangentalSkyAngle = new Lerp(0, true);
     public final Lerp skyAngle = new Lerp(0, true);
 
@@ -101,10 +98,6 @@ public class UnicopiaClient implements ClientModInitializer {
         }
 
         return Unicopia.getConfig().preferredRace.get();
-    }
-
-    public static float getWorldBrightness(float initial) {
-        return 0.6F;
     }
 
     public UnicopiaClient() {
