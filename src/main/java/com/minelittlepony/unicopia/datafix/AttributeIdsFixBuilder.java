@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.datafixer;
+package com.minelittlepony.unicopia.datafix;
 
 import java.util.HashMap;
 import java.util.Map;

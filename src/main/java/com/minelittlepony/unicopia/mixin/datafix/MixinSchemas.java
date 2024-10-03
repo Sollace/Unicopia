@@ -13,6 +13,6 @@ import net.minecraft.datafixer.Schemas;
 abstract class MixinSchemas {
     @Inject(method = "build", at = @At("TAIL"))
     private static void unicopia_build(DataFixerBuilder builder, CallbackInfo info) {
-        com.minelittlepony.unicopia.datafixer.Schemas.build(builder);
+        com.minelittlepony.unicopia.datafix.Schemas.build(builder);
     }
 }

@@ -13,6 +13,6 @@ import net.minecraft.datafixer.fix.ItemStackComponentizationFix;
 abstract class MixinItemStackComponentizationFix {
     @Inject(method = "fixStack", at = @At("TAIL"))
     private static void unicopia_fixStack(ItemStackComponentizationFix.StackData data, Dynamic<?> dynamic, CallbackInfo info) {
-        com.minelittlepony.unicopia.datafixer.Schemas.fixComponents(data, dynamic);
+        com.minelittlepony.unicopia.datafix.Schemas.fixComponents(data, dynamic);
     }
 }

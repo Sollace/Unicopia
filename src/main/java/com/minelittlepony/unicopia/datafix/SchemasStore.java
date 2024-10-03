@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.datafixer;
+package com.minelittlepony.unicopia.datafix;
 
 import com.mojang.datafixers.schemas.Schema;
 

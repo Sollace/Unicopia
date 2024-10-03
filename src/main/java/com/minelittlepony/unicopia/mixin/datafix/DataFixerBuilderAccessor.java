@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.mixin.datafix;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-import com.minelittlepony.unicopia.datafixer.SchemasStore;
+import com.minelittlepony.unicopia.datafix.SchemasStore;
 import com.mojang.datafixers.DataFixerBuilder;
 import com.mojang.datafixers.schemas.Schema;
 
