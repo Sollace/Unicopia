@@ -41,7 +41,11 @@ final class UnicopiaItemStackComponentizations {
             data.moveToComponent("spell_traits", "unicopia:spell_traits");
         }
         if (data.itemEquals("unicopia:butterfly")) {
-            data.moveToComponent("variant", "unicopia:butterfly_variant");
+            data.getAndRemove("variant").result().ifPresent(variant -> {
+                data.setComponent("unicopia:butterfly_variant", dynamic.emptyMap()
+                        .set("variant", variant)
+                        .set("show_in_tooltip", dynamic.createBoolean(true)));
+            });
         }
         if (data.itemEquals("unicopia:giant_balloon")) {
             data.moveToComponent("design", "unicopia:balloon_design");
