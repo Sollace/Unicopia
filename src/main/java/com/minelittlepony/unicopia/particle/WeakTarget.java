@@ -15,12 +15,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class WeakTarget {
-    public static final Codec<WeakTarget> CODEC = CodecUtils.xor(
+    public static final Codec<WeakTarget> CODEC = Codec.withAlternative(
             RecordCodecBuilder.create(instance -> instance.group(
                     CodecUtils.VECTOR.fieldOf("position").forGetter(i -> i.fixedPosition),
                     Codec.INT.fieldOf("targetId").forGetter(i -> i.targetId)
             ).apply(instance, WeakTarget::new)),
-            CodecUtils.VECTOR.xmap(pos -> new WeakTarget(pos, null), target -> target.fixedPosition)
+            CodecUtils.VECTOR,
+            pos -> new WeakTarget(pos, null)
     );
     public static final PacketCodec<PacketByteBuf, WeakTarget> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecUtils.VECTOR, i -> i.fixedPosition,

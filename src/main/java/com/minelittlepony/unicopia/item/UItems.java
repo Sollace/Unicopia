@@ -329,7 +329,6 @@ public interface UItems {
         CompostingChanceRegistry.INSTANCE.add(APPLE_PIE_SLICE, 0.1F);
         CompostingChanceRegistry.INSTANCE.add(BUTTERFLY, 0.1F);
 
-        UDataComponentTypes.bootstrap();
         UEnchantments.bootstrap();
         URecipes.bootstrap();
         UItemGroups.bootstrap();

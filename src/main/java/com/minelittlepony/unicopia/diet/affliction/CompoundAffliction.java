@@ -9,13 +9,17 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
 
 public record CompoundAffliction (List<Affliction> afflictions) implements Affliction {
     public static final MapCodec<CompoundAffliction> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            Affliction.CODEC.listOf().fieldOf("afflictions").forGetter(CompoundAffliction::afflictions)
+            AfflictionType.CODEC.listOf().fieldOf("afflictions").forGetter(CompoundAffliction::afflictions)
     ).apply(instance, CompoundAffliction::new));
-    public static final PacketCodec<RegistryByteBuf, CompoundAffliction> PACKET_CODEC = null;
+    public static final PacketCodec<RegistryByteBuf, CompoundAffliction> PACKET_CODEC = PacketCodec.tuple(
+            AfflictionType.PACKET_CODEC.collect(PacketCodecs.toList()), CompoundAffliction::afflictions,
+            CompoundAffliction::new
+    );
 
     public static CompoundAffliction of(Affliction...afflictions) {
         return new CompoundAffliction(List.of(afflictions));

@@ -27,6 +27,7 @@ import com.minelittlepony.unicopia.entity.effect.SeaponyGraceStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UPotions;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
@@ -63,6 +64,7 @@ public class Unicopia implements ModInitializer {
     public void onInitialize() {
         Channel.bootstrap();
         UCriteria.bootstrap();
+        UDataComponentTypes.bootstrap();
         UEntities.bootstrap();
         Commands.bootstrap();
         TrinketsDelegate.getInstance(null).bootstrap();

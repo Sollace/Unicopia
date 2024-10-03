@@ -19,7 +19,7 @@ public record RacePredicate(Optional<Set<Race>> include, Optional<Set<Race>> exc
             RACE_SET_CODEC.optionalFieldOf("include").forGetter(RacePredicate::include),
             RACE_SET_CODEC.optionalFieldOf("exclude").forGetter(RacePredicate::exclude)
     ).apply(instance, RacePredicate::of));
-    public static final Codec<RacePredicate> CODEC = CodecUtils.xor(BASE_CODEC, RACE_SET_CODEC.xmap(include -> of(Optional.of(include), Optional.empty()), a -> a.include().orElse(Set.of())));
+    public static final Codec<RacePredicate> CODEC = Codec.withAlternative(BASE_CODEC, RACE_SET_CODEC, a -> of(a, Set.of()));
 
     public static RacePredicate of(Set<Race> include, Set<Race> exclude) {
         return of(Optional.of(include).filter(s -> !s.isEmpty()), Optional.of(exclude).filter(s -> !s.isEmpty()));

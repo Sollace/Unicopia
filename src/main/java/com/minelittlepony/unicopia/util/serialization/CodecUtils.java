@@ -3,9 +3,10 @@ package com.minelittlepony.unicopia.util.serialization;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
-import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -26,11 +27,11 @@ import net.minecraft.util.math.Vec3d;
 public interface CodecUtils {
     Codec<ItemConvertible> ITEM = Registries.ITEM.getCodec().xmap(i -> () -> i, ItemConvertible::asItem);
     Codec<Optional<BlockPos>> OPTIONAL_POS = Codecs.optional(BlockPos.CODEC);
-    Codec<Vec3d> VECTOR = RecordCodecBuilder.create(instance -> instance.group(
+    Codec<Vec3d> VECTOR = Codec.withAlternative(RecordCodecBuilder.create(instance -> instance.group(
             Codec.DOUBLE.fieldOf("x").forGetter(Vec3d::getX),
             Codec.DOUBLE.fieldOf("y").forGetter(Vec3d::getY),
             Codec.DOUBLE.fieldOf("z").forGetter(Vec3d::getZ)
-    ).apply(instance, Vec3d::new));
+    ).apply(instance, Vec3d::new)), Codec.DOUBLE.listOf(3, 3), list -> new Vec3d(list.get(0), list.get(1), list.get(2)));
     /**
      * Combines the result of two unrelated codecs into a single object.
      * <p>
@@ -79,8 +80,8 @@ public interface CodecUtils {
         });
     }
 
-    static <K> Codec<K> xor(Codec<K> left, Codec<K> right) {
-        return Codec.xor(left, right).xmap(either -> either.left().or(either::right).get(), Either::left);
+    static <K> Codec<K> apply(Codec<K> codec, UnaryOperator<Codec<K>> func) {
+        return func.apply(codec);
     }
 
     static <K> Codec<Set<K>> setOf(Codec<K> codec) {
@@ -95,11 +96,16 @@ public interface CodecUtils {
     }
 
     static MapCodec<TriState> tristateOf(String fieldName) {
-        return Codec.BOOL.optionalFieldOf(fieldName)
-                .<TriState>xmap(b -> b.map(TriState::of).orElse(TriState.DEFAULT), t -> Optional.ofNullable(t.get()));
+        return Codec.BOOL.optionalFieldOf(fieldName).xmap(
+                b -> b.map(TriState::of).orElse(TriState.DEFAULT),
+                t -> Optional.ofNullable(t.get())
+        );
     }
 
     static <T> Codec<DefaultedList<T>> defaultedList(Codec<T> elementCodec, T empty) {
-        return elementCodec.listOf().flatXmap(elements -> DataResult.success(new DefaultedList<>(elements, empty) {}), DataResult::success);
+        return elementCodec.listOf().xmap(
+                elements -> new DefaultedList<>(elements, empty) {},
+                Function.identity()
+        );
     }
 }

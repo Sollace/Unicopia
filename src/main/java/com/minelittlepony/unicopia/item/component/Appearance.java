@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.item.component;
 
-import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -15,10 +14,7 @@ public record Appearance(ItemStack item, boolean replaceFully) {
     public static final Appearance DEFAULT = new Appearance(ItemStack.EMPTY, false);
     public static final Appearance DEFAULT_FULLY_DISGUISED = new Appearance(ItemStack.EMPTY, true);
     public static final Codec<Appearance> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            CodecUtils.xor(
-                    ItemStack.CODEC,
-                    Registries.ITEM.getCodec().xmap(Item::getDefaultStack, ItemStack::getItem)
-            ).fieldOf("item").forGetter(Appearance::item),
+            Codec.withAlternative(ItemStack.CODEC, Registries.ITEM.getCodec(), Item::getDefaultStack).fieldOf("item").forGetter(Appearance::item),
             Codec.BOOL.fieldOf("replace_fully").forGetter(Appearance::replaceFully)
     ).apply(instance, Appearance::of));
     public static final PacketCodec<RegistryByteBuf, Appearance> PACKET_CODEC = PacketCodec.tuple(
