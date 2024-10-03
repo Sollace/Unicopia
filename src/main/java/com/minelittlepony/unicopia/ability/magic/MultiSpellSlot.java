@@ -15,7 +15,7 @@ import com.minelittlepony.unicopia.network.track.ObjectTracker;
 import com.minelittlepony.unicopia.network.track.Trackable;
 import com.minelittlepony.unicopia.network.track.TrackableObject;
 import com.minelittlepony.unicopia.network.track.MsgTrackedValues.TrackerEntries;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.NbtCompound;

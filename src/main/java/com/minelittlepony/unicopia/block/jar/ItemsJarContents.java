@@ -10,7 +10,7 @@ import com.minelittlepony.unicopia.block.ItemJarBlock.TileData;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.mixin.MixinEntityBucketItem;
 import com.minelittlepony.unicopia.util.FluidHelper;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import com.mojang.serialization.Codec;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;

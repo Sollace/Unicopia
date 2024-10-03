@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.entity;
 
-import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;

@@ -4,8 +4,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;

@@ -15,7 +15,7 @@ import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgMarkTraitRead;
 import com.minelittlepony.unicopia.network.MsgUnlockTraits;
 import com.minelittlepony.unicopia.util.Copyable;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

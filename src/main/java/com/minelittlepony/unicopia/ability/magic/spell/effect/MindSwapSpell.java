@@ -19,7 +19,7 @@ import com.minelittlepony.unicopia.item.AlicornAmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.entity.Entity;

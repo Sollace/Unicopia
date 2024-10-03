@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 import com.google.common.base.Suppliers;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.EnchantableItem;
-import com.minelittlepony.unicopia.util.CodecUtils;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 

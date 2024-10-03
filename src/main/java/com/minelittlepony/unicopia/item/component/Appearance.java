@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.item.component;
 
-import com.minelittlepony.unicopia.util.CodecUtils;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 

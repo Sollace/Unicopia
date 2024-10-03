@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.block;
 
 import java.util.function.Supplier;
 
-import com.minelittlepony.unicopia.util.CodecUtils;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

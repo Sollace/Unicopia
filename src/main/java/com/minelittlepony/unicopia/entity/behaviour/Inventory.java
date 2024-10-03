@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.entity.behaviour;
 import java.util.*;
 import java.util.function.Consumer;
 
-import com.minelittlepony.unicopia.util.CodecUtils;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 

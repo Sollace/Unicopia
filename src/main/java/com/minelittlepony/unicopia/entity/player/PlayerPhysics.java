@@ -35,6 +35,7 @@ import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 import com.minelittlepony.unicopia.util.*;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.*;

@@ -12,8 +12,8 @@ import com.minelittlepony.unicopia.entity.mob.FloatingArtefactEntity;
 import com.minelittlepony.unicopia.entity.mob.SpellbookEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.util.CodecUtils;
 import com.minelittlepony.unicopia.util.PosHelper;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 

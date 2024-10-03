@@ -17,7 +17,8 @@ import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;
 import com.minelittlepony.unicopia.server.world.Altar;
 import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
+
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.block.Blocks;

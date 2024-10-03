@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.nbt.NbtCompound;

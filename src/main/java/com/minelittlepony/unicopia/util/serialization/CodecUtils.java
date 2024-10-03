@@ -1,4 +1,4 @@
-package com.minelittlepony.unicopia.util;
+package com.minelittlepony.unicopia.util.serialization;
 
 import java.util.ArrayList;
 import java.util.Optional;

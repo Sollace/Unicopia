@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.particle;
 import org.joml.Vector3f;
 
 import com.minelittlepony.common.util.Color;
-import com.minelittlepony.unicopia.util.CodecUtils;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;

@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.particle;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.util.CodecUtils;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

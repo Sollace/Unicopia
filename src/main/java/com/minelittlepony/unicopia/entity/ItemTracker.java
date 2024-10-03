@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.*;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemConvertible;

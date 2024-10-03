@@ -17,9 +17,9 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.mojang.serialization.MapCodec;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
-import com.minelittlepony.unicopia.util.NbtSerialisable.Serializer;
 import com.minelittlepony.unicopia.util.PosHelper;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable.Serializer;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;

@@ -2,8 +2,8 @@ package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.item.UItems;
-import com.minelittlepony.unicopia.util.CodecUtils;
 import com.minelittlepony.unicopia.util.SoundEmitter;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 

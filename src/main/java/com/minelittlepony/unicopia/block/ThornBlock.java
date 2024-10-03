@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.function.Supplier;
 import com.minelittlepony.unicopia.ability.EarthPonyGrowAbility;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
-import com.minelittlepony.unicopia.util.CodecUtils;
 import com.minelittlepony.unicopia.util.VecHelper;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 

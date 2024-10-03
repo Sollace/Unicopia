@@ -6,8 +6,8 @@ import java.util.Set;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSkyAngle;
-import com.minelittlepony.unicopia.util.CodecUtils;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.datafixer.DataFixTypes;

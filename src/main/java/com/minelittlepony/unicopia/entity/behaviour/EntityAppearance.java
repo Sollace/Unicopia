@@ -23,7 +23,7 @@ import com.minelittlepony.unicopia.entity.player.PlayerDimensions;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.track.TrackableObject;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.block.ShapeContext;
