@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.google.common.base.Suppliers;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.entity.effect.FoodPoisoningStatusEffect;
 import com.minelittlepony.unicopia.item.DamageChecker;
 import com.minelittlepony.unicopia.item.ItemStackDuck;
@@ -68,38 +69,30 @@ abstract class MixinItemStack implements ItemStackDuck {
         getTransientComponents().setCarrier(null);
     }
 
-    @Inject(method = "takesDamageFrom", at = @At("HEAD"))
-    private void onTakesDamageFrom(DamageSource source, CallbackInfoReturnable<Boolean> info) {
+    @ModifyReturnValue(method = "takesDamageFrom", at = @At("RETURN"))
+    private boolean onTakesDamageFrom(boolean takesDamage, DamageSource source) {
         ItemStack self = (ItemStack)(Object)this;
-        if (self.getItem() instanceof DamageChecker checker) {
-            info.setReturnValue(checker.takesDamageFrom(source));
-        }
+        return self.getItem() instanceof DamageChecker checker ? checker.takesDamageFrom(source) : takesDamage;
     }
 }
 
 @Mixin(ComponentHolder.class)
 interface MixinComponentHolder {
-    @Inject(method = "get", at = @At("RETURN"))
-    default <T> void unicopia_onGet(ComponentType<? extends T> type, CallbackInfoReturnable<T> info) {
+    @ModifyReturnValue(method = "get", at = @At("RETURN"))
+    default <T> T unicopia_onGet(T value, ComponentType<? extends T> type) {
         Object o = this;
-        if (o instanceof ItemStack stack) {
-            info.setReturnValue(ItemStackDuck.of(stack).getTransientComponents().get(type, stack, info.getReturnValue()));
-        }
+        return o instanceof ItemStack stack ? ItemStackDuck.of(stack).getTransientComponents().get(type, stack, value) : value;
     }
 
-    @Inject(method = "getOrDefault", at = @At("RETURN"))
-    default <T> void unicopia_onGetOrDefault(ComponentType<? extends T> type, T fallback, CallbackInfoReturnable<T> info) {
+    @ModifyReturnValue(method = "getOrDefault", at = @At("RETURN"))
+    default <T> T unicopia_onGetOrDefault(T value, ComponentType<? extends T> type, T fallback) {
         Object o = this;
-        if (o instanceof ItemStack stack) {
-            info.setReturnValue(ItemStackDuck.of(stack).getTransientComponents().get(type, stack, info.getReturnValue()));
-        }
+        return o instanceof ItemStack stack ? ItemStackDuck.of(stack).getTransientComponents().get(type, stack, value) : value;
     }
 
-    @Inject(method = "contains", at = @At("RETURN"))
-    default void unicopia_onContains(ComponentType<?> type, CallbackInfoReturnable<Boolean> info) {
+    @ModifyReturnValue(method = "contains", at = @At("RETURN"))
+    default boolean unicopia_onContains(boolean z, ComponentType<?> type) {
         Object o = this;
-        if (o instanceof ItemStack stack && ItemStackDuck.of(stack).getTransientComponents().get(type, stack, null) != null) {
-            info.setReturnValue(true);
-        }
+        return z || (o instanceof ItemStack stack && ItemStackDuck.of(stack).getTransientComponents().get(type, stack, null) != null);
     }
 }

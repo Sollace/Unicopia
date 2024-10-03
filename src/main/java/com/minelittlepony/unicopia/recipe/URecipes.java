@@ -2,11 +2,13 @@ package com.minelittlepony.unicopia.recipe;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.*;
+import com.minelittlepony.unicopia.datagen.providers.recipe.CuttingBoardRecipeJsonBuilder;
 import com.minelittlepony.unicopia.server.world.gen.ULootTableEntryType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.CuttingRecipe;
@@ -18,6 +20,7 @@ import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
 public interface URecipes {
@@ -32,9 +35,9 @@ public interface URecipes {
         return DataResult.success(DefaultedList.copyOf(Ingredient.EMPTY, ingredients2));
     }, DataResult::success);
 
-    RecipeType<SpellbookRecipe> SPELLBOOK = RecipeType.register("unicopia:spellbook");
-    RecipeType<StonecuttingRecipe> CLOUD_SHAPING = RecipeType.register("unicopia:cloud_shaping");
-    RecipeType<TransformCropsRecipe> GROWING = RecipeType.register("unicopia:growing");
+    RecipeType<SpellbookRecipe> SPELLBOOK = register("spellbook");
+    RecipeType<StonecuttingRecipe> CLOUD_SHAPING = register("cloud_shaping");
+    RecipeType<TransformCropsRecipe> GROWING = register("growing");
 
     RecipeSerializer<ZapAppleRecipe> ZAP_APPLE_SERIALIZER = register("crafting_zap_apple", ZapAppleRecipe.CODEC, ZapAppleRecipe.PACKET_CODEC);
     RecipeSerializer<GlowingRecipe> GLOWING_SERIALIZER = register("crafting_glowing", new SpecialRecipeSerializer<>(GlowingRecipe::new));
@@ -46,6 +49,16 @@ public interface URecipes {
     RecipeSerializer<SpellDuplicatingRecipe> SPELL_DUPLICATING = register("spellbook/duplicating", SpellDuplicatingRecipe.CODEC, SpellDuplicatingRecipe.PACKET_CODEC);
     RecipeSerializer<CloudShapingRecipe> CLOUD_SHAPING_SERIALIZER = register("cloud_shaping", new CuttingRecipe.Serializer<>(CloudShapingRecipe::new) {});
     RecipeSerializer<TransformCropsRecipe> TRANSFORM_CROP_SERIALIZER = register("transform_crop", TransformCropsRecipe.CODEC, TransformCropsRecipe.PACKET_CODEC);
+
+    static <T extends Recipe<?>> RecipeType<T> register(String name) {
+        Identifier id = Unicopia.id(name);
+        return Registry.register(Registries.RECIPE_TYPE, id, new RecipeType<T>() {
+            @Override
+            public String toString() {
+                return id.toString();
+            }
+        });
+    }
 
     static <T extends Recipe<?>> RecipeSerializer<T> register(String name, MapCodec<T> codec, PacketCodec<RegistryByteBuf, T> packetCodec) {
         return register(name, new RecipeSerializer<>() {
@@ -66,6 +79,9 @@ public interface URecipes {
     }
 
     static void bootstrap() {
+        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+            CuttingBoardRecipeJsonBuilder.CuttingBoardRecipe.bootstrap();
+        }
         ULootTableEntryType.bootstrap();
     }
 }

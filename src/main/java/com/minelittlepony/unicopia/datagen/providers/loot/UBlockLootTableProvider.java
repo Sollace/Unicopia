@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.datagen.providers.loot;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.EdibleBlock;
 import com.minelittlepony.unicopia.block.EnchantedFruitBlock;
@@ -12,7 +11,6 @@ import com.minelittlepony.unicopia.block.SegmentedCropBlock;
 import com.minelittlepony.unicopia.block.ShellsBlock;
 import com.minelittlepony.unicopia.block.SlimePustuleBlock;
 import com.minelittlepony.unicopia.block.UBlocks;
-import com.minelittlepony.unicopia.datagen.Datagen;
 import com.minelittlepony.unicopia.datagen.providers.UModelProvider;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.server.world.Tree;
@@ -234,9 +232,10 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         addDrop(UBlocks.SCALLOP_SHELL, shellDrops(UBlocks.SCALLOP_SHELL, UItems.SCALLOP_SHELL));
         addDrop(UBlocks.TURRET_SHELL, shellDrops(UBlocks.TURRET_SHELL, UItems.TURRET_SHELL));
 
-        var farmersDelightGenerator = withConditions(ResourceConditions.allModsLoaded("farmersdelight"));
-        farmersDelightGenerator.addDrop(Datagen.getOrCreateBaleBlock(Unicopia.id("rice_block")), b -> edibleBlockDrops(b, Datagen.getOrCreateItem(Identifier.of("farmersdelight", "rice_panicle"))));
-        farmersDelightGenerator.addDrop(Datagen.getOrCreateBaleBlock(Unicopia.id("straw_block")), b -> edibleBlockDrops(b, Datagen.getOrCreateItem(Identifier.of("farmersdelight", "straw"))));
+        var farmersDelightGenerator = new UExternalBlockLootTableProvider(lootTables, ResourceConditions.allModsLoaded("farmersdelight"));
+
+        farmersDelightGenerator.addDrop(Unicopia.id("rice_block"), b -> UExternalBlockLootTableProvider.edibleBlockDrops(b, Identifier.of("farmersdelight", "rice_panicle")));
+        farmersDelightGenerator.addDrop(Unicopia.id("straw_block"), b -> UExternalBlockLootTableProvider.edibleBlockDrops(b, Identifier.of("farmersdelight", "straw")));
     }
 
     private void addTallCropDrops(SegmentedCropBlock baseCrop, ItemConvertible crop) {

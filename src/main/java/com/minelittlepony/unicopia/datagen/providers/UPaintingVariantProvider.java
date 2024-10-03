@@ -1,60 +1,49 @@
 package com.minelittlepony.unicopia.datagen.providers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.datagen.DataGenRegistryProvider;
 
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
+import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.tag.PaintingVariantTags;
 
-public class UPaintingVariantProvider extends FabricDynamicRegistryProvider {
-
-    private final List<RegistryKey<PaintingVariant>> keys = new ArrayList<>();
-
-    public UPaintingVariantProvider(FabricDataOutput output, CompletableFuture<WrapperLookup> registriesFuture) {
-        super(output, registriesFuture);
+public class UPaintingVariantProvider extends DataGenRegistryProvider<PaintingVariant> {
+    public UPaintingVariantProvider() {
+        super(RegistryKeys.PAINTING_VARIANT);
     }
 
     @Override
-    public String getName() {
-        return "Painting Variants";
+    public void run(Registerable<PaintingVariant> registerable) {
+        register(registerable, "bloom", 2, 1);
+        register(registerable, "chicken", 2, 1);
+        register(registerable, "bells", 2, 1);
+
+        register(registerable, "crystal", 3, 3);
+        register(registerable, "harmony", 3, 3);
+
+        register(registerable, "equality", 2, 4);
+        register(registerable, "solar", 2, 4);
+        register(registerable, "lunar", 2, 4);
+        register(registerable, "platinum", 2, 4);
+        register(registerable, "hurricane", 2, 4);
+        register(registerable, "pudding", 2, 4);
+        register(registerable, "terra", 2, 4);
+        register(registerable, "equestria", 2, 4);
+
+        register(registerable, "blossom", 2, 3);
+        register(registerable, "shadow", 2, 3);
     }
 
-    public List<RegistryKey<PaintingVariant>> getKeys() {
-        return keys;
-    }
-
-    @Override
-    protected void configure(WrapperLookup registries, Entries entries) {
-        register(entries, "bloom", 2, 1);
-        register(entries, "chicken", 2, 1);
-        register(entries, "bells", 2, 1);
-
-        register(entries, "crystal", 3, 3);
-        register(entries, "harmony", 3, 3);
-
-        register(entries, "equality", 2, 4);
-        register(entries, "solar", 2, 4);
-        register(entries, "lunar", 2, 4);
-        register(entries, "platinum", 2, 4);
-        register(entries, "hurricane", 2, 4);
-        register(entries, "pudding", 2, 4);
-        register(entries, "terra", 2, 4);
-        register(entries, "equestria", 2, 4);
-
-        register(entries, "blossom", 2, 3);
-        register(entries, "shadow", 2, 3);
-    }
-
-    private void register(Entries entries, String name, int width, int height) {
+    private void register(Registerable<PaintingVariant> registerable, String name, int width, int height) {
         RegistryKey<PaintingVariant> key = RegistryKey.of(RegistryKeys.PAINTING_VARIANT, Unicopia.id(name));
-        keys.add(key);
-        entries.add(key, new PaintingVariant(width, height, key.getValue()));
+        registerable.register(key, new PaintingVariant(width, height, key.getValue()));
+    }
+
+    @Override
+    protected void configureTags(TagProvider tagProvider, WrapperLookup lookup) {
+        tagProvider.getOrCreateTagBuilder(PaintingVariantTags.PLACEABLE).add(getKeys());
     }
 }

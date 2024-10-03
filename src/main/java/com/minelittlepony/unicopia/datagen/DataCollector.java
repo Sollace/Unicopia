@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.datagen;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.google.common.base.Preconditions;
@@ -26,6 +27,11 @@ public class DataCollector {
         return values.containsKey(id);
     }
 
+    public <T extends Supplier<JsonElement>> Consumer<T> prime(BiConsumer<T, BiConsumer<Identifier, Supplier<JsonElement>>> converter) {
+        var consumer = prime();
+        return element -> converter.accept(element, consumer);
+    }
+
     public BiConsumer<Identifier, Supplier<JsonElement>> prime() {
         values.clear();
         return (Identifier id, Supplier<JsonElement> value) ->
@@ -38,5 +44,9 @@ public class DataCollector {
                 .map(entry -> DataProvider.writeToPath(cache, entry.getValue().get(), resolver.resolveJson(entry.getKey())))
                 .toArray(CompletableFuture[]::new)
         );
+    }
+
+    public interface Identifiable {
+        Identifier getId();
     }
 }

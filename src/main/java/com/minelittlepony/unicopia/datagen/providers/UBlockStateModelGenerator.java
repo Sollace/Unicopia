@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 
 import com.google.gson.JsonElement;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.block.EdibleBlock;
 import com.minelittlepony.unicopia.block.FruitBearingBlock;
 import com.minelittlepony.unicopia.block.PieBlock;
 import com.minelittlepony.unicopia.block.PileBlock;
@@ -16,7 +15,6 @@ import com.minelittlepony.unicopia.block.ShellsBlock;
 import com.minelittlepony.unicopia.block.SlimePustuleBlock;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.zap.ZapAppleLeavesBlock;
-import com.minelittlepony.unicopia.datagen.Datagen;
 import com.minelittlepony.unicopia.datagen.UBlockFamilies;
 import com.minelittlepony.unicopia.server.world.Tree;
 
@@ -48,7 +46,6 @@ import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Pair;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.Direction;
 
@@ -164,12 +161,6 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         // fruit
         UModelProvider.FRUITS.forEach((block, item) -> registerSingleton(block, TextureMap.cross(ModelIds.getItemModelId(item)), BlockModels.FRUIT));
 
-        // bales
-        registerAll((g, block) -> g.registerBale(Unicopia.id(block.getLeft().getPath().replace("bale", "block")), block.getLeft(), block.getRight()),
-                new Pair<>(Identifier.ofVanilla("hay_block"), "_top"),
-                new Pair<>(Identifier.of("farmersdelight", "rice_bale"), "_top"),
-                new Pair<>(Identifier.of("farmersdelight", "straw_bale"), "_end")
-        );
         // shells
         registerAll(UBlockStateModelGenerator::registerShell, UBlocks.CLAM_SHELL, UBlocks.TURRET_SHELL, UBlocks.SCALLOP_SHELL);
         // other
@@ -442,31 +433,6 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
                 .with(When.create().set(Properties.DOWN, true), BlockStateVariant.create().put(MODEL, side).put(UVLOCK, true).put(X, R90))
                 .with(When.create().set(Properties.UP, true), BlockStateVariant.create().put(MODEL, side).put(UVLOCK, true).put(X, R270)));
         Models.CUBE_ALL.upload(ModelIds.getItemModelId(hive.asItem()), TextureMap.all(ModelIds.getBlockSubModelId(hive, "_side")), modelCollector);
-    }
-
-    public void registerBale(Identifier blockId, Identifier baseBlockId, String endSuffex) {
-        Identifier top = baseBlockId.withPath(p -> "block/" + p + endSuffex);
-        Identifier side = baseBlockId.withPath(p -> "block/" + p + "_side");
-        TextureMap textures = new TextureMap().put(TOP, top).put(SIDE, side);
-
-        MultipartBlockStateSupplier supplier = MultipartBlockStateSupplier.create(Datagen.getOrCreateBaleBlock(blockId));
-        Map<Integer, Identifier> uploadedModels = new HashMap<>();
-
-        for (Direction.Axis axis : Direction.Axis.VALUES) {
-            for (int i = 0; i < EdibleBlock.SEGMENTS.length; i++) {
-                BooleanProperty segment = EdibleBlock.SEGMENTS[i];
-                segment.getName();
-                supplier.with(When.create().set(EdibleBlock.AXIS, axis).set(segment, true), BlockStateVariant.create()
-                        .put(MODEL, uploadedModels.computeIfAbsent(i, ii -> {
-                            return BlockModels.BALE_MODELS[ii].getLeft().upload(blockId.withPath(p -> "block/" + p + BlockModels.BALE_MODELS[ii].getRight()), textures, modelCollector);
-                        }))
-                        .put(X, axis == Direction.Axis.Y ? R0 : R90)
-                        .put(Y, axis == Direction.Axis.X ? R90 : R0)
-                );
-            }
-        }
-
-        blockStateCollector.accept(supplier);
     }
 
     public void registerWithStages(Block crop, Property<Integer> ageProperty, BlockModels.Factory modelFactory, int ... stages) {

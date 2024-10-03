@@ -36,15 +36,22 @@ public class UModelProvider extends FabricModelProvider {
     );
 
     private final DataCollector seasonsModels;
+    private final DataCollector indirectBlockStatesDefinitions;
 
     public UModelProvider(FabricDataOutput output) {
         super(output);
         seasonsModels = new DataCollector(output.getResolver(DataOutput.OutputType.RESOURCE_PACK, "seasons/models"));
+        indirectBlockStatesDefinitions = new DataCollector(output.getResolver(DataOutput.OutputType.RESOURCE_PACK, "blockstates"));
     }
 
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator modelGenerator0) {
         UBlockStateModelGenerator.create(modelGenerator0).register();
+        new UExternalBlockStateModelGenerator(modelGenerator0, indirectBlockStatesDefinitions.prime((states, consumer) -> {
+            if (states instanceof DataCollector.Identifiable i) {
+                consumer.accept(i.getId(), states);
+            }
+        })).register();
         new SeasonsModelGenerator(modelGenerator0, seasonsModels.prime()).register();
     }
 
@@ -52,6 +59,7 @@ public class UModelProvider extends FabricModelProvider {
     public CompletableFuture<?> run(DataWriter writer) {
         return CompletableFuture.allOf(
             super.run(writer),
+            indirectBlockStatesDefinitions.upload(writer),
             seasonsModels.upload(writer)
         );
     }
