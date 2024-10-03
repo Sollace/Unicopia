@@ -41,9 +41,10 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
         return new Pony((PlayerEntity)(Object)this);
     }
 
-    @Inject(method = "createPlayerAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
-    private static void onCreateAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {
-        Pony.registerAttributes(info.getReturnValue());
+    @ModifyReturnValue(method = "createPlayerAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
+    private static DefaultAttributeContainer.Builder onCreateAttributes(DefaultAttributeContainer.Builder builder) {
+        Pony.registerAttributes(builder);
+        return builder;
     }
 
     @ModifyVariable(method = "applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
@@ -52,13 +53,11 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
     }
 
     @ModifyVariable(method = "eatFood(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;Lnet/minecraft/component/type/FoodComponent;)Lnet/minecraft/item/ItemStack;", at = @At("HEAD"), argsOnly = true)
-    private FoodComponent onEatFood(FoodComponent initial, World world, ItemStack stack, FoodComponent food, CallbackInfoReturnable<ItemStack> info) {
+    private FoodComponent onEatFood(FoodComponent initial, World world, ItemStack stack, FoodComponent food) {
         return get().onEat(stack, food);
     }
 
-    @Inject(method = "trySleep(Lnet/minecraft/util/math/BlockPos;)Lcom/mojang/datafixers/util/Either;",
-            at = @At("HEAD"),
-            cancellable = true)
+    @Inject(method = "trySleep(Lnet/minecraft/util/math/BlockPos;)Lcom/mojang/datafixers/util/Either;", at = @At("HEAD"), cancellable = true)
     private void onTrySleep(BlockPos pos, CallbackInfoReturnable<Either<PlayerEntity.SleepFailureReason, Unit>> info) {
         if (!getWorld().isClient) {
             get().trySleep(pos).ifPresent(reason -> {

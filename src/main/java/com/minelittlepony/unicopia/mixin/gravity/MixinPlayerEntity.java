@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.minelittlepony.unicopia.entity.Equine;
 
 import net.minecraft.entity.Entity;
@@ -32,15 +33,24 @@ abstract class MixinPlayerEntity {
         }
     }
 
-    @ModifyArg(method = { "adjustMovementForSneaking", "method_30263" }, at = @At(
-            value = "INVOKE",
-            target = "net/minecraft/util/math/Box.offset(DDD)Lnet/minecraft/util/math/Box;"),
+    @ModifyArg(method = "isSpaceAroundPlayerEmpty",
+            at = @At(value = "INVOKE", target = "net/minecraft/util/math/Box.<init>(DDDDDD)V"),
             index = 1)
-    private double invertStepHeight(double stepHeight) {
+    private double invertStepHeightCheckBoxBottom(double bottom) {
         if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
-            return -stepHeight;
+            return eq.get().asEntity().getBoundingBox().maxY;
         }
-        return stepHeight;
+        return bottom;
+    }
+
+    @ModifyArg(method = "isSpaceAroundPlayerEmpty",
+            at = @At(value = "INVOKE", target = "net/minecraft/util/math/Box.<init>(DDDDDD)V"),
+            index = 4)
+    private double invertStepHeightCheckBoxTop(double top, @Local(argsOnly = true) float stepHeight) {
+        if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
+            return eq.get().asEntity().getBoundingBox().maxY + stepHeight + 1.0E-5F;
+        }
+        return top;
     }
 
     @ModifyArg(method = "canChangeIntoPose",
