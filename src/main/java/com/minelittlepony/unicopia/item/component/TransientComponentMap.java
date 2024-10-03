@@ -21,7 +21,7 @@ import net.minecraft.util.Util;
 
 public class TransientComponentMap {
     private static final BiFunction<ItemStack, ?, ?> DEFAULT = (stack, t) -> t;
-    public static final TransientComponentMap INITIAL = Util.make(new TransientComponentMap(), map -> {
+    public static final TransientComponentMap INITIAL = Util.make(new TransientComponentMap(null), map -> {
         map.set(UDataComponentTypes.DIET_PROFILE, (s, original) -> {
             if (original != null) {
                 return original;
@@ -56,11 +56,18 @@ public class TransientComponentMap {
         });
     });
 
-    private final Map<ComponentType<?>, BiFunction<ItemStack, ?, ?>> components = new HashMap<>();
+    @Nullable
+    private final TransientComponentMap parent;
+    private Map<ComponentType<?>, BiFunction<ItemStack, ?, ?>> components;
 
     private Optional<Entity> carrier = Optional.empty();
 
-    private TransientComponentMap() {}
+    private TransientComponentMap(TransientComponentMap parent) {
+        this.parent = parent;
+        if (parent == null) {
+            components = new HashMap<>();
+        }
+    }
 
     public Optional<Entity> getCarrier() {
         return carrier;
@@ -71,18 +78,25 @@ public class TransientComponentMap {
     }
 
     public <T> void set(ComponentType<? extends T> type, BiFunction<ItemStack, T, T> getter) {
+        if (components == null) {
+            components = parent == null ? new HashMap<>() : new HashMap<>(parent.components);
+        }
         components.put(type, getter);
     }
 
     @SuppressWarnings("unchecked")
     public <T> T get(ComponentType<? extends T> type, ItemStack stack, T upstreamValue) {
-        return ((BiFunction<ItemStack, T, T>)components.getOrDefault(type, DEFAULT)).apply(stack, upstreamValue);
+        if (components != null) {
+            return ((BiFunction<ItemStack, T, T>)components.getOrDefault(type, DEFAULT)).apply(stack, upstreamValue);
+        }
+        if (parent != null) {
+            return parent.get(type, stack, upstreamValue);
+        }
+        return upstreamValue;
     }
 
     public TransientComponentMap createCopy() {
-        TransientComponentMap copy = new TransientComponentMap();
-        copy.components.putAll(components);
-        return copy;
+        return new TransientComponentMap(this);
     }
 
     public interface Holder {
