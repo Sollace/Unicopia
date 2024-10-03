@@ -44,7 +44,7 @@ public class UnicopiaWorldProperties extends PersistentState {
         this(world);
         defaultRace = Race.fromName(tag.getString("defaultRace"), Race.HUMAN);
         tangentalSkyAngle = tag.getFloat("tangentalSkyAngle");
-        NbtSerialisable.decode(POS_CODEC, tag.getList("activeAltars", NbtElement.COMPOUND_TYPE)).ifPresent(activeAltarPositions::addAll);
+        NbtSerialisable.decode(POS_CODEC, tag.getList("activeAltars", NbtElement.COMPOUND_TYPE), world.getRegistryManager()).ifPresent(activeAltarPositions::addAll);
     }
 
     public Race getDefaultRace() {
@@ -94,7 +94,7 @@ public class UnicopiaWorldProperties extends PersistentState {
     public NbtCompound writeNbt(NbtCompound tag, WrapperLookup lookup) {
         tag.putString("defaultRace", Race.REGISTRY.getId(defaultRace).toString());
         tag.putFloat("tangentalSkyAngle", tangentalSkyAngle);
-        tag.put("activeAltars", NbtSerialisable.encode(POS_CODEC, activeAltarPositions));
+        tag.put("activeAltars", NbtSerialisable.encode(POS_CODEC, activeAltarPositions, lookup));
         return tag;
     }
 }

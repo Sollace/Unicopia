@@ -25,9 +25,6 @@ import net.minecraft.util.Util;
  * Interface for a magic spells
  */
 public interface Spell extends NbtSerialisable, Affine {
-    @Deprecated
-    Serializer<NbtCompound, Spell> SERIALIZER = Serializer.of(Spell::readNbt, Spell::writeNbt);
-
     /**
      * Returns the full type that describes this spell.
      */

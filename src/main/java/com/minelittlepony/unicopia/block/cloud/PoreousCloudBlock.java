@@ -46,7 +46,7 @@ public class PoreousCloudBlock extends CloudBlock implements Soakable {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (state.getBlock() instanceof Soakable soakable && world.hasRain(pos) && world.isAir(pos.up())) {
             @Nullable
             BlockState soggyState = soakable.getStateWithMoisture(state, random.nextBetween(1, 5));

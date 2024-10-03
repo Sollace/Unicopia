@@ -14,7 +14,7 @@ public class SpectralFireBlock extends SoulFireBlock {
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (!(entity instanceof ItemEntity)) {
             super.onEntityCollision(state, world, pos, entity);
         }

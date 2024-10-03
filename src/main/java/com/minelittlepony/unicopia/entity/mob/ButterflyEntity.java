@@ -342,10 +342,10 @@ public class ButterflyEntity extends AmbientEntity {
         nbt.putInt("ticksResting", ticksResting);
         nbt.putInt("breedingCooldown", breedingCooldown);
         hoveringPosition.ifPresent(pos -> {
-            nbt.put("hoveringPosition", NbtSerialisable.encode(BlockPos.CODEC, pos));
+            nbt.put("hoveringPosition", NbtSerialisable.encode(BlockPos.CODEC, pos, getRegistryManager()));
         });
         flowerPosition.ifPresent(pos -> {
-            nbt.put("flowerPosition", NbtSerialisable.encode(BlockPos.CODEC, pos));
+            nbt.put("flowerPosition", NbtSerialisable.encode(BlockPos.CODEC, pos, getRegistryManager()));
         });
         NbtCompound visited = new NbtCompound();
         this.visited.forEach((pos, time) -> {
@@ -359,8 +359,8 @@ public class ButterflyEntity extends AmbientEntity {
         super.readCustomDataFromNbt(nbt);
         ticksResting = nbt.getInt("ticksResting");
         breedingCooldown = nbt.getInt("breedingCooldown");
-        hoveringPosition = NbtSerialisable.decode(BlockPos.CODEC, nbt.get("hoveringPosition"));
-        flowerPosition = NbtSerialisable.decode(BlockPos.CODEC, nbt.get("flowerPosition"));
+        hoveringPosition = NbtSerialisable.decode(BlockPos.CODEC, nbt.get("hoveringPosition"), getRegistryManager());
+        flowerPosition = NbtSerialisable.decode(BlockPos.CODEC, nbt.get("flowerPosition"), getRegistryManager());
         NbtCompound visited = nbt.getCompound("visited");
         this.visited.clear();
         visited.getKeys().forEach(key -> {

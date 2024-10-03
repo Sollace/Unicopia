@@ -72,15 +72,13 @@ public class PieBlock extends Block implements Waterloggable {
         return CODEC;
     }
 
-    @Deprecated
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPES[state.get(BITES)];
     }
 
-    @Deprecated
     @Override
-    public ItemActionResult onUseWithItem(ItemStack itemStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ItemActionResult onUseWithItem(ItemStack itemStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
         if (world.isClient) {
 
@@ -180,9 +178,8 @@ public class PieBlock extends Block implements Waterloggable {
         }
     }
 
-    @Deprecated
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
@@ -192,13 +189,11 @@ public class PieBlock extends Block implements Waterloggable {
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
-    @Deprecated
     @Override
-    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+    protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         return world.getBlockState(pos.down()).isSideSolidFullSquare(world, pos, Direction.UP);
     }
 
-    @Deprecated
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         return super.getDefaultState()
@@ -206,9 +201,8 @@ public class PieBlock extends Block implements Waterloggable {
                 .with(STOMPED, ctx.getStack().isOf(UItems.APPLE_PIE_HOOF));
     }
 
-    @Deprecated
     @Override
-    public FluidState getFluidState(BlockState state) {
+    protected FluidState getFluidState(BlockState state) {
         if (state.get(WATERLOGGED)) {
             return Fluids.WATER.getStill(false);
         }
@@ -221,17 +215,17 @@ public class PieBlock extends Block implements Waterloggable {
     }
 
     @Override
-    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return (5 - state.get(BITES)) * 2;
     }
 
     @Override
-    public boolean hasComparatorOutput(BlockState state) {
+    protected boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
     @Override
-    public boolean canPathfindThrough(BlockState state, NavigationType type) {
+    protected boolean canPathfindThrough(BlockState state, NavigationType type) {
         return false;
     }
 }

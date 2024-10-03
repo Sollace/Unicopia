@@ -73,7 +73,7 @@ public class GrowableBlock extends SpreadableBlock {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (!canSurvive(state, world, pos)) {
             world.setBlockState(pos, dead.get().getDefaultState());
             return;

@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -22,7 +23,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
 
@@ -147,7 +147,7 @@ public class ChangelingFeedingSpell extends AbstractSpell {
         compound.putFloat("healthToDrain", healthToDrain);
         compound.putInt("foodToDrain", foodToDrain);
         compound.putFloat("damageThisTick", damageThisTick);
-        compound.put("targets", EntityReference.<LivingEntity>getSerializer().writeAll(targets, lookup));
+        compound.put("targets", NbtSerialisable.encode(EntityReference.<LivingEntity>listCodec(), targets, lookup));
     }
 
     @Override
@@ -156,8 +156,6 @@ public class ChangelingFeedingSpell extends AbstractSpell {
         healthToDrain = compound.getFloat("healthToDrain");
         foodToDrain = compound.getInt("foodToDrain");
         damageThisTick = compound.getFloat("damageThisTick");
-        targets = compound.contains("targets", NbtElement.LIST_TYPE)
-                ? EntityReference.<LivingEntity>getSerializer().readAll(compound.getList("targets", NbtElement.COMPOUND_TYPE), lookup).toList()
-                : List.of();
+        targets = NbtSerialisable.decode(EntityReference.<LivingEntity>listCodec(), compound.get("targets"), lookup).orElse(List.of());
     }
 }

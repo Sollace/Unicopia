@@ -65,9 +65,8 @@ public class WaterloggableCloudBlock extends PoreousCloudBlock implements Waterl
         return super.getFluidState(state);
     }
 
-    @Deprecated
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED).booleanValue()) {
             world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
@@ -75,7 +74,7 @@ public class WaterloggableCloudBlock extends PoreousCloudBlock implements Waterl
     }
 
     @Override
-    public boolean canPathfindThrough(BlockState state, NavigationType type) {
+    protected boolean canPathfindThrough(BlockState state, NavigationType type) {
         return (type == NavigationType.WATER) == state.getFluidState().isIn(FluidTags.WATER);
     }
 }

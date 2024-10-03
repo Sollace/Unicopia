@@ -48,12 +48,12 @@ public class NbtMap<K, V> implements NbtSerialisable {
 
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
-        compound.put("data", NbtSerialisable.encode(codec, data));
+        compound.put("data", NbtSerialisable.encode(codec, data, lookup));
     }
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         data.clear();
-        NbtSerialisable.decode(codec, compound.get("data")).ifPresent(data::putAll);
+        NbtSerialisable.decode(codec, compound.get("data"), lookup).ifPresent(data::putAll);
     }
 }

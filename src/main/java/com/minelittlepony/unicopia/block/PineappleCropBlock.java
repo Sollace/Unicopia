@@ -60,7 +60,7 @@ public class PineappleCropBlock extends CropBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.UP && !neighborState.isOf(this)) {
             return state.with(AGE, Math.min(state.get(AGE), getMaxAge() - 1));
         }
@@ -68,7 +68,7 @@ public class PineappleCropBlock extends CropBlock {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (state.get(HALF) == BlockHalf.BOTTOM) {
             super.randomTick(state, world, pos, random);
 

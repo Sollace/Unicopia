@@ -50,7 +50,7 @@ public class NaturalCloudBlock extends PoreousCloudBlock {
     }
 
     @Override
-    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (stack.isIn(ItemTags.SHOVELS)) {
             BooleanProperty property = CompactedCloudBlock.FACING_PROPERTIES.get(hit.getSide());
             world.setBlockState(pos, compactedBlock.get().getDefaultState().with(property, false));

@@ -6,7 +6,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -16,15 +19,15 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable.Serializer;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.ConnectingBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
@@ -32,7 +35,6 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -164,9 +166,8 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
         return ActionResult.PASS;
     }
 
-    @Deprecated
     @Override
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         world.scheduleBlockTick(pos, this, 15);
         super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
     }
@@ -211,25 +212,19 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
             listener = new Listener(pos);
         }
 
-        @SuppressWarnings("deprecation")
         @Override
         public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
             opening = nbt.getBoolean("opening");
             closing = nbt.getBoolean("closing");
             storedBlocks.clear();
-            if (nbt.contains("storedBlocks", NbtElement.LIST_TYPE)) {
-                Entry.SERIALIZER.readAll(nbt.getList("storedBlocks", NbtElement.COMPOUND_TYPE), lookup).forEach(entry -> {
-                    storedBlocks.put(entry.pos(), entry);
-                });
-            }
+            NbtSerialisable.decode(Entry.MAP_CODEC, nbt.get("storedBlocks"), lookup).ifPresent(storedBlocks::putAll);
         }
 
-        @SuppressWarnings("deprecation")
         @Override
         protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
             nbt.putBoolean("opening", opening);
             nbt.putBoolean("closing", closing);
-            nbt.put("storedBlocks", Entry.SERIALIZER.writeAll(storedBlocks.values(), lookup));
+            nbt.put("storedBlocks", NbtSerialisable.encode(Entry.MAP_CODEC, storedBlocks, lookup));
         }
 
         static void tick(World world, BlockPos pos, BlockState state, TileData data) {
@@ -263,7 +258,7 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
 
                     if (consumed.add(adjacent.toImmutable()) && !storedBlocks.containsKey(adjacent)) {
                         BlockEntity data = world.getBlockEntity(adjacent);
-                        storedBlocks.put(adjacent.toImmutable(), new Entry(adjacent.toImmutable(), s, data instanceof TileData ? null : data));
+                        storedBlocks.put(adjacent.toImmutable(), new Entry(adjacent.toImmutable(), s, data instanceof TileData ? Optional.empty() : Optional.ofNullable(data.createNbtWithId(world.getRegistryManager()))));
 
                         if (s.isOf(UBlocks.CHITIN)) {
                             world.breakBlock(adjacent, false);
@@ -311,35 +306,21 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
             markDirty();
         }
 
-        record Entry (BlockPos pos, BlockState state, @Nullable BlockEntity data) {
-            @SuppressWarnings("deprecation")
-            public static final Serializer<NbtCompound, Entry> SERIALIZER = Serializer.of((compound, lookup) -> new Entry(
-                NbtSerialisable.decode(BlockPos.CODEC, compound.getCompound("pos")).orElse(BlockPos.ORIGIN),
-                NbtSerialisable.decode(BlockState.CODEC, compound.get("state")).orElse(Blocks.AIR.getDefaultState()),
-                compound.getCompound("data"),
-                lookup
-            ), (entry, lookup) -> {
-                NbtCompound compound = new NbtCompound();
-                compound.put("pos", NbtSerialisable.encode(BlockPos.CODEC, entry.pos()));
-                compound.put("state", NbtSerialisable.encode(BlockState.CODEC, entry.state()));
-                if (entry.data() != null) {
-                    compound.put("data", entry.data().createNbtWithId(lookup));
-                }
-                return compound;
-            });
+        record Entry (BlockPos pos, BlockState state, Optional<NbtCompound> data) {
+            public static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                    BlockPos.CODEC.fieldOf("pos").forGetter(Entry::pos),
+                    BlockState.CODEC.fieldOf("state").forGetter(Entry::state),
+                    NbtCompound.CODEC.optionalFieldOf("data").forGetter(Entry::data)
+            ).apply(instance, Entry::new));
+            public static final Codec<Map<BlockPos, Entry>> MAP_CODEC = CODEC.listOf().xmap(
+                entries -> entries.stream().collect(Collectors.toMap(Entry::pos, Function.identity())),
+                entries -> entries.values().stream().toList()
+            );
 
-            Entry(BlockPos pos, BlockState state, NbtCompound nbt, WrapperLookup lookup) {
-                this(pos, state, BlockEntity.createFromNbt(pos, state, nbt, lookup));
-            }
-
-            @SuppressWarnings("deprecation")
             public void restore(World world) {
                 if (world.isAir(pos)) {
                     world.setBlockState(pos, state);
-                    if (data != null) {
-                        data.setCachedState(state);
-                        world.addBlockEntity(data);
-                    }
+                    data.map(nbt -> BlockEntity.createFromNbt(pos, state, nbt, world.getRegistryManager())).ifPresent(world::addBlockEntity);
                 }
             }
         }

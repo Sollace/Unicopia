@@ -71,8 +71,7 @@ public class ThornBlock extends ConnectingBlock implements EarthPonyGrowAbility.
     }
 
     @Override
-    @Deprecated
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (state.get(AGE) == MAX_AGE
                 && random.nextInt(1200) == 0
                 && world.isPlayerInRange(pos.getX(), pos.getY(), pos.getZ(), 3)) {
@@ -81,7 +80,7 @@ public class ThornBlock extends ConnectingBlock implements EarthPonyGrowAbility.
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (!state.canPlaceAt(world, pos)) {
             world.breakBlock(pos, true);
         }
@@ -96,7 +95,7 @@ public class ThornBlock extends ConnectingBlock implements EarthPonyGrowAbility.
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == state.get(FACING) && !state.canPlaceAt(world, pos)) {
             world.scheduleBlockTick(pos, this, 1);
         }
@@ -104,7 +103,7 @@ public class ThornBlock extends ConnectingBlock implements EarthPonyGrowAbility.
     }
 
     @Override
-    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+    protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         Direction facing = state.get(FACING);
         BlockState neighborState = world.getBlockState(pos.offset(facing));
         return (facing == Direction.DOWN && state.get(DISTANCE) == 0 && neighborState.isIn(BlockTags.DIRT))

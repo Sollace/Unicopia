@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -11,15 +12,20 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.Levelled;
 import com.minelittlepony.unicopia.network.track.TrackableObject;
+import com.minelittlepony.unicopia.util.Untyped;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -33,16 +39,19 @@ import net.minecraft.world.World;
  * @param <T> The type of the entity this reference points to.
  */
 public class EntityReference<T extends Entity> implements NbtSerialisable, TrackableObject<EntityReference<T>> {
-    private static final Serializer<NbtCompound, ?> SERIALIZER = Serializer.of(EntityReference::new);
+    public static final Codec<EntityReference<?>> CODEC = EntityValues.CODEC.xmap(r -> new EntityReference<>(r), r -> r.reference);
+    public static final Codec<List<EntityReference<?>>> LIST_CODEC = CODEC.listOf();
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Entity> Serializer<NbtCompound, EntityReference<T>> getSerializer() {
-        return (Serializer<NbtCompound, EntityReference<T>>)SERIALIZER;
+    public static <T extends Entity> Codec<List<EntityReference<T>>> codec() {
+        return Untyped.cast(CODEC);
+    }
+
+    public static <T extends Entity> Codec<List<EntityReference<T>>> listCodec() {
+        return Untyped.cast(LIST_CODEC);
     }
 
     @Nullable
     private EntityValues<T> reference;
-
     private WeakReference<T> directReference = new WeakReference<>(null);
 
     private boolean dirty = true;
@@ -55,6 +64,10 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
 
     public EntityReference(NbtCompound nbt, WrapperLookup lookup) {
         fromNBT(nbt, lookup);
+    }
+
+    private EntityReference(EntityValues<T> reference) {
+        this.reference = reference;
     }
 
     @SuppressWarnings("unchecked")
@@ -102,24 +115,33 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
 
     @Nullable
     public T get(World world) {
-        return getOrEmpty(world).orElse(null);
+        T t = directReference.get();
+        if (t == null) {
+            directReference = new WeakReference<>(t = reference.resolve(world).orElse(null));
+        }
+        return t;
     }
 
     public Optional<T> getOrEmpty(World world) {
-        return Optional.ofNullable(directReference.get())
-                .or(() -> reference == null ? Optional.empty() : reference.resolve(world))
-                .filter(this::set);
+        return Optional.ofNullable(get(world));
     }
 
     @Override
     public void toNBT(NbtCompound tag, WrapperLookup lookup) {
-        getTarget().ifPresent(ref -> ref.toNBT(tag));
+        getTarget().ifPresent(ref -> EntityValues.CODEC.encode(ref, lookup.getOps(NbtOps.INSTANCE), tag));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void fromNBT(NbtCompound tag, WrapperLookup lookup) {
-        this.reference = tag.contains("uuid") ? new EntityValues<>(tag) : null;
+        this.reference = (EntityValues<T>)NbtSerialisable.decode(EntityValues.CODEC, tag, lookup).orElse(null);
         this.dirty = true;
+        if (reference != null) {
+            T value = directReference.get();
+            if (value != null) {
+                reference = new EntityValues<>(value);
+            }
+        }
     }
 
     @Override
@@ -165,6 +187,16 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
             boolean isDead,
             Levelled.LevelStore level,
             Levelled.LevelStore corruption) {
+        public static final Codec<EntityValues<?>> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                Uuids.CODEC.fieldOf("uuid").forGetter(EntityValues::uuid),
+                CodecUtils.VECTOR.fieldOf("pos").forGetter(EntityValues::pos),
+                Codec.INT.fieldOf("clientId").forGetter(EntityValues::clientId),
+                Codec.BOOL.fieldOf("isPlayer").forGetter(EntityValues::isPlayer),
+                Codec.BOOL.fieldOf("isDead").forGetter(EntityValues::isDead),
+                Levelled.CODEC.fieldOf("level").forGetter(EntityValues::level),
+                Levelled.CODEC.fieldOf("corruption").forGetter(EntityValues::corruption)
+        ).apply(instance, EntityValues::new));
+
         public EntityValues(Entity entity) {
             this(
                 entity.getUuid(),
@@ -176,34 +208,17 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
             );
         }
 
-        public EntityValues(NbtCompound tag) {
-            this(
-                tag.getUuid("uuid"),
-                NbtSerialisable.readVector(tag.getList("pos", NbtElement.DOUBLE_TYPE)),
-                tag.getInt("clientId"),
-                tag.getBoolean("isPlayer"),
-                tag.getBoolean("isDead"),
-                Levelled.fromNbt(tag.getCompound("level")),
-                Levelled.fromNbt(tag.getCompound("corruption"))
-            );
-        }
-
         @SuppressWarnings("unchecked")
         public Optional<T> resolve(World world) {
             if (world instanceof ServerWorld serverWorld) {
                 return Optional.ofNullable((T)serverWorld.getEntity(uuid));
             }
-            return Optional.ofNullable((T)world.getEntityById(clientId()));
-        }
+            Entity target = world.getEntityById(clientId());
+            if (target == null || !target.getUuid().equals(uuid)) {
+                return Optional.empty();
+            }
 
-        public void toNBT(NbtCompound tag) {
-            tag.putUuid("uuid", uuid);
-            tag.put("pos", NbtSerialisable.writeVector(pos));
-            tag.putInt("clientId", clientId);
-            tag.putBoolean("isPlayer", isPlayer);
-            tag.putBoolean("isDead", isDead);
-            tag.put("level", level.toNbt());
-            tag.put("corruption", corruption.toNbt());
+            return Optional.of((T)target);
         }
     }
 }

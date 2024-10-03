@@ -165,7 +165,7 @@ public class FloatingArtefactEntity extends StationaryObjectEntity {
         setState(State.valueOf(compound.getInt("State")));
         setRotationSpeed(compound.getFloat("spin"), compound.getInt("spinDuration"));
         ticksUntilRegen = compound.getInt("regen");
-        altar = NbtSerialisable.decode(Altar.CODEC, compound.get("altar"));
+        altar = NbtSerialisable.decode(Altar.CODEC, compound.get("altar"), getRegistryManager());
     }
 
     @Override
@@ -173,13 +173,13 @@ public class FloatingArtefactEntity extends StationaryObjectEntity {
         super.writeCustomDataToNbt(compound);
         ItemStack stack = getStack();
         if (!stack.isEmpty()) {
-            compound.put("Item", NbtSerialisable.encode(ItemStack.CODEC, stack));
+            compound.put("Item", NbtSerialisable.encode(ItemStack.CODEC, stack, getRegistryManager()));
         }
         compound.putInt("State", getState().ordinal());
         compound.putFloat("spin", getRotationSpeed());
         compound.putInt("spinDuration", boostDuration);
         compound.putInt("regen", ticksUntilRegen);
-        altar.ifPresent(altar -> compound.put("altar", NbtSerialisable.encode(Altar.CODEC, altar)));
+        altar.ifPresent(altar -> compound.put("altar", NbtSerialisable.encode(Altar.CODEC, altar, getRegistryManager())));
     }
 
     @Override

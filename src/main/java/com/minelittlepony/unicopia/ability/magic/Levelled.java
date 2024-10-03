@@ -3,13 +3,18 @@ package com.minelittlepony.unicopia.ability.magic;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.MathHelper;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 /**
  * Object with levelling capabilities.
  */
 public interface Levelled {
+    Codec<LevelStore> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.INT.fieldOf("max").forGetter(LevelStore::getMax),
+            Codec.INT.fieldOf("value").forGetter(LevelStore::get)
+    ).apply(instance, Levelled::of));
+
     LevelStore ZERO = of(0, 1);
 
     static LevelStore of(IntSupplier getter, IntConsumer setter, IntSupplier max) {
@@ -33,12 +38,6 @@ public interface Levelled {
 
     static LevelStore copyOf(LevelStore store) {
         return of(store.get(), store.getMax());
-    }
-
-    static LevelStore fromNbt(NbtCompound compound) {
-        int max = Math.max(1, compound.getInt("max"));
-        int value = MathHelper.clamp(compound.getInt("value"), 0, max);
-        return of(value, max);
     }
 
     static LevelStore of(int level, int max) {
@@ -84,13 +83,6 @@ public interface Levelled {
 
         default void add(int levels) {
             set(get() + levels);
-        }
-
-        default NbtCompound toNbt() {
-            NbtCompound compound = new NbtCompound();
-            compound.putInt("value", get());
-            compound.putInt("max", getMax());
-            return compound;
         }
     }
 }

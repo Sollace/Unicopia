@@ -99,7 +99,7 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         BlockPos tip = getTip(world, pos);
         BlockPos root = getRoot(world, pos);
 
@@ -119,7 +119,7 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
     }
 
     @Override
-    public boolean canPlantOnTop(BlockState state, BlockView view, BlockPos pos) {
+    protected boolean canPlantOnTop(BlockState state, BlockView view, BlockPos pos) {
         return (state.getBlock() instanceof SegmentedCropBlock o && o.canSupportBlock(this, state, view, pos)) || super.canPlantOnTop(state, view, pos);
     }
 
@@ -134,7 +134,7 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.UP && !isNext(neighborState)) {
             return state.with(getAgeProperty(), Math.min(state.get(getAgeProperty()), getMaxAge() - 1));
         }
@@ -142,7 +142,7 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         BlockPos tip = getTip(world, pos);
         BlockPos root = getRoot(world, pos);
 

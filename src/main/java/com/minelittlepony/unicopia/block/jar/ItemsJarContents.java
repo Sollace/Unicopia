@@ -39,7 +39,7 @@ public record ItemsJarContents (
     }
 
     public ItemsJarContents(TileData tile, NbtCompound compound, WrapperLookup lookup) {
-        this(tile, new ArrayList<>(NbtSerialisable.decode(STACKS_CODEC, compound.get("items")).orElse(List.of())));
+        this(tile, new ArrayList<>(NbtSerialisable.decode(STACKS_CODEC, compound.get("items"), lookup).orElse(List.of())));
     }
 
     @Override
@@ -197,7 +197,7 @@ public record ItemsJarContents (
 
     @Override
     public NbtCompound toNBT(NbtCompound compound, WrapperLookup lookup) {
-        compound.put("items", NbtSerialisable.encode(STACKS_CODEC, stacks));
+        compound.put("items", NbtSerialisable.encode(STACKS_CODEC, stacks, lookup));
         return compound;
     }
 

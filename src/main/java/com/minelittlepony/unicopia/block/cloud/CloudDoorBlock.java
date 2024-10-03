@@ -47,7 +47,7 @@ public class CloudDoorBlock extends DoorBlock implements CloudLike {
     }
 
     @Override
-    public final VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected final VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         if (canPassThrough(state, world, pos, EquineContext.of(context))) {
             return VoxelShapes.empty();
         }
@@ -59,14 +59,12 @@ public class CloudDoorBlock extends DoorBlock implements CloudLike {
     }
 
     @Override
-    @Deprecated
-    public final VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+    protected final VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
         return super.getOutlineShape(state, world, pos, ShapeContext.absent());
     }
 
     @Override
-    @Deprecated
-    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return this.collidable ? state.getOutlineShape(world, pos, context) : VoxelShapes.empty();
     }
 
@@ -80,16 +78,15 @@ public class CloudDoorBlock extends DoorBlock implements CloudLike {
     }
 
     @Override
-    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!baseBlock.canInteract(baseState, world, pos, EquineContext.of(player))) {
             return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
         }
         return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
     }
 
-    @Deprecated
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         baseState.onEntityCollision(world, pos, entity);
 
         EquineContext context = EquineContext.of(entity);
@@ -100,8 +97,7 @@ public class CloudDoorBlock extends DoorBlock implements CloudLike {
     }
 
     @Override
-    @Deprecated
-    public boolean canPathfindThrough(BlockState state, NavigationType type) {
+    protected boolean canPathfindThrough(BlockState state, NavigationType type) {
         return !InteractionManager.getInstance().getPathingEquineContext().collidesWithClouds() || super.canPathfindThrough(state, type);
     }
 }

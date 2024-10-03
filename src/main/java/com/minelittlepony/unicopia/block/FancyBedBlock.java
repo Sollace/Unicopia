@@ -71,13 +71,12 @@ public class FancyBedBlock extends BedBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPES.get(state.get(PART).ordinal()).apply(BedBlock.getOppositePartDirection(state));
     }
 
-    @Deprecated
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (state.hasBlockEntity() && !state.isOf(newState.getBlock()) && state.get(PART) == BedPart.HEAD) {
             world.getBlockEntity(pos, UBlockEntities.FANCY_BED).ifPresent(tile -> {
                 SheetPattern pattern = tile.getPattern();

@@ -19,6 +19,7 @@ import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.network.track.Trackable;
 import com.minelittlepony.unicopia.server.world.Ether;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -237,8 +238,8 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound tag) {
-        tag.put("level", level.toNbt());
-        tag.put("corruption", corruption.toNbt());
+        tag.put("level", NbtSerialisable.encode(Levelled.CODEC, level, getRegistryManager()));
+        tag.put("corruption", NbtSerialisable.encode(Levelled.CODEC, corruption, getRegistryManager()));
 
         if (controllingEntityUuid != null) {
             tag.putUuid("owningEntity", controllingEntityUuid);
@@ -256,10 +257,10 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound tag) {
-        var level = Levelled.fromNbt(tag.getCompound("level"));
+        var level = NbtSerialisable.decode(Levelled.CODEC, tag.get("level"), getRegistryManager()).orElse(Levelled.ZERO);
         dataTracker.set(MAX_LEVEL, level.getMax());
         dataTracker.set(LEVEL, level.get());
-        var corruption = Levelled.fromNbt(tag.getCompound("corruption"));
+        var corruption = NbtSerialisable.decode(Levelled.CODEC, tag.get("corruption"), getRegistryManager()).orElse(Levelled.ZERO);
         dataTracker.set(MAX_CORRUPTION, corruption.getMax());
         dataTracker.set(CORRUPTION, corruption.get());
 

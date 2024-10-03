@@ -21,6 +21,8 @@ import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
@@ -181,10 +183,10 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
         getDataTracker().set(HYDROPHOBIC, compound.getBoolean("hydrophobic"));
         physics.fromNBT(compound, getRegistryManager());
         spells.getSlots().fromNBT(compound, getRegistryManager());
-        var level = Levelled.fromNbt(compound.getCompound("level"));
+        var level = NbtSerialisable.decode(Levelled.CODEC, compound.get("level"), getRegistryManager()).orElse(Levelled.ZERO);
         dataTracker.set(MAX_LEVEL, level.getMax());
         dataTracker.set(LEVEL, level.get());
-        var corruption = Levelled.fromNbt(compound.getCompound("corruption"));
+        var corruption = NbtSerialisable.decode(Levelled.CODEC, compound.get("corruption"), getRegistryManager()).orElse(Levelled.ZERO);
         dataTracker.set(MAX_CORRUPTION, corruption.getMax());
         dataTracker.set(CORRUPTION, corruption.get());
     }
@@ -192,8 +194,8 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
     @Override
     public void writeCustomDataToNbt(NbtCompound compound) {
         super.writeCustomDataToNbt(compound);
-        compound.put("level", level.toNbt());
-        compound.put("corruption", corruption.toNbt());
+        compound.put("level", NbtSerialisable.encode(Levelled.CODEC, level, getRegistryManager()));
+        compound.put("corruption", NbtSerialisable.encode(Levelled.CODEC, corruption, getRegistryManager()));
         compound.putBoolean("hydrophobic", getHydrophobic());
         physics.toNBT(compound, getRegistryManager());
         spells.getSlots().toNBT(compound, getRegistryManager());

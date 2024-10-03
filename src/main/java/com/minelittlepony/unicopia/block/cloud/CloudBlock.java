@@ -50,13 +50,12 @@ public class CloudBlock extends Block implements CloudLike {
     }
 
     @Override
-    @Deprecated
-    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+    protected float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
         return 0.9F;
     }
 
     @Override
-    public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+    protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
         return true;
     }
 
@@ -117,8 +116,7 @@ public class CloudBlock extends Block implements CloudLike {
     }
 
     @Override
-    @Deprecated
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 
         if (entity instanceof PlayerEntity player && (player.getAbilities().flying || Pony.of(player).getPhysics().isFlying())) {
             return;
@@ -137,7 +135,7 @@ public class CloudBlock extends Block implements CloudLike {
     }
 
     @Override
-    public final VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected final VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         EquineContext equineContext = EquineContext.of(context);
         if (!canInteract(state, world, pos, equineContext)) {
             return VoxelShapes.empty();
@@ -146,14 +144,12 @@ public class CloudBlock extends Block implements CloudLike {
     }
 
     @Override
-    @Deprecated
-    public final VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+    protected final VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
         return getOutlineShape(state, world, pos, ShapeContext.absent(), EquineContext.ABSENT);
     }
 
     @Override
-    @Deprecated
-    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return this.collidable ? state.getOutlineShape(world, pos, context) : VoxelShapes.empty();
     }
 
@@ -167,9 +163,8 @@ public class CloudBlock extends Block implements CloudLike {
         return getPlacementState(context, equineContext);
     }
 
-    @Deprecated
     @Override
-    public final boolean canReplace(BlockState state, ItemPlacementContext context) {
+    protected final boolean canReplace(BlockState state, ItemPlacementContext context) {
         EquineContext equineContext = EquineContext.of(context);
         if (canInteract(state, context.getWorld(), context.getBlockPos(), equineContext)) {
             return canReplace(state, context, equineContext);
@@ -177,17 +172,15 @@ public class CloudBlock extends Block implements CloudLike {
         return true;
     }
 
-    @Deprecated
     @Override
-    public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
+    protected boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
         VoxelShape shape = state.getCullingShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
         VoxelShape shapeFrom = stateFrom.getCullingShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
         return !shape.isEmpty() && !shapeFrom.isEmpty() && VoxelShapes.isSideCovered(shape, shapeFrom, direction);
     }
 
     @Override
-    @Deprecated
-    public boolean canPathfindThrough(BlockState state, NavigationType type) {
+    protected boolean canPathfindThrough(BlockState state, NavigationType type) {
         System.out.println(InteractionManager.getInstance().getPathingEquineContext().collidesWithClouds());
         return type != NavigationType.LAND || !InteractionManager.getInstance().getPathingEquineContext().collidesWithClouds();
     }
@@ -210,7 +203,7 @@ public class CloudBlock extends Block implements CloudLike {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (meltable) {
             if (world.getLightLevel(LightType.BLOCK, pos) > 11) {
                 dropStacks(state, world, pos);

@@ -135,14 +135,14 @@ public class HydrophobicSpell extends AbstractSpell {
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         super.toNBT(compound, lookup);
-        compound.put("storedFluidPositions", NbtSerialisable.encode(Entry.SET_CODEC, storedFluidPositions));
+        compound.put("storedFluidPositions", NbtSerialisable.encode(Entry.SET_CODEC, storedFluidPositions, lookup));
     }
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
         storedFluidPositions.clear();
-        NbtSerialisable.decode(Entry.SET_CODEC, compound.getList("storedFluidPositions", NbtElement.COMPOUND_TYPE)).ifPresent(storedFluidPositions::addAll);
+        NbtSerialisable.decode(Entry.SET_CODEC, compound.get("storedFluidPositions"), lookup).ifPresent(storedFluidPositions::addAll);
     }
     /**
      * Calculates the maximum radius of the shield. aka The area of effect.

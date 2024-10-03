@@ -48,7 +48,7 @@ public class CloudSlabBlock extends WaterloggableCloudBlock {
     }
 
     @Override
-    public boolean hasSidedTransparency(BlockState state) {
+    protected boolean hasSidedTransparency(BlockState state) {
         return state.get(SlabBlock.TYPE) != SlabType.DOUBLE;
     }
 
@@ -59,7 +59,7 @@ public class CloudSlabBlock extends WaterloggableCloudBlock {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context, EquineContext equineContext) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context, EquineContext equineContext) {
         return switch (state.get(SlabBlock.TYPE)) {
             case DOUBLE -> VoxelShapes.fullCube();
             case TOP -> TOP_SHAPE;
@@ -84,7 +84,7 @@ public class CloudSlabBlock extends WaterloggableCloudBlock {
     }
 
     @Override
-    public boolean canReplace(BlockState state, ItemPlacementContext context, EquineContext equineContext) {
+    protected boolean canReplace(BlockState state, ItemPlacementContext context, EquineContext equineContext) {
         SlabType slabType = state.get(SlabBlock.TYPE);
         if (slabType == SlabType.DOUBLE || !context.getStack().isOf(asItem())) {
             return false;

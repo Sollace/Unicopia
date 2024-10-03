@@ -89,9 +89,8 @@ public class CloudPillarBlock extends CloudBlock {
                 .with(AXIS, axis);
     }
 
-    @Deprecated
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction.getAxis() == state.get(AXIS)) {
             return state.with(DIRECTION_PROPERTIES.get(direction), neighborState.isOf(this) && neighborState.get(AXIS) == state.get(AXIS));
         }
@@ -100,7 +99,7 @@ public class CloudPillarBlock extends CloudBlock {
     }
 
     @Override
-    public BlockState rotate(BlockState state, BlockRotation rotation) {
+    protected BlockState rotate(BlockState state, BlockRotation rotation) {
         return PillarBlock.changeRotation(state, rotation);
     }
 }

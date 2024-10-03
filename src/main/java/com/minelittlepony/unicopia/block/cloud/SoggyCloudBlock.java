@@ -65,8 +65,7 @@ public class SoggyCloudBlock extends CloudBlock implements Soakable {
     }
 
     @Override
-    @Deprecated
-    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         return Soakable.tryCollectMoisture(stack, state, world, pos, player, hand, hit);
     }
 
@@ -77,7 +76,7 @@ public class SoggyCloudBlock extends CloudBlock implements Soakable {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         Soakable.tickMoisture(state, world, pos, random);
     }
 }

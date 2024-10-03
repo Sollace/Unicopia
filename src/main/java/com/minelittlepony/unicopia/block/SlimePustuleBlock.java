@@ -73,7 +73,7 @@ public class SlimePustuleBlock extends Block {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return switch (state.get(SHAPE)) {
             case POD -> BULB_SHAPE;
             case DRIP -> DRIP_SHAPE;
@@ -108,9 +108,8 @@ public class SlimePustuleBlock extends Block {
         }
     }
 
-    @Deprecated
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (state.get(SHAPE) == Shape.POD && random.nextInt(130) == 0) {
             SlimeEntity slime = EntityType.SLIME.create(world);
             slime.setSize(1, true);
@@ -166,17 +165,15 @@ public class SlimePustuleBlock extends Block {
         builder.add(SHAPE, POWERED);
     }
 
-    @Deprecated
     @Override
-    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+    protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         pos = pos.up();
         state = world.getBlockState(pos);
         return state.isOf(this) || state.isSideSolid(world, pos, Direction.DOWN, SideShapeType.CENTER);
     }
 
-    @Deprecated
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (!canPlaceAt(state, world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
@@ -204,8 +201,7 @@ public class SlimePustuleBlock extends Block {
     }
 
     @Override
-    @Deprecated
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         super.onStateReplaced(state, world, pos, newState, moved);
         if (state.isOf(this) && newState.isOf(this) && state.get(POWERED) != newState.get(POWERED)) {
             world.updateNeighborsAlways(pos.up(), this);
@@ -213,14 +209,12 @@ public class SlimePustuleBlock extends Block {
     }
 
     @Override
-    @Deprecated
-    public boolean emitsRedstonePower(BlockState state) {
+    protected boolean emitsRedstonePower(BlockState state) {
         return state.get(POWERED);
     }
 
     @Override
-    @Deprecated
-    public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+    protected int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         if (direction == Direction.DOWN && emitsRedstonePower(state)) {
             return 15;
         }
@@ -228,8 +222,7 @@ public class SlimePustuleBlock extends Block {
     }
 
     @Override
-    @Deprecated
-    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+    protected int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
         if (direction == Direction.DOWN && emitsRedstonePower(state)) {
             return 15;
         }

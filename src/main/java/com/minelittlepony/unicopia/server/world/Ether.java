@@ -16,7 +16,6 @@ import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.server.world.chunk.PositionalDataMap;
 import com.minelittlepony.unicopia.util.Tickable;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
-
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Identifier;

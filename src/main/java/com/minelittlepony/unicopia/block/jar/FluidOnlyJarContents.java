@@ -22,8 +22,8 @@ public record FluidOnlyJarContents (
         FluidVariant fluid
 ) implements FluidJarContents {
 
-    public FluidOnlyJarContents(TileData tile, NbtCompound compound) {
-        this(tile, compound.getLong("amount"), NbtSerialisable.decode(FluidVariant.CODEC, compound.getCompound("fluid")).orElse(FluidVariant.blank()));
+    public FluidOnlyJarContents(TileData tile, NbtCompound compound, WrapperLookup lookup) {
+        this(tile, compound.getLong("amount"), NbtSerialisable.decode(FluidVariant.CODEC, compound.getCompound("fluid"), lookup).orElse(FluidVariant.blank()));
     }
 
     @Override
@@ -50,7 +50,7 @@ public record FluidOnlyJarContents (
 
     @Override
     public NbtCompound toNBT(NbtCompound compound, WrapperLookup lookup) {
-        compound.put("fluid", NbtSerialisable.encode(FluidVariant.CODEC, fluid));
+        compound.put("fluid", NbtSerialisable.encode(FluidVariant.CODEC, fluid, lookup));
         compound.putLong("amount", amount);
         return compound;
     }

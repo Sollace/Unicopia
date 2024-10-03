@@ -38,13 +38,12 @@ public class CloudStairsBlock extends StairsBlock implements CloudLike {
     }
 
     @Override
-    @Deprecated
-    public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
+    protected float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
         return baseBlock.getAmbientOcclusionLightLevel(state, world, pos);
     }
 
     @Override
-    public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+    protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
         return baseBlock.isTransparent(state, world, pos);
     }
 
@@ -59,13 +58,12 @@ public class CloudStairsBlock extends StairsBlock implements CloudLike {
     }
 
     @Override
-    @Deprecated
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         baseBlock.onEntityCollision(state, world, pos, entity);
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         if (!baseBlock.canInteract(state, world, pos, EquineContext.of(context))) {
             return VoxelShapes.empty();
         }
@@ -73,14 +71,12 @@ public class CloudStairsBlock extends StairsBlock implements CloudLike {
     }
 
     @Override
-    @Deprecated
-    public final VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
+    protected final VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
         return super.getOutlineShape(state, world, pos, ShapeContext.absent());
     }
 
     @Override
-    @Deprecated
-    public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return this.collidable ? state.getOutlineShape(world, pos, context) : VoxelShapes.empty();
     }
 
@@ -94,21 +90,18 @@ public class CloudStairsBlock extends StairsBlock implements CloudLike {
         return super.getPlacementState(context);
     }
 
-    @Deprecated
     @Override
-    public boolean canReplace(BlockState state, ItemPlacementContext context) {
+    protected boolean canReplace(BlockState state, ItemPlacementContext context) {
         return baseBlock.canReplace(state, context);
     }
 
-    @Deprecated
     @Override
-    public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
+    protected boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
         return baseBlock.isSideInvisible(state, stateFrom, direction);
     }
 
     @Override
-    @Deprecated
-    public boolean canPathfindThrough(BlockState state, NavigationType type) {
+    protected boolean canPathfindThrough(BlockState state, NavigationType type) {
         return baseBlock.canPathfindThrough(state, type);
     }
 }

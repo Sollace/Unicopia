@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.block;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.util.Untyped;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.Block;
@@ -22,10 +23,9 @@ public class FrostedObsidianBlock extends FrostedIceBlock {
         super(settings);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public MapCodec<FrostedIceBlock> getCodec() {
-        return (MapCodec)CODEC;
+        return Untyped.cast(CODEC);
     }
 
     @Override

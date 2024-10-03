@@ -39,9 +39,8 @@ public class WeatherVaneBlock extends BlockWithEntity {
         return CODEC;
     }
 
-    @Deprecated
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPE;
     }
 

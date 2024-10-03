@@ -392,8 +392,8 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
         activeTicks = compound.getInt("activeTicks");
         setAltered(compound.getBoolean("altered"));
         setForcedState(compound.contains("locked") ? TriState.of(compound.getBoolean("locked")) : TriState.DEFAULT);
-        setSpellbookState(NbtSerialisable.decode(SpellbookState.CODEC, compound.getCompound("spellbookState")).orElse(new SpellbookState()));
-        altar = NbtSerialisable.decode(Altar.CODEC, compound.get("altar"));
+        setSpellbookState(NbtSerialisable.decode(SpellbookState.CODEC, compound.getCompound("spellbookState"), getRegistryManager()).orElse(new SpellbookState()));
+        altar = NbtSerialisable.decode(Altar.CODEC, compound.get("altar"), getRegistryManager());
     }
 
     @Override
@@ -402,13 +402,13 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
         compound.putInt("activeTicks", activeTicks);
         compound.putBoolean("prevDaytime", prevDaytime);
         compound.putBoolean("altered", isAltered());
-        compound.put("spellbookState", NbtSerialisable.encode(SpellbookState.CODEC, state));
+        compound.put("spellbookState", NbtSerialisable.encode(SpellbookState.CODEC, state, getRegistryManager()));
         getForcedState().map(t -> {
             compound.putBoolean("locked", t);
             return null;
         });
         altar.ifPresent(altar -> {
-            compound.put("altar", NbtSerialisable.encode(Altar.CODEC, altar));
+            compound.put("altar", NbtSerialisable.encode(Altar.CODEC, altar, getRegistryManager()));
         });
     }
 

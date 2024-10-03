@@ -55,14 +55,14 @@ public class ThornBudBlock extends Block implements EarthPonyGrowAbility.Growabl
     }
 
     @Override
-    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (random.nextInt(50) == 0) {
             grow(world, state, pos);
         }
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == state.get(FACING) && !(neighborState.isOf(this) || neighborState.isOf(branchState.getBlock()))) {
             return Blocks.AIR.getDefaultState();
         }

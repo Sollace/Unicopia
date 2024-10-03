@@ -198,8 +198,8 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
         compound.put("counterpart", counterpart.toNBT(lookup));
         compound.putBoolean("initialized", initialized);
 
-        myStoredInventory.ifPresent(mine -> compound.put("myStoredInventory", NbtSerialisable.encode(Inventory.CODEC, mine)));
-        theirStoredInventory.ifPresent(theirs -> compound.put("theirStoredInventory", NbtSerialisable.encode(Inventory.CODEC, theirs)));
+        myStoredInventory.ifPresent(mine -> compound.put("myStoredInventory", NbtSerialisable.encode(Inventory.CODEC, mine, lookup)));
+        theirStoredInventory.ifPresent(theirs -> compound.put("theirStoredInventory", NbtSerialisable.encode(Inventory.CODEC, theirs, lookup)));
     }
 
     @Override
@@ -207,8 +207,8 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
         super.fromNBT(compound, lookup);
         counterpart.fromNBT(compound.getCompound("counterpart"), lookup);
         initialized = compound.getBoolean("initialized");
-        myStoredInventory = NbtSerialisable.decode(Inventory.CODEC, compound.getCompound("myStoredInventory"));
-        theirStoredInventory = NbtSerialisable.decode(Inventory.CODEC, compound.getCompound("theirStoredInventory"));
+        myStoredInventory = NbtSerialisable.decode(Inventory.CODEC, compound.getCompound("myStoredInventory"), lookup);
+        theirStoredInventory = NbtSerialisable.decode(Inventory.CODEC, compound.getCompound("theirStoredInventory"), lookup);
     }
 
     private static void swapPlayerData(ServerPlayerEntity a, ServerPlayerEntity b) {

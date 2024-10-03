@@ -54,16 +54,15 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
     }
 
     @Override
-    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (hand == Hand.OFF_HAND) {
             return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         return world.getBlockEntity(pos, UBlockEntities.ITEM_JAR).map(data -> data.interact(player, hand)).orElse(ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
     }
 
-    @Deprecated
     @Override
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         if (!moved && !state.isOf(newState.getBlock())) {
             world.getBlockEntity(pos, UBlockEntities.ITEM_JAR).ifPresent(data -> {
                 data.getContents().onDestroyed();
@@ -73,21 +72,20 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
     }
 
     @Override
-    public boolean hasComparatorOutput(BlockState state) {
+    protected boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
     @Override
-    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return world.getBlockEntity(pos, UBlockEntities.ITEM_JAR)
                 .map(TileData::getItems)
                 .map(data -> Math.min(16, data.stacks().size()))
                 .orElse(0);
     }
 
-    @Deprecated
     @Override
-    public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
+    protected boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
         super.onSyncedBlockEvent(state, world, pos, type, data);
         BlockEntity blockEntity = world.getBlockEntity(pos);
         return blockEntity != null && blockEntity.onSyncedBlockEvent(type, data);
@@ -167,7 +165,7 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
             } else if (nbt.contains("entity", NbtElement.COMPOUND_TYPE)) {
                 contents = new EntityJarContents(this, nbt.getCompound("entity"));
             } else if (nbt.contains("fluid", NbtElement.COMPOUND_TYPE)) {
-                contents = new FluidOnlyJarContents(this, nbt.getCompound("fluid"));
+                contents = new FluidOnlyJarContents(this, nbt.getCompound("fluid"), lookup);
             } else if (nbt.contains("fakeFluid", NbtElement.COMPOUND_TYPE)) {
                 contents = new FakeFluidJarContents(this, nbt.getCompound("fakeFluid"));
             }

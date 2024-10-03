@@ -58,7 +58,7 @@ public class PileBlock extends Block implements Waterloggable {
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         Vec3d offset = state.getModelOffset(world, pos);
         return shapes[state.get(COUNT) - 1].offset(offset.x, offset.y, offset.z);
     }
@@ -81,20 +81,18 @@ public class PileBlock extends Block implements Waterloggable {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+    protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         pos = pos.down();
         return world.getBlockState(pos).isSideSolid(world, pos, Direction.UP, SideShapeType.CENTER);
     }
 
-    @Deprecated
     @Override
-    public boolean canReplace(BlockState state, ItemPlacementContext context) {
+    protected boolean canReplace(BlockState state, ItemPlacementContext context) {
         return (!context.shouldCancelInteraction() && context.getStack().isOf(asItem()) && state.get(COUNT) < MAX_COUNT) || super.canReplace(state, context);
     }
 
-    @Deprecated
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (!state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }

@@ -63,13 +63,12 @@ public class CrystalDoorBlock extends DoorBlock implements BlockEntityProvider {
     }
 
     @Override
-    public boolean hasRandomTicks(BlockState state) {
+    protected boolean hasRandomTicks(BlockState state) {
         return state.get(LOCKED);
     }
 
-    @Deprecated
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.randomTick(state, world, pos, random);
         if (!isLocked(world, pos)) {
             setOnGuard(state, world, pos, false);
@@ -77,7 +76,7 @@ public class CrystalDoorBlock extends DoorBlock implements BlockEntityProvider {
     }
 
     @Override
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
         if (!state.get(LOCKED)) {
             boolean powered = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.offset(state.get(HALF) == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN));
             if (!getDefaultState().isOf(sourceBlock) && powered != state.get(POWERED)) {

@@ -201,13 +201,13 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         compound.putInt("ticksHanging", ticksHanging);
         getHangingPosition().ifPresent(pos -> {
-            compound.put("hangingPosition", NbtSerialisable.encode(BlockPos.CODEC, pos));
+            compound.put("hangingPosition", NbtSerialisable.encode(BlockPos.CODEC, pos, lookup));
         });
     }
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         ticksHanging = compound.getInt("ticksHanging");
-        hangingPos.set(NbtSerialisable.decode(BlockPos.CODEC, compound.get("hangingPosition")));
+        hangingPos.set(NbtSerialisable.decode(BlockPos.CODEC, compound.get("hangingPosition"), lookup));
     }
 }

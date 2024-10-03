@@ -33,9 +33,8 @@ public class SpikesBlock extends OrientedBlock {
         return CODEC;
     }
 
-    @Deprecated
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
         if (!(entity instanceof LivingEntity) || entity.getType() == EntityType.FOX || entity.getType() == EntityType.BEE) {
             return;
         }
@@ -51,9 +50,8 @@ public class SpikesBlock extends OrientedBlock {
         }
     }
 
-    @Deprecated
     @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+    protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         if (!world.isClient && !oldState.isOf(this)) {
             for (Entity e : world.getOtherEntities(null, new Box(pos))) {
                 if (!(e instanceof LivingEntity) || e.getType() == EntityType.FOX || e.getType() == EntityType.BEE) {
@@ -65,7 +63,7 @@ public class SpikesBlock extends OrientedBlock {
     }
 
     @Override
-    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+    protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         Direction facing = state.get(FACING);
         pos = pos.offset(facing.getOpposite());
         state = world.getBlockState(pos);
@@ -78,9 +76,8 @@ public class SpikesBlock extends OrientedBlock {
         return getDefaultState().with(FACING, side);
     }
 
-    @Deprecated
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == state.get(FACING).getOpposite() && !canPlaceAt(state, world, pos)) {
             if (!(neighborState.isOf(Blocks.STICKY_PISTON)
                     || neighborState.isOf(Blocks.PISTON)
@@ -94,7 +91,7 @@ public class SpikesBlock extends OrientedBlock {
     }
 
     @Override
-    public boolean canPathfindThrough(BlockState state, NavigationType type) {
+    protected boolean canPathfindThrough(BlockState state, NavigationType type) {
         return false;
     }
 }

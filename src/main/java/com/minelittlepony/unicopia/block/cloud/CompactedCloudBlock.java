@@ -99,12 +99,12 @@ public class CompactedCloudBlock extends CloudBlock {
     }
 
     @Override
-    public BlockState rotate(BlockState state, BlockRotation rotation) {
+    protected BlockState rotate(BlockState state, BlockRotation rotation) {
         return transform(state, rotation::rotate);
     }
 
     @Override
-    public BlockState mirror(BlockState state, BlockMirror mirror) {
+    protected BlockState mirror(BlockState state, BlockMirror mirror) {
         return transform(state, mirror::apply);
     }
 
