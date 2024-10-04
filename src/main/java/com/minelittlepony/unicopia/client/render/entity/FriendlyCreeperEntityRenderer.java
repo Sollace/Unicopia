@@ -43,8 +43,7 @@ public class FriendlyCreeperEntityRenderer extends MobEntityRenderer<FriendlyCre
     protected void setupTransforms(FriendlyCreeperEntity entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta, float scale) {
         super.setupTransforms(entity, matrices, animationProgress, bodyYaw, tickDelta, scale);
         if (entity.isSitting()) {
-            // TODO: Check if creepers are offset correctly
-            matrices.translate(0, -0.25 * scale, 0);
+            matrices.translate(0, -0.25, 0);
         }
     }
 

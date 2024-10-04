@@ -42,8 +42,7 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
         super.setupTransforms(entity, matrices, animationProgress, bodyYaw + 90, tickDelta, scale);
 
         if (entity.isOpen()) {
-            // TODO: Check that this is correct for extreme scales
-            matrices.translate(-1.25F * scale, -0.35F * scale, 0);
+            matrices.translate(-1.25F, -0.35F, 0);
 
             float floatPosition = MathHelper.sin((animationProgress + entity.getId()) / 20) * 0.04F;
 

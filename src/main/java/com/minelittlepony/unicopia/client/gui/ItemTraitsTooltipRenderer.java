@@ -128,8 +128,6 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
         String count = value > 99 ? "99+" : Math.round(value) == value ? (int)value + "" : ((Math.round(value * 10) / 10F) + "");
 
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEffectVertexConsumers();
-                // TODO: Before 1.21 was using tessellator's buffer but we can't get it without calling begin()
-                //VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
         textRenderer.draw(count, 0, 0, 16777215, true, matrices.peek().getPositionMatrix(), immediate, TextLayerType.SEE_THROUGH, 0, 15728880);
         immediate.draw();
         matrices.pop();
