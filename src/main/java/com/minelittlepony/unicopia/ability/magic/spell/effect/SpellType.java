@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.function.Supplier;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Suppliers;
@@ -103,7 +105,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     private final CustomisedSpellType<T> traited;
     private final SpellTraits traits;
 
-    private final ItemStack defaultStack;
+    private final Supplier<ItemStack> defaultStack;
 
     private final TooltipFactory tooltipFunction;
 
@@ -118,7 +120,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         this.traits = traits;
         this.stackable = stackable;
         traited = new CustomisedSpellType<>(this, traits, SpellTraits::empty);
-        defaultStack = EnchantableItem.enchant(UItems.GEMSTONE.getDefaultStack(), this);
+        defaultStack = Suppliers.memoize(() -> EnchantableItem.enchant(UItems.GEMSTONE.getDefaultStack(), this));
     }
 
     public boolean isObtainable() {
@@ -134,7 +136,7 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
     }
 
     public ItemStack getDefualtStack() {
-        return defaultStack;
+        return defaultStack.get();
     }
 
     /**
