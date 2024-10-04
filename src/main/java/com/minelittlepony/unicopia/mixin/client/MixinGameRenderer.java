@@ -4,8 +4,6 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.client.BatEyesApplicator;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
@@ -43,25 +41,19 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
         }
     }
 
-    @Inject(method = "renderWorld",
-            at = @At("RETURN"))
+    @Inject(method = "renderWorld", at = @At("RETURN"))
     private void afterRenderWorld(RenderTickCounter counter, CallbackInfo info) {
         BatEyesApplicator.INSTANCE.disable();
     }
 
-    @ModifyReturnValue(method = "getNightVisionStrength(Lnet/minecraft/entity/LivingEntity;F)F", at = @At("RETURN"))
-    private static float modifyWorldBrightness(float initial, LivingEntity entity, float tickDelta, CallbackInfoReturnable<Float> info) {
+    @ModifyReturnValue(method = "getNightVisionStrength", at = @At("RETURN"))
+    private static float modifyNightVisionStrength(float initial, LivingEntity entity, float tickDelta) {
         return BatEyesApplicator.getWorldBrightness(initial, entity, tickDelta);
     }
 
-    @Inject(method = "render",
-            at = @At(
-                value = "INVOKE",
-                target = "net/minecraft/client/gl/Framebuffer.beginWrite(Z)V",
-                shift = Shift.BEFORE)
-    )
-    private void onBeforeFrameEnd(float tickDelta, long startTime, boolean tick, CallbackInfo info) {
-        ViewportShader.INSTANCE.render(tickDelta);
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/gl/Framebuffer.beginWrite(Z)V", shift = Shift.BEFORE))
+    private void onBeforeFrameEnd(RenderTickCounter tickCounter, boolean tick, CallbackInfo info) {
+        ViewportShader.INSTANCE.render(tickCounter);
     }
 
     @Inject(method = "onResized", at = @At("HEAD"))

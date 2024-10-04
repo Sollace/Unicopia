@@ -348,8 +348,8 @@ public class SpellbookScreenHandler extends ScreenHandler {
             ItemStack current = slot.getStack();
 
             if (current.isEmpty() && slot.canInsert(stack)) {
-                if (stack.getCount() > slot.getMaxItemCount()) {
-                    slot.setStack(stack.split(slot.getMaxItemCount()));
+                if (stack.getCount() > slot.getMaxItemCount(stack)) {
+                    slot.setStack(stack.split(slot.getMaxItemCount(stack)));
                 } else {
                     slot.setStack(stack.split(stack.getCount()));
                 }

@@ -16,7 +16,6 @@ abstract class MixinTrinketInventory implements Inventory {
         ItemStack existingStack = getStack(slot);
         SlotReference ref = new SlotReference((TrinketInventory)(Object)this, slot);
 
-
         int max = Math.min(
                 existingStack.isEmpty() ? 64 : TrinketsDelegateImpl.getMaxCount(existingStack, ref, existingStack.getMaxCount()),
                 stack.isEmpty() ? 64 : TrinketsDelegateImpl.getMaxCount(stack, ref, stack.getMaxCount())

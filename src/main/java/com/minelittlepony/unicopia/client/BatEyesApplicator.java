@@ -20,6 +20,10 @@ public class BatEyesApplicator {
             return 0.6F;
         }
         return initial;
+        /*StatusEffectInstance statusEffectInstance = entity.getStatusEffect(StatusEffects.NIGHT_VISION);
+        return !statusEffectInstance.isDurationBelow(200)
+            ? 1.0F
+            : 0.7F + MathHelper.sin(((float)statusEffectInstance.getDuration() - tickDelta) * (float) Math.PI * 0.2F) * 0.3F;*/
     }
 
     public void enable() {

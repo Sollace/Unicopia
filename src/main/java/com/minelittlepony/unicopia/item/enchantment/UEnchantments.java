@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import com.minelittlepony.unicopia.Unicopia;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 
@@ -119,10 +118,6 @@ public interface UEnchantments {
         RegistryKey<Enchantment> key = RegistryKey.of(RegistryKeys.ENCHANTMENT, Unicopia.id(name));
         REGISTRY.add(key);
         return key;
-    }
-
-    static void register(Registry<Enchantment> registry, RegistryKey<Enchantment> key, Enchantment.Builder builder) {
-        Registry.register(registry, key, builder.build(key.getValue()));
     }
 
     static void bootstrap() {

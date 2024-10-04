@@ -41,7 +41,7 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
 
     static Identifier getModelId(ItemConvertible item) {
         Identifier id = Registries.ITEM.getId(item.asItem());
-        return id.withPath(p -> p + "_in_inventory");
+        return id.withPath(p -> "item/" + p + "_in_inventory");
     }
 
     public static TexturedModelData getTexturedModelData() {

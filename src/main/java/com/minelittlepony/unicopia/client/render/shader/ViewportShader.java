@@ -16,6 +16,7 @@ import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.*;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
@@ -27,8 +28,8 @@ public class ViewportShader implements SynchronousResourceReloader, Identifiable
 
     public static final ViewportShader INSTANCE = new ViewportShader();
 
-    public static final Identifier CREEPER_SHADER = Identifier.ofVanilla("shaders/post/invert.json");
-    public static final Identifier DESATURATION_SHADER = Identifier.ofVanilla("shaders/post/desaturate.json");
+    public static final Identifier CREEPER_SHADER = Identifier.ofVanilla("shaders/post/creeper.json");
+    public static final Identifier DESATURATION_SHADER = Unicopia.id("shaders/post/desaturate.json");
 
     private final MinecraftClient client = MinecraftClient.getInstance();
 
@@ -70,7 +71,7 @@ public class ViewportShader implements SynchronousResourceReloader, Identifiable
         }
     }
 
-    public void render(float tickDelta) {
+    public void render(RenderTickCounter tickCounter) {
         if (Unicopia.getConfig().disableShaders.get()) {
             return;
         }
@@ -85,7 +86,7 @@ public class ViewportShader implements SynchronousResourceReloader, Identifiable
                 corruption = 1 - corruption + 0.05F;
 
                 shader.setUniformValue("color_convolve", "Saturation", corruption);
-                shader.render(tickDelta);
+                shader.render(tickCounter.getLastFrameDuration());
             }
         }
     }

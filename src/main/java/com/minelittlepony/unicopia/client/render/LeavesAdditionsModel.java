@@ -24,10 +24,12 @@ public final class LeavesAdditionsModel extends ForwardingBakedModel {
         ModelLoadingPlugin.register(ctx -> {
             ctx.modifyModelAfterBake().register(ModelModifier.WRAP_PHASE, (model, context) -> {
                 Identifier id = context.resourceId();
-                if (!id.getPath().endsWith("_flowering") || !(Registries.BLOCK.get(id.withPath(p -> p.replace("block/", "").replace("_flowering", ""))) instanceof FruitBearingBlock)) {
+                if (model == null || id == null
+                        || !id.getPath().endsWith("_flowering")
+                        || !(Registries.BLOCK.get(id.withPath(p -> p.replace("block/", "").replace("_flowering", ""))) instanceof FruitBearingBlock)) {
                     return model;
                 }
-                return model == null ? null : new LeavesAdditionsModel(model);
+                return new LeavesAdditionsModel(model);
             });
         });
     }

@@ -16,6 +16,6 @@ public interface UEnchantmentEffects {
     }
 
     private static void register(String name, MapCodec<? extends EnchantmentEntityEffect> codec) {
-        Registry.register(Registries.ENCHANTMENT_ENTITY_EFFECT_TYPE, Unicopia.id("name"), codec);
+        Registry.register(Registries.ENCHANTMENT_ENTITY_EFFECT_TYPE, Unicopia.id(name), codec);
     }
 }
