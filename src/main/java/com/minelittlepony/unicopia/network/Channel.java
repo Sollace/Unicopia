@@ -32,7 +32,7 @@ public interface Channel {
 
     S2CPacketType<MsgServerResources> SERVER_RESOURCES = SimpleNetworking.serverToClient(Unicopia.id("resources"), MsgServerResources.PACKET_CODEC);
 
-    S2CPacketType<MsgTrackedValues> SERVER_TRACKED_ENTITY_DATA = SimpleNetworking.serverToClient(Unicopia.id("tracked_entity_date"), MsgTrackedValues.PACKET_CODEC);
+    S2CPacketType<MsgTrackedValues> SERVER_TRACKED_ENTITY_DATA = SimpleNetworking.serverToClient(Unicopia.id("tracked_entity_data"), MsgTrackedValues.PACKET_CODEC);
     S2CPacketType<MsgPlayerAnimationChange> SERVER_PLAYER_ANIMATION_CHANGE = SimpleNetworking.serverToClient(Unicopia.id("player_animation_change"), MsgPlayerAnimationChange.PACKET_CODEC);
     S2CPacketType<MsgSkyAngle> SERVER_SKY_ANGLE = SimpleNetworking.serverToClient(Unicopia.id("sky_angle"), MsgSkyAngle.PACKET_CODEC);
     S2CPacketType<MsgConfigurationChange> CONFIGURATION_CHANGE = SimpleNetworking.serverToClient(Unicopia.id("config"), MsgConfigurationChange.PACKET_CODEC);

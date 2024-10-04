@@ -51,7 +51,7 @@ public interface PacketCodecUtils {
     }
 
     static <B extends ByteBuf, K, V> PacketCodec.ResultFunction<B, V, Map<K, V>> toMap(Function<V, K> keyFunction) {
-        return codec -> map(HashMap::new, codec, keyFunction, -1);
+        return codec -> map(HashMap::new, codec, keyFunction, Integer.MAX_VALUE);
     }
 
     static <B extends ByteBuf, K, V, C extends Map<K, V>> PacketCodec<B, C> map(
