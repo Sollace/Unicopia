@@ -89,13 +89,22 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pro
         Vec3d sourcePos = originator.getOriginVector();
         Vec3d sourceVel = originator.asEntity().getVelocity();
 
-        teleport(originator, target, sourcePos, sourceVel);
-        teleport(originator, originator.asEntity(), destinationPos, destinationVel);
+        Entity targetVehicle = teleport(originator, target, sourcePos, sourceVel);
+        Entity sourceVehicle = teleport(originator, originator.asEntity(), destinationPos, destinationVel);
+
+        if (targetVehicle != null) {
+            originator.asEntity().startRiding(targetVehicle);
+        }
+        if (sourceVehicle != null) {
+            target.startRiding(sourceVehicle);
+        }
+
         originator.subtractEnergyCost(destinationPos.distanceTo(sourcePos) / 20F);
     }
 
-    private void teleport(Caster<?> source, Entity entity, Vec3d pos, Vec3d vel) {
-        entity.setPosition(pos);
+    private Entity teleport(Caster<?> source, Entity entity, Vec3d pos, Vec3d vel) {
+        Entity oldVehicle = entity.getVehicle();
+        entity.requestTeleportAndDismount(pos.x, pos.y, pos.z);
         entity.setVelocity(vel);
         entity.setGlowing(false);
         entity.playSound(USounds.SPELL_DISPLACEMENT_TELEPORT, 1, 1);
@@ -104,6 +113,7 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pro
         if (damage > 0) {
             entity.damage(source.damageOf(UDamageTypes.EXHAUSTION, source), damage);
         }
+        return oldVehicle;
     }
 
     @Override

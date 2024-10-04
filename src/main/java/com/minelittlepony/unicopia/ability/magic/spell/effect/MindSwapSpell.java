@@ -277,14 +277,3 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
         return clone;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
