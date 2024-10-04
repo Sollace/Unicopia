@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.client.gui.spellbook.element;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
-import com.minelittlepony.unicopia.container.SpellbookChapterLoader.Flow;
+import com.minelittlepony.unicopia.container.spellbook.Flow;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;

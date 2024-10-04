@@ -4,8 +4,8 @@ import java.util.*;
 
 import com.minelittlepony.unicopia.ability.data.tree.TreeTypeLoader;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
-import com.minelittlepony.unicopia.container.SpellbookChapter;
-import com.minelittlepony.unicopia.container.SpellbookChapterLoader;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookChapterLoader;
 import com.minelittlepony.unicopia.diet.PonyDiets;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;

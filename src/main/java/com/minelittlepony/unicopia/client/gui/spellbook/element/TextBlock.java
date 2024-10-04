@@ -7,7 +7,7 @@ import java.util.function.Supplier;
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.client.gui.ParagraphWrappingVisitor;
-import com.minelittlepony.unicopia.container.SpellbookChapterLoader.Flow;
+import com.minelittlepony.unicopia.container.spellbook.Flow;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.client.MinecraftClient;

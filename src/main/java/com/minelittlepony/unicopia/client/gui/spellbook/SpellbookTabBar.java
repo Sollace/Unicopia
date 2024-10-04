@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Chapter;
-import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.TabSide;
+import com.minelittlepony.unicopia.container.spellbook.TabSide;
 
 import net.minecraft.util.Identifier;
 

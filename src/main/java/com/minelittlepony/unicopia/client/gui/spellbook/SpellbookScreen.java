@@ -19,6 +19,7 @@ import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketSlotBackSprites;
 import com.minelittlepony.unicopia.container.*;
 import com.minelittlepony.unicopia.container.inventory.*;
+import com.minelittlepony.unicopia.container.spellbook.TabSide;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;
 import com.mojang.blaze3d.platform.GlStateManager;

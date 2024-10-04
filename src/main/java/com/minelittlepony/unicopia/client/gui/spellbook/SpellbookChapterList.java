@@ -6,7 +6,8 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.unicopia.Debug;
-import com.minelittlepony.unicopia.container.SpellbookChapter;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
+import com.minelittlepony.unicopia.container.spellbook.TabSide;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
@@ -57,11 +58,6 @@ public class SpellbookChapterList {
         public static Identifier createIcon(Identifier id, String suffex) {
             return id.withPath(p -> "textures/gui/container/pages/" + p + suffex + ".png");
         }
-    }
-
-    public enum TabSide {
-        LEFT,
-        RIGHT
     }
 
     public interface Content extends Drawable {

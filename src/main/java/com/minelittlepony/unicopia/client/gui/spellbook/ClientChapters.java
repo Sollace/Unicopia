@@ -3,7 +3,8 @@ package com.minelittlepony.unicopia.client.gui.spellbook;
 import java.util.*;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
 import com.minelittlepony.unicopia.client.gui.spellbook.element.DynamicContent;
-import com.minelittlepony.unicopia.container.SpellbookChapter;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
+import com.minelittlepony.unicopia.container.spellbook.TabSide;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.*;
@@ -26,7 +27,7 @@ public class ClientChapters {
                 buffer.readEnumConstant(TabSide.class),
                 buffer.readInt(),
                 buffer.readInt(),
-                buffer.readOptional(DynamicContent::new)
+                Optional.of(new DynamicContent(buffer))
         );
     }
 }

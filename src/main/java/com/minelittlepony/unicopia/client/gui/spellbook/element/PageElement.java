@@ -12,7 +12,9 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.state.Schematic;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Drawable;
-import com.minelittlepony.unicopia.container.SpellbookChapterLoader.Flow;
+import com.minelittlepony.unicopia.container.spellbook.ChapterPageElement;
+import com.minelittlepony.unicopia.container.spellbook.Flow;
+
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
@@ -45,24 +47,22 @@ public interface PageElement extends Drawable {
     static PageElement read(DynamicContent.Page page, PacketByteBuf buffer) {
         byte type = buffer.readByte();
         return switch (type) {
-            case 0 -> new Image(buffer.readIdentifier(), boundsFromBuffer(buffer), buffer.readEnumConstant(Flow.class));
-            case 1 -> new Recipe(page, buffer.readIdentifier(), Bounds.empty());
-            case 2 -> new Stack(page, IngredientWithSpell.PACKET_CODEC.decode((RegistryByteBuf)buffer), boundsFromBuffer(buffer));
-            case 3 -> new TextBlock(page, List.of(Suppliers.ofInstance(TextCodecs.PACKET_CODEC.decode(buffer))));
-            case 4 -> new TextBlock(page, buffer.readList(b -> {
+            case ChapterPageElement.IMAGE -> new Image(buffer.readIdentifier(), boundsFromBuffer(buffer), buffer.readEnumConstant(Flow.class));
+            case ChapterPageElement.RECIPE -> new Recipe(page, buffer.readIdentifier(), Bounds.empty());
+            case ChapterPageElement.STACK -> new Stack(page, IngredientWithSpell.PACKET_CODEC.decode((RegistryByteBuf)buffer), boundsFromBuffer(buffer));
+            case ChapterPageElement.TEXT_BLOCK -> new TextBlock(page, List.of(Suppliers.ofInstance(TextCodecs.PACKET_CODEC.decode(buffer))));
+            case ChapterPageElement.INGREDIENTS -> new TextBlock(page, buffer.readList(b -> {
                 int count = b.readVarInt();
                 byte t = b.readByte();
                 return switch (t) {
-                    case 1 -> formatLine(capture(b.readIdentifier(), id -> {
-                        return Registries.ITEM.get(id).getDefaultStack().getName();
-                    }), "item", count);
+                    case 1 -> formatLine(capture(b.readIdentifier(), id -> Registries.ITEM.get(id).getDefaultStack().getName()), "item", count);
                     case 2 -> formatLine(Trait.PACKET_CODEC.decode(b)::getShortName, "trait", count);
                     case 3 -> Suppliers.ofInstance(TextCodecs.PACKET_CODEC.decode(b));
                     case 4 -> formatLine(SpellType.getKey(b.readIdentifier())::getName, "spell", count);
                     default -> throw new IllegalArgumentException("Unexpected value: " + t);
                 };
             }));
-            case 5 -> new Structure(Bounds.empty(), Schematic.fromPacket(buffer));
+            case ChapterPageElement.STRUCTURE -> new Structure(Bounds.empty(), Schematic.fromPacket(buffer));
             default -> throw new IllegalArgumentException("Unexpected value: " + type);
         };
     }
