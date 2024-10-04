@@ -12,8 +12,8 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.network.track.TrackableObject.Status;
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class ObjectTracker<T extends TrackableObject<T>> {
@@ -89,7 +89,7 @@ public class ObjectTracker<T extends TrackableObject<T>> {
             return Optional.empty();
         }
 
-        Map<UUID, PacketByteBuf> updates = new HashMap<>();
+        Map<UUID, ByteBuf> updates = new HashMap<>();
         quickAccess.entrySet().forEach(object -> {
             object.getValue().write(Status.NEW, lookup).ifPresent(data -> {
                 updates.put(object.getKey(), data);
@@ -101,7 +101,7 @@ public class ObjectTracker<T extends TrackableObject<T>> {
 
     synchronized Optional<MsgTrackedValues.TrackerObjects> getDirtyPairs(WrapperLookup lookup) {
         if (!trackedObjects.isEmpty()) {
-            Map<UUID, PacketByteBuf> updates = new HashMap<>();
+            Map<UUID, ByteBuf> updates = new HashMap<>();
             Set<UUID> removedTrackableObjects = new HashSet<>();
             trackedObjects.entrySet().removeIf(object -> {
                 TrackableObject.Status status = object.getValue().getStatus();

@@ -5,8 +5,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.network.Channel;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.entity.Entity;
@@ -23,13 +21,13 @@ public class DataTrackerManager {
     private final List<ObjectTracker<?>> objectTrackers = new ObjectArrayList<>();
     private final List<PacketEmitter> packetEmitters = new ObjectArrayList<>();
 
-    @Nullable
     private DataTracker primaryTracker;
 
     public DataTrackerManager(Entity entity) {
         this.entity = entity;
         this.lookup = entity.getWorld().getRegistryManager();
         this.isClient = entity.getWorld().isClient;
+        this.primaryTracker = checkoutTracker();
     }
 
     public synchronized void addPacketEmitter(PacketEmitter packetEmitter) {
@@ -37,9 +35,6 @@ public class DataTrackerManager {
     }
 
     public DataTracker getPrimaryTracker() {
-        if (primaryTracker == null) {
-            primaryTracker = checkoutTracker();
-        }
         return primaryTracker;
     }
 

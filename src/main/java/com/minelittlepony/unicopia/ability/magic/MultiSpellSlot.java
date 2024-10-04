@@ -17,9 +17,10 @@ import com.minelittlepony.unicopia.network.track.TrackableObject;
 import com.minelittlepony.unicopia.network.track.MsgTrackedValues.TrackerEntries;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
@@ -147,22 +148,24 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
         }
 
         @Override
-        public void read(PacketByteBuf buffer, WrapperLookup lookup) {
+        public void read(ByteBuf buffer, WrapperLookup lookup) {
             byte contentType = buffer.readByte();
             if (contentType == 1) {
                 readTrackedNbt(PacketCodecs.NBT_COMPOUND.decode(buffer), lookup);
             } else {
                 T spell = this.spell.get();
                 if (spell != null) {
-                    spell.getDataTracker().load(MsgTrackedValues.TrackerEntries.PACKET_CODEC.decode(buffer), lookup);
+                    spell.getDataTracker().load(MsgTrackedValues.TrackerEntries.PACKET_CODEC.decode(
+                            buffer instanceof RegistryByteBuf r ? r : new RegistryByteBuf(buffer, owner.asEntity().getRegistryManager())
+                    ), lookup);
                 }
             }
         }
 
         @Override
-        public Optional<PacketByteBuf> write(Status status, WrapperLookup lookup) {
+        public Optional<? extends ByteBuf> write(Status status, WrapperLookup lookup) {
             if (status != Status.DEFAULT) {
-                PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
+                ByteBuf buffer = Unpooled.buffer();
                 buffer.writeByte(1);
                 PacketCodecs.NBT_COMPOUND.encode(buffer, spell.toNBT(lookup));
                 return Optional.of(buffer);
@@ -172,7 +175,7 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
                 return Optional.empty();
             }
             return spell.getDataTracker().getDirtyPairs(lookup).map(entries -> {
-                PacketByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
+                RegistryByteBuf buffer = new RegistryByteBuf(Unpooled.buffer(), owner.asEntity().getRegistryManager());
                 buffer.writeByte(0);
                 TrackerEntries.PACKET_CODEC.encode(buffer, entries);
                 return buffer;

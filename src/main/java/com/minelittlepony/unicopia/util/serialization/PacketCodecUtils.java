@@ -10,6 +10,7 @@ import java.util.function.IntFunction;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryKey;
@@ -24,6 +25,13 @@ public interface PacketCodecUtils {
         buffer.writeBytes(bytes);
     }, buffer -> new PacketByteBuf(buffer.readBytes(buffer.readInt())));
     PacketCodec<PacketByteBuf, Optional<PacketByteBuf>> OPTIONAL_BUFFER = PacketCodecs.optional(BUFFER);
+
+    PacketCodec<RegistryByteBuf, ByteBuf> REGISTRY_BUFFER = PacketCodec.of((buffer, bytes) -> {
+        buffer.writeInt(bytes.writerIndex());
+        buffer.writeBytes(bytes);
+    }, buffer -> new RegistryByteBuf(buffer.readBytes(buffer.readInt()), buffer.getRegistryManager()));
+    PacketCodec<RegistryByteBuf, Optional<ByteBuf>> OPTIONAL_REGISTRY_BUFFER = PacketCodecs.optional(REGISTRY_BUFFER);
+
     PacketCodec<PacketByteBuf, RegistryKey<?>> REGISTRY_KEY = PacketCodec.tuple(
             Identifier.PACKET_CODEC, RegistryKey::getRegistry,
             Identifier.PACKET_CODEC, RegistryKey::getValue,
