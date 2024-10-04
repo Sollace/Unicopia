@@ -5,10 +5,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import com.minelittlepony.unicopia.EquineContext;
-import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.Entity;
@@ -35,15 +31,5 @@ abstract class MixinPlayerManager {
                 Pony.of(player).setCarrier((Entity)null);
             }
         }
-    }
-
-    @Inject(method = "respawnPlayer", at = @At("HEAD"))
-    private void beforeRespawnPlayer(ServerPlayerEntity player, boolean alive, CallbackInfoReturnable<ServerPlayerEntity> info) {
-        InteractionManager.getInstance().setEquineContext(EquineContext.of(player));
-    }
-
-    @Inject(method = "respawnPlayer", at = @At("RETURN"))
-    private void afterRespawnPlayer(ServerPlayerEntity player, boolean alive, CallbackInfoReturnable<ServerPlayerEntity> info) {
-        InteractionManager.getInstance().clearEquineContext();
     }
 }

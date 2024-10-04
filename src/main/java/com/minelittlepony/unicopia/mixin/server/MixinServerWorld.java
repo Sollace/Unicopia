@@ -16,23 +16,18 @@ import net.minecraft.block.BlockState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.World;
 
 @Mixin(ServerWorld.class)
-abstract class MixinServerWorld extends World implements StructureWorldAccess, NocturnalSleepManager.Source {
+abstract class MixinServerWorld implements StructureWorldAccess, NocturnalSleepManager.Source {
 
     private NocturnalSleepManager nocturnalSleepManager;
-
-    MixinServerWorld() { super(null, null, null, null, null, false, false, 0, 0); }
 
     @Inject(method = "onBlockChanged", at = @At("HEAD"))
     private void onOnBlockChanged(BlockPos pos, BlockState oldState, BlockState newState, CallbackInfo info) {
         ((BlockDestructionManager.Source)this).getDestructionManager().onBlockChanged(pos, oldState, newState);
     }
 
-    @ModifyConstant(method = "sendSleepingStatus()V", constant = @Constant(
-            stringValue = "sleep.skipping_night"
-    ))
+    @ModifyConstant(method = "sendSleepingStatus()V", constant = @Constant(stringValue = "sleep.skipping_night"))
     private String modifySleepingMessage(String initial) {
         return getNocturnalSleepManager().getTimeSkippingMessage(initial);
     }

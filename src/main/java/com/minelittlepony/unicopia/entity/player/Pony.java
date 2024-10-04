@@ -365,22 +365,31 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return Optional.of(asEntity().getUuid());
     }
 
+    public void forceRespawnOnRaceChange() {
+        if (isSpawnInvalid(getOrigin())) {
+            BlockPos respawnPos = entity.getWorldSpawnPos((ServerWorld)asWorld(), getOrigin());
+            if (!isSpawnInvalid(respawnPos)) {
+                Vec3d pos = respawnPos.toBottomCenterPos();
+                entity.updatePosition(pos.x, pos.y, pos.z);
+            }
+        }
+        onSpawn();
+    }
+
     public void onSpawn() {
-        if (entity.getWorld() instanceof ServerWorld sw && sw.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE) {
-            boolean mustAvoidSun = getObservedSpecies() == Race.BAT && MeteorlogicalUtil.isPositionExposedToSun(sw, getOrigin());
-            boolean mustAvoidAir = getCompositeRace().includes(Race.SEAPONY) && !sw.getFluidState(getOrigin()).isIn(FluidTags.WATER);
-            if (mustAvoidSun || mustAvoidAir) {
-                SpawnLocator.selectSpawnPosition(sw, entity, mustAvoidAir, mustAvoidSun);
-                if ((mustAvoidAir && !sw.getFluidState(getOrigin()).isIn(FluidTags.WATER))
-                 || (mustAvoidSun && MeteorlogicalUtil.isPositionExposedToSun(sw, getOrigin()))) {
-                    Race suppressedRace = getSuppressedRace();
-                    if (suppressedRace != Race.UNSET) {
-                        setSpecies(suppressedRace);
-                    }
-                }
+        if (isSpawnInvalid(getOrigin())) {
+            Race suppressedRace = getSuppressedRace();
+            if (suppressedRace != Race.UNSET) {
+                setSpecies(suppressedRace);
             }
         }
         ticksSunImmunity = INITIAL_SUN_IMMUNITY;
+    }
+
+    public boolean isSpawnInvalid(BlockPos pos) {
+        return (entity.getWorld() instanceof ServerWorld sw && sw.getDimension().hasSkyLight() && sw.getServer().getSaveProperties().getGameMode() != GameMode.ADVENTURE)
+            && ((getCompositeRace().includes(Race.BAT) && MeteorlogicalUtil.isPositionExposedToSun(asWorld(), pos))
+            || (getCompositeRace().includes(Race.SEAPONY) && !asWorld().getFluidState(pos).isIn(FluidTags.WATER)));
     }
 
     @Override

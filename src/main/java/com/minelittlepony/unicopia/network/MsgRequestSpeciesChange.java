@@ -48,7 +48,7 @@ public record MsgRequestSpeciesChange (
                     });
                 }
 
-                player.onSpawn();
+                player.forceRespawnOnRaceChange();
             }
         }
 
