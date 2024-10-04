@@ -92,6 +92,9 @@ public record CustomisedSpellType<T extends Spell> (
 
     @Override
     public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+        if (isEmpty()) {
+            return;
+        }
         MutableText lore = Text.translatable(type().getTranslationKey() + ".lore").formatted(type().getAffinity().getColor());
 
         if (!InteractionManager.getInstance().getClientSpecies().canCast()) {

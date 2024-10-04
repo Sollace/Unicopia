@@ -12,6 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.google.common.base.Suppliers;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.minelittlepony.unicopia.client.ModifierTooltipRenderer;
 import com.minelittlepony.unicopia.entity.effect.FoodPoisoningStatusEffect;
 import com.minelittlepony.unicopia.item.DamageChecker;
 import com.minelittlepony.unicopia.item.ItemStackDuck;
@@ -45,7 +47,7 @@ abstract class MixinItemStack implements ItemStackDuck {
         getTransientComponents().setCarrier(user);
         TypedActionResult<ItemStack> result = FoodPoisoningStatusEffect.apply((ItemStack)(Object)this, user);
         if (result.getResult() != ActionResult.PASS) {
-            info.setReturnValue(result);
+            info.setReturnValue(result) ;
         }
     }
 
@@ -67,6 +69,15 @@ abstract class MixinItemStack implements ItemStackDuck {
     @Inject(method = "getTooltip", at = @At("RETURN"))
     public void afterGetTooltip(Item.TooltipContext context, @Nullable PlayerEntity player, TooltipType type, CallbackInfoReturnable<List<Text>> info) {
         getTransientComponents().setCarrier(null);
+    }
+
+    @Inject(method = "getTooltip",
+            at = @At(value = "INVOKE",
+            target = "net/minecraft/item/ItemStack.appendAttributeModifiersTooltip(Ljava/util/function/Consumer;Lnet/minecraft/entity/player/PlayerEntity;)V"
+    ))
+    public void onGetTooltip(Item.TooltipContext context, @Nullable PlayerEntity player, TooltipType type, CallbackInfoReturnable<List<Text>> info, @Local List<Text> lines) {
+        ItemStack self = (ItemStack)(Object)this;
+        ModifierTooltipRenderer.INSTANCE.getTooltip(self, context, player, type, lines);
     }
 
     @ModifyReturnValue(method = "takesDamageFrom", at = @At("RETURN"))
