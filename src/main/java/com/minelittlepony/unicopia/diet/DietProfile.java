@@ -82,8 +82,7 @@ public record DietProfile(
     }
 
     @Nullable
-    public FoodComponent getAdjustedFoodComponent(ItemStack stack) {
-        var food = stack.get(DataComponentTypes.FOOD);
+    public FoodComponent getAdjustedFoodComponent(ItemStack stack, FoodComponent food) {
         if (this == EMPTY) {
             return food;
         }

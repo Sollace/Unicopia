@@ -23,10 +23,7 @@ public class TransientComponentMap {
     private static final BiFunction<ItemStack, ?, ?> DEFAULT = (stack, t) -> t;
     public static final TransientComponentMap INITIAL = Util.make(new TransientComponentMap(null), map -> {
         map.set(UDataComponentTypes.DIET_PROFILE, (s, original) -> {
-            if (original != null) {
-                return original;
-            }
-            return ItemStackDuck.of(s).getTransientComponents().getCarrier()
+            return original != null ? original : ItemStackDuck.of(s).getTransientComponents().getCarrier()
                     .flatMap(Pony::of)
                     .map(pony -> PonyDiets.getInstance().getDiet(pony))
                     .orElse(DietProfile.EMPTY);
@@ -34,12 +31,12 @@ public class TransientComponentMap {
         map.set(DataComponentTypes.FOOD, (s, originalFood) -> {
             DietProfile diet = s.get(UDataComponentTypes.DIET_PROFILE);
 
-            if (diet == null) {
+            if (diet == null || diet == DietProfile.EMPTY) {
                 return originalFood;
             }
 
             if (originalFood != null) {
-                return diet.getAdjustedFoodComponent(s);
+                return diet.getAdjustedFoodComponent(s, originalFood);
             }
 
             if (ItemStackDuck.of(s).getTransientComponents().getCarrier()

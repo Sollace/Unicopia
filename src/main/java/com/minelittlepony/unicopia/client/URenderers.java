@@ -162,9 +162,9 @@ public interface URenderers {
 
         ColorProviderRegistry.BLOCK.register(URenderers::getTintedBlockColor, TintedBlock.REGISTRY.stream().toArray(Block[]::new));
         ColorProviderRegistry.ITEM.register((stack, i) -> getTintedBlockColor(Block.getBlockFromItem(stack.getItem()).getDefaultState(), null, null, i), TintedBlock.REGISTRY.stream().map(Block::asItem).filter(i -> i != Items.AIR).toArray(Item[]::new));
-        ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 ? -1 : DyedColorComponent.getColor(stack, Colors.WHITE), UItems.FRIENDSHIP_BRACELET);
-        ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 || !EnchantableItem.isEnchanted(stack) ? -1 : EnchantableItem.getSpellKey(stack).getColor(), UItems.GEMSTONE);
-        ColorProviderRegistry.ITEM.register((stack, i) -> i == 1 && EnchantableItem.isEnchanted(stack) ? EnchantableItem.getSpellKey(stack).getColor() : -1, UItems.MAGIC_STAFF);
+        ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 ? -1 : DyedColorComponent.getColor(stack, DyedColorComponent.DEFAULT_COLOR), UItems.FRIENDSHIP_BRACELET);
+        ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 || !EnchantableItem.isEnchanted(stack) ? Colors.WHITE : EnchantableItem.getSpellKey(stack).getColor() | 0xFF000000, UItems.GEMSTONE);
+        ColorProviderRegistry.ITEM.register((stack, i) -> i == 1 && EnchantableItem.isEnchanted(stack) ? EnchantableItem.getSpellKey(stack).getColor() | 0xFF000000 : Colors.WHITE, UItems.MAGIC_STAFF);
 
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), UBlocks.TRANSLUCENT_BLOCKS.stream().toArray(Block[]::new));
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(), UBlocks.SEMI_TRANSPARENT_BLOCKS.stream().toArray(Block[]::new));
