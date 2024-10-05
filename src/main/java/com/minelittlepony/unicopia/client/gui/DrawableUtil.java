@@ -98,6 +98,7 @@ public interface DrawableUtil {
         if (arcAngle < INCREMENT) {
             return;
         }
+
         float r = (color >> 24 & 255) / 255F;
         float g = (color >> 16 & 255) / 255F;
         float b = (color >> 8 & 255) / 255F;

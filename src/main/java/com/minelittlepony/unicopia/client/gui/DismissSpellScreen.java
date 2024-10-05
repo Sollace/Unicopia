@@ -85,11 +85,11 @@ public class DismissSpellScreen extends GameGui {
         MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(width - mouseX, height - mouseY, 0);
-        DrawableUtil.drawLine(matrices, 0, 0, relativeMouseX, relativeMouseY, 0xFFFFFF88);
-        DrawableUtil.drawArc(matrices, 40, 80, 0, DrawableUtil.TAU, 0x00000010);
-        DrawableUtil.drawArc(matrices, 160, 1600, 0, DrawableUtil.TAU, 0x00000020);
+
 
         super.render(context, mouseX, mouseY, delta);
+
+        DrawableUtil.drawLine(matrices, 0, 0, relativeMouseX, relativeMouseY, 0xFFFFFF88);
         DrawableUtil.renderRaceIcon(context, pony.getObservedSpecies(), 0, 0, 16);
         matrices.pop();
 
@@ -106,6 +106,12 @@ public class DismissSpellScreen extends GameGui {
     @Override
     public void renderInGameBackground(DrawContext context) {
 
+    }
+
+    @Override
+    protected void renderDarkening(DrawContext context) {
+        DrawableUtil.drawArc(context.getMatrices(), 40, 80, 0, DrawableUtil.TAU, 0x00000010);
+        DrawableUtil.drawArc(context.getMatrices(), 160, 1600, 0, DrawableUtil.TAU, 0x00000020);
     }
 
     @Override

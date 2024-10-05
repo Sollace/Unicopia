@@ -242,7 +242,7 @@ public interface URenderers {
         color = view == null || pos == null ? FoliageColors.getDefaultColor() : BiomeColors.getFoliageColor(view, pos);
 
         if (state.getBlock() instanceof TintedBlock block) {
-            return block.getTint(state, view, pos, color);
+            return block.getTint(state, view, pos, color) | 0xFF000000;
         }
 
         return color;

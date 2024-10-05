@@ -138,7 +138,7 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         int left = (int)caster.asEntity().getWidth() * 64;
 
         for (Text line : debugLines) {
-            client.textRenderer.draw(line, left += 1, top += spacing, Colors.WHITE, false, matrices.peek().getPositionMatrix(), vertices, TextLayerType.NORMAL, j, light);
+            client.textRenderer.draw(line, left += 1, top += spacing, Colors.WHITE, false, matrices.peek().getPositionMatrix(), vertices, TextLayerType.POLYGON_OFFSET, j, light);
         }
         matrices.pop();
     }
