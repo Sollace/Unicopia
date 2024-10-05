@@ -116,7 +116,7 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
     @Nullable
     public T get(World world) {
         T t = directReference.get();
-        if (t == null) {
+        if (t == null && reference != null) {
             directReference = new WeakReference<>(t = reference.resolve(world).orElse(null));
         }
         return t;
