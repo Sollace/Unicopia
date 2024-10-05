@@ -327,7 +327,7 @@ public class TentacleEntity extends AbstractDecorationEntity {
     @Override
     protected Box calculateBoundingBox(BlockPos pos, Direction side) {
         visibilityBox = null;
-        return Box.of(pos.toCenterPos(), 1, 1, 1).stretch(0, 2, 0);
+        return Box.of(pos.down().toCenterPos(), 1, 1, 1).stretch(0, 2, 0);
     }
 
     @Override
