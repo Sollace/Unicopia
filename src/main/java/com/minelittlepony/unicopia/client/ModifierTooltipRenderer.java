@@ -41,7 +41,9 @@ public class ModifierTooltipRenderer {
             lines.add(Text.translatable("item.unicopia.friendship_bracelet.glowing").formatted(Formatting.ITALIC, Formatting.GRAY));
         }
 
-        PonyDiets.getInstance().getDiet(pony).appendTooltip(stack, pony, lines, type);
+        if (pony != null) {
+            PonyDiets.getInstance().getDiet(pony).appendTooltip(stack, pony, lines, type);
+        }
     }
 
     private <T extends TooltipAppender> void appendTooltip(ItemStack stack, ComponentType<T> componentType, Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type) {
