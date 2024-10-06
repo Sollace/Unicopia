@@ -43,12 +43,12 @@ public interface Projectile extends ItemConvertible, ProjectileItem {
     default TypedActionResult<ItemStack> triggerThrow(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        SoundEmitter.playSoundAt(player,
-                getThrowSound(stack), SoundCategory.NEUTRAL,
-                0.5F,
-                0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
-
         if (!world.isClient) {
+            SoundEmitter.playSoundAt(player,
+                    getThrowSound(stack), SoundCategory.NEUTRAL,
+                    0.5F,
+                    0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
+
             world.spawnEntity(createProjectile(stack.copyWithCount(1), world, player));
         }
 

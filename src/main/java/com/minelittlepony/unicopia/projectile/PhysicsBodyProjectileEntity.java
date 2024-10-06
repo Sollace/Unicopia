@@ -81,7 +81,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     @Override
     public void setStack(ItemStack stack) {
-        getDataTracker().set(ITEM, stack);
+        getDataTracker().set(ITEM, stack.isEmpty() ? getDefaultItemStack() : stack.copy());
         super.setStack(stack);
     }
 
@@ -101,6 +101,11 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     @Override
     protected ItemStack asItemStack() {
+        return getStack().copy();
+    }
+
+    @Override
+    public ItemStack getItemStack() {
         return getStack();
     }
 
@@ -291,7 +296,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
         super.writeCustomDataToNbt(nbt);
         ItemStack stack = getStack();
         if (!stack.isEmpty()) {
-            ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, stack).result().ifPresent(item -> nbt.put("Item", item));
+            ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, stack).result().ifPresent(item -> nbt.put("item", item));
         }
         nbt.putString("damageType", damageType.getValue().toString());
     }
@@ -299,7 +304,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        setStack(ItemStack.fromNbtOrEmpty(getRegistryManager(), nbt.getCompound("Item")));
+        setStack(ItemStack.fromNbtOrEmpty(getRegistryManager(), nbt.getCompound("item")));
         if (nbt.contains("damageType", NbtElement.STRING_TYPE)) {
             Optional.ofNullable(Identifier.tryParse(nbt.getString("damageType"))).ifPresent(id -> {
                 setDamageType(RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id));
