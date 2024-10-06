@@ -69,6 +69,7 @@ public class MimicEntity extends PathAwareEntity {
             return false;
         }
 
+        // TODO: Local difficulty?
         int difficulty = world.getDifficulty().ordinal() - 1;
         float threshold = 0.35F * ((EnchantmentUtil.getLuck(0, player) / 20F) + 0.5F);
         return difficulty > 0 && world.random.nextFloat() < (difficulty / 3F) * threshold;
@@ -101,7 +102,8 @@ public class MimicEntity extends PathAwareEntity {
              && lootTable.getPath().indexOf("village") == -1
              && lootTable.getPath().indexOf("bastion") == -1
              && lootTable.getPath().indexOf("underwater") == -1
-             && lootTable.getPath().indexOf("shipwreck") == -1;
+             && lootTable.getPath().indexOf("shipwreck") == -1
+             && !LootTables.SPAWN_BONUS_CHEST.equals(lootTable);
     }
 
     MimicEntity(EntityType<? extends MimicEntity> type, World world) {
