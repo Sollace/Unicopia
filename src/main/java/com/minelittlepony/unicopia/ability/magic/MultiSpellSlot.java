@@ -20,6 +20,7 @@ import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
@@ -165,7 +166,7 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
         @Override
         public Optional<? extends ByteBuf> write(Status status, WrapperLookup lookup) {
             if (status != Status.DEFAULT) {
-                ByteBuf buffer = Unpooled.buffer();
+                ByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
                 buffer.writeByte(1);
                 PacketCodecs.NBT_COMPOUND.encode(buffer, spell.toNBT(lookup));
                 return Optional.of(buffer);

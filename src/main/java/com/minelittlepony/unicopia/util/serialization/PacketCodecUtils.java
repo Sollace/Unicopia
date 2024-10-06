@@ -20,13 +20,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 public interface PacketCodecUtils {
-    PacketCodec<PacketByteBuf, PacketByteBuf> BUFFER = PacketCodec.of((buffer, bytes) -> {
+    PacketCodec<PacketByteBuf, PacketByteBuf> BUFFER = PacketCodec.of((bytes, buffer) -> {
         buffer.writeInt(bytes.writerIndex());
         buffer.writeBytes(bytes);
     }, buffer -> new PacketByteBuf(buffer.readBytes(buffer.readInt())));
     PacketCodec<PacketByteBuf, Optional<PacketByteBuf>> OPTIONAL_BUFFER = PacketCodecs.optional(BUFFER);
 
-    PacketCodec<RegistryByteBuf, ByteBuf> REGISTRY_BUFFER = PacketCodec.of((buffer, bytes) -> {
+    PacketCodec<RegistryByteBuf, ByteBuf> REGISTRY_BUFFER = PacketCodec.of((bytes, buffer) -> {
         buffer.writeInt(bytes.writerIndex());
         buffer.writeBytes(bytes);
     }, buffer -> new RegistryByteBuf(buffer.readBytes(buffer.readInt()), buffer.getRegistryManager()));
