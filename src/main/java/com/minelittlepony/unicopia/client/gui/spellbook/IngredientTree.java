@@ -25,8 +25,12 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.Text;
 
 public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
+    private static final List<Text> EMPTY_LINES = List.of(ScreenTexts.EMPTY);
+    private static final Tooltip EMPTY_TOOLTIP = Tooltip.of(EMPTY_LINES);
     private final List<IngredientTree.Entry> entries = new ArrayList<>();
     private Optional<IngredientTree.Entry> result = Optional.empty();
 
@@ -188,7 +192,7 @@ public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
 
             @Override
             public Tooltip getTooltip() {
-                return List::of;
+                return EMPTY_TOOLTIP;
             }
         };
 
@@ -251,7 +255,7 @@ public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         public Tooltip getTooltip() {
             return () -> {
                 if (stack.isEmpty()) {
-                    return List.of();
+                    return EMPTY_LINES;
                 }
                 return stack.getTooltip(Item.TooltipContext.create(MinecraftClient.getInstance().world), MinecraftClient.getInstance().player, TooltipType.BASIC);
             };
@@ -301,7 +305,7 @@ public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
 
         @Override
         public Tooltip getTooltip() {
-            return List::of;
+            return EMPTY_TOOLTIP;
         }
     }
 
