@@ -57,6 +57,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     public PhysicsBodyProjectileEntity(EntityType<PhysicsBodyProjectileEntity> type, World world, ItemStack stack) {
         super(type, world, stack);
+        setStack(stack);
     }
 
     public PhysicsBodyProjectileEntity(World world, ItemStack stack) {
@@ -65,6 +66,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     public PhysicsBodyProjectileEntity(World world, @Nullable LivingEntity thrower, ItemStack stack) {
         super(UEntities.MUFFIN, thrower, world, stack);
+        setStack(stack);
     }
 
     @Override
@@ -75,7 +77,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
     }
 
     public void setStack(ItemStack stack) {
-        getDataTracker().set(ITEM, stack);
+        getDataTracker().set(ITEM, stack.copy());
     }
 
     @Override
@@ -89,6 +91,11 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
     @Override
     protected ItemStack asItemStack() {
+        return getStack().copy();
+    }
+
+    @Override
+    public ItemStack getItemStack() {
         return getStack();
     }
 
@@ -273,7 +280,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
         super.writeCustomDataToNbt(nbt);
         ItemStack stack = getStack();
         if (!stack.isEmpty()) {
-            nbt.put("Item", stack.writeNbt(new NbtCompound()));
+            nbt.put("item", stack.writeNbt(new NbtCompound()));
         }
         nbt.putString("damageType", damageType.getValue().toString());
     }
@@ -281,7 +288,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        setStack(ItemStack.fromNbt(nbt.getCompound("Item")));
+        setStack(ItemStack.fromNbt(nbt.getCompound("item")));
         if (nbt.contains("damageType", NbtElement.STRING_TYPE)) {
             Optional.ofNullable(Identifier.tryParse(nbt.getString("damageType"))).ifPresent(id -> {
                 setDamageType(RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id));

@@ -19,8 +19,8 @@ public class HeavyProjectileItem extends ProjectileItem {
     @Override
     public PhysicsBodyProjectileEntity createProjectile(ItemStack stack, World world, @Nullable PlayerEntity player) {
         PhysicsBodyProjectileEntity projectile = player == null
-                ? new PhysicsBodyProjectileEntity(world, stack.copyWithCount(1))
-                : new PhysicsBodyProjectileEntity(world, player, stack.copyWithCount(1));
+                ? new PhysicsBodyProjectileEntity(world, stack)
+                : new PhysicsBodyProjectileEntity(world, player, stack);
         if (player != null) {
             projectile.setVelocity(player, player.getPitch(), player.getYaw(), 0, 1.5F, 1);
         }
