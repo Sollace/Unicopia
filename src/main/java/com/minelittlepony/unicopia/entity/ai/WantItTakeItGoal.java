@@ -4,7 +4,6 @@ import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
-import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
@@ -76,7 +75,7 @@ public class WantItTakeItGoal extends BreakHeartGoal {
                     if (mob.getWorld().random.nextInt(20) == 0) {
                         for (EquipmentSlot slot : EquipmentSlot.values()) {
                             ItemStack stack = living.getEquippedStack(slot);
-                            if (EnchantmentUtil.getLevel(UEnchantments.WANT_IT_NEED_IT, stack) > 0) {
+                            if (EnchantmentUtil.getWantItNeedItLevel(stack) > 0) {
                                 AwaitTickQueue.scheduleTask(mob.getWorld(), w -> {
                                     living.equipStack(slot, ItemStack.EMPTY);
                                     mob.tryEquip(stack);

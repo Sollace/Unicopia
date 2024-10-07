@@ -6,8 +6,6 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
-import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
-
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -44,7 +42,7 @@ public interface AttractionUtils {
         center = target.getPos().subtract(center).normalize().multiply(force);
 
         if (target instanceof LivingEntity) {
-            center = center.multiply(1 / (1 + EnchantmentUtil.getLevel(UEnchantments.HEAVY, (LivingEntity)target)));
+            center = center.multiply(1 / EnchantmentUtil.getWeight((LivingEntity)target));
         }
 
         target.addVelocity(

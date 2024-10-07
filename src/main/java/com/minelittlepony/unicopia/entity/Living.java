@@ -204,7 +204,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public boolean hasFeatherTouch() {
-        return EnchantmentUtil.getLevel(UEnchantments.FEATHER_TOUCH, entity) > 0;
+        return EnchantmentUtil.hasAnyEnchantmentsIn(entity, UTags.Enchantments.PERMITS_CLOUD_INTERACTION);
     }
 
     @Override
@@ -378,7 +378,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         }
 
         if (source instanceof MagicalDamageSource magical) {
-            Caster<?> attacker = ((MagicalDamageSource)source).getSpell();
+            Caster<?> attacker = magical.getSpell();
             if (attacker != null) {
                 this.attacker = attacker;
             }

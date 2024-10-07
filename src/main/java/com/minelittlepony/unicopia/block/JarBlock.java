@@ -4,8 +4,8 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.item.WeatherJarItem;
-import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.mojang.serialization.MapCodec;
 
@@ -15,7 +15,7 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.block.TransparentBlock;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.enchantment.Enchantments;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -100,8 +100,7 @@ public class JarBlock extends TransparentBlock implements Waterloggable {
     @Override
     public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
         super.afterBreak(world, player, pos, state, blockEntity, tool);
-        // TODO: Enchantment tag
-        if (EnchantmentUtil.getLevel(world, Enchantments.SILK_TOUCH, tool) == 0 && !player.shouldCancelInteraction()) {
+        if (EnchantmentHelper.hasAnyEnchantmentsIn(tool, UTags.Enchantments.CAN_BREAK_JARS_SAFELY) && !player.shouldCancelInteraction()) {
             if (asItem() instanceof WeatherJarItem jar) {
                 jar.releaseContents(world, pos);
             }

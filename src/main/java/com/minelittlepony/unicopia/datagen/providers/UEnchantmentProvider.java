@@ -15,6 +15,7 @@ import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentLevelBasedValue;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.enchantment.effect.AttributeEnchantmentEffect;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -92,7 +93,7 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
                 EntityAttributes.GENERIC_ATTACK_DAMAGE,
                 EnchantmentLevelBasedValue.linear(0, 1),
                 Operation.ADD_VALUE
-        ), EnchantmentLevelBasedValue.linear(2, 2))));
+        ), EnchantmentLevelBasedValue.linear(2, 2), UTags.Enchantments.HERDING)));
 
         register(registry, UEnchantments.REPULSION, Enchantment.builder(
                 Enchantment.definition(
@@ -189,5 +190,9 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
         tagProvider.getOrCreateTagBuilder(EnchantmentTags.CURSE).add(
                 UEnchantments.WANT_IT_NEED_IT, UEnchantments.POISONED_JOKE, UEnchantments.STRESSED
         );
+        tagProvider.getOrCreateTagBuilder(UTags.Enchantments.HERDING).add(UEnchantments.HERDS);
+        tagProvider.getOrCreateTagBuilder(UTags.Enchantments.CAN_BREAK_JARS_SAFELY).add(Enchantments.SILK_TOUCH);
+        tagProvider.getOrCreateTagBuilder(UTags.Enchantments.CONVERTS_DROPS_TO_XP).add(UEnchantments.CONSUMPTION);
+        tagProvider.getOrCreateTagBuilder(UTags.Enchantments.PERMITS_CLOUD_INTERACTION).add(UEnchantments.FEATHER_TOUCH);
     }
 }

@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia;
 
 import net.minecraft.block.Block;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffect;
@@ -155,6 +156,17 @@ public interface UTags {
 
         private static TagKey<SoundEvent> sound(String name) {
             return TagKey.of(RegistryKeys.SOUND_EVENT, Unicopia.id(name));
+        }
+    }
+
+    interface Enchantments {
+        TagKey<Enchantment> HERDING = enchantment("herding");
+        TagKey<Enchantment> CAN_BREAK_JARS_SAFELY = enchantment("can_break_jars_safely");
+        TagKey<Enchantment> CONVERTS_DROPS_TO_XP = enchantment("converts_drops_to_xp");
+        TagKey<Enchantment> PERMITS_CLOUD_INTERACTION = enchantment("permits_cloud_interaction");
+
+        private static TagKey<Enchantment> enchantment(String name) {
+            return TagKey.of(RegistryKeys.ENCHANTMENT, Unicopia.id(name));
         }
     }
 }

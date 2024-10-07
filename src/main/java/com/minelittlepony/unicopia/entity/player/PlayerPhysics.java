@@ -24,7 +24,6 @@ import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.component.Charges;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
-import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgPlayerFlightControlsInput;
 import com.minelittlepony.unicopia.network.track.DataTracker;
@@ -388,7 +387,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         velocity.z = MathHelper.clamp(velocity.z, -maximum, maximum);
 
         if (!entity.isOnGround()) {
-            float heavyness = 1 + EnchantmentUtil.getLevel(UEnchantments.HEAVY, entity) * 0.009F;
+            float heavyness = EnchantmentUtil.getAirResistance(entity);
             velocity.x /= heavyness;
             velocity.z /= heavyness;
         }
@@ -654,11 +653,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
             float distance = (float)(motion * 20 - 3);
 
-            float bouncyness = EnchantmentUtil.getLevel(UEnchantments.PADDED, entity) * 6;
-
             if (distance > 0) {
                 wallHitCooldown = MAX_WALL_HIT_CALLDOWN;
 
+                float bouncyness = EnchantmentUtil.getBouncyness(entity);
                 if (bouncyness > 0) {
                     playSound(USounds.ENTITY_PLAYER_REBOUND, 1, entity.getSoundPitch());
                     ProjectileUtil.ricochet(entity, Vec3d.of(pos), 0.4F + Math.min(2, bouncyness / 18F));
@@ -750,13 +748,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             }
         }
 
-        float heavyness = EnchantmentUtil.getLevel(UEnchantments.HEAVY, entity);
-        float thrustStrength = 0.235F * thrustScale;
-
-        if (heavyness > 0) {
-            thrustStrength /= 1 + heavyness;
-        }
-
+        float thrustStrength = (0.235F * thrustScale) / EnchantmentUtil.getWeight(entity);
         Vec3d direction = entity.getRotationVec(1).normalize().multiply(thrustStrength);
 
         if (hovering || !manualFlap) {
@@ -768,7 +760,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         } else {
             velocity.x += direction.x * 1.3F;
             velocity.z += direction.z * 1.3F;
-            velocity.y += ((direction.y * 2.45 + Math.abs(direction.y) * 10));// - heavyness / 5F
+            velocity.y += ((direction.y * 2.45 + Math.abs(direction.y) * 10));
         }
 
         if (velocity.y < 0 && hovering) {
@@ -791,7 +783,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             SoundEmitter.playSoundAt(entity, USounds.AMBIENT_WIND_GUST, SoundCategory.AMBIENT, 3, 1);
         }
 
-        float weight = 1 + (EnchantmentUtil.getLevel(UEnchantments.HEAVY, entity) * 0.8F) + (pony.getCompositeRace().canUseEarth() ? 1 : 0);
+        float weight = EnchantmentUtil.getWindBuffetResistance(entity);
 
         Vec3d airflow = WeatherConditions.getAirflow(entity.getBlockPos(), entity.getWorld())
                 .multiply(0.04F * effectStrength)

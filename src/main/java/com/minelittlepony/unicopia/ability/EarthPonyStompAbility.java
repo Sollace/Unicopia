@@ -16,7 +16,6 @@ import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
-import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
@@ -125,7 +124,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                 player.fallDistance = 0;
                 BlockPos center = PosHelper.findSolidGroundAt(player.getEntityWorld(), player.getBlockPos(), iplayer.getPhysics().getGravitySignum());
 
-                float heavyness = 1 + EnchantmentUtil.getLevel(UEnchantments.HEAVY, player);
+                float heavyness = EnchantmentUtil.getWeight(player);
 
                 iplayer.asWorld().getOtherEntities(player, areaOfEffect.offset(iplayer.getOriginVector())).forEach(i -> {
                     double dist = Math.sqrt(center.getSquaredDistance(i.getBlockPos()));
@@ -133,8 +132,8 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                     if (dist <= rad + 3) {
                         double inertia = 2 / dist;
 
-                        if (i instanceof LivingEntity) {
-                            inertia *= 1 + EnchantmentUtil.getLevel(UEnchantments.HEAVY, (LivingEntity)i);
+                        if (i instanceof LivingEntity l) {
+                            inertia *= EnchantmentUtil.getWeight(l);
                         }
                         inertia /= heavyness;
 
@@ -158,8 +157,8 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                             }
                         }
 
-                        if (i instanceof LivingEntity) {
-                            amount /= 1 + (EnchantmentUtil.getLevel(UEnchantments.PADDED, (LivingEntity)i) / 6F);
+                        if (i instanceof LivingEntity l) {
+                            amount /= EnchantmentUtil.getImpactReduction(l);
                         }
 
                         i.damage(iplayer.damageOf(UDamageTypes.SMASH, iplayer), (float)amount);

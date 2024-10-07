@@ -5,12 +5,14 @@ import java.util.function.DoubleSupplier;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
@@ -31,7 +33,7 @@ public class ConsumptionEnchantmentUtil {
             tool = l.getMainHandStack();
         }
 
-        if (EnchantmentUtil.getLevel(w, UEnchantments.CONSUMPTION, tool) <= 0) {
+        if (!EnchantmentHelper.hasAnyEnchantmentsIn(tool, UTags.Enchantments.CONVERTS_DROPS_TO_XP)) {
             return false;
         }
 
