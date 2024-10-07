@@ -3,13 +3,11 @@ package com.minelittlepony.unicopia.advancement;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -20,7 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.TypeFilter;
 
-public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendViaDragonBreathScrollCriterion.Conditions> {
+public class SendViaDragonBreathScrollCriterion extends AbstractRepeatingCriterion<SendViaDragonBreathScrollCriterion.Conditions> {
     @Override
     public Codec<Conditions> getConditionsCodec() {
         return Conditions.CODEC;
@@ -28,10 +26,10 @@ public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendVi
 
     public void triggerSent(PlayerEntity player, ItemStack payload, String recipient, BiConsumer<String, Integer> counterCallback) {
         if (player instanceof ServerPlayerEntity spe) {
-            trigger(spe, c -> {
+            trigger(spe, (count, c) -> {
                 if (c.test(spe, payload, recipient, false)) {
                     c.counter.ifPresent(counter -> {
-                        counterCallback.accept(counter, Pony.of(spe).getAdvancementProgress().compute(counter, (key, i) -> i == null ? 1 : i + 1));
+                        counterCallback.accept(counter, count);
                     });
                     return true;
                 }
@@ -42,7 +40,7 @@ public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendVi
 
     public void triggerReceived(LivingEntity recipient, ItemStack payload) {
         if (recipient instanceof ServerPlayerEntity spe) {
-            trigger(spe, c -> c.test(spe, payload, recipient.getDisplayName().getString(), true));
+            trigger(spe, (count, c) -> c.test(spe, payload, recipient.getDisplayName().getString(), true));
         }
     }
 
@@ -54,7 +52,7 @@ public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendVi
             TriState recipientPresent,
             Optional<String> counter,
             RacePredicate races
-    ) implements AbstractCriterion.Conditions {
+    ) implements AbstractRepeatingCriterion.Conditions {
         public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(Conditions::player),
                 ItemPredicate.CODEC.optionalFieldOf("item").forGetter(Conditions::item),
@@ -64,7 +62,6 @@ public class SendViaDragonBreathScrollCriterion extends AbstractCriterion<SendVi
                 Codec.STRING.optionalFieldOf("counter").forGetter(Conditions::counter),
                 RacePredicate.CODEC.optionalFieldOf("races", RacePredicate.EMPTY).forGetter(Conditions::races)
             ).apply(instance, Conditions::new));
-
         public boolean test(ServerPlayerEntity player, ItemStack payload, String recipient, boolean receiving) {
             return isReceivingEnd == receiving
                     && races.test(player)

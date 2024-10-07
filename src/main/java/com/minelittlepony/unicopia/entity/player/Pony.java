@@ -19,6 +19,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.RageAbilitySpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitDiscovery;
+import com.minelittlepony.unicopia.advancement.TriggerCountTracker;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
@@ -35,6 +36,7 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.*;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import com.minelittlepony.unicopia.network.*;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
@@ -84,7 +86,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private final Acrobatics acrobatics = new Acrobatics(this, tracker);
     private final CorruptionHandler corruptionHandler = new CorruptionHandler(this);
 
-    private final Map<String, Integer> advancementProgress = new HashMap<>();
+    private TriggerCountTracker advancementProgress = new TriggerCountTracker(Map.of());
 
     private final ManaContainer mana;
     private final PlayerLevelStore levels;
@@ -196,7 +198,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return 1 - (((float)animationDuration) / animationMaxDuration);
     }
 
-    public Map<String, Integer> getAdvancementProgress() {
+    public TriggerCountTracker getAdvancementProgress() {
         return advancementProgress;
     }
 
@@ -872,11 +874,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         compound.put("discoveries", discoveries.toNBT(lookup));
         compound.putInt("ticksInvulnerable", ticksInvulnerable);
         compound.putInt("ticksMetamorphising", ticksMetamorphising);
-        NbtCompound progress = new NbtCompound();
-        advancementProgress.forEach((key, count) -> {
-            progress.putInt(key, count);
-        });
-        compound.put("advancementProgress", progress);
+        compound.put("advancementTriggerCounts", NbtSerialisable.encode(TriggerCountTracker.CODEC, advancementProgress, lookup));
     }
 
     @Override
@@ -894,11 +892,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         ticksInSun = compound.getInt("ticksInSun");
         hasShades = compound.getBoolean("hasShades");
         ticksMetamorphising = compound.getInt("ticksMetamorphising");
-        NbtCompound progress = compound.getCompound("advancementProgress");
-        advancementProgress.clear();
-        for (String key : progress.getKeys()) {
-            advancementProgress.put(key, progress.getInt(key));
-        }
+        advancementProgress = NbtSerialisable.decode(TriggerCountTracker.CODEC, compound.get("advancementTriggerCounts"), lookup).orElseGet(() -> new TriggerCountTracker(Map.of()));
     }
 
     @Override
@@ -948,8 +942,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         mana.copyFrom(oldPlayer.mana, !forcedSwap);
-
-        advancementProgress.putAll(oldPlayer.getAdvancementProgress());
+        advancementProgress.copyFrom(oldPlayer.advancementProgress, alive);
         setDirty();
         onSpawn();
     }

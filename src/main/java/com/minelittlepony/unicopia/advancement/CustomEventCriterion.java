@@ -11,13 +11,12 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.advancement.AdvancementCriterion;
-import net.minecraft.advancement.criterion.AbstractCriterion;
 import net.minecraft.entity.Entity;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion.Conditions> {
+public class CustomEventCriterion extends AbstractRepeatingCriterion<CustomEventCriterion.Conditions> {
     @Override
     public Codec<Conditions> getConditionsCodec() {
         return Conditions.CODEC;
@@ -26,9 +25,7 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
     public CustomEventCriterion.Trigger createTrigger(String name) {
         return player -> {
             if (player instanceof ServerPlayerEntity p) {
-                int counter = Pony.of(p).getAdvancementProgress().compute(name, (key, i) -> i == null ? 1 : i + 1);
-
-                trigger(p, c -> c.test(name, counter, p));
+                trigger(p, (count, condition) -> condition.test(name, count, p));
             }
         };
     }
@@ -58,7 +55,7 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
             String event,
             RacePredicate races,
             TriState flying,
-            int repeatCount) implements AbstractCriterion.Conditions {
+            int repeatCount) implements AbstractRepeatingCriterion.Conditions {
         public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(Conditions::player),
                 Codec.STRING.fieldOf("event").forGetter(Conditions::event),
@@ -72,7 +69,7 @@ public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion
             return this.event.equalsIgnoreCase(event)
                     && races.test(player)
                     && flying.orElse(isFlying) == isFlying
-                    && (repeatCount <= 0 || (count > 0 && count % repeatCount == 0));
+                    && (repeatCount < 0 || repeatCount == count);
         }
     }
 }
