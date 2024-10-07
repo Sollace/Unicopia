@@ -3,6 +3,8 @@ package com.minelittlepony.unicopia.diet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+
 import com.minelittlepony.unicopia.diet.affliction.Affliction;
 import com.minelittlepony.unicopia.item.UFoodComponents;
 import com.mojang.serialization.Codec;
@@ -45,10 +47,10 @@ public record FoodGroupEffects(
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, List<Text> tooltip, TooltipType context) {
+    public void appendTooltip(ItemStack stack, Consumer<Text> tooltip, TooltipType context) {
         tags.forEach(tag -> {
             if (tag.contains(stack)) {
-                tooltip.add(Text.literal(" ").append(Text.translatable(Util.createTranslationKey("tag", tag.id()))).formatted(Formatting.GRAY));
+                tooltip.accept(Text.literal(" ").append(Text.translatable(Util.createTranslationKey("tag", tag.id()))).formatted(Formatting.GRAY));
             }
         });
         Effect.super.appendTooltip(stack, tooltip, context);

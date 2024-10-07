@@ -38,11 +38,11 @@ public class ModifierTooltipRenderer {
         appendTooltip(stack, UDataComponentTypes.BUTTERFLY_VARIANT, context, textConsumer, type);
         EnchantableItem.getSpellEffect(stack).appendTooltip(context, textConsumer, type);
         if (GlowableItem.isGlowing(stack)) {
-            lines.add(Text.translatable("item.unicopia.friendship_bracelet.glowing").formatted(Formatting.ITALIC, Formatting.GRAY));
+            textConsumer.accept(Text.translatable("item.unicopia.friendship_bracelet.glowing").formatted(Formatting.ITALIC, Formatting.GRAY));
         }
 
         if (pony != null) {
-            PonyDiets.getInstance().getDiet(pony).appendTooltip(stack, pony, lines, type);
+            PonyDiets.getInstance().getDiet(pony).appendTooltip(stack, pony, textConsumer, type);
         }
     }
 

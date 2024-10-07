@@ -8,7 +8,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
-import com.minelittlepony.unicopia.UConventionalTags;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellDuplicatingRecipe;
@@ -102,7 +101,7 @@ public class URecipeProvider extends FabricRecipeProvider {
             .input(UTags.Items.MAGIC_FEATHERS)
             .offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.ARROW, 4)
-            .input('#', UConventionalTags.Items.STICKS)
+            .input('#', ConventionalItemTags.WOODEN_RODS)
             .input('X', Items.FLINT).criterion("has_flint", conditionsFromItem(Items.FLINT))
             .input('Y', UTags.Items.MAGIC_FEATHERS).criterion("has_feather", conditionsFromTag(UTags.Items.MAGIC_FEATHERS))
             .pattern("X")
@@ -227,7 +226,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         // magic staff
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.MAGIC_STAFF)
             .input('*', UItems.GEMSTONE).criterion("has_gemstone", conditionsFromItem(UItems.GEMSTONE))
-            .input('#', UConventionalTags.Items.STICKS).criterion("has_stick", conditionsFromTag(UConventionalTags.Items.STICKS))
+            .input('#', ConventionalItemTags.WOODEN_RODS).criterion("has_stick", conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
             .pattern("  *")
             .pattern(" # ")
             .pattern("#  ")
@@ -269,7 +268,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         // meadowbrook's staff
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.MEADOWBROOKS_STAFF)
             .input('*', UItems.GEMSTONE).criterion(hasItem(UItems.GEMSTONE), conditionsFromItem(UItems.GEMSTONE))
-            .input('/', UConventionalTags.Items.STICKS).criterion(hasItem(Items.STICK), conditionsFromTag(UConventionalTags.Items.STICKS))
+            .input('/', ConventionalItemTags.WOODEN_RODS).criterion(hasItem(Items.STICK), conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
             .pattern("  *")
             .pattern(" / ")
             .pattern("/  ")
@@ -378,7 +377,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         appendIngredients(ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.MUFFIN), Items.SUGAR, Items.EGG, Items.POTATO, UItems.JUICE, UItems.WHEAT_WORMS).offerTo(exporter);
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.MUG)
             .input('*', Items.IRON_NUGGET).criterion(hasItem(Items.IRON_NUGGET), conditionsFromItem(Items.IRON_NUGGET))
-            .input('#', UConventionalTags.Items.STICKS).criterion(hasItem(Items.STICK), conditionsFromTag(UConventionalTags.Items.STICKS))
+            .input('#', ConventionalItemTags.WOODEN_RODS).criterion(hasItem(Items.STICK), conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
             .pattern("# #")
             .pattern("* *")
             .pattern(" # ")
@@ -442,7 +441,7 @@ public class URecipeProvider extends FabricRecipeProvider {
             .input(UItems.TOAST, 8)
             .offerTo(exporter);
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.CANDIED_APPLE)
-            .input(UConventionalTags.Items.STICKS)
+            .input(ConventionalItemTags.WOODEN_RODS)
             .input(UTags.Items.FRESH_APPLES).criterion(hasItem(Items.APPLE), conditionsFromTag(UTags.Items.FRESH_APPLES))
             .input(Items.SUGAR, 4)
             .offerTo(exporter);
@@ -610,7 +609,7 @@ public class URecipeProvider extends FabricRecipeProvider {
     public static void offerPolearmRecipe(RecipeExporter exporter, ItemConvertible output, Either<ItemConvertible, TagKey<Item>> input) {
         CraftingMaterialHelper
             .input(ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, output), 'o', input).criterion(CraftingMaterialHelper.hasEither(input), CraftingMaterialHelper.conditionsFromEither(input))
-            .input('#', UConventionalTags.Items.STICKS)
+            .input('#', ConventionalItemTags.WOODEN_RODS)
             .pattern("  o")
             .pattern(" # ")
             .pattern("#  ")

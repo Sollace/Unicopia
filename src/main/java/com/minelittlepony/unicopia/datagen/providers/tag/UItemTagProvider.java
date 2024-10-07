@@ -19,6 +19,7 @@ import com.minelittlepony.unicopia.server.world.UTreeGen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.block.Block;
 import net.minecraft.data.family.BlockFamily;
@@ -228,8 +229,8 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
                     .toArray(Item[]::new))
             .add(UBlocks.UNSTABLE_CLOUD.asItem(), UBlocks.CLOUD_PILLAR.asItem(), UBlocks.CLOUD_DOOR.asItem(), UBlocks.CLOUD_BED.asItem())
             .forceAddTag(UTags.Items.BED_SHEETS)
-            .forceAddTag(UConventionalTags.Items.RAW_FISH)
-            .forceAddTag(UConventionalTags.Items.COOKED_FISH)
+            .forceAddTag(ConventionalItemTags.RAW_FISH_FOODS)
+            .forceAddTag(ConventionalItemTags.COOKED_FISH_FOODS)
             .forceAddTag(UConventionalTags.Items.ROTTEN_FISH)
             .forceAddTag(UTags.Items.CLOUD_JARS)
             .add(UItems.LIGHTNING_JAR)
@@ -287,8 +288,8 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
                 UBlocks.MYSTERIOUS_EGG.asItem(), UItems.GREEN_FRIED_EGG,
                 UBlocks.HIVE.asItem()
             )
-            .forceAddTag(UConventionalTags.Items.RAW_MEAT)
-            .forceAddTag(UConventionalTags.Items.COOKED_MEAT)
+            .forceAddTag(ConventionalItemTags.RAW_MEAT_FOODS)
+            .forceAddTag(ConventionalItemTags.COOKED_MEAT_FOODS)
             .forceAddTag(UConventionalTags.Items.ROTTEN_MEAT)
             .forceAddTag(UConventionalTags.Items.RAW_INSECT)
             .forceAddTag(UConventionalTags.Items.COOKED_INSECT)
@@ -303,9 +304,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
     }
 
     private void exportConventionalTags() {
-        copy(UConventionalTags.Blocks.CONCRETES, UConventionalTags.Items.CONCRETES);
-        copy(UConventionalTags.Blocks.CONCRETE_POWDERS, UConventionalTags.Items.CONCRETE_POWDERS);
-        copy(UConventionalTags.Blocks.GLAZED_TERRACOTTAS, UConventionalTags.Items.GLAZED_TERRACOTTAS);
+        copy(ConventionalBlockTags.CONCRETES, UConventionalTags.Items.CONCRETES);
         copy(UConventionalTags.Blocks.CORAL_BLOCKS, UConventionalTags.Items.CORAL_BLOCKS);
         copy(UConventionalTags.Blocks.CORAL_FANS, UConventionalTags.Items.CORAL_FANS);
         copy(UConventionalTags.Blocks.CORALS, UConventionalTags.Items.CORALS);
@@ -316,15 +315,14 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .addOptionalTag(Identifier.of("c", "pyrite_apples")) // no idea which mod add pyrite apples
         ;
         getOrCreateTagBuilder(UConventionalTags.Items.BANANAS).add(UItems.BANANA);
-        getOrCreateTagBuilder(UConventionalTags.Items.RAW_FISH).add(Items.COD, Items.SALMON, Items.PUFFERFISH, Items.TROPICAL_FISH).addOptionalTag(Identifier.of("c", "mollusks"));
-        getOrCreateTagBuilder(UConventionalTags.Items.COOKED_FISH).add(Items.COOKED_COD, Items.COOKED_SALMON, UItems.COOKED_TROPICAL_FISH, UItems.COOKED_PUFFERFISH, UItems.FRIED_AXOLOTL);
+        getOrCreateTagBuilder(ConventionalItemTags.RAW_FISH_FOODS).addOptionalTag(Identifier.of("c", "mollusks"));
+        getOrCreateTagBuilder(ConventionalItemTags.COOKED_FISH_FOODS).add(UItems.COOKED_TROPICAL_FISH, UItems.COOKED_PUFFERFISH, UItems.FRIED_AXOLOTL);
         getOrCreateTagBuilder(UConventionalTags.Items.ROTTEN_FISH).add(UItems.ROTTEN_COD, UItems.ROTTEN_TROPICAL_FISH, UItems.ROTTEN_SALMON, UItems.ROTTEN_PUFFERFISH);
         getOrCreateTagBuilder(ItemTags.FISHES).add(
                 UItems.COOKED_TROPICAL_FISH, UItems.COOKED_PUFFERFISH, UItems.FRIED_AXOLOTL,
                 UItems.ROTTEN_COD, UItems.ROTTEN_TROPICAL_FISH, UItems.ROTTEN_SALMON, UItems.ROTTEN_PUFFERFISH
         );
-        getOrCreateTagBuilder(UConventionalTags.Items.COOKED_MEAT)
-            .add(Items.COOKED_PORKCHOP, Items.COOKED_BEEF, Items.COOKED_MUTTON, Items.COOKED_RABBIT, Items.COOKED_CHICKEN, Items.RABBIT_STEW)
+        getOrCreateTagBuilder(ConventionalItemTags.COOKED_MEAT_FOODS)
             .addOptionalTag(Identifier.of("c", "cooked_bacon"))
             .addOptionalTag(Identifier.of("c", "cooked_beef"))
             .addOptionalTag(Identifier.of("c", "cooked_chicken"))
@@ -335,8 +333,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .addOptionalTag(Identifier.of("c", "pork_and_beans"))
             .addOptionalTag(Identifier.of("c", "pork_jerkies"))
             .addOptionalTag(Identifier.of("c", "protien"));
-        getOrCreateTagBuilder(UConventionalTags.Items.RAW_MEAT)
-            .add(Items.PORKCHOP, Items.BEEF, Items.MUTTON, Items.RABBIT, Items.CHICKEN)
+        getOrCreateTagBuilder(ConventionalItemTags.RAW_MEAT_FOODS)
             .addOptionalTag(Identifier.of("c", "raw_bacon"))
             .addOptionalTag(Identifier.of("c", "raw_beef"))
             .addOptionalTag(Identifier.of("c", "raw_chicken"))
@@ -348,7 +345,6 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(UConventionalTags.Items.COOKED_INSECT).add(UItems.COOKED_FROG_LEGS);
         getOrCreateTagBuilder(UConventionalTags.Items.RAW_INSECT).add(Items.SPIDER_EYE, UItems.BUTTERFLY, UItems.FROG_LEGS, UItems.WHEAT_WORMS, UBlocks.WORM_BLOCK.asItem());
         getOrCreateTagBuilder(UConventionalTags.Items.WORMS).add(UItems.WHEAT_WORMS);
-        getOrCreateTagBuilder(UConventionalTags.Items.STICKS).add(Items.STICK);
         getOrCreateTagBuilder(UConventionalTags.Items.ROCKS).add(UItems.ROCK);
         getOrCreateTagBuilder(UConventionalTags.Items.GEMS).add(UItems.GEMSTONE, UItems.BOTCHED_GEM);
         getOrCreateTagBuilder(UConventionalTags.Items.PINECONES).add(UItems.PINECONE);
@@ -368,7 +364,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .addOptional(Identifier.of("garnished", "nuts"))
             .addOptional(Identifier.of("garnished", "nut_mix"))
             .addOptional(Identifier.of("garnished", "neverable_delecacies"));
-        getOrCreateTagBuilder(UConventionalTags.Items.FRUITS)
+        getOrCreateTagBuilder(ConventionalItemTags.FRUIT_FOODS)
             .add(Items.MELON_SLICE, Items.SWEET_BERRIES, Items.GLOW_BERRIES, Items.CHORUS_FRUIT)
             .add(UItems.JUICE, UItems.ZAP_APPLE, UItems.ZAP_BULB)
             .forceAddTag(UConventionalTags.Items.MANGOES)
@@ -377,7 +373,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .forceAddTag(UConventionalTags.Items.BANANAS)
             .addOptionalTag(Identifier.of("garnished", "berries"));
         getOrCreateTagBuilder(UConventionalTags.Items.DESSERTS).add(Items.CAKE, UItems.APPLE_PIE_SLICE).forceAddTag(UTags.Items.PIES);
-        getOrCreateTagBuilder(UConventionalTags.Items.CANDY).add(Items.SUGAR, UItems.ROCK_CANDY, UItems.CANDIED_APPLE);
+        getOrCreateTagBuilder(ConventionalItemTags.CANDY_FOODS).add(Items.SUGAR, UItems.ROCK_CANDY, UItems.CANDIED_APPLE);
         getOrCreateTagBuilder(UTags.Items.BAKED_GOODS).add(
                 Items.BREAD, Items.COOKIE, Items.PUMPKIN_PIE,
                 UItems.MUFFIN, UItems.SCONE, UItems.COOKED_ZAP_APPLE, UItems.TOAST, UItems.BURNED_TOAST, UItems.JAM_TOAST, UItems.IMPORTED_OATS,
@@ -392,18 +388,18 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .addOptional(Identifier.of("farmersdelight", "melon_juice"));
         getOrCreateTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("farmersdelight", "cabbage_roll_ingredients"))).add(UItems.OATS, UItems.ROCK, UItems.WHEAT_WORMS);
         getOrCreateTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("farmersdelight", "comfort_foods"))).add(UItems.OATMEAL, UItems.ROCK_STEW, UItems.MUFFIN);
-        getOrCreateTagBuilder(UConventionalTags.Items.RAW_FISH)
+        getOrCreateTagBuilder(ConventionalItemTags.RAW_FISH_FOODS)
             .addOptional(Identifier.of("farmersdelight", "cod_roll"))
             .addOptional(Identifier.of("farmersdelight", "salmon_roll"))
             .addOptional(Identifier.of("farmersdelight", "cod_slice"))
             .addOptional(Identifier.of("farmersdelight", "salmon_slice"));
-        getOrCreateTagBuilder(UConventionalTags.Items.COOKED_FISH)
+        getOrCreateTagBuilder(ConventionalItemTags.COOKED_FISH_FOODS)
             .addOptional(Identifier.of("farmersdelight", "fish_stew"))
             .addOptional(Identifier.of("farmersdelight", "baked_cod_stew"))
             .addOptional(Identifier.of("farmersdelight", "grilled_salmon"));
-        getOrCreateTagBuilder(UConventionalTags.Items.RAW_MEAT)
+        getOrCreateTagBuilder(ConventionalItemTags.RAW_MEAT_FOODS)
             .addOptional(Identifier.of("farmersdelight", "ham"));
-        getOrCreateTagBuilder(UConventionalTags.Items.COOKED_MEAT)
+        getOrCreateTagBuilder(ConventionalItemTags.COOKED_MEAT_FOODS)
             .addOptional(Identifier.of("farmersdelight", "chicken_soup"))
             .addOptional(Identifier.of("farmersdelight", "bacon_and_eggs"))
             .addOptional(Identifier.of("farmersdelight", "pasta_with_meatballs"))
@@ -422,7 +418,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .addOptional(Identifier.of("farmersdelight", "steak_and_potatoes"))
             .addOptional(Identifier.of("farmersdelight", "roasted_mutton_chops"))
             .addOptional(Identifier.of("farmersdelight", "pasta_with_mutton_chop"));
-        getOrCreateTagBuilder(UConventionalTags.Items.FRUITS)
+        getOrCreateTagBuilder(ConventionalItemTags.FRUIT_FOODS)
             .addOptional(Identifier.of("farmersdelight", "pumpkin_slice"))
             .addOptional(Identifier.of("farmersdelight", "tomato"))
             .addOptional(Identifier.of("farmersdelight", "melon_juice"))

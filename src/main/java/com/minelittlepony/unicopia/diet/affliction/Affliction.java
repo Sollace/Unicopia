@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.diet.affliction;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -14,8 +14,8 @@ public interface Affliction {
         return getType() == AfflictionType.EMPTY;
     }
 
-    default void appendTooltip(List<Text> tooltip) {
-        tooltip.add(Text.literal(" ").append(getName()).formatted(Formatting.DARK_GRAY));
+    default void appendTooltip(Consumer<Text> tooltip) {
+        tooltip.accept(Text.literal(" ").append(getName()).formatted(Formatting.DARK_GRAY));
     }
 
     default Text getName() {

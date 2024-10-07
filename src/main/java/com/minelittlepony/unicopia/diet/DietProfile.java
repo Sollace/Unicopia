@@ -25,7 +25,6 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.UseAction;
 
 public record DietProfile(
         float defaultMultiplier,
@@ -122,34 +121,31 @@ public record DietProfile(
         return Pair.of(hungerMultiplier, saturationMultiplier);
     }
 
-    public void appendTooltip(ItemStack stack, @Nullable Pony pony, List<Text> tooltip, TooltipType context) {
+    public void appendTooltip(ItemStack stack, @Nullable Pony pony, Consumer<Text> tooltip, TooltipType context) {
         if (this == EMPTY) {
             return;
         }
-
-        tooltip.add(Text.translatable("unicopia.diet.information").formatted(Formatting.DARK_PURPLE));
-        findEffect(stack).orElseGet(() -> PonyDiets.getInstance().getEffects(stack)).appendTooltip(stack, tooltip, context);
 
         var food = stack.get(DataComponentTypes.FOOD);
         var ratios = getRatios(stack);
 
         if (food == null || isInedible(ratios)) {
-            if (stack.getUseAction() != UseAction.DRINK) {
-                tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.not_edible")).formatted(Formatting.DARK_GRAY));
-            }
             return;
         }
+
+        tooltip.accept(Text.translatable("unicopia.diet.information").formatted(Formatting.DARK_PURPLE));
+        findEffect(stack).orElseGet(() -> PonyDiets.getInstance().getEffects(stack)).appendTooltip(stack, tooltip, context);
 
         float baseMultiplier = (isForaged(stack) ? foragingMultiplier() : defaultMultiplier());
 
         if (context.isAdvanced()) {
             var nonAdjustedFood = getNonAdjustedFoodComponent(stack, pony).orElse(food);
-            tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.base_multiplier", baseMultiplier).formatted(Formatting.DARK_GRAY)));
-            tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.hunger.detailed", food.nutrition(), nonAdjustedFood.nutrition(), (int)(ratios.getFirst() * 100))).formatted(Formatting.DARK_GRAY));
-            tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.saturation.detailed", food.saturation(), nonAdjustedFood.saturation(), (int)(ratios.getSecond() * 100))).formatted(Formatting.DARK_GRAY));
+            tooltip.accept(Text.literal(" ").append(Text.translatable("unicopia.diet.base_multiplier", baseMultiplier).formatted(Formatting.DARK_GRAY)));
+            tooltip.accept(Text.literal(" ").append(Text.translatable("unicopia.diet.hunger.detailed", food.nutrition(), nonAdjustedFood.nutrition(), (int)(ratios.getFirst() * 100))).formatted(Formatting.DARK_GRAY));
+            tooltip.accept(Text.literal(" ").append(Text.translatable("unicopia.diet.saturation.detailed", food.saturation(), nonAdjustedFood.saturation(), (int)(ratios.getSecond() * 100))).formatted(Formatting.DARK_GRAY));
         } else {
-            tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.hunger", (int)(ratios.getFirst() * 100))).formatted(Formatting.DARK_GRAY));
-            tooltip.add(Text.literal(" ").append(Text.translatable("unicopia.diet.saturation", (int)(ratios.getSecond() * 100))).formatted(Formatting.DARK_GRAY));
+            tooltip.accept(Text.literal(" ").append(Text.translatable("unicopia.diet.hunger", (int)(ratios.getFirst() * 100))).formatted(Formatting.DARK_GRAY));
+            tooltip.accept(Text.literal(" ").append(Text.translatable("unicopia.diet.saturation", (int)(ratios.getSecond() * 100))).formatted(Formatting.DARK_GRAY));
         }
     }
 

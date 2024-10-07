@@ -16,6 +16,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
@@ -25,7 +26,8 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tick
     public static final long HOURS = 1000 * TICKS;
     public static final long DAYS = 24 * HOURS;
 
-    public static String formatTicks(long ticks) {
+    public static String formatTicks(long ticks, float tickRate) {
+        ticks = MathHelper.floor(ticks / tickRate);
         long days = ticks / (SECONDS * 60 * 24);
         ticks %= (SECONDS * 60 * 60 * 24);
         long hours = ticks / (SECONDS * 60 * 60);

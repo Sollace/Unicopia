@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.diet.affliction.StatusEffectAffliction;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.item.UFoodComponents;
 
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.component.type.FoodComponents;
 import net.minecraft.entity.effect.StatusEffects;
@@ -28,9 +29,9 @@ public class FoodGroupsGenerator {
     public void generate(BiConsumer<Identifier, FoodGroupEffects.Builder> exporter) {
         exporter.accept(Unicopia.id("baked_goods"), new FoodGroupEffects.Builder().tag(UTags.Items.BAKED_GOODS).food(FoodComponents.BREAD));
         exporter.accept(Unicopia.id("bat_ponys_delight"), new FoodGroupEffects.Builder().tag(UConventionalTags.Items.MANGOES).food(UFoodComponents.MANGO));
-        exporter.accept(Unicopia.id("candy"), new FoodGroupEffects.Builder().tag(UConventionalTags.Items.CANDY).food(UFoodComponents.CANDY));
+        exporter.accept(Unicopia.id("candy"), new FoodGroupEffects.Builder().tag(ConventionalItemTags.CANDY_FOODS).food(UFoodComponents.CANDY));
         exporter.accept(Unicopia.id("desserts"), new FoodGroupEffects.Builder().tag(UConventionalTags.Items.DESSERTS).food(FoodComponents.COOKIE));
-        exporter.accept(Unicopia.id("fruit"), new FoodGroupEffects.Builder().tag(UConventionalTags.Items.FRUITS).food(UFoodComponents.BANANA));
+        exporter.accept(Unicopia.id("fruit"), new FoodGroupEffects.Builder().tag(ConventionalItemTags.FRUIT_FOODS).food(UFoodComponents.BANANA));
         exporter.accept(Unicopia.id("rocks"), new FoodGroupEffects.Builder().tag(UConventionalTags.Items.ROCKS).tag(UTags.Items.ROCK_STEWS).food(FoodComponents.MUSHROOM_STEW));
         exporter.accept(Unicopia.id("gems"), new FoodGroupEffects.Builder().tag(UConventionalTags.Items.GEMS));
         exporter.accept(Unicopia.id("shells"), new FoodGroupEffects.Builder().tag(UTags.Items.SHELLS).food(UFoodComponents.SHELL));
@@ -46,10 +47,10 @@ public class FoodGroupsGenerator {
         exporter.accept(Unicopia.id("pinecone"), new FoodGroupEffects.Builder().tag(UConventionalTags.Items.PINECONES).food(UFoodComponents.PINECONE).ailment(new HealingAffliction(1)));
 
         provideMeatCategory("fish",
-                UConventionalTags.Items.COOKED_FISH, UConventionalTags.Items.RAW_FISH, UConventionalTags.Items.ROTTEN_FISH,
+                ConventionalItemTags.COOKED_FISH_FOODS, ConventionalItemTags.RAW_FISH_FOODS, UConventionalTags.Items.ROTTEN_FISH,
                 FoodComponents.COOKED_COD, FoodComponents.COD, FoodComponents.ROTTEN_FLESH, exporter);
         provideMeatCategory("meat",
-                UConventionalTags.Items.COOKED_MEAT, UConventionalTags.Items.RAW_MEAT, UConventionalTags.Items.ROTTEN_MEAT,
+                ConventionalItemTags.COOKED_MEAT_FOODS, ConventionalItemTags.RAW_MEAT_FOODS, UConventionalTags.Items.ROTTEN_MEAT,
                 FoodComponents.COOKED_BEEF, FoodComponents.BEEF, FoodComponents.ROTTEN_FLESH, exporter);
         provideMeatCategory("insect",
                 UConventionalTags.Items.COOKED_INSECT, UConventionalTags.Items.RAW_INSECT, UConventionalTags.Items.ROTTEN_INSECT,

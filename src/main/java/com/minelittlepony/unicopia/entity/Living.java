@@ -430,7 +430,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return Stream.of(entity.getStackInHand(Hand.MAIN_HAND), entity.getStackInHand(Hand.OFF_HAND));
     }
 
-    protected Stream<ItemStack> getArmourStacks() {
+    public Stream<ItemStack> getArmourStacks() {
         if (!TrinketsDelegate.hasTrinkets()) {
             return StreamSupport.stream(entity.getArmorItems().spliterator(), false);
         }

@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.diet;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.component.type.FoodComponent;
@@ -39,8 +40,8 @@ public record FoodGroup(
         return attributes.ailment();
     }
     @Override
-    public void appendTooltip(ItemStack stack, List<Text> tooltip, TooltipType context) {
-        tooltip.add(Text.literal(" ").append(Text.translatable(Util.createTranslationKey("food_group", id()))).formatted(Formatting.GRAY));
+    public void appendTooltip(ItemStack stack, Consumer<Text> tooltip, TooltipType context) {
+        tooltip.accept(Text.literal(" ").append(Text.translatable(Util.createTranslationKey("food_group", id()))).formatted(Formatting.GRAY));
         Effect.super.appendTooltip(stack, tooltip, context);
     }
 }

@@ -27,7 +27,6 @@ import it.unimi.dsi.fastutil.objects.Object2FloatMaps;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -78,14 +77,14 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
     @Environment(EnvType.CLIENT)
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        Pony pony = Pony.of(MinecraftClient.getInstance().player);
-
-        if (pony != null) {
-            long ticks = pony.getArmour().getTicks(this);
-            if (ticks > 0) {
-                tooltip.add(Text.literal(ItemTracker.formatTicks(ticks).formatted(Formatting.GRAY)));
+        ItemStackDuck.of(stack).getTransientComponents().getCarrier().flatMap(Pony::of).ifPresent(pony -> {
+            if (pony.getArmourStacks().anyMatch(i -> i == stack)) {
+                long ticks = pony.getArmour().getTicks(this);
+                if (ticks > 0) {
+                    tooltip.add(Text.literal(ItemTracker.formatTicks(ticks, context.getUpdateTickRate()).formatted(Formatting.GRAY)));
+                }
             }
-        }
+        });
     }
 
     @Override

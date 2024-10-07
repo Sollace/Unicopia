@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.diet.affliction;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -36,7 +37,7 @@ public record CompoundAffliction (List<Affliction> afflictions) implements Affli
     }
 
     @Override
-    public void appendTooltip(List<Text> tooltip) {
+    public void appendTooltip(Consumer<Text> tooltip) {
         afflictions.forEach(i -> i.appendTooltip(tooltip));
     }
 

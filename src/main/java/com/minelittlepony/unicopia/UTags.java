@@ -76,7 +76,7 @@ public interface UTags {
         TagKey<Item> FORAGE_PRICKLY = item("forage/prickly");
         TagKey<Item> FORAGE_GLOWING = item("forage/glowing");
         TagKey<Item> FORAGE_RISKY = item("forage/risky");
-        TagKey<Item> FORAGE_STRENGHENING = item("forage/strenghtening");
+        TagKey<Item> FORAGE_STRENGHENING = item("forage/strengthening");
         TagKey<Item> FORAGE_SEVERE_NAUSEATING = item("forage/severe/nauseating");
         TagKey<Item> FORAGE_SEVERE_PRICKLY = item("forage/severe/prickly");
 
