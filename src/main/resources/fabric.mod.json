@@ -30,8 +30,8 @@
     "modmenu": [
       "com.minelittlepony.unicopia.modmenu.UMenuFactory"
     ],
-    "emi": [
-      "com.minelittlepony.unicopia.compat.emi.Main"
+    "tla-api": [
+      "com.minelittlepony.unicopia.compat.tla.Main"
     ],
     "minelittlepony": [
       "com.minelittlepony.unicopia.client.minelittlepony.Main"

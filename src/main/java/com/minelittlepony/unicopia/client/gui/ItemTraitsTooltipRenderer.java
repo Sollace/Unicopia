@@ -102,6 +102,19 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
         }
     }
 
+    public static void renderStackSingleTrait(Trait trait, float amount, DrawContext context, float x, float y, float weight, float delta, int seed, boolean revealAll) {
+        float time = MathHelper.cos((MinecraftClient.getInstance().player.age + delta + seed) / 2F) * 0.7F;
+
+        float angle = 0.7F + (time / 30F) % MathHelper.TAU;
+        float r = 9 + 2 * MathHelper.sin(delta / 20F);
+
+        ItemTraitsTooltipRenderer.renderTraitIcon(trait, amount * weight, context,
+                x + r * MathHelper.sin(angle),
+                y + r * MathHelper.cos(angle),
+                revealAll || isKnown(trait)
+        );
+    }
+
     public static boolean isKnown(Trait trait) {
         return MinecraftClient.getInstance().player == null
             || Pony.of(MinecraftClient.getInstance().player).getDiscoveries().isKnown(trait);

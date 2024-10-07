@@ -46,10 +46,10 @@
   "item.unicopia.spellbook": "Spellbook",
   "item.unicopia.spectral_clock": "Spectral Clock",
 
-  "emi.category.unicopia.spellbook": "Spellbook",
-  "emi.category.unicopia.cloud_shaping": "Shaping",
-  "emi.category.unicopia.growing": "Growing",
-  "emi.category.unicopia.altar": "Dark Ritual",
+  "tla.category.unicopia.spellbook": "Spellbook",
+  "tla.category.unicopia.cloud_shaping": "Shaping",
+  "tla.category.unicopia.growing": "Growing",
+  "tla.category.unicopia.altar": "Dark Ritual",
   "recipe.unicopia.altar.instruction": "Cast item into flames",
   "recipe.unicopia.growing.instruction": "Focus Earth Pony Magic",
 
