@@ -208,13 +208,14 @@
   "item.unicopia.netherite_polearm": "Netherite Polearm",
 
   "item.unicopia.music_disc_pet": "Music Disc",
-  "item.unicopia.music_disc_pet.desc": "Daniel Ingram - pet",
   "item.unicopia.music_disc_popular": "Music Disc",
-  "item.unicopia.music_disc_popular.desc": "Daniel Ingram - popular",
   "item.unicopia.music_disc_crusade": "Music Disc",
-  "item.unicopia.music_disc_crusade.desc": "Daniel Ingram - crusade",
   "item.unicopia.music_disc_funk": "Music Disc",
-  "item.unicopia.music_disc_funk.desc": "funk, just funk",
+  
+  "jukebox_song.unicopia.pet": "Daniel Ingram - pet",
+  "jukebox_song.unicopia.popular": "Daniel Ingram - popular",
+  "jukebox_song.unicopia.crusade": "Daniel Ingram - crusade",
+  "jukebox_song.unicopia.funk": "funk, just funk",
   
   "item.unicopia.cloud_lump": "Cloud Lump",
   "item.unicopia.white_bed_sheets": "White Bed Sheets",
