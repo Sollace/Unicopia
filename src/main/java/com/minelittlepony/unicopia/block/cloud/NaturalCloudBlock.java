@@ -59,6 +59,6 @@ public class NaturalCloudBlock extends PoreousCloudBlock {
             return ItemActionResult.SUCCESS;
         }
 
-        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
     }
 }

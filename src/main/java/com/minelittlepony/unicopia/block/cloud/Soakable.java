@@ -8,10 +8,14 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.PotionContentsComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.potion.Potions;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -53,18 +57,28 @@ public interface Soakable {
 
     static ItemActionResult tryCollectMoisture(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (state.getBlock() instanceof Soakable soakable) {
-            if (stack.getItem() == Items.GLASS_BOTTLE) {
-                if (!player.isCreative()) {
-                    stack.split(1);
-                }
-                if (stack.isEmpty()) {
-                    player.setStackInHand(hand, Items.POTION.getDefaultStack());
-                } else {
-                    player.giveItemStack(Items.POTION.getDefaultStack());
-                }
+            if (stack.isOf(Items.GLASS_BOTTLE)) {
+                player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, Items.POTION.getDefaultStack(), false));
                 world.playSound(player, player.getX(), player.getY(), player.getZ(), USounds.Vanilla.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1, 1);
                 world.emitGameEvent(player, GameEvent.FLUID_PICKUP, pos);
                 updateMoisture(soakable, state, world, pos, soakable.getMoisture(state) - 1);
+
+                return ItemActionResult.SUCCESS;
+            }
+        }
+
+        return tryDepositMoisture(stack, state, world, pos, player, hand, hit);
+    }
+
+    static ItemActionResult tryDepositMoisture(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        if (state.getBlock() instanceof Soakable soakable) {
+            if (soakable.getMoisture(state) < 7
+                    && stack.isOf(Items.POTION)
+                    && stack.getOrDefault(DataComponentTypes.POTION_CONTENTS, PotionContentsComponent.DEFAULT).matches(Potions.WATER)) {
+                player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, Items.GLASS_BOTTLE.getDefaultStack(), false));
+                world.playSound(player, player.getX(), player.getY(), player.getZ(), USounds.Vanilla.ITEM_BUCKET_EMPTY, SoundCategory.NEUTRAL, 1, 1);
+                world.emitGameEvent(player, GameEvent.FLUID_PLACE, pos);
+                updateMoisture(soakable, state, world, pos, soakable.getMoisture(state) + 1);
 
                 return ItemActionResult.SUCCESS;
             }
