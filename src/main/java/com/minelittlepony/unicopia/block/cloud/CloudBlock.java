@@ -181,7 +181,6 @@ public class CloudBlock extends Block implements CloudLike {
 
     @Override
     protected boolean canPathfindThrough(BlockState state, NavigationType type) {
-        System.out.println(InteractionManager.getInstance().getPathingEquineContext().collidesWithClouds());
         return type != NavigationType.LAND || !InteractionManager.getInstance().getPathingEquineContext().collidesWithClouds();
     }
 
