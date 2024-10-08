@@ -225,6 +225,11 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     @Override
+    public boolean collidesWithClouds() {
+        return getCompositeRace().canInteractWithClouds() || entity.isCreative();
+    }
+
+    @Override
     public void setSpecies(Race race) {
         race = race.validate(entity);
         Race current = getSpecies();
@@ -597,7 +602,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             float lightScale = light / 15F;
             float approachFactor = ((velocityScale + lightScale) / 2F);
 
-            if (approachFactor < (entity.isSneaking() ? 0.8F : 0.6F)) {
+            if (approachFactor < (entity.isSneaking() ? 0.8F : 0.3F)) {
                 return false;
             }
         }
@@ -703,7 +708,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         if (EffectUtils.hasExtraDefenses(entity)) {
             double radius = distance / 10;
             if (radius > 0) {
-                EarthPonyStompAbility.spawnEffectAround(entity, entity.getSteppingPos(), radius, radius);
+                EarthPonyStompAbility.spawnEffectAround(this, entity, entity.getSteppingPos(), radius, radius);
             }
         }
 
@@ -807,7 +812,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public ActionResult canSleepNow() {
         if (asWorld().getGameRules().getBoolean(UGameRules.DO_NOCTURNAL_BAT_PONIES) && getSpecies().isNocturnal()) {
-            return asWorld().isDay() ? ActionResult.SUCCESS : ActionResult.FAIL;
+            return asWorld().isDay() || asWorld().getAmbientDarkness() >= 4 ? ActionResult.SUCCESS : ActionResult.FAIL;
         }
 
         return ActionResult.PASS;

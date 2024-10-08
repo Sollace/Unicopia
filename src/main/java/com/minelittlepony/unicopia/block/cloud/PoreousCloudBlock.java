@@ -7,9 +7,14 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.block.state.StateUtil;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 
 public class PoreousCloudBlock extends CloudBlock implements Soakable {
     @Nullable
@@ -18,6 +23,12 @@ public class PoreousCloudBlock extends CloudBlock implements Soakable {
     public PoreousCloudBlock(Settings settings, boolean meltable, @Nullable Supplier<Soakable> soggyBlock) {
         super(settings.nonOpaque(), meltable);
         this.soggyBlock = soggyBlock;
+    }
+
+    @Deprecated
+    @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        return Soakable.tryDepositMoisture(state, world, pos, player, hand, hit);
     }
 
     @Nullable

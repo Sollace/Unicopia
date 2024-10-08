@@ -77,9 +77,14 @@ dependencies {
     include "com.sollace:Romanizer:Romanizer:1.0.2"
 
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
-    modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
+
+    if (project.use_trinkets == '1') {
+      modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
         modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.3.0"
         modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0"
+    } else {
+      modCompileOnly "dev.emi:trinkets-dummy:${project.trinkets_version}"
+    }
 
     modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
     include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
@@ -98,7 +103,12 @@ dependencies {
     if (project.use_sodium == '1') {
       modCompileOnly "maven.modrinth:indium:${project.indium_version}", { exclude group: "net.fabricmc.fabric-api" }
       modCompileOnly "maven.modrinth:sodium:${project.sodium_version}", { exclude group: "net.fabricmc.fabric-api" }
-     // modCompileOnly "maven.modrinth:iris:${project.iris_version}", { exclude group: "net.fabricmc.fabric-api" }
+      if (project.use_iris == '1') {
+        modCompileOnly "maven.modrinth:iris:${project.iris_version}", { exclude group: "net.fabricmc.fabric-api" }
+        modImplementation "org.anarres:jcpp:1.4.14"
+        modImplementation "org.antlr:antlr4-runtime:4.13.1"
+        modImplementation "io.github.douira:glsl-transformer:2.0.1"
+      }
     }
 
     if (project.tmi_type == 'emi') {

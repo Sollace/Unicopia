@@ -21,6 +21,7 @@ import com.minelittlepony.unicopia.entity.mob.SombraEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.PlayerDimensions;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.network.track.TrackableObject;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
 import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.mojang.authlib.GameProfile;
@@ -51,7 +52,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 
-public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provider, FlightType.Provider, EntityCollisions.ComplexCollidable {
+public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provider, FlightType.Provider, EntityCollisions.ComplexCollidable, TrackableObject<EntityAppearance> {
     private static final Optional<Float> BLOCK_HEIGHT = Optional.of(0.5F);
 
     @NotNull
@@ -76,6 +77,8 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
 
     @Nullable
     private NbtCompound entityNbt;
+
+    private boolean dirty;
 
     @Nullable
     public Entity getAppearance() {
@@ -109,6 +112,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
 
         entityNbt = entity == null ? null : encodeEntityToNBT(entity);
         entityId = entityNbt == null ? "" : entityNbt.getString("id");
+        markDirty();
     }
 
     public boolean isPresent() {
@@ -390,6 +394,46 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     public void getCollissionShapes(ShapeContext context, Consumer<VoxelShape> output) {
         EntityCollisions.getCollissionShapes(getAppearance(), context, output);
         getAttachments().forEach(e -> EntityCollisions.getCollissionShapes(e.entity(), context, output));
+    }
+
+    public void markDirty() {
+        dirty = true;
+    }
+
+    @Override
+    public Status getStatus() {
+        if (dirty) {
+            dirty = false;
+            return Status.UPDATED;
+        }
+        return Status.DEFAULT;
+    }
+
+    @Override
+    public void readTrackedNbt(NbtCompound nbt) {
+        fromNBT(nbt);
+    }
+
+    @Override
+    public NbtCompound writeTrackedNbt() {
+        return toNBT();
+    }
+
+    @Override
+    public void discard(boolean immediate) {
+        setAppearance(null);
+        dirty = false;
+    }
+
+    @Override
+    public void copyTo(EntityAppearance destination) {
+        destination.entityId = entityId;
+        destination.entity = entity;
+        destination.blockEntity = blockEntity;
+        destination.attachments.addAll(attachments);
+        destination.dimensions = dimensions;
+        destination.tag = tag == null ? null : tag.copy();
+        destination.entityNbt = entityNbt == null ? null : entityNbt.copy();
     }
 
 }

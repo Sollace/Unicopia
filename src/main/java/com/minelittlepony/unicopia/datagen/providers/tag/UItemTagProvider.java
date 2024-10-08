@@ -175,6 +175,11 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         copy(UTags.Blocks.CLOUD_STAIRS, UTags.Items.CLOUD_STAIRS);
         copy(UTags.Blocks.CLOUD_BLOCKS, UTags.Items.CLOUD_BLOCKS);
         copy(UTags.Blocks.CHITIN_BLOCKS, UTags.Items.CHITIN_BLOCKS);
+
+        copy(SereneSeasonsTags.Blocks.AUTUMN_CROPS, SereneSeasonsTags.Items.AUTUMN_CROPS);
+        copy(SereneSeasonsTags.Blocks.WINTER_CROPS, SereneSeasonsTags.Items.WINTER_CROPS);
+        copy(SereneSeasonsTags.Blocks.SPRING_CROPS, SereneSeasonsTags.Items.SPRING_CROPS);
+        copy(SereneSeasonsTags.Blocks.SUMMER_CROPS, SereneSeasonsTags.Items.SUMMER_CROPS);
     }
 
     private void exportForagingTags() {
@@ -348,6 +353,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(UConventionalTags.Items.WORMS).add(UItems.WHEAT_WORMS);
         getOrCreateTagBuilder(UConventionalTags.Items.STICKS).add(Items.STICK);
         getOrCreateTagBuilder(UConventionalTags.Items.ROCKS).add(UItems.ROCK);
+        getOrCreateTagBuilder(UConventionalTags.Items.GEMS).add(UItems.GEMSTONE, UItems.BOTCHED_GEM);
         getOrCreateTagBuilder(UConventionalTags.Items.PINECONES).add(UItems.PINECONE);
         getOrCreateTagBuilder(UConventionalTags.Items.PINEAPPLES).add(UItems.PINEAPPLE);
         getOrCreateTagBuilder(UConventionalTags.Items.MANGOES).add(UItems.MANGO);

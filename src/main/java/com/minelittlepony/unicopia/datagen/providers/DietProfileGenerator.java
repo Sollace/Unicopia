@@ -148,12 +148,14 @@ public class DietProfileGenerator {
                 bakedGoodExtremePreference, pineconeMultiplier, properMeatStandards, seaFoodExclusions,
                 // They have a sweet tooth
                 new Multiplier.Builder().tag(Unicopia.id("candy")).tag(Unicopia.id("desserts")).tag(Unicopia.id("rocks")).hunger(2.5F).saturation(1.7F).build(),
+                new Multiplier.Builder().tag(Unicopia.id("gems")).hunger(0.5F).saturation(0.7F).build(),
                 new Multiplier.Builder().tag(Unicopia.id("fish/cooked")).hunger(0.2F).saturation(0.3F).build(),
                 new Multiplier.Builder().tag(Unicopia.id("insect/cooked")).hunger(0.1F).saturation(0.1F).build(),
                 new Multiplier.Builder().tag(Unicopia.id("meat/cooked")).hunger(0.1F).saturation(0.1F).build()
         ), List.of(
                 // Candy and rocks gives them a massive saturation boost. Maybe too much?
                 new FoodGroupEffects.Builder().tag(Unicopia.id("candy")).tag(Unicopia.id("rocks")).food(UFoodComponents.builder(5, 12).alwaysEdible()).build(),
+                new FoodGroupEffects.Builder().tag(Unicopia.id("gems")).food(UFoodComponents.builder(2, 1.5F).snack().alwaysEdible()).build(),
                 new FoodGroupEffects.Builder().tag(Unicopia.id("desserts")).food(UFoodComponents.builder(12, 32).snack().alwaysEdible()).build()
         ), Optional.empty()));
         // Pegasi prefer fish over other food sources

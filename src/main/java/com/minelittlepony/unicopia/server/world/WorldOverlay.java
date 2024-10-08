@@ -98,7 +98,7 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
     }
 
     private Chunk getChunk(BlockPos pos) {
-        return chunks.computeIfAbsent(new ChunkPos(pos).toLong(), Chunk::new);
+        return chunks.computeIfAbsent(ChunkPos.toLong(pos), Chunk::new);
     }
 
     public void setState(BlockPos pos, @Nullable T state) {

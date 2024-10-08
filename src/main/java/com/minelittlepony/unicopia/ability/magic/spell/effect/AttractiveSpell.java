@@ -28,14 +28,12 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
     static final TooltipFactory TARGET = (type, tooltip) -> (TARGET_FOCUSED_ENTITY.get(type.traits()) ? TARGET_FOCUSED_ENTITY : ShieldSpell.TARGET).appendTooltip(type, tooltip);
     static final TooltipFactory TOOLTIP = TooltipFactory.of(TIME, RANGE, TARGET, STICK_TO_TARGET, CAST_ON);
 
-    private final EntityReference<Entity> target = new EntityReference<>();
+    private final EntityReference<Entity> target = dataTracker.startTracking(new EntityReference<>());
 
-    private final Timer timer;
+    private final Timer timer = new Timer(TIME.get(getTraits()));
 
     protected AttractiveSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer(TIME.get(getTraits()));
-        dataTracker.startTracking(target);
     }
 
     @Override

@@ -18,10 +18,10 @@
     }
   },
   "start_height": {
-    "absolute": -7
+    "absolute": -6
   },
   "start_pool": "unicopia:changeling_hive/start",
-  "step": "underground_decoration",
+  "step": "underground_structures",
   "terrain_adaptation": "none",
   "use_expansion_hack": false
 }

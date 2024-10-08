@@ -58,6 +58,8 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     public void tick() {
         BlockPos climbingPos = entity.getClimbingPos().orElse(null);
 
+        BlockPos hangingPos = pony.getPhysics().getHeadPosition();
+
         if (!pony.getPhysics().isFlying() && !entity.getAbilities().flying
                 && climbingPos != null
                 && pony.getObservedSpecies() == Race.CHANGELING
@@ -68,7 +70,8 @@ public class Acrobatics implements Tickable, NbtSerialisable {
             }
 
             distanceClimbed += Math.abs(pony.getMotion().getClientVelocity().y);
-            BlockPos hangingPos = entity.getBlockPos().up();
+
+
             boolean canhangHere = canHangAt(hangingPos);
 
             if (distanceClimbed > 1.5) {
@@ -156,8 +159,9 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     }
 
     public void startHanging(BlockPos pos) {
+        boolean inverted = pony.getPhysics().isGravityNegative();
         hangingPos.set(Optional.of(pos));
-        entity.teleport(pos.getX() + 0.5, pos.getY() - 1, pos.getZ() + 0.5);
+        entity.teleport(pos.getX() + 0.5, pos.getY() - (inverted ? 0 : 1), pos.getZ() + 0.5);
         entity.setVelocity(Vec3d.ZERO);
         entity.setSneaking(false);
         entity.stopFallFlying();
@@ -165,14 +169,17 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     }
 
     public boolean canHangAt(BlockPos pos) {
-        if (!pony.asWorld().isAir(pos) || !pony.asWorld().isAir(pos.down())) {
+        int gravity = pony.getPhysics().getGravitySignum() * (isHanging() && pony.getObservedSpecies() == Race.BAT ? -1 : 1);
+        BlockState state = pony.asWorld().getBlockState(pos);
+
+        if (!pony.asWorld().isAir(pos) || !pony.asWorld().isAir(pos.down(gravity))) {
             return false;
         }
 
-        pos = pos.up();
-        BlockState state = pony.asWorld().getBlockState(pos);
+        pos = pos.up(gravity);
+        state = pony.asWorld().getBlockState(pos);
 
-        return state.isSolidSurface(pony.asWorld(), pos, entity, Direction.DOWN) && entity.getWorld().isAir(entity.getBlockPos().down());
+        return state.isSolidSurface(pony.asWorld(), pos, entity, gravity > 0 ? Direction.UP : Direction.DOWN);
     }
 
     private boolean canKeepHanging() {
@@ -184,7 +191,7 @@ public class Acrobatics implements Tickable, NbtSerialisable {
             return true;
         }
         return getHangingPosition().filter(hangingPos -> {
-            return (race != Race.BAT || hangingPos.equals(pony.getOrigin().down())) && canHangAt(hangingPos);
+            return (race != Race.BAT || hangingPos.equals(pony.asEntity().getBlockPos().up(pony.getPhysics().isGravityNegative() ? 1 : 0))) && canHangAt(hangingPos);
         }).isPresent();
     }
 

@@ -44,10 +44,10 @@ class SpeciesCommand {
                ))
             .then(CommandManager.literal("describe")
                .then(CommandManager.argument("race", Race.argument()).suggests(UCommandSuggestion.ALL_RACE_SUGGESTIONS)
-                       .executes(context -> describe(context.getSource().getPlayer(), Race.fromArgument(context, "race")))
+                       .executes(context -> describe(context.getSource(), Race.fromArgument(context, "race")))
                ))
             .then(CommandManager.literal("list")
-                       .executes(context -> list(context.getSource().getPlayer())
+                       .executes(context -> list(context.getSource())
                ));
     }
 
@@ -70,57 +70,59 @@ class SpeciesCommand {
                 }
                 source.sendFeedback(() -> Text.translatable("commands.race.success.other", player.getName(), race.getDisplayName()), true);
             }
-        } else if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-            player.sendMessage(Text.translatable("commands.race.permission"), false);
+        } else {
+            source.sendFeedback(() -> Text.translatable("commands.race.permission"), false);
         }
 
         return 0;
     }
 
     static int get(ServerCommandSource source, PlayerEntity player, boolean isSelf) {
-        Race spec = Pony.of(player).getSpecies();
+        source.sendFeedback(() -> {
+            Race spec = Pony.of(player).getSpecies();
 
-        String name = "commands.race.tell.";
-        name += isSelf ? "self" : "other";
+            String name = "commands.race.tell.";
+            name += isSelf ? "self" : "other";
 
-        player.sendMessage(Text.translatable(name, player.getName())
+            return Text.translatable(name, player.getName())
                 .append(Text.translatable(spec.getTranslationKey())
-                        .styled(s -> s.withColor(Formatting.GOLD))), false);
-
+                        .styled(s -> s.withColor(Formatting.GOLD)));
+        }, false);
         return 0;
     }
 
-    static int list(PlayerEntity player) {
-        player.sendMessage(Text.translatable("commands.race.list"), false);
+    static int list(ServerCommandSource source) {
+        source.sendFeedback(() -> Text.translatable("commands.race.list"), false);
+        source.sendFeedback(() -> {
+            MutableText message = Text.literal("");
 
-        MutableText message = Text.literal("");
-
-        boolean first = true;
-        for (Race i : Race.REGISTRY) {
-            if (i.availability().isGrantable() && !i.isUnset() && i.isPermitted(player)) {
-                message.append(Text.literal((!first ? "\n" : "") + " - "));
-                message.append(i.getDisplayName());
-                first = false;
+            boolean first = true;
+            for (Race i : Race.REGISTRY) {
+                if (i.availability().isGrantable() && !i.isUnset() && i.isPermitted(source.getPlayer())) {
+                    message.append(Text.literal((!first ? "\n" : "") + " - "));
+                    message.append(i.getDisplayName());
+                    first = false;
+                }
             }
-        }
 
-        player.sendMessage(message.styled(s -> s.withColor(Formatting.GOLD)), false);
+            return message.styled(s -> s.withColor(Formatting.GOLD));
+        }, false);
 
         return 0;
     }
 
-    static int describe(PlayerEntity player, Race species) {
+    static int describe(ServerCommandSource source, Race species) {
         Identifier id = Race.REGISTRY.getId(species);
 
         for (String category : new String[] { "goods", "bads" }) {
-            player.sendMessage(Text.translatable(
+            source.sendFeedback(() -> Text.translatable(
                     String.format("gui.unicopia.tribe_selection.confirm.%s.%d.%s.%s", category),
                     species.getAltDisplayName()
             ), false);
             for (int i = 1; i < 5; i++) {
                 String line = String.format("gui.unicopia.tribe_selection.confirm.%s.%d.%s.%s", category, i, id.getNamespace(), id.getPath());
 
-                player.sendMessage(Text.translatable(line).styled(s -> s.withColor(category.equals("goods") ? Formatting.YELLOW : Formatting.RED)), false);
+                source.sendFeedback(() -> Text.translatable(line).styled(s -> s.withColor(category.equals("goods") ? Formatting.YELLOW : Formatting.RED)), false);
             }
         }
 

@@ -242,7 +242,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     public void tick() {
         super.tick();
 
-        if (pony.isClientPlayer() && isFlying() && (pony.getJumpingHeuristic().hasChanged(Heuristic.ONCE) || pony.sneakingChanged())) {
+        if (pony.isClientPlayer() && (pony.getJumpingHeuristic().hasChanged(Heuristic.ONCE) || pony.sneakingChanged())) {
             Channel.FLIGHT_CONTROLS_INPUT.sendToServer(new MsgPlayerFlightControlsInput(pony));
         }
 
@@ -369,7 +369,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     pony.getMagicalReserves().getCharge().set(0);
                 }
 
-                if (!creative) {
+                if (!creative && !pony.isClient()) {
                     checkAvianTakeoffConditions(velocity);
                 }
             }
@@ -377,16 +377,17 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             tickGrounded();
         }
 
-        if (!entity.isOnGround()) {
-            float heavyness = 1 - EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.015F;
-            velocity.x /= heavyness;
-            velocity.z /= heavyness;
-        }
-
         float maximum = 1.5F;
         velocity.x = MathHelper.clamp(velocity.x, -maximum, maximum);
         velocity.y = MathHelper.clamp(velocity.y, -maximum, maximum);
         velocity.z = MathHelper.clamp(velocity.z, -maximum, maximum);
+
+        if (!entity.isOnGround()) {
+            float heavyness = 1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, entity) * 0.009F;
+            velocity.x /= heavyness;
+            velocity.z /= heavyness;
+        }
+
         entity.setVelocity(velocity.toImmutable());
 
         if (isFlying() && !entity.isFallFlying() && !pony.getAcrobatics().isHanging() && pony.isClient()) {
@@ -463,7 +464,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             entity.damage(entity.getDamageSources().generic(), 0.5F);
         }
 
-        if (type.isAvian()) {
+        if (type.isAvian() && !entity.getWorld().isClient) {
             if (pony.getObservedSpecies() != Race.BAT && entity.getWorld().random.nextInt(9000) == 0) {
                 entity.dropItem(pony.getObservedSpecies() == Race.HIPPOGRIFF ? UItems.GRYPHON_FEATHER : UItems.PEGASUS_FEATHER);
                 playSound(USounds.ENTITY_PLAYER_PEGASUS_MOLT, 0.3F, 1);
@@ -530,7 +531,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     private void playSound(SoundEvent sound, float volume, float pitch) {
-        entity.getWorld().playSoundFromEntity(entity, entity, sound, SoundCategory.PLAYERS, volume, pitch);
+        entity.getWorld().playSoundFromEntity(entity.getWorld().isClient ? entity : null, entity, sound, SoundCategory.PLAYERS, volume, pitch);
     }
 
     private void tickNaturalFlight(MutableVector velocity) {
@@ -689,7 +690,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (entity.getWorld().hasRain(entity.getBlockPos())) {
             applyTurbulance(velocity);
         } else {
-            float targetUpdraft = (float)WeatherConditions.getUpdraft(new BlockPos.Mutable().set(entity.getBlockPos()), entity.getWorld()) / 3F;
+            float targetUpdraft = WeatherConditions.THERMAL_FIELD.getValue(entity.getWorld(), new BlockPos.Mutable().set(entity.getBlockPos())) / 3F;
             targetUpdraft *= 1 + motion;
             if (isGravityNegative()) {
                 targetUpdraft *= -1;
@@ -829,8 +830,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             .reduce(0, (u, pos) -> {
                 if (pony.canModifyAt(pos, ModificationType.PHYSICAL)) {
                     if (isEarthPonySmash) {
-                        BlockDestructionManager.of(entity.getWorld()).damageBlock(pos, (int)entity.getWorld().getRandom().nextTriangular(5, 3));
-                        if (BlockDestructionManager.of(entity.getWorld()).getBlockDestruction(pos) >= 9) {
+                        float destruction = BlockDestructionManager.of(entity.getWorld()).damageBlock(pos, (int)entity.getWorld().getRandom().nextTriangular(5, 3));
+                        if (destruction >= BlockDestructionManager.MAX_DAMAGE - 1 && pony.canModifyAt(pos, ModificationType.PHYSICAL)) {
                             entity.getWorld().breakBlock(pos, true);
                         }
                     } else {
@@ -862,7 +863,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (isFlying()) {
             playSound(USounds.ENTITY_PLAYER_PEGASUS_DASH, 1, 1);
         } else {
-            playSound(USounds.ENTITY_PLAYER_EARTHPONY_DASH, 2, 0.3F);
+            playSound(USounds.ENTITY_PLAYER_EARTHPONY_DASH, 2, 1.3F);
         }
     }
 

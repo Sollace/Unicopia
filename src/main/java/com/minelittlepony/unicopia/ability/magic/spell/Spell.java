@@ -75,18 +75,6 @@ public interface Spell extends NbtSerialisable, Affine {
     boolean isDying();
 
     /**
-     * Returns true if this effect has changes that need to be sent to the client.
-     */
-    @Deprecated
-    boolean isDirty();
-
-    /**
-     * Marks this effect as dirty.
-     */
-    @Deprecated
-    void setDirty();
-
-    /**
      * Applies this spell to the supplied caster.
      * @param caster    The caster to apply the spell to
      */

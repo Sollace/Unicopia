@@ -7,14 +7,17 @@ import com.google.common.collect.Multimap;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
+import com.minelittlepony.unicopia.item.enchantment.CustomEnchantableItem;
 
 import net.minecraft.block.*;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.item.*;
 
-public class PolearmItem extends SwordItem {
+public class PolearmItem extends SwordItem implements CustomEnchantableItem {
     static final UUID ATTACK_RANGE_MODIFIER_ID = UUID.fromString("A7B3659C-AA74-469C-963A-09A391DCAA0F");
 
     private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
@@ -64,5 +67,10 @@ public class PolearmItem extends SwordItem {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean isAcceptableEnchant(ItemStack stack, Enchantment enchantment) {
+        return enchantment != Enchantments.SWEEPING;
     }
 }

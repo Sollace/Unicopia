@@ -19,11 +19,10 @@ import net.minecraft.registry.Registries;
 
 public class AwkwardSpell extends AbstractSpell implements TimedSpell {
 
-    private final Timer timer;
+    private final Timer timer = new Timer(20);
 
     protected AwkwardSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer(20);
     }
 
     @Override

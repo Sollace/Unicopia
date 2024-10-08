@@ -127,7 +127,7 @@ public interface TrinketsDelegate {
     }
 
     record EquippedStack(ItemStack stack, Runnable sendUpdate, Consumer<LivingEntity> breakStatusSender) {
-        public static EquippedStack EMPTY = new EquippedStack(ItemStack.EMPTY, () -> {}, l -> {});
+        public static final EquippedStack EMPTY = new EquippedStack(ItemStack.EMPTY, () -> {}, l -> {});
 
         EquippedStack(LivingEntity entity, EquipmentSlot slot) {
             this(entity.getEquippedStack(slot), () -> {}, l -> l.sendEquipmentBreakStatus(slot));

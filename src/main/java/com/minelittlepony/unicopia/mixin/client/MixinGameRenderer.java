@@ -6,7 +6,6 @@ import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.client.BatEyesApplicator;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.minelittlepony.unicopia.client.render.shader.ViewportShader;
@@ -17,7 +16,6 @@ import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.resource.SynchronousResourceReloader;
 
 @Mixin(value = GameRenderer.class, priority = Integer.MAX_VALUE)
@@ -47,20 +45,10 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
     }
 
     @Inject(method = "getNightVisionStrength(Lnet/minecraft/entity/LivingEntity;F)F",
-            at = @At("HEAD"),
-            cancellable = true)
-    private static void onGetNightVisionStrengthHead(LivingEntity entity, float tickDelta, CallbackInfoReturnable<Float> info) {
-        if (!entity.hasStatusEffect(StatusEffects.NIGHT_VISION)) {
-            info.setReturnValue(UnicopiaClient.getWorldBrightness(0));
-        }
-    }
-    @Inject(method = "getNightVisionStrength(Lnet/minecraft/entity/LivingEntity;F)F",
             at = @At("RETURN"),
             cancellable = true)
     private static void onGetNightVisionStrengthReturn(LivingEntity entity, float tickDelta, CallbackInfoReturnable<Float> info) {
-        if (entity.hasStatusEffect(StatusEffects.NIGHT_VISION) && EquinePredicates.PLAYER_BAT.test(entity)) {
-            info.setReturnValue(UnicopiaClient.getWorldBrightness(info.getReturnValueF()));
-        }
+        info.setReturnValue(BatEyesApplicator.INSTANCE.getWorldBrightness(info.getReturnValueF(), entity, tickDelta));
     }
 
     @Inject(method = "render",

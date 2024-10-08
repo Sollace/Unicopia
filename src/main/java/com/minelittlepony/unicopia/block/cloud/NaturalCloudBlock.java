@@ -25,10 +25,11 @@ public class NaturalCloudBlock extends PoreousCloudBlock {
     public NaturalCloudBlock(Settings settings, boolean meltable,
             @Nullable Supplier<Soakable> soggyBlock,
             Supplier<Block> compactedBlock) {
-        super(settings.nonOpaque(), meltable, soggyBlock);
+        super(settings, meltable, soggyBlock);
         this.compactedBlock = compactedBlock;
     }
 
+    @Deprecated
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         ItemStack stack = player.getStackInHand(hand);
@@ -41,6 +42,6 @@ public class NaturalCloudBlock extends PoreousCloudBlock {
             return ActionResult.SUCCESS;
         }
 
-        return ActionResult.PASS;
+        return super.onUse(state, world, pos, player, hand, hit);
     }
 }

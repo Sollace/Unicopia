@@ -21,7 +21,6 @@ import com.minelittlepony.unicopia.container.*;
 import com.minelittlepony.unicopia.entity.player.PlayerCamera;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.handler.ClientNetworkHandlerImpl;
-import com.minelittlepony.unicopia.server.world.WeatherConditions;
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 import com.minelittlepony.unicopia.util.Lerp;
 
@@ -38,7 +37,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -54,10 +52,6 @@ public class UnicopiaClient implements ClientModInitializer {
     public static Pony getClientPony() {
         return Pony.of(MinecraftClient.getInstance().player);
     }
-
-    @Nullable
-    private Float originalRainGradient;
-    private final Lerp rainGradient = new Lerp(0);
 
     public final Lerp tangentalSkyAngle = new Lerp(0, true);
     public final Lerp skyAngle = new Lerp(0, true);
@@ -104,10 +98,6 @@ public class UnicopiaClient implements ClientModInitializer {
         }
 
         return Unicopia.getConfig().preferredRace.get();
-    }
-
-    public static float getWorldBrightness(float initial) {
-        return 0.6F;
     }
 
     public UnicopiaClient() {
@@ -157,38 +147,22 @@ public class UnicopiaClient implements ClientModInitializer {
     }
 
     private void onWorldTick(ClientWorld world) {
-        BlockPos pos = MinecraftClient.getInstance().getCameraEntity().getBlockPos();
+        /*BlockPos pos = MinecraftClient.getInstance().getCameraEntity().getBlockPos();
         float tickDelta = MinecraftClient.getInstance().getTickDelta();
 
-        Float targetRainGradient = getTargetRainGradient(world, pos, tickDelta);
+        Float targetRainGradient = ((WeatherAccess)world).isInRangeOfStorm(pos) ? (Float)1F : ((WeatherAccess)world).isBelowCloudLayer(pos) ? null : (Float)0F;
+        Float targetThunderGradient = ((WeatherAccess)world).isInRangeOfStorm(pos) ? (Float)1F : null;
 
-        if (targetRainGradient != null) {
-            rainGradient.update(targetRainGradient, 2000);
-        }
+        ((WeatherAccess)world).setWeatherOverride(null, null);
+        rainGradient.update(targetRainGradient == null ? world.getRainGradient(tickDelta) : targetRainGradient, 2000);
 
-        float gradient = rainGradient.getValue();
-        if (!rainGradient.isFinished()) {
-            world.setRainGradient(gradient);
-            world.setThunderGradient(gradient);
-        }
-    }
+        ((WeatherAccess)world).setWeatherOverride(1F, null);
+        thunderGradient.update(targetThunderGradient == null ? world.getThunderGradient(tickDelta) : targetThunderGradient, 2000);
 
-    private Float getTargetRainGradient(ClientWorld world, BlockPos pos, float tickDelta) {
-        if (WeatherConditions.get(world).isInRangeOfStorm(pos)) {
-            if (originalRainGradient == null) {
-                originalRainGradient = world.getRainGradient(tickDelta);
-            }
-
-            return 1F;
-        }
-
-        if (originalRainGradient != null) {
-            Float f = originalRainGradient;
-            originalRainGradient = null;
-            return f;
-        }
-
-        return null;
+        ((WeatherAccess)world).setWeatherOverride(
+                rainGradient.isFinished() ? targetRainGradient : (Float)rainGradient.getValue(),
+                thunderGradient.isFinished() ? targetThunderGradient : (Float)thunderGradient.getValue()
+        );*/
     }
 
     private void onScreenInit(Screen screen, ButtonList buttons) {

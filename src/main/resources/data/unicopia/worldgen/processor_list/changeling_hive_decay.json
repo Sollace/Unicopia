@@ -13,10 +13,23 @@
         },
         "output_state": {
           "name": "unicopia:hive",
-          "Name": "unicopia:hive",
-          "properties": []
+          "Name": "unicopia:hive"
         }
       }
     ]
+  },
+  {
+      "processor_type": "unicopia:cave_carving"
+  },
+  {
+    "processor_type": "unicopia:surface_growth",
+    "input_predicate": {
+      "predicate_type": "block_match",
+      "block": "unicopia:chitin"
+    },
+    "output_state": {
+      "name": "unicopia:surface_chitin",
+      "Name": "unicopia:surface_chitin"
+    }
   }
 ]

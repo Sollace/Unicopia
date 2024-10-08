@@ -20,7 +20,6 @@ public abstract class AbstractSpell implements Spell {
 
     private final DataTracker.Entry<Boolean> dead = dataTracker.startTracking(TrackableDataType.BOOLEAN, false);
     private final DataTracker.Entry<Boolean> dying = dataTracker.startTracking(TrackableDataType.BOOLEAN, false);
-    private boolean dirty;
     private final DataTracker.Entry<Boolean> hidden = dataTracker.startTracking(TrackableDataType.BOOLEAN, false);
     private boolean destroyed;
 
@@ -66,18 +65,6 @@ public abstract class AbstractSpell implements Spell {
         return dying.get();
     }
 
-    @Deprecated
-    @Override
-    public final boolean isDirty() {
-        return dirty;
-    }
-
-    @Deprecated
-    @Override
-    public final void setDirty() {
-        dirty = true;
-    }
-
     @Override
     public final boolean isHidden() {
         return hidden.get();
@@ -120,7 +107,6 @@ public abstract class AbstractSpell implements Spell {
 
     @Override
     public void fromNBT(NbtCompound compound) {
-        dirty = false;
         if (compound.containsUuid("uuid")) {
             uuid = compound.getUuid("uuid");
         }

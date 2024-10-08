@@ -16,9 +16,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public record PacketCodec<T>(PacketByteBuf.PacketReader<T> reader, PacketByteBuf.PacketWriter<T> writer) {
     public static final PacketCodec<Boolean> BOOLEAN = new PacketCodec<>(PacketByteBuf::readBoolean, PacketByteBuf::writeBoolean);
@@ -30,7 +32,7 @@ public record PacketCodec<T>(PacketByteBuf.PacketReader<T> reader, PacketByteBuf
     public static final PacketCodec<UUID> UUID = new PacketCodec<>(PacketByteBuf::readUuid, PacketByteBuf::writeUuid);
     public static final PacketCodec<Optional<UUID>> OPTIONAL_UUID = UUID.asOptional();
 
-    public static final PacketCodec<Identifier> IDENTIFIER = STRING.xMap(Identifier::new, Identifier::toString);
+    public static final PacketCodec<Identifier> IDENTIFIER = new PacketCodec<>(PacketByteBuf::readIdentifier, PacketByteBuf::writeIdentifier);
 
     public static final PacketCodec<NbtCompound> NBT = new PacketCodec<>(PacketByteBuf::readNbt, PacketByteBuf::writeNbt);
 
@@ -58,6 +60,19 @@ public record PacketCodec<T>(PacketByteBuf.PacketReader<T> reader, PacketByteBuf
 
     public static final PacketCodec<BlockPos> POS = new PacketCodec<>(PacketByteBuf::readBlockPos, PacketByteBuf::writeBlockPos);
     public static final PacketCodec<Optional<BlockPos>> OPTIONAL_POS = POS.asOptional();
+    public static final PacketCodec<Vec3d> VECTOR = new PacketCodec<>(buffer -> new Vec3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()), (buffer, vector) -> {
+       buffer.writeDouble(vector.x);
+       buffer.writeDouble(vector.y);
+       buffer.writeDouble(vector.z);
+    });
+    public static final PacketCodec<Optional<Vec3d>> OPTIONAL_VECTOR = VECTOR.asOptional();
+    public static final PacketCodec<RegistryKey<?>> REGISTRY_KEY = new PacketCodec<>(buffer -> {
+        return RegistryKey.of(RegistryKey.ofRegistry(IDENTIFIER.read(buffer)), IDENTIFIER.read(buffer));
+    }, (buffer, key) -> {
+        IDENTIFIER.write(buffer, key.getRegistry());
+        IDENTIFIER.write(buffer, key.getValue());
+    });
+    public static final PacketCodec<Optional<RegistryKey<?>>> OPTIONAL_REGISTRY_KEY = REGISTRY_KEY.asOptional();
 
     public static final <T> PacketCodec<T> ofRegistry(Registry<T> registry) {
         return INT.xMap(registry::get, registry::getRawId);

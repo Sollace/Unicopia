@@ -6,7 +6,10 @@ import java.util.function.Consumer;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.ShellsBlock;
 import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.server.world.gen.CaveCarvingStructureProcessor;
+import com.minelittlepony.unicopia.server.world.gen.CloudCarver;
 import com.minelittlepony.unicopia.server.world.gen.OverworldBiomeSelectionCallback;
+import com.minelittlepony.unicopia.server.world.gen.SurfaceGrowthStructureProcessor;
 import com.minelittlepony.unicopia.util.registry.DynamicRegistry;
 
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
@@ -23,6 +26,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
@@ -35,6 +39,9 @@ import net.minecraft.world.biome.OverworldBiomeCreator;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.blockpredicate.BlockPredicate;
+import net.minecraft.world.gen.carver.Carver;
+import net.minecraft.world.gen.carver.CaveCarverConfig;
+import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.DefaultBiomeFeatures;
 import net.minecraft.world.gen.feature.Feature;
@@ -120,6 +127,12 @@ public interface UWorldGen {
                 .build();
     });
 
+    StructureProcessorType<SurfaceGrowthStructureProcessor> SURFACE_GROWTH_STRUCTURE_PROCESSOR = Registry.register(Registries.STRUCTURE_PROCESSOR, Unicopia.id("surface_growth"), () -> SurfaceGrowthStructureProcessor.CODEC);
+    StructureProcessorType<CaveCarvingStructureProcessor> CAVE_CARVING_STRUCTURE_PROCESSOR = Registry.register(Registries.STRUCTURE_PROCESSOR, Unicopia.id("cave_carving"), () -> CaveCarvingStructureProcessor.CODEC);
+
+    RegistryKey<ConfiguredCarver<?>> OVERWORLD_CLOUD_CARVER_CONFIG = RegistryKey.of(RegistryKeys.CONFIGURED_CARVER, Unicopia.id("overworld_cloud_carver"));
+    Carver<CaveCarverConfig> CLOUR_CARVER = Registry.register(Registries.CARVER, Unicopia.id("cloud"), new CloudCarver(CaveCarverConfig.CAVE_CODEC));
+
     @SafeVarargs
     static <T> T applyAll(T t, Consumer<T> ...consumers) {
         for (Consumer<T> consumer : consumers) {
@@ -136,6 +149,7 @@ public interface UWorldGen {
                 .or(BiomeSelectors.tag(BiomeTags.IS_RIVER))
                 .or(BiomeSelectors.includeByKey(BiomeKeys.STONY_SHORE))
         ), GenerationStep.Feature.VEGETAL_DECORATION, SHELLS_PLACED_FEATURE);
+        BiomeModifications.addCarver(BiomeSelectors.foundInOverworld(), GenerationStep.Carver.AIR, OVERWORLD_CLOUD_CARVER_CONFIG);
         UTreeGen.bootstrap();
 
         OverworldBiomeSelectionCallback.EVENT.register(context -> {

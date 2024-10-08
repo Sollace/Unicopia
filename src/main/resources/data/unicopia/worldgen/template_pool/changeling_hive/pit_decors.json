@@ -4,9 +4,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/pit_decoration/eggs",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_surfacing",
         "projection": "rigid"
       },
       "weight": 1
@@ -15,9 +13,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/pit_decoration/lava",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_surfacing",
         "projection": "rigid"
       },
       "weight": 1
@@ -35,9 +31,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/pit_decoration/spiders",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_surfacing",
         "projection": "rigid"
       },
       "weight": 1
@@ -46,9 +40,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/pit_decoration/spikes",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_surfacing",
         "projection": "rigid"
       },
       "weight": 1
@@ -57,9 +49,7 @@
       "element": {
         "element_type": "minecraft:single_pool_element",
         "location": "unicopia:changeling_hive/pit_decoration/bulb",
-        "processors": {
-          "processors": []
-        },
+        "processors": "unicopia:changeling_hive_surfacing",
         "projection": "rigid"
       },
       "weight": 1

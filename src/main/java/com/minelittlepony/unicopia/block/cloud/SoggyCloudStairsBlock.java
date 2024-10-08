@@ -8,10 +8,15 @@ import com.minelittlepony.unicopia.block.state.StateUtil;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateManager;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 
 public class SoggyCloudStairsBlock extends CloudStairsBlock implements Soakable {
 
@@ -32,6 +37,12 @@ public class SoggyCloudStairsBlock extends CloudStairsBlock implements Soakable 
     @Override
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
         return dryBlock.get().getPickStack(world, pos, state);
+    }
+
+    @Deprecated
+    @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        return Soakable.tryCollectMoisture(state, world, pos, player, hand, hit);
     }
 
     @Nullable
