@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
-import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
@@ -93,20 +92,20 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public boolean matches(SpellbookInventory inventory, World world) {
+    public boolean matches(Input inventory, World world) {
 
-        if (!material.test(inventory.getItemToModify())) {
+        if (!material.test(inventory.stackToModify())) {
             return false;
         }
 
         if (requiredItems.isEmpty()) {
-            return requiredTraits.test(inventory.getTraits());
+            return requiredTraits.test(inventory.traits());
         }
 
         var outstandingRequirements = new ArrayList<>(requiredItems);
         var ingredients = InventoryUtil.slots(inventory)
-                .filter(slot -> !inventory.getStack(slot).isEmpty())
-                .map(slot -> Pair.of(slot, inventory.getStack(slot)))
+                .filter(slot -> !inventory.getStackInSlot(slot).isEmpty())
+                .map(slot -> Pair.of(slot, inventory.getStackInSlot(slot)))
                 .collect(Collectors.toList());
 
         outstandingRequirements.removeIf(requirement -> {
@@ -125,7 +124,7 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public ItemStack craft(SpellbookInventory inventory, WrapperLookup registries) {
+    public ItemStack craft(Input inventory, WrapperLookup registries) {
         return getResult(registries).copy();
     }
 

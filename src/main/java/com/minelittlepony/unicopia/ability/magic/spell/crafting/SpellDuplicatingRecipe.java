@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.*;
 import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
@@ -41,10 +40,10 @@ public record SpellDuplicatingRecipe (IngredientWithSpell material) implements S
     }
 
     @Override
-    public boolean matches(SpellbookInventory inventory, World world) {
-        ItemStack stack = inventory.getItemToModify();
+    public boolean matches(Input inventory, World world) {
+        ItemStack stack = inventory.stackToModify();
         return InventoryUtil.stream(inventory)
-                .limit(inventory.size() - 1)
+                .limit(inventory.getSize() - 1)
                 .filter(i -> !i.isEmpty())
                 .noneMatch(i -> !i.isOf(UItems.GEMSTONE) || !EnchantableItem.isEnchanted(i))
                 && material.test(stack)
@@ -52,7 +51,7 @@ public record SpellDuplicatingRecipe (IngredientWithSpell material) implements S
     }
 
     @Override
-    public ItemStack craft(SpellbookInventory inventory, WrapperLookup registries) {
+    public ItemStack craft(Input inventory, WrapperLookup registries) {
         return InventoryUtil.stream(inventory)
             .filter(i -> i.isOf(UItems.GEMSTONE))
             .filter(EnchantableItem::isEnchanted)

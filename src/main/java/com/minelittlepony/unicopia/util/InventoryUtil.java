@@ -5,14 +5,23 @@ import java.util.stream.Stream;
 
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.input.RecipeInput;
 
 public interface InventoryUtil {
     static Stream<ItemStack> stream(Inventory inventory) {
         return slots(inventory).map(inventory::getStack);
     }
 
+    static Stream<ItemStack> stream(RecipeInput inventory) {
+        return slots(inventory).map(inventory::getStackInSlot);
+    }
+
     static Stream<Integer> slots(Inventory inventory) {
         return Stream.iterate(0, i -> i < inventory.size(), i -> i + 1);
+    }
+
+    static Stream<Integer> slots(RecipeInput inventory) {
+        return Stream.iterate(0, i -> i < inventory.getSize(), i -> i + 1);
     }
 
     static int getOpenSlot(Inventory inventory) {

@@ -11,8 +11,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.SingleStackInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -127,41 +125,20 @@ public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.Placeme
         return width >= SIDE_LENGTH && height >= SIDE_LENGTH;
     }
 
-    public static record PlacementArea (Pony pony, BlockPos position) implements SingleStackInventory, RecipeInput {
-        @Override
-        public void markDirty() { }
-
-        @Override
-        public ItemStack getStack() {
-            return ItemStack.EMPTY;
-        }
-
-        @Override
-        public ItemStack decreaseStack(int var1) {
-            return ItemStack.EMPTY;
-        }
-
-        @Override
-        public void setStack(ItemStack var1) { }
-
+    public static record PlacementArea (Pony pony, BlockPos position) implements RecipeInput {
         @Override
         public boolean isEmpty() {
-            return SingleStackInventory.super.isEmpty();
-        }
-
-        @Override
-        public boolean canPlayerUse(PlayerEntity player) {
             return false;
         }
 
         @Override
         public ItemStack getStackInSlot(int slot) {
-            return getStack(slot);
+            return ItemStack.EMPTY;
         }
 
         @Override
         public int getSize() {
-            return size();
+            return 0;
         }
     }
 

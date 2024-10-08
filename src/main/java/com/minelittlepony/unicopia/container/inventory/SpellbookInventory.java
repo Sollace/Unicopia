@@ -1,15 +1,15 @@
 package com.minelittlepony.unicopia.container.inventory;
 
+import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.screen.slot.Slot;
 
-public class SpellbookInventory extends CraftingInventory implements RecipeInput {
+public class SpellbookInventory extends CraftingInventory {
     private final SpellbookScreenHandler handler;
 
     public SpellbookInventory(SpellbookScreenHandler handler, int width, int height) {
@@ -19,15 +19,6 @@ public class SpellbookInventory extends CraftingInventory implements RecipeInput
 
     public ItemStack getItemToModify() {
         return handler.gemSlot.getStack();
-    }
-
-    public boolean hasIngredients() {
-        for (int i = 0; i < handler.GEM_SLOT_INDEX; i++) {
-            if (!getStack(i).isEmpty()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public float getFactor(int slot) {
@@ -42,13 +33,13 @@ public class SpellbookInventory extends CraftingInventory implements RecipeInput
         );
     }
 
-    @Override
-    public ItemStack getStackInSlot(int slot) {
-        return this.getStack(slot);
-    }
-
-    @Override
-    public int getSize() {
-        return size();
+    public SpellbookRecipe.Input createInput() {
+        float[] factors = new float[size()];
+        ItemStack[] stacks = new ItemStack[size()];
+        for (int i = 0; i < size(); i++) {
+            factors[i] = getFactor(i);
+            stacks[i] = getStack(i);
+        }
+        return new SpellbookRecipe.Input(getItemToModify(), stacks, factors, getTraits(), handler.GEM_SLOT_INDEX);
     }
 }

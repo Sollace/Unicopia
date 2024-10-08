@@ -26,7 +26,6 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.input.CraftingRecipeInput;
-import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
@@ -170,16 +169,5 @@ public class CuttingBoardRecipeJsonBuilder {
 
         @Override
         public RecipeType<?> getType() { return TYPE; }
-
-        static class CuttingInput implements RecipeInput {
-            @Override
-            public ItemStack getStackInSlot(int slot) {
-                return null;
-            }
-            @Override
-            public int getSize() {
-                return 0;
-            }
-        }
     }
 }

@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
-import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.*;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -38,16 +37,16 @@ public record SpellEnhancingRecipe (IngredientWithSpell material) implements Spe
     }
 
     @Override
-    public boolean matches(SpellbookInventory inventory, World world) {
-        ItemStack stack = inventory.getItemToModify();
+    public boolean matches(Input inventory, World world) {
+        ItemStack stack = inventory.stackToModify();
         return material.test(stack) && EnchantableItem.isEnchanted(stack);
     }
 
     @Override
-    public ItemStack craft(SpellbookInventory inventory, WrapperLookup registries) {
-        return SpellTraits.of(inventory.getItemToModify())
-                .add(inventory.getTraits())
-                .applyTo(inventory.getItemToModify());
+    public ItemStack craft(Input inventory, WrapperLookup registries) {
+        return SpellTraits.of(inventory.stackToModify())
+                .add(inventory.traits())
+                .applyTo(inventory.stackToModify());
     }
 
     @Override

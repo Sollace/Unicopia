@@ -7,7 +7,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.container.inventory.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.recipe.URecipes;
 import com.mojang.datafixers.util.Pair;
 
@@ -188,28 +187,20 @@ public class SpellbookScreenHandler extends ScreenHandler {
         context.run((world, pos) -> {
             if (!world.isClient && !gemSlot.getStack().isEmpty()) {
                 Comparator<RecipeEntry<SpellbookRecipe>> comparator = Comparator.comparing(e -> e.value().getPriority());
+                SpellbookRecipe.Input input = this.input.createInput();
                 ItemStack resultStack = input.hasIngredients() ? world.getServer().getRecipeManager()
                         .getAllMatches(URecipes.SPELLBOOK, input, world)
                         .stream().sorted(comparator)
                         .findFirst()
                         .filter(recipe -> result.shouldCraftRecipe(world, (ServerPlayerEntity)this.inventory.player, recipe))
                         .map(recipe -> recipe.value().craft(input, world.getRegistryManager()))
-                        .orElseGet(this::getFallbackStack) : ItemStack.EMPTY;
+                        .orElseGet(input::getFallbackStack) : ItemStack.EMPTY;
                 outputSlot.setStack(resultStack);
 
                 setPreviousTrackedSlot(outputSlot.id, resultStack);
                 ((ServerPlayerEntity)this.inventory.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(syncId, nextRevision(), outputSlot.id, outputSlot.getStack()));
             }
         });
-    }
-
-    private ItemStack getFallbackStack() {
-        ItemStack gemStack = gemSlot.getStack();
-        if (gemStack.isOf(UItems.GEMSTONE) || gemStack.isOf(UItems.BOTCHED_GEM)) {
-            return input.getTraits().applyTo(UItems.BOTCHED_GEM.getDefaultStack());
-        }
-
-        return ItemStack.EMPTY;
     }
 
     @Override
