@@ -6,11 +6,11 @@ import com.minelittlepony.unicopia.block.ItemJarBlock.TileData;
 import com.minelittlepony.unicopia.util.FluidHelper;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
@@ -29,7 +29,7 @@ public record FluidOnlyJarContents (
     @Override
     public TypedActionResult<JarContents> interact(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-        if (stack.isOf(Items.BUCKET)) {
+        if (stack.isIn(ConventionalItemTags.EMPTY_BUCKETS)) {
             long remainder = FluidHelper.deposit(stack, player, hand, fluid, amount);
             tile.markDirty();
             fluid.getFluid().getBucketFillSound().ifPresent(sound -> player.playSound(sound, 1, 1));
