@@ -5,7 +5,7 @@ import com.minelittlepony.unicopia.block.ItemJarBlock.JarContents;
 import com.minelittlepony.unicopia.block.ItemJarBlock.TileData;
 import com.minelittlepony.unicopia.util.FluidHelper;
 
-import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalItemTags;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.entity.player.PlayerEntity;
