@@ -150,7 +150,7 @@ public class ItemJarBlockEntityRenderer implements BlockEntityRenderer<ItemJarBl
                 topSprite.getMaxU(), topSprite.getMaxV(),
                 0.28F, 0.01F, 0.28F,
                 0.73F, 0.01F + height, 0.73F,
-                color,
+                color | 0xFF000000,
                 light, overlay, Direction.UP
         );
         Sprite sideSprite = sprite[sprite.length - 1];
@@ -161,7 +161,7 @@ public class ItemJarBlockEntityRenderer implements BlockEntityRenderer<ItemJarBl
                 sideSprite.getMaxU(), sideSprite.getMaxV(),
                 0.28F, 0.01F, 0.28F,
                 0.73F, 0.01F + height, 0.73F,
-                color,
+                color | 0xFF000000,
                 light, overlay, GLASS_SIDES
         );
         matrices.pop();
