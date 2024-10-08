@@ -197,7 +197,7 @@ public interface UBlocks {
     Block SLIME_PUSTULE = register("slime_pustule", new SlimePustuleBlock(Settings.copy(Blocks.SLIME_BLOCK)), ItemGroups.NATURAL);
 
     Block SHAPING_BENCH = register("shaping_bench", new ShapingBenchBlock(Settings.create().mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL)), ItemGroups.FUNCTIONAL);
-    Block CLOUD = register("cloud", new NaturalCloudBlock(Settings.create().mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL), true,
+    Block CLOUD = register("cloud", new NaturalCloudBlock(Settings.create().notSolid().mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL), true,
             () -> UBlocks.SOGGY_CLOUD,
             () -> UBlocks.COMPACTED_CLOUD), ItemGroups.NATURAL);
     Block COMPACTED_CLOUD = register("compacted_cloud", new CompactedCloudBlock(CLOUD.getDefaultState()));
@@ -216,14 +216,14 @@ public interface UBlocks {
             () -> UBlocks.COMPACTED_CLOUD_BRICKS), ItemGroups.BUILDING_BLOCKS);
     Block COMPACTED_CLOUD_BRICKS = register("compacted_cloud_bricks", new CompactedCloudBlock(CLOUD_BRICKS.getDefaultState()));
     Block CLOUD_BRICK_SLAB = register("cloud_brick_slab", new CloudSlabBlock(Settings.copy(CLOUD_BRICKS), false, null), ItemGroups.BUILDING_BLOCKS);
-    Block CLOUD_BRICK_STAIRS = register("cloud_brick_stairs", new CloudStairsBlock(CLOUD_BRICKS.getDefaultState(), Settings.copy(CLOUD_PLANKS)), ItemGroups.BUILDING_BLOCKS);
+    Block CLOUD_BRICK_STAIRS = register("cloud_brick_stairs", new CloudStairsBlock(CLOUD_BRICKS.getDefaultState(), Settings.copy(CLOUD_BRICKS)), ItemGroups.BUILDING_BLOCKS);
 
     Block ETCHED_CLOUD = register("etched_cloud", new NaturalCloudBlock(Settings.copy(CLOUD_BRICKS), false,
             null,
             () -> UBlocks.COMPACTED_CLOUD_BRICKS), ItemGroups.BUILDING_BLOCKS);
     Block COMPACTED_ETCHED_CLOUD = register("compacted_etched_cloud", new CompactedCloudBlock(ETCHED_CLOUD.getDefaultState()));
     Block ETCHED_CLOUD_SLAB = register("etched_cloud_slab", new CloudSlabBlock(Settings.copy(ETCHED_CLOUD), false, null), ItemGroups.BUILDING_BLOCKS);
-    Block ETCHED_CLOUD_STAIRS = register("etched_cloud_stairs", new CloudStairsBlock(ETCHED_CLOUD.getDefaultState(), Settings.copy(CLOUD_PLANKS)), ItemGroups.BUILDING_BLOCKS);
+    Block ETCHED_CLOUD_STAIRS = register("etched_cloud_stairs", new CloudStairsBlock(ETCHED_CLOUD.getDefaultState(), Settings.copy(ETCHED_CLOUD)), ItemGroups.BUILDING_BLOCKS);
 
     SoggyCloudBlock SOGGY_CLOUD = register("soggy_cloud", new SoggyCloudBlock(Settings.copy(CLOUD).hardness(0.7F), () -> UBlocks.CLOUD));
     SoggyCloudSlabBlock SOGGY_CLOUD_SLAB = register("soggy_cloud_slab", new SoggyCloudSlabBlock(Settings.copy(SOGGY_CLOUD), () -> UBlocks.CLOUD_SLAB));
