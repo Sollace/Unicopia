@@ -5,6 +5,7 @@ buildscript {
 }
 plugins {
     id 'fabric-loom' version '1.7-SNAPSHOT'
+    id 'maven-publish'
     id 'com.modrinth.minotaur' version '2.+'
     id 'org.ajoberstar.reckon' version '0.13.1'
 }
@@ -167,3 +168,34 @@ modrinth {
        optional.project 'fRiHVvU7'
     }
 }
+
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+
+            pom {
+                name = "Unicopia"
+                description = "Pony abilities mod for minecraft"
+                licenses {
+                    license {
+                        name = "MIT Public License"
+                        url = "https://tlo.mit.edu/learn-about-intellectual-property/software-and-open-source-licensing"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "sollace"
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/Sollace/Unicopia.git'
+                    developerConnection = 'scm:git:ssh://github.com/Sollace/Unicopia.git'
+                    url = 'https://github.com/Sollace/Unicopia'
+                }
+            }
+        }
+    }
+}
+

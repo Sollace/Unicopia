@@ -12,4 +12,4 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name = 'Unicopia'
+rootProject.name = 'unicopia'
