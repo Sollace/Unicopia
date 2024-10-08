@@ -12,9 +12,14 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 
 public class PoreousCloudBlock extends CloudBlock implements Soakable {
     private static final MapCodec<PoreousCloudBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -34,6 +39,12 @@ public class PoreousCloudBlock extends CloudBlock implements Soakable {
     @Override
     public MapCodec<? extends PoreousCloudBlock> getCodec() {
         return CODEC;
+    }
+
+    @Deprecated
+    @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        return Soakable.tryDepositMoisture(state, world, pos, player, hand, hit);
     }
 
     @Nullable
