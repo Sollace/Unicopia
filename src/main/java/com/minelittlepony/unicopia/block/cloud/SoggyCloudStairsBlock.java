@@ -12,10 +12,15 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.StairsBlock;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.state.StateManager;
+import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class SoggyCloudStairsBlock extends CloudStairsBlock implements Soakable {
@@ -47,6 +52,11 @@ public class SoggyCloudStairsBlock extends CloudStairsBlock implements Soakable 
     @Override
     public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         return dryBlock.get().getPickStack(world, pos, state);
+    }
+
+    @Override
+    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        return Soakable.tryCollectMoisture(stack, state, world, pos, player, hand, hit);
     }
 
     @Nullable
