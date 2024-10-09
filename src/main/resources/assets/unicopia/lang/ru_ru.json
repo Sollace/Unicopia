@@ -1,5 +1,5 @@
 {
-  "block.unicopia.bed.not_safe": "Вы не можете уснуть, пока рядом есть монстры",
+  "block.unicopia.bed.not_safe": "Вы не можете уснуть, пока рядом есть враги",
   "block.unicopia.bed.not_tired": "Сейчас вы не чувствуете усталости",
   "block.unicopia.bed.no_sleep.nocturnal": "Вы можете спать только днём или во время грозы",
   "sleep.not_possible.nocturnal": "Никакой отдых не может пройти в этот день",
