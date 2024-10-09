@@ -10,7 +10,7 @@ import net.minecraft.registry.Registry;
 public interface UEnchantmentEffects {
     static void bootstrap() {
         register("group_based_attribute", GroupBasedAttributeEnchantmentEffect.CODEC);
-        register("poisoned_joke_sound", AmbientSoundsEnchantmentEffect.CODEC);
+        register("ambient_sounds", AmbientSoundsEnchantmentEffect.CODEC);
         register("danger_sensor", DangerSensingEnchantmentEffect.CODEC);
         register("particle_trail", ParticleTrailEnchantmentEntityEffect.CODEC);
     }
