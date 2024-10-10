@@ -106,16 +106,14 @@ public interface DrawableUtil {
 
         final double maxAngle = MathHelper.clamp(startAngle + arcAngle, 0, TAU - INCREMENT);
 
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-
         Matrix4f model = matrices.peek().getPositionMatrix();
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
+        boolean shouldDraw = false;
+
         for (double angle = -startAngle; angle >= -maxAngle; angle -= INCREMENT) {
+            shouldDraw = true;
             // center
             cylendricalVertex(bufferBuilder, model, innerRadius, angle, r, g, b, k);
             // point one
@@ -126,7 +124,13 @@ public interface DrawableUtil {
             cylendricalVertex(bufferBuilder, model, innerRadius, angle + INCREMENT, r, g, b, k);
         }
 
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        if (shouldDraw) {
+            RenderSystem.setShaderColor(1, 1, 1, 1);
+            RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        }
     }
 
     private static void cylendricalVertex(BufferBuilder bufferBuilder, Matrix4f model, double radius, double angle, float r, float g, float b, float k) {
