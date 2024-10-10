@@ -103,7 +103,7 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
         parent.child(UItems.TOAST).criterion("has_toast", hasItems(UItems.TOAST)).build(consumer, "toast")
             .child(UItems.BURNED_TOAST).hidden().criterion("has_burned_toast", hasItems(UItems.BURNED_TOAST)).build(consumer, "burn_toast");
         parent.child(UItems.GREEN_APPLE).criterion("has_apple", hasItems(UTags.Items.FRESH_APPLES)).build(consumer, "apple_route").children(p -> {
-            p.child(UItems.SWEET_APPLE).criterion("has_all_apples", hasItems(Items.APPLE, UItems.GREEN_APPLE, UItems.SWEET_APPLE, UItems.SOUR_APPLE, UItems.ROTTEN_APPLE, UItems.ZAP_APPLE, UItems.COOKED_ZAP_APPLE, Items.GOLDEN_APPLE)).build(consumer, "sweet_apple_acres");
+            requireAllItems(p.child(UItems.SWEET_APPLE), Items.APPLE, UItems.GREEN_APPLE, UItems.SWEET_APPLE, UItems.SOUR_APPLE, UItems.ROTTEN_APPLE, UItems.ZAP_APPLE, UItems.COOKED_ZAP_APPLE, Items.GOLDEN_APPLE).build(consumer, "sweet_apple_acres");
             p.child(UItems.ZAP_BULB).criterion("has_zap_apple", hasItems(UItems.ZAP_APPLE)).build(consumer, "trick_apple").children(pp -> {
                 pp.child(UItems.ZAP_APPLE).hidden().criterion("eat_trick_apple", CustomEventCriterion.createFlying("eat_trick_apple")).build(consumer, "eat_trick_apple");
                 pp.child(UItems.ZAP_APPLE).hidden().criterion("feed_trick_apple", CustomEventCriterion.createFlying("feed_trick_apple")).build(consumer, "feed_trick_apple");
@@ -136,6 +136,13 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
             .child(UItems.PEGASUS_FEATHER).apply(d -> applyShedFeatherCriterions(d, 512, 2280)).build(consumer, "molting_season_10")
             .child(UItems.GOLDEN_FEATHER).apply(d -> applyShedFeatherCriterions(d, 1024, 4560)).build(consumer, "molting_season_11")
             .child(UItems.GOLDEN_FEATHER).apply(d -> applyShedFeatherCriterions(d, 2048, 10000)).frame(AdvancementFrame.GOAL).build(consumer, "dedicated_flier");
+    }
+
+    private AdvancementDisplayBuilder requireAllItems(AdvancementDisplayBuilder builder, ItemConvertible...items) {
+        List.of(items).forEach(item -> {
+            builder.criterion("has_" + Registries.ITEM.getId(item.asItem()).getPath(), hasItems(item));
+        });
+        return builder.criteriaMerger(AdvancementRequirements.CriterionMerger.AND);
     }
 
     private AdvancementDisplayBuilder applyShedFeatherCriterions(AdvancementDisplayBuilder builder, int repeats, int experience) {
