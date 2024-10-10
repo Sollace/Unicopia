@@ -11,6 +11,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapelessRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.collection.DefaultedList;
@@ -36,5 +37,10 @@ public class ZapAppleRecipe extends ShapelessRecipe {
 
     public ZapAppleRecipe(String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
         super(group, category, output, input);
+    }
+
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return URecipes.ZAP_APPLE_SERIALIZER;
     }
 }

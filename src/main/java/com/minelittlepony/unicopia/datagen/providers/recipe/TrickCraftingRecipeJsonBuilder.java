@@ -5,6 +5,8 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.include.com.google.common.base.Preconditions;
 
+import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.component.Appearance;
 import com.minelittlepony.unicopia.recipe.ZapAppleRecipe;
 
 import net.minecraft.advancement.Advancement;
@@ -71,7 +73,7 @@ public class TrickCraftingRecipeJsonBuilder implements CraftingRecipeJsonBuilder
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
         criterions.forEach(builder::criterion);
         exporter.accept(id,
-                new ZapAppleRecipe(group == null ? "" : group, CraftingRecipeCategory.MISC, output.getDefaultStack(), inputs),
+                new ZapAppleRecipe(group == null ? "" : group, CraftingRecipeCategory.MISC, Appearance.set(UItems.ZAP_APPLE.getDefaultStack(), output.getDefaultStack()), inputs),
                 builder.build(id.withPrefixedPath("recipes/" + category.getName() + "/"))
         );
     }
