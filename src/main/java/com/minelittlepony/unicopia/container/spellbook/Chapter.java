@@ -20,7 +20,7 @@ public record Chapter (
             TabSide.CODEC.fieldOf("side").forGetter(Chapter::side),
             Codec.INT.fieldOf("y_position").forGetter(Chapter::tabY),
             Codec.INT.optionalFieldOf("color", 0).forGetter(Chapter::color),
-            Contents.CODEC.fieldOf("contents").forGetter(Chapter::contents)
+            Contents.CODEC.fieldOf("content").forGetter(Chapter::contents)
     ).apply(instance, Chapter::new));
 
     record Contents(List<Page> pages) {
@@ -35,10 +35,10 @@ public record Chapter (
                 List<ChapterPageElement> elements
             ) {
             public static final Codec<Page> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                    TextCodecs.CODEC.fieldOf("title").forGetter(Page::title),
-                    Codec.INT.fieldOf("level").forGetter(Page::level),
-                    TextColor.CODEC.fieldOf("color").xmap(TextColor::getRgb, TextColor::fromRgb).forGetter(Page::level),
-                    ChapterPageElement.CODEC.listOf().fieldOf("elements").forGetter(Page::elements)
+                    TextCodecs.CODEC.optionalFieldOf("title", Text.empty()).forGetter(Page::title),
+                    Codec.INT.optionalFieldOf("level", 0).forGetter(Page::level),
+                    TextColor.CODEC.xmap(TextColor::getRgb, TextColor::fromRgb).optionalFieldOf("color", 0).forGetter(Page::color),
+                    ChapterPageElement.CODEC.listOf().optionalFieldOf("elements", List.of()).forGetter(Page::elements)
             ).apply(instance, Page::new));
 
             public void toBuffer(RegistryByteBuf buffer) {

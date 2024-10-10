@@ -91,7 +91,7 @@ public class DynamicContent implements Content {
         rightPanel.init(screen, pageIndex + 1);
     }
 
-    class Page implements Drawable {
+    public class Page implements Drawable {
         private final Text title;
         private final int level;
         private final int color;
@@ -196,6 +196,11 @@ public class DynamicContent implements Content {
             matrices.pop();
 
             matrices.pop();
+        }
+
+        @Override
+        public String toString() {
+            return "DynamicContents$Page[title=" + title + ",elements=" + elements + "]";
         }
     }
 }

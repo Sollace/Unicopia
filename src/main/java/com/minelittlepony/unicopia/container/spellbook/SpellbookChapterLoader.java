@@ -61,6 +61,7 @@ public class SpellbookChapterLoader extends JsonDataLoader implements Identifiab
         try {
             chapters = data.entrySet().stream().map(entry -> {
                 return Chapter.CODEC.decode(JsonOps.INSTANCE, entry.getValue())
+                    .ifError(error -> LOGGER.error("Could not load spellbook chapters due to exception {}", error))
                     .result()
                     .map(Pair::getFirst)
                     .map(chapter -> new IdentifiableChapter(entry.getKey(), chapter))

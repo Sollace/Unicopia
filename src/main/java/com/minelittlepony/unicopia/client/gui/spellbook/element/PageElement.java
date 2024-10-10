@@ -56,7 +56,7 @@ public interface PageElement extends Drawable {
                 byte t = b.readByte();
                 return switch (t) {
                     case 1 -> formatLine(capture(b.readIdentifier(), id -> Registries.ITEM.get(id).getDefaultStack().getName()), "item", count);
-                    case 2 -> formatLine(Trait.PACKET_CODEC.decode(b)::getShortName, "trait", count);
+                    case 2 -> formatLine(Trait.fromId(b.readIdentifier()).get()::getShortName, "trait", count);
                     case 3 -> Suppliers.ofInstance(TextCodecs.PACKET_CODEC.decode(b));
                     case 4 -> formatLine(SpellType.getKey(b.readIdentifier())::getName, "spell", count);
                     default -> throw new IllegalArgumentException("Unexpected value: " + t);
