@@ -18,6 +18,11 @@ public class ZapAppleRecipe extends ShapelessRecipe {
         super(group, category, output, input);
     }
 
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return URecipes.ZAP_APPLE_SERIALIZER;
+    }
+
     public static class Serializer implements RecipeSerializer<ZapAppleRecipe> {
         private static final Codec<ZapAppleRecipe> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(ZapAppleRecipe::getGroup),
