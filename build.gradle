@@ -157,6 +157,7 @@ modrinth {
     versionNumber = version.toString()
     versionName = archivesBaseName + '-' + version
     changelog = "[Changelog](https://github.com/Sollace/Unicopia/releases/tag/${version.toString()})"
+    loaders = ['fabric', 'quilt']
     uploadFile = remapJar
     outlet.mcVersions().each{ver ->
       gameVersions.add ver
