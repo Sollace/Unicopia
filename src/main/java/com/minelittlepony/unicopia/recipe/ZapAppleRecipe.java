@@ -31,7 +31,7 @@ public class ZapAppleRecipe extends ShapelessRecipe {
             PacketCodecs.STRING, ZapAppleRecipe::getGroup,
             CraftingRecipeCategory.PACKET_CODEC, ZapAppleRecipe::getCategory,
             ItemStack.PACKET_CODEC, recipe -> recipe.getResult(null),
-            Ingredient.PACKET_CODEC.collect(PacketCodecs.toCollection(i -> DefaultedList.ofSize(i, Ingredient.EMPTY))), ZapAppleRecipe::getIngredients,
+            Ingredient.PACKET_CODEC.collect(PacketCodecs.toCollection(DefaultedList::ofSize)), ZapAppleRecipe::getIngredients,
             ZapAppleRecipe::new
     );
 
