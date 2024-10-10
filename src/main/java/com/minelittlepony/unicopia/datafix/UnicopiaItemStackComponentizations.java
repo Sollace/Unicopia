@@ -64,9 +64,9 @@ final class UnicopiaItemStackComponentizations {
     }
 
     private static void fixEnergy(ItemStackComponentizationFix.StackData data, Dynamic<?> dynamic, int maximum, int baseline) {
-        data.getAndRemove("energy").getElement("energy").result().ifPresent(energy -> {
+        data.getAndRemove("energy").result().ifPresent(energy -> {
             data.setComponent("unicopia:charges", dynamic.emptyMap()
-                    .set("energy", dynamic.createInt((int)energy))
+                    .set("energy", dynamic.createInt(energy.get("energy").asInt(energy.asInt(baseline))))
                     .set("maximum", dynamic.createInt(maximum))
                     .set("baseline", dynamic.createInt(baseline))
                     .set("show_in_tooltip", dynamic.createBoolean(true)));
