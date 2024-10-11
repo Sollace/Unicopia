@@ -80,6 +80,9 @@ public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvid
         addVanillaDrop(Blocks.COARSE_DIRT, block -> gemstoneAndWormDrops(block, 2, 0.05F, 0.052222223F, 0.055F, 0.066666665F, 0.1F));
         addVanillaDrop(Blocks.GRASS_BLOCK, block -> gemstoneAndWormDrops(block, 2, 0.05F, 0.052222223F, 0.055F, 0.066666665F, 0.1F));
         addVanillaDrop(Blocks.SHORT_GRASS, block -> chanceDrop(block, UItems.OAT_SEEDS, 2, 0.05F, 0.052222223F, 0.055F, 0.066666665F, 0.1F));
+        addVanillaDrop(Blocks.FERN, block -> chanceDrop(block, UItems.OAT_SEEDS, 2, 0.05F, 0.052222223F, 0.055F, 0.066666665F, 0.1F));
+        addVanillaDrop(Blocks.TALL_GRASS, block -> chanceDrop(block, UItems.OAT_SEEDS, 2, 0.05F, 0.052222223F, 0.055F, 0.066666665F, 0.1F));
+        addVanillaDrop(Blocks.LARGE_FERN, block -> chanceDrop(block, UItems.OAT_SEEDS, 2, 0.05F, 0.052222223F, 0.055F, 0.066666665F, 0.1F));
         addVanillaDrop(Blocks.MYCELIUM, block -> wormDrops(block, 3, 0.06F, 0.062222223F, 0.065F, 0.077777776F, 0.2F));
         addVanillaDrop(Blocks.PODZOL, block -> wormDrops(block, 4, 0.06F, 0.062222223F, 0.065F, 0.077777776F, 0.2F));
         addVanillaDrop(Blocks.DIAMOND_ORE, this::crystalShardDrops);
