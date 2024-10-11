@@ -11,9 +11,7 @@ import com.minelittlepony.unicopia.container.inventory.HexagonalCraftingGrid;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import io.github.mattidragon.tlaapi.api.gui.GuiBuilder;
-import io.github.mattidragon.tlaapi.api.gui.TlaBounds;
 import io.github.mattidragon.tlaapi.api.recipe.TlaIngredient;
-import io.github.mattidragon.tlaapi.impl.SimpleCustomTlaWidget;
 import net.minecraft.client.MinecraftClient;
 
 public record TraitedTlaIngredient(Optional<TraitEntry> trait, TlaIngredient ingredient) {
@@ -37,7 +35,11 @@ public record TraitedTlaIngredient(Optional<TraitEntry> trait, TlaIngredient ing
     }
 
     public void buildGui(TlaIngredient ingredientOverride, HexagonalCraftingGrid.Slot slot, GuiBuilder builder) {
-        builder.addCustomWidget(new SlotTexture(slot));
+        builder.addCustomWidget(slot.left() - 7, slot.top() - 7, 32, 32, (context, mouseX, mouseY, delta) -> {
+            RenderSystem.enableBlend();
+            context.drawTexture(SpellbookScreen.SLOT, 0, 0, 0, 0, 0, 32, 32, 32, 32);
+            RenderSystem.disableBlend();
+        });
         builder.addSlot(ingredientOverride, slot.left(), slot.top()).disableBackground();
         trait.ifPresent(traitEntry -> {
             builder.addCustomWidget(slot.left(), slot.top(), 16, 16, (context, mouseX, mouseY, delta) -> {
@@ -53,14 +55,4 @@ public record TraitedTlaIngredient(Optional<TraitEntry> trait, TlaIngredient ing
     }
 
     record TraitEntry(List<Trait> traits, float amount) { }
-
-    static class SlotTexture extends SimpleCustomTlaWidget {
-        public SlotTexture(HexagonalCraftingGrid.Slot slot) {
-            super((context, mouseX, mouseY, delta) -> {
-                RenderSystem.enableBlend();
-                context.drawTexture(SpellbookScreen.SLOT, 0, 0, 0, 0, 0, 32, 32, 32, 32);
-                RenderSystem.disableBlend();
-            }, new TlaBounds(slot.left() - 7, slot.top() - 7, 32, 32));
-        }
-    }
 }

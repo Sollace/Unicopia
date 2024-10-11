@@ -30,8 +30,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.RotationAxis;
 
 public class StructureInteractionTlaRecipe implements TlaRecipe {
-    static final TextureConfig PLUS = TextureConfig.builder().texture(Identifier.of("emi", "textures/gui/widgets.png")).size(13, 13).uv(82, 0).build();
-
     private final RecipeCategory category;
     private final Identifier id;
     private final Schematic schematic;
@@ -137,7 +135,7 @@ public class StructureInteractionTlaRecipe implements TlaRecipe {
                 row += 20;
             }
             if (i > 0) {
-                widgets.addTexture(PLUS, x + 3, y + 53 + row);
+                widgets.addTexture(Main.PLUS, x + 3, y + 53 + row);
                 x += 20;
             }
             var slot = widgets.addSlot(allInputs.get(i), x, y + 50 + row);

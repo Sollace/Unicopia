@@ -9,11 +9,9 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.google.common.base.Suppliers;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellDuplicatingRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellEnhancingRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen;
 import com.minelittlepony.unicopia.container.inventory.HexagonalCraftingGrid;
@@ -30,9 +28,6 @@ import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.util.Identifier;
 
 class SpellbookTlaRecipe implements TlaRecipe, SpellbookRecipe.CraftingTreeBuilder {
-    static final Identifier WIDGETS = Unicopia.id("textures/gui/widgets.png");
-    static final TextureConfig EMPTY_ARROW = TextureConfig.builder().texture(WIDGETS).uv(44, 0).size(24, 17).build();
-
     private final RecipeEntry<SpellbookRecipe> recipe;
 
     protected final List<TraitedTlaIngredient> inputs = new ArrayList<>();
@@ -46,27 +41,8 @@ class SpellbookTlaRecipe implements TlaRecipe, SpellbookRecipe.CraftingTreeBuild
                 return Stream.of(new SpellDuplicatingTlaRecipe(recipe));
             }
 
-            if (recipe.value() instanceof SpellEnhancingRecipe enhancingRecipe) {
-                return Trait.all().stream().map(trait -> {
-                    return new SpellDuplicatingTlaRecipe(recipe) {
-                        private final Identifier id = recipe.id().withPath(p -> p + "/" + trait.getId().getPath());
-
-                        {
-                            input(trait);
-                            getOutputs().addAll(
-                                    Arrays.stream(enhancingRecipe.getBaseMaterial().getMatchingStacks())
-                                    .map(stack -> TlaStack.of(SpellTraits.of(stack).add(new SpellTraits.Builder().with(trait, 1).build()).applyTo(stack)))
-                                    .toList()
-                            );
-                        }
-
-                        @Nullable
-                        @Override
-                        public Identifier getId() {
-                            return id;
-                        }
-                    };
-                });
+            if (recipe.value() instanceof SpellEnhancingRecipe) {
+                return Trait.all().stream().map(trait -> new SpellEnhancingTlaRecipe(recipe, trait));
             }
 
             return Stream.of((TlaRecipe)new SpellbookTlaRecipe(recipe));
@@ -114,7 +90,7 @@ class SpellbookTlaRecipe implements TlaRecipe, SpellbookRecipe.CraftingTreeBuild
                 .regionSize(128, 128)
                 .textureSize(512, 256)
                 .build(), 0, 0);
-        builder.addTexture(EMPTY_ARROW, 85, 30);
+        builder.addTexture(Main.EMPTY_ARROW, 85, 30);
 
         List<HexagonalCraftingGrid.Slot> grid = new ArrayList<>();
         List<HexagonalCraftingGrid.Slot> gem = new ArrayList<>();
