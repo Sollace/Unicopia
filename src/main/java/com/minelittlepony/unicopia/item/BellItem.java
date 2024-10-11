@@ -120,6 +120,11 @@ public class BellItem extends Item {
         user.setTarget(null);
         user.playSound(USounds.ITEM_GROGAR_BELL_STOP_USING, 0.2F, 0.3F);
         if (target instanceof Creature creature && (completed || target.asEntity().getHealth() < (target.asEntity().getMaxHealth() * 0.5F) + 1)) {
+            ItemStack handStack = creature.asEntity().getStackInHand(Hand.MAIN_HAND);
+            if (!handStack.isEmpty()) {
+                creature.asEntity().setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
+                creature.asEntity().dropStack(handStack);
+            }
             creature.setDiscorded(true);
         }
     }
