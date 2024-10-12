@@ -133,8 +133,14 @@ public interface URenderers {
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, Identifier.ofVanilla("affinity"), (stack, world, entity, seed) -> EnchantableItem.getSpellKey(stack).getAffinity().getAlignment());
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, Identifier.ofVanilla("shape"), (stack, world, entity, seed) -> EnchantableItem.getSpellKey(stack).getGemShape().getId());
         ModelPredicateProviderRegistry.register(UItems.ROCK_CANDY, Identifier.ofVanilla("count"), (stack, world, entity, seed) -> stack.getCount() / (float)stack.getMaxCount());
-        ModelPredicateProviderRegistry.register(UItems.BUTTERFLY, Identifier.ofVanilla("variant"), (stack, world, entity, seed) -> (float)BufferflyVariantComponent.get(stack).variant().ordinal() / ButterflyEntity.Variant.VALUES.length);
-        ModelPredicateProviderRegistry.register(UItems.GIANT_BALLOON, Identifier.ofVanilla("design"), (stack, world, entity, seed) -> (float)BalloonDesignComponent.get(stack).design().ordinal() / AirBalloonEntity.BalloonDesign.VALUES.length);
+        ModelPredicateProviderRegistry.register(UItems.BUTTERFLY, Identifier.ofVanilla("variant"), (stack, world, entity, seed) -> {
+            // float operations do be weird like
+            return BufferflyVariantComponent.get(stack).variant().ordinal() * (1F / ButterflyEntity.Variant.VALUES.length);
+        });
+        ModelPredicateProviderRegistry.register(UItems.GIANT_BALLOON, Identifier.ofVanilla("design"), (stack, world, entity, seed) -> {
+            // float operations do be weird like
+            return BalloonDesignComponent.get(stack).design().ordinal() * (1F / AirBalloonEntity.BalloonDesign.VALUES.length);
+        });
         ModelPredicateProviderRegistry.register(Unicopia.id("zap_cycle"), new ClampedModelPredicateProvider() {
             private double targetAngle;
             private double lastAngle;

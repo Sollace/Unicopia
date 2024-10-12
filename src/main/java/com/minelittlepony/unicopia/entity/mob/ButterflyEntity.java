@@ -387,7 +387,7 @@ public class ButterflyEntity extends AmbientEntity {
         WHITE_MONARCH,
         BRIMSTONE;
 
-        public static final Variant[] VALUES = Variant.values();
+        public static final Variant[] VALUES = values();
 
         @SuppressWarnings("deprecation")
         public static final EnumCodec<Variant> CODEC = StringIdentifiable.createCodec(Variant::values);
