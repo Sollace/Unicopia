@@ -26,21 +26,16 @@ public class SendViaDragonBreathScrollCriterion extends AbstractRepeatingCriteri
 
     public void triggerSent(PlayerEntity player, ItemStack payload, String recipient, BiConsumer<String, Integer> counterCallback) {
         if (player instanceof ServerPlayerEntity spe) {
-            trigger(spe, (count, c) -> {
-                if (c.test(spe, payload, recipient, false)) {
-                    c.counter.ifPresent(counter -> {
-                        counterCallback.accept(counter, count);
-                    });
-                    return true;
-                }
-                return false;
+            trigger(spe, c -> c.test(spe, payload, recipient, false), (count, c) -> {
+                c.counter.ifPresent(counter -> counterCallback.accept(counter, count));
+                return true;
             });
         }
     }
 
     public void triggerReceived(LivingEntity recipient, ItemStack payload) {
         if (recipient instanceof ServerPlayerEntity spe) {
-            trigger(spe, (count, c) -> c.test(spe, payload, recipient.getDisplayName().getString(), true));
+            trigger(spe, c -> c.test(spe, payload, recipient.getDisplayName().getString(), true), (count, c) -> true);
         }
     }
 

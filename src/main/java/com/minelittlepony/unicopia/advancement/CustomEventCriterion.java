@@ -25,7 +25,10 @@ public class CustomEventCriterion extends AbstractRepeatingCriterion<CustomEvent
     public CustomEventCriterion.Trigger createTrigger(String name) {
         return player -> {
             if (player instanceof ServerPlayerEntity p) {
-                trigger(p, (count, condition) -> condition.test(name, count, p));
+                trigger(p,
+                    condition -> condition.event().equalsIgnoreCase(name),
+                    (count, condition) -> condition.test(count, p)
+                );
             }
         };
     }
@@ -64,12 +67,11 @@ public class CustomEventCriterion extends AbstractRepeatingCriterion<CustomEvent
                 Codec.INT.optionalFieldOf("repeatCount", 0).forGetter(Conditions::repeatCount)
             ).apply(instance, Conditions::new));
 
-        public boolean test(String event, int count, ServerPlayerEntity player) {
+        public boolean test(int count, ServerPlayerEntity player) {
             boolean isFlying = Pony.of(player).getPhysics().isFlying();
-            return this.event.equalsIgnoreCase(event)
-                    && races.test(player)
+            return races.test(player)
                     && flying.orElse(isFlying) == isFlying
-                    && (repeatCount < 0 || repeatCount == count);
+                    && (repeatCount < 0 || repeatCount <= count);
         }
     }
 }

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
+
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.advancement.PlayerAdvancementTracker;
@@ -40,7 +42,7 @@ public abstract class AbstractRepeatingCriterion<T extends AbstractRepeatingCrit
         progressions.remove(tracker);
     }
 
-    protected void trigger(ServerPlayerEntity player, BiPredicate<Integer, T> predicate) {
+    protected void trigger(ServerPlayerEntity player, Predicate<T> shouldCount, BiPredicate<Integer, T> predicate) {
         PlayerAdvancementTracker tracker = player.getAdvancementTracker();
         TriggerCountTracker counter = Pony.of(player).getAdvancementProgress();
         counter.removeGranted(player, tracker);
@@ -52,7 +54,7 @@ public abstract class AbstractRepeatingCriterion<T extends AbstractRepeatingCrit
 
             for (var condition : advancements) {
                 T conditions = condition.conditions();
-                if (predicate.test(counter.update(condition.advancement(), condition.id()), conditions)) {
+                if (shouldCount.test(conditions) && predicate.test(counter.update(condition.advancement(), condition.id()), conditions)) {
                     var playerPredicate = conditions.player();
                     if (playerPredicate.isEmpty() || playerPredicate.get().test(lootContext)) {
                         if (matches == null) {
