@@ -117,17 +117,17 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
             p.child(UItems.LIGHTNING_JAR).hidden().frame(AdvancementFrame.CHALLENGE).apply(d -> applyLightningBugCriterions(d, RacePredicate.of(Set.of(Race.CHANGELING), Set.of()), 10, 90)).build(consumer, "lightning_bug");
             p.child(UItems.LIGHTNING_JAR).hidden().frame(AdvancementFrame.CHALLENGE).apply(d -> applyLightningBugCriterions(d, RacePredicate.of(Set.of(), Set.of(Race.CHANGELING)), 10, 90)).build(consumer, "wonder_bolt");
         });
-        parent.child(UItems.PEGASUS_FEATHER).hidden().frame(AdvancementFrame.CHALLENGE).criterion("shed_feather", CustomEventCriterion.createFlying("shed_feather")).rewards(AdvancementRewards.Builder.experience(1)).build(consumer, "molting_season_1")
+        parent.child(UItems.PEGASUS_FEATHER).hidden().frame(AdvancementFrame.TASK).criterion("shed_feather", CustomEventCriterion.createFlying("shed_feather")).rewards(AdvancementRewards.Builder.experience(1)).build(consumer, "molting_season_1")
             .child(UItems.PEGASUS_FEATHER).apply(d -> applyShedFeatherCriterions(d, 2, 2)).build(consumer, "molting_season_2")
             .child(UItems.PEGASUS_FEATHER).apply(d -> applyShedFeatherCriterions(d, 4, 8)).build(consumer, "molting_season_3")
             .child(UItems.PEGASUS_FEATHER).apply(d -> applyShedFeatherCriterions(d, 8, 20)).build(consumer, "molting_season_4")
             .child(UItems.PEGASUS_FEATHER).apply(d -> applyShedFeatherCriterions(d, 16, 40)).build(consumer, "molting_season_5")
             .child(UItems.PEGASUS_FEATHER).apply(d -> applyShedFeatherCriterions(d, 32, 80)).build(consumer, "molting_season_6")
             .child(UItems.PEGASUS_FEATHER).apply(d -> applyShedFeatherCriterions(d, 64, 200)).build(consumer, "molting_season_7")
-            .child(UItems.PEGASUS_FEATHER).apply(d -> applyShedFeatherCriterions(d, 128, 500)).build(consumer, "molting_season_8")
-            .child(UItems.PEGASUS_FEATHER).apply(d -> applyShedFeatherCriterions(d, 256, 1000)).build(consumer, "molting_season_9")
-            .child(UItems.PEGASUS_FEATHER).apply(d -> applyShedFeatherCriterions(d, 512, 2280)).build(consumer, "molting_season_10")
-            .child(UItems.GOLDEN_FEATHER).apply(d -> applyShedFeatherCriterions(d, 1024, 4560)).build(consumer, "molting_season_11")
+            .child(UItems.PEGASUS_FEATHER).apply(d -> applyShedFeatherCriterions(d, 128, 500)).frame(AdvancementFrame.CHALLENGE).build(consumer, "molting_season_8")
+            .child(UItems.PEGASUS_FEATHER).apply(d -> applyShedFeatherCriterions(d, 256, 1000)).frame(AdvancementFrame.CHALLENGE).build(consumer, "molting_season_9")
+            .child(UItems.PEGASUS_FEATHER).apply(d -> applyShedFeatherCriterions(d, 512, 2280)).frame(AdvancementFrame.CHALLENGE).build(consumer, "molting_season_10")
+            .child(UItems.GOLDEN_FEATHER).apply(d -> applyShedFeatherCriterions(d, 1024, 4560)).frame(AdvancementFrame.CHALLENGE).build(consumer, "molting_season_11")
             .child(UItems.GOLDEN_FEATHER).apply(d -> applyShedFeatherCriterions(d, 2048, 10000)).frame(AdvancementFrame.GOAL).build(consumer, "dedicated_flier");
     }
 
