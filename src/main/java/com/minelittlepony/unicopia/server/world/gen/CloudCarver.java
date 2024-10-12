@@ -167,7 +167,10 @@ public class CloudCarver extends CaveCarver {
             MutableBoolean replacedGrassy
         ) {
         if (super.carveAtPoint(context, config, chunk, posToBiome, mask, pos, tmp, aquiferSampler, replacedGrassy)) {
-            topWrittenPositions.remove(tmp.set(pos).move(Direction.DOWN).asLong());
+            tmp.set(pos).move(Direction.DOWN);
+            if (!topWrittenPositions.isEmpty()) {
+                topWrittenPositions.remove(tmp.asLong());
+            }
             topWrittenPositions.add(pos.asLong());
             if (chunk.getBlockState(tmp).isOf(UBlocks.SOGGY_CLOUD)) {
                 chunk.setBlockState(tmp, UBlocks.CLOUD.getDefaultState(), false);
