@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.google.common.base.Strings;
 
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.data.client.Model;
@@ -59,6 +60,15 @@ interface ItemModels {
         float step = 1F / ButterflyEntity.Variant.VALUES.length;
         ModelOverrides.of(GENERATED).addUniform("variant", step, 1 - step, step, (i, value) -> {
             String name = ButterflyEntity.Variant.byId(i + 1).name().toLowerCase(Locale.ROOT);
+            Identifier subModelId = Registries.ITEM.getId(item).withPath(p -> "item/" + name + "_" + p);
+            return GENERATED.upload(subModelId, TextureMap.layer0(subModelId), itemModelGenerator.writer);
+        }).upload(item, itemModelGenerator);
+    }
+
+    static void registerBalloonDesigns(ItemModelGenerator itemModelGenerator, Item item) {
+        float step = 1F / AirBalloonEntity.BalloonDesign.VALUES.length;
+        ModelOverrides.of(GENERATED).addUniform("design", step, 1, step, (i, value) -> {
+            String name = AirBalloonEntity.BalloonDesign.getType(i + 1).name().toLowerCase(Locale.ROOT);
             Identifier subModelId = Registries.ITEM.getId(item).withPath(p -> "item/" + name + "_" + p);
             return GENERATED.upload(subModelId, TextureMap.layer0(subModelId), itemModelGenerator.writer);
         }).upload(item, itemModelGenerator);

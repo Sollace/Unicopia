@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.block.cloud.CloudBedBlock;
 import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.cloud.CloudBedItem;
+import com.minelittlepony.unicopia.item.component.BalloonDesignComponent;
 import com.minelittlepony.unicopia.item.component.BreaksIntoItemComponent;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
@@ -179,7 +180,7 @@ public interface UItems {
     Item BAMBOO_BASKET = register("bamboo_basket", new BasketItem(AirBalloonEntity.BasketType.of(BoatEntity.Type.BAMBOO), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
     Item PALM_BASKET = register("palm_basket", new BasketItem(AirBalloonEntity.BasketType.of(UWoodTypes.PALM_BOAT_TYPE), new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
 
-    Item GIANT_BALLOON = register("giant_balloon", new Item(new Item.Settings().maxCount(1).component(UDataComponentTypes.BALLOON_DESIGN, AirBalloonEntity.BalloonDesign.NONE)), ItemGroups.TOOLS);
+    Item GIANT_BALLOON = register("giant_balloon", new GiantBalloonItem(new Item.Settings().maxCount(1).component(UDataComponentTypes.BALLOON_DESIGN, BalloonDesignComponent.DEFAULT)), ItemGroups.TOOLS);
     Item SPECTRAL_CLOCK = register("spectral_clock", new Item(new Item.Settings()), ItemGroups.TOOLS);
 
     Item WHITE_BED_SHEETS = register(CloudBedBlock.SheetPattern.WHITE);

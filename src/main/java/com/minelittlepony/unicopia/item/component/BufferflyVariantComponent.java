@@ -28,7 +28,6 @@ public record BufferflyVariantComponent (ButterflyEntity.Variant variant, boolea
             BufferflyVariantComponent::new
     );
 
-
     public static BufferflyVariantComponent get(ItemStack stack) {
         return stack.getOrDefault(UDataComponentTypes.BUTTERFLY_VARIANT, DEFAULT);
     }

@@ -54,6 +54,7 @@ import com.minelittlepony.unicopia.entity.collision.MultiBoundingBoxEntity;
 import com.minelittlepony.unicopia.entity.collision.MultiBox;
 import com.minelittlepony.unicopia.item.BasketItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.component.BalloonDesignComponent;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
@@ -794,7 +795,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         STORM,
         TALE;
 
-        private static final BalloonDesign[] VALUES = values();
+        public static final BalloonDesign[] VALUES = values();
         public static final EnumCodec<BalloonDesign> CODEC = StringIdentifiable.createCodec(BalloonDesign::values);
         public static final PacketCodec<ByteBuf, BalloonDesign> PACKET_CODEC = PacketCodecUtils.ofEnum(BalloonDesign.class);
 
@@ -806,7 +807,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         }
 
         public static AirBalloonEntity.BalloonDesign of(World world, ItemStack stack) {
-            AirBalloonEntity.BalloonDesign design = stack.getOrDefault(UDataComponentTypes.BALLOON_DESIGN, NONE);
+            AirBalloonEntity.BalloonDesign design = BalloonDesignComponent.get(stack).design();
             if (design == NONE) {
                 return VALUES[1 + world.getRandom().nextInt(VALUES.length - 1)];
             }

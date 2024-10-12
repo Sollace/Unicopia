@@ -7,7 +7,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.diet.DietProfile;
-import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.component.ComponentType;
@@ -21,7 +20,7 @@ public interface UDataComponentTypes {
     ComponentType<SpellbookState> SPELLBOOK_STATE = register("spellbook_state", builder -> builder.codec(SpellbookState.CODEC).packetCodec(SpellbookState.PACKET_CODEC).cache());
     ComponentType<Boolean> GLOWING = register("glowing", builder -> builder.codec(Codec.BOOL).packetCodec(PacketCodecs.BOOL));
     ComponentType<BufferflyVariantComponent> BUTTERFLY_VARIANT = register("butterfly_variant", builder -> builder.codec(BufferflyVariantComponent.CODEC).packetCodec(BufferflyVariantComponent.PACKET_CODEC));
-    ComponentType<AirBalloonEntity.BalloonDesign> BALLOON_DESIGN = register("balloon_design", builder -> builder.codec(AirBalloonEntity.BalloonDesign.CODEC).packetCodec(AirBalloonEntity.BalloonDesign.PACKET_CODEC));
+    ComponentType<BalloonDesignComponent> BALLOON_DESIGN = register("balloon_design", builder -> builder.codec(BalloonDesignComponent.CODEC).packetCodec(BalloonDesignComponent.PACKET_CODEC));
     ComponentType<Issuer> ISSUER = register("issuer", builder -> builder.codec(Issuer.CODEC).packetCodec(Issuer.PACKET_CODEC).cache());
     ComponentType<Charges> CHARGES = register("charges", builder -> builder.codec(Charges.CODEC).packetCodec(Charges.PACKET_CODEC));
     ComponentType<Appearance> APPEARANCE = register("appearance", builder -> builder.codec(Appearance.CODEC).packetCodec(Appearance.PACKET_CODEC));

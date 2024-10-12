@@ -28,12 +28,14 @@ import com.minelittlepony.unicopia.client.render.*;
 import com.minelittlepony.unicopia.client.render.entity.*;
 import com.minelittlepony.unicopia.client.render.shader.UShaders;
 import com.minelittlepony.unicopia.client.render.spell.SpellRendererFactory;
+import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.FancyBedItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.component.Appearance;
+import com.minelittlepony.unicopia.item.component.BalloonDesignComponent;
 import com.minelittlepony.unicopia.item.component.BufferflyVariantComponent;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.terraformersmc.terraform.boat.api.client.TerraformBoatClientHelper;
@@ -132,6 +134,7 @@ public interface URenderers {
         ModelPredicateProviderRegistry.register(UItems.GEMSTONE, Identifier.ofVanilla("shape"), (stack, world, entity, seed) -> EnchantableItem.getSpellKey(stack).getGemShape().getId());
         ModelPredicateProviderRegistry.register(UItems.ROCK_CANDY, Identifier.ofVanilla("count"), (stack, world, entity, seed) -> stack.getCount() / (float)stack.getMaxCount());
         ModelPredicateProviderRegistry.register(UItems.BUTTERFLY, Identifier.ofVanilla("variant"), (stack, world, entity, seed) -> (float)BufferflyVariantComponent.get(stack).variant().ordinal() / ButterflyEntity.Variant.VALUES.length);
+        ModelPredicateProviderRegistry.register(UItems.GIANT_BALLOON, Identifier.ofVanilla("design"), (stack, world, entity, seed) -> (float)BalloonDesignComponent.get(stack).design().ordinal() / AirBalloonEntity.BalloonDesign.VALUES.length);
         ModelPredicateProviderRegistry.register(Unicopia.id("zap_cycle"), new ClampedModelPredicateProvider() {
             private double targetAngle;
             private double lastAngle;

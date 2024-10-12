@@ -75,7 +75,7 @@ public class UModelProvider extends FabricModelProvider {
                 UItems.DAFFODIL_DAISY_SANDWICH, UItems.DRAGON_BREATH_SCROLL,
                 UItems.EMPTY_JAR,
                 UItems.FRIENDSHIP_BRACELET, UItems.FRIED_AXOLOTL, UItems.FROG_LEGS,
-                UItems.GIANT_BALLOON, UItems.GOLDEN_FEATHER, UItems.GOLDEN_OAK_SEEDS, UItems.GOLDEN_WING, UItems.GREEN_APPLE_SEEDS, UItems.GREEN_APPLE, UItems.GROGARS_BELL,
+                UItems.GOLDEN_FEATHER, UItems.GOLDEN_OAK_SEEDS, UItems.GOLDEN_WING, UItems.GREEN_APPLE_SEEDS, UItems.GREEN_APPLE, UItems.GROGARS_BELL,
                     UItems.GRYPHON_FEATHER, UItems.GREEN_FRIED_EGG,
                 UItems.HAY_BURGER, UItems.HAY_FRIES, UItems.HORSE_SHOE_FRIES,
                 UItems.IMPORTED_OATS,
@@ -131,8 +131,8 @@ public class UModelProvider extends FabricModelProvider {
                 .flatMap(id -> Registries.ITEM.getOrEmpty(id).stream())
                 .toArray(Item[]::new));
 
-        // butterflies
         ItemModels.registerButterfly(itemModelGenerator, UItems.BUTTERFLY);
+        ItemModels.registerBalloonDesigns(itemModelGenerator, UItems.GIANT_BALLOON);
         ItemModels.registerSpectralBlock(itemModelGenerator, UItems.SPECTRAL_CLOCK);
         ModelOverrides.of(ItemModels.GENERATED)
             .addUniform("count", 2, 16, ModelIds.getItemModelId(UItems.ROCK_CANDY))
