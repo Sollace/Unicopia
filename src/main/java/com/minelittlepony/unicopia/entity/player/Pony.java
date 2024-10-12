@@ -848,6 +848,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         compound.put("mana", mana.toNBT(lookup));
         compound.putInt("levels", levels.get());
         compound.putInt("corruption", corruption.get());
+        compound.put("advancementTriggerCounts", NbtSerialisable.encode(TriggerCountTracker.CODEC, advancementProgress, lookup));
         super.toNBT(compound, lookup);
     }
 
@@ -856,6 +857,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         levels.set(compound.getInt("levels"));
         corruption.set(compound.getInt("corruption"));
         mana.fromNBT(compound.getCompound("mana"), lookup);
+        advancementProgress = NbtSerialisable.decode(TriggerCountTracker.CODEC, compound.get("advancementTriggerCounts"), lookup).orElseGet(() -> new TriggerCountTracker(Map.of()));
         super.fromNBT(compound, lookup);
     }
 
@@ -874,7 +876,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         compound.put("discoveries", discoveries.toNBT(lookup));
         compound.putInt("ticksInvulnerable", ticksInvulnerable);
         compound.putInt("ticksMetamorphising", ticksMetamorphising);
-        compound.put("advancementTriggerCounts", NbtSerialisable.encode(TriggerCountTracker.CODEC, advancementProgress, lookup));
     }
 
     @Override
@@ -892,7 +893,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         ticksInSun = compound.getInt("ticksInSun");
         hasShades = compound.getBoolean("hasShades");
         ticksMetamorphising = compound.getInt("ticksMetamorphising");
-        advancementProgress = NbtSerialisable.decode(TriggerCountTracker.CODEC, compound.get("advancementTriggerCounts"), lookup).orElseGet(() -> new TriggerCountTracker(Map.of()));
     }
 
     @Override
