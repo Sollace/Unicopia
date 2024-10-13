@@ -67,6 +67,7 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
             for (Race r : extra) {
                 builder.criterion("be_" + r.getId().getPath(), new RaceChangeCriterion.Conditions(LootContextPredicate.EMPTY, r));
             }
+            builder.criteriaMerger(CriterionMerger.OR);
         }
 
         return builder.build(consumer, race.getId().getPath() + "_route");
