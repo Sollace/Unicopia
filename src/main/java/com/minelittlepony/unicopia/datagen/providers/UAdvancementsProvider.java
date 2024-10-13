@@ -22,6 +22,7 @@ import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRequirements;
+import net.minecraft.advancement.AdvancementRequirements.CriterionMerger;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.criterion.ConsumeItemCriterion;
 import net.minecraft.advancement.criterion.Criteria;
@@ -74,6 +75,7 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
             for (Race r : extra) {
                 builder.criterion("be_" + r.getId().getPath(), UCriteria.PLAYER_CHANGE_RACE.create(new RaceChangeCriterion.Conditions(Optional.empty(), r)));
             }
+            builder.criteriaMerger(CriterionMerger.OR);
         }
 
         return builder.build(consumer, race.getId().getPath() + "_route");
