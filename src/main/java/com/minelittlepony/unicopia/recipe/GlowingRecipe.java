@@ -43,7 +43,7 @@ public class GlowingRecipe extends ItemCombinationRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends GlowingRecipe> getSerializer() {
         return URecipes.GLOWING_SERIALIZER;
     }
 }

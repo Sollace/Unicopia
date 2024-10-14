@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.item.component.Appearance;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
@@ -38,7 +39,7 @@ public class JarInsertRecipe extends ItemCombinationRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends JarInsertRecipe> getSerializer() {
         return URecipes.JAR_INSERT_SERIALIZER;
     }
 

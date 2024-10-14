@@ -67,7 +67,7 @@ public class SeaponySonarPulseAbility implements Ability<Hit> {
             if (distance < 4) {
                 float scale = 1 - (distance/10F);
                 ((LivingEntity)target).takeKnockback(0.7 * scale, -offset.x, -offset.z);
-                target.damage(target.getDamageSources().sonicBoom(player.asEntity()), 10 * scale);
+                target.damage((ServerWorld)target.getWorld(), target.getDamageSources().sonicBoom(player.asEntity()), 10 * scale);
             } else {
                 emitPing(player, target.getPos(), 10, 1, 1.3F);
             }

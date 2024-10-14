@@ -34,7 +34,6 @@ abstract class MixinLivingEntityRenderer<T extends LivingEntity, M extends Entit
     @Shadow
     private @Final List<FeatureRenderer<T, M>> features;
 
-    MixinLivingEntityRenderer() { super(null); }
     @Nullable
     private AccessoryFeatureRenderer<T, M> accessories;
 

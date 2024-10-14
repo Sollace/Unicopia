@@ -82,12 +82,12 @@ public class ChangelingFeedAbility implements Ability<Hit> {
             if (targets.size() > 0) {
                 new ChangelingFeedingSpell(targets, maximumHealthGain, maximumFoodGain).apply(iplayer);
 
-                iplayer.playSound(USounds.ENTITY_PLAYER_CHANGELING_FEED, 0.1F, iplayer.getRandomPitch());
+                iplayer.playSound(USounds.ENTITY_PLAYER_CHANGELING_FEED.value(), 0.1F, iplayer.getRandomPitch());
                 return true;
             }
         }
 
-        iplayer.playSound(USounds.Vanilla.ENTITY_PLAYER_BURP, 1, (float)player.getWorld().random.nextTriangular(1F, 0.2F));
+        iplayer.playSound(USounds.Vanilla.ENTITY_PLAYER_BURP, 1, player.getWorld().random.nextTriangular(1F, 0.2F));
         return true;
     }
 

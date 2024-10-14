@@ -19,8 +19,8 @@ public interface ULootTableEntryType {
         });
         LootTableEvents.ALL_LOADED.register((resourceManager, registry) -> {
             extentionTableIds.forEach((base, extra) -> {
-                registry.getOrEmpty(base).ifPresent(table -> {
-                    registry.getOrEmpty(extra).ifPresent(extraTable -> {
+                registry.getOptionalValue(base).ifPresent(table -> {
+                    registry.getOptionalValue(extra).ifPresent(extraTable -> {
                         table.pools = Stream.concat(table.pools.stream(), extraTable.pools.stream()).toList();
                     });
                 });

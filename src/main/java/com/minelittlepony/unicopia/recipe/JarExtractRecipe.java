@@ -31,7 +31,7 @@ public class JarExtractRecipe extends SpecialCraftingRecipe {
     @Override
     public ItemStack craft(CraftingRecipeInput inventory, @Nullable WrapperLookup manager) {
         ItemStack jar = ItemStack.EMPTY;
-        for (int i = 0; i < inventory.getSize(); i++) {
+        for (int i = 0; i < inventory.size(); i++) {
             ItemStack stack = inventory.getStackInSlot(i);
             if (stack.isEmpty()) {
                 continue;
@@ -56,7 +56,7 @@ public class JarExtractRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<? extends JarExtractRecipe> getSerializer() {
         return URecipes.JAR_INSERT_SERIALIZER;
     }
 }

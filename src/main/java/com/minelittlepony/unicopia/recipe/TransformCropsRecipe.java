@@ -137,7 +137,7 @@ public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.Placeme
         }
 
         @Override
-        public int getSize() {
+        public int size() {
             return 0;
         }
     }

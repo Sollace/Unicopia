@@ -20,6 +20,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -103,12 +104,12 @@ public class ScreechAbility implements Ability<Numeric> {
         boolean isBracing = isEarthPony && player.asEntity().isSneaking();
 
         if (!isBracing) {
-            living.damage(player.damageOf(UDamageTypes.BAT_SCREECH, player), isEarthPony ? 0.1F : 0.3F);
+            living.damage((ServerWorld)player.asWorld(), player.damageOf(UDamageTypes.BAT_SCREECH, player), isEarthPony ? 0.1F : 0.3F);
 
 
             if (living.getWorld().random.nextInt(MOB_SPOOK_PROBABILITY) == 0) {
                 RegistryUtils.pickRandom(living.getWorld(), UTags.Items.SPOOKED_MOB_DROPS).ifPresent(drop -> {
-                    living.dropStack(drop.getDefaultStack());
+                    living.dropStack((ServerWorld)living.getWorld(), drop.getDefaultStack());
                     living.playSound(USounds.Vanilla.ENTITY_ITEM_PICKUP, 1, 0.1F);
                     UCriteria.SPOOK_MOB.trigger(player.asEntity());
                 });

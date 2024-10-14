@@ -21,6 +21,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
@@ -138,7 +140,7 @@ public record Altar(
     public void generateDecorations(World world) {
         world.setBlockState(origin, UBlocks.SPECTRAL_FIRE.getDefaultState(), Block.FORCE_STATE | Block.NOTIFY_ALL);
         pillars.forEach(pillar -> {
-            FloatingArtefactEntity artefact = UEntities.FLOATING_ARTEFACT.create(world);
+            FloatingArtefactEntity artefact = UEntities.FLOATING_ARTEFACT.create(world, SpawnReason.NATURAL);
             artefact.setStack(UItems.ALICORN_BADGE.getDefaultStack());
             artefact.setPosition(pillar.up().toCenterPos());
             artefact.setInvulnerable(true);
@@ -159,7 +161,13 @@ public record Altar(
     }
 
     private void removeExisting(@Nullable Entity except, World world, BlockPos pillar) {
-        world.getOtherEntities(except, new Box(pillar.up()), IS_PARTICIPANT).forEach(Entity::kill);
+        world.getOtherEntities(except, new Box(pillar.up()), IS_PARTICIPANT).forEach(e -> {
+            if (world instanceof ServerWorld sw) {
+                e.kill(sw);
+            } else {
+                e.setRemoved(RemovalReason.KILLED);
+            }
+        });
     }
 
     public boolean isValid(World world) {

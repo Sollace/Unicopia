@@ -6,7 +6,7 @@ public interface LimbAnimationUtil {
 
     static void resetToZero(LimbAnimator animator) {
         animator.setSpeed(0);
-        animator.updateLimbs(-animator.getPos(), 1);
+        animator.updateLimbs(-animator.getPos(), 1, 1);
         animator.setSpeed(0);
     }
 
@@ -17,7 +17,7 @@ public interface LimbAnimationUtil {
 
         resetToZero(to);
         to.setSpeed(prevSpeed);
-        to.updateLimbs(pos, 1);
+        to.updateLimbs(pos, 1, 1);
         to.setSpeed(speed);
     }
 }

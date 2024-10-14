@@ -90,7 +90,9 @@ public class EarthPonyKickAbility implements Ability<Pos> {
                         if (e instanceof LivingEntity entity) {
                             float calculatedStrength = 0.5F * (1 + player.getLevel().getScaled(9));
 
-                            entity.damage(player.damageOf(UDamageTypes.KICK, player), player.asWorld().random.nextBetween(2, 10) + calculatedStrength);
+                            if (player.asWorld() instanceof ServerWorld sw) {
+                                entity.damage(sw, player.damageOf(UDamageTypes.KICK, player), player.asWorld().random.nextBetween(2, 10) + calculatedStrength);
+                            }
                             entity.takeKnockback(calculatedStrength, origin.x - entity.getX(), origin.z - entity.getZ());
                             Living.updateVelocity(entity);
                             player.subtractEnergyCost(3);
@@ -109,7 +111,7 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         }
 
         if (type == ActivationType.DOUBLE_TAP && player.asEntity().isOnGround() && player.getMagicalReserves().getMana().get() > 40) {
-            player.getPhysics().dashForward((float)player.asWorld().random.nextTriangular(3.5F, 0.3F));
+            player.getPhysics().dashForward(player.asWorld().random.nextTriangular(3.5F, 0.3F));
             player.subtractEnergyCost(4);
             player.asEntity().addExhaustion(5);
             return true;

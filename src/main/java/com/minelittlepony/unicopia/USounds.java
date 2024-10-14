@@ -24,7 +24,7 @@ public interface USounds {
     SoundEvent ENTITY_PLAYER_EARTHPONY_DASH = ENTITY_RAVAGER_STEP;
     SoundEvent ENTITY_PLAYER_CHANGELING_BUZZ = register("entity.player.changeling.buzz");
     SoundEvent ENTITY_PLAYER_CHANGELING_TRANSFORM = register("entity.player.changeling.transform");
-    SoundEvent ENTITY_PLAYER_CHANGELING_FEED = ENTITY_GENERIC_DRINK;
+    RegistryEntry<SoundEvent> ENTITY_PLAYER_CHANGELING_FEED = ENTITY_GENERIC_DRINK;
     SoundEvent ENTITY_PLAYER_CHANGELING_CLIMB = ENTITY_CHICKEN_STEP;
     SoundEvent ENTITY_PLAYER_UNICORN_TELEPORT = register("entity.player.unicorn.teleport");
     SoundEvent ENTITY_PLAYER_KIRIN_RAGE = ENTITY_POLAR_BEAR_WARNING;

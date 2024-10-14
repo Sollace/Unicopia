@@ -26,7 +26,7 @@ public record MagicParticleEffect (
     ).apply(instance, MagicParticleEffect::new));
     public static final PacketCodec<ByteBuf, MagicParticleEffect> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.BOOL, MagicParticleEffect::tinted,
-            PacketCodecs.VECTOR3F, MagicParticleEffect::color,
+            PacketCodecs.VECTOR_3F, MagicParticleEffect::color,
             MagicParticleEffect::new
     );
 

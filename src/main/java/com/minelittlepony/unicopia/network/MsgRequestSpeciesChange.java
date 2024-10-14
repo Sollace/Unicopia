@@ -39,7 +39,7 @@ public record MsgRequestSpeciesChange (
             }
 
             if (force) {
-                if (sender.getWorld().getGameRules().getBoolean(UGameRules.ANNOUNCE_TRIBE_JOINS)) {
+                if (((ServerWorld)sender.getWorld()).getGameRules().getBoolean(UGameRules.ANNOUNCE_TRIBE_JOINS)) {
                     Text message = Text.translatable("respawn.reason.joined_new_tribe",
                             sender.getDisplayName(),
                             player.getSpecies().getDisplayName(), player.getSpecies().getAltDisplayName());

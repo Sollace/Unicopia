@@ -18,6 +18,6 @@ public interface WorldConvertable {
     }
 
     default <T> RegistryEntry<T> entryFor(RegistryKey<T> key) {
-        return asWorld().getRegistryManager().get(key.getRegistryRef()).getEntry(key).orElseThrow();
+        return asWorld().getRegistryManager().getOrThrow(key.getRegistryRef()).getEntry(key.getValue()).orElseThrow();
     }
 }

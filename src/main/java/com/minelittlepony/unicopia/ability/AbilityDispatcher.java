@@ -302,7 +302,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
             maxWarmup = compound.getInt("maxWarmup");
             maxCooldown = compound.getInt("maxCooldown");
             triggered = compound.getBoolean("triggered");
-            activeAbility = Abilities.REGISTRY.getOrEmpty(Identifier.of(compound.getString("activeAbility")));
+            activeAbility = Abilities.REGISTRY.getOptionalValue(Identifier.of(compound.getString("activeAbility")));
         }
     }
 }

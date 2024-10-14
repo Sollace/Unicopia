@@ -21,7 +21,7 @@ public interface InventoryUtil {
     }
 
     static Stream<Integer> slots(RecipeInput inventory) {
-        return Stream.iterate(0, i -> i < inventory.getSize(), i -> i + 1);
+        return Stream.iterate(0, i -> i < inventory.size(), i -> i + 1);
     }
 
     static int getOpenSlot(Inventory inventory) {

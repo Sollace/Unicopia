@@ -14,7 +14,6 @@ import net.minecraft.util.Util;
 import net.minecraft.registry.*;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.registry.entry.RegistryEntryList.Named;
 import net.minecraft.world.World;
 
 public interface RegistryUtils {
@@ -26,8 +25,12 @@ public interface RegistryUtils {
         return FabricRegistryBuilder.from(new SimpleDefaultedRegistry<T>(def, RegistryKey.ofRegistry(id), Lifecycle.stable(), false)).buildAndRegister();
     }
 
+    @SuppressWarnings("unchecked")
     static <T> RegistryEntryList<T> entriesForTag(World world, TagKey<T> key) {
-        return world.getRegistryManager().get(key.registry()).getOrCreateEntryList(key);
+        return world.getRegistryManager().getOrThrow(key.registryRef())
+                .getOptional(key)
+                .map(RegistryEntryList.class::cast)
+                .orElse(RegistryEntryList.<T>empty());
     }
 
     static <T> Stream<T> valuesForTag(World world, TagKey<T> key) {
@@ -43,29 +46,18 @@ public interface RegistryUtils {
     }
 
     static <T> Optional<T> pickRandom(World world, TagKey<T> key, Predicate<T> filter) {
-        return Util.getRandomOrEmpty(world.getRegistryManager().getOptional(key.registry())
-            .flatMap(registry -> registry.getEntryList(key))
-            .stream()
-            .flatMap(Named::stream)
-            .map(RegistryEntry::value)
-            .filter(filter)
-            .toList(), world.random);
+        return Util.getRandomOrEmpty(entriesForTag(world, key).stream().map(RegistryEntry::value).filter(filter).toList(), world.random);
     }
 
     static <T> Optional<RegistryEntry<T>> pickRandomEntry(World world, TagKey<T> key, Predicate<RegistryEntry<T>> filter) {
-        return Util.getRandomOrEmpty(world.getRegistryManager().getOptional(key.registry())
-            .flatMap(registry -> registry.getEntryList(key))
-            .stream()
-            .flatMap(Named::stream)
-            .filter(filter)
-            .toList(), world.random);
+        return Util.getRandomOrEmpty(entriesForTag(world, key).stream().filter(filter).toList(), world.random);
     }
 
     static <T> boolean isIn(World world, T obj, RegistryKey<? extends Registry<T>> registry, TagKey<T> tag) {
-        return world.getRegistryManager().get(registry).getEntry(obj).isIn(tag);
+        return world.getRegistryManager().getOrThrow(registry).getEntry(obj).isIn(tag);
     }
 
     static <T> Identifier getId(World world, T obj, RegistryKey<? extends Registry<T>> registry) {
-        return world.getRegistryManager().get(registry).getId(obj);
+        return world.getRegistryManager().getOrThrow(registry).getId(obj);
     }
 }

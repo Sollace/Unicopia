@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.entity.mob.FriendlyCreeperEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.conversion.EntityConversionContext;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
@@ -25,11 +26,13 @@ public class HugAbility extends CarryAbility {
         pony.setAnimation(Animation.ARMS_FORWARD, Animation.Recipient.ANYONE);
 
         if (rider instanceof CreeperEntity creeper) {
-            FriendlyCreeperEntity friendlyCreeper = creeper.convertTo(UEntities.FRIENDLY_CREEPER, true);
-            player.getWorld().spawnEntity(friendlyCreeper);
-
-            friendlyCreeper.startRiding(player, true);
-            Living.getOrEmpty(friendlyCreeper).ifPresent(living -> living.setCarrier(player));
+            FriendlyCreeperEntity friendlyCreeper = creeper.convertTo(UEntities.FRIENDLY_CREEPER, EntityConversionContext.create(creeper, true, true), e -> {
+                e.startRiding(player, true);
+                Living.getOrEmpty(e).ifPresent(living -> living.setCarrier(player));
+            });
+            if (friendlyCreeper != null) {
+                player.getWorld().spawnEntity(friendlyCreeper);
+            }
         } else if (rider instanceof FriendlyCreeperEntity creeper) {
             creeper.startRiding(player, true);
             Living.getOrEmpty(creeper).ifPresent(living -> living.setCarrier(player));

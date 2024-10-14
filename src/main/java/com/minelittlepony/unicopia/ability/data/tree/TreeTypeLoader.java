@@ -2,17 +2,13 @@ package com.minelittlepony.unicopia.ability.data.tree;
 
 import java.util.*;
 import java.util.function.Supplier;
-import com.google.gson.JsonElement;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.util.Resources;
 import com.minelittlepony.unicopia.util.Weighted;
 import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -23,10 +19,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 
-public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
+public class TreeTypeLoader extends JsonDataLoader<TreeTypeLoader.TreeTypeDef> implements IdentifiableResourceReloadListener {
     private static final Identifier ID = Unicopia.id("data/tree_type");
 
     public static final TreeTypeLoader INSTANCE = new TreeTypeLoader();
@@ -34,7 +29,7 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
     private Map<Identifier, TreeTypeDef> entries = new HashMap<>();
 
     TreeTypeLoader() {
-        super(Resources.GSON, "tree_types");
+        super(TreeTypeDef.CODEC, "tree_types");
     }
 
     public Map<Identifier, TreeTypeDef> getEntries() {
@@ -46,18 +41,9 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
         return ID;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    protected void apply(Map<Identifier, JsonElement> resources, ResourceManager manager, Profiler profiler) {
-        entries = Map.ofEntries(resources.entrySet().stream()
-                .filter(Objects::nonNull)
-                .map(entry -> TreeTypeDef.CODEC.decode(JsonOps.INSTANCE, entry.getValue())
-                        .result()
-                        .map(p -> p.getFirst())
-                        .map(p -> Map.entry(entry.getKey(), p))
-                        .orElse(null))
-                .filter(Objects::nonNull)
-                .toArray(Map.Entry[]::new));
+    protected void apply(Map<Identifier, TreeTypeDef> resources, ResourceManager manager, Profiler profiler) {
+        entries = resources;
 
         TreeTypes.load(entries);
     }
@@ -120,15 +106,13 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
             @Override
             public void appendTo(Weighted.Builder<Supplier<ItemStack>> weighted) {
                 if (item.isPresent()) {
-                    Registries.ITEM.getOrEmpty(item.get()).ifPresent(item -> {
+                    Registries.ITEM.getOptionalValue(item.get()).ifPresent(item -> {
                         weighted.put(weight, item::getDefaultStack);
                     });
                 } else {
                     weighted.put(weight, () -> {
-                        return Registries.ITEM.getOrCreateEntryList(TagKey.of(RegistryKeys.ITEM, tag.get()))
-                                .getRandom(Weighted.getRng())
-                                .map(RegistryEntry::value)
-                                .map(Item::getDefaultStack)
+                        return Registries.ITEM.getRandomEntry(TagKey.of(RegistryKeys.ITEM, tag.get()), Weighted.getRng())
+                                .map(entry -> entry.value().getDefaultStack())
                                 .orElse(ItemStack.EMPTY);
                     });
                 }

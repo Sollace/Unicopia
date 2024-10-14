@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.event.GameEvent;
 
@@ -38,8 +39,8 @@ public class BatEeeeAbility extends ScreechAbility {
             }
         }
 
-        if (strength > 0.5F && rng.nextInt(SELF_SPOOK_PROBABILITY) == 0) {
-            player.asEntity().damage(player.damageOf(UDamageTypes.BAT_SCREECH, player), 0.1F);
+        if (player.asWorld() instanceof ServerWorld sw && strength > 0.5F && rng.nextInt(SELF_SPOOK_PROBABILITY) == 0) {
+            player.asEntity().damage(sw, player.damageOf(UDamageTypes.BAT_SCREECH, player), 0.1F);
             UCriteria.SCREECH_SELF.trigger(player.asEntity());
         }
     }

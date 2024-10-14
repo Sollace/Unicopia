@@ -3,6 +3,8 @@ package com.minelittlepony.unicopia.ability;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import java.util.stream.StreamSupport;
+
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.data.Pos;
@@ -28,6 +30,8 @@ import net.minecraft.item.Items;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -132,10 +136,13 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
         return 0;
     }
 
+    @SuppressWarnings("unchecked")
     private boolean applyDirectly(Pony player, BlockPos pos) {
-        return player.asWorld().getRecipeManager()
-                .getAllMatches(URecipes.GROWING, new TransformCropsRecipe.PlacementArea(player, pos), player.asWorld())
-                .stream()
+        var placementArea = new TransformCropsRecipe.PlacementArea(player, pos);
+        return StreamSupport.stream(((ServerWorld)player.asWorld()).getRecipeManager().values().spliterator(), false)
+                .filter(recipe -> recipe.value().getType() == URecipes.GROWING)
+                .map(recipe -> (RecipeEntry<TransformCropsRecipe>)recipe)
+                .filter(recipe -> recipe.value().matches(placementArea, player.asWorld()))
                 .map(recipe -> recipe.value().checkPattern(player.asWorld(), pos))
                 .filter(result -> result.matchedLocations().size() + 1 >= TransformCropsRecipe.MINIMUM_INPUT)
                 .filter(result -> {

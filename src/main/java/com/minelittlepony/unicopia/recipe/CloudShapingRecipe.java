@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.recipe;
 
 import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.util.Untyped;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
@@ -19,13 +20,13 @@ public class CloudShapingRecipe extends StonecuttingRecipe {
     }
 
     @Override
-    public RecipeType<?> getType() {
-        return URecipes.CLOUD_SHAPING;
+    public RecipeType<StonecuttingRecipe> getType() {
+        return Untyped.cast(URecipes.CLOUD_SHAPING);
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
-        return URecipes.CLOUD_SHAPING_SERIALIZER;
+    public RecipeSerializer<StonecuttingRecipe> getSerializer() {
+        return Untyped.cast(URecipes.CLOUD_SHAPING_SERIALIZER);
     }
 
     @Override

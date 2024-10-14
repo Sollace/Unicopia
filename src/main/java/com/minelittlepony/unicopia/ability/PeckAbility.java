@@ -125,8 +125,8 @@ public class PeckAbility implements Ability<Hit> {
         boolean isEarthPony = EquinePredicates.PLAYER_EARTH.test(living);
         boolean isBracing = isEarthPony && player.asEntity().isSneaking();
 
-        if (!isBracing) {
-            living.damage(player.damageOf(UDamageTypes.BAT_SCREECH, player), isEarthPony ? 0.1F : 0.3F);
+        if (!isBracing && living.getWorld() instanceof ServerWorld sw) {
+            living.damage(sw, player.damageOf(UDamageTypes.BAT_SCREECH, player), isEarthPony ? 0.1F : 0.3F);
         }
 
         Vec3d knockVec = player.getOriginVector().subtract(living.getPos()).multiply(strength);

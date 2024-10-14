@@ -36,7 +36,7 @@ public record SphereParticleEffect (
 
     public static final PacketCodec<RegistryByteBuf, SphereParticleEffect> createPacketCodec(ParticleType<SphereParticleEffect> type) {
         return PacketCodec.tuple(
-                PacketCodecs.VECTOR3F, SphereParticleEffect::color,
+                PacketCodecs.VECTOR_3F, SphereParticleEffect::color,
                 PacketCodecs.FLOAT, SphereParticleEffect::alpha,
                 PacketCodecs.FLOAT, SphereParticleEffect::radius,
                 PacketCodecUtils.VECTOR, SphereParticleEffect::offset,

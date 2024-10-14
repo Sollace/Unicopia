@@ -85,7 +85,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
     public Optional<Hit> prepare(Pony player) {
         if (player.asEntity().getVelocity().y * player.getPhysics().getGravitySignum() < 0
                 && !player.asEntity().getAbilities().flying
-                && !player.asEntity().isFallFlying()
+                && !player.asEntity().isGliding()
                 && !player.asEntity().isUsingRiptide()) {
             thrustDownwards(player);
             return Hit.INSTANCE;
@@ -144,7 +144,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                                 -(player.getY() - i.getY() - liftAmount) / inertia + (dist < 1 ? dist : 0),
                                 -(player.getZ() - i.getZ()) / inertia);
 
-                        double amount = (1.5F * player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).getValue() + heavyness * 0.4) / (float)(dist * 1.3F);
+                        double amount = (1.5F * player.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue() + heavyness * 0.4) / (float)(dist * 1.3F);
 
                         if (i instanceof PlayerEntity) {
                             Race.Composite race = Pony.of((PlayerEntity)i).getCompositeRace();
@@ -161,7 +161,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
                             amount /= EnchantmentUtil.getImpactReduction(l);
                         }
 
-                        i.damage(iplayer.damageOf(UDamageTypes.SMASH, iplayer), (float)amount);
+                        i.damage((ServerWorld)iplayer.asWorld(), iplayer.damageOf(UDamageTypes.SMASH, iplayer), (float)amount);
                         Living.updateVelocity(i);
                     }
                 });
