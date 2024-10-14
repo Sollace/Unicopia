@@ -145,6 +145,11 @@ public class FancyBedBlock extends BedBlock {
         }
 
         @Override
+        public boolean supports(BlockState state) {
+            return getType().supports(state);
+        }
+
+        @Override
         public BlockEntityType<?> getType() {
             return UBlockEntities.FANCY_BED;
         }
