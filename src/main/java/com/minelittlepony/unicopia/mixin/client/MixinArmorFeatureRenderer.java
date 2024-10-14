@@ -7,6 +7,7 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.entity.LivingEntity;
 
 @Mixin(ArmorFeatureRenderer.class)
+// TODO: Remove this
 abstract class MixinArmorFeatureRenderer<
         T extends LivingEntity,
         M extends BipedEntityModel<T>,
