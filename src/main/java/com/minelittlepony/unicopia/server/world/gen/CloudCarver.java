@@ -27,11 +27,6 @@ import net.minecraft.world.gen.chunk.AquiferSampler;
 import net.minecraft.world.gen.densityfunction.DensityFunction.NoisePos;
 
 public class CloudCarver extends CaveCarver {
-
-    private Random random;
-
-    private final LongSet topWrittenPositions = new LongOpenHashSet();
-
     public CloudCarver(Codec<CaveCarverConfig> codec) {
         super(codec);
     }
@@ -62,25 +57,13 @@ public class CloudCarver extends CaveCarver {
             ChunkPos chunkPos,
             CarvingMask carvingMask
         ) {
-        this.random = random;
-        boolean result = super.carve(context, config, chunk, function, random, new AquiferSampler() {
-            @Override
-            public BlockState apply(NoisePos pos, double density) {
-                BlockState state = sampler.apply(pos, density);
-                return state != null && state.isAir() ? UBlocks.CLOUD.getDefaultState() : state;
-            }
-
-            @Override
-            public boolean needsFluidTick() {
-                return sampler.needsFluidTick();
-            }
-
-        }, chunkPos, carvingMask);
+        CloudCarverContext carverContext = new CloudCarverContext(sampler, random);
+        boolean result = super.carve(context, config, chunk, function, random, carverContext, chunkPos, carvingMask);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        topWrittenPositions.forEach(l -> {
+        carverContext.topWrittenPositions.forEach(l -> {
             processSurfaceBlocks(mutable.set(l), context, config, chunk, random);
         });
-        topWrittenPositions.clear();
+        carverContext.topWrittenPositions.clear();
         return result;
     }
 
@@ -99,17 +82,17 @@ public class CloudCarver extends CaveCarver {
         CarvingMask mask,
         Carver.SkipPredicate skipPredicate
     ) {
-        if (random == null) {
+        if (!(aquiferSampler instanceof CloudCarverContext c)) {
             return;
         }
         int maxY = context.getMinY() + context.getHeight();
 
-        int bubbleCount = 10 + random.nextInt(12);
+        int bubbleCount = 10 + c.random.nextInt(12);
         for (int i = 0; i < bubbleCount; i++) {
-            double width = 1.5 * xScale + random.nextTriangular(3, 2);
-            double height = Math.min(width * yScale * (1 + random.nextFloat() * 2) + MathHelper.sin((float) (Math.PI / 2)) * xScale, maxY - y);
-            double bubbleX = x + (random.nextFloat() * 2 - 1) * width;
-            double bubbleZ = z + (random.nextFloat() * 2 - 1) * width;
+            double width = 1.5 * xScale +c.random.nextTriangular(3, 2);
+            double height = Math.min(width * yScale * (1 + c.random.nextFloat() * 2) + MathHelper.sin((float) (Math.PI / 2)) * xScale, maxY - y);
+            double bubbleX = x + (c.random.nextFloat() * 2 - 1) * width;
+            double bubbleZ = z + (c.random.nextFloat() * 2 - 1) * width;
             carveRegion(context, config, chunk, posToBiome, aquiferSampler, bubbleX + 1.0, y, bubbleZ, width, height, mask, skipPredicate);
         }
     }
@@ -136,17 +119,17 @@ public class CloudCarver extends CaveCarver {
             CarvingMask mask,
             Carver.SkipPredicate skipPredicate
         ) {
-        if (random == null) {
+        if (!(aquiferSampler instanceof CloudCarverContext c)) {
             return;
         }
         int maxY = context.getMinY() + context.getHeight();
-        int bubbleCount = 10 + random.nextInt(12);
+        int bubbleCount = 10 + c.random.nextInt(12);
         for (int i = 0; i < bubbleCount; i++) {
-            double width = /*1.5 + MathHelper.sin((float) (Math.PI / 2)) * xScale +*/ 1.5 * horizontalScale + random.nextInt(3) + w;
-            double height = width * (1 + random.nextFloat() * 2) * verticalScale * 0.2;
-            double bubbleX = x + (random.nextFloat() * 2 - 1) * width * 1.5;
-            double bubbleZ = z + (random.nextFloat() * 2 - 1) * width * 1.5;
-            double bubbleY = y + random.nextFloat() * height * 0.5;
+            double width = /*1.5 + MathHelper.sin((float) (Math.PI / 2)) * xScale +*/ 1.5 * horizontalScale + c.random.nextInt(3) + w;
+            double height = width * (1 + c.random.nextFloat() * 2) * verticalScale * 0.2;
+            double bubbleX = x + (c.random.nextFloat() * 2 - 1) * width * 1.5;
+            double bubbleZ = z + (c.random.nextFloat() * 2 - 1) * width * 1.5;
+            double bubbleY = y + c.random.nextFloat() * height * 0.5;
             if (bubbleY + height < maxY) {
                 carveRegion(context, config, chunk, posToBiome, aquiferSampler, bubbleX, bubbleY, bubbleZ, width, height, mask, skipPredicate);
             }
@@ -168,10 +151,12 @@ public class CloudCarver extends CaveCarver {
         ) {
         if (super.carveAtPoint(context, config, chunk, posToBiome, mask, pos, tmp, aquiferSampler, replacedGrassy)) {
             tmp.set(pos).move(Direction.DOWN);
-            if (!topWrittenPositions.isEmpty()) {
-                topWrittenPositions.remove(tmp.asLong());
+            if (aquiferSampler instanceof CloudCarverContext c) {
+                if (!c.topWrittenPositions.isEmpty()) {
+                    c.topWrittenPositions.remove(tmp.asLong());
+                }
+                c.topWrittenPositions.add(pos.asLong());
             }
-            topWrittenPositions.add(pos.asLong());
             if (chunk.getBlockState(tmp).isOf(UBlocks.SOGGY_CLOUD)) {
                 chunk.setBlockState(tmp, UBlocks.CLOUD.getDefaultState(), false);
             }
@@ -183,6 +168,29 @@ public class CloudCarver extends CaveCarver {
     protected void processSurfaceBlocks(BlockPos.Mutable pos, CarverContext context, CaveCarverConfig config, Chunk chunk, Random random) {
         if (chunk.getBlockState(pos.move(Direction.UP)).isAir()) {
             chunk.setBlockState(pos.move(Direction.DOWN), UBlocks.SOGGY_CLOUD.getDefaultState(), false);
+        }
+    }
+
+    static class CloudCarverContext implements AquiferSampler {
+
+        private final AquiferSampler sampler;
+        public final LongSet topWrittenPositions = new LongOpenHashSet();
+        public final Random random;
+
+        public CloudCarverContext(AquiferSampler sampler, Random random) {
+            this.sampler = sampler;
+            this.random = random;
+        }
+
+        @Override
+        public BlockState apply(NoisePos pos, double density) {
+            BlockState state = sampler.apply(pos, density);
+            return state != null && state.isAir() ? UBlocks.CLOUD.getDefaultState() : state;
+        }
+
+        @Override
+        public boolean needsFluidTick() {
+            return sampler.needsFluidTick();
         }
     }
 }
