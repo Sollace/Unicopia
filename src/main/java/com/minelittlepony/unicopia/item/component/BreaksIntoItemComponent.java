@@ -34,10 +34,10 @@ public record BreaksIntoItemComponent(
     );
 
     public Optional<Item> getItemAfterBreaking() {
-        return Registries.ITEM.getOrEmpty(itemAfterBreaking());
+        return Registries.ITEM.getOptionalValue(itemAfterBreaking());
     }
 
     public Optional<SoundEvent> getBreakingSound() {
-        return Registries.SOUND_EVENT.getOrEmpty(breakingSound);
+        return Registries.SOUND_EVENT.getOptionalValue(breakingSound);
     }
 }

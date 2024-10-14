@@ -482,9 +482,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                     entity.playSound(SoundEvents.ENTITY_TURTLE_AMBIENT_LAND, 1, 1);
                 }
 
-                if (entity.getAir() == -20) {
+                if (entity.getAir() == -20 && !asWorld().isClient) {
                     entity.setAir(0);
-                    entity.damage(entity.getDamageSources().dryOut(), 2);
+                    entity.damage((ServerWorld)asWorld(), entity.getDamageSources().dryOut(), 2);
                 }
             }
         }
@@ -831,7 +831,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public ActionResult canSleepNow() {
-        if (asWorld().getGameRules().getBoolean(UGameRules.DO_NOCTURNAL_BAT_PONIES) && getSpecies().isNocturnal()) {
+        if (!asWorld().isClient && ((ServerWorld)asWorld()).getGameRules().getBoolean(UGameRules.DO_NOCTURNAL_BAT_PONIES) && getSpecies().isNocturnal()) {
             return asWorld().isDay() || asWorld().getAmbientDarkness() >= 4 ? ActionResult.SUCCESS : ActionResult.FAIL;
         }
 
@@ -899,7 +899,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public void copyFrom(Pony oldPlayer, boolean alive) {
         boolean forcedSwap = (!alive
                 && entity instanceof ServerPlayerEntity
-                && entity.getWorld().getGameRules().getBoolean(UGameRules.SWAP_TRIBE_ON_DEATH)
+                && ((ServerWorld)entity.getWorld()).getGameRules().getBoolean(UGameRules.SWAP_TRIBE_ON_DEATH)
                 && oldPlayer.respawnRace.isUnset())
                 || oldPlayer.getSpecies().isUnset();
 
@@ -919,7 +919,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         if (!alive) {
             // putting it here instead of adding another injection point into ServerPlayerEntity.copyFrom()
-            if (!asWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
+            if (!((ServerWorld)asWorld()).getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
                 PlayerInventory inventory = oldPlayer.asEntity().getInventory();
                 for (int i = 0; i < inventory.size(); i++) {
                     ItemStack stack = inventory.getStack(i);

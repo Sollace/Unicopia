@@ -26,11 +26,13 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -139,7 +141,7 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
 
         if (!isClient()) {
             if (!checkConnection()) {
-                kill();
+                kill((ServerWorld)getWorld());
             }
 
             spells.getSlots().get().ifPresent(spell -> {
@@ -157,7 +159,12 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
     }
 
     @Override
-    public void kill() {
+    public boolean damage(ServerWorld world, DamageSource source, float amount) {
+        return true;
+    }
+
+    @Override
+    public void kill(ServerWorld world) {
         setDead(true);
     }
 

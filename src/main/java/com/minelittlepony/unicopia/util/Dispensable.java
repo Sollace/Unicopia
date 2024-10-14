@@ -4,7 +4,6 @@ import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.Direction;
 
@@ -14,14 +13,13 @@ public interface Dispensable {
             private ActionResult result;
             @Override
             protected ItemStack dispenseSilently(BlockPointer source, ItemStack stack) {
-                TypedActionResult<ItemStack> result = dispenseStack(source, stack);
-                this.result = result.getResult();
+                result = dispenseStack(source, stack);
 
-                if (!this.result.isAccepted()) {
+                if (!result.isAccepted()) {
                     return super.dispenseSilently(source, stack);
                 }
 
-                return result.getValue();
+                return result instanceof ActionResult.Success success ? success.getNewHandStack() : stack.split(1);
             }
 
             @Override
@@ -43,5 +41,5 @@ public interface Dispensable {
     /**
      * Called to dispense this stack.
      */
-    TypedActionResult<ItemStack> dispenseStack(BlockPointer source, ItemStack stack);
+    ActionResult dispenseStack(BlockPointer source, ItemStack stack);
 }

@@ -61,11 +61,11 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
     }
 
     public MagicProjectileEntity(World world, LivingEntity thrower) {
-        super(UEntities.THROWN_ITEM, thrower, world);
+        super(UEntities.THROWN_ITEM, thrower, world, UItems.GEMSTONE.getDefaultStack());
     }
 
     protected MagicProjectileEntity(EntityType<? extends MagicProjectileEntity> type, World world, LivingEntity thrower) {
-        super(type, thrower, world);
+        super(type, thrower, world, UItems.GEMSTONE.getDefaultStack());
     }
 
     @Override
@@ -221,8 +221,8 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
         if (entity != null) {
             float damage = getThrowDamage();
 
-            if (damage > 0) {
-                entity.damage(getDamageSources().thrown(this, getOwner()), getThrowDamage());
+            if (damage > 0 && !getWorld().isClient) {
+                entity.damage((ServerWorld)getWorld(), getDamageSources().thrown(this, getOwner()), getThrowDamage());
             }
 
             forEachDelegates(effect -> effect.onImpact(this, hit), ProjectileDelegate.EntityHitListener.PREDICATE);
@@ -232,7 +232,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
     public void knockback(LivingEntity target, DamageSource source, ItemStack weapon) {
         double d = weapon != null && getWorld() instanceof ServerWorld serverWorld ? EnchantmentHelper.modifyKnockback(serverWorld, weapon, target, source, 0) : 0;
         if (d > 0) {
-            double e = Math.max(0, 1 - target.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
+            double e = Math.max(0, 1 - target.getAttributeValue(EntityAttributes.KNOCKBACK_RESISTANCE));
             Vec3d vec3d = this.getVelocity().multiply(1, 0, 1).normalize().multiply(d * 0.6 * e);
             if (vec3d.lengthSquared() > 0) {
                 target.addVelocity(vec3d.x, 0.1, vec3d.z);

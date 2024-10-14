@@ -13,14 +13,14 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.AliasedBlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
@@ -48,7 +48,7 @@ public class WeatherJarItem extends AliasedBlockItem implements Projectile, Proj
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    public ActionResult use(World world, PlayerEntity player, Hand hand) {
         if (player.shouldCancelInteraction()) {
             return super.use(world, player, hand);
         }
@@ -100,7 +100,7 @@ public class WeatherJarItem extends AliasedBlockItem implements Projectile, Proj
             }
 
             if (type == Type.LIGHTNING) {
-                LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world);
+                LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world, SpawnReason.EVENT);
                 lightning.refreshPositionAfterTeleport(pos.getX(), pos.getY(), pos.getZ());
 
                 world.spawnEntity(lightning);

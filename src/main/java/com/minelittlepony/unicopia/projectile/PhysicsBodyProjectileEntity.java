@@ -120,7 +120,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
     @Override
     public void tick() {
         super.tick();
-        if (inGround) {
+        if (inGroundTime > 0) {
             Vec3d vel = getVelocity();
             vel = vel.multiply(0, 1, 0);
 
@@ -167,7 +167,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
                     playSound(USounds.Vanilla.ENTITY_ITEM_BREAK, 1, 1);
                 });
                 if (!stack.isEmpty()) {
-                    dropStack(stack);
+                    dropStack((ServerWorld)getWorld(), stack);
                 }
                 setStack(ItemStack.EMPTY);
             }
@@ -225,7 +225,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
         if (getVelocity().length() > 0.2F) {
             boolean ownerCanModify = !getWorld().isClient && Caster.of(getOwner()).filter(pony -> pony.canModifyAt(hit.getBlockPos())).isPresent();
 
-            if (ownerCanModify && getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+            if (ownerCanModify && ((ServerWorld)getWorld()).getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                 if ((!isBouncy() || getWorld().random.nextInt(200) == 0) && state.isIn(UTags.Blocks.FRAGILE)) {
                     getWorld().breakBlock(hit.getBlockPos(), true);
                 }

@@ -12,6 +12,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -44,7 +45,7 @@ public interface ElectrifiedBlock {
     default void triggerLightning(BlockState state, World world, BlockPos pos) {
         Vec3d center = pos.toCenterPos();
         if (world instanceof ServerWorld serverWorld) {
-            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world);
+            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world, SpawnReason.EVENT);
             world.getOtherEntities(null, Box.from(center).expand(7)).forEach(entity -> {
                 shockEntity(serverWorld, center, lightning, entity);
             });
@@ -56,7 +57,7 @@ public interface ElectrifiedBlock {
     default void triggerLightning(BlockState state, World world, BlockPos pos, LivingEntity entity, boolean knockBack) {
         Vec3d center = pos.toCenterPos();
         if (world instanceof ServerWorld serverWorld) {
-            shockEntity(serverWorld, center, EntityType.LIGHTNING_BOLT.create(world), entity);
+            shockEntity(serverWorld, center, EntityType.LIGHTNING_BOLT.create(world, SpawnReason.EVENT), entity);
         }
         if (knockBack) {
             Vec3d offset = center.subtract(entity.getPos());
@@ -72,11 +73,11 @@ public interface ElectrifiedBlock {
         }
         float dist = (float)entity.getPos().distanceTo(center);
         if (dist < 4) {
-            entity.onStruckByLightning(serverWorld, EntityType.LIGHTNING_BOLT.create(serverWorld));
+            entity.onStruckByLightning(serverWorld, EntityType.LIGHTNING_BOLT.create(serverWorld, SpawnReason.EVENT));
         } else {
             float damage = 3 / dist;
             if (damage > 1) {
-                entity.damage(entity.getDamageSources().lightningBolt(), damage);
+                entity.damage(serverWorld, entity.getDamageSources().lightningBolt(), damage);
             }
         }
     }

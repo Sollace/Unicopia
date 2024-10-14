@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.util.Tickable;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.nbt.*;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -113,7 +114,7 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
             StreamSupport.stream(BlockPos.iterateRandomly(world.random, 20, pos, 10).spliterator(), false)
                 .filter(p -> world.isAir(p) && !world.isAir(p.down()) && world.isSkyVisible(p))
                 .findFirst().ifPresent(p -> {
-                    LightningEntity bolt = EntityType.LIGHTNING_BOLT.create(world);
+                    LightningEntity bolt = EntityType.LIGHTNING_BOLT.create(world, SpawnReason.EVENT);
                     bolt.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(pos));
                     bolt.setCosmetic(true);
                     world.spawnEntity(bolt);

@@ -3,7 +3,8 @@ package com.minelittlepony.unicopia.util;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.math.ColorHelper.Argb;
+
+import static net.minecraft.util.math.ColorHelper.*;
 
 public interface ColorHelper {
     static int getRainbowColor(Entity entity, int speed, float tickDelta) {
@@ -14,7 +15,7 @@ public interface ColorHelper {
         float r = (entity.age % speed + tickDelta) / 25.0f;
         int fs = SheepEntity.getRgbColor(DyeColor.byId(p));
         int gs = SheepEntity.getRgbColor(DyeColor.byId(q));
-        return Argb.lerp(r, fs, gs);
+        return lerp(r, fs, gs);
     }
 
     static float[] changeSaturation(float red, float green, float blue, float intensity) {
@@ -43,10 +44,10 @@ public interface ColorHelper {
     }
 
     static int saturate(int color, float intensity) {
-        float a = Argb.getAlpha(color) / 255F,
-                red = Argb.getRed(color) / 255F,
-                green = Argb.getGreen(color) / 255F,
-                blue = Argb.getBlue(color) / 255F;
+        float a = getAlpha(color) / 255F,
+                red = getRed(color) / 255F,
+                green = getGreen(color) / 255F,
+                blue = getBlue(color) / 255F;
         float avg = (red + green + blue) / 3F;
         float r = avg + (red - avg) * intensity,
                 g = avg + (green - avg) * intensity,
@@ -68,6 +69,6 @@ public interface ColorHelper {
             b = 1;
         }
 
-        return Argb.fromFloats(a, r, g, b);
+        return fromFloats(a, r, g, b);
     }
 }

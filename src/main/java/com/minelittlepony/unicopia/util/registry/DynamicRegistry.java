@@ -28,7 +28,7 @@ public class DynamicRegistry<T> implements RegistryBuilder.BootstrapFunction<T> 
                     if (added.getAndSet(true)) {
                         return;
                     }
-                    final WrapperLookup lookup = registries.asDynamicRegistryManager()::getWrapperOrThrow;
+                    final WrapperLookup lookup = registries.asDynamicRegistryManager()::getOrThrow;
                     keys.forEach((key, entry) -> {
                         if (!r.contains(key)) {
                             Registry.register(r, key, entry.factory().apply(lookup, key));

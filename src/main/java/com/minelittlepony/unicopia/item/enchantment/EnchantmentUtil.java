@@ -138,13 +138,13 @@ public interface EnchantmentUtil {
 
     @Deprecated
     static int getLevel(RegistryKey<Enchantment> enchantment, LivingEntity entity) {
-        return entity.getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(enchantment)
+        return entity.getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).getEntry(enchantment.getValue())
                 .map(entry -> EnchantmentHelper.getEquipmentLevel(entry, entity))
                 .orElse(0);
     }
 
     private static int getTotalLevel(RegistryKey<Enchantment> enchantment, LivingEntity entity) {
-        return entity.getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(enchantment)
+        return entity.getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).getEntry(enchantment.getValue())
                 .map(entry -> getTotalEquipmentLevel(entry, entity))
                 .orElse(0);
     }

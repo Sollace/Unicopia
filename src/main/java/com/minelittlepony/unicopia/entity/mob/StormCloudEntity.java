@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity.mob;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -18,6 +19,7 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
@@ -27,7 +29,6 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
@@ -283,7 +284,7 @@ public class StormCloudEntity extends Entity implements MagicImmune {
                 return;
             }
         }
-        LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(getWorld());
+        LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(getWorld(), SpawnReason.EVENT);
         lightning.refreshPositionAfterTeleport(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
         lightning.setCosmetic(cosmetic);
         getWorld().spawnEntity(lightning);
@@ -291,14 +292,13 @@ public class StormCloudEntity extends Entity implements MagicImmune {
     }
 
     @Override
-    public boolean damage(DamageSource source, float amount) {
-        super.damage(source, amount);
+    public boolean damage(ServerWorld world, DamageSource source, float amount) {
         if (!cursed) {
             if (random.nextInt(35) == 0 || (source.isOf(DamageTypes.PLAYER_ATTACK) && EquineContext.of(source.getAttacker()).collidesWithClouds())) {
                 if (getSize(1) < 2) {
-                    if (!getWorld().isClient() && getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-                        RegistryKey<LootTable> table = getType().getLootTableId();
-                        LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)this.getWorld())
+                    if (!world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+                        Optional<RegistryKey<LootTable>> table = getType().getLootTableKey();
+                        LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
                                 .add(LootContextParameters.THIS_ENTITY, this)
                                 .add(LootContextParameters.ORIGIN, this.getPos())
                                 .add(LootContextParameters.DAMAGE_SOURCE, source)
@@ -310,7 +310,7 @@ public class StormCloudEntity extends Entity implements MagicImmune {
                         getRegistryManager().get(RegistryKeys.LOOT_TABLE).get(table)
                             .generateLoot(builder.build(LootContextTypes.ENTITY), 0L, this::dropStack);
                     }
-                    kill();
+                    kill(world);
                     getWorld().sendEntityStatus(this, EntityStatuses.ADD_DEATH_PARTICLES);
                 } else {
                     split(2 + random.nextInt(4));

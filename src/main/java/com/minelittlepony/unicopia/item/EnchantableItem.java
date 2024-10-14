@@ -11,12 +11,12 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellTyp
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
+import com.minelittlepony.unicopia.util.TypedActionResult;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 
 public interface EnchantableItem extends ItemConvertible {
     static CustomisedSpellType<?> getSpellEffect(ItemStack stack) {
@@ -43,7 +43,7 @@ public interface EnchantableItem extends ItemConvertible {
 
         if (!player.getWorld().isClient && consume) {
             player.swingHand(player.getStackInHand(Hand.OFF_HAND) == stack ? Hand.OFF_HAND : Hand.MAIN_HAND);
-            player.getItemCooldownManager().set(stack.getItem(), 20);
+            player.getItemCooldownManager().set(stack, 20);
 
             if (!player.isCreative()) {
                 if (stack.getCount() == 1) {
@@ -54,7 +54,7 @@ public interface EnchantableItem extends ItemConvertible {
             }
         }
 
-        return TypedActionResult.consume(result);
+        return TypedActionResult.success(result);
     }
 
     static boolean isEnchanted(ItemStack stack) {

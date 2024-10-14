@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.client.TextHelper;
 import com.minelittlepony.unicopia.entity.effect.EffectUtils;
+import com.minelittlepony.unicopia.util.TypedActionResult;
 
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.ItemStack;
@@ -25,7 +26,6 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.TypedActionResult;
 
 public record CustomisedSpellType<T extends Spell> (
         SpellType<T> type,

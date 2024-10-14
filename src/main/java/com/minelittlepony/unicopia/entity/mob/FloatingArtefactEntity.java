@@ -15,6 +15,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
@@ -183,7 +184,7 @@ public class FloatingArtefactEntity extends StationaryObjectEntity {
     }
 
     @Override
-    public boolean damage(DamageSource source, float damage) {
+    public boolean damage(ServerWorld world, DamageSource source, float damage) {
 
         if (getWorld().isClient || isInvulnerable()) {
             return false;

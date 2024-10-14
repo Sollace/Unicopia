@@ -8,12 +8,14 @@ import com.google.common.base.Suppliers;
 import com.minelittlepony.unicopia.block.ItemJarBlock.FluidJarContents;
 import com.minelittlepony.unicopia.block.ItemJarBlock.JarContents;
 import com.minelittlepony.unicopia.block.ItemJarBlock.TileData;
+import com.minelittlepony.unicopia.util.TypedActionResult;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
@@ -23,7 +25,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
 
 public record EntityJarContents (
         TileData tile,
@@ -31,7 +32,7 @@ public record EntityJarContents (
         Supplier<@Nullable Entity> entity
 ) implements FluidJarContents {
     public EntityJarContents(TileData tile, NbtCompound compound) {
-        this(tile, Registries.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(compound.getString("entity"))).orElse(null));
+        this(tile, Registries.ENTITY_TYPE.getOptionalValue(Identifier.tryParse(compound.getString("entity"))).orElse(null));
     }
 
     public EntityJarContents(TileData tile) {
@@ -40,7 +41,7 @@ public record EntityJarContents (
 
     public EntityJarContents(TileData tile, EntityType<?> entityType) {
         this(tile, entityType, Suppliers.memoize(() -> {
-            return entityType == null ? null : entityType.create(tile.getWorld());
+            return entityType == null ? null : entityType.create(tile.getWorld(), SpawnReason.LOAD);
         }));
     }
 

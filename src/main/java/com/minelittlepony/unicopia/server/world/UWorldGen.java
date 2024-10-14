@@ -149,7 +149,7 @@ public interface UWorldGen {
                 .or(BiomeSelectors.tag(BiomeTags.IS_RIVER))
                 .or(BiomeSelectors.includeByKey(BiomeKeys.STONY_SHORE))
         ), GenerationStep.Feature.VEGETAL_DECORATION, SHELLS_PLACED_FEATURE);
-        BiomeModifications.addCarver(BiomeSelectors.foundInOverworld(), GenerationStep.Carver.AIR, OVERWORLD_CLOUD_CARVER_CONFIG);
+        BiomeModifications.addCarver(BiomeSelectors.foundInOverworld(), OVERWORLD_CLOUD_CARVER_CONFIG);
         UTreeGen.bootstrap();
 
         OverworldBiomeSelectionCallback.EVENT.register(context -> {

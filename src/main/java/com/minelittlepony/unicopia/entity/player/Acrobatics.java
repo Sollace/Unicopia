@@ -166,7 +166,7 @@ public class Acrobatics implements Tickable, NbtSerialisable {
         entity.setPosition(pos.getX() + 0.5, pos.getY() - (inverted ? 0 : 1), pos.getZ() + 0.5);
         entity.setVelocity(Vec3d.ZERO);
         entity.setSneaking(false);
-        entity.stopFallFlying();
+        entity.stopGliding();
         pony.getPhysics().cancelFlight(true);
     }
 

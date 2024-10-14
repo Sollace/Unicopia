@@ -69,7 +69,7 @@ public class ButterflyEntity extends AmbientEntity {
     }
 
     public static DefaultAttributeContainer.Builder createButterflyAttributes() {
-        return createMobAttributes().add(EntityAttributes.GENERIC_MAX_HEALTH, 2);
+        return createMobAttributes().add(EntityAttributes.MAX_HEALTH, 2);
     }
 
     public static boolean canSpawn(EntityType<? extends ButterflyEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

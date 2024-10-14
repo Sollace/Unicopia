@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 
 import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 
 public interface ManaConsumptionUtil {
     float MANA_PER_FOOD = 10F;
@@ -62,8 +63,8 @@ public interface ManaConsumptionUtil {
             float consumedHearts = Math.max(0, Math.min(availableHearts - 1, foodSubtract * HEARTS_PER_FOOD));
             foodSubtract = addExhaustion(hunger, foodSubtract);
             foodSubtract -= (consumedHearts / HEARTS_PER_FOOD);
-            if (consumedHearts > 0) {
-                entity.damage(UDamageSources.of(entity.getWorld()).damageOf(UDamageTypes.EXHAUSTION), consumedHearts);
+            if (consumedHearts > 0 && !entity.getWorld().isClient) {
+                entity.damage((ServerWorld)entity.getWorld(), UDamageSources.of(entity.getWorld()).damageOf(UDamageTypes.EXHAUSTION), consumedHearts);
             }
         }
 

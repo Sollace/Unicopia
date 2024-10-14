@@ -42,7 +42,7 @@ public record Tree (
                 });
             });
             registries.getOptional(RegistryKeys.PLACED_FEATURE).ifPresent(registry -> {
-                var reg = registries.asDynamicRegistryManager().createRegistryLookup().getOrThrow(RegistryKeys.CONFIGURED_FEATURE);
+                var reg = registries.asDynamicRegistryManager().getOrThrow(RegistryKeys.CONFIGURED_FEATURE);
                 REGISTRY.stream().forEach(tree -> {
                     tree.placements().forEach(placement -> {
                         Registry.register(registry, placement.id(), new PlacedFeature(reg.getOrThrow(tree.configuredFeatureId()),
@@ -131,7 +131,7 @@ public record Tree (
 
         public Tree build() {
             RegistryKey<ConfiguredFeature<?, ?>> configuredFeatureId = RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, id);
-            Optional<Block> sapling = saplingId.map(id -> UBlocks.register(id, saplingConstructor.apply(new SaplingGenerator(id.toString(), Optional.of(configuredFeatureId), Optional.empty(), Optional.empty()), Block.Settings.copy(Blocks.OAK_SAPLING)), ItemGroups.NATURAL));
+            Optional<Block> sapling = saplingId.map(id -> UBlocks.register(id, saplingConstructor.apply(new SaplingGenerator(id.toString(), Optional.of(configuredFeatureId), Optional.empty(), Optional.empty()), Block.Settings.copy(Blocks.OAK_SAPLING).registryKey(RegistryKey.of(RegistryKeys.BLOCK, id))), ItemGroups.NATURAL));
             Tree tree = new Tree(id, configParameters.apply(new TreeFeatureConfig.Builder(
                     BlockStateProvider.of(logType),
                     trunkPlacer,
@@ -142,7 +142,8 @@ public record Tree (
                     .collect(Collectors.toUnmodifiableSet()),
                     sapling,
                     sapling.map(saplingBlock -> {
-                        Block flowerPot = Registry.register(Registries.BLOCK, saplingId.get().withPrefixedPath("potted_"), Blocks.createFlowerPotBlock(saplingBlock));
+                        RegistryKey<Block> flowerPotKey = RegistryKey.of(RegistryKeys.BLOCK, saplingId.get().withPrefixedPath("potted_"));
+                        Block flowerPot = Registry.register(Registries.BLOCK, saplingId.get().withPrefixedPath("potted_"), new FlowerPotBlock(saplingBlock, Blocks.createFlowerPotSettings().registryKey(flowerPotKey)));
                         UBlocks.TRANSLUCENT_BLOCKS.add(flowerPot);
                         return flowerPot;
                     }));

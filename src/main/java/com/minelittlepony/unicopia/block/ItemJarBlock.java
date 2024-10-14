@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.block.jar.EntityJarContents;
 import com.minelittlepony.unicopia.block.jar.FluidOnlyJarContents;
 import com.minelittlepony.unicopia.block.jar.ItemsJarContents;
+import com.minelittlepony.unicopia.util.TypedActionResult;
 import com.mojang.serialization.MapCodec;
 import com.minelittlepony.unicopia.block.jar.FakeFluidJarContents;
 
@@ -29,8 +30,6 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -54,11 +53,11 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (hand == Hand.OFF_HAND) {
-            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
         }
-        return world.getBlockEntity(pos, UBlockEntities.ITEM_JAR).map(data -> data.interact(player, hand)).orElse(ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION);
+        return world.getBlockEntity(pos, UBlockEntities.ITEM_JAR).map(data -> data.interact(player, hand)).orElse(ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION);
     }
 
     @Override
@@ -110,10 +109,10 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
             super(UBlockEntities.ITEM_JAR, pos, state);
         }
 
-        public ItemActionResult interact(PlayerEntity player, Hand hand) {
+        public ActionResult interact(PlayerEntity player, Hand hand) {
             TypedActionResult<JarContents> result = contents.interact(player, hand);
-            contents = result.getValue();
-            return result.getResult().isAccepted() ? ItemActionResult.SUCCESS : result.getResult() == ActionResult.FAIL ? ItemActionResult.FAIL : ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            contents = result.value();
+            return result.result().isAccepted() ? ActionResult.SUCCESS : result.result() == ActionResult.FAIL ? ActionResult.FAIL : ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
         }
 
         public JarContents getContents() {

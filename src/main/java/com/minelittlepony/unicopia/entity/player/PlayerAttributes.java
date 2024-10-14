@@ -22,12 +22,12 @@ public class PlayerAttributes implements Tickable {
     private final static List<ToggleableAttribute> ATTRIBUTES = List.of(
             new ToggleableAttribute(
                     new EntityAttributeModifier(Unicopia.id("earth_pony_strength"), 0.6, Operation.ADD_MULTIPLIED_TOTAL),
-                    List.of(EntityAttributes.GENERIC_ATTACK_DAMAGE, EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE),
+                    List.of(EntityAttributes.ATTACK_DAMAGE, EntityAttributes.KNOCKBACK_RESISTANCE),
                     pony -> pony.getCompositeRace().canUseEarth()
             ),
             new ToggleableAttribute(
                     new EntityAttributeModifier(Unicopia.id("earth_pony_knockback_resistance"), 6, Operation.ADD_VALUE),
-                    List.of(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE),
+                    List.of(EntityAttributes.KNOCKBACK_RESISTANCE),
                     pony -> pony.getCompositeRace().canUseEarth() && pony.asEntity().isSneaking()
             ),
             new ToggleableAttribute(
@@ -38,7 +38,7 @@ public class PlayerAttributes implements Tickable {
 
             new ToggleableAttribute(
                     new EntityAttributeModifier(Unicopia.id("pegasus_speed"), 0.2, Operation.ADD_MULTIPLIED_TOTAL),
-                    List.of(EntityAttributes.GENERIC_MOVEMENT_SPEED, EntityAttributes.GENERIC_ATTACK_SPEED),
+                    List.of(EntityAttributes.MOVEMENT_SPEED, EntityAttributes.ATTACK_SPEED),
                     pony -> pony.getCompositeRace().canFly() && !pony.getCompositeRace().includes(Race.HIPPOGRIFF)
             ),
             new ToggleableAttribute(
@@ -49,7 +49,7 @@ public class PlayerAttributes implements Tickable {
 
             new ToggleableAttribute(
                     new EntityAttributeModifier(Unicopia.id("hippogriff_speed"), 0.1, Operation.ADD_MULTIPLIED_TOTAL),
-                    List.of(EntityAttributes.GENERIC_MOVEMENT_SPEED, EntityAttributes.GENERIC_ATTACK_SPEED),
+                    List.of(EntityAttributes.MOVEMENT_SPEED, EntityAttributes.ATTACK_SPEED),
                     pony -> pony.getCompositeRace().includes(Race.HIPPOGRIFF)
             ),
             new ToggleableAttribute(
@@ -60,16 +60,16 @@ public class PlayerAttributes implements Tickable {
 
             new ToggleableAttribute(
                     new EntityAttributeModifier(Unicopia.id("kirin_knockback_vulneravility"), -2, Operation.ADD_VALUE),
-                    List.of(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE),
+                    List.of(EntityAttributes.KNOCKBACK_RESISTANCE),
                     pony -> pony.getCompositeRace().includes(Race.KIRIN)
             ),
             new ToggleableAttribute(
                     new EntityAttributeModifier(Unicopia.id("kirin_rage"), 0.7, Operation.ADD_MULTIPLIED_TOTAL),
-                    List.of(EntityAttributes.GENERIC_MOVEMENT_SPEED,
-                            EntityAttributes.GENERIC_ATTACK_SPEED,
-                            EntityAttributes.GENERIC_ATTACK_DAMAGE,
-                            EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE,
-                            EntityAttributes.GENERIC_ATTACK_KNOCKBACK
+                    List.of(EntityAttributes.MOVEMENT_SPEED,
+                            EntityAttributes.ATTACK_SPEED,
+                            EntityAttributes.ATTACK_DAMAGE,
+                            EntityAttributes.KNOCKBACK_RESISTANCE,
+                            EntityAttributes.ATTACK_KNOCKBACK
                     ),
                     SpellType.RAGE::isOn
             )

@@ -14,8 +14,8 @@ import net.minecraft.item.ProjectileItem;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
@@ -40,7 +40,7 @@ public interface Projectile extends ItemConvertible, ProjectileItem {
         return SETTINGS;
     }
 
-    default TypedActionResult<ItemStack> triggerThrow(World world, PlayerEntity player, Hand hand) {
+    default ActionResult triggerThrow(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
         if (!world.isClient) {
@@ -58,7 +58,7 @@ public interface Projectile extends ItemConvertible, ProjectileItem {
             stack.decrement(1);
         }
 
-        return TypedActionResult.success(stack, world.isClient());
+        return ActionResult.SUCCESS_SERVER.withNewHandStack(stack);
     }
 
     default ProjectileEntity createProjectile(ItemStack stack, World world, @Nullable PlayerEntity player) {

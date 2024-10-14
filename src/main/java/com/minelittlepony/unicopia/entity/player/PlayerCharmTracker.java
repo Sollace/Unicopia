@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellTyp
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.util.Copyable;
+import com.minelittlepony.unicopia.util.TypedActionResult;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.minecraft.nbt.NbtCompound;
@@ -15,7 +16,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 
 public class PlayerCharmTracker implements NbtSerialisable, Copyable<PlayerCharmTracker> {
 
