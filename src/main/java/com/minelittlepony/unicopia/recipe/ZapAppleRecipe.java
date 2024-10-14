@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.item.UItems;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapelessRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
@@ -19,6 +20,11 @@ public class ZapAppleRecipe extends ShapelessRecipe {
 
     public ZapAppleRecipe(Identifier id, String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
         super(id, group, category, output, input);
+    }
+
+    @Override
+    public RecipeSerializer<?> getSerializer() {
+        return URecipes.ZAP_APPLE_SERIALIZER;
     }
 
     public static class Serializer extends ShapelessRecipe.Serializer {
