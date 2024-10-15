@@ -35,7 +35,7 @@ public class TransientComponentMap {
                 return originalFood;
             }
 
-            if (originalFood != null) {
+            if (originalFood != null && (originalFood.nutrition() > 0 || originalFood.saturation() > 0)) {
                 return diet.getAdjustedFoodComponent(s, originalFood);
             }
 
