@@ -368,7 +368,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         ShapedRecipeJsonBuilder.create(RecipeCategory.FOOD, Items.BREAD)
             .input('#', UItems.OATS).criterion("has_oats", conditionsFromItem(UItems.OATS))
             .pattern("###")
-            .offerTo(exporter, convertBetween(UItems.OATS, Items.WHEAT));
+            .offerTo(exporter, convertBetween(Items.BREAD, UItems.OATS));
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.JUICE)
             .input(Ingredient.fromTag(UTags.Items.FRESH_APPLES), 6).criterion(hasItem(Items.APPLE), conditionsFromTag(UTags.Items.FRESH_APPLES))
             .input(Items.GLASS_BOTTLE)
