@@ -66,7 +66,7 @@ public class RockCropBlock extends CropBlock {
     };
 
     protected RockCropBlock(Settings settings) {
-        super(settings);
+        super(settings.notSolid());
     }
 
     @Override
