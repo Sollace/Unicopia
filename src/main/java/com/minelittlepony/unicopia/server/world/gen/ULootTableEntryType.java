@@ -13,7 +13,7 @@ public interface ULootTableEntryType {
         LootTableEvents.MODIFY.register((key, supplier, source, registries) -> {
             Identifier id = key.getValue();
 
-            if ("unicopiamc".equalsIgnoreCase(id.getPath())) {
+            if ("unicopiamc".equalsIgnoreCase(id.getNamespace())) {
                 extentionTableIds.put(Identifier.ofVanilla(id.getPath()), id);
             }
         });
