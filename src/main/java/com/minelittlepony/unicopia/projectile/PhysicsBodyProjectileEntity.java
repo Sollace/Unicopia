@@ -268,9 +268,11 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
 
         if (!isBouncy()) {
             if (stack.isIn(UTags.Items.HORSE_SHOES)) {
-                stack.damage(1 + random.nextInt(10), (ServerWorld)getWorld(), null, i -> {
-                    playSound(USounds.Vanilla.ENTITY_ITEM_BREAK, 1, 1);
-                });
+                if (getWorld() instanceof ServerWorld sw) {
+                    stack.damage(1 + random.nextInt(10), sw, null, i -> {
+                        playSound(USounds.Vanilla.ENTITY_ITEM_BREAK, 1, 1);
+                    });
+                }
                 if (stack.isEmpty()) {
                     discard();
                     return;
