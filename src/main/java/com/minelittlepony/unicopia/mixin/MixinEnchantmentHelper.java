@@ -8,12 +8,14 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.enchantment.SimpleEnchantment;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 
 @Mixin(EnchantmentHelper.class)
 abstract class MixinEnchantmentHelper {
@@ -30,6 +32,8 @@ abstract class MixinEnchantmentHelper {
 
     @Inject(method = "getPossibleEntries", at = @At("RETURN"))
     private static void onGetPossibleEntries(int power, ItemStack stack, boolean treasureAllowed, CallbackInfoReturnable<List<EnchantmentLevelEntry>> info) {
-        info.getReturnValue().removeIf(entry -> !entry.enchantment.isAcceptableItem(stack));
+        if (!stack.isOf(Items.BOOK)) {
+            info.getReturnValue().removeIf(entry -> entry.enchantment instanceof SimpleEnchantment && !entry.enchantment.isAcceptableItem(stack));
+        }
     }
 }
