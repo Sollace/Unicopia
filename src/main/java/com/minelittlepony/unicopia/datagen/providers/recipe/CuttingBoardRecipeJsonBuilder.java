@@ -115,7 +115,7 @@ public class CuttingBoardRecipeJsonBuilder {
     public record Tool(Identifier type, TagKey<Item> tag) {
         static final Codec<Tool> CODEC = RecordCodecBuilder.create(ii -> ii.group(
                 Identifier.CODEC.fieldOf("type").forGetter(Tool::type),
-                TagKey.codec(RegistryKeys.ITEM).fieldOf("tag").forGetter(Tool::tag)
+                TagKey.unprefixedCodec(RegistryKeys.ITEM).fieldOf("tag").forGetter(Tool::tag)
         ).apply(ii, Tool::new));
     }
     public record Result(Identifier item, int count) {
