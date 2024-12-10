@@ -1,4 +1,5 @@
 {
+  "resourcepack.unicopia.programmer_art": "Programmer Art (Unicopia)",
   "block.unicopia.bed.not_safe": "Вы не можете уснуть, пока рядом есть враги",
   "block.unicopia.bed.not_tired": "Сейчас вы не чувствуете усталости",
   "block.unicopia.bed.no_sleep.nocturnal": "Вы можете спать только днём или во время грозы",
@@ -1488,6 +1489,8 @@
   "death.attack.unicopia.bat_screech.self": "%1$ напугали себя до смерти",
   "death.attack.unicopia.bat_screech.player": "%2$s напугал %1$s",
   "death.attack.unicopia.bat_screech.item": "%1$s был напуган до смерти %2$s с помощью %3$s",
+  "death.attack.unicopia.rainboom": "%1$s's eardrums were shattered",
+  "death.attack.unicopia.rainboom.player": "%2$s's shattered %1$s's eardrums",
   "death.attack.unicopia.gravity_well_recoil": "%1$ превратился в спагетти",
   "death.attack.unicopia.gravity_well_recoil.player": "%1$s превращён в спагетти заклинанием, созданным %2$s",
   "death.attack.unicopia.gravity_well_recoil.item": "%1$s превращён в спагетти заклинанием, созданным %2$s с помощью %3$s",

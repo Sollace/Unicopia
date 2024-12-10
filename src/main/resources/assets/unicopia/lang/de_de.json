@@ -1,4 +1,5 @@
 {
+  "resourcepack.unicopia.programmer_art": "Programmer Art (Unicopia)",
   "block.unicopia.bed.not_safe": "Du kannst jetzt nicht schlafen, es sind Monster in der Nähe",
   "block.unicopia.bed.not_tired": "Du bist noch nicht müde",
   "block.unicopia.bed.no_sleep.nocturnal": "Du kannst nur tagsüber oder bei Gewittern schlafen",
@@ -1488,6 +1489,8 @@
   "death.attack.unicopia.bat_screech.self": "%1$s hat sich geschockt",
   "death.attack.unicopia.bat_screech.player": "%2$s geschockt %1$s",
   "death.attack.unicopia.bat_screech.item": "%1$s wurde von %2$s mit %3$s erschreckt",
+  "death.attack.unicopia.rainboom": "%1$s's eardrums were shattered",
+  "death.attack.unicopia.rainboom.player": "%2$s's shattered %1$s's eardrums",
   "death.attack.unicopia.gravity_well_recoil": "%1$s wurde in Spaghetti verwandelt",
   "death.attack.unicopia.gravity_well_recoil.player": "%1$s wurde durch einen Zauberspruch von %2$s in Spaghetti umgewandelt",
   "death.attack.unicopia.gravity_well_recoil.item": "%1$s wurde durch einen Zauberspruch %2$s mit %3$s in Spaghetti umgewandelt",

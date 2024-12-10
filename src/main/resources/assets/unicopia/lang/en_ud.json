@@ -1,4 +1,5 @@
 {
+  "resourcepack.unicopia.programmer_art": "Programmer Art (Unicopia)",
   "block.unicopia.bed.not_safe": "ʎqɹɐǝu sǝᴉɯǝuǝ ǝɹɐ ǝɹǝɥʇ `ǝɹǝɥ ʇsǝɹ ʇou ʎɐɯ no⅄",
   "block.unicopia.bed.not_tired": "ʍou ʇɥƃᴉɹ pǝɹᴉʇ lǝǝɟ ʇou op no⅄",
   "block.unicopia.bed.no_sleep.nocturnal": "sɯɹoʇsɹǝpunɥʇ ƃuᴉɹnp ɹo ʎɐp ǝɥʇ uᴉ dǝǝls ʎluo uɐɔ no⅄",
@@ -1488,6 +1489,8 @@
   "death.attack.unicopia.bat_screech.self": "sǝʌlǝsɯǝɥʇ pǝʞoods %1$s",
   "death.attack.unicopia.bat_screech.player": "%1$s pǝʞoods %2$s",
   "death.attack.unicopia.bat_screech.item": "%3$s ƃuᴉsn %2$s ʎq pǝʞoods sɐʍ %1$s",
+  "death.attack.unicopia.rainboom": "%1$s's eardrums were shattered",
+  "death.attack.unicopia.rainboom.player": "%2$s's shattered %1$s's eardrums",
   "death.attack.unicopia.gravity_well_recoil": "ᴉʇʇǝɥƃɐds oʇuᴉ pǝuɹnʇ %1$s",
   "death.attack.unicopia.gravity_well_recoil.player": "%2$s ʎq ʇsɐɔ llǝds ɐ ʎq ᴉʇʇǝɥƃɐds oʇuᴉ pǝuɹnʇ %1$s",
   "death.attack.unicopia.gravity_well_recoil.item": "%3$s ƃuᴉsn %2$s ʎq ʇsɐɔ llǝds ɐ ʎq ᴉʇʇǝɥƃɐds oʇuᴉ pǝuɹnʇ %1$s",

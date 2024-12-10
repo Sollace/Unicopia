@@ -22,6 +22,7 @@ If applicable, add screenshots to help explain your problem.
 **Version Information:**
  - Minecraft Version: [e.g. 1.20.5]
  - Mine Little Pony Version:
+ - Unicopia Version:
 
 **Mod Loader:**
  - [ ] Fabric
