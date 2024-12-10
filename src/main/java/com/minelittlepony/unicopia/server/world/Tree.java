@@ -132,7 +132,7 @@ public record Tree (
 
         public Tree build() {
             RegistryKey<ConfiguredFeature<?, ?>> configuredFeatureId = RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, id);
-            Optional<Block> sapling = saplingId.map(id -> UBlocks.register(id, saplingConstructor.apply(new SaplingGenerator(id.toString(), Optional.of(configuredFeatureId), Optional.empty(), Optional.empty()), FabricBlockSettings.copy(Blocks.OAK_SAPLING)), ItemGroups.NATURAL));
+            Optional<Block> sapling = saplingId.map(id -> UBlocks.register(id, saplingConstructor.apply(new SaplingGenerator(id.toString(), Optional.empty(), Optional.of(configuredFeatureId), Optional.empty()), FabricBlockSettings.copy(Blocks.OAK_SAPLING)), ItemGroups.NATURAL));
             Tree tree = new Tree(id, configParameters.apply(new TreeFeatureConfig.Builder(
                     BlockStateProvider.of(logType),
                     trunkPlacer,
