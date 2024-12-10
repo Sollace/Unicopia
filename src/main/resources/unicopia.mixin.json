@@ -19,7 +19,6 @@
     "MixinComponentHolder",
     "MutableBlockLightStorage",
     "MixinDamageSource",
-    "MixinEnchantment",
     "MixinEnchantmentHelper",
     "MixinFallLocation",
     "MixinFishingBobberEntity",
