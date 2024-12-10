@@ -1,4 +1,5 @@
 {
+  "resourcepack.unicopia.programmer_art": "Programmer Art (Unicopia)",
   "block.unicopia.bed.not_safe": "You may not rest here, there are enemies nearby",
   "block.unicopia.bed.not_tired": "You do not feel tired right now",
   "block.unicopia.bed.no_sleep.nocturnal": "You can only sleep in the day or during thunderstorms",
@@ -1488,6 +1489,8 @@
   "death.attack.unicopia.bat_screech.self": "%1$s spooked themselves",
   "death.attack.unicopia.bat_screech.player": "%2$s spooked %1$s",
   "death.attack.unicopia.bat_screech.item": "%1$s was spooked by %2$s using %3$s",
+  "death.attack.unicopia.rainboom": "%1$s's eardrums were shattered",
+  "death.attack.unicopia.rainboom.player": "%2$s's shattered %1$s's eardrums",
   "death.attack.unicopia.gravity_well_recoil": "%1$s turned into spaghetti",
   "death.attack.unicopia.gravity_well_recoil.player": "%1$s turned into spaghetti by a spell cast by %2$s",
   "death.attack.unicopia.gravity_well_recoil.item": "%1$s turned into spaghetti by a spell cast by %2$s using %3$s",
