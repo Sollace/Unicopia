@@ -144,7 +144,6 @@ public class DynamicContent implements Content {
         }
 
         public void drawHeader(DrawContext context, int mouseX, int mouseY) {
-
             if (elements.isEmpty()) {
                 return;
             }
