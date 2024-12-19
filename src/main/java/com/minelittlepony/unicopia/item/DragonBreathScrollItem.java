@@ -30,7 +30,7 @@ public class DragonBreathScrollItem extends Item {
             return TypedActionResult.fail(stack);
         }
 
-        ItemStack scroll = stack.split(1);
+        ItemStack scroll = stack.splitUnlessCreative(1, player);
         if (!world.isClient) {
             String recipient = scroll.get(DataComponentTypes.CUSTOM_NAME).getString();
             UCriteria.SEND_DRAGON_BREATH.triggerSent(player, payload, recipient, (counterName, count) -> {

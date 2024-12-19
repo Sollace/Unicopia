@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia.server.world;
 
 import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.item.UItems;
@@ -8,6 +10,7 @@ import com.minelittlepony.unicopia.item.UItems;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
@@ -29,7 +32,7 @@ public class DragonBreathStore extends PersistentState {
         this(world);
         compound.getKeys().forEach(key -> {
             compound.getList(key, NbtElement.COMPOUND_TYPE).forEach(entry -> {
-                put(key, new Entry((NbtCompound)entry, world.getRegistryManager()));
+                put(key, new Entry((NbtCompound)entry, world.getRegistryManager(), this));
             });
         });
     }
@@ -53,6 +56,12 @@ public class DragonBreathStore extends PersistentState {
 
             return compound;
         }
+    }
+
+    public static Stream<Entry> popAll(MinecraftServer server, String recipient) {
+        return StreamSupport.stream(server.getWorlds().spliterator(), false)
+                .map(DragonBreathStore::get)
+                .flatMap(store -> store.popEntries(recipient).stream());
     }
 
     public List<Entry> popEntries(String recipient) {
@@ -100,7 +109,7 @@ public class DragonBreathStore extends PersistentState {
                }
                return false;
             })) {
-                put(recipient, new Entry(System.currentTimeMillis() + (long)(Math.random() * 1999), payload));
+                put(recipient, new Entry(System.currentTimeMillis() + (long)(Math.random() * 1999), payload, this));
             }
         }
     }
@@ -122,10 +131,11 @@ public class DragonBreathStore extends PersistentState {
 
     public record Entry(
             long created,
-            ItemStack payload) {
+            ItemStack payload,
+            DragonBreathStore store) {
 
-        public Entry(NbtCompound compound, WrapperLookup lookup) {
-            this(compound.getLong("created"), ItemStack.fromNbtOrEmpty(lookup, compound.getCompound("payload")));
+        public Entry(NbtCompound compound, WrapperLookup lookup, DragonBreathStore store) {
+            this(compound.getLong("created"), ItemStack.fromNbtOrEmpty(lookup, compound.getCompound("payload")), store);
         }
 
         public NbtCompound toNBT(NbtCompound compound) {
