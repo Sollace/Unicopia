@@ -5,14 +5,18 @@
   "content": {
     "pages": [
       {
-        "title": "gui.unicopia.spellbook.chapter.air.p1.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.air.p1.title"
+        },
         "level": 1,
         "elements": [
           { "x": 15, "y": -10, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/air_magic.png" }
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.air.p2.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.air.p2.title"
+        },
         "level": 1,
         "elements": [
           "gui.unicopia.spellbook.chapter.air.p1.1.body",
@@ -30,7 +34,9 @@
       },
 
       {
-        "title": "gui.unicopia.spellbook.chapter.air.p3.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.air.p3.title"
+        },
         "level": 0,
         "elements": [
           "gui.unicopia.spellbook.chapter.air.p3.1.body",
@@ -39,7 +45,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.air.p4.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.air.p4.title"
+        },
         "level": 3,
         "elements": [
           "gui.unicopia.spellbook.chapter.air.p4.1.body",
@@ -60,7 +68,9 @@
         ]
       },
       {
-        "title": "spell.unicopia.catapult",
+        "title": {
+          "translate": "spell.unicopia.catapult"
+        },
         "level": 4,
         "elements": [
           "gui.unicopia.spellbook.chapter.air.catapult.1.body",
@@ -86,7 +96,9 @@
         ]
       },
       {
-        "title": "spell.unicopia.bubble",
+        "title": {
+          "translate": "spell.unicopia.bubble"
+        },
         "level": 2,
         "elements": [
           "gui.unicopia.spellbook.chapter.air.bubble.1.body",
@@ -111,7 +123,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.air.p7.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.air.p7.title"
+        },
         "level": 4,
         "elements": [
           "gui.unicopia.spellbook.chapter.air.p7.1.body",
@@ -119,14 +133,18 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.air.p8.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.air.p8.title"
+        },
         "level": 5,
         "elements": [
           "gui.unicopia.spellbook.chapter.air.p8.1.body"
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.air.p9.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.air.p9.title"
+        },
         "level": 6,
         "elements": [
           "gui.unicopia.spellbook.chapter.air.p9.1.body",
@@ -134,7 +152,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.air.p10.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.air.p10.title"
+        },
         "level": 7,
         "elements": [
           "gui.unicopia.spellbook.chapter.air.p10.1.body",
@@ -144,7 +164,9 @@
         ]
       },
       {
-        "title": "spell.unicopia.feather_fall",
+        "title": {
+          "translate": "spell.unicopia.feather_fall"
+        },
         "level": 5,
         "elements": [
           "gui.unicopia.spellbook.chapter.air.feather_fall.1.body",
@@ -171,7 +193,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.air.p12.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.air.p12.title"
+        },
         "level": 6,
         "elements": [
           "gui.unicopia.spellbook.chapter.air.p12.1.body",
@@ -182,7 +206,9 @@
       },
       { },
       {
-        "title": "gui.unicopia.spellbook.chapter.air.p13.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.air.p13.title"
+        },
         "level": 7,
         "elements": [
           "gui.unicopia.spellbook.chapter.air.p13.1.body",
@@ -190,7 +216,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.air.p14.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.air.p14.title"
+        },
         "level": 7,
         "elements": [
           "gui.unicopia.spellbook.chapter.air.p14.1.body",
@@ -199,7 +227,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.air.p15.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.air.p15.title"
+        },
         "level": 8,
         "elements": [
           "gui.unicopia.spellbook.chapter.air.p15.1.body",

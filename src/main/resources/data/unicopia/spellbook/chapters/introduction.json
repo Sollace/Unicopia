@@ -5,7 +5,9 @@
   "content": {
     "pages": [
       {
-        "title": "gui.unicopia.spellbook.chapter.introduction.p1.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.introduction.p1.title"
+        },
         "level": 0,
         "elements": [
           "gui.unicopia.spellbook.chapter.introduction.p1.body",
@@ -14,7 +16,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.introduction.p2.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.introduction.p2.title"
+        },
         "level": 0,
         "elements": [
           "gui.unicopia.spellbook.chapter.introduction.p2.body",
@@ -22,7 +26,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.introduction.p3.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.introduction.p3.title"
+        },
         "level": 0,
         "elements": [
           "gui.unicopia.spellbook.chapter.introduction.p3.1.body",
@@ -31,7 +37,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.introduction.p4.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.introduction.p4.title"
+        },
         "level": 0,
         "elements": [
           "gui.unicopia.spellbook.chapter.introduction.p4.1.body",
@@ -41,7 +49,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.introduction.p5.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.introduction.p5.title"
+        },
         "level": 0,
         "elements": [
           "gui.unicopia.spellbook.chapter.introduction.p5.1.body",
@@ -50,7 +60,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.introduction.p6.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.introduction.p6.title"
+        },
         "level": 0,
         "elements": [
           { "x": 125, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/crafting.png" },
@@ -60,7 +72,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.introduction.p7.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.introduction.p7.title"
+        },
         "level": 0,
         "elements": [
           "gui.unicopia.spellbook.chapter.introduction.p7.1.body",
@@ -70,7 +84,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.introduction.p8.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.introduction.p8.title"
+        },
         "level": 1,
         "elements": [
           { "x": 127, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/item/botched_gem.png" },
@@ -80,7 +96,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.introduction.p9.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.introduction.p9.title"
+        },
         "level": 0,
         "elements": [
           "gui.unicopia.spellbook.chapter.introduction.p9.1.body",
