@@ -16,16 +16,17 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
             .addComment("whilst any ones left off are not permitted")
             .addComment("An empty list disables whitelisting entirely.");
 
-    @Deprecated
-    public final Setting<Set<String>> wantItNeedItEntityExcludelist = value("server", "wantItNeedItEntityExcludelist", (Set<String>)new HashSet<>(Set.of("minecraft:creeper")))
+    private final Setting<Set<String>> wantItNeedItEntityExcludelist = value("server", "wantItNeedItEntityExcludelist", (Set<String>)new HashSet<>(Set.of("minecraft:creeper")))
             .addComment("A list of entity types that are immune to the want it need it spell's effects");
 
-    @Deprecated
-    public final Setting<Set<String>> dimensionsWithoutAtmosphere = value("server", "dimensionsWithoutAtmosphere", (Set<String>)new HashSet<String>())
+    private final Setting<Set<String>> dimensionsWithoutAtmosphere = value("server", "dimensionsWithoutAtmosphere", (Set<String>)new HashSet<String>())
             .addComment("A list of dimensions ids that do not have an atmosphere, and thus shouldn't allow pegasi to fly.");
 
     public final Setting<Boolean> enableCheats = value("server", "enableCheats", false)
             .addComment("Allows use of the /tribe, /unicopia disguise, and /unicopia gravity commands");
+
+    public final Setting<Boolean> enableCloudGen = value("server", "enableCloudGen", true)
+            .addComment("Sets whether clouds generate");
 
     public final Setting<Race> preferredRace = value("client", "preferredRace", Race.EARTH)
             .addComment("The default preferred race")

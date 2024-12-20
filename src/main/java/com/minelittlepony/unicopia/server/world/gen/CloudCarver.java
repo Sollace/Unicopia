@@ -4,6 +4,7 @@ import java.util.function.Function;
 
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.mojang.serialization.Codec;
 
@@ -57,6 +58,9 @@ public class CloudCarver extends CaveCarver {
             ChunkPos chunkPos,
             CarvingMask carvingMask
         ) {
+        if (!Unicopia.getConfig().enableCloudGen.get()) {
+            return false;
+        }
         CloudCarverContext carverContext = new CloudCarverContext(sampler, random);
         boolean result = super.carve(context, config, chunk, function, random, carverContext, chunkPos, carvingMask);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
