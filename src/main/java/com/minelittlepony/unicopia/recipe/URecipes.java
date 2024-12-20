@@ -40,6 +40,7 @@ public interface URecipes {
     RecipeType<TransformCropsRecipe> GROWING = register("growing");
 
     RecipeSerializer<ZapAppleRecipe> ZAP_APPLE_SERIALIZER = register("crafting_zap_apple", ZapAppleRecipe.CODEC, ZapAppleRecipe.PACKET_CODEC);
+    RecipeSerializer<ItemConversionShapedRecipe> CONVERSION_SERIALIZER = register("conversion", ItemConversionShapedRecipe.CODEC, ItemConversionShapedRecipe.PACKET_CODEC);
     RecipeSerializer<GlowingRecipe> GLOWING_SERIALIZER = register("crafting_glowing", new SpecialRecipeSerializer<>(GlowingRecipe::new));
     RecipeSerializer<JarInsertRecipe> JAR_INSERT_SERIALIZER = register("jar_insert", new SpecialRecipeSerializer<>(JarInsertRecipe::new));
     RecipeSerializer<JarExtractRecipe> JAR_EXTRACT_SERIALIZER = register("jar_extract", new SpecialRecipeSerializer<>(JarExtractRecipe::new));

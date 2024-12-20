@@ -509,9 +509,11 @@ public class URecipeProvider extends FabricRecipeProvider {
         // worms
         offerReversibleCompactingRecipes(exporter, RecipeCategory.BUILDING_BLOCKS, UItems.WHEAT_WORMS, RecipeCategory.BUILDING_BLOCKS, UBlocks.WORM_BLOCK);
         // fishing
-        ShapelessRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.BAITED_FISHING_ROD)
-            .input(Items.FISHING_ROD).criterion(hasItem(Items.FISHING_ROD), conditionsFromItem(Items.FISHING_ROD))
-            .input(UItems.WHEAT_WORMS)
+        ItemConversionShapedRecipeBuilder.create(RecipeCategory.MISC, Items.FISHING_ROD, UItems.BAITED_FISHING_ROD)
+            .input('#', Items.FISHING_ROD).criterion(hasItem(Items.FISHING_ROD), conditionsFromItem(Items.FISHING_ROD))
+            .input('*', UItems.WHEAT_WORMS).criterion("has_wheat_worms", conditionsFromItem(UItems.WHEAT_WORMS))
+            .pattern("# ")
+            .pattern(" *")
             .group("fishing_rod")
             .offerTo(exporter);
 
