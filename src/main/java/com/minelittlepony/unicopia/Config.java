@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.minelittlepony.common.util.GamePaths;
 import com.minelittlepony.common.util.registry.RegistryTypeAdapter;
 import com.minelittlepony.common.util.settings.*;
+import com.minelittlepony.unicopia.client.gui.HudPosition;
 
 public class Config extends com.minelittlepony.common.util.settings.Config {
     public final Setting<Set<String>> speciesWhiteList = value("server", "speciesWhiteList", (Set<String>)new HashSet<String>())
@@ -41,6 +42,9 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
 
     public final Setting<Integer> hudPage = value("client", "hudActivePage", 0)
             .addComment("The page of abilities currently visible in the HUD. You can change this in-game using the PG_UP and PG_DWN keys (configurable)");
+
+    public final Setting<HudPosition> hudPosition = value("client", "hudPosition", HudPosition.MAIN_HAND)
+            .addComment("Location of the HUD on-screen");
 
     public final Setting<Boolean> disableWaterPlantsFix = value("compatibility", "disableWaterPlantsFix", false)
             .addComment("Disables this mod's built in fix for making sea plants waterlogged")
