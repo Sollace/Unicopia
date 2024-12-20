@@ -63,8 +63,8 @@ public class Trail {
             return segments.indexOf(this) < segments.size() - 1 && age++ >= maxAge;
         }
 
-        public BezierSegment getPlane(Segment to) {
-            return new BezierSegment(offset, to.offset, height);
+        public void getPlane(Segment to, BezierSegment segment) {
+            segment.set(offset, to.offset, height);
         }
     }
 }

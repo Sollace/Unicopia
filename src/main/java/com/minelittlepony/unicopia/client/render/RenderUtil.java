@@ -47,6 +47,15 @@ public class RenderUtil {
             this(new Vector3f(x, y, z), new Vector3f(u, v, 1));
         }
 
+        public Vertex() {
+            this(new Vector3f(), new Vector3f());
+        }
+
+        public void set(float x, float y, float z, float u, float v) {
+            position.set(x, y, z);
+            texture.set(u, v, 1);
+        }
+
         public Vector4f position(Matrix4f mat) {
             return mat.transform(TEMP_VECTOR.set(position, 1));
         }
