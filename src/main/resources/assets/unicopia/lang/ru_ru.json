@@ -1422,6 +1422,7 @@
   "unicopia.options.ignore_mine_lp.detected": "* Ваша обнаруженная раса %s",
   "unicopia.options.ignore_mine_lp.undetected": "* Мы не будем использовать вашу обнаруженную расу",
   "unicopia.options.preferred_race": "Предпочитаемая раса: %s",
+  "unicopia.options.hud_position": "HUD Position: %s",
   "unicopia.options.whitelist": "Включить белый список",
   "unicopia.options.whitelist.race": "Разрешить %ss",
   "unicopia.options.whitelist.details": "* Выберите расы, которые вы хотите разрешить",
