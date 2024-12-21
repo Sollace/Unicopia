@@ -1422,6 +1422,7 @@
   "unicopia.options.ignore_mine_lp.detected": "* Dein festgestelltes Rennen ist %s",
   "unicopia.options.ignore_mine_lp.undetected": "* Wir werden dein entdecktes Rennen nicht verwenden",
   "unicopia.options.preferred_race": "Bevorzugtes Rennen: %s",
+  "unicopia.options.hud_position": "HUD Position: %s",
   "unicopia.options.whitelist": "Whitelist aktivieren",
   "unicopia.options.whitelist.race": "%ss erlauben",
   "unicopia.options.whitelist.details": "* Wähle die Rennen aus, die du zulassen möchtest",
