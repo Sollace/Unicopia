@@ -3,10 +3,14 @@ package com.minelittlepony.unicopia.client.gui.spellbook;
 import java.util.*;
 import java.util.function.Function;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
+
 import com.minelittlepony.common.client.gui.*;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.element.Label;
-import com.minelittlepony.common.client.gui.sprite.TextureSprite;
+import com.minelittlepony.common.client.gui.style.Style;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.*;
 import com.minelittlepony.unicopia.client.TextHelper;
@@ -19,11 +23,19 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.OverlayVertexConsumer;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexConsumers;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.MathHelper;
 
 public class SpellbookTraitDexPageContent implements SpellbookChapterList.Content, SpellbookScreen.RecipesChangedListener {
     private final Trait[] traits = Trait.values();
@@ -101,13 +113,13 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
 
             margin.left = screen.getX() + 20;
             margin.top = screen.getY() + 15;
-            margin.right = screen.width - screen.getBackgroundWidth() - screen.getX() + 20;
+            margin.right = screen.width - screen.getBackgroundWidth() - screen.getX() + 25;
             margin.bottom = screen.height - screen.getBackgroundHeight() - screen.getY() + 40;
 
             if (page % 2 == 1) {
-                margin.left += screen.getBackgroundWidth() / 2;
+                margin.left += screen.getBackgroundWidth() / 2 - 15;
             } else {
-                margin.right += screen.getBackgroundWidth() / 2 - 5;
+                margin.right += screen.getBackgroundWidth() / 2 - 15;
             }
 
             init(() -> {
@@ -184,28 +196,69 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
     static class TraitButton extends ImageButton {
         private final Trait trait;
 
+        private final Style revealedStyle = new Style();
+        private final Style hiddenStyle = new Style();
+
         public TraitButton(int x, int y, Trait trait) {
             super(x, y, 16, 16);
             this.trait = trait;
-            getStyle().setIcon(new TextureSprite()
-                    .setTextureSize(16, 16)
-                    .setSize(16, 16)
-                    .setTexture(trait.getSprite()));
-            getStyle().setTooltip(Tooltip.of(TextHelper.wrap(trait.getTooltip(), 200).toList()));
+            revealedStyle
+                .setIcon(this::renderIcon)
+                .setTooltip(Tooltip.of(TextHelper.wrap(trait.getTooltip(), 200).toList()));
+            hiddenStyle
+                .setTooltip(Tooltip.of(TextHelper.wrap(trait.getObfuscatedTooltip(), 200).toList()));
 
             onClick(sender -> Pony.of(MinecraftClient.getInstance().player).getDiscoveries().markRead(trait));
         }
 
+        private void renderIcon(DrawContext context, int x, int y, int mouseX, int mouseY, float partialTicks) {
+            float amplify = Math.abs(MathHelper.sin((MinecraftClient.getInstance().player.age + partialTicks) / 80F) * 8);
+            float x1 = 0;
+            float x2 = 16 + amplify * 2;
+            float y1 = 0;
+            float y2 = 16 + amplify * 2;
+            float z = 0;
+
+            context.getMatrices().push();
+            context.getMatrices().translate(x - amplify, y - amplify, 0);
+
+            Matrix4f posMat = context.getMatrices().peek().getPositionMatrix();
+            Vector3f normal = context.getMatrices().peek().transformNormal(-1, -1, -1, new Vector3f());
+
+            context.getMatrices().pop();
+
+            Vector4f vec = new Vector4f();
+
+            VertexConsumerProvider.Immediate vertices = context.getVertexConsumers();
+            VertexConsumer buffer = VertexConsumers.union(
+                    new OverlayVertexConsumer(vertices.getBuffer(RenderLayer.getGlint()), context.getMatrices().peek(), 0.000078125F),
+                    vertices.getBuffer(RenderLayer.getEntityCutout(trait.getSprite()))
+            );
+
+            int color = 0xFFFFFFFF;
+            posMat.transform(vec.set(x1, y1, z));
+            buffer.vertex(vec.x(), vec.y(), vec.z(), color, 0, 0, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, normal.x(), normal.y(), normal.z());
+            posMat.transform(vec.set(x1, y2, z));
+            buffer.vertex(vec.x(), vec.y(), vec.z(), color, 0, 1, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, normal.x(), normal.y(), normal.z());
+            posMat.transform(vec.set(x2, y2, z));
+            buffer.vertex(vec.x(), vec.y(), vec.z(), color, 1, 1, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, normal.x(), normal.y(), normal.z());
+            posMat.transform(vec.set(x2, y1, z));
+            buffer.vertex(vec.x(), vec.y(), vec.z(), color, 1, 0, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, normal.x(), normal.y(), normal.z());
+            vertices.draw();
+        }
+
         @Override
         public void renderWidget(DrawContext context, int mouseX, int mouseY, float tickDelta) {
+            hovered = isMouseOver(mouseX, mouseY);
             TraitDiscovery discoveries = Pony.of(MinecraftClient.getInstance().player).getDiscoveries();
-            setEnabled(discoveries.isKnown(trait));
+            boolean known = discoveries.isKnown(trait);
+            setStyle(known ? revealedStyle : hiddenStyle);
 
             RenderSystem.setShaderColor(1, 1, 1, 1);
             RenderSystem.enableBlend();
             context.drawTexture(SpellbookScreen.TEXTURE, getX() - 2, getY() - 8, 204, 219, 22, 32, 512, 256);
 
-            if (!active) {
+            if (!known) {
                 context.drawTexture(SpellbookScreen.TEXTURE, getX() - 2, getY() - 1, 74, 223, 18, 18, 512, 256);
             }
 
