@@ -1,5 +1,5 @@
 {
-  "resourcepack.unicopia.programmer_art": "Programmer Art (Unicopia)",
+  "resourcepack.unicopia.programmer_art": "Programmer Art (奇幻小马国)",
   "block.unicopia.bed.not_safe": "你现在不能休息，附近有敌人在游荡",
   "block.unicopia.bed.not_tired": "你现在并不觉得累",
   "block.unicopia.bed.no_sleep.nocturnal": "你只能在白天或雷暴中入眠",
@@ -1422,7 +1422,7 @@
   "unicopia.options.ignore_mine_lp.detected": "* 检测到你的种族是 %s",
   "unicopia.options.ignore_mine_lp.undetected": "* 我们不会利用你所选的种族身份信息",
   "unicopia.options.preferred_race": "偏好种族：%s",
-  "unicopia.options.hud_position": "HUD Position: %s",
+  "unicopia.options.hud_position": "HUD 位置：%s",
   "unicopia.options.whitelist": "启用白名单",
   "unicopia.options.whitelist.race": "允许 %ss",
   "unicopia.options.whitelist.details": "* 请选择你希望允许使用的种族",
