@@ -7,6 +7,7 @@ accessible          class    net/minecraft/client/render/VertexConsumers$Union
 accessible          class    net/minecraft/client/gui/hud/InGameHud$HeartType
 
 #accessible         method   net/minecraft/world/gen/foliage/FoliagePlacerType <init>             (Lcom/mojang/serialization/Codec;)V
+accessible          method   net/minecraft/entity/FallingBlockEntity           <init>             (Lnet/minecraft/world/World;DDDLnet/minecraft/block/BlockState;)V
 
 accessible          field    net/minecraft/entity/mob/CreeperEntity               CHARGED         Lnet/minecraft/entity/data/TrackedData;
 accessible          field    net/minecraft/entity/mob/CreeperEntity               IGNITED         Lnet/minecraft/entity/data/TrackedData;

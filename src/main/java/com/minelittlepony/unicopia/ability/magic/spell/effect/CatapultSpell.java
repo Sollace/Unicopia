@@ -15,7 +15,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeT
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
-import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
+import com.minelittlepony.unicopia.entity.duck.Hoverable;
 import com.minelittlepony.unicopia.projectile.MagicBeamEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
@@ -26,6 +26,7 @@ import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -133,17 +134,25 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
                 l.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, hoverDuration, 1));
             }
 
-            if (noGravity || e instanceof FallingBlockEntity && (!e.getWorld().getBlockState(e.getBlockPos().up()).isReplaceable())) {
+            if (noGravity || e instanceof FallingBlockEntity && hasRoof(e.getWorld(), e.getBlockPos().up())) {
                 if (e instanceof LivingEntity l) {
                     l.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 200, 1));
                 } else {
                     e.setNoGravity(true);
+                    if (e instanceof Hoverable h) {
+                        h.setTicksHovering(20);
+                    }
                 }
             }
         }
 
         e.velocityDirty = true;
         e.velocityModified = true;
+    }
+
+    private boolean hasRoof(World world, BlockPos pos) {
+        BlockState state = world.getBlockState(pos);
+        return !state.isReplaceable() && !state.getCollisionShape(world, pos).isEmpty();
     }
 
     static void createBlockEntity(World world, BlockPos bpos, @Nullable Consumer<Entity> apply) {
@@ -158,8 +167,14 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
         }
 
         Vec3d pos = Vec3d.ofBottomCenter(bpos);
-        FallingBlockEntity e = MixinFallingBlockEntity.createInstance(world, pos.x, pos.y, pos.z, world.getBlockState(bpos));
+        FallingBlockEntity e = new FallingBlockEntity(world, pos.x, pos.y, pos.z, state.withIfExists(Properties.WATERLOGGED, false));
+        if (state.hasBlockEntity()) {
+            e.blockEntityData = world.getChunk(bpos).getPackedBlockEntityNbt(bpos, world.getRegistryManager());
+        }
+
+        world.removeBlockEntity(bpos);
         world.removeBlock(bpos, true);
+
         e.setOnGround(false);
         e.timeFalling = Integer.MIN_VALUE;
         e.setHurtEntities(1 + (world.random.nextFloat() * 10), 100);
