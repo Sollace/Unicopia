@@ -26,7 +26,6 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ItemStackParticleEffect;
@@ -81,7 +80,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
 
     @Override
     protected Item getDefaultItem() {
-        return Items.AIR;
+        return UItems.GEMSTONE;
     }
 
     @Override
