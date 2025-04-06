@@ -21,6 +21,8 @@ import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ChestBlock;
+import net.minecraft.block.enums.ChestType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
@@ -167,7 +169,9 @@ public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.B
         }
 
         Vec3d pos = Vec3d.ofBottomCenter(bpos);
-        FallingBlockEntity e = new FallingBlockEntity(world, pos.x, pos.y, pos.z, state.withIfExists(Properties.WATERLOGGED, false));
+        FallingBlockEntity e = new FallingBlockEntity(world, pos.x, pos.y, pos.z, state
+                .withIfExists(Properties.WATERLOGGED, false)
+                .withIfExists(ChestBlock.CHEST_TYPE, ChestType.SINGLE));
         if (state.hasBlockEntity()) {
             e.blockEntityData = world.getChunk(bpos).getPackedBlockEntityNbt(bpos, world.getRegistryManager());
         }
