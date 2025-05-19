@@ -97,7 +97,7 @@ View the HOW_TO_PLAY.md file for more details.
 
 Linux/Mac:
 ```bash
-git clone https://github.com/Sollace/Unicopia
+git clone https://github.com/Sollace/Unicopia.git
 cd Unicopia
 ./gradlew rundatagen
 ./gradlew build
@@ -105,7 +105,7 @@ cd Unicopia
 
 Windows:
 ```bash
-git clone https://github.com/Sollace/Unicopia
+git clone https://github.com/Sollace/Unicopia.git
 cd Unicopia
 gradlew.bat rundatagen
 gradlew.bat build
