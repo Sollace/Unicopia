@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
  */
 public interface TimedSpell extends Spell {
     int BASE_DURATION = 120 * 20;
-    SpellAttribute<Integer> TIME = SpellAttribute.create(SpellAttributeType.SOAPINESS, AttributeFormat.TIME, AttributeFormat.PERCENTAGE, Trait.FOCUS, focus -> BASE_DURATION + (int)(MathHelper.clamp(focus, 0, 160) * 19) * 20);
+    SpellAttribute<Integer> TIME = SpellAttribute.create(SpellAttributeType.DURATION, AttributeFormat.TIME, AttributeFormat.PERCENTAGE, Trait.FOCUS, focus -> BASE_DURATION + (int)(MathHelper.clamp(focus, 0, 160) * 19) * 20);
 
     Timer getTimer();
 
