@@ -95,7 +95,6 @@ View the HOW_TO_PLAY.md file for more details.
 
 ### Building Unicopia
 
-Linux/Mac:
 ```bash
 git clone https://github.com/Sollace/Unicopia.git
 cd Unicopia
