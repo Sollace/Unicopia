@@ -28,18 +28,18 @@ public class RangedAttackBehaviour<T extends Entity & RangedAttackMob> extends E
 
         if (player.sneakingChanged() && isSneakingOnGround(player)) {
 
-            ProjectileEntity spit = projectileSupplier.apply(entity.world, entity);
+            ProjectileEntity spit = projectileSupplier.apply(entity.getWorld(), entity);
 
-            Vec3d rot = player.getEntity().getRotationVec(1);
+            Vec3d rot = player.asEntity().getRotationVec(1);
 
             spit.setVelocity(rot.getX(), rot.getY(), rot.getZ(), 1.5F, 3);
-            spit.setOwner(player.getMaster());
+            spit.setOwner(player.asEntity());
 
             if (!entity.isSilent()) {
-                SoundEmitter.playSoundAt(entity, sound, 1, 1 + (entity.world.random.nextFloat() - entity.world.random.nextFloat()) * 0.2F);
+                SoundEmitter.playSoundAt(entity, sound, 1, 1 + (entity.getWorld().random.nextFloat() - entity.getWorld().random.nextFloat()) * 0.2F);
             }
 
-            entity.world.spawnEntity(spit);
+            entity.getWorld().spawnEntity(spit);
         }
     }
 }

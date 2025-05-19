@@ -1,21 +1,26 @@
 package com.minelittlepony.unicopia.client.gui.spellbook;
 
+import java.util.List;
+
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
+import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.client.gui.*;
 import com.minelittlepony.unicopia.entity.player.*;
+import com.sollace.romanizer.api.Romanizer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper.Argb;
 import net.minecraft.util.math.MathHelper;
 
-public class SpellbookProfilePageContent extends DrawableHelper implements SpellbookChapterList.Content {
+public class SpellbookProfilePageContent implements SpellbookChapterList.Content {
+    private static final Text MANA_LABEL = Text.translatable("gui.unicopia.spellbook.page.mana");
     private final MinecraftClient client = MinecraftClient.getInstance();
     private final Pony pony = Pony.of(client.player);
     private final TextRenderer font = client.textRenderer;
@@ -33,46 +38,55 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
         int x = screen.getX() + bounds.left + bounds.width / 4 - size + 5;
         int y = screen.getY() + bounds.top + bounds.height / 2 + 3;
 
-
         screen.addDrawable(new SpellbookScreen.ImageButton(x, y, size, size))
             .getStyle()
                 .setIcon(TribeButton.createSprite(pony.getSpecies(), 0, 0, size))
-                .setTooltip(ProfileTooltip.get(pony));
+                .setTooltip(() -> List.of(
+                        Text.literal(String.format("Level %d ", pony.getLevel().get() + 1)).append(pony.getSpecies().getDisplayName()).formatted(pony.getSpecies().getAffinity().getColor()),
+                        Text.literal(String.format("Mana: %d%%", (int)(pony.getMagicalReserves().getMana().getPercentFill() * 100))),
+                        Text.literal(String.format("Corruption: %s%d%%", pony.getCorruptionhandler().hasCorruptingMagic() ? "^" : "", (int)(pony.getCorruption().getScaled(100)))),
+                        Text.literal(String.format("Experience: %d", (int)(pony.getMagicalReserves().getXp().getPercentFill() * 100))),
+                        Text.literal(String.format("Next level in: %dxp", 100 - (int)(pony.getMagicalReserves().getXp().getPercentFill() * 100)))
+                ));
 
-
-        float mainAngle = 90 * MathHelper.RADIANS_PER_DEGREE;
-        float offAngle = 60 * MathHelper.RADIANS_PER_DEGREE;
-        int radius = 75;
-
-        x += size / 4;
-        y += size / 3;
-
-        screen.addDrawable(new EquippedSpellSlot(x + (int)(Math.sin(mainAngle) * radius), y + (int)(Math.cos(mainAngle) * radius), pony.getCharms().getEquippedSpell(Hand.MAIN_HAND)));
-        screen.addDrawable(new EquippedSpellSlot(x + (int)(Math.sin(offAngle) * radius), y + (int)(Math.cos(offAngle) * radius), pony.getCharms().getEquippedSpell(Hand.OFF_HAND)));
+        Race inherited = pony.getCompositeRace().collapsed();
+        if (inherited != pony.getSpecies()) {
+            int halfSize = size / 2;
+            screen.addDrawable(new SpellbookScreen.ImageButton(x + halfSize, y + halfSize, halfSize, halfSize))
+                .getStyle()
+                    .setIcon(TribeButton.createSprite(inherited, 0, 0, halfSize));
+        }
     }
 
     @Override
-    public boolean showInventory() {
-        return true;
-    }
-
-    @Override
-    public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
+    public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
 
         int y = SpellbookScreen.TITLE_Y;
 
-        float delta = pony.getEntity().age + client.getTickDelta();
+        float tickDelta = client.getRenderTickCounter().getTickDelta(false);
+        float delta = pony.asEntity().age + tickDelta;
         int currentLevel = pony.getLevel().get();
+        float currentScaledLevel = pony.getLevel().getScaled(1);
+        float currentCorruption = pony.getCorruption().getScaled(1);
 
-        DrawableUtil.drawScaledText(matrices, pony.getEntity().getName(), SpellbookScreen.TITLE_X, y, 1.3F, SpellbookScreen.TITLE_COLOR);
-        DrawableUtil.drawScaledText(matrices, ExperienceGroup.forLevel(currentLevel, pony.getCorruption().get()), SpellbookScreen.TITLE_X, y + 13, 0.8F, 0xAA0040FF);
+        DrawableUtil.drawScaledText(context, pony.asEntity().getName(), SpellbookScreen.TITLE_X, y, 1.3F, MagicText.getColor());
+        DrawableUtil.drawScaledText(context, ExperienceGroup.forLevel(
+                currentScaledLevel,
+                currentCorruption
+        ), SpellbookScreen.TITLE_X, y + 13, 0.8F,
+                Argb.lerp(currentCorruption,
+                        Argb.lerp(currentScaledLevel, 0xAA0040FF, 0xAAA0AA40),
+                        0xAAFF0000
+                )
+        );
 
         MagicReserves reserves = pony.getMagicalReserves();
 
+        MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(screen.getBackgroundWidth() / 2 + SpellbookScreen.TITLE_X - 10, y, 0);
         matrices.scale(1.3F, 1.3F, 1);
-        font.draw(matrices, SpellbookCraftingPageContent.INVENTORY_TITLE, 0, 0, SpellbookScreen.TITLE_COLOR);
+        context.drawText(font, SpellbookCraftingPageContent.INVENTORY_TITLE, 0, 0, MagicText.getColor(), false);
         matrices.pop();
 
         Bounds bounds = screen.getFrameBounds();
@@ -83,44 +97,71 @@ public class SpellbookProfilePageContent extends DrawableHelper implements Spell
         double growth = MathHelper.sin(delta / 9F) * 2;
 
         double radius = 40 + growth;
-        float xpPercentage = reserves.getXp().getPercentFill();
-        float manaPercentage = reserves.getMana().getPercentFill();
+        float xpPercentage = reserves.getXp().getPercentFill(tickDelta);
+        float manaPercentage = reserves.getMana().getPercentFill(tickDelta);
 
         float alphaF = (MathHelper.sin(delta / 9F) + 1) / 2F;
         int alpha = (int)(alphaF * 0x10) & 0xFF;
         int color = 0x10404000 | alpha;
         int xpColor = 0xAA0040FF | ((int)((0.3F + 0.7F * xpPercentage) * 0xFF) & 0xFF) << 16;
-        int manaColor = 0xFF00F040 | (int)((0.3F + 0.7F * alphaF) * 0x40) << 16;
+        int manaColor = 0xFF00F040;
+        if (pony.getSpellSlot().get(SpellPredicate.IS_CORRUPTING).isPresent()) {
+            manaColor = Argb.lerp(Math.abs(MathHelper.sin(pony.asEntity().age / 15F)), manaColor, 0xFF0030F0);
+        }
+        manaColor |= (int)((0.3F + 0.7F * alphaF) * 0x40) << 16;
 
-        DrawableUtil.drawArc(matrices, 0, radius + 24, 0, DrawableUtil.TAU, color, false);
-        DrawableUtil.drawArc(matrices, radius / 3, radius + 6, 0, DrawableUtil.TAU, color, false);
-        DrawableUtil.drawArc(matrices, radius / 3, radius + 6, 0, xpPercentage * DrawableUtil.TAU, xpColor, false);
+        DrawableUtil.drawArc(matrices, 0, radius + 24, 0, DrawableUtil.TAU, color);
+        DrawableUtil.drawArc(matrices, radius / 3, radius + 6, 0, DrawableUtil.TAU, color);
+
+        if (currentLevel >= pony.getLevel().getMax()) {
+            int rayCount = 6;
+            float raySeparation = MathHelper.TAU / rayCount;
+            float rotate = (delta / 120) % (MathHelper.TAU / (rayCount / 2));
+
+            growth = MathHelper.sin(delta / 10F) * 2;
+
+            int bandAColor = Argb.lerp(currentCorruption, 0xAAFFAA60, 0xFF000030);
+            int bandBColor = Argb.lerp(currentCorruption, 0xFFFFFF40, 0x00000020);
+
+            float glowSize = Argb.lerp(currentCorruption, 8, -8);
+
+            for (int i = 0; i < rayCount; i++) {
+                double rad = (radius + glowSize) * 0.8F + growth - (i % 2) * 5;
+                float rot = (rotate + raySeparation * i) % MathHelper.TAU;
+
+                DrawableUtil.drawArc(matrices, 0, rad, rot, 0.2F, bandAColor);
+                DrawableUtil.drawArc(matrices, 0, rad + 0.3F, rot + 0.37F, 0.25F, bandBColor);
+            }
+        }
+
+        DrawableUtil.drawArc(matrices, radius / 3, radius + 6, 0, xpPercentage * DrawableUtil.TAU, xpColor);
         radius += 8;
-        DrawableUtil.drawArc(matrices, radius, radius + 6 + growth, 0, manaPercentage * DrawableUtil.TAU, manaColor, false);
+        DrawableUtil.drawArc(matrices, radius, radius + 6 + growth, 0, manaPercentage * DrawableUtil.TAU, manaColor);
 
         String manaString = (int)reserves.getMana().get() + "/" + (int)reserves.getMana().getMax();
 
         y = 15;
-        font.draw(matrices, "Mana", -font.getWidth("Mana") / 2, y, SpellbookScreen.TITLE_COLOR);
-        font.draw(matrices, manaString, -font.getWidth(manaString) / 2, y += font.fontHeight, SpellbookScreen.TITLE_COLOR);
 
-        Text levelString = I18n.hasTranslation("enchantment.level." + (currentLevel + 1)) ? Text.translatable("enchantment.level." + (currentLevel + 1)) : Text.literal(currentLevel >= 999 ? ">999" : "" + (currentLevel + 1));
+        context.drawText(font, MANA_LABEL, -font.getWidth(MANA_LABEL) / 2, y, SpellbookScreen.TITLE_COLOR, false);
+        context.drawText(font, manaString, -font.getWidth(manaString) / 2, y += font.fontHeight, SpellbookScreen.TITLE_COLOR, false);
+
+        Text levelString = Text.literal(Romanizer.romanize(currentLevel + 1));
 
         matrices.translate(-font.getWidth(levelString), -35, 0);
         matrices.scale(2F, 2F, 1);
-        font.draw(matrices, levelString, 0, 0, SpellbookScreen.TITLE_COLOR);
+        context.drawText(font, levelString, 0, 0, SpellbookScreen.TITLE_COLOR, false);
         matrices.pop();
 
         matrices.push();
         matrices.translate(-screen.getX(), -screen.getY(), 0);
-        screen.drawSlots(matrices, mouseX, mouseY, 0);
+        screen.drawSlots(context, mouseX, mouseY, 0);
         matrices.pop();
     }
 
-    static void drawBar(MatrixStack matrices, int x, int y, float value, int color) {
+    static void drawBar(DrawContext context, int x, int y, float value, int color) {
         int barWidth = 40;
         int midpoint = x + (int)(barWidth * value);
-        fill(matrices, x, y, midpoint, y + 5, 0xFFAAFFFF);
-        fill(matrices, midpoint, y, x + barWidth, y + 5, color);
+        context.fill(x, y, midpoint, y + 5, 0xFFAAFFFF);
+        context.fill(midpoint, y, x + barWidth, y + 5, color);
     }
 }

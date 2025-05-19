@@ -10,12 +10,13 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.data.*;
+import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.tag.FluidTags;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.TagKey;
 
 @Mixin(BoatEntity.class)
 abstract class MixinBoatEntity extends Entity implements LavaAffine {
@@ -31,17 +32,15 @@ abstract class MixinBoatEntity extends Entity implements LavaAffine {
                     "fall",
                     "canAddPassenger"
             },
-            at = @At(value = "FIELD", target = "net/minecraft/tag/FluidTags.WATER:Lnet/minecraft/tag/TagKey;", opcode = Opcodes.GETSTATIC)
+            at = @At(
+                    value = "FIELD",
+                    target = "net/minecraft/registry/tag/FluidTags.WATER:Lnet/minecraft/registry/tag/TagKey;",
+                    opcode = Opcodes.GETSTATIC
+            ),
+            require = 0 // Forge
     )
     private TagKey<Fluid> redirectFluidTag() {
         return isLavaAffine() ? FluidTags.LAVA : FluidTags.WATER;
-    }
-
-    @Inject(method = "copyEntityData", at = @At("HEAD"))
-    private void onCopyEntityData(Entity entity, CallbackInfo info) {
-        if (entity instanceof LavaAffine affine) {
-            affine.setLavaAffine(isLavaAffine());
-        }
     }
 
     @Inject(method = "writeCustomDataToNbt", at = @At("HEAD"))
@@ -55,8 +54,8 @@ abstract class MixinBoatEntity extends Entity implements LavaAffine {
     }
 
     @Inject(method = "initDataTracker", at = @At("HEAD"))
-    private void onInitDataTracker(CallbackInfo info) {
-        dataTracker.startTracking(IS_LAVA_BOAT, false);
+    private void onInitDataTracker(Builder builder, CallbackInfo info) {
+        builder.add(IS_LAVA_BOAT, false);
     }
 
     @Override

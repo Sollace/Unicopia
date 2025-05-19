@@ -29,6 +29,21 @@
       }
     ]
   },
+  "entity.player.hippogriff.screech": {
+    "category": "player",
+    "subtitle": "unicopia.subtitle.screech",
+    "sounds": [
+      "unicopia:screech/screech1",
+      "unicopia:screech/screech2"
+    ]
+  },
+  "entity.player.seapony.sonar": {
+    "category": "player",
+    "subtitle": "unicopia.subtitle.sonar",
+    "sounds": [
+      "unicopia:sonar/sonar0"
+    ]
+  },
   "item.magic.aura": {
     "category": "player",
     "subtitle": "unicopia.subtitle.magic_aura",
@@ -65,6 +80,13 @@
       "unicopia:changeling/buzz0"
     ]
   },
+  "entity.player.kirin.rage.loop": {
+    "category": "player",
+    "sounds": [
+      { "name": "unicopia:kirin/rage/dark_matter", "stream": true },
+      { "name": "unicopia:kirin/rage/dogged", "stream": true }
+    ]
+  },
   "entity.player.ears_ring": {
     "category": "ambient",
     "subtitle": "unicopia.subtitle.ears_ringing",
@@ -72,11 +94,37 @@
       "unicopia:ears/ringing"
     ]
   },
+  "entity.player.heartbeat_loop": {
+    "category": "ambient",
+    "subtitle": "unicopia.subtitle.heartbeat",
+    "sounds": [
+      "unicopia:heartbeat/heartbeat_loop"
+    ]
+  },
   "entity.player.heartbeat": {
     "category": "ambient",
     "subtitle": "unicopia.subtitle.heartbeat",
     "sounds": [
-      "unicopia:heartbeat/heartbeat"
+      "unicopia:heartbeat/heartbeat_1"
+    ]
+  },
+  "entity.player.corrupt": {
+    "category": "ambient",
+    "subtitle": "unicopia.subtitle.corrupt",
+    "sounds": [
+      { "name": "enchant/soulspeed/soulspeed1", "volume": 0.25 },
+      { "name": "enchant/soulspeed/soulspeed2", "volume": 0.25 },
+      { "name": "enchant/soulspeed/soulspeed3", "volume": 0.25 },
+      { "name": "enchant/soulspeed/soulspeed4", "volume": 0.25 },
+      { "name": "enchant/soulspeed/soulspeed5", "volume": 0.25 },
+      { "name": "enchant/soulspeed/soulspeed6", "volume": 0.25 },
+      { "name": "enchant/soulspeed/soulspeed7", "volume": 0.25 },
+      { "name": "enchant/soulspeed/soulspeed8", "volume": 0.25 },
+      { "name": "enchant/soulspeed/soulspeed9", "volume": 0.25 },
+      { "name": "enchant/soulspeed/soulspeed10", "volume": 0.25 },
+      { "name": "enchant/soulspeed/soulspeed11", "volume": 0.25 },
+      { "name": "enchant/soulspeed/soulspeed12", "volume": 0.25 },
+      { "name": "enchant/soulspeed/soulspeed13", "volume": 0.25 }
     ]
   },
   "ambient.wind.gust": {
@@ -227,6 +275,24 @@
       "mob/bat/hurt4"
     ],
     "subtitle": "unicopia.subtitle.entity.twittermite.hurt"
+  },
+  "entity.sombra.ambient": {
+    "subtitle": "unicopia.subtitle.entity.sombra.ambient",
+    "sounds": [
+      "unicopia:entity/sombra/sombra_idle"
+    ]
+  },
+  "entity.sombra.laugh": {
+    "subtitle": "unicopia.subtitle.entity.sombra.laugh",
+    "sounds": [
+      "unicopia:entity/sombra/sombra_laugh"
+    ]
+  },
+  "entity.sombra.snicker": {
+    "subtitle": "unicopia.subtitle.entity.sombra.snicker",
+    "sounds": [
+      "unicopia:entity/sombra/sombra_snicker"
+    ]
   },
   "entity.jar.throw": {
     "sounds": [
@@ -383,6 +449,29 @@
     "subtitle": "unicopia.subtitle.item.bracelet.sign"
   },
   
+  "block.chitin.ambience": {
+    "sounds": [
+      "unicopia:insect/insect_1",
+      "unicopia:insect/insect_21",
+      "unicopia:insect/insect_22",
+      "unicopia:insect/insect_23",
+      "unicopia:insect/insect_24",
+      "unicopia:insect/insect_25",
+      "unicopia:insect/insect_31",
+      "unicopia:insect/insect_32",
+      "unicopia:insect/insect_33",
+      "unicopia:insect/insect_34",
+      "unicopia:insect/insect_35"
+    ],
+    "subtitle": "unicopia.subtitle.block.chitin.ambience"
+  },
+  "block.slime_pustule.pop": {
+    "sounds": [
+      "unicopia:pustule/pop"
+    ],
+    "subtitle": "unicopia.subtitle.block.slime_pustule.pop"
+  },
+
   "spell.cast.fail": {
     "sounds": [
       "random/break"

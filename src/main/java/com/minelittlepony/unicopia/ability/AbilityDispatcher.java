@@ -8,16 +8,16 @@ import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.MsgPlayerAbility;
 import com.minelittlepony.unicopia.network.Channel;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
 import com.minelittlepony.unicopia.util.Tickable;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Identifier;
 
 public class AbilityDispatcher implements Tickable, NbtSerialisable {
@@ -38,19 +38,8 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         Stat stat = getStat(slot);
 
         if (stat.canSwitchStates()) {
-            if (pressType == ActivationType.NONE || stat.getAbility(page).filter(ability -> !triggerQuickAction(ability, pressType)).isEmpty()) {
-                stat.setActiveAbility(null);
-            }
+            stat.clear(pressType, page);
         }
-    }
-
-    private <T extends Hit> boolean triggerQuickAction(Ability<T> ability, ActivationType pressType) {
-        Optional<T> data = ability.prepareQuickAction(player, pressType);
-        if (ability.onQuickAction(player, pressType, data)) {
-            Channel.CLIENT_PLAYER_ABILITY.send(new MsgPlayerAbility<>(ability, data, pressType));
-            return true;
-        }
-        return false;
     }
 
     public Optional<Ability<?>> activate(AbilitySlot slot, long page) {
@@ -65,6 +54,10 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         return stats.values();
     }
 
+    public Optional<Stat> getActiveStat() {
+        return stats.values().stream().filter(stat -> stat.getFillProgress() > 0).findFirst();
+    }
+
     public Stat getStat(AbilitySlot slot) {
         return stats.computeIfAbsent(slot, Stat::new);
     }
@@ -73,15 +66,16 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         return getStat(slot).getMaxPage() > 0;
     }
 
-    public long getMaxPage() {
-        if (maxPage < 0 || prevRace != player.getSpecies()) {
-            prevRace = player.getSpecies();
+    public int getMaxPage() {
+        Race newRace = player.getCompositeRace().collapsed();
+        if (maxPage < 0 || prevRace != newRace) {
+            prevRace = newRace;
             maxPage = 0;
             for (AbilitySlot slot : AbilitySlot.values()) {
                 maxPage = Math.max(maxPage, getStat(slot).getMaxPage() - 1);
             }
         }
-        return maxPage;
+        return (int)maxPage;
     }
 
     @Override
@@ -90,20 +84,20 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         if (compound.contains("stats")) {
             stats.clear();
             NbtCompound li = compound.getCompound("stats");
             li.getKeys().forEach(key -> {
-                getStat(AbilitySlot.valueOf(key)).fromNBT(li.getCompound(key));
+                getStat(AbilitySlot.valueOf(key)).fromNBT(li.getCompound(key), lookup);
             });
         }
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         NbtCompound li = new NbtCompound();
-        stats.forEach((key, value) -> li.put(key.name(), value.toNBT()));
+        stats.forEach((key, value) -> li.put(key.name(), value.toNBT(lookup)));
         compound.put("stats", li);
     }
 
@@ -179,42 +173,58 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         }
 
         public void tick() {
-            getActiveAbility().ifPresent(this::activate);
+            Optional<Ability<?>> activeAbility = getActiveAbility();
+
+            if (activeAbility.isEmpty()) {
+                if (warmup > 0) {
+                    warmup--;
+                }
+                if (cooldown > 0) {
+                    cooldown--;
+                }
+            }
+            getActiveAbility().ifPresent(ability -> {
+                if (warmup > 0) {
+                    warmup--;
+                    ability.warmUp(player, slot);
+                    return;
+                }
+
+                if (cooldown > 100 && player.asEntity().isCreative()) {
+                    cooldown = Math.max(10, cooldown - 100);
+                }
+
+                if (cooldown > 0 && cooldown-- > 0) {
+                    ability.coolDown(player, slot);
+
+                    if (cooldown <= 0) {
+                        setActiveAbility(null);
+                    }
+                    return;
+                }
+
+                tryFire(ability);
+            });
         }
 
-        private <T extends Hit> void activate(Ability<T> ability) {
-            if (warmup > 0) {
-                warmup--;
-                ability.preApply(player, slot);
-                return;
-            }
-
-            if (cooldown > 0 && cooldown-- > 0) {
-                ability.postApply(player, slot);
-
-                if (cooldown <= 0) {
-                    setActiveAbility(null);
-                }
-                return;
-            }
-
+        private <T extends Hit> void tryFire(Ability<T> ability) {
             if (triggered) {
                 return;
             }
 
-            if (ability.canActivate(player.getReferenceWorld(), player)) {
-                triggered = true;
-                setCooldown(ability.getCooldownTime(player));
+            triggered = true;
+            setCooldown(ability.getCooldownTime(player));
 
-                if (player.isClientPlayer()) {
-                    Optional<T> data = ability.prepare(player);
+            if (player.isClientPlayer()) {
+                Optional<T> data = ability.prepare(player);
+                warmup = 0;
 
-                    if (data.isPresent()) {
-                        Channel.CLIENT_PLAYER_ABILITY.send(new MsgPlayerAbility<>(ability, data, ActivationType.NONE));
-                    } else {
-                        player.getEntity().playSound(USounds.GUI_ABILITY_FAIL, 1, 1);
-                        setCooldown(0);
-                    }
+                if (data.isPresent()) {
+                    InteractionManager.getInstance().sendPlayerLookAngles(player.asEntity());
+                    Channel.CLIENT_PLAYER_ABILITY.sendToServer(new MsgPlayerAbility<>(ability, data, ActivationType.NONE));
+                } else {
+                    player.asEntity().playSound(USounds.GUI_ABILITY_FAIL, 1, 1);
+                    setCooldown(0);
                 }
             }
 
@@ -224,7 +234,7 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         }
 
         public Optional<Ability<?>> getAbility(long page) {
-            List<Ability<?>> found = Abilities.BY_SLOT_AND_RACE.apply(slot, player.getSpecies());
+            List<Ability<?>> found = Abilities.BY_SLOT_AND_COMPOSITE_RACE.apply(slot, player.getCompositeRace());
             if (found.isEmpty()) {
                 return Optional.empty();
             }
@@ -232,8 +242,28 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
             return Optional.ofNullable(found.get((int)Math.min(found.size() - 1, page)));
         }
 
+        public void clear(ActivationType pressType, long page) {
+            if (pressType == ActivationType.NONE
+                    || getAbility(page).filter(ability -> !triggerQuickAction(ability, pressType)).isEmpty()) {
+                if (warmup > 0) {
+                    getActiveAbility().filter(Ability::activateOnEarlyRelease).ifPresentOrElse(this::tryFire, () -> setActiveAbility(null));
+                } else {
+                    setActiveAbility(null);
+                }
+            }
+        }
+
+        private <T extends Hit> boolean triggerQuickAction(Ability<T> ability, ActivationType pressType) {
+            Optional<T> data = ability.prepareQuickAction(player, pressType);
+            if (ability.onQuickAction(player, pressType, data)) {
+                Channel.CLIENT_PLAYER_ABILITY.sendToServer(new MsgPlayerAbility<>(ability, data, pressType));
+                return true;
+            }
+            return false;
+        }
+
         public long getMaxPage() {
-            return Abilities.BY_SLOT_AND_RACE.apply(slot, player.getSpecies()).size();
+            return Abilities.BY_SLOT_AND_COMPOSITE_RACE.apply(slot, player.getCompositeRace()).size();
         }
 
         protected synchronized Optional<Ability<?>> setActiveAbility(@Nullable Ability<?> power) {
@@ -247,14 +277,14 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
             return Optional.empty();
         }
 
-        protected synchronized Optional<Ability<?>> getActiveAbility() {
+        public synchronized Optional<Ability<?>> getActiveAbility() {
             return activeAbility.filter(ability -> {
-                return (!(ability == null || (triggered && warmup == 0 && cooldown == 0)) && ability.canUse(player.getSpecies()));
+                return (!(ability == null || (triggered && warmup == 0 && cooldown == 0)) && ability.canUse(player.getCompositeRace()));
             });
         }
 
         @Override
-        public void toNBT(NbtCompound compound) {
+        public void toNBT(NbtCompound compound, WrapperLookup lookup) {
             compound.putInt("warmup", warmup);
             compound.putInt("cooldown", cooldown);
             compound.putInt("maxWarmup", maxWarmup);
@@ -266,13 +296,13 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
         }
 
         @Override
-        public void fromNBT(NbtCompound compound) {
+        public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
             warmup = compound.getInt("warmup");
             cooldown = compound.getInt("cooldown");
             maxWarmup = compound.getInt("maxWarmup");
             maxCooldown = compound.getInt("maxCooldown");
             triggered = compound.getBoolean("triggered");
-            activeAbility = Abilities.REGISTRY.getOrEmpty(new Identifier(compound.getString("activeAbility")));
+            activeAbility = Abilities.REGISTRY.getOrEmpty(Identifier.of(compound.getString("activeAbility")));
         }
     }
 }

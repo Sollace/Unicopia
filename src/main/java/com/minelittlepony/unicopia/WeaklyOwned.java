@@ -6,9 +6,9 @@ import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.entity.EntityReference.EntityValues;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.world.World;
 
 /**
  * Interface for things that can be weakly owned (by an entity).
@@ -16,42 +16,42 @@ import net.minecraft.world.World;
  *
  * @param <E> The type of object that owns us.
  */
-public interface WeaklyOwned<E extends Entity> extends Owned<E> {
-
+public interface WeaklyOwned<E extends Entity> extends Owned<E>, WorldConvertable {
     EntityReference<E> getMasterReference();
-
-    /**
-     * Updated the owner of this object to be the same as another.
-     *
-     * @param sibling
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    default void setMaster(Owned<? extends E> sibling) {
-        if (sibling instanceof WeaklyOwned) {
-            getMasterReference().copyFrom(((WeaklyOwned<E>)sibling).getMasterReference());
-        } else {
-            setMaster(sibling.getMaster());
-        }
-    }
-
-    default World getReferenceWorld() {
-        return ((Entity)this).getEntityWorld();
-    }
 
     @Nullable
     @Override
     default E getMaster() {
-        return getMasterReference().get(getReferenceWorld());
-    }
-
-    @Override
-    default void setMaster(E master) {
-        getMasterReference().set(master);
+        return getMasterReference().get(asWorld());
     }
 
     @Override
     default Optional<UUID> getMasterId() {
-        return getMasterReference().getId();
+        return getMasterReference().getTarget().map(EntityValues::uuid);
+    }
+
+    interface Mutable<E extends Entity> extends WeaklyOwned<E>, Owned.Mutable<E> {
+        @Override
+        EntityReference<E> getMasterReference();
+
+        /**
+         * Updated the owner of this object to be the same as another.
+         *
+         * @param sibling
+         */
+        @Override
+        @SuppressWarnings("unchecked")
+        default void setMaster(Owned<? extends E> sibling) {
+            if (sibling instanceof WeaklyOwned w) {
+                getMasterReference().copyFrom(w.getMasterReference());
+            } else {
+                setMaster(sibling.getMaster());
+            }
+        }
+
+        @Override
+        default void setMaster(E master) {
+            getMasterReference().set(master);
+        }
     }
 }

@@ -3,6 +3,7 @@
 bin/
 build/
 run/
+generated/
 .classpath
 .project
 *.launch

@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "traits": "happiness:10 kindness:10",
+  "items": [
+    "#unicopia:groups/unicorn",
+    "unicopia:curing_joke"
+  ]
+}

@@ -3,19 +3,29 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
-import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.EntityReference;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
+import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 
-public class DisplacementSpell extends AbstractSpell implements HomingSpell, PlaceableSpell.PlacementDelegate {
+public class DisplacementSpell extends AbstractSpell implements HomingSpell, ProjectileDelegate.HitListener {
 
-    private final EntityReference<Entity> target = new EntityReference<>();
+    private static final SpellAttribute<Float> DAMAGE_TO_TARGET = SpellAttribute.create(SpellAttributeType.DAMAGE_TO_TARGET, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.BLOOD, blood -> blood);
+
+    static final TooltipFactory TOOLTIP = DAMAGE_TO_TARGET;
+
+    private final EntityReference<Entity> target = dataTracker.startTracking(new EntityReference<>());
 
     private int ticks = 10;
 
@@ -24,32 +34,32 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
     }
 
     @Override
-    public boolean apply(Caster<?> caster) {
-        return toPlaceable().apply(caster);
+    public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
+        return method.isIndirectCause() ? this : toPlaceable();
     }
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        source.getMaster().setGlowing(true);
+        Caster<?> originator = source.getOriginatingCaster();
+
+        originator.asEntity().setGlowing(true);
+
+        if (situation == Situation.PROJECTILE) {
+            return !isDead();
+        }
 
         ticks--;
 
-        if (source.isClient()) {
+        if (originator.isClient()) {
             return !isDead() || ticks >= -10;
         }
 
-        if (ticks == 0) {
-            target.ifPresent(source.getReferenceWorld(), target -> {
-
-                Vec3d destinationPos = target.getPos();
-                Vec3d destinationVel = target.getVelocity();
-
-                Vec3d sourcePos = source.getMaster().getPos();
-                Vec3d sourceVel = source.getMaster().getVelocity();
-
-                teleport(target, sourcePos, sourceVel);
-                teleport(source.getMaster(), destinationPos, destinationVel);
-                source.subtractEnergyCost(destinationPos.distanceTo(sourcePos) / 20F);
+        if (!originator.isClient()) {
+            target.ifPresent(originator.asWorld(), target -> {
+                target.setGlowing(true);
+                if (ticks == 0) {
+                    apply(originator, target);
+                }
             });
         }
 
@@ -57,28 +67,53 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
     }
 
     @Override
-    public void onPlaced(Caster<?> source, PlaceableSpell parent, CastSpellEntity entity) {
-
-    }
-
-    @Override
-    public void updatePlacement(Caster<?> caster, PlaceableSpell parent) {
-        parent.getParticleEffectAttachment(caster).ifPresent(attachment -> {
-            float r = 3 - (1 - ((ticks + 10) / 20F)) * 3;
-            attachment.setAttribute(Attachment.ATTR_RADIUS, r);
+    public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
+        HitListener.super.onImpact(projectile, hit);
+        Caster.of(projectile.getMaster()).ifPresent(originator -> {
+            apply(originator, hit.getEntity());
         });
     }
 
-    private void teleport(Entity entity, Vec3d pos, Vec3d vel) {
-        entity.teleport(pos.x, pos.y, pos.z);
+    @Override
+    public void onImpact(MagicProjectileEntity projectile) {
+        if (projectile.getMaster() != null) {
+            projectile.getMaster().setGlowing(false);
+        }
+        target.ifPresent(projectile.asWorld(), e -> e.setGlowing(false));
+    }
+
+    private void apply(Caster<?> originator, Entity target) {
+        Vec3d destinationPos = target.getPos();
+        Vec3d destinationVel = target.getVelocity();
+
+        Vec3d sourcePos = originator.getOriginVector();
+        Vec3d sourceVel = originator.asEntity().getVelocity();
+
+        Entity targetVehicle = teleport(originator, target, sourcePos, sourceVel);
+        Entity sourceVehicle = teleport(originator, originator.asEntity(), destinationPos, destinationVel);
+
+        if (targetVehicle != null) {
+            originator.asEntity().startRiding(targetVehicle);
+        }
+        if (sourceVehicle != null) {
+            target.startRiding(sourceVehicle);
+        }
+
+        originator.subtractEnergyCost(destinationPos.distanceTo(sourcePos) / 20F);
+    }
+
+    private Entity teleport(Caster<?> source, Entity entity, Vec3d pos, Vec3d vel) {
+        Entity oldVehicle = entity.getVehicle();
+        entity.requestTeleportAndDismount(pos.x, pos.y, pos.z);
         entity.setVelocity(vel);
         entity.setGlowing(false);
         entity.playSound(USounds.SPELL_DISPLACEMENT_TELEPORT, 1, 1);
 
-        float damage = getTraits().get(Trait.BLOOD);
+        float damage = DAMAGE_TO_TARGET.get(getTraits());
         if (damage > 0) {
-            entity.damage(MagicalDamageSource.EXHAUSTION, damage);
+            entity.damage(source.damageOf(UDamageTypes.EXHAUSTION, source), damage);
         }
+        return oldVehicle;
     }
 
     @Override
@@ -93,20 +128,23 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pla
     }
 
     @Override
-    public void onDestroyed(Caster<?> caster) {
-        caster.getMaster().setGlowing(false);
-        target.ifPresent(caster.getReferenceWorld(), e -> e.setGlowing(false));
+    protected void onDestroyed(Caster<?> caster) {
+        super.onDestroyed(caster);
+        caster.getOriginatingCaster().asEntity().setGlowing(false);
+        target.ifPresent(caster.asWorld(), e -> e.setGlowing(false));
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
         compound.putInt("ticks", ticks);
+        compound.put("target", target.toNBT(lookup));
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
         ticks = compound.getInt("ticks");
+        target.fromNBT(compound.getCompound("target"), lookup);
     }
 }

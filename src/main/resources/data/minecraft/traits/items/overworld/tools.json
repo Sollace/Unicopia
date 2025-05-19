@@ -3,30 +3,7 @@
   "traits": "order:-2 kindness:1 strength:3",
   "items": [
     "minecraft:shears",
-
-    "minecraft:wooden_shovel",
-    "minecraft:wooden_pickaxe",
-    "minecraft:wooden_axe",
-    "minecraft:wooden_hoe",
-   
-    "minecraft:stone_shovel",
-    "minecraft:stone_pickaxe",
-    "minecraft:stone_axe",
-    "minecraft:stone_hoe",
-   
-    "minecraft:golden_shovel",
-    "minecraft:golden_pickaxe",
-    "minecraft:golden_axe",
-    "minecraft:golden_hoe",
-   
-    "minecraft:iron_shovel",
-    "minecraft:iron_pickaxe",
-    "minecraft:iron_axe",
-    "minecraft:iron_hoe",
-   
-    "minecraft:diamond_shovel",
-    "minecraft:diamond_pickaxe",
-    "minecraft:diamond_axe",
-    "minecraft:diamond_hoe"
+    "#minecraft:tools",
+    "#c:tools"
   ]
 }

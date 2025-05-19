@@ -1,20 +1,26 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
-import com.minelittlepony.unicopia.client.render.RenderLayers;
-import com.minelittlepony.unicopia.entity.ButterflyEntity;
+import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.client.render.RenderLayers;
+import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
+
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 public class ButterflyEntityRenderer extends MobEntityRenderer<ButterflyEntity, ButterflyEntityRenderer.ButterflyEntityModel> {
@@ -36,13 +42,30 @@ public class ButterflyEntityRenderer extends MobEntityRenderer<ButterflyEntity, 
     }
 
     @Override
-    protected void setupTransforms(ButterflyEntity entity, MatrixStack matrices, float age, float yaw, float ticks) {
+    protected void setupTransforms(ButterflyEntity entity, MatrixStack matrices, float age, float yaw, float ticks, float scale) {
 
         if (!entity.isResting()) {
             matrices.translate(0, MathHelper.cos(age / 3F) / 10F, 0);
         }
 
-        super.setupTransforms(entity, matrices, age, yaw, ticks);
+        super.setupTransforms(entity, matrices, age, yaw, ticks, scale);
+    }
+
+    @Override
+    @Nullable
+    protected RenderLayer getRenderLayer(ButterflyEntity entity, boolean showBody, boolean translucent, boolean showOutline) {
+        if (showBody && !translucent) {
+            BlockPos pos = entity.getBlockPos();
+            if (getBlockLight(entity, pos) < 7 && getSkyLight(entity, pos) < 15) {
+                return RenderLayers.getEntityTranslucent(getTexture(entity));
+            }
+        }
+        return super.getRenderLayer(entity, showBody, translucent, showOutline);
+    }
+
+    @Override
+    protected int getSkyLight(ButterflyEntity entity, BlockPos pos) {
+        return (int)(super.getSkyLight(entity, pos) * (entity.getWorld() instanceof ClientWorld w ? w.getSkyBrightness(MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false)) : 1));
     }
 
     public static class ButterflyEntityModel extends EntityModel<ButterflyEntity> {
@@ -73,8 +96,8 @@ public class ButterflyEntityRenderer extends MobEntityRenderer<ButterflyEntity, 
         }
 
         @Override
-        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-            body.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+            body.render(matrices, vertexConsumer, light, overlay, color);
         }
 
         @Override

@@ -2,37 +2,25 @@ package com.minelittlepony.unicopia.command;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 
-import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.Unicopia;
-
+import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
+import com.minelittlepony.unicopia.command.ManaCommand.ManaType;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.server.MinecraftServer;
+import net.minecraft.command.argument.serialize.ConstantArgumentSerializer;
 
 public class Commands {
-    @SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })
     public static void bootstrap() {
-        ArgumentTypeRegistry.registerArgumentType(
-                Unicopia.id("enumeration"),
-                EnumArgumentType.class,
-                new EnumArgumentType.Serializer()
-        );
-        CommandRegistrationCallback.EVENT.register((dispatcher, access, environment) -> {
-            RacelistCommand.register(dispatcher);
-            EmoteCommand.register(dispatcher);
-            if (Unicopia.getConfig().enableCheats.get()) {
-                SpeciesCommand.register(dispatcher);
-                GravityCommand.register(dispatcher);
-                DisguiseCommand.register(dispatcher);
-                if (Debug.DEBUG_COMMANDS) {
-                    TraitCommand.register(dispatcher);
-                    ManaCommand.register(dispatcher);
-                }
-            }
+        ArgumentTypeRegistry.registerArgumentType(Unicopia.id("animation"), Animation.ArgumentType.class, ConstantArgumentSerializer.of(Animation::argument));
+        ArgumentTypeRegistry.registerArgumentType(Unicopia.id("animation_recipient"), Animation.Recipient.ArgumentType.class, ConstantArgumentSerializer.of(Animation.Recipient::argument));
+        ArgumentTypeRegistry.registerArgumentType(Unicopia.id("mana_type"), ManaType.ArgumentType.class, ConstantArgumentSerializer.of(ManaType::argument));
+        ArgumentTypeRegistry.registerArgumentType(Unicopia.id("trait_type"), Trait.ArgumentType.class, ConstantArgumentSerializer.of(Trait::argument));
+        ArgumentTypeRegistry.registerArgumentType(Unicopia.id("spell_traits"), TraitsArgumentType.class, ConstantArgumentSerializer.of(TraitsArgumentType::traits));
+
+        CommandRegistrationCallback.EVENT.register((dispatcher, registries, environment) -> {
+            dispatcher.register(EmoteCommand.create());
+            dispatcher.register(SpeciesCommand.create(environment));
+            dispatcher.register(UnicopiaCommand.create(registries, environment));
         });
-        Object game = FabricLoader.getInstance().getGameInstance();
-        if (game instanceof MinecraftServer) {
-            ((MinecraftServer)game).setFlightEnabled(true);
-        }
     }
 }

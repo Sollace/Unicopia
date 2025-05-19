@@ -4,6 +4,8 @@
    "items": [
      "minecraft:potion",
      "minecraft:glass_bottle",
-     "minecraft:ender_eye"
+     "minecraft:ender_eye",
+     "#minecraft:trim_materials",
+     "minecraft:brush"
    ]
 }

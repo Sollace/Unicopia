@@ -1,8 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
@@ -12,8 +11,6 @@ import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.Block;
@@ -24,17 +21,17 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion.DestructionType;
+import net.minecraft.world.World.ExplosionSourceType;
 
 /**
  * Simple fire spell that triggers an effect when used on a block.
@@ -52,7 +49,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
     public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
         if (!projectile.isClient()) {
             Vec3d pos = hit.getPos();
-            projectile.getReferenceWorld().createExplosion(projectile.getOwner(), pos.getX(), pos.getY(), pos.getZ(), 2, DestructionType.DESTROY);
+            projectile.asWorld().createExplosion(projectile.getOwner(), pos.getX(), pos.getY(), pos.getZ(), 2, ExplosionSourceType.MOB);
         }
     }
 
@@ -60,7 +57,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
         if (!projectile.isClient()) {
             Entity entity = hit.getEntity();
-            projectile.getReferenceWorld().createExplosion(projectile.getOwner(), entity.getX(), entity.getY(), entity.getZ(), 2, DestructionType.DESTROY);
+            projectile.asWorld().createExplosion(projectile.getOwner(), entity.getX(), entity.getY(), entity.getZ(), 2, ExplosionSourceType.MOB);
         }
     }
 
@@ -70,14 +67,14 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
             generateParticles(source);
         }
 
-        return new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER))).translate(source.getOrigin()).getBlockPositions().reduce(false,
-                (r, i) -> source.canModifyAt(i) && applyBlocks(source.getReferenceWorld(), i),
+        return new Sphere(false, RANGE.get(getTraits())).translate(source.getOrigin()).getBlockPositions().reduce(false,
+                (r, i) -> source.canModifyAt(i) && applyBlocks(source.asWorld(), i),
                 (a, b) -> a || b)
-                || applyEntities(null, source.getReferenceWorld(), source.getOriginVector());
+                || applyEntities(source, source.getOriginVector());
     }
 
     protected void generateParticles(Caster<?> source) {
-        source.spawnParticles(new Sphere(false, Math.max(0, 4 + getTraits().get(Trait.POWER))), (int)(1 + source.getLevel().getScaled(8)) * 6, pos -> {
+        source.spawnParticles(new Sphere(false, RANGE.get(getTraits())), (int)(1 + source.getLevel().getScaled(8)) * 6, pos -> {
             source.addParticle(ParticleTypes.LARGE_SMOKE, pos, Vec3d.ZERO);
         });
     }
@@ -124,25 +121,27 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
         return false;
     }
 
-    protected boolean applyEntities(@Nullable Entity owner, World world, Vec3d pos) {
-        return !VecHelper.findInRange(owner, world, pos, Math.max(0, 3 + getTraits().get(Trait.POWER)), i -> applyEntitySingle(owner, world, i)).isEmpty();
+    protected float getEntityEffectRange() {
+        return Math.max(0, RANGE.get(getTraits()) - 1);
     }
 
-    protected boolean applyEntitySingle(@Nullable Entity owner, World world, Entity e) {
-        if ((!e.equals(owner) ||
-                (owner instanceof PlayerEntity && !EquinePredicates.PLAYER_UNICORN.test(owner))) && !(e instanceof ItemEntity)
-        && !(e instanceof Caster<?>)) {
+    protected boolean applyEntities(Caster<?> source, Vec3d pos) {
+        return source.findAllEntitiesInRange(getEntityEffectRange(), e -> {
+            LivingEntity master = source.getMaster();
+            return (!(e.equals(source.asEntity()) || e.equals(master)) ||
+                    (master instanceof PlayerEntity && !EquinePredicates.PLAYER_UNICORN.test(master))) && !(e instanceof ItemEntity)
+                    && !(e instanceof Caster<?>);
+        }).filter(e -> {
             e.setOnFireFor(60);
-            e.damage(getDamageCause(e, (LivingEntity)owner), 0.1f);
-            playEffect(world, e.getBlockPos());
+            e.damage(getDamageCause(source, e), 0.1f);
+            playEffect(source.asWorld(), e.getBlockPos());
             return true;
-        }
-
-        return false;
+        })
+        .count() > 0;
     }
 
-    protected DamageSource getDamageCause(Entity target, @Nullable LivingEntity attacker) {
-        return MagicalDamageSource.create("fire", attacker);
+    protected DamageSource getDamageCause(Caster<?> source, Entity target) {
+        return source.damageOf(DamageTypes.IN_FIRE, source);
     }
 
     /**
@@ -171,7 +170,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
         int y = pos.getY();
         int z = pos.getZ();
 
-        world.playSound(null, pos, SoundEvents.BLOCK_FURNACE_FIRE_CRACKLE, SoundCategory.AMBIENT, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
+        world.playSound(null, pos, USounds.SPELL_FIRE_CRACKLE, SoundCategory.AMBIENT, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
 
         for (int i = 0; i < 8; ++i) {
             ParticleUtils.spawnParticle(world, ParticleTypes.LARGE_SMOKE, new Vec3d(

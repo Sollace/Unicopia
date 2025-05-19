@@ -2,15 +2,15 @@ package com.minelittlepony.unicopia.ability;
 
 import java.util.Optional;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import net.minecraft.util.Util;
 
 public interface Ability<T extends Hit> {
     /**
@@ -29,6 +29,52 @@ public interface Ability<T extends Hit> {
     int getCooldownTime(Pony player);
 
     /**
+     * The icon representing this ability on the UI and HUD.
+     */
+    default Identifier getIcon(Pony player) {
+        return getId().withPath(p -> "textures/gui/ability/" + p + ".png");
+    }
+
+    default int getColor(Pony player) {
+        return -1;
+    }
+
+    /**
+     * The display name for this ability.
+     */
+    default Text getName(Pony player) {
+        return Text.translatable(getTranslationKey());
+    }
+
+    default String getTranslationKey() {
+        return Util.createTranslationKey("ability", getId());
+    }
+
+    default Identifier getId() {
+        return Abilities.REGISTRY.getId(this);
+    }
+
+    default boolean activateOnEarlyRelease() {
+        return false;
+    }
+
+    /**
+     * Checks if the given race is permitted to use this ability
+     * @param race The player's species
+     */
+    default boolean canUse(Race.Composite race) {
+        return race.any(this::canUse);
+    }
+
+    /**
+     * Checks if the given race is permitted to use this ability
+     * @param playerSpecies The player's species
+     */
+    default boolean canUse(Race race) {
+        return race.canUse(this);
+    }
+
+    /**
      * Called when an ability is about to be triggered. This event occurs on both the client and server so check {@code Pony#isClient} if you need to know which one you're on.
      * <p>
      * Use this method to respond to quick-time events, like short taps or double-taps.
@@ -36,78 +82,41 @@ public interface Ability<T extends Hit> {
      * @return True if the event has been handled.
      */
     default boolean onQuickAction(Pony player, ActivationType type, Optional<T> data) {
-        return onQuickAction(player, type);
-    }
-
-    @Deprecated
-    default boolean onQuickAction(Pony player, ActivationType type) {
         return false;
     }
 
     /**
+     * Checks whether this ability has any special actions for the given activation type.
+     * <p>
+     * The default is to only respond to press-and-hold actions.
+     */
+    default boolean acceptsQuickAction(Pony player, ActivationType type) {
+        return type == ActivationType.NONE;
+    }
+
+    /**
      * Called on the client to get any data required for the quick action.
+     *
+     * @param player    The player
+     * @param type      The type of quick event being triggered
+     * @return The data to pass on to the quick event handler
      */
     default Optional<T> prepareQuickAction(Pony player, ActivationType type) {
         return Optional.empty();
     }
 
     /**
-     * Called to check preconditions for activating the ability.
-     *
-     * @param w         The world
-     * @param player    The player
-     * @return  True to allow activation
+     * Gets the serializer to use for reading data over the network.
      */
-    default boolean canActivate(World w, Pony player) {
-        return true;
-    }
+    PacketCodec<? super RegistryByteBuf, T> getSerializer();
 
     /**
-     * Checks if the given race is permitted to use this ability
-     * @param playerSpecies The player's species
-     */
-    boolean canUse(Race playerSpecies);
-
-    @Deprecated
-    @Nullable
-    T tryActivate(Pony player);
-
-    /**
-     * Called on the client to activate the ability.
+     * Called on the client to get any data required to activate the ability.
      *
      * @param player    The player activating the ability
-     * @return  Data to be sent, or null if activation failed
+     * @return  Data to be sent, or Empty if activation failed
      */
-    default Optional<T> prepare(Pony player) {
-        return Optional.ofNullable(tryActivate(player));
-    }
-
-    Hit.Serializer<T> getSerializer();
-
-    /**
-     * The icon representing this ability on the UI and HUD.
-     */
-    default Identifier getIcon(Pony player, boolean swap) {
-        Identifier id = Abilities.REGISTRY.getId(this);
-        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + ".png");
-    }
-
-    /**
-     * The display name for this ability.
-     */
-    default Text getName() {
-        Identifier id = Abilities.REGISTRY.getId(this);
-        return Text.translatable("ability." + id.getNamespace() + "." + id.getPath().replace('/', '.'));
-    }
-
-    /**
-     * Server-side counterpart to canActivate.
-     *
-     * Called before applying to determine whether to cancel the command or not.
-     */
-    default boolean canApply(Pony player, T data) {
-        return true;
-    }
+    Optional<T> prepare(Pony player);
 
     /**
      * Called to actually apply the ability.
@@ -115,18 +124,19 @@ public interface Ability<T extends Hit> {
      *
      * @param player    The player that triggered the ability
      * @param data      Data previously sent from the client
+     * @return True if the ability succeeded. Returning false will cause an ability reset message to be sent to the client.
      */
-    void apply(Pony player, T data);
+    boolean apply(Pony player, T data);
 
     /**
      * Called every tick until the warmup timer runs out.
      * @param player    The current player
      */
-    void preApply(Pony player, AbilitySlot slot);
+    void warmUp(Pony player, AbilitySlot slot);
 
     /**
      * Called every tick until the cooldown timer runs out.
      * @param player    The current player
      */
-    void postApply(Pony player, AbilitySlot slot);
+    void coolDown(Pony player, AbilitySlot slot);
 }

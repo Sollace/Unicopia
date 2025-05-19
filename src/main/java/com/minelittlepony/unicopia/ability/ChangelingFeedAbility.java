@@ -1,37 +1,43 @@
 package com.minelittlepony.unicopia.ability;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.ability.magic.spell.ChangelingFeedingSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
-import com.minelittlepony.unicopia.particle.ParticleUtils;
-import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.ParticleTypes;
 
 /**
  * Changeling ability to restore health from mobs
  */
 public class ChangelingFeedAbility implements Ability<Hit> {
+    private static final Predicate<Entity> TARGET_PREDICATE = e -> (e instanceof LivingEntity)
+            && (e instanceof CowEntity
+            || e instanceof MerchantEntity
+            || e instanceof PlayerEntity
+            || e instanceof SheepEntity
+            || e instanceof PigEntity
+            || e instanceof HostileEntity);
 
     @Override
     public int getWarmupTime(Pony player) {
@@ -40,53 +46,18 @@ public class ChangelingFeedAbility implements Ability<Hit> {
 
     @Override
     public int getCooldownTime(Pony player) {
-        return canFeed(player) ? 15 : 80;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race == Race.CHANGELING;
+        return !SpellType.FEED.isOn(player) && ChangelingFeedingSpell.canFeed(player) ? 15 : 80;
     }
 
     @Nullable
     @Override
-    public Hit tryActivate(Pony player) {
-        if (canFeed(player)) {
-            if (!getTargets(player).isEmpty()) {
-                return Hit.INSTANCE;
-            }
-        }
-
-        return null;
-    }
-
-    private boolean canFeed(Pony player) {
-        return player.getMaster().getHealth() < player.getMaster().getMaxHealth() || player.getMaster().canConsume(false);
-    }
-
-    private boolean canDrain(Entity e) {
-        return (e instanceof LivingEntity)
-            && (e instanceof CowEntity
-            || e instanceof MerchantEntity
-            || e instanceof PlayerEntity
-            || e instanceof SheepEntity
-            || e instanceof PigEntity
-            || e instanceof HostileEntity);
+    public Optional<Hit> prepare(Pony player) {
+        return Hit.of(ChangelingFeedingSpell.canFeed(player) && !getTargets(player).findAny().isEmpty());
     }
 
     @Override
-    public Hit.Serializer<Hit> getSerializer() {
-        return Hit.SERIALIZER;
-    }
-
-    protected List<LivingEntity> getTargets(Pony player) {
-        List<Entity> list = VecHelper.findInRange(player.getMaster(), player.getReferenceWorld(), player.getOriginVector(), 3, this::canDrain);
-
-        TraceHelper.<LivingEntity>findEntity(player.getMaster(), 17, 1,
-                looked -> looked instanceof LivingEntity && !list.contains(looked) && canDrain(looked))
-            .ifPresent(list::add);
-
-        return list.stream().map(i -> (LivingEntity)i).collect(Collectors.toList());
+    public PacketCodec<? super RegistryByteBuf, Hit> getSerializer() {
+        return Hit.CODEC;
     }
 
     @Override
@@ -95,74 +66,46 @@ public class ChangelingFeedAbility implements Ability<Hit> {
     }
 
     @Override
-    public void apply(Pony iplayer, Hit data) {
-        PlayerEntity player = iplayer.getMaster();
+    public boolean apply(Pony iplayer, Hit data) {
+        if (!ChangelingFeedingSpell.canFeed(iplayer)) {
+            return false;
+        }
+
+        PlayerEntity player = iplayer.asEntity();
 
         float maximumHealthGain = player.getMaxHealth() - player.getHealth();
         int maximumFoodGain = player.canConsume(false) ? (20 - player.getHungerManager().getFoodLevel()) : 0;
 
         if (maximumHealthGain > 0 || maximumFoodGain > 0) {
+            List<LivingEntity> targets = getTargets(iplayer).map(LivingEntity.class::cast).toList();
 
-            float healAmount = 0;
+            if (targets.size() > 0) {
+                new ChangelingFeedingSpell(targets, maximumHealthGain, maximumFoodGain).apply(iplayer);
 
-            for (LivingEntity i : getTargets(iplayer)) {
-                healAmount += drainFrom(player, i);
-            }
-
-            int foodAmount = (int)Math.floor(Math.min(healAmount / 3, maximumFoodGain));
-
-            if (foodAmount > 0) {
-                healAmount -= foodAmount;
-                player.getHungerManager().add(foodAmount, 0.125f);
-            }
-
-            if (healAmount > 0) {
-                player.heal(Math.min(healAmount, maximumHealthGain));
+                iplayer.playSound(USounds.ENTITY_PLAYER_CHANGELING_FEED, 0.1F, iplayer.getRandomPitch());
+                return true;
             }
         }
+
+        iplayer.playSound(USounds.Vanilla.ENTITY_PLAYER_BURP, 1, (float)player.getWorld().random.nextTriangular(1F, 0.2F));
+        return true;
     }
 
-    public float drainFrom(PlayerEntity changeling, LivingEntity living) {
-
-        DamageSource d = MagicalDamageSource.create("feed", changeling);
-
-        float damage = living.getHealth()/2;
-
-        if (damage > 0) {
-            living.damage(d, damage);
-        }
-
-        ParticleUtils.spawnParticles(UParticles.CHANGELING_MAGIC, living, 7);
-        ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, changeling, 0.2F), living, 1);
-
-        if (changeling.hasStatusEffect(StatusEffects.NAUSEA)) {
-            StatusEffectInstance effect = changeling.getStatusEffect(StatusEffects.NAUSEA);
-            changeling.removeStatusEffect(StatusEffects.NAUSEA);
-            living.addStatusEffect(effect);
-        } else if (changeling.getEntityWorld().random.nextInt(2300) == 0) {
-            living.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20, 1));
-        }
-
-        if (living instanceof PlayerEntity) {
-            damage ++;
-            damage *= 1.6F;
-
-            if (!changeling.hasStatusEffect(StatusEffects.HEALTH_BOOST)) {
-                changeling.addStatusEffect(new StatusEffectInstance(StatusEffects.HEALTH_BOOST, 13000, 1));
-            }
-        }
-
-        return damage;
+    protected Stream<Entity> getTargets(Pony player) {
+        return Stream.concat(
+                VecHelper.findInRange(player.asEntity(), player.asWorld(), player.getOriginVector(), 3, TARGET_PREDICATE).stream(),
+                TraceHelper.findEntity(player.asEntity(), 17, 1, TARGET_PREDICATE).stream()
+        ).distinct();
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().getExertion().add(6);
+    public void warmUp(Pony player, AbilitySlot slot) {
+        player.getMagicalReserves().getExertion().addPercent(6);
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
-        if (player.getReferenceWorld().random.nextInt(10) == 0) {
+    public void coolDown(Pony player, AbilitySlot slot) {
+        if (player.asWorld().random.nextInt(10) == 0) {
             player.spawnParticles(ParticleTypes.HEART, 1);
         }
     }

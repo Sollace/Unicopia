@@ -1,41 +1,51 @@
 package com.minelittlepony.unicopia.entity.player;
 
+import java.lang.ref.WeakReference;
+
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
-public record ExperienceGroup (String experience, String corruption) {
-    public static final LinearSelector<String> EXPERIENCES = new LinearSelector<>(new String[] {
-            "MAGICAL_KINDERGARTENER",
-            "FRIENDSHIP_STUDENT",
-            "SENIOR_FRIENDSHIP_STUDENT",
-            "JUNIOR_MAGE",
-            "MAGE",
-            "ARCHMAGE",
-            "ARCHMAGUS",
-            "SENIOR_ARCHMAGUS",
-            "ASCENDED_SENIOR_ARCHMAGUS",
-            "DEMI_GOD",
-            "ARCH_DEMI_GOD",
-            "ALICORN_PRINCESS",
-            "POLYCORN_PRINCESS",
-            "FAUSTIAN_LEGEND"
-    }, 2);
-    public static final LinearSelector<String> CORRUPTIONS = new LinearSelector<>(new String[] {
-            "PURE",
-            "IMPURE",
-            "TAINTED",
-            "TWISTED",
-            "CORRUPT",
-            "MONSTROUS"
-    }, 1F/8F);
+public interface ExperienceGroup {
+    String[] EXPERIENCES = {
+            "magical_kindergartner",
+            "friendship_student",
+            "senior_friendship_student",
+            "junior_mage",
+            "mage",
+            "archmage",
+            "archmagus",
+            "senior_archmagus",
+            "ascended_senior_archmagus",
+            "demi_god",
+            "arch_demi_god",
+            "alicorn_princess",
+            "polycorn_princess",
+            "faustian_legend"
+    };
+    String[] CORRUPTIONS = {
+            "pure",
+            "impure",
+            "tainted",
+            "twisted",
+            "corrupt",
+            "monstrous"
+    };
+    Int2ObjectArrayMap<WeakReference<Text>> CACHE = new Int2ObjectArrayMap<>();
 
-    public static Text forLevel(int level, int corruption) {
-        return Text.of(CORRUPTIONS.get(corruption).toLowerCase() + " " + EXPERIENCES.get(level).toLowerCase());
+    static Text forLevel(float level, float corruption) {
+        int c = get(CORRUPTIONS, corruption);
+        int x = get(EXPERIENCES, level);
+        int i = x * c;
+
+        Text value;
+        if (!CACHE.containsKey(i) || (value = CACHE.get(i).get()) == null) {
+            CACHE.put(i, new WeakReference<>(value = Text.translatable("experience.unicopia." + CORRUPTIONS[c] + "." + EXPERIENCES[x])));
+        }
+        return value;
     }
 
-    public record LinearSelector<T> (T[] values, float ratio) {
-        public T get(int level) {
-            return values()[MathHelper.clamp(MathHelper.floor(MathHelper.sqrt(level * ratio())), 0, values().length - 1)];
-        }
+    private static int get(String[] values, float level) {
+        return MathHelper.clamp(MathHelper.floor(level * values.length), 0, values.length - 1);
     }
 }

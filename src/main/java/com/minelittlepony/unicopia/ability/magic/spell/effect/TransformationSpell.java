@@ -9,11 +9,11 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.entity.UEntities;
+import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
-import com.minelittlepony.unicopia.util.Registries;
+import com.minelittlepony.unicopia.util.RegistryUtils;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -39,11 +39,11 @@ public class TransformationSpell extends AbstractSpell implements ProjectileDele
 
     @Override
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
-        if (projectile.world.isClient) {
+        if (projectile.getWorld().isClient) {
             return;
         }
         Entity entity = hit.getEntity();
-        pickType(entity.getType(), entity.world).flatMap(type -> convert(entity, type)).ifPresentOrElse(e -> {
+        pickType(entity.getType(), entity.getWorld()).flatMap(type -> convert(entity, type)).ifPresentOrElse(e -> {
             entity.playSound(USounds.SPELL_TRANSFORM_TRANSMUTE_ENTITY, 1, 1);
         }, () -> {
             ParticleUtils.spawnParticles(ParticleTypes.SMOKE, entity, 20);
@@ -66,7 +66,7 @@ public class TransformationSpell extends AbstractSpell implements ProjectileDele
 
     @SuppressWarnings("unchecked")
     private <T extends MobEntity> Optional<EntityType<T>> pickType(EntityType<?> except, World world) {
-        Set<EntityType<?>> options = Registries.valuesForTag(world, UTags.TRANSFORMABLE_ENTITIES).collect(Collectors.toSet());
+        Set<EntityType<?>> options = RegistryUtils.valuesForTag(world, UTags.Entities.TRANSFORMABLE).collect(Collectors.toSet());
         if (except.getSpawnGroup() == SpawnGroup.MONSTER) {
             options.removeIf(t -> t.getSpawnGroup() == SpawnGroup.MONSTER);
         } else {

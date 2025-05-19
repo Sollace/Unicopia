@@ -6,7 +6,11 @@
     "unicopia:gemstone": "order:1 power:-1",
     "unicopia:pebbles": "earth:3",
     "unicopia:rock": "earth:6",
+    "unicopia:tom": "earth:11",
     "unicopia:weird_rock": "earth:16 chaos:9",
-    "unicopia:rock_stew": "earth:9 chaos:16"
+    "unicopia:rock_stew": "earth:9 chaos:16",
+    "unicopia:toast": "earth:3",
+    "unicopia:burned_toast": "chaos:1 earth:3",
+    "unicopia:jam_toast": "earth:3 strength:1 power:11"
   }
 }

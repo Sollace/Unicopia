@@ -1,123 +1,120 @@
 package com.minelittlepony.unicopia.entity;
 
-import java.util.List;
-
-import org.jetbrains.annotations.NotNull;
-
-import com.minelittlepony.unicopia.Owned;
-import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.*;
+import com.minelittlepony.unicopia.item.ItemDuck;
+import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.DataTrackerManager;
+import com.minelittlepony.unicopia.network.track.Trackable;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
+import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.util.VecHelper;
-
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.MovementType;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.ActionResult;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 
-public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
-    private static final TrackedData<String> ITEM_RACE = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.STRING);
-    static final TrackedData<Float> ITEM_GRAVITY = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.FLOAT);
-
-    private final ItemEntity owner;
+public class ItemImpl implements Equine<ItemEntity> {
+    private final ItemEntity entity;
 
     private final ItemPhysics physics;
 
-    private Race serverRace;
+    private final DataTrackerManager trackers;
+    protected final DataTracker tracker;
+
+    private final DataTracker.Entry<Race> race;
 
     public ItemImpl(ItemEntity owner) {
-        this.owner = owner;
+        this.entity = owner;
+        this.trackers = Trackable.of(entity).getDataTrackers();
+        this.tracker = trackers.getPrimaryTracker();
         this.physics = new ItemPhysics(owner);
-        owner.getDataTracker().startTracking(ITEM_GRAVITY, 1F);
-        owner.getDataTracker().startTracking(ITEM_RACE, Race.REGISTRY.getId(Race.HUMAN).toString());
+
+        race = tracker.startTracking(TrackableDataType.RACE, Race.HUMAN);
     }
 
     @Override
-    public Entity getAttacker() {
-        return null;
+    public boolean onProjectileImpact(ProjectileEntity projectile) {
+        return false;
     }
 
     @Override
     public boolean beforeUpdate() {
 
-        if (!owner.world.isClient) {
-            Race race = getSpecies();
-            if (race != serverRace) {
-                serverRace = race;
-                setSpecies(Race.HUMAN);
-                setSpecies(race);
+        if (!entity.getWorld().isClient) {
+            if (EnchantmentUtil.getWantItNeedItLevel(entity) > 0) {
+                var random = entity.getWorld().random;
+
+                if (random.nextInt(15) == 0) {
+                    ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, entity.getPos().add(
+                            VecHelper.sphere(random).get().add(0, 1, 0)
+                    ), 0.2F), entity, 1);
+                }
             }
         }
 
-        ItemStack stack = owner.getStack();
-        IItemEntity i = (IItemEntity)owner;
+        ItemStack stack = entity.getStack();
+        IItemEntity i = (IItemEntity)entity;
+        ItemDuck duck = ItemDuck.of(stack);
 
         if (!stack.isEmpty()) {
 
-            Item item = stack.getItem();
-            ClingyItem clingy = item instanceof ClingyItem ? (ClingyItem)item : ClingyItem.DEFAULT;
+            if (duck.isClingy(stack)) {
+                Random rng = entity.getWorld().random;
 
-            if (clingy.isClingy(stack)) {
-                Random rng = owner.world.random;
-
-                owner.world.addParticle(clingy.getParticleEffect((IItemEntity)owner),
-                        owner.getX() + rng.nextFloat() - 0.5,
-                        owner.getY() + rng.nextFloat() - 0.5,
-                        owner.getZ() + rng.nextFloat() - 0.5,
+                entity.getWorld().addParticle(duck.getParticleEffect(i),
+                        entity.getX() + rng.nextFloat() - 0.5,
+                        entity.getY() + rng.nextFloat() - 0.5,
+                        entity.getZ() + rng.nextFloat() - 0.5,
                         0, 0, 0
                 );
 
-                Vec3d position = owner.getPos();
-                VecHelper.findInRange(owner, owner.world, owner.getPos(), clingy.getFollowDistance(i), e -> e instanceof PlayerEntity)
+                Vec3d position = entity.getPos();
+                VecHelper.findInRange(entity, entity.getWorld(), entity.getPos(), duck.getFollowDistance(i), e -> e instanceof PlayerEntity)
                     .stream()
                     .sorted((a, b) -> (int)(a.getPos().distanceTo(position) - b.getPos().distanceTo(position)))
                     .findFirst()
                     .ifPresent(player -> {
-                        double distance = player.getPos().distanceTo(owner.getPos());
+                        double distance = player.getPos().distanceTo(entity.getPos());
 
-                        owner.move(MovementType.SELF,  player.getPos().subtract(owner.getPos()).multiply(distance < 0.3 ? 1 : clingy.getFollowSpeed(i)));
-                        if (owner.horizontalCollision) {
-                            owner.move(MovementType.SELF, new Vec3d(0, owner.verticalCollision ? -0.3 : 0.3, 0));
+                        entity.move(MovementType.SELF,  player.getPos().subtract(entity.getPos()).multiply(distance < 0.3 ? 1 : duck.getFollowSpeed(i)));
+                        if (entity.horizontalCollision) {
+                            entity.move(MovementType.SELF, new Vec3d(0, entity.verticalCollision ? -0.3 : 0.3, 0));
                         }
 
-                        clingy.interactWithPlayer(i, (PlayerEntity)player);
+                        duck.interactWithPlayer(i, (PlayerEntity)player);
                     });
             }
 
-            if (stack.isIn(UTags.FALLS_SLOWLY)) {
-                if (!owner.isOnGround() && Math.signum(owner.getVelocity().y) != getPhysics().getGravitySignum()) {
-                    double ticks = ((Entity)owner).age;
+            if (stack.isIn(UTags.Items.FALLS_SLOWLY)) {
+                if (!entity.isOnGround() && Math.signum(entity.getVelocity().y) != getPhysics().getGravitySignum()) {
+                    double ticks = ((Entity)entity).age;
                     double shift = Math.sin(ticks / 9D) / 9D;
                     double rise = -Math.cos(ticks / 9D) * getPhysics().getGravitySignum();
 
-                    owner.prevYaw = owner.prevYaw;
-                    owner.setYaw(owner.getYaw() + 0.3F);
+                    entity.prevYaw = entity.prevYaw;
+                    entity.setYaw(entity.getYaw() + 0.3F);
 
-                    owner.setVelocity(
-                            owner.getVelocity()
+                    entity.setVelocity(
+                            entity.getVelocity()
                                 .multiply(0.25, 0, 0.25)
                                 .add(0, rise, 0)
-                                .add(owner.getRotationVec(1)).normalize().multiply(shift)
+                                .add(entity.getRotationVec(1)).normalize().multiply(shift)
                     );
                 }
             }
 
-            if (stack.getItem() instanceof GroundTickCallback) {
-                return ((GroundTickCallback)stack.getItem()).onGroundTick(i).isAccepted();
-            }
+            return duck.onGroundTick(i).isAccepted();
         }
 
 
@@ -136,85 +133,54 @@ public class ItemImpl implements Equine<ItemEntity>, Owned<ItemEntity> {
 
     @Override
     public Race getSpecies() {
-        return Race.fromName(owner.getDataTracker().get(ITEM_RACE), Race.HUMAN);
+        return race.get();
     }
 
     @Override
     public void setSpecies(Race race) {
-        owner.getDataTracker().set(ITEM_RACE, Race.REGISTRY.getId(race).toString());
+        this.race.set(race);
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        compound.putString("owner_race", Race.REGISTRY.getId(getSpecies()).toString());
-        physics.toNBT(compound);
+    public boolean collidesWithClouds() {
+        return entity.getStack().isIn(UTags.Items.FLOATS_ON_CLOUDS) || getSpecies().hasPersistentWeatherMagic();
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        compound.putString("owner_race", getSpecies().getId().toString());
+        physics.toNBT(compound, lookup);
+    }
+
+    @Override
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         if (compound.contains("owner_race", NbtElement.STRING_TYPE)) {
             setSpecies(Race.fromName(compound.getString("owner_race"), Race.HUMAN));
         }
-        physics.fromNBT(compound);
+        physics.fromNBT(compound, lookup);
     }
 
     @Override
-    public void setMaster(ItemEntity owner) {
-
-    }
-
-    @Override
-    @NotNull
-    public ItemEntity getMaster() {
-        return owner;
-    }
-
-    public static <T extends Item> T registerTickCallback(T item, GroundTickCallback callback) {
-        ((ItemImpl.TickableItem)item).addGroundTickCallback(callback);
-        return item;
-    }
-
-    public interface TickableItem extends GroundTickCallback {
-
-        List<GroundTickCallback> getCallbacks();
-
-        default void addGroundTickCallback(GroundTickCallback callback) {
-            getCallbacks().add(callback);
-        }
-
-        @Override
-        default ActionResult onGroundTick(IItemEntity entity) {
-            for (var callback : getCallbacks()) {
-                ActionResult result = callback.onGroundTick(entity);
-                if (result.isAccepted()) {
-                    return result;
-                }
-            }
-            return ActionResult.PASS;
-        }
-    }
-
-    public interface GroundTickCallback {
-        ActionResult onGroundTick(IItemEntity entity);
+    public ItemEntity asEntity() {
+        return entity;
     }
 
     public interface ClingyItem {
-        ClingyItem DEFAULT = stack -> {
-            return EnchantmentHelper.getLevel(UEnchantments.CLINGY, stack) > 0;
-        };
-
-        boolean isClingy(ItemStack stack);
+        default boolean isClingy(ItemStack stack) {
+            return EnchantmentUtil.getLevel(UEnchantments.CLINGY, stack) > 0;
+        }
 
         default ParticleEffect getParticleEffect(IItemEntity entity) {
-            return ParticleTypes.AMBIENT_ENTITY_EFFECT;
+            // TODO: was AMBIENT_ENTITY_EFFECT
+            return ParticleTypes.EFFECT;
         }
 
         default float getFollowDistance(IItemEntity entity) {
-            return 6 * (1 + EnchantmentHelper.getLevel(UEnchantments.CLINGY, entity.get().getMaster().getStack()));
+            return 6 * (1 + EnchantmentUtil.getLevel(UEnchantments.CLINGY, entity.get().asEntity().getStack()));
         }
 
         default float getFollowSpeed(IItemEntity entity) {
-            return Math.min(1, 0.02F * (1 + EnchantmentHelper.getLevel(UEnchantments.CLINGY, entity.get().getMaster().getStack())));
+            return Math.min(1, 0.02F * (1 + EnchantmentUtil.getLevel(UEnchantments.CLINGY, entity.get().asEntity().getStack())));
         }
 
         default void interactWithPlayer(IItemEntity entity, PlayerEntity player) {

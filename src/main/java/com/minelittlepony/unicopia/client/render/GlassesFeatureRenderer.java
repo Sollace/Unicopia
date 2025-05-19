@@ -17,8 +17,9 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public class GlassesFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
 
@@ -36,15 +37,15 @@ public class GlassesFeatureRenderer<E extends LivingEntity> implements Accessory
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch) {
 
-        ItemStack stack = GlassesItem.getForEntity(entity);
+        ItemStack stack = GlassesItem.getForEntity(entity).stack();
 
         if (!stack.isEmpty()) {
-            Identifier texture = textures.computeIfAbsent(Registry.ITEM.getId(stack.getItem()), id -> new Identifier(id.getNamespace(), "textures/models/armor/" + id.getPath() + ".png"));
+            Identifier texture = textures.computeIfAbsent(Registries.ITEM.getId(stack.getItem()), id -> id.withPath(p -> "textures/models/armor/" + p + ".png"));
 
-            VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(texture), false, false);
+            VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(texture), false);
 
             model.setAngles(entity, context.getModel());
-            model.render(matrices, consumer, lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
+            model.render(matrices, consumer, lightUv, OverlayTexture.DEFAULT_UV, Colors.WHITE);
         }
     }
 
@@ -73,8 +74,8 @@ public class GlassesFeatureRenderer<E extends LivingEntity> implements Accessory
         }
 
         @Override
-        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
-            root.render(matrices, vertexConsumer, i, j, f, g, h, k);
+        public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
+            root.render(matrices, vertices, light, overlay, color);
         }
     }
 }

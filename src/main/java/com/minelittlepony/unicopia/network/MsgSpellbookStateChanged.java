@@ -2,40 +2,38 @@ package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.container.SpellbookState;
-import com.minelittlepony.unicopia.util.network.Packet;
-
+import com.sollace.fabwork.api.packets.Handled;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
  * Received by the server when a player changes their opened spellbook's state
  * Received by the client when another player changes the shared spellbook's state
  */
-public class MsgSpellbookStateChanged<T extends PlayerEntity> implements Packet<T> {
+public record MsgSpellbookStateChanged<T extends PlayerEntity> (
+        int syncId,
+        SpellbookState state
+    ) implements Handled<T> {
+    private static final PacketCodec<RegistryByteBuf, MsgSpellbookStateChanged<?>> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.INTEGER, MsgSpellbookStateChanged::syncId,
+            SpellbookState.PACKET_CODEC, MsgSpellbookStateChanged::state,
+            MsgSpellbookStateChanged::new
+    );
 
-    private final int syncId;
-    private final SpellbookState state;
-
-    public MsgSpellbookStateChanged(int syncId, SpellbookState state) {
-        this.syncId = syncId;
-        this.state = state;
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T extends PlayerEntity> PacketCodec<RegistryByteBuf, MsgSpellbookStateChanged<T>> packetCodec() {
+        return (PacketCodec)PACKET_CODEC;
     }
 
-    public MsgSpellbookStateChanged(PacketByteBuf buffer) {
-        syncId = buffer.readInt();
-        state = new SpellbookState().fromPacket(buffer);
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeInt(syncId);
-        state.toPacket(buffer);
+    public static <T extends PlayerEntity> MsgSpellbookStateChanged<T> create(SpellbookScreenHandler handler, SpellbookState state) {
+        return new MsgSpellbookStateChanged<>(handler.syncId, state);
     }
 
     @Override
     public void handle(T sender) {
-
         if (sender.currentScreenHandler.syncId != syncId) {
             return;
         }

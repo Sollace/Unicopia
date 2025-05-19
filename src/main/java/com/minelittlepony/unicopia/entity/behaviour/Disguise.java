@@ -7,7 +7,9 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
+import com.minelittlepony.unicopia.entity.duck.RotatedView;
 import com.minelittlepony.unicopia.entity.player.PlayerDimensions;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -22,8 +24,6 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
 
     EntityAppearance getDisguise();
 
-    void setDirty();
-
     boolean isDead();
 
     default Optional<EntityAppearance> getAppearance() {
@@ -36,13 +36,12 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
     }
 
     @Override
-    default Optional<Float> getTargetEyeHeight(Pony player) {
-        return getAppearance().flatMap(d -> d.getTargetEyeHeight(player));
-    }
-
-    @Override
     default Optional<EntityDimensions> getTargetDimensions(Pony player) {
         return getAppearance().flatMap(d -> d.getTargetDimensions(player));
+    }
+
+    default boolean isOf(@Nullable Entity entity) {
+        return getDisguise().isOf(entity);
     }
 
     default Disguise setDisguise(@Nullable Entity entity) {
@@ -51,14 +50,17 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
         }
 
         getDisguise().setAppearance(entity);
-        setDirty();
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    default boolean update(Caster<?> source, boolean tick) {
+    default boolean update(Caster<?> caster, boolean tick) {
 
-        LivingEntity owner = source.getMaster();
+        if (!(caster instanceof Living<?> source)) {
+            return false;
+        }
+
+        LivingEntity owner = source.asEntity();
 
         if (owner == null) {
             return true;
@@ -78,8 +80,8 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
 
         entity.noClip = true;
 
-        if (entity instanceof MobEntity) {
-            ((MobEntity)entity).setAiDisabled(true);
+        if (entity instanceof MobEntity mob) {
+            mob.setAiDisabled(true);
         }
 
         entity.setInvisible(false);
@@ -90,7 +92,14 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
         behaviour.copyBaseAttributes(owner, entity);
 
         if (tick && !getDisguise().skipsUpdate()) {
-            entity.tick();
+            ((RotatedView)entity.getWorld()).setMirrorEntityStatuses(entity.getWorld().isClient);
+            if (entity.getWorld().isClient) {
+                entity.tick();
+            } else {
+                entity.tick();
+            }
+
+            ((RotatedView)entity.getWorld()).setMirrorEntityStatuses(false);
         }
 
         if (!(owner instanceof PlayerEntity) && !((LivingEntityDuck)owner).isJumping()) {
@@ -99,14 +108,12 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
 
         behaviour.update(source, entity, this);
 
-        if (source instanceof Pony) {
-            Pony player = (Pony)source;
-
-            source.getMaster().setInvisible(true);
+        if (source instanceof Pony player) {
+            source.asEntity().setInvisible(true);
             player.setInvisible(true);
 
-            if (entity instanceof Owned) {
-                ((Owned<LivingEntity>)entity).setMaster(player);
+            if (entity instanceof Owned.Mutable) {
+                ((Owned.Mutable<LivingEntity>)entity).setMaster(player);
             }
 
             if (entity instanceof PlayerEntity) {
@@ -114,11 +121,11 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
             }
         }
 
-        return !isDead() && !source.getMaster().isDead();
+        return !isDead() && !source.asEntity().isDead();
     }
 
     public static abstract class PlayerAccess extends PlayerEntity {
-        public PlayerAccess() { super(null, null, 0, null, null); }
+        public PlayerAccess() { super(null, null, 0, null); }
         public static TrackedData<Byte> getModelBitFlag() {
             return PLAYER_MODEL_PARTS;
         }

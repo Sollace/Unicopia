@@ -4,7 +4,7 @@
   "items": [
     "minecraft:dark_oak_leaves",
     "minecraft:dark_oak_planks",
-    "minecraft:dark_oak_log",
+    "#minecraft:dark_oak_logs",
     "minecraft:dark_oak_stairs",
     "minecraft:stripped_dark_oak_log",
     "minecraft:stripped_dark_oak_wood",

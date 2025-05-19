@@ -1,30 +1,40 @@
 package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import com.minelittlepony.common.client.gui.*;
 import com.minelittlepony.common.client.gui.element.Button;
+import com.minelittlepony.common.util.render.RenderLayerUtil;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.Vector4f;
+import com.minelittlepony.unicopia.client.render.RenderLayers;
+import com.minelittlepony.unicopia.container.SpellbookState;
 
-class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
+import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.Text;
+import net.minecraft.util.Util;
+import net.minecraft.util.crash.CrashException;
+import net.minecraft.util.crash.CrashReport;
+
+public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
+    private static final List<Text> EMPTY_LINES = List.of(ScreenTexts.EMPTY);
+    private static final Tooltip EMPTY_TOOLTIP = Tooltip.of(EMPTY_LINES);
     private final List<IngredientTree.Entry> entries = new ArrayList<>();
     private Optional<IngredientTree.Entry> result = Optional.empty();
 
@@ -54,7 +64,14 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
     @Override
     public void input(ItemStack... stacks) {
         if (stacks.length > 0) {
-            entries.add(new Stacks(stacks));
+            entries.add(Entry.of(stacks));
+        }
+    }
+
+    @Override
+    public void input(Trait... traits) {
+        if (traits.length > 0) {
+            entries.add(Entry.of(1, traits));
         }
     }
 
@@ -68,14 +85,14 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
     @Override
     public void mystery(ItemStack... stacks) {
         if (stacks.length > 0) {
-            entries.add(new HiddenStacks(stacks));
+            entries.add(Multiple.of(Arrays.stream(stacks).map(HiddenStacks::new).toArray(Entry[]::new)));
         }
     }
 
     @Override
     public void result(ItemStack...stacks) {
         if (stacks.length > 0) {
-            result = Optional.of(new Stacks(stacks));
+            result = Optional.of(Entry.of(stacks));
         }
     }
 
@@ -113,7 +130,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         return totalHeight + 7;
     }
 
-    class IngredientButton extends Button {
+    static class IngredientButton extends Button {
         private final IngredientTree.Entry entry;
         private String label;
 
@@ -128,80 +145,123 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         }
 
         @Override
-        public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
+        public void renderWidget(DrawContext context, int mouseX, int mouseY, float tickDelta) {
             RenderSystem.setShaderColor(1, 1, 1, 1);
-            RenderSystem.setShaderTexture(0, SpellbookScreen.SLOT);
             RenderSystem.enableBlend();
 
-            drawTexture(matrices, x - 8, y - 10, 0, 0, 32, 32, 32, 32);
+            context.drawTexture(SpellbookScreen.SLOT, getX() - 8, getY() - 10, 0, 0, 32, 32, 32, 32);
 
             RenderSystem.disableBlend();
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
-            MinecraftClient.getInstance().textRenderer.draw(matrices, label,
-                    x - MinecraftClient.getInstance().textRenderer.getWidth(label) / 2 - 3,
-                    y + 4,
-                    0
+            context.drawText(getFont(), label,
+                    getX() - MinecraftClient.getInstance().textRenderer.getWidth(label) / 2 - 3,
+                    getY() + 4,
+                    0,
+                    false
             );
-            entry.render(matrices, x, y, tickDelta);
-        }
-
-        @Override
-        public void renderToolTip(MatrixStack matrices, Screen parent, int mouseX, int mouseY) {
-            if (visible) {
-                getStyle().getTooltip().ifPresent(tooltip -> {
-                    List<Text> lines = tooltip.getLines();
-                    if (!lines.isEmpty()) {
-                        parent.renderTooltip(matrices, tooltip.getLines(), mouseX + getStyle().toolTipX, mouseY + getStyle().toolTipY);
-                    }
-                });
-            }
+            entry.render(context, getX(), getY(), tickDelta);
         }
     }
 
     interface Entry {
-        void render(MatrixStack matrices, int mouseX, int mouseY, float tickDelta);
+
+        static Entry of(ItemStack... stacks) {
+            return Multiple.of(Arrays.stream(stacks).map(Stacks::new).toArray(Entry[]::new));
+        }
+
+        static Entry of(float value, Trait... traits) {
+            return Multiple.of(Arrays.stream(traits).map(t -> new Traits(t, value)).toArray(Entry[]::new));
+        }
+
+        void render(DrawContext context, int mouseX, int mouseY, float tickDelta);
 
         Tooltip getTooltip();
 
         void onClick();
     }
 
-    class Stacks implements IngredientTree.Entry {
+    static class Multiple implements IngredientTree.Entry {
         private int ticker;
         protected int index;
-        protected final ItemStack[] stacks;
+        protected final IngredientTree.Entry[] entries;
 
-        protected final ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
+        static final IngredientTree.Entry EMPTY = new IngredientTree.Entry() {
 
-        Stacks(ItemStack[] stacks) {
-            this.stacks = stacks;
+            @Override
+            public void render(DrawContext context, int mouseX, int mouseY, float tickDelta) {}
+
+            @Override
+            public void onClick() { }
+
+            @Override
+            public Tooltip getTooltip() {
+                return EMPTY_TOOLTIP;
+            }
+        };
+
+        static IngredientTree.Entry of(IngredientTree.Entry... entries) {
+            if (entries.length == 0) {
+                return EMPTY;
+            }
+            if (entries.length == 1) {
+                return entries[0];
+            }
+            return new Multiple(entries);
+        }
+
+        Multiple(IngredientTree.Entry[] entries) {
+            this.entries = entries;
         }
 
         @Override
-        public void render(MatrixStack matrices, int x, int y, float tickDelta) {
+        public void render(DrawContext context, int x, int y, float tickDelta) {
             y -= 2;
 
             if (ticker++ % 30 == 0) {
-                index = (index + 1) % stacks.length;
+                index = (index + 1) % entries.length;
             }
 
-            Vector4f pos = new Vector4f(x, y, 0, 1);
-            pos.transform(matrices.peek().getPositionMatrix());
-            drawItem((int)pos.getX(), (int)pos.getY());
+            entries[index].render(context, x, y, tickDelta);
         }
 
-        protected void drawItem(int x, int y) {
-            itemRenderer.renderInGui(stacks[index], x, y);
+        @Override
+        public Tooltip getTooltip() {
+            return () -> entries[index].getTooltip().getLines();
+        }
+
+        @Override
+        public void onClick() {
+            entries[index].onClick();
+        }
+    }
+
+    static class Stacks implements IngredientTree.Entry {
+
+        protected final ItemStack stack;
+
+        protected final ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
+
+        Stacks(ItemStack stack) {
+            this.stack = stack;
+        }
+
+        @Override
+        public void render(DrawContext context, int x, int y, float tickDelta) {
+            drawItem(context, x, y - 2);
+        }
+
+        protected void drawItem(DrawContext context, int x, int y) {
+            context.drawItem(stack, x, y);
         }
 
         @Override
         public Tooltip getTooltip() {
             return () -> {
-                if (stacks[index].isEmpty()) {
-                    return List.of();
+                if (stack.isEmpty()) {
+                    return EMPTY_LINES;
                 }
-                return stacks[index].getTooltip(MinecraftClient.getInstance().player, TooltipContext.Default.NORMAL);
+                return stack.getTooltip(Item.TooltipContext.create(MinecraftClient.getInstance().world), MinecraftClient.getInstance().player, TooltipType.BASIC);
             };
         }
 
@@ -211,51 +271,62 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         }
     }
 
-    class HiddenStacks extends Stacks {
-        HiddenStacks(ItemStack[] stacks) {
-            super(stacks);
+    static class HiddenStacks extends Stacks {
+        HiddenStacks(ItemStack stack) {
+            super(stack);
         }
 
         @Override
-        protected void drawItem(int x, int y) {
-            var model = itemRenderer.getModel(stacks[index], null, null, 0);
-
-            MinecraftClient.getInstance().getTextureManager().getTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
-            RenderSystem.setShaderTexture(0, PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
-            RenderSystem.enableBlend();
-            RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-            RenderSystem.setShaderColor(1, 1, 1, 0.2F);
-            MatrixStack matrixStack = RenderSystem.getModelViewStack();
-            matrixStack.push();
-            matrixStack.translate(x, y, 100 + itemRenderer.zOffset);
-            matrixStack.translate(8, 8, 0);
-            matrixStack.scale(1, -1, 1);
-            matrixStack.scale(8, 8, 8);
-            RenderSystem.applyModelViewMatrix();
-            VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-            boolean bl = !model.isSideLit();
-            if (bl) {
-                DiffuseLighting.disableGuiDepthLighting();
+        protected void drawItem(DrawContext context, int x, int y) {
+            if (stack.isEmpty()) {
+                return;
             }
-            itemRenderer.renderItem(stacks[index], ModelTransformation.Mode.GUI, false, new MatrixStack(), immediate, 0, OverlayTexture.DEFAULT_UV, model);
-            immediate.draw();
-            RenderSystem.enableDepthTest();
-            if (bl) {
-                DiffuseLighting.enableGuiDepthLighting();
-            }
-            matrixStack.pop();
-            RenderSystem.applyModelViewMatrix();
+            var model = itemRenderer.getModel(stack, MinecraftClient.getInstance().world, MinecraftClient.getInstance().player, 0);
 
+            MatrixStack matrices = context.getMatrices();
+            matrices.push();
+            matrices.translate(x + 8, y + 8, 150);
+
+            try {
+                matrices.scale(16, -16, 16);
+
+                boolean bl = !model.isSideLit();
+                if (bl) {
+                    DiffuseLighting.disableGuiDepthLighting();
+                }
+
+                VertexConsumerProvider.Immediate immediate = context.getVertexConsumers();
+                stack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false);
+                itemRenderer.renderItem(stack, ModelTransformationMode.GUI, false, matrices, layer -> {
+                    return immediate.getBuffer(RenderLayerUtil.getTexture(layer)
+                            .map(texture -> RenderLayers.getMagicColored(texture, 0x09000000))
+                            .orElse(RenderLayers.getMagicColored(0x09000000)));
+                }, 0, OverlayTexture.DEFAULT_UV, model);
+
+                RenderSystem.disableDepthTest();
+                context.draw();
+                RenderSystem.enableDepthTest();
+
+                if (bl) {
+                    DiffuseLighting.enableGuiDepthLighting();
+                }
+            } catch (Throwable t) {
+                throw new CrashException(Util.make(CrashReport.create(t, "Rendering item"), report -> report.addElement("Item being rendered")
+                        .add("Item Type", () -> String.valueOf(stack.getItem()))
+                        .add("Item Components", () -> String.valueOf(stack.getComponents()))
+                        .add("Item Foil", () -> String.valueOf(stack.hasGlint()))));
+            }
+            matrices.pop();
             RenderSystem.setShaderColor(1, 1, 1, 1);
         }
 
         @Override
         public Tooltip getTooltip() {
-            return List::of;
+            return EMPTY_TOOLTIP;
         }
     }
 
-    class Traits implements IngredientTree.Entry {
+    static class Traits implements IngredientTree.Entry {
         private final Trait trait;
         private final float value;
 
@@ -265,8 +336,8 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         }
 
         @Override
-        public void render(MatrixStack matrices, int x, int y, float tickDelta) {
-            ItemTraitsTooltipRenderer.renderTraitIcon(trait, value, matrices, x, y);
+        public void render(DrawContext context, int x, int y, float tickDelta) {
+            ItemTraitsTooltipRenderer.renderTraitIcon(trait, value, context, x, y);
         }
 
         @Override
@@ -277,7 +348,7 @@ class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
         @Override
         public void onClick() {
             if (MinecraftClient.getInstance().currentScreen instanceof SpellbookScreen spellbook) {
-                spellbook.getState().setCurrentPageId(SpellbookChapterList.TRAIT_DEX_ID);
+                spellbook.getState().setCurrentPageId(SpellbookState.TRAIT_DEX_ID);
                 spellbook.getTraitDex().pageTo(spellbook, trait);
             }
         }

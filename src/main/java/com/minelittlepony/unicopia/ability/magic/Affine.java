@@ -19,4 +19,8 @@ public interface Affine {
     default boolean isFriendlyTogether(Affine other) {
         return getAffinity() != Affinity.BAD && other.getAffinity() != Affinity.BAD;
     }
+
+    default boolean applyInversion(Affine other, boolean friendly) {
+        return isEnemy(other) ? !friendly : friendly;
+    }
 }

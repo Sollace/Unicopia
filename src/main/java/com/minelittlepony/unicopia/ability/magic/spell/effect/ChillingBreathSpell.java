@@ -20,14 +20,17 @@ public class ChillingBreathSpell extends AbstractSpell implements HomingSpell {
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        source.subtractEnergyCost(90);
-        return false;
+        if (!source.subtractEnergyCost(90)) {
+            setDead();
+        }
+        return !isDead();
     }
 
     @Override
     public boolean setTarget(Entity target) {
         if (target instanceof LavaAffine affine) {
             affine.setLavaAffine(!affine.isLavaAffine());
+            setDead();
         }
         return true;
     }

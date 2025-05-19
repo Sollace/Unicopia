@@ -1,136 +1,130 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import com.minelittlepony.unicopia.Affinity;
+import com.google.common.base.MoreObjects;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
-import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
-import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.server.world.Ether;
 
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
-public abstract class AbstractDelegatingSpell implements Spell,
-    ProjectileDelegate.ConfigurationListener, ProjectileDelegate.BlockHitListener, ProjectileDelegate.EntityHitListener {
-
-    private boolean isDirty;
-
+public abstract class AbstractDelegatingSpell implements Spell {
     private UUID uuid = UUID.randomUUID();
 
-    private final SpellType<?> type;
+    private final CustomisedSpellType<?> type;
+    protected final SpellReference<Spell> delegate = new SpellReference<>();
 
     public AbstractDelegatingSpell(CustomisedSpellType<?> type) {
-        this.type = type.type();
+        this.type = type;
     }
 
-    public abstract Collection<Spell> getDelegates();
+    public AbstractDelegatingSpell(CustomisedSpellType<?> type, Spell delegate) {
+        this.type = type;
+        this.delegate.set(delegate);
+    }
+
+    public final Spell getDelegate() {
+        return delegate.get();
+    }
+
+    @Override
+    public final DataTracker getDataTracker() {
+        return getOrEmpty().getDataTracker();
+    }
+
+    private Spell getOrEmpty() {
+        return MoreObjects.firstNonNull(delegate.get(), EmptySpell.INSTANCE);
+    }
 
     @Override
     public boolean equalsOrContains(UUID id) {
-        return Spell.super.equalsOrContains(id) || getDelegates().stream().anyMatch(s -> s.equalsOrContains(id));
+        return Spell.super.equalsOrContains(id) || delegate.equalsOrContains(id);
     }
 
     @Override
-    public Stream<Spell> findMatches(Predicate<Spell> predicate) {
-        return Stream.concat(Spell.super.findMatches(predicate), getDelegates().stream().flatMap(s -> s.findMatches(predicate)));
+    public <T extends Spell> Stream<T> findMatches(SpellPredicate<T> predicate) {
+        return Stream.concat(Spell.super.findMatches(predicate), delegate.findMatches(predicate));
     }
 
     @Override
-    public Affinity getAffinity() {
-        return Affinity.NEUTRAL;
-    }
-
-    @Override
-    public SpellType<?> getType() {
+    public CustomisedSpellType<?> getTypeAndTraits() {
         return type;
     }
 
     @Override
-    public SpellTraits getTraits() {
-        return getDelegates().stream().map(Spell::getTraits).reduce(SpellTraits.EMPTY, SpellTraits::union);
-    }
-
-    @Override
-    public UUID getUuid() {
+    public final UUID getUuid() {
         return uuid;
     }
 
     @Override
     public void setDead() {
-        getDelegates().forEach(Spell::setDead);
+        getOrEmpty().setDead();
+    }
+
+    @Override
+    public void tickDying(Caster<?> caster) {
+        getOrEmpty().tickDying(caster);
     }
 
     @Override
     public boolean isDead() {
-        return getDelegates().isEmpty() || getDelegates().stream().allMatch(Spell::isDead);
+        return getOrEmpty().isDead();
     }
 
     @Override
-    public boolean isDirty() {
-        return isDirty || getDelegates().stream().anyMatch(Spell::isDirty);
+    public boolean isDying() {
+        return getOrEmpty().isDying();
     }
 
     @Override
-    public void setDirty() {
-        isDirty = true;
+    public boolean isHidden() {
+        return getOrEmpty().isHidden();
     }
 
     @Override
-    public void onDestroyed(Caster<?> caster) {
-        getDelegates().forEach(a -> a.onDestroyed(caster));
+    public void setHidden(boolean hidden) {
+        getOrEmpty().setHidden(hidden);
+    }
+
+    @Override
+    public final void destroy(Caster<?> caster) {
+        if (!caster.isClient()) {
+            Ether.get(caster.asWorld()).remove(this, caster);
+        }
+        getOrEmpty().destroy(caster);
     }
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        return execute(getDelegates().stream(), a -> a.tick(source, situation));
+        Spell s = getOrEmpty();
+        if (s.isDying()) {
+            s.tickDying(source);
+            return !s.isDead();
+        }
+        return s.tick(source, situation);
     }
 
     @Override
-    public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
-        getDelegates(BlockHitListener.PREDICATE).forEach(a -> a.onImpact(projectile, hit));
-    }
-
-    @Override
-    public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
-        getDelegates(EntityHitListener.PREDICATE).forEach(a -> a.onImpact(projectile, hit));
-    }
-
-    @Override
-    public void configureProjectile(MagicProjectileEntity projectile, Caster<?> caster) {
-        getDelegates(ConfigurationListener.PREDICATE).forEach(a -> a.configureProjectile(projectile, caster));
-    }
-
-    @Override
-    public void toNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         compound.putUuid("uuid", uuid);
-        saveDelegates(compound);
+        compound.put("spell", delegate.toNBT(lookup));
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        isDirty = false;
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         if (compound.contains("uuid")) {
             uuid = compound.getUuid("uuid");
         }
-        loadDelegates(compound);
+        delegate.fromNBT(compound.getCompound("spell"), lookup);
     }
 
-    protected abstract void loadDelegates(NbtCompound compound);
-
-    protected abstract void saveDelegates(NbtCompound compound);
-
-    protected <T> Stream<T> getDelegates(Function<? super Spell, T> cast) {
-        return getDelegates().stream().map(cast).filter(Objects::nonNull);
-    }
-
-    protected static boolean execute(Stream<Spell> spells, Function<Spell, Boolean> action) {
-        return spells.reduce(false, (u, a) -> action.apply(a), (a, b) -> a || b);
+    @Override
+    public final String toString() {
+        return "Delegate{" + getTypeAndTraits() + "}[uuid=" + uuid + "][spell=" + delegate.get() + "]";
     }
 }

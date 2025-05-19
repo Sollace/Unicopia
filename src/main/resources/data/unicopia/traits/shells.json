@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "traits": "water:7 earth:1 life:1",
+  "items": [
+    "#unicopia:food_types/shells",
+    "unicopia:shelly"
+  ]
+}

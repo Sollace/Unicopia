@@ -2,20 +2,19 @@ package com.minelittlepony.unicopia.mixin.client;
 
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import com.minelittlepony.unicopia.EquinePredicates;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.client.BatEyesApplicator;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
+import com.minelittlepony.unicopia.client.render.shader.ViewportShader;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.resource.SynchronousResourceReloader;
 
 @Mixin(value = GameRenderer.class, priority = Integer.MAX_VALUE)
@@ -24,51 +23,41 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
     @Shadow
     private @Final MinecraftClient client;
 
-    @ModifyConstant(
-            method = "updateTargetedEntity",
-            constant = @Constant(doubleValue = 6),
-            require = 0
-            /* This injection is only here to fix reach distance in creative. If it fails, another mod is probably doing the same thing as us. */
-            // TODO: Find a better way of doing this
-    )
-    private double onUpdateTargetedEntity(double initial) {
-        return Math.max(initial, client.interactionManager.getReachDistance());
+    @ModifyReturnValue(method = "getFov", at = @At("RETURN"))
+    private double modifyFov(double initial) {
+        return UnicopiaClient.getCamera().calculateFieldOfView(initial);
     }
 
-    @Inject(method = "getFov(Lnet/minecraft/client/render/Camera;FZ)D",
-            at = @At("RETURN"),
-            cancellable = true)
-    private void onGetFov(Camera camera, float f, boolean z, CallbackInfoReturnable<Double> info) {
-        UnicopiaClient.getCamera().ifPresent(c -> info.setReturnValue(c.calculateFieldOfView(info.getReturnValue())));
-    }
-
-    @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V",
-            at = @At("HEAD"))
-    private void beforeRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
-        UnicopiaClient.getCamera().ifPresent(c -> matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(c.calculateRoll())));
+    @Inject(method = "renderWorld", at = @At("HEAD"))
+    private void beforeRenderWorld(RenderTickCounter counter, CallbackInfo info) {
         BatEyesApplicator.INSTANCE.enable();
     }
 
-    @Inject(method = "renderWorld(FJLnet/minecraft/client/util/math/MatrixStack;)V",
-            at = @At("RETURN"))
-    private void afterRenderWorld(float tickDelta, long limitTime, MatrixStack matrices, CallbackInfo info) {
+    @Inject(method = "tiltViewWhenHurt", at = @At("HEAD"))
+    private void tiltViewWhenHurt(MatrixStack matrices, float tickDelta, CallbackInfo info) {
+        float roll = UnicopiaClient.getCamera().calculateFirstPersonRoll();
+        if (roll != 0) {
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(roll));
+        }
+    }
+
+    @Inject(method = "renderWorld", at = @At("RETURN"))
+    private void afterRenderWorld(RenderTickCounter counter, CallbackInfo info) {
         BatEyesApplicator.INSTANCE.disable();
     }
 
-    @Inject(method = "getNightVisionStrength(Lnet/minecraft/entity/LivingEntity;F)F",
-            at = @At("HEAD"),
-            cancellable = true)
-    private static void onGetNightVisionStrengthHead(LivingEntity entity, float tickDelta, CallbackInfoReturnable<Float> info) {
-        if (!entity.hasStatusEffect(StatusEffects.NIGHT_VISION)) {
-            info.setReturnValue(UnicopiaClient.getWorldBrightness(0));
-        }
+    @ModifyReturnValue(method = "getNightVisionStrength", at = @At("RETURN"))
+    private static float modifyNightVisionStrength(float initial, LivingEntity entity, float tickDelta) {
+        return BatEyesApplicator.getWorldBrightness(initial, entity, tickDelta);
     }
-    @Inject(method = "getNightVisionStrength(Lnet/minecraft/entity/LivingEntity;F)F",
-            at = @At("RETURN"),
-            cancellable = true)
-    private static void onGetNightVisionStrengthReturn(LivingEntity entity, float tickDelta, CallbackInfoReturnable<Float> info) {
-        if (entity.hasStatusEffect(StatusEffects.NIGHT_VISION) && EquinePredicates.PLAYER_BAT.test(entity)) {
-            info.setReturnValue(UnicopiaClient.getWorldBrightness(info.getReturnValueF()));
-        }
+
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/gl/Framebuffer.beginWrite(Z)V", shift = Shift.BEFORE))
+    private void onBeforeFrameEnd(RenderTickCounter tickCounter, boolean tick, CallbackInfo info) {
+        ViewportShader.INSTANCE.render(tickCounter);
+    }
+
+    @Inject(method = "onResized", at = @At("HEAD"))
+    private void onResized(int width, int height, CallbackInfo info) {
+        ViewportShader.INSTANCE.onResized(width, height);
     }
 }

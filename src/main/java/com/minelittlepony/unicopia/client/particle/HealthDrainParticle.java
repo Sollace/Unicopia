@@ -14,7 +14,7 @@ public class HealthDrainParticle extends SpriteBillboardParticle {
     private final FollowingParticleEffect effect;
 
     public static Particle create(FollowingParticleEffect effect, SpriteProvider provider, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-        if (effect.getChildEffect().isPresent()) {
+        if (effect.childEffect().isPresent()) {
             return new FollowingParticle(effect, provider, world, x, y, z, velocityX, velocityY, velocityZ);
         }
         return new HealthDrainParticle(effect, provider, world, x, y, z, velocityX, velocityY, velocityZ);
@@ -38,7 +38,7 @@ public class HealthDrainParticle extends SpriteBillboardParticle {
     public void tick() {
         super.tick();
 
-        Vec3d target = effect.getTarget(world);
+        Vec3d target = effect.target().getPosition(world);
         Vec3d pos = new Vec3d(x, y, z);
 
         if (this.scale * 1.5F < 0.5F) {
@@ -50,7 +50,7 @@ public class HealthDrainParticle extends SpriteBillboardParticle {
             age = 0;
         }
 
-        Vec3d motion = target.subtract(pos).normalize().multiply(Math.min(distance, effect.getSpeed()));
+        Vec3d motion = target.subtract(pos).normalize().multiply(Math.min(distance, effect.followSpeed()));
         move(motion.x, motion.y, motion.z);
     }
 }

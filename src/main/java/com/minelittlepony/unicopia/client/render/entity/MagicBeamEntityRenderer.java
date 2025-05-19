@@ -1,8 +1,7 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
 import com.minelittlepony.unicopia.client.render.RenderLayers;
-import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
-
+import com.minelittlepony.unicopia.projectile.MagicBeamEntity;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
@@ -19,11 +18,12 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
-public class MagicBeamEntityRenderer extends EntityRenderer<MagicProjectileEntity> {
+public class MagicBeamEntityRenderer extends EntityRenderer<MagicBeamEntity> {
     private final Model model;
 
     public MagicBeamEntityRenderer(EntityRendererFactory.Context ctx) {
@@ -32,17 +32,17 @@ public class MagicBeamEntityRenderer extends EntityRenderer<MagicProjectileEntit
     }
 
     @Override
-    public Identifier getTexture(MagicProjectileEntity entity) {
+    public Identifier getTexture(MagicBeamEntity entity) {
         return PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
     }
 
     @Override
-    protected int getBlockLight(MagicProjectileEntity entity, BlockPos pos) {
+    protected int getBlockLight(MagicBeamEntity entity, BlockPos pos) {
         return 15;
     }
 
     @Override
-    public void render(MagicProjectileEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+    public void render(MagicBeamEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         if (entity.age < 2 && dispatcher.camera.getFocusedEntity().squaredDistanceTo(entity) < 8) {
             return;
         }
@@ -57,18 +57,18 @@ public class MagicBeamEntityRenderer extends EntityRenderer<MagicProjectileEntit
                 -entity.getPitch(tickDelta) * MathHelper.RADIANS_PER_DEGREE
         );
 
-        RenderLayer layer = entity.getSpellSlot().get(true)
-                .map(spell -> spell.getType().getColor())
+        RenderLayer layer = entity.getSpellSlot().get()
+                .map(spell -> (0x99 << 24) | spell.getTypeAndTraits().type().getColor())
                 .map(RenderLayers::getMagicColored)
                 .orElseGet(RenderLayers::getMagicColored);
 
-        model.render(matrices, vertexConsumers.getBuffer(layer), light, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
+        model.render(matrices, vertexConsumers.getBuffer(layer), light, OverlayTexture.DEFAULT_UV, Colors.WHITE);
 
         matrices.pop();
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
     }
 
-    public class Model extends EntityModel<MagicProjectileEntity> {
+    public class Model extends EntityModel<MagicBeamEntity> {
 
         private final ModelPart part;
 
@@ -89,14 +89,14 @@ public class MagicBeamEntityRenderer extends EntityRenderer<MagicProjectileEntit
         }
 
         @Override
-        public void setAngles(MagicProjectileEntity entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
+        public void setAngles(MagicBeamEntity entity, float limbAngle, float limbDistance, float customAngle, float headYaw, float headPitch) {
             part.pitch = headPitch;
             part.yaw = headYaw;
         }
 
         @Override
-        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-            part.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+            part.render(matrices, vertexConsumer, light, overlay, color);
         }
     }
 }

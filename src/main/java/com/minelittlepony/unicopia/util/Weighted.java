@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.NotNull;
 
 import net.minecraft.util.Pair;
+import net.minecraft.util.math.random.Random;
 
 public final class Weighted {
     private static final Supplier<Optional<?>> EMPTY = Optional::empty;
@@ -22,8 +23,16 @@ public final class Weighted {
         return result.build();
     }
 
+    public static <T> Supplier<Optional<T>> of(Collection<? extends Buildable<T>> entries) {
+        return of(builder -> entries.forEach(entry -> entry.appendTo(builder)));
+    }
+
+    public static Random getRng() {
+        return Builder.RANDOM;
+    }
+
     public final static class Builder<T> {
-        private static final Random RANDOM = new Random();
+        public static final Random RANDOM = Random.create();
 
         private float totalWeight = 0;
 
@@ -82,5 +91,9 @@ public final class Weighted {
                 return max;
             }
         }
+    }
+
+    public interface Buildable<T> {
+        void appendTo(Weighted.Builder<T> weighted);
     }
 }

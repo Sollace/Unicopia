@@ -1,46 +1,58 @@
 package com.minelittlepony.unicopia.entity.player;
 
-import com.minelittlepony.unicopia.util.NbtSerialisable;
-import com.minelittlepony.unicopia.util.Tickable;
+import java.util.HashMap;
+import java.util.Map;
 
-import net.minecraft.entity.data.TrackedData;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
+import com.minelittlepony.unicopia.util.Copyable;
+import com.minelittlepony.unicopia.util.Tickable;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
+
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
 
-public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
+class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyable<ManaContainer> {
     private final Pony pony;
+
+    private final Map<String, BarInst> bars = new HashMap<>();
 
     private final BarInst energy;
     private final BarInst exhaustion;
     private final BarInst exertion;
     private final BarInst mana;
     private final BarInst xp;
+    private final BarInst charge;
 
-    public ManaContainer(Pony pony) {
+    public ManaContainer(Pony pony, DataTracker tracker) {
         this.pony = pony;
-        this.energy = new BarInst(Pony.ENERGY, 100F, 0);
-        this.exhaustion = new BarInst(Pony.EXHAUSTION, 100F, 0);
-        this.exertion = new BarInst(Pony.EXERTION, 10F, 0);
-        this.xp = new BarInst(Pony.XP, 1, 0);
-        this.mana = new XpCollectingBar(Pony.MANA, 100F, 100F);
+        this.energy = addBar("energy", new BarInst(tracker, 100F, 0));
+        this.exhaustion = addBar("exhaustion", new BarInst(tracker, 100F, 0));
+        this.exertion = addBar("exertion", new BarInst(tracker, 10F, 0));
+        this.xp = addBar("xp", new BarInst(tracker, 1F, 0));
+        this.mana = addBar("mana", new XpCollectingBar(tracker, 100F, 1));
+        this.charge = addBar("charge", new BarInst(tracker, 10F, 0) {
+            @Override
+            protected float applyLimits(float value) {
+                return Math.max(0, value);
+            }
+        });
+    }
+
+    protected BarInst addBar(String name, BarInst bar) {
+        bars.put(name, bar);
+        return bar;
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        compound.put("energy", energy.toNBT());
-        compound.put("exhaustion", exhaustion.toNBT());
-        compound.put("exertion", exertion.toNBT());
-        compound.put("mana",  mana.toNBT());
-        compound.put("xp",  xp.toNBT());
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        bars.forEach((key, bar) -> compound.put(key, bar.toNBT(lookup)));
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        energy.fromNBT(compound.getCompound("energy"));
-        exhaustion.fromNBT(compound.getCompound("exhaustion"));
-        exertion.fromNBT(compound.getCompound("exertion"));
-        mana.fromNBT(compound.getCompound("mana"));
-        xp.fromNBT(compound.getCompound("xp"));
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        bars.forEach((key, bar) -> bar.fromNBT(compound.getCompound(key), lookup));
     }
 
     @Override
@@ -69,29 +81,31 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
     }
 
     @Override
-    public void tick() {
-        exertion.tick();
-        energy.tick();
-        mana.tick();
-        xp.tick();
+    public Bar getCharge() {
+        return charge;
+    }
 
-        exertion.add(-10);
+    @Override
+    public void tick() {
+        bars.values().forEach(BarInst::tick);
+
+        exertion.addPercent(-10);
 
         if (energy.get() > 5) {
             energy.multiply(0.8F);
         } else {
-            energy.add(-1);
+            energy.addPercent(-1);
         }
 
-        if (pony.getSpecies().canFly() && !pony.getPhysics().isFlying()) {
-            exhaustion.multiply(0.8F);
+        if (pony.getCompositeRace().canFly() && !pony.getPhysics().isFlying() && pony.asEntity().isOnGround()) {
+            exhaustion.multiply(0.99F);
         } else {
-            exhaustion.add(-1);
+            exhaustion.addPercent(-1);
         }
 
-        if (!pony.getSpecies().canFly() || !pony.getPhysics().isFlying()) {
-            if (mana.getPercentFill() < 1 && mana.getShadowFill() == mana.getPercentFill()) {
-                mana.add((mana.getMax() / 10F) * Math.max(1, pony.getLevel().get() * 4));
+        if (!pony.getCompositeRace().canFly() || (!pony.getPhysics().isFlying() && pony.asEntity().isOnGround())) {
+            if (mana.getPercentFill() < 1 && mana.getShadowFill(1) <= mana.getPercentFill(1)) {
+                mana.addPercent(MathHelper.clamp(1 + pony.getLevel().get(), 1, 50) / 4F);
             }
         }
 
@@ -101,10 +115,21 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
         }
     }
 
-    class XpCollectingBar extends BarInst {
+    @Override
+    public void copyFrom(ManaContainer other, boolean alive) {
+        if (alive) {
+            mana.resetTo(mana.getMax());
+            xp.resetTo(other.xp.get());
+        } else {
+            energy.resetTo(0.6F);
+            exhaustion.resetTo(0);
+            exertion.resetTo(0);
+        }
+    }
 
-        XpCollectingBar(TrackedData<Float> marker, float max, float initial) {
-            super(marker, max, initial);
+    class XpCollectingBar extends BarInst {
+        XpCollectingBar(DataTracker tracker, float max, float initial) {
+            super(tracker, max, initial);
         }
 
         @Override
@@ -128,35 +153,56 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
     }
 
     class BarInst implements Bar, NbtSerialisable {
-
-        private final TrackedData<Float> marker;
+        private final DataTracker.Entry<Float> marker;
         private final float max;
 
         private float trailingValue;
+        private float prevTrailingValue;
+        private float prevValue;
 
-        BarInst(TrackedData<Float> marker, float max, float initial) {
-            this.marker = marker;
+        BarInst(DataTracker tracker, float max, float initial) {
             this.max = max;
-            pony.getMaster().getDataTracker().startTracking(marker, initial);
+            this.trailingValue = initial;
+            this.prevTrailingValue = initial;
+            this.prevValue = initial;
+            this.marker = tracker.startTracking(TrackableDataType.FLOAT, max * trailingValue);
         }
 
         @Override
         public float get() {
-            return pony.getMaster().getDataTracker().get(marker);
+            return applyLimits(marker.get());
         }
 
         @Override
-        public float getShadowFill() {
-            return trailingValue;
+        public float get(float tickDelta) {
+            return MathHelper.lerp(tickDelta, prevValue, get());
+        }
+
+        @Override
+        public float getShadowFill(float tickDelta) {
+            return MathHelper.lerp(tickDelta, prevTrailingValue, trailingValue);
         }
 
         @Override
         public void set(float value) {
-            load(MathHelper.clamp(value, 0, getMax()));
+            load(applyLimits(value));
         }
 
         private void load(float value) {
-            pony.getMaster().getDataTracker().set(marker, value);
+            marker.set(value);
+        }
+
+        protected float getInitial(float initial) {
+            return initial;
+        }
+
+        protected float applyLimits(float value) {
+            return MathHelper.clamp(value, 0, getMax());
+        }
+
+        void resetTo(float value) {
+            trailingValue = MathHelper.clamp(value / getMax(), 0, 1);
+            load(value);
         }
 
         @Override
@@ -165,6 +211,9 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
         }
 
         void tick() {
+            prevValue = get();
+            prevTrailingValue = trailingValue;
+
             float fill = getPercentFill();
             float trailingIncrement = 0.003F;
 
@@ -180,13 +229,13 @@ public class ManaContainer implements MagicReserves, Tickable, NbtSerialisable {
         }
 
         @Override
-        public void toNBT(NbtCompound compound) {
+        public void toNBT(NbtCompound compound, WrapperLookup lookup) {
             compound.putFloat("shadow", trailingValue);
             compound.putFloat("value", get());
         }
 
         @Override
-        public void fromNBT(NbtCompound compound) {
+        public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
             trailingValue = compound.getFloat("shadow");
             load(compound.getFloat("value"));
         }

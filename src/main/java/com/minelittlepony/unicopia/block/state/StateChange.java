@@ -11,10 +11,9 @@ import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 import net.minecraft.world.World;
 
 public abstract class StateChange {
@@ -23,7 +22,7 @@ public abstract class StateChange {
     static {
         SERIALIZERS.put(Unicopia.id("set_state"), json -> {
             final String sstate = JsonHelper.getString(json, "state");
-            final Identifier id = new Identifier(sstate);
+            final Identifier id = Identifier.of(sstate);
             final float chance = JsonHelper.getFloat(json, "chance", -1);
 
             return new StateChange() {
@@ -49,8 +48,8 @@ public abstract class StateChange {
                     if (chance > 0 && world.random.nextFloat() > chance) {
                         return state;
                     }
-                    return Registry.BLOCK.getOrEmpty(id).map(Block::getDefaultState)
-                            .map(newState -> merge(newState, state))
+                    return Registries.BLOCK.getOrEmpty(id).map(Block::getDefaultState)
+                            .map(newState -> StateUtil.copyState(state, newState))
                             .orElse(state);
                 }
             };
@@ -97,21 +96,8 @@ public abstract class StateChange {
 
     public static StateChange fromJson(JsonObject json) {
         String action = JsonHelper.getString(json, "action");
-        return Optional.of(SERIALIZERS.get(new Identifier(action))).map(serializer -> {
+        return Optional.of(SERIALIZERS.get(Identifier.of(action))).map(serializer -> {
             return serializer.apply(json);
         }).orElseThrow(() -> new IllegalArgumentException("Invalid action " + action));
-    }
-
-    private static BlockState merge(BlockState into, BlockState from) {
-        for (var property : from.getProperties()) {
-            if (into.contains(property)) {
-                into = copy(into, from, property);
-            }
-        }
-        return into;
-    }
-
-    private static <T extends Comparable<T>> BlockState copy(BlockState to, BlockState from, Property<T> property) {
-        return to.with(property, from.get(property));
     }
 }

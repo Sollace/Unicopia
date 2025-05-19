@@ -17,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 
 public interface EntitySwap {
     Swap<Entity> POSITION = Swap.of(Entity::getPos, (entity, pos) -> {
-        entity.teleport(pos.getX(), pos.getY(), pos.getZ());
+        entity.setPosition(pos.getX(), pos.getY(), pos.getZ());
         if (entity instanceof PathAwareEntity pae && !(entity instanceof PlayerEntity)) {
             pae.getNavigation().stop();
         }
@@ -30,7 +30,7 @@ public interface EntitySwap {
     Swap<Entity> YAW = Swap.of(Entity::getYaw, Entity::setYaw);
     Swap<Entity> HEAD_YAW = Swap.of(Entity::getHeadYaw, (entity, headYaw) -> {
         entity.setHeadYaw(headYaw);
-        if (entity.world instanceof ServerWorld sw) {
+        if (entity.getWorld() instanceof ServerWorld sw) {
             sw.getChunkManager().sendToNearbyPlayers(entity, new EntitySetHeadYawS2CPacket(entity, (byte)MathHelper.floor(entity.getHeadYaw() * 256F / 360F)));
         }
     });

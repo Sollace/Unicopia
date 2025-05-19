@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia.ability;
 
-import com.minelittlepony.unicopia.Race;
+import java.util.Optional;
+
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -11,8 +13,6 @@ import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.TraceHelper;
 
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 
 /**
@@ -21,37 +21,15 @@ import net.minecraft.util.TypedActionResult;
  * 1. If the player is holding nothing, casts their equipped offensive spell (currently only vortex - inverse of shield)
  * 2. If the player is holding a gem, consumes it and casts whatever spell is contained within onto a projectile.
  */
-public class UnicornProjectileAbility implements Ability<Hit> {
-
-    @Override
-    public Identifier getIcon(Pony player, boolean swap) {
-        Identifier id = Abilities.REGISTRY.getId(this);
-        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (swap ? "_focused" : "_unfocused") + ".png");
-    }
-
+public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
     @Override
     public int getWarmupTime(Pony player) {
-        return 8;
+        return 1;
     }
 
     @Override
-    public int getCooldownTime(Pony player) {
-        return 0;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race.canCast();
-    }
-
-    @Override
-    public Hit tryActivate(Pony player) {
-        return Hit.of(player.getCharms().getSpellInHand(Hand.OFF_HAND).getResult() != ActionResult.FAIL);
-    }
-
-    @Override
-    public Hit.Serializer<Hit> getSerializer() {
-        return Hit.SERIALIZER;
+    public Optional<Hit> prepare(Pony player) {
+        return Hit.of(player.getCharms().getSpellInHand(false).getResult() != ActionResult.FAIL);
     }
 
     @Override
@@ -60,15 +38,15 @@ public class UnicornProjectileAbility implements Ability<Hit> {
     }
 
     @Override
-    public boolean onQuickAction(Pony player, ActivationType type) {
+    public boolean onQuickAction(Pony player, ActivationType type, Optional<Hit> data) {
         if (type == ActivationType.DOUBLE_TAP) {
             if (!player.isClient()) {
-                TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(Hand.OFF_HAND);
+                TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(true);
 
                 if (thrown.getResult() != ActionResult.FAIL) {
                     thrown.getValue().create().toThrowable().throwProjectile(player).ifPresent(projectile -> {
                         player.subtractEnergyCost(getCostEstimate(player));
-                        player.setAnimation(Animation.ARMS_FORWARD, 2);
+                        player.setAnimation(Animation.ARMS_FORWARD, Animation.Recipient.ANYONE, 2);
                     });
                 }
             }
@@ -79,34 +57,36 @@ public class UnicornProjectileAbility implements Ability<Hit> {
     }
 
     @Override
-    public void apply(Pony player, Hit data) {
-        TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(Hand.OFF_HAND);
+    public boolean acceptsQuickAction(Pony player, ActivationType type) {
+        return type == ActivationType.NONE || type == ActivationType.DOUBLE_TAP;
+    }
+
+    @Override
+    public boolean apply(Pony player, Hit data) {
+        TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(true);
 
         if (thrown.getResult() != ActionResult.FAIL) {
-
-
             Spell spell = thrown.getValue().create();
 
             spell.toThrowable().throwProjectile(player).ifPresent(projectile -> {
                 player.subtractEnergyCost(getCostEstimate(player));
-                player.setAnimation(Animation.ARMS_FORWARD);
+                player.setAnimation(Animation.ARMS_FORWARD, Animation.Recipient.ANYONE);
                 projectile.setHydrophobic();
 
-                if (spell instanceof HomingSpell) {
-                    TraceHelper.findEntity(player.getMaster(), 600, 1).filter(((HomingSpell)spell)::setTarget).ifPresent(projectile::setHomingTarget);
+                if (spell instanceof HomingSpell homer) {
+                    TraceHelper.findEntity(player.asEntity(), homer.getRange(player), 1, EquinePredicates.VALID_LIVING_AND_NOT_MAGIC_IMMUNE).filter(((HomingSpell)spell)::setTarget).ifPresent(projectile::setHomingTarget);
                 }
             });
+
+            return true;
         }
+
+        return false;
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getExhaustion().multiply(3.3F);
-        player.spawnParticles(MagicParticleEffect.UNICORN, 5);
-    }
-
-    @Override
-    public void postApply(Pony player, AbilitySlot slot) {
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 }

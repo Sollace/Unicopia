@@ -1,35 +1,53 @@
 package com.minelittlepony.unicopia.client.particle;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Link;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.client.render.bezier.BezierSegment;
+import com.minelittlepony.unicopia.client.render.bezier.Trail;
+import com.minelittlepony.unicopia.particle.TargetBoundParticleEffect;
+import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
-public class RainbowTrailParticle extends AbstractBillboardParticle implements Attachment {
+public class RainbowTrailParticle extends AbstractBillboardParticle {
     private static final Identifier TEXTURE = Unicopia.id("textures/particles/rainboom_trail.png");
 
-    private final List<Segment> segments = new ArrayList<>();
+    private final BezierSegment bezier = new BezierSegment();
 
-    private Optional<Link> link = Optional.empty();
+    private final Trail trail;
 
-    public RainbowTrailParticle(DefaultParticleType effect, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+    @Nullable
+    private Entity target;
+    private boolean isAbility;
+
+    public RainbowTrailParticle(TargetBoundParticleEffect effect, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
-        segments.add(new Segment(new Vec3d(x, y, z)));
+        trail = new Trail(new Vec3d(x, y, z), 1);
         setMaxAge(300);
+        this.velocityX = velocityX;
+        this.velocityY = velocityY;
+        this.velocityZ = velocityZ;
+
+        if (effect.targetId() <= 0) {
+            this.target = world.getOtherEntities(null, Box.from(trail.pos)).get(0);
+        } else {
+            this.target = world.getEntityById(effect.targetId());
+        }
+        isAbility = Caster.of(target).filter(caster -> SpellType.RAINBOOM.isOn(caster)).isPresent();
     }
 
     @Override
@@ -38,53 +56,38 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
     }
 
     @Override
-    public boolean isStillAlive() {
-        return age < getMaxAge() && (!dead || !segments.isEmpty());
+    public boolean isAlive() {
+        return age < getMaxAge() && (!dead || !trail.getSegments().isEmpty());
     }
 
     @Override
-    public void attach(Link link) {
-        this.link = Optional.of(link);
-    }
+    protected void renderQuads(Tessellator te, float x, float y, float z, float tickDelta) {
+        float alpha = this.alpha * (1 - (float)age / maxAge);
+        int light = getBrightness(tickDelta);
+        float scale = getScale(tickDelta);
 
-    @Override
-    public void detach() {
-        link = Optional.empty();
-    }
+        List<Trail.Segment> segments = trail.getSegments();
 
-    @Override
-    public void setAttribute(int key, Number value) {
-
-    }
-
-    @Override
-    protected void renderQuads(Tessellator te, BufferBuilder buffer, float x, float y, float z, float tickDelta) {
-        float alpha = 1 - (float)age / maxAge;
+        @Nullable
+        BufferBuilder buffer = null;
 
         for (int i = 0; i < segments.size() - 1; i++) {
-            Vec3f[] corners = segments.get(i).getPlane(segments.get(i + 1));
-            float scale = getScale(tickDelta);
+            segments.get(i).getPlane(segments.get(i + 1), bezier);
 
-            for (int k = 0; k < 4; ++k) {
-               Vec3f corner = corners[k];
-               corner.scale(scale);
-               corner.add(x, y, z);
+            for (var corner : bezier.corners()) {
+                corner.position().mul(scale).add(x, y, z);
             }
 
-            renderQuad(te, buffer, corners, segments.get(i).getAlpha() * alpha, tickDelta);
+            if (buffer == null) {
+                RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+                buffer = te.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+            }
+
+            quad(buffer, bezier.corners(), segments.get(i).getAlpha() * alpha, tickDelta, light);
         }
-    }
 
-    private void follow(Caster<?> caster) {
-        Vec3d next = caster.getOriginVector();
-
-        if (segments.isEmpty()) {
-            segments.add(new Segment(next));
-        } else {
-            Vec3d last = segments.get(segments.size() - 1).position;
-            if (next.distanceTo(last) > 0.2) {
-                segments.add(new Segment(next));
-            }
+        if (buffer != null) {
+            BufferRenderer.drawWithGlobalProgram(buffer.end());
         }
     }
 
@@ -92,61 +95,19 @@ public class RainbowTrailParticle extends AbstractBillboardParticle implements A
     public void tick() {
         super.tick();
 
-        if (link.isPresent()) {
-            age = 0;
-            link.flatMap(Link::get).ifPresent(this::follow);
-        } else if (!dead) {
-            follow(Pony.of(MinecraftClient.getInstance().player));
+        if (target != null && target.isAlive()) {
+            if (isAbility) {
+                age = 0;
+            }
+            trail.update(target.getEyePos());
+
+            if (isAbility && Caster.of(target).filter(caster -> SpellType.RAINBOOM.isOn(caster)).isEmpty()) {
+                target = null;
+            }
         }
 
-        if (segments.size() > 1) {
-            segments.removeIf(Segment::tick);
-        }
-        if (segments.isEmpty()) {
+        if (trail.tick()) {
             markDead();
-        }
-    }
-
-    private final class Segment {
-        Vec3d position;
-        Vec3f offset;
-
-        int age;
-        int maxAge;
-
-        Segment(Vec3d position) {
-            this.position = position;
-            this.offset = new Vec3f((float)(position.getX() - x), (float)(position.getY() - y), (float)(position.getZ() - z));
-            this.maxAge = 90;
-        }
-
-        float getAlpha() {
-            return alpha * (1 - ((float)age / maxAge));
-        }
-
-        boolean tick() {
-            return segments.indexOf(this) < segments.size() - 1 && age++ >= maxAge;
-        }
-
-        Vec3f[] getPlane(Segment to) {
-            float fromX = offset.getX();
-            float toX = to.offset.getX();
-
-            float fromZ = offset.getZ();
-            float toZ = to.offset.getZ();
-
-            float fromTopY = offset.getY() + 1;
-            float fromBottomY = offset.getY();
-
-            float toTopY = to.offset.getY() + 1;
-            float toBottomY = to.offset.getY();
-
-            return new Vec3f[]{
-                    new Vec3f(fromX, fromBottomY, fromZ), // bottom left
-                    new Vec3f(fromX, fromTopY, fromZ),    // top    left
-                    new Vec3f(toX, toTopY, toZ),          // top    right
-                    new Vec3f(toX, toBottomY, toZ)        // bottom right
-            };
         }
     }
 }

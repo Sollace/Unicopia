@@ -1,28 +1,35 @@
 package com.minelittlepony.unicopia.ability;
 
-import com.minelittlepony.unicopia.Race;
+import java.util.Optional;
+
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.block.state.StatePredicate;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.Trace;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.FenceBlock;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
-import net.minecraft.block.WallBlock;
+import net.minecraft.block.PowderSnowBlock;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 
 /**
@@ -31,58 +38,67 @@ import net.minecraft.world.World;
 public class UnicornTeleportAbility implements Ability<Pos> {
 
     @Override
-    public Identifier getIcon(Pony player, boolean swap) {
-        Identifier id = Abilities.REGISTRY.getId(this);
-        return new Identifier(id.getNamespace(), "textures/gui/ability/" + id.getPath() + (swap ? "_far" : "_near") + ".png");
+    public Identifier getIcon(Pony player) {
+        return getId().withPath(p -> "textures/gui/ability/" + p + (player.asEntity().isSneaking() ? "_far" : "_near") + ".png");
+    }
+
+    @Override
+    public Text getName(Pony player) {
+        if (player.asEntity().isSneaking()) {
+            return Text.translatable(getTranslationKey() + ".far");
+        }
+        return Ability.super.getName(player);
     }
 
     @Override
     public int getWarmupTime(Pony player) {
-        return 20;
+        return (int)(20 - Math.min(17F, player.getLevel().get() * 0.75F));
     }
 
     @Override
     public int getCooldownTime(Pony player) {
-        return 50;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race.canCast();
+        return (int)(50 - Math.min(45F, player.getLevel().get() * 0.75F));
     }
 
     @Override
     public double getCostEstimate(Pony player) {
-        Pos pos = tryActivate(player);
-
-        if (pos == null) {
-            return 0;
-        }
-        return pos.distanceTo(player) / 10;
+        return prepare(player).map(pos -> pos.distanceTo(player) / 10).orElse(0D);
     }
 
     @Override
-    public Pos tryActivate(Pony player) {
+    public int getColor(Pony player) {
+        return SpellType.PORTAL.getColor();
+    }
+
+    @Override
+    public Optional<Pos> prepare(Pony player) {
 
         if (!player.canCast()) {
-            return null;
+            return Optional.empty();
         }
 
-        int maxDistance = player.getMaster().isCreative() ? 1000 : 100;
+        int maxDistance = (int)((player.asEntity().isCreative() ? 1000 : 100) + (player.getLevel().get() * 0.25F));
 
+        World w = player.asWorld();
 
-        World w = player.getReferenceWorld();
-
-        Trace trace = Trace.create(player.getMaster(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR);
+        Trace trace = Trace.create(player.asEntity(), maxDistance, 1, EntityPredicates.EXCEPT_SPECTATOR);
         return trace.getBlockOrEntityPos().map(pos -> {
             final BlockPos originalPos = pos;
 
-            boolean airAbove = enterable(w, pos.up()) && enterable(w, pos.up(2));
+            Direction globalUp = player.getPhysics().isGravityNegative() ? Direction.DOWN : Direction.UP;
 
-            if (exception(w, pos, player.getMaster())) {
+            boolean originalPosHasSupport = exception(w, pos, player.asEntity());
+            boolean originalPosValid = enterable(w, pos.offset(globalUp)) && enterable(w, pos.offset(globalUp, 2));
+
+            if (w.getBlockState(pos).isOf(Blocks.POWDER_SNOW) && !PowderSnowBlock.canWalkOnPowderSnow(player.asEntity())) {
+                return null;
+            }
+
+            if (originalPosHasSupport) {
                 final BlockPos p = pos;
+                // offset to adjacent
                 pos = trace.getSide().map(sideHit -> {
-                    if (player.getMaster().isSneaking()) {
+                    if (player.asEntity().isSneaking()) {
                         sideHit = sideHit.getOpposite();
                     }
 
@@ -90,102 +106,129 @@ public class UnicornTeleportAbility implements Ability<Pos> {
                 }).orElse(pos);
             }
 
-            if (enterable(w, pos.down())) {
-                pos = pos.down();
-
-                if (enterable(w, pos.down())) {
-                    if (!airAbove) {
-                        return null;
+            if (pos.getX() != originalPos.getX() || pos.getZ() != originalPos.getZ()) {
+                // check support
+                int steps = 0;
+                while (enterable(w, pos.offset(globalUp.getOpposite()))) {
+                    pos = pos.offset(globalUp.getOpposite());
+                    if (++steps > 2) {
+                        if (originalPosValid) {
+                            pos = originalPos.offset(globalUp);
+                            break;
+                        } else {
+                            return null;
+                        }
                     }
-
-                    pos = originalPos.up(2);
                 }
             }
 
-            if ((!enterable(w, pos) && exception(w, pos, player.getMaster()))
-             || (!enterable(w, pos.up()) && exception(w, pos.up(), player.getMaster()))) {
+            if ((!enterable(w, pos) && exception(w, pos, player.asEntity()))
+             || (!enterable(w, pos.offset(globalUp)) && exception(w, pos.offset(globalUp), player.asEntity()))) {
                 return null;
             }
 
             return new Pos(pos);
-        }).orElse(null);
+        });
     }
 
     @Override
-    public Hit.Serializer<Pos> getSerializer() {
-        return Pos.SERIALIZER;
+    public PacketCodec<? super RegistryByteBuf, Pos> getSerializer() {
+        return Pos.CODEC;
     }
 
     @Override
-    public void apply(Pony iplayer, Pos data) {
-        teleport(iplayer, iplayer, data);
+    public boolean apply(Pony iplayer, Pos data) {
+        return teleport(iplayer, iplayer, data);
     }
 
-    protected void teleport(Pony teleporter, Caster<?> teleportee, Pos destination) {
+    protected boolean teleport(Pony teleporter, Caster<?> teleportee, Pos destination) {
 
         if (!teleporter.canCast()) {
-            return;
+            return false;
         }
 
-        LivingEntity player = teleportee.getMaster();
+        Entity participant = teleportee.asEntity();
 
-        if (player == null) {
-            return;
+        if (participant == null) {
+            return false;
         }
 
-        teleportee.getReferenceWorld().playSound(null, teleportee.getOrigin(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
+        teleportee.asWorld().playSound(null, teleportee.getOrigin(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
 
         double distance = destination.distanceTo(teleportee) / 10;
 
-        if (player.hasVehicle()) {
-            Entity mount = player.getVehicle();
+        if (participant.hasVehicle()) {
+            Entity mount = participant.getVehicle();
 
-            player.stopRiding();
+            participant.stopRiding();
             Living.transmitPassengers(mount);
         }
 
-        Vec3d offset = teleportee.getOriginVector().subtract(teleporter.getOriginVector());
+        Vec3d offset = teleportee.getOriginVector()
+                .subtract(teleporter.getOriginVector())
+                .add(
+                    participant.getX() - Math.floor(participant.getX()),
+                    0,
+                    participant.getZ() - Math.floor(participant.getZ())
+                );
 
-        player.teleport(
-                destination.x + offset.x + (player.getX() - Math.floor(player.getX())),
-                destination.y + offset.y,
-                destination.z + offset.z + (player.getZ() - Math.floor(player.getZ())));
+        double yPos = getTargetYPosition(participant.getEntityWorld(), destination.pos(), ShapeContext.of(participant));
+        Vec3d dest = new Vec3d(
+                destination.x() + offset.getX(),
+                yPos,
+                destination.z() + offset.getZ()
+        );
+
+        participant.requestTeleport(dest.x, dest.y, dest.z);
+        if (participant.getWorld().getBlockCollisions(participant, participant.getBoundingBox()).iterator().hasNext()) {
+            dest = destination.vec();
+            participant.requestTeleport(dest.x, participant.getY(), dest.z);
+        }
         teleporter.subtractEnergyCost(distance);
 
-        player.fallDistance /= distance;
+        participant.fallDistance /= Math.min(distance, 1);
 
-        player.world.playSound(null, destination.pos(), USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
+        BlockPos blockPos = BlockPos.ofFloored(dest);
+
+        participant.getWorld().playSound(null, blockPos, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, SoundCategory.PLAYERS, 1, 1);
+        if (!participant.getEntityWorld().isInBuildLimit(blockPos)) {
+            UCriteria.TELEPORT_ABOVE_WORLD.trigger(teleporter.asEntity());
+        }
+
+        return true;
     }
 
     private boolean enterable(World w, BlockPos pos) {
         BlockState state = w.getBlockState(pos);
-
-        Block block = state.getBlock();
-
-        return w.isAir(pos)
-                || !state.isOpaque()
-                || (block instanceof LeavesBlock);
+        if (StatePredicate.isFluid(state) || state.getBlock() instanceof LeavesBlock) {
+            return false;
+        }
+        return w.isAir(pos) || !state.isOpaque() || !state.shouldSuffocate(w, pos);
     }
 
     private boolean exception(World w, BlockPos pos, PlayerEntity player) {
         BlockState state = w.getBlockState(pos);
+        VoxelShape shape;
 
-        Block c = state.getBlock();
         return state.hasSolidTopSurface(w, pos, player)
-                || state.getMaterial().isLiquid()
-                || (c instanceof WallBlock)
-                || (c instanceof FenceBlock)
-                || (c instanceof LeavesBlock);
+                || StatePredicate.isFluid(state)
+                || (shape = state.getCollisionShape(w, pos, ShapeContext.of(player))).isEmpty()
+                || shape.getBoundingBox().getLengthY() > 1;
+    }
+
+    private double getTargetYPosition(World world, BlockPos pos, ShapeContext context) {
+        VoxelShape shape = world.getBlockState(pos).getCollisionShape(world, pos, context);
+        return pos.getY() + (shape.isEmpty() ? 0 : shape.getBoundingBox().getLengthY());
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().getExertion().add(30);
+    public void warmUp(Pony player, AbilitySlot slot) {
+        player.getMagicalReserves().getExertion().addPercent(30);
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 }

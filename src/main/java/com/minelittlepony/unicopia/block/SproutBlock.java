@@ -4,7 +4,13 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.block.*;
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -16,6 +22,13 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.*;
 
 public class SproutBlock extends CropBlock implements TintedBlock {
+    public static final MapCodec<SproutBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.INT.fieldOf("overlay").forGetter(b -> b.overlay),
+            CodecUtils.ITEM.fieldOf("seeds").forGetter(b -> b.seeds),
+            CodecUtils.supplierOf(BlockState.CODEC).fieldOf("mature_state").forGetter(b -> b.matureState),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, SproutBlock::new));
+
     private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
             Block.createCuboidShape(7, 0, 7, 9, 2, 9),
             Block.createCuboidShape(7, 0, 7, 9, 4, 9),
@@ -27,34 +40,54 @@ public class SproutBlock extends CropBlock implements TintedBlock {
             Block.createCuboidShape(7, 0, 7, 9, 16, 9)
     };
 
+    public static Settings settings() {
+        return Settings.create()
+                .noCollision()
+                .ticksRandomly()
+                .breakInstantly()
+                .sounds(BlockSoundGroup.STEM)
+                .pistonBehavior(PistonBehavior.DESTROY);
+    }
+
     private final ItemConvertible seeds;
 
     private final Supplier<BlockState> matureState;
 
     private final int overlay;
 
-    public SproutBlock(int overlay, ItemConvertible seeds, Supplier<BlockState> matureState) {
-        super(Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.STEM));
+    public SproutBlock(int overlay, ItemConvertible seeds, Supplier<BlockState> matureState, Settings settings) {
+        super(settings);
         this.seeds = seeds;
         this.matureState = matureState;
         this.overlay = overlay;
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public MapCodec<? extends SproutBlock> getCodec() {
+        return CODEC;
+    }
+
+    @Override
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return AGE_TO_SHAPE[state.get(getAgeProperty())];
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         super.randomTick(state, world, pos, random);
-        onGrow(world, world.getBlockState(pos), pos);
+        state = world.getBlockState(pos);
+        if (state.isOf(this)) {
+            onGrow(world, state, pos);
+        }
     }
 
     @Override
     public void applyGrowth(World world, BlockPos pos, BlockState state) {
         super.applyGrowth(world, pos, state);
-        onGrow(world, world.getBlockState(pos), pos);
+        state = world.getBlockState(pos);
+        if (state.isOf(this)) {
+            onGrow(world, world.getBlockState(pos), pos);
+        }
     }
 
     @Override
@@ -63,7 +96,7 @@ public class SproutBlock extends CropBlock implements TintedBlock {
     }
 
     @Override
-    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         return new ItemStack(seeds.asItem());
     }
 
@@ -75,7 +108,7 @@ public class SproutBlock extends CropBlock implements TintedBlock {
 
     protected void mature(World world, BlockState state, BlockPos pos) {
         state = matureState.get();
-        world.setBlockState(pos, matureState.get());
+        world.setBlockState(pos, state);
         BlockSoundGroup group = state.getSoundGroup();
         world.playSound(null, pos, group.getPlaceSound(), SoundCategory.BLOCKS, group.getVolume(), group.getPitch());
     }

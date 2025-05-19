@@ -1,0 +1,17 @@
+{
+	"parent": "minecraft:block/cube_bottom_top",
+	"elements": [
+		{
+			"from": [0, 0, 0],
+			"to": [16, 5, 16],
+			"faces": {
+				"north": {"uv": [0, 11, 16, 16], "texture": "#end", "cullface": "north"},
+				"east": {"uv": [0, 11, 16, 16], "texture": "#end", "cullface": "east"},
+				"south": {"uv": [0, 11, 16, 16], "texture": "#end", "cullface": "south"},
+				"west": {"uv": [0, 11, 16, 16], "texture": "#end", "cullface": "west"},
+				"up": {"uv": [0, 0, 16, 16], "texture": "#top"},
+				"down": {"uv": [0, 0, 16, 16], "texture": "#bottom", "cullface": "down"}
+			}
+		}
+	]
+}

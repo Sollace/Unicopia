@@ -4,17 +4,39 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.compat.seasons.FertilizableUtil;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.block.*;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.*;
 
 public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
+    private static final Codec<Supplier<SegmentedCropBlock>> SEGMENT_CODEC = CodecUtils.supplierOf(Registries.BLOCK.getCodec().xmap(
+            b -> (SegmentedCropBlock)b,
+            b -> (Block)b
+    ));
+    public static final MapCodec<SegmentedCropBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.INT.fieldOf("max_age").forGetter(b -> b.getAgeProperty().getValues().stream().mapToInt(i -> i).max().orElse(0)),
+            Codec.INT.fieldOf("progression_age").forGetter(b -> b.progressionAge),
+            CodecUtils.ITEM.fieldOf("seeds").forGetter(b -> b.seeds),
+            SEGMENT_CODEC.optionalFieldOf("prev", null).forGetter(b -> b.prevSegmentSupplier),
+            SEGMENT_CODEC.optionalFieldOf("next", null).forGetter(b -> b.nextSegmentSupplier),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, SegmentedCropBlock::create));
+
+    static final float BASE_GROWTH_CHANCE = /*1 in */ 50F /* chance, half the speed of regular crops */;
 
     private final ItemConvertible seeds;
 
@@ -25,10 +47,10 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
 
     private final int progressionAge;
 
-    public static SegmentedCropBlock create(final int maxAge, int progressionAge, Block.Settings settings,
+    public static SegmentedCropBlock create(final int maxAge, int progressionAge,
             ItemConvertible seeds,
             @Nullable Supplier<SegmentedCropBlock> prevSegmentSupplier,
-            @Nullable Supplier<SegmentedCropBlock> nextSegmentSupplier) {
+            @Nullable Supplier<SegmentedCropBlock> nextSegmentSupplier, Block.Settings settings) {
 
         final IntProperty age = IntProperty.of("age", 0, maxAge);
         return new SegmentedCropBlock(progressionAge, settings, seeds, prevSegmentSupplier, nextSegmentSupplier) {
@@ -60,21 +82,31 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
        this.progressionAge = progressionAge;
     }
 
+    @Override
+    public IntProperty getAgeProperty() {
+        return super.getAgeProperty();
+    }
+
     public SegmentedCropBlock createNext(int progressionAge) {
-        SegmentedCropBlock next = create(getMaxAge() - this.progressionAge, progressionAge, Settings.copy(this), seeds, () -> this, null);
+        SegmentedCropBlock next = create(getMaxAge() - this.progressionAge, progressionAge, seeds, () -> this, null, Settings.copy(this));
         nextSegmentSupplier = () -> next;
         return next;
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public MapCodec<? extends SegmentedCropBlock> getCodec() {
+        return CODEC;
+    }
+
+    @Override
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         BlockPos tip = getTip(world, pos);
         BlockPos root = getRoot(world, pos);
 
         int height = (tip.getY() - root.getY());
 
         BlockState tipState = world.getBlockState(tip);
-        double tipHeight = SegmentedBlock.getHeight(((SegmentedCropBlock)tipState.getBlock()).getAge(tipState));
+        double tipHeight = tipState.getBlock() instanceof SegmentedCropBlock tipBlock ? SegmentedBlock.getHeight(tipBlock.getAge(tipState)) : 0;
 
         double offset = (root.getY() - pos.getY()) * 16;
 
@@ -102,19 +134,41 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        super.randomTick(state, world, pos, random);
-        propagateGrowth(world, pos, state);
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+        if (direction == Direction.UP && !isNext(neighborState)) {
+            return state.with(getAgeProperty(), Math.min(state.get(getAgeProperty()), getMaxAge() - 1));
+        }
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+    }
+
+    @Override
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        BlockPos tip = getTip(world, pos);
+        BlockPos root = getRoot(world, pos);
+
+        if (root.getY() != pos.getY()) {
+            return;
+        }
+
+        if (world.getBaseLightLevel(tip, 0) >= 9) {
+            int age = getAge(state);
+            if (age < getMaxAge()) {
+                float moisture = CropBlock.getAvailableMoisture(world.getBlockState(root).getBlock(), world, root);
+                int steps = FertilizableUtil.getGrowthSteps(world, pos, state, random);
+                while (steps-- > 0) {
+                    if (random.nextInt((int)(BASE_GROWTH_CHANCE / moisture) + 1) == 0) {
+                        world.setBlockState(pos, withAge(age + 1), Block.NOTIFY_LISTENERS);
+                        propagateGrowth(world, pos, state);
+                    }
+                }
+            }
+        }
     }
 
     private void propagateGrowth(World world, BlockPos pos, BlockState state) {
         int oldAge = getAge(state);
         state = world.getBlockState(pos);
-        int ageChange = getAge(state) - oldAge;
-
-        if (ageChange <= 0) {
-            return;
-        }
+        int ageChange = Math.max(1, getAge(state) - oldAge);
 
         onGrown(world, pos, state, ageChange);
 
@@ -143,13 +197,18 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
     }
 
     @Override
-    public boolean hasRandomTicks(BlockState state) {
-        return super.hasRandomTicks(state) || nextSegmentSupplier != null;
-    }
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
+        if (super.isFertilizable(world, pos, state)) {
+            return true;
+        }
 
-    @Override
-    public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
-        return super.isFertilizable(world, pos, state, isClient) || (nextSegmentSupplier != null && isNext(world.getBlockState(pos.up())));
+        if (nextSegmentSupplier == null) {
+            return false;
+        }
+
+        pos = pos.up();
+        state = world.getBlockState(pos);
+        return state.isAir() || (isNext(state) && state.getBlock() instanceof Fertilizable f && f.isFertilizable(world, pos, state));
     }
 
     @Override
@@ -167,4 +226,8 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
         return state.getBlock() == this || (nextSegmentSupplier != null && nextSegmentSupplier.get().isNext(state));
     }
 
+    @Nullable
+    public SegmentedCropBlock getNext() {
+        return nextSegmentSupplier == null ? null : nextSegmentSupplier.get();
+    }
 }

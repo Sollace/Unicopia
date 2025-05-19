@@ -3,6 +3,7 @@
   "traits": "blood:1 famine:2 poison:4",
   "items": [
     "minecraft:spider_eye",
-    "minecraft:rotten_flesh"
+    "minecraft:rotten_flesh",
+    "#unicopia:food_types/forage_nauseating"
   ]
 }

@@ -15,15 +15,15 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class AwkwardSpell extends AbstractSpell implements TimedSpell {
 
-    private final Timer timer;
+    private final Timer timer = new Timer(20);
 
     protected AwkwardSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer(20);
     }
 
     @Override
@@ -40,19 +40,17 @@ public class AwkwardSpell extends AbstractSpell implements TimedSpell {
             if (timer.getTicksRemaining() <= 0) {
                 return false;
             }
-
-            setDirty();
         }
 
         if (source.isClient()) {
             source.spawnParticles(new Sphere(false, (1 + source.getLevel().getScaled(8)) * 8), 10, pos -> {
 
-                List<Identifier> names = new ArrayList<>(Registry.PARTICLE_TYPE.getIds());
+                List<Identifier> names = new ArrayList<>(Registries.PARTICLE_TYPE.getIds());
 
-                int index = (int)MathHelper.nextDouble(source.getReferenceWorld().random, 0, names.size());
+                int index = (int)MathHelper.nextDouble(source.asWorld().random, 0, names.size());
 
                 Identifier id = names.get(index);
-                ParticleType<?> type = Registry.PARTICLE_TYPE.get(id);
+                ParticleType<?> type = Registries.PARTICLE_TYPE.get(id);
 
                 if (type instanceof ParticleEffect && shouldSpawnParticle(type)) {
                     source.addParticle((ParticleEffect)type, pos, Vec3d.ZERO);
@@ -68,18 +66,20 @@ public class AwkwardSpell extends AbstractSpell implements TimedSpell {
             && type != ParticleTypes.SMOKE
             && type != ParticleTypes.EXPLOSION
             && type != ParticleTypes.EXPLOSION_EMITTER
-            && type != ParticleTypes.AMBIENT_ENTITY_EFFECT;
+            && type != ParticleTypes.ENTITY_EFFECT
+            && type != ParticleTypes.EFFECT
+            && type != ParticleTypes.INSTANT_EFFECT;
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        timer.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        timer.toNBT(compound, lookup);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        timer.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
+        timer.fromNBT(compound, lookup);
     }
 }

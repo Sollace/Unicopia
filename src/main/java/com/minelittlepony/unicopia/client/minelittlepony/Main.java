@@ -1,29 +1,41 @@
 package com.minelittlepony.unicopia.client.minelittlepony;
 
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
-import com.minelittlepony.api.model.IModel;
-import com.minelittlepony.api.model.ModelAttributes;
-import com.minelittlepony.api.model.fabric.PonyModelPrepareCallback;
-import com.minelittlepony.api.model.gear.IGear;
-import com.minelittlepony.client.MineLittlePony;
-import com.minelittlepony.client.render.LevitatingItemRenderer;
+import com.minelittlepony.api.events.PonyModelPrepareCallback;
+import com.minelittlepony.api.model.*;
+import com.minelittlepony.api.model.gear.Gear;
+import com.minelittlepony.api.pony.PonyData;
+import com.minelittlepony.client.render.MobRenderers;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.util.AnimationUtil;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class Main extends MineLPDelegate implements ClientModInitializer {
+    private static final Map<com.minelittlepony.api.pony.meta.Race, Race> PONY_RACE_MAPPING = new HashMap<>();
+    private static final Function<com.minelittlepony.api.pony.meta.Race, Race> LOOKUP_CACHE = Util.memoize(race -> {
+        return Optional.ofNullable(PONY_RACE_MAPPING.get(race))
+                .or(() -> Race.REGISTRY.getOrEmpty(Unicopia.id(race.name().toLowerCase(Locale.ROOT))))
+                .orElse(Race.UNSET);
+    });
+
+    public static void registerRaceMapping(com.minelittlepony.api.pony.meta.Race minelpRace, Race unicopiaRace) {
+        PONY_RACE_MAPPING.put(minelpRace, unicopiaRace);
+    }
 
     private boolean hookErroring;
 
@@ -31,13 +43,26 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
     public void onInitializeClient() {
         INSTANCE = this;
         PonyModelPrepareCallback.EVENT.register(this::onPonyModelPrepared);
-        IGear.register(() -> new BangleGear(TrinketsDelegate.MAINHAND));
-        IGear.register(() -> new BangleGear(TrinketsDelegate.OFFHAND));
-        IGear.register(AmuletGear::new);
-        IGear.register(GlassesGear::new);
+        Gear.register(() -> new BangleGear(TrinketsDelegate.MAIN_GLOVE));
+        Gear.register(() -> new BangleGear(TrinketsDelegate.SECONDARY_GLOVE));
+        Gear.register(HeldEntityGear::new);
+        Gear.register(BodyPartGear::pegasusWings);
+        Gear.register(BodyPartGear::batWings);
+        Gear.register(BodyPartGear::bugWings);
+        Gear.register(BodyPartGear::unicornHorn);
+        Gear.register(AmuletGear::new);
+        Gear.register(GlassesGear::new);
+        Gear.register(SpellEffectGear::new);
+
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.CHANGEDLING, Race.CHANGELING);
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.ZEBRA, Race.EARTH);
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.GRYPHON, Race.PEGASUS);
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.HIPPOGRIFF, Race.HIPPOGRIFF);
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.BATPONY, Race.BAT);
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.SEAPONY, Race.SEAPONY);
     }
 
-    private void onPonyModelPrepared(Entity entity, IModel model, ModelAttributes.Mode mode) {
+    private void onPonyModelPrepared(Entity entity, PonyModel<?> model, ModelAttributes.Mode mode) {
         if (hookErroring) return;
         try {
             if (entity instanceof PlayerEntity) {
@@ -47,15 +72,18 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
                 Pony pony = Pony.of((PlayerEntity)entity);
 
                 if (pony.getMotion().isFlying()) {
-                    model.getAttributes().wingAngle = MathHelper.clamp(pony.getMotion().getWingAngle() / 3 - (float)Math.PI * 0.7F, -3, 0);
+                    model.getAttributes().wingAngle = MathHelper.clamp(pony.getMotion().getWingAngle() / 3F - (float)Math.PI * 0.4F, -2, 0);
 
-                    Vec3d motion = entity.getVelocity();
+                    Vec3d motion = pony.getMotion().getClientVelocity();
                     double zMotion = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
                     model.getAttributes().isGoingFast |= zMotion > 0.4F;
+                    model.getAttributes().isGoingFast |= pony.getMotion().isDiving();
                 }
-                model.getAttributes().isGoingFast |= pony.getMotion().isRainbooming();
 
-                if (pony.getAnimation() == Animation.SPREAD_WINGS) {
+                model.getAttributes().isGoingFast |= pony.getMotion().isRainbooming();
+                model.getAttributes().isGoingFast &= !pony.getEntityInArms().isPresent();
+
+                if (pony.getAnimation().isOf(Animation.SPREAD_WINGS)) {
                     model.getAttributes().wingAngle = -AnimationUtil.seeSitSaw(pony.getAnimationProgress(1), 1.5F) * (float)Math.PI / 1.2F;
                     model.getAttributes().isFlying = true;
                 }
@@ -68,36 +96,32 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
 
 
     @Override
-    public Race getPlayerPonyRace(PlayerEntity player) {
-        switch (MineLittlePony.getInstance().getManager().getPony(player).getRace()) {
-            case ALICORN:
-                return Race.ALICORN;
-            case CHANGELING:
-            case CHANGEDLING:
-                return Race.CHANGELING;
-            case ZEBRA:
-            case EARTH:
-                return Race.EARTH;
-            case GRYPHON:
-            case HIPPOGRIFF:
-            case PEGASUS:
-                return Race.PEGASUS;
-            case BATPONY:
-                return Race.BAT;
-            case SEAPONY:
-            case UNICORN:
-                return Race.UNICORN;
-            default:
-                return Race.HUMAN;
-        }
+    public int getMagicColor(Entity entity) {
+        return com.minelittlepony.api.pony.Pony.getManager().getPony(entity).map(com.minelittlepony.api.pony.Pony::metadata).map(PonyData::glowColor).orElse(0);
     }
 
     @Override
-    public Optional<VertexConsumer> getItemBuffer(VertexConsumerProvider vertexConsumers, Identifier texture) {
-        if (LevitatingItemRenderer.isEnabled()) {
-            return Optional.of(vertexConsumers.getBuffer(LevitatingItemRenderer.getRenderLayer(texture)));
+    public Race getPlayerPonyRace(PlayerEntity player) {
+        return toUnicopiaRace(com.minelittlepony.api.pony.Pony.getManager().getPony(player).race());
+    }
+
+    @Override
+    public Race getRace(Entity entity) {
+        if (entity instanceof AllayEntity) {
+            return MobRenderers.ALLAY.get() ? Race.PEGASUS : Race.HUMAN;
         }
 
-        return Optional.empty();
+        return com.minelittlepony.api.pony.Pony.getManager().getPony(entity).map(com.minelittlepony.api.pony.Pony::race).map(Main::toUnicopiaRace).orElse(Race.HUMAN);
+    }
+
+    @Override
+    public float getPonyHeight(Entity entity) {
+        return super.getPonyHeight(entity) * com.minelittlepony.api.pony.Pony.getManager().getPony(entity)
+                .map(pony -> pony.race().isHuman() ? 1 : pony.metadata().size().scaleFactor() + 0.1F)
+                .orElse(1F);
+    }
+
+    private static Race toUnicopiaRace(com.minelittlepony.api.pony.meta.Race race) {
+        return LOOKUP_CACHE.apply(race);
     }
 }

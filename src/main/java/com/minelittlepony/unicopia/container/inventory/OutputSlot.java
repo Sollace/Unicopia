@@ -33,7 +33,7 @@ public class OutputSlot extends CraftingResultSlot implements SpellbookSlot {
     public void setStack(ItemStack stack) {
         if (!stack.isEmpty() && !ItemStack.areEqual(stack, getStack())) {
             BufferedExecutor.bufferExecution(player, () -> {
-                player.playSound(stack.getItem() == UItems.BOTCHED_GEM ? USounds.GUI_ABILITY_FAIL : USounds.GUI_SPELL_CRAFT_SUCCESS, SoundCategory.MASTER, 1, 0.3F);
+                player.playSoundToPlayer(stack.getItem() == UItems.BOTCHED_GEM ? USounds.GUI_ABILITY_FAIL : USounds.GUI_SPELL_CRAFT_SUCCESS, SoundCategory.MASTER, 1, 0.3F);
             });
         }
         super.setStack(stack);
@@ -46,7 +46,7 @@ public class OutputSlot extends CraftingResultSlot implements SpellbookSlot {
 
     @Override
     public boolean isEnabled() {
-       return handler.canShowSlots.test(SlotType.CRAFTING) && hasStack();
+       return handler.canShowSlots(SlotType.CRAFTING) && hasStack();
     }
 
     @Override
@@ -55,7 +55,7 @@ public class OutputSlot extends CraftingResultSlot implements SpellbookSlot {
         InventoryUtil.stream(input).forEach(s -> {
             pony.getDiscoveries().unlock(s.getItem());
         });
-        pony.getMagicalReserves().getXp().add(MathHelper.clamp(player.world.getRandom().nextFloat() / 10F, 0.001F, 0.3F));
+        pony.getMagicalReserves().getXp().add(MathHelper.clamp(player.getWorld().getRandom().nextFloat() / 10F, 0.001F, 0.3F));
         super.onTakeItem(player, stack);
     }
 }

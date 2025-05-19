@@ -1,32 +1,47 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import java.util.Optional;
+import java.util.UUID;
+
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
-import com.minelittlepony.unicopia.block.data.Ether;
-import com.minelittlepony.unicopia.entity.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.network.Channel;
+import com.minelittlepony.unicopia.network.MsgCasterLookRequest;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.particle.*;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
+import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.shape.*;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.ParticleEffect;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldEvents;
 
-public class PortalSpell extends AbstractSpell implements PlaceableSpell.PlacementDelegate, OrientedSpell {
+public class PortalSpell extends AbstractSpell implements PlacementControlSpell.PlacementDelegate, OrientedSpell {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
             .with(Trait.LIFE, 10)
             .with(Trait.KNOWLEDGE, 1)
@@ -34,14 +49,13 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
             .build();
     private static final Shape PARTICLE_AREA = new Sphere(true, 2, 1, 1, 0);
 
-    private final EntityReference<Entity> teleportationTarget = new EntityReference<>();
+    private final DataTracker.Entry<Optional<UUID>> targetPortalId = dataTracker.startTracking(TrackableDataType.UUID, Optional.empty());
+    private final DataTracker.Entry<Float> targetPortalPitch = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
+    private final DataTracker.Entry<Float> targetPortalYaw = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
+    private final EntityReference<Entity> teleportationTarget = dataTracker.startTracking(new EntityReference<>());
 
-    private boolean publishedPosition;
-
-    private final ParticleHandle particleEffect = new ParticleHandle();
-
-    private float pitch;
-    private float yaw;
+    private final DataTracker.Entry<Float> pitch = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
+    private final DataTracker.Entry<Float> yaw = dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
 
     private Shape particleArea = PARTICLE_AREA;
 
@@ -49,85 +63,145 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
         super(type);
     }
 
+    public EntityReference<Entity> getDestinationReference() {
+        return teleportationTarget;
+    }
+
+    public float getPitch() {
+        return pitch.get();
+    }
+
+    public float getYaw() {
+        return yaw.get();
+    }
+
+    public float getTargetPitch() {
+        return targetPortalPitch.get();
+    }
+
+    public float getTargetYaw() {
+        return targetPortalYaw.get();
+    }
+
+    public float getYawDifference() {
+        return MathHelper.wrapDegrees(180 + getTargetYaw() - getYaw());
+    }
+
+    @SuppressWarnings("unchecked")
+    private Ether.Entry<PortalSpell> getDestination(Caster<?> source) {
+        return targetPortalId.get().flatMap(id -> getDestinationReference()
+                .getTarget()
+                .map(target -> Ether.get(source.asWorld()).get((SpellType<PortalSpell>)getType(), target.uuid(), id))
+                .filter(destination -> destination.isClaimedBy(getUuid()))
+        ).orElse(null);
+    }
+
     @Override
     public boolean apply(Caster<?> caster) {
-        setOrientation(caster.getEntity().getPitch(), caster.getEntity().getYaw());
         return toPlaceable().apply(caster);
+    }
+
+    protected void setDestination(@Nullable Ether.Entry<?> destination) {
+        if (destination == null) {
+            teleportationTarget.set(null);
+            targetPortalId.set(Optional.empty());
+        } else {
+            teleportationTarget.copyFrom(destination.entity);
+            targetPortalId.set(Optional.of(destination.getSpellId()));
+            targetPortalPitch.set(destination.getPitch());
+            targetPortalYaw.set(destination.getYaw());
+        }
     }
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
         if (situation == Situation.GROUND) {
-
             if (source.isClient()) {
-                Vec3d origin = source.getOriginVector();
-
-                ParticleEffect effect = teleportationTarget.getPosition()
-                        .map(target -> {
-                            getType();
-                            return new FollowingParticleEffect(UParticles.HEALTH_DRAIN, target, 0.2F).withChild(ParticleTypes.ELECTRIC_SPARK);
-                        })
-                        .orElse(ParticleTypes.ELECTRIC_SPARK);
-
-                source.spawnParticles(origin, particleArea, 5, pos -> {
-                    source.addParticle(effect, pos, Vec3d.ZERO);
-                });
-
-                teleportationTarget.getPosition().ifPresentOrElse(position -> {
-                    particleEffect.update(getUuid(), source, spawner -> {
-                        spawner.addParticle(new SphereParticleEffect(UParticles.DISK, getType().getColor(), 0.8F, 1.8F, new Vec3d(pitch, yaw, 0)), source.getOriginVector(), Vec3d.ZERO);
-                    });
-                }, () -> {
-                    particleEffect.destroy();
+                source.spawnParticles(particleArea, 5, pos -> {
+                    source.addParticle(ParticleTypes.ELECTRIC_SPARK, pos, Vec3d.ZERO);
                 });
             } else {
-                teleportationTarget.getId().ifPresent(id -> {
-                    if (Ether.get(source.getReferenceWorld()).getEntry(getType(), id).isEmpty()) {
-                        Unicopia.LOGGER.debug("Lost sibling, breaking connection to " + id);
-                        teleportationTarget.set(null);
-                        setDirty();
-                        source.getReferenceWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, source.getOrigin(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
+                var ownEntry = Ether.get(source.asWorld()).get(this, source);
+                synchronized (ownEntry) {
+                    var targetEntry = getDestination(source);
+
+                    if (targetEntry == null) {
+                        if (teleportationTarget.isSet()) {
+                            setDestination(null);
+                            source.asWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, source.getOrigin(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
+                        } else {
+                            Ether.get(source.asWorld()).anyMatch(getType(), entry -> {
+                                if (entry.isAlive() && !entry.hasClaimant() && !entry.entityMatches(source.asEntity().getUuid())) {
+                                    entry.claim(getUuid());
+                                    ownEntry.claim(entry.getSpellId());
+                                    synchronized (entry) {
+                                        if (entry.getSpell() instanceof PortalSpell portal) {
+                                            portal.setDestination(ownEntry);
+                                        }
+                                    }
+                                    setDestination(entry);
+                                }
+                                return false;
+                            });
+                        }
+                    } else {
+                        targetPortalPitch.set(targetEntry.getPitch());
+                        targetPortalYaw.set(targetEntry.getYaw());
+
+                        tickActive(source, targetEntry);
                     }
-                });
+                }
 
-                getTarget(source).ifPresentOrElse(
-                        entry -> tickWithTargetLink(source, entry),
-                        () -> findLink(source)
-                );
-            }
-
-            if (!publishedPosition) {
-                publishedPosition = true;
-                Ether.Entry entry = Ether.get(source.getReferenceWorld()).put(getType(), source);
-                entry.pitch = pitch;
-                entry.yaw = yaw;
+                ownEntry.setPitch(getPitch());
+                ownEntry.setYaw(getYaw());
             }
         }
 
         return !isDead();
     }
 
-    private void tickWithTargetLink(Caster<?> source, Ether.Entry destination) {
+    private void tickActive(Caster<?> source, Ether.Entry<?> destination) {
+        destination.entity.getTarget().ifPresent(target -> {
+            Quaternionf rotationChange = getOrientationChange();
+            var matrix = getPositionMatrix(source, source.asEntity().getPos(), rotationChange, new Matrix4f());
 
-        destination.entity.getPosition().ifPresent(targetPos -> {
+            float yawDifference = getYawDifference();
+
             source.findAllEntitiesInRange(1).forEach(entity -> {
-                if (!entity.hasPortalCooldown() && entity.timeUntilRegen <= 0) {
-                    Vec3d offset = entity.getPos().subtract(source.getOriginVector());
-                    float yawDifference = pitch < 15 ? (180 - yaw + destination.yaw) : 0;
-                    Vec3d dest = targetPos.add(offset.rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE)).add(0, 0.05, 0);
+                if (!entity.hasPortalCooldown()) {
+
+                    float approachYaw = Math.abs(MathHelper.wrapDegrees(entity.getYaw() - this.yaw.get()));
+                    if (approachYaw > 80) {
+                        return;
+                    }
+
+                    var dest4f = matrix.transform(new Vector4f(entity.getPos().toVector3f(), 1));
+                    Vec3d dest = new Vec3d(dest4f.x, dest4f.y - 0.5, dest4f.z).add(new Vec3d(0, 0, -0.7F).rotateY(-getTargetYaw() * MathHelper.RADIANS_PER_DEGREE));
+
+                    for (int i = 0; i < 2; i++) {
+                        BlockPos destBlock = BlockPos.ofFloored(dest);
+                        BlockState state = entity.getWorld().getBlockState(destBlock);
+                        if (entity.getWorld().isTopSolid(destBlock, entity)) {
+                            double maxY = state.getCollisionShape(entity.getWorld(), destBlock).getMax(Axis.Y);
+                            dest = new Vec3d(dest.x, destBlock.getY() + maxY, dest.z);
+                        }
+                    }
 
                     entity.resetPortalCooldown();
-                    entity.timeUntilRegen = 100;
 
-                    entity.setYaw(entity.getYaw() + yawDifference);
+                    float yaw = MathHelper.wrapDegrees(entity.getYaw() + yawDifference);
+
                     entity.setVelocity(entity.getVelocity().rotateY(yawDifference * MathHelper.RADIANS_PER_DEGREE));
 
-                    entity.world.playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
-                    entity.teleport(dest.x, dest.y, dest.z);
-                    entity.world.playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
-                    setDirty();
+                    entity.getWorld().playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
+                    entity.teleport((ServerWorld)entity.getWorld(), dest.x, dest.y, dest.z, PositionFlag.VALUES, yaw, entity.getPitch());
+                    entity.getWorld().playSoundFromEntity(null, entity, USounds.ENTITY_PLAYER_UNICORN_TELEPORT, entity.getSoundCategory(), 1, 1);
 
-                    source.subtractEnergyCost(Math.sqrt(entity.getPos().subtract(dest).length()));
+                    Living.updateVelocity(entity);
+
+                    if (!source.subtractEnergyCost(Math.sqrt(entity.getPos().subtract(dest).length()))) {
+                        setDead();
+                    }
                 }
 
                 ParticleUtils.spawnParticles(new MagicParticleEffect(getType().getColor()), entity, 7);
@@ -135,86 +209,79 @@ public class PortalSpell extends AbstractSpell implements PlaceableSpell.Placeme
         });
     }
 
-    private void findLink(Caster<?> source) {
-        if (source.isClient()) {
-            return;
-        }
+    public Matrix4f getPositionMatrix(Caster<?> source, Vec3d pos, Quaternionf orientationChange, Matrix4f matrix) {
+        getDestinationReference().getTarget().ifPresent(destEntity -> {
+            Vector3f destPos = destEntity.pos().toVector3f();
+            Vector3f sourcePos = pos.toVector3f();
 
-        Ether ether = Ether.get(source.getReferenceWorld());
-        ether.getEntries(getType())
-            .stream()
-            .filter(entry -> entry.isAvailable() && !entry.entity.referenceEquals(source.getEntity()) && entry.entity.getId().isPresent())
-            .findAny()
-            .ifPresent(entry -> {
-                entry.setTaken(true);
-                teleportationTarget.copyFrom(entry.entity);
-                setDirty();
-            });
-    }
-
-    private Optional<Ether.Entry> getTarget(Caster<?> source) {
-        return teleportationTarget.getId().flatMap(id -> Ether.get(source.getReferenceWorld()).getEntry(getType(), id));
-    }
-
-    @Override
-    public void setOrientation(float pitch, float yaw) {
-        this.pitch = pitch;
-        this.yaw = yaw;
-        particleArea = PARTICLE_AREA.rotate(
-            pitch * MathHelper.RADIANS_PER_DEGREE,
-            (180 - yaw) * MathHelper.RADIANS_PER_DEGREE
-        );
-        setDirty();
-    }
-
-    @Override
-    public void onPlaced(Caster<?> source, PlaceableSpell parent, CastSpellEntity entity) {
-        LivingEntity caster = source.getMaster();
-        Vec3d targetPos = caster.getRotationVector().multiply(3).add(caster.getEyePos());
-        parent.setOrientation(pitch, yaw);
-        entity.setPos(targetPos.x, caster.getY() + 1.5, targetPos.z);
-    }
-
-    @Override
-    public void updatePlacement(Caster<?> source, PlaceableSpell parent) {
-        parent.getParticleEffectAttachment(source).ifPresent(attachment -> {
-            attachment.setAttribute(Attachment.ATTR_RADIUS, 2);
-            attachment.setAttribute(Attachment.ATTR_OPACITY, 0.92F);
+            matrix.rotateAround(orientationChange.conjugate(), destPos.x, destPos.y, destPos.z);
+            matrix.translate(destPos.sub(sourcePos));
         });
+        return matrix;
     }
 
-    @Override
-    public void onDestroyed(Caster<?> caster) {
-        Ether ether = Ether.get(caster.getReferenceWorld());
-        ether.remove(getType(), caster.getEntity().getUuid());
-        getTarget(caster).ifPresent(e -> e.setTaken(false));
-    }
-
-    @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        compound.putBoolean("publishedPosition", publishedPosition);
-        compound.put("teleportationTarget", teleportationTarget.toNBT());
-        compound.putFloat("pitch", pitch);
-        compound.putFloat("yaw", yaw);
-    }
-
-    @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        publishedPosition = compound.getBoolean("publishedPosition");
-        teleportationTarget.fromNBT(compound.getCompound("teleportationTarget"));
-        pitch = compound.getFloat("pitch");
-        yaw = compound.getFloat("yaw");
-        particleArea = PARTICLE_AREA.rotate(
-            pitch * MathHelper.RADIANS_PER_DEGREE,
-            (180 - yaw) * MathHelper.RADIANS_PER_DEGREE
+    public Quaternionf getOrientationChange() {
+        return new Quaternionf().rotateTo(
+                Vec3d.fromPolar(getPitch(), getYaw()).toVector3f(),
+                Vec3d.fromPolar(getTargetPitch(), getTargetYaw()).toVector3f()
         );
     }
 
     @Override
-    public void setDead() {
-        super.setDead();
-        particleEffect.destroy();
+    public void setOrientation(Caster<?> caster, float pitch, float yaw) {
+        this.pitch.set(90 - pitch);
+        this.yaw.set(-yaw);
+        particleArea = PARTICLE_AREA.rotate(
+            this.pitch.get() * MathHelper.RADIANS_PER_DEGREE,
+            (180 - this.yaw.get()) * MathHelper.RADIANS_PER_DEGREE
+        );
+    }
+
+    @Override
+    public void onPlaced(Caster<?> source, PlacementControlSpell parent) {
+        Entity caster = source.asEntity();
+        Vec3d targetPos = caster.getRotationVector().multiply(3).add(caster.getEyePos());
+        parent.setOrientation(source, -90 - source.asEntity().getPitch(), -source.asEntity().getYaw());
+        parent.setPosition(new Vec3d(targetPos.x, caster.getPos().y, targetPos.z));
+        if (source instanceof Pony pony) {
+            Channel.SERVER_REQUEST_PLAYER_LOOK.sendToPlayer(new MsgCasterLookRequest(parent.getUuid()), (ServerPlayerEntity)pony.asEntity());
+        }
+    }
+
+    @Override
+    protected void onDestroyed(Caster<?> caster) {
+        super.onDestroyed(caster);
+        if (!caster.isClient()) {
+            var destination = getDestination(caster);
+            if (destination != null) {
+                destination.release(getUuid());
+            }
+        }
+    }
+
+    @Override
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        targetPortalId.get().ifPresent(i -> compound.putUuid("targetPortalId", i));
+        compound.put("teleportationTarget", teleportationTarget.toNBT(lookup));
+        compound.putFloat("pitch", getPitch());
+        compound.putFloat("yaw", getYaw());
+        compound.putFloat("targetPortalPitch", getTargetPitch());
+        compound.putFloat("targetPortalYaw", getTargetYaw());
+    }
+
+    @Override
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
+        targetPortalId.set(compound.containsUuid("targetPortalId") ? Optional.of(compound.getUuid("targetPortalId")) : Optional.empty());
+        teleportationTarget.fromNBT(compound.getCompound("teleportationTarget"), lookup);
+        pitch.set(compound.getFloat("pitch"));
+        yaw.set(compound.getFloat("yaw"));
+        targetPortalPitch.set(compound.getFloat("targetPortalPitch"));
+        targetPortalYaw.set(compound.getFloat("targetPortalYaw"));
+        particleArea = PARTICLE_AREA.rotate(
+            pitch.get() * MathHelper.RADIANS_PER_DEGREE,
+            (180 - yaw.get()) * MathHelper.RADIANS_PER_DEGREE
+        );
     }
 }

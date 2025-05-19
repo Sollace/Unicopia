@@ -1,23 +1,28 @@
 package com.minelittlepony.unicopia.ability.magic.spell.trait;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.command.CommandArgumentEnum;
+import com.mojang.serialization.Codec;
 
-import net.minecraft.item.ItemStack;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.command.argument.EnumArgumentType;
+import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringIdentifiable;
 
-public enum Trait {
+public enum Trait implements CommandArgumentEnum<Trait> {
     /**
      * Imparts physical strength or enhances endurance.
      * Spells with more of the strength trait hit harder and last longer.
@@ -58,18 +63,28 @@ public enum Trait {
     POISON(TraitGroup.DARKNESS),
     BLOOD(TraitGroup.DARKNESS);
 
-    private static final Map<String, Trait> REGISTRY = Arrays.stream(values()).collect(Collectors.toMap(Trait::name, Function.identity()));
+    private static final Trait[] VALUES = values();
     private static final Map<Identifier, Trait> IDS = Arrays.stream(values()).collect(Collectors.toMap(Trait::getId, Function.identity()));
+    @SuppressWarnings("deprecation")
+    private static final EnumCodec<Trait> NAME_CODEC = StringIdentifiable.createCodec(Trait::values, n -> n.toLowerCase(Locale.ROOT));
+    public static final Codec<Trait> CODEC = Identifier.CODEC.xmap(id -> IDS.get(id), Trait::getId);
+    public static final Codec<Set<Trait>> SET_CODEC = CODEC.listOf().xmap(
+            l -> l.stream().distinct().collect(Collectors.toSet()),
+            s -> s.stream().toList()
+    );
+    public static final PacketCodec<ByteBuf, Trait> PACKET_CODEC = PacketCodecs.indexed(i -> VALUES[i], Trait::ordinal);
+
     private final Identifier id;
     private final Identifier sprite;
     private final TraitGroup group;
 
     private final Text tooltip;
     private final Text obfuscatedTooltip;
+    private final List<Text> tooltipLines;
 
     Trait(TraitGroup group) {
-        this.id = Unicopia.id(name().toLowerCase());
-        this.sprite = Unicopia.id("textures/gui/trait/" + name().toLowerCase() + ".png");
+        this.id = Unicopia.id(name().toLowerCase(Locale.ROOT));
+        this.sprite = Unicopia.id("textures/gui/trait/" + name().toLowerCase(Locale.ROOT) + ".png");
         this.group = group;
 
         Formatting corruptionColor = getGroup().getCorruption() < -0.01F
@@ -78,14 +93,17 @@ public enum Trait {
                     ? Formatting.RED
                     : Formatting.WHITE;
 
-        MutableText tooltipText = Text.translatable("gui.unicopia.trait.label",
-                            Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".name")
-                        ).formatted(Formatting.YELLOW)
-                        .append(Text.translatable("gui.unicopia.trait.group", getGroup().name().toLowerCase()).formatted(Formatting.ITALIC, Formatting.GRAY))
-                        .append(Text.literal("\n\n").formatted(Formatting.WHITE)
-                        .append(Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".description").formatted(Formatting.GRAY))
-                        .append("\n")
-                        .append(Text.translatable("gui.unicopia.trait.corruption", ItemStack.MODIFIER_FORMAT.format(getGroup().getCorruption())).formatted(Formatting.ITALIC, corruptionColor)));
+        tooltipLines = List.of(
+            Text.translatable("gui.unicopia.trait.group", getGroup().name().toLowerCase(Locale.ROOT)).formatted(Formatting.ITALIC, Formatting.GRAY),
+            Text.empty(),
+            Text.empty(),
+            Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".description").formatted(Formatting.GRAY),
+            Text.empty(),
+            Text.translatable("gui.unicopia.trait.corruption", AttributeModifiersComponent.DECIMAL_FORMAT.format(getGroup().getCorruption())).formatted(Formatting.ITALIC, corruptionColor)
+        );
+
+        MutableText tooltipText = getName().copy();
+        tooltipLines.forEach(line -> tooltipText.append(line).append("\n"));
         this.tooltip = tooltipText;
         this.obfuscatedTooltip = tooltipText.copy().formatted(Formatting.OBFUSCATED);
 
@@ -93,6 +111,11 @@ public enum Trait {
 
     public Identifier getId() {
         return id;
+    }
+
+    @Override
+    public String asString() {
+        return getId().getPath();
     }
 
     public TraitGroup getGroup() {
@@ -103,12 +126,28 @@ public enum Trait {
         return sprite;
     }
 
+    public Text getName() {
+        return Text.translatable("gui.unicopia.trait.label", getShortName()).formatted(Formatting.YELLOW);
+    }
+
+    public Text getShortName() {
+        return Text.translatable("trait." + getId().getNamespace() + "." + getId().getPath() + ".name");
+    }
+
+    public List<Text> getTooltipLines() {
+        return tooltipLines;
+    }
+
     public Text getTooltip() {
         return tooltip;
     }
 
     public Text getObfuscatedTooltip() {
         return obfuscatedTooltip;
+    }
+
+    public List<Item> getItems() {
+        return SpellTraits.ITEMS.getOrDefault(this, List.of());
     }
 
     public static Collection<Trait> all() {
@@ -122,15 +161,32 @@ public enum Trait {
                 .flatMap(Optional::stream);
     }
 
+    @Deprecated
     public static Optional<Trait> fromId(Identifier id) {
-        return Optional.ofNullable(IDS.getOrDefault(id, null));
+        return Optional.ofNullable(IDS.get(id));
     }
 
+    @Deprecated
     public static Optional<Trait> fromId(String name) {
         return Optional.ofNullable(Identifier.tryParse(name)).flatMap(Trait::fromId);
     }
 
+    @Deprecated
     public static Optional<Trait> fromName(String name) {
-        return Optional.ofNullable(REGISTRY.getOrDefault(name.toUpperCase(), null));
+        Trait trait = NAME_CODEC.byId(name);
+        if (trait == null) {
+            Unicopia.LOGGER.error("Unknown trait: " + name);
+        }
+        return Optional.ofNullable(trait);
+    }
+
+    public static EnumArgumentType<Trait> argument() {
+        return new ArgumentType();
+    }
+
+    public static class ArgumentType extends EnumArgumentType<Trait> {
+        protected ArgumentType() {
+            super(NAME_CODEC, Trait::values);
+        }
     }
 }

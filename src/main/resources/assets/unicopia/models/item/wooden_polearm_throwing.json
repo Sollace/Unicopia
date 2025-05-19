@@ -1,6 +1,0 @@
-{
-    "parent": "item/trident_throwing",
-    "textures": {
-        "particle": "unicopia:item/wooden_polearm"
-    }
-}

@@ -3,18 +3,17 @@ package com.minelittlepony.unicopia.client.gui;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 import com.minelittlepony.unicopia.*;
-import com.minelittlepony.unicopia.ability.AbilityDispatcher;
-import com.minelittlepony.unicopia.ability.AbilitySlot;
-import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
-import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
-import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
+import com.minelittlepony.unicopia.ability.*;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.client.KeyBindingsHandler;
+import com.minelittlepony.unicopia.client.render.RenderLayers;
+import com.minelittlepony.unicopia.client.render.spell.DarkVortexSpellRenderer;
 import com.minelittlepony.unicopia.client.sound.*;
-import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
+import com.minelittlepony.unicopia.entity.ItemTracker;
+import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -24,22 +23,21 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EntityDimensions;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 
-public class UHud extends DrawableHelper {
+public class UHud {
 
     public static final UHud INSTANCE = new UHud();
 
@@ -55,8 +53,8 @@ public class UHud extends DrawableHelper {
 
     private final List<Slot> slots = List.of(
         new ManaRingSlot(this, AbilitySlot.PRIMARY, AbilitySlot.PASSIVE, 0, 0),
-        new Slot(this, AbilitySlot.SECONDARY, AbilitySlot.SECONDARY, 26, -5),
-        new Slot(this, AbilitySlot.TERTIARY, AbilitySlot.TERTIARY, 36, 19)
+        new Slot(this, AbilitySlot.SECONDARY, AbilitySlot.SECONDARY, 30, -10),
+        new Slot(this, AbilitySlot.TERTIARY, AbilitySlot.TERTIARY, 43, 10)
     );
 
     @Nullable
@@ -70,7 +68,12 @@ public class UHud extends DrawableHelper {
     @Nullable
     private LoopingSoundInstance<PlayerEntity> partySound;
 
-    public void render(InGameHud hud, MatrixStack matrices, float tickDelta) {
+    private boolean prevPointed;
+    private boolean prevReplacing;
+    private SpellType<?> focusedType = SpellType.empty();
+
+    public void render(InGameHud hud, DrawContext context, RenderTickCounter tickCounter) {
+        final int hotbarZ = -90;
 
         if (client.player == null) {
             return;
@@ -78,28 +81,53 @@ public class UHud extends DrawableHelper {
 
         int scaledWidth = client.getWindow().getScaledWidth();
         int scaledHeight = client.getWindow().getScaledHeight();
+        MatrixStack matrices = context.getMatrices();
 
         Pony pony = Pony.of(client.player);
 
-        renderViewEffects(pony, matrices, scaledWidth, scaledHeight, tickDelta);
+        float tickDelta = tickCounter.getTickDelta(false);
+
+        matrices.push();
+        matrices.translate(0, 0, hotbarZ - 9800);
+        renderViewEffects(pony, context, scaledWidth, scaledHeight, tickDelta);
+        matrices.pop();
 
         if (client.currentScreen instanceof HidesHud || client.player.isSpectator() || client.options.hudHidden) {
             return;
         }
 
         font = client.textRenderer;
-        xDirection = client.player.getMainArm() == Arm.LEFT ? -1 : 1;
+
+        HudPosition hudPos = Unicopia.getConfig().hudPosition.get();
+        HudPosition.Alignment armAlignment = client.player.getMainArm() == Arm.LEFT ? HudPosition.Alignment.START : HudPosition.Alignment.END;
+        if (hudPos == HudPosition.OFF_HAND) {
+            armAlignment = armAlignment.opposite();
+        }
+
+        xDirection = hudPos.getHorizontal().or(armAlignment.opposite()).opposite().getSignum();
 
         matrices.push();
+        matrices.translate(scaledWidth / 2, scaledHeight / 2, 0);
 
-        int hudX = ((scaledWidth - 50) / 2) + (104 * xDirection);
-        int hudY = scaledHeight - 50;
-        int hudZ = 0;
+        float flapCooldown = pony.getPhysics().getFlapCooldown(tickDelta);
+        if (flapCooldown > 0) {
+            float angle = MathHelper.TAU * flapCooldown;
+            DrawableUtil.drawArc(context.getMatrices(), 3, 6, -angle / 2F, angle, 0x888888AF);
+        }
 
+        matrices.pop();
+        matrices.push();
+
+        int hudX = hudPos.getHorizontal().pick(2, scaledWidth - 50, ((scaledWidth - 50) / 2) + (109 * armAlignment.getSignum()));
+        int hudY = hudPos.getVertical().pick(12, scaledHeight - 50, scaledHeight - 50);
+        if (hudPos == HudPosition.BOTTOM_CENTER) {
+            hudY -= 22;
+        }
+        int hudZ = hotbarZ;
 
         float exhaustion = pony.getMagicalReserves().getExhaustion().getPercentFill();
 
-        if (exhaustion > 0.5F) {
+        if (exhaustion > 0.5F || EquinePredicates.RAGING.test(client.player)) {
             Random rng = client.world.random;
             hudX += rng.nextFloat() - 0.5F;
             hudY += rng.nextFloat() - 0.5F;
@@ -111,150 +139,151 @@ public class UHud extends DrawableHelper {
         AbilityDispatcher abilities = pony.getAbilities();
 
         if (message != null && messageTime > 0) {
-            renderMessage(matrices, tickDelta);
+            renderMessage(context, tickDelta);
         }
 
         RenderSystem.setShaderColor(1, 1, 1,1);
         RenderSystem.enableBlend();
-        RenderSystem.setShaderTexture(0, HUD_TEXTURE);
 
         boolean swap = client.options.sneakKey.isPressed();
 
-        slots.forEach(slot -> slot.renderBackground(matrices, abilities, swap, tickDelta));
-        slots.forEach(slot -> slot.renderLabel(matrices, abilities, tickDelta));
+        slots.forEach(slot -> slot.renderBackground(context, abilities, swap, tickDelta));
+
+        int currentPage = Unicopia.getConfig().hudPage.get();
+        int maxPages = pony.getAbilities().getMaxPage();
+
+        Ability<?> ability = pony.getAbilities().getStat(AbilitySlot.PRIMARY)
+                .getAbility(currentPage)
+                .orElse(null);
+        boolean canCast = ability == Abilities.CAST || ability == Abilities.KIRIN_CAST || ability == Abilities.SHOOT;
+
+        if (canCast) {
+            matrices.push();
+            matrices.translate(PRIMARY_SLOT_SIZE / 2F, PRIMARY_SLOT_SIZE / 2F, 0);
+            boolean first = !pony.asEntity().isSneaking();
+            TypedActionResult<CustomisedSpellType<?>> inHand = pony.getCharms().getSpellInHand(false);
+            boolean replacing = inHand.getResult().isAccepted() && pony.getAbilities().getStat(AbilitySlot.PRIMARY).getActiveAbility().isEmpty();
+            if (first != prevPointed || replacing != prevReplacing || inHand.getValue().type() != focusedType) {
+                focusedType = inHand.getValue().type();
+                prevPointed = first;
+                prevReplacing = replacing;
+                setMessage(ability.getName(pony));
+            }
+            int baseAngle = xDirection < 0 ? 100 : 0;
+            int secondAngleDif = xDirection * 30;
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(baseAngle + 37 + (first ? 0 : secondAngleDif)));
+            matrices.translate(-23, 0, 0);
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-26));
+            matrices.scale(0.8F, 0.8F, 1);
+            int u = replacing ? 16 : 3;
+            context.drawTexture(HUD_TEXTURE, 0, 0, u, 120, 13, 7, 128, 128);
+            matrices.pop();
+        }
+
+        slots.forEach(slot -> slot.renderLabel(context, abilities, tickDelta));
+
+        if (xDirection < 0) {
+            matrices.translate(-48, 0, 0);
+        }
+
+        //if (maxPages > 0) {
+            DrawableUtil.drawScaledText(context, Text.literal((currentPage + 1) + "/" + (maxPages + 1)), 44, 38, 0.5F, Colors.WHITE);
+            //down
+            context.drawTexture(HUD_TEXTURE, 42, 43, 52, currentPage == 0 ? 6 : 0, 6, 6, 128, 128);
+            //up
+            context.drawTexture(HUD_TEXTURE, 48, 43, 57, currentPage < maxPages ? 0 : 6, 8, 6, 128, 128);
+        //}
 
         matrices.pop();
 
-        if (pony.getActualSpecies().canCast()) {
-            renderSpell(pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 15 - xDirection * 13, hudY + 3);
-            renderSpell(pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 15 - xDirection * 2, hudY - 3);
+        if (canCast) {
+            matrices.push();
+            if (xDirection < 0) {
+                hudX += PRIMARY_SLOT_SIZE / 2F - 8;
+            }
+            SpellIconRenderer.renderSpell(context, pony.getCharms().getEquippedSpell(Hand.MAIN_HAND), hudX + 10 - xDirection * 13, hudY + 2, EQUIPPED_GEMSTONE_SCALE);
+            SpellIconRenderer.renderSpell(context, pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 8 - xDirection * 2, hudY - 6, EQUIPPED_GEMSTONE_SCALE);
+            matrices.pop();
         }
 
         RenderSystem.disableBlend();
-
-        if (pony.getSpecies() == Race.CHANGELING && !client.player.isSneaking()) {
-            pony.getSpellSlot().get(SpellType.CHANGELING_DISGUISE, false).map(AbstractDisguiseSpell::getDisguise)
-                .map(EntityAppearance::getAppearance)
-                .ifPresent(appearance -> {
-
-                    float baseHeight = 20;
-
-                    EntityDimensions dims = appearance.getDimensions(appearance.getPose());
-
-                    float entityHeight = Math.max(dims.height, dims.width);
-                    int scale = (int)(baseHeight / entityHeight);
-
-                    int x = scaledWidth / 2 + xDirection * 67;
-                    int y = (int)(scaledHeight - 18 - dims.height/2F);
-
-                    MatrixStack view = RenderSystem.getModelViewStack();
-
-                    view.push();
-                    view.translate(x, y, 0);
-                    view.multiply(new Quaternion(-9, xDirection * 45, 0, true));
-                    InventoryScreen.drawEntity(0, 0, scale, 0, -20, client.player);
-                    view.pop();
-                    RenderSystem.applyModelViewMatrix();
-                });
-        }
     }
 
-    public void renderSpell(CustomisedSpellType<?> spell, double x, double y) {
-        if (spell.isEmpty()) {
-            return;
-        }
-
-        Pony pony = Pony.of(client.player);
-
-        if (spell.isOn(pony)) {
-            MatrixStack modelStack = new MatrixStack();
-
-            modelStack.push();
-            modelStack.translate(x + 5.5, y + 5.5, 0);
-
-            int color = spell.type().getColor() | 0x000000FF;
-            double radius = 2 + Math.sin(client.player.age / 9D) / 4;
-
-            DrawableUtil.drawArc(modelStack, radius, radius + 3, 0, DrawableUtil.TAU, color & 0xFFFFFF2F, false);
-            DrawableUtil.drawArc(modelStack, radius + 3, radius + 4, 0, DrawableUtil.TAU, color & 0xFFFFFFAF, false);
-            pony.getSpellSlot().get(spell.and(SpellPredicate.IS_TIMED), false).map(TimedSpell::getTimer).ifPresent(timer -> {
-                DrawableUtil.drawArc(modelStack, radius, radius + 3, 0, DrawableUtil.TAU * timer.getPercentTimeRemaining(client.getTickDelta()), 0xFFFFFFFF, false);
-            });
-
-            long count = pony.getSpellSlot().stream(spell, false).count();
-            if (count > 1) {
-                modelStack.push();
-                modelStack.translate(1, 1, 900);
-                modelStack.scale(0.8F, 0.8F, 0.8F);
-                font.drawWithShadow(modelStack, count > 64 ? "64+" : String.valueOf(count), 0, 0, 0xFFFFFFFF);
-                modelStack.pop();
-            }
-
-            modelStack.pop();
-        }
-
-        DrawableUtil.renderItemIcon(spell.getDefaultStack(), x, y, EQUIPPED_GEMSTONE_SCALE);
-    }
-
-    private void renderMessage(MatrixStack matrices, float tickDelta) {
+    private void renderMessage(DrawContext context, float tickDelta) {
         float time = messageTime - tickDelta;
         int progress = Math.min(255, (int)(time * 255F / 20F));
 
         if (progress > 8) {
-            int color = 0xFFFFFF;
-            int alpha = progress << 24 & -16777216;
+            int color = ColorHelper.Argb.withAlpha(progress, Colors.WHITE);
 
-            color |= alpha;
+            HudPosition hudPos = Unicopia.getConfig().hudPosition.get();
 
-            drawCenteredText(matrices, client.textRenderer, message, 25, -15, color);
+            int messageWidth = font.getWidth(message);
+            int messageX = hudPos.getHorizontal().pick(0, 25 - messageWidth/2, -messageWidth + 45, 25 - messageWidth/2);
+            int messageY = hudPos.getVertical().pick(55, -17, -17, -17);
+            context.drawText(font, message, messageX, messageY, color, true);
         }
     }
 
-    protected void renderViewEffects(Pony pony, MatrixStack matrices, int scaledWidth, int scaledHeight, float tickDelta) {
+    protected void renderViewEffects(Pony pony, DrawContext context, int scaledWidth, int scaledHeight, float tickDelta) {
+
+        float vortexDistortion = DarkVortexSpellRenderer.getCameraDistortion();
+
+        if (vortexDistortion > 25) {
+            context.fill(RenderLayers.getEndPortal(), 0, 0, scaledWidth, scaledHeight, 0);
+            context.getMatrices().push();
+            context.getMatrices().translate(scaledWidth / 2, scaledHeight / 2, 0);
+            DrawableUtil.drawArc(context.getMatrices(), 0, 20, 0, MathHelper.TAU, 0x000000FF);
+            context.getMatrices().pop();
+            return;
+        } else if (vortexDistortion > 0) {
+            context.fill(0, 0, scaledWidth, scaledHeight, (int)((Math.min(20, vortexDistortion) / 20F) * 255) << 24);
+        }
 
         boolean hasEffect = client.player.hasStatusEffect(UEffects.SUN_BLINDNESS);
 
-        ItemStack glasses = GlassesItem.getForEntity(client.player);
-        boolean hasSunglasses = glasses.getItem() == UItems.SUNGLASSES;
+        ItemStack glasses = GlassesItem.getForEntity(client.player).stack();
+        boolean hasSunglasses = glasses.isOf(UItems.SUNGLASSES);
 
-        if (hasEffect || (!hasSunglasses && pony.getSpecies() == Race.BAT && SunBlindnessStatusEffect.hasSunExposure(client.player))) {
+        if (hasEffect || (!hasSunglasses && pony.getObservedSpecies() == Race.BAT && SunBlindnessStatusEffect.hasSunExposure(client.player))) {
             float i = hasEffect ? (client.player.getStatusEffect(UEffects.SUN_BLINDNESS).getDuration() - tickDelta) / SunBlindnessStatusEffect.MAX_DURATION : 0;
 
             float pulse = (1 + (float)Math.sin(client.player.age / 108F)) * 0.25F;
 
             float strength = MathHelper.clamp(pulse + i, 0.3F, 1F);
 
-            int alpha1 = (int)(strength * 205) << 24 & -16777216;
+            int alpha1 = (int)(strength * 205);
             int alpha2 = (int)(alpha1 * 0.6F);
-
-            fillGradient(matrices, 0, 0, scaledWidth, scaledHeight / 2, 0xFFFFFF | alpha1, 0xFFFFFF | alpha2);
-            fillGradient(matrices, 0, scaledHeight / 2, scaledWidth, scaledHeight, 0xFFFFFF | alpha2, 0xFFFFFF | alpha1);
+            int color = 0xFFFFFF;
 
             if (hasEffect) {
-                matrices.push();
-                matrices.translate(scaledWidth, 0, 0);
-                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90));
-
-                fillGradient(matrices, 0, 0, scaledHeight, scaledWidth / 2, 0xFFFFFF | 0, 0xFFFFFF | alpha2);
-                fillGradient(matrices, 0, scaledWidth / 2, scaledHeight, scaledWidth, 0xFFFFFF | alpha2, 0xFFFFFF | 0);
-
-                matrices.pop();
+                GradientUtil.fillRadialGradient(context.getMatrices(), 0, 0, scaledWidth, scaledHeight,
+                        color | (alpha1 << 24),
+                        color | (alpha2 << 24),
+                        0, 1);
+            } else {
+                GradientUtil.fillVerticalGradient(context.getMatrices(), 0, 0, scaledHeight / 2, scaledWidth, scaledHeight,
+                        color | (alpha1 << 24),
+                        color | (alpha2 << 24),
+                        color | (alpha1 << 24),
+                        0);
             }
         }
 
         if (hasSunglasses) {
 
-            if (glasses.hasCustomName() && "Cool Shades".equals(glasses.getName().getString())) {
+            Text customName = glasses.get(DataComponentTypes.CUSTOM_NAME);
+            if (customName != null && "Cool Shades".equals(customName.getString())) {
                 final int delay = 7;
                 final int current = client.player.age / delay;
                 final int tint = DyeColor.byId(current % DyeColor.values().length).getSignColor();
-                fillGradient(matrices, 0, 0, scaledWidth, scaledHeight, 0x1F000000 | tint, 0x5F000000 | tint);
+                context.fillGradient(0, 0, scaledWidth, scaledHeight, 0x1F000000 | tint, 0x5F000000 | tint);
 
                 if (partySound == null || partySound.isDone()) {
                     client.getSoundManager().play(
                             partySound = new LoopingSoundInstance<>(client.player, player -> {
                                 return UItems.SUNGLASSES.isApplicable(player) || true;
-                            }, SoundEvents.MUSIC_DISC_PIGSTEP, 1, 1, client.world.random)
+                            }, USounds.Vanilla.MUSIC_DISC_PIGSTEP.value(), 1, 1, client.world.random)
                     );
                 } else if (partySound != null) {
                     partySound.setMuted(false);
@@ -263,7 +292,7 @@ public class UHud extends DrawableHelper {
                 if (partySound != null) {
                     partySound.setMuted(true);
                 }
-                fillGradient(matrices, 0, 0, scaledWidth, scaledHeight, 0x0A000088, 0x7E000000);
+                context.fillGradient(0, 0, scaledWidth, scaledHeight, 0x0A000088, 0x7E000000);
             }
         } else {
             if (partySound != null) {
@@ -271,42 +300,83 @@ public class UHud extends DrawableHelper {
             }
         }
 
-        float exhaustion = pony.getMagicalReserves().getExhaustion().getPercentFill();
+        if (UItems.ALICORN_AMULET.isApplicable(client.player)) {
+            float radius = (float)pony.getArmour().getTicks(UItems.ALICORN_AMULET) / (5 * ItemTracker.DAYS);
+            renderVignette(context, 0x000000, radius, radius, scaledWidth, scaledHeight);
+        }
+
+        float exhaustion = MathHelper.clamp(pony.getMagicalReserves().getExhaustion().getPercentFill(), 0, 0.6F);
 
         if (exhaustion > 0) {
             if (exhaustion > 0.5F && (heartbeatSound == null || heartbeatSound.isDone())) {
                 client.getSoundManager().play(
                         heartbeatSound = new LoopingSoundInstance<>(client.player, player -> {
                             return partySound == null && Pony.of(player).getMagicalReserves().getExhaustion().getPercentFill() > 0.5F;
-                        }, USounds.ENTITY_PLAYER_HEARTBEAT, 1, 1, client.world.random)
+                        }, USounds.ENTITY_PLAYER_HEARTBEAT_LOOP, 1, 1, client.world.random)
                 );
             }
 
-            int color = 0x880000;
-
             float rate = exhaustion > 0.5F ? 2.5F : 7F;
-
             float radius = (1 + (float)Math.sin(client.player.age / rate)) / 2F;
-            radius = 0.1F + radius * 0.1F;
 
-            int alpha1 = (int)(MathHelper.clamp(exhaustion * radius * 2, 0, 1) * 205) << 24 & -16777216;
-            int alpha2 = 0;
-
-            int halfWidth = (int)(scaledWidth * radius);
-            int halfHeight = (int)(scaledHeight * radius);
-
-            fillGradient(matrices, 0, 0, scaledWidth, halfHeight, color | alpha1, color | alpha2);
-            fillGradient(matrices, 0, scaledHeight - halfHeight, scaledWidth, scaledHeight, color | alpha2, color | alpha1);
-
-            matrices.push();
-            matrices.translate(scaledWidth, 0, 0);
-            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90));
-
-            fillGradient(matrices, 0, 0, scaledHeight, halfWidth, color | alpha1, color | alpha2);
-            fillGradient(matrices, 0, scaledWidth - halfWidth, scaledHeight, scaledWidth, color | alpha2, color | alpha1);
-
-            matrices.pop();
+            renderVignette(context, 0x880000, exhaustion * radius, 0.1F + radius * 0.3F, scaledWidth, scaledHeight);
         }
+
+        float anger = pony.getMagicalReserves().getCharge().getPercentFill();
+
+        if (pony.getObservedSpecies() == Race.KIRIN && anger >= 1F) {
+            float radius = (1 + (float)Math.sin(client.player.age / 25F)) / 5F;
+            renderVignette(context, 0x000000, anger * radius, 0.1F + radius * 0.3F, scaledWidth, scaledHeight);
+        }
+
+        if (EquinePredicates.RAGING.test(client.player)) {
+            context.fillGradient(0, 0, scaledWidth, scaledHeight / 4, 0xAAFF0000, 0x00FF0000);
+            int alpha = 0x3A + (int)(125 * Math.abs(MathHelper.sin(client.player.age / 25F)));//3A
+            context.fill(0, 0, scaledWidth, scaledHeight, 0x00FF0000 | (alpha << 24));
+            context.fillGradient(0, (int)(scaledHeight / 1.5), scaledWidth, scaledHeight, 0x00FF0000, 0xAAFF0000);
+        }
+
+        if (pony.getPhysics().isFlyingSurvival) {
+            float effectStrength = (float)MathHelper.clamp(pony.getPhysics().getClientVelocity().length() / 15F, 0, 1);
+
+            VertexConsumer vertexConsumer = context.getVertexConsumers().getBuffer(RenderLayer.getGui());
+
+            float innerRadiusPulse = MathHelper.cos((pony.asEntity().age + tickDelta) / 2F) * 6 + (effectStrength * scaledHeight / 2F);
+
+            double points = 22;
+            float wedgeAngle = 0.05F + MathHelper.sin((pony.asEntity().age + tickDelta) / 3F) * 0.01F;
+            float outerRadius = Math.max(scaledWidth, scaledHeight);
+            float alpha = effectStrength * (0.6F + Math.abs(MathHelper.sin((pony.asEntity().age + tickDelta) / 10F)));
+            context.getMatrices().push();
+            context.getMatrices().translate(scaledWidth / 2F, scaledHeight / 2F, 0);
+            Matrix4f matrix4f = context.getMatrices().peek().getPositionMatrix();
+            for (int i = 0; i < points; i++) {
+                float angle = (MathHelper.TAU * i / (float)points) - wedgeAngle * 0.5F;
+                float innerRadius = Math.max(0, (scaledHeight / 2F) + (i % 2) * 72 + 14 * (1 - effectStrength) - innerRadiusPulse);
+                float centerX = MathHelper.sin(angle) * innerRadius;
+                float centerY = MathHelper.cos(angle) * innerRadius;
+
+                vertexConsumer.vertex(matrix4f, centerX, centerY, 0).color(1F, 1F, 1F, alpha * 0.3F);
+                vertexConsumer.vertex(matrix4f, MathHelper.sin(angle - wedgeAngle) * outerRadius, MathHelper.cos(angle - wedgeAngle) * outerRadius, 0).color(1F, 1F, 1F, alpha);
+                vertexConsumer.vertex(matrix4f, MathHelper.sin(angle + wedgeAngle) * outerRadius, MathHelper.cos(angle + wedgeAngle) * outerRadius, 0).color(1F, 1F, 1F, alpha);
+                vertexConsumer.vertex(matrix4f, centerX, centerY, 0).color(1F, 1F, 1F, alpha * 0.3F);
+            }
+            context.getMatrices().pop();
+        }
+    }
+
+    private void renderVignette(DrawContext context, int color, float alpha, float radius, int scaledWidth, int scaledHeight) {
+        if (radius <= 0) {
+            return;
+        }
+
+        color &= 0xFFFFFF;
+        float alpha2 = MathHelper.clamp(radius - 1, 0, 1) * 255;
+        float alpha1 = Math.max(alpha2, MathHelper.clamp(alpha * 2, 0, 1) * 205);
+        GradientUtil.fillRadialGradient(context.getMatrices(), 0, 0, scaledWidth, scaledHeight,
+                color | (int)alpha1 << 24,
+                color | (int)alpha2 << 24,
+                0, Math.min(1, radius));
     }
 
     public void setMessage(Text message) {
@@ -315,16 +385,28 @@ public class UHud extends DrawableHelper {
     }
 
     public void tick() {
-        if (messageTime > 0) {
+        if (!client.isPaused() && messageTime > 0) {
             messageTime--;
         }
     }
 
-    void renderAbilityIcon(MatrixStack matrices, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {
-        stat.getAbility(KeyBindingsHandler.INSTANCE.page).ifPresent(ability -> {
-            RenderSystem.setShaderTexture(0, ability.getIcon(Pony.of(client.player), client.options.sneakKey.isPressed()));
-            drawTexture(matrices, x, y, 0, 0, frameWidth, frameHeight, u, v);
-            RenderSystem.setShaderTexture(0, HUD_TEXTURE);
+    void renderAbilityIcon(DrawContext context, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {
+        stat.getAbility(Unicopia.getConfig().hudPage.get()).ifPresent(ability -> {
+            context.drawTexture(ability.getIcon(Pony.of(client.player)), x, y, 0, 0, frameWidth, frameHeight, u, v);
         });
+    }
+
+
+    @Nullable
+    public static InGameHud.HeartType getHeartsType(PlayerEntity player) {
+        if (UItems.ALICORN_AMULET.isApplicable(player) || EffectUtils.isChangingRace(player)) {
+            return InGameHud.HeartType.WITHERED;
+        }
+
+        if (EffectUtils.isPoisoned(player)) {
+            return InGameHud.HeartType.POISONED;
+        }
+
+        return null;
     }
 }

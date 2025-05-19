@@ -2,33 +2,39 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
-import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSpell, ProjectileDelegate.EntityHitListener {
+    static final SpellAttribute<Boolean> TARGET_FOCUSED_ENTITY = SpellAttribute.createConditional(SpellAttributeType.FOCUSED_ENTITY, Trait.ORDER, order -> order >= 20);
+    static final SpellAttribute<Boolean> STICK_TO_TARGET = SpellAttribute.createConditional(SpellAttributeType.STICK_TO_TARGET, Trait.CHAOS, chaos -> chaos > 0);
+    static final TooltipFactory TARGET = (type, tooltip) -> (TARGET_FOCUSED_ENTITY.get(type.traits()) ? TARGET_FOCUSED_ENTITY : ShieldSpell.TARGET).appendTooltip(type, tooltip);
+    static final TooltipFactory TOOLTIP = TooltipFactory.of(TIME, RANGE, TARGET, STICK_TO_TARGET, CAST_ON);
 
-    private final EntityReference<Entity> target = new EntityReference<>();
+    private final EntityReference<Entity> target = dataTracker.startTracking(new EntityReference<>());
 
-    private final Timer timer;
+    private final Timer timer = new Timer(TIME.get(getTraits()));
 
     protected AttractiveSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer((120 + (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19)) * 20);
     }
 
     @Override
@@ -44,24 +50,25 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
             return false;
         }
 
-        setDirty();
-
-        Vec3d pos = caster.getOriginVector();
-        if (target.isPresent(caster.getReferenceWorld()) && target.get(caster.getReferenceWorld()).distanceTo(caster.getEntity()) > getDrawDropOffRange(caster)) {
-            target.get(caster.getReferenceWorld()).requestTeleport(pos.x, pos.y, pos.z);
-        }
+        target.getOrEmpty(caster.asWorld())
+            .filter(entity -> entity.distanceTo(caster.asEntity()) > getDrawDropOffRange(caster))
+            .ifPresent(entity -> {
+                Vec3d pos = caster.getOriginVector();
+                entity.requestTeleport(pos.x, pos.y, pos.z);
+            });
 
         return super.tick(caster, situation);
     }
 
     @Override
     public void generateParticles(Caster<?> source) {
-        double range = getDrawDropOffRange(source) + 10;
+        double range = getDrawDropOffRange(source);
+        Vec3d origin = getOrigin(source);
 
-        source.spawnParticles(getOrigin(source), new Sphere(false, range), 7, p -> {
+        source.spawnParticles(origin, new Sphere(false, range), 7, p -> {
             source.addParticle(
-                    new FollowingParticleEffect(UParticles.HEALTH_DRAIN, source.getEntity(), 0.4F)
-                        .withChild(new MagicParticleEffect(getType().getColor())),
+                    new FollowingParticleEffect(UParticles.HEALTH_DRAIN, origin, 0.4F)
+                        .withChild(ParticleTypes.EFFECT),
                     p,
                     Vec3d.ZERO
             );
@@ -69,16 +76,8 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
     }
 
     @Override
-    public double getDrawDropOffRange(Caster<?> caster) {
-        return 10 + (caster.getLevel().getScaled(8) * 2);
-    }
-
-    @Override
     protected boolean isValidTarget(Caster<?> source, Entity entity) {
-        if (target.isPresent(entity.world)) {
-            return target.get(entity.world) == entity;
-        }
-        return getTraits().get(Trait.KNOWLEDGE) > 10 ? entity instanceof ItemEntity : super.isValidTarget(source, entity);
+        return target.referenceEquals(entity) || super.isValidTarget(source, entity);
     }
 
     @Override
@@ -92,8 +91,8 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
             force *= AttractionUtils.getForceAdjustment(target);
         }
 
-        if (!isGood && source.getReferenceWorld().random.nextInt(4500) == 0) {
-            source.getEntity().damage(MagicalDamageSource.create("vortex"), 4);
+        if (!isGood && source.asWorld().random.nextInt(4500) == 0) {
+            source.asEntity().damage(source.damageOf(UDamageTypes.GAVITY_WELL_RECOIL, source), 4);
         }
 
         AttractionUtils.applyForce(getOrigin(source), target, -force, 0, false);
@@ -114,7 +113,7 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
             z = 0;
         }
 
-        if (this.target.get(target.world) == target) {
+        if (this.target.referenceEquals(target)) {
             target.fallDistance = 0;
 
             if (target.isOnGround()) {
@@ -128,7 +127,7 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
 
     @Override
     public boolean setTarget(Entity target) {
-        if (getTraits().get(Trait.ORDER) >= 20) {
+        if (TARGET_FOCUSED_ENTITY.get(getTraits())) {
             this.target.set(target);
             target.setGlowing(true);
             return true;
@@ -137,29 +136,30 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
     }
 
     @Override
-    public void onDestroyed(Caster<?> caster) {
-        target.getOrEmpty(caster.getReferenceWorld()).ifPresent(target -> target.setGlowing(false));
+    protected void onDestroyed(Caster<?> caster) {
+        super.onDestroyed(caster);
+        target.getOrEmpty(caster.asWorld()).ifPresent(target -> target.setGlowing(false));
     }
 
     @Override
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
-        if (!isDead() && getTraits().get(Trait.CHAOS) > 0) {
+        if (!isDead() && STICK_TO_TARGET.get(getTraits())) {
             setDead();
-            Caster.of(hit.getEntity()).ifPresent(getTypeAndTraits()::apply);
+            Caster.of(hit.getEntity()).ifPresent(caster -> getTypeAndTraits().apply(caster, CastingMethod.INDIRECT));
         }
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        compound.put("target", target.toNBT());
-        timer.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        compound.put("target", target.toNBT(lookup));
+        timer.toNBT(compound, lookup);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        target.fromNBT(compound.getCompound("target"));
-        timer.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
+        target.fromNBT(compound.getCompound("target"), lookup);
+        timer.fromNBT(compound, lookup);
     }
 }

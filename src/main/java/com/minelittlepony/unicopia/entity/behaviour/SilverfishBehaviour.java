@@ -12,12 +12,12 @@ import net.minecraft.world.WorldEvents;
 public class SilverfishBehaviour extends EntityBehaviour<SilverfishEntity> {
     @Override
     public void update(Pony player, SilverfishEntity entity, Disguise spell) {
-        if (!player.isClient() && player.sneakingChanged() && player.getMaster().isSneaking()) {
+        if (!player.isClient() && player.sneakingChanged() && player.asEntity().isSneaking()) {
             BlockPos pos = entity.getBlockPos().down();
-            BlockState state = entity.world.getBlockState(pos);
+            BlockState state = entity.getWorld().getBlockState(pos);
 
-            if (StateMaps.SILVERFISH_AFFECTED.convert(entity.world, pos)) {
-                entity.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
+            if (StateMaps.SILVERFISH_AFFECTED.convert(entity.getWorld(), pos)) {
+                entity.getWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
             }
         }
     }

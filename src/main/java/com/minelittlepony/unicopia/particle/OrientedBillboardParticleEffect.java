@@ -1,32 +1,37 @@
 package com.minelittlepony.unicopia.particle;
 
-import java.util.Locale;
-
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
 
-public class OrientedBillboardParticleEffect implements ParticleEffect {
-    @SuppressWarnings("deprecation")
-    public static final ParticleEffect.Factory<OrientedBillboardParticleEffect> FACTORY = ParticleFactoryHelper.of(OrientedBillboardParticleEffect::new, OrientedBillboardParticleEffect::new);
-
-    private final boolean fixed;
-    private final float yaw;
-    private final float pitch;
-
-    private final ParticleType<OrientedBillboardParticleEffect> type;
-
-    protected OrientedBillboardParticleEffect(ParticleType<OrientedBillboardParticleEffect> type, StringReader reader) throws CommandSyntaxException {
-        this(type, ParticleFactoryHelper.readBoolean(reader), ParticleFactoryHelper.readFloat(reader), ParticleFactoryHelper.readFloat(reader));
+public record OrientedBillboardParticleEffect (
+        ParticleType<OrientedBillboardParticleEffect> type,
+        boolean fixed,
+        float yaw,
+        float pitch
+    ) implements ParticleEffect {
+    public static MapCodec<OrientedBillboardParticleEffect> createCodec(ParticleType<OrientedBillboardParticleEffect> type) {
+        return RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.BOOL.fieldOf("fixed").forGetter(OrientedBillboardParticleEffect::fixed),
+            Codec.FLOAT.fieldOf("yaw").forGetter(OrientedBillboardParticleEffect::yaw),
+            Codec.FLOAT.fieldOf("pitch").forGetter(OrientedBillboardParticleEffect::pitch)
+        ).apply(instance, (fixed, yaw, pitch) -> new OrientedBillboardParticleEffect(type, fixed, yaw, pitch)));
     }
 
-    protected OrientedBillboardParticleEffect(ParticleType<OrientedBillboardParticleEffect> particleType, PacketByteBuf buf) {
-        this(particleType, buf.readBoolean(), buf.readFloat(), buf.readFloat());
+    public static final PacketCodec<RegistryByteBuf, OrientedBillboardParticleEffect> createPacketCodec(ParticleType<OrientedBillboardParticleEffect> type) {
+        return PacketCodec.tuple(
+                PacketCodecs.BOOL, OrientedBillboardParticleEffect::fixed,
+                PacketCodecs.FLOAT, OrientedBillboardParticleEffect::yaw,
+                PacketCodecs.FLOAT, OrientedBillboardParticleEffect::pitch,
+                (fixed, yaw, pitch) -> new OrientedBillboardParticleEffect(type, fixed, yaw, pitch)
+        );
     }
 
     public OrientedBillboardParticleEffect(ParticleType<OrientedBillboardParticleEffect> type, Vec3d orientation) {
@@ -37,40 +42,8 @@ public class OrientedBillboardParticleEffect implements ParticleEffect {
         this(type, true, yaw, pitch);
     }
 
-    private OrientedBillboardParticleEffect(ParticleType<OrientedBillboardParticleEffect> type, boolean fixed, float yaw, float pitch) {
-        this.fixed = fixed;
-        this.yaw = yaw;
-        this.pitch = pitch;
-        this.type = type;
-    }
-
-    public boolean isAngleFixed() {
-        return fixed;
-    }
-
-    public float getYaw() {
-        return yaw;
-    }
-
-    public float getPitch() {
-        return pitch;
-    }
-
     @Override
     public ParticleType<?> getType() {
         return type;
     }
-
-    @Override
-    public void write(PacketByteBuf buf) {
-        buf.writeBoolean(fixed);
-        buf.writeFloat(yaw);
-        buf.writeFloat(pitch);
-    }
-
-    @Override
-    public String asString() {
-        return String.format(Locale.ROOT, "%s %b %.2f %.2f", Registry.PARTICLE_TYPE.getId(getType()), fixed, yaw, pitch);
-    }
-
 }

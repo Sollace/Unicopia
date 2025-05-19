@@ -1,112 +1,315 @@
 {
-  "side": "RIGHT",
+  "side": "right",
   "y_position": 7,
   "color": 0,
   "content": {
     "pages": [
       {
-        "title": "Ch.7 Artefacts",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.p1.title"
+        },
         "level": 0,
         "elements": [
-          { "x": 15, "y": 0, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/crystal_heart.png" }
+          { "x": 15, "y": -10, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/crystal_heart.png" }
         ]
       },
       {
-        "title": "2nd Mare '12",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.p2.title"
+        },
         "level": 0,
         "elements": [
-          "What follows is a compendium of research into certain objects of interest identified through my research.",
-          "Not all of these have gotten anywhere, as they have been proven to either be pure legend, or perhaps a hoax, so I cannot put stock into their stories.",
-          "At the princess' behest",
-          "- Starswirl the Bearded"
+          "gui.unicopia.spellbook.chapter.artefacts.p2.1.body",
+          "gui.unicopia.spellbook.chapter.artefacts.p2.2.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
         ]
       },
       {
-        "title": "The Crystal Heart",
+        "title": {
+          "translate": "item.unicopia.crystal_heart"
+        },
         "level": 0,
         "elements": [
           { "item": { "item": "unicopia:crystal_heart" } },
-          "Status: Lost",
-          "Crafted by a group of unicorns long ago, its origin and current location is unknown.",
-          "What few accounts exist claim it was a powerful tool of protection and support, as it would funnel life force from enemies towards the caster and their allies."
+          "gui.unicopia.spellbook.chapter.artefacts.status.lost",
+          "gui.unicopia.spellbook.chapter.artefacts.crystal_heart.1.body",
+          "gui.unicopia.spellbook.chapter.artefacts.crystal_heart.2.body"
         ]
       },
       {
-        "title": "5th Mare '12",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.crystal_heart.title"
+        },
         "level": 0,
         "elements": [
-          "Other accounts say that this artefact only functions when mounted on a specific pedestal of diamond blocks, like a beacon."
+          "gui.unicopia.spellbook.chapter.artefacts.crystal_heart.3.body"
         ]
       },
-
       {
-        "title": "Dragon's Breath Scroll",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.torn_page.title"
+        },
+        "level": 0,
+        "elements": [
+          "gui.unicopia.spellbook.chapter.artefacts.torn_page.1.body",
+          "gui.unicopia.spellbook.chapter.artefacts.torn_page.2.body",
+          "gui.unicopia.spellbook.chapter.artefacts.torn_page.3.body",
+          {
+            "ingredients": [
+              { "count": 2, "item": "minecraft:end_rod" },
+              { "count": 20, "item": "minecraft:diamond_block" },
+              { "count": 1, "item": "unicopia:crystal_heart" }
+            ]
+          }
+        ]
+      },
+      {
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.crystal_podium.title"
+        },
+        "level": 0,
+        "elements": [
+          {
+            "structure": [
+              { "state": "minecraft:diamond_block", "min": [0,0,0], "max": [2,0,2] },
+              { "state": "minecraft:diamond_block", "pos": [1,1,1] },
+              { "state": "minecraft:end_rod[facing=up]", "pos": [1,2,1] },
+              { "state": "minecraft:end_rod[facing=down]", "pos": [1,4,1] },
+              { "state": "minecraft:diamond_block", "pos": [1,5,1] },
+              { "state": "minecraft:diamond_block", "min": [0,6,0], "max": [2,6,2] }
+            ]
+          },
+          { "x": 60, "y": -34, "item": { "item": "unicopia:crystal_heart" } }
+        ]
+      },
+      {
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.altar.title"
+        },
+        "level": 0,
+        "elements": [
+          "gui.unicopia.spellbook.chapter.artefacts.altar.1.body",
+          "gui.unicopia.spellbook.chapter.artefacts.altar.2.body",
+          {
+            "ingredients": [
+              { "count": 40, "item": "minecraft:obsidian" },
+              { "count": 1, "item": "minecraft:soul_sand" },
+              { "count": 1, "item": "minecraft:lodestone" },
+              { "count": 1, "item": "unicopia:spellbook" }
+            ]
+          }
+        ]
+      },
+      {
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.altar.title"
+        },
+        "level": 0,
+        "elements": [
+          {
+            "structure": [
+              { "state": "minecraft:soul_sand", "min": [0,0,0], "max": [8,0,8] },
+              { "state": "minecraft:obsidian", "min": [3,1,3], "max": [5,1,5] },
+              { "state": "minecraft:soul_sand", "pos": [4,1,4] },
+              { "state": "minecraft:lodestone", "pos": [4,1,6] },
+              { "state": "minecraft:obsidian", "min": [0,1,2], "max": [0,4,2] },
+              { "state": "minecraft:obsidian", "min": [0,1,6], "max": [0,4,6] },
+              { "state": "minecraft:obsidian", "min": [2,1,0], "max": [2,4,0] },
+              { "state": "minecraft:obsidian", "min": [6,1,0], "max": [6,4,0] },
+              { "state": "minecraft:obsidian", "min": [8,1,2], "max": [8,4,2] },
+              { "state": "minecraft:obsidian", "min": [8,1,6], "max": [8,4,6] },
+              { "state": "minecraft:obsidian", "min": [2,1,8], "max": [2,4,8] },
+              { "state": "minecraft:obsidian", "min": [6,1,8], "max": [6,4,8] }
+            ]
+          }
+        ]
+      },
+      {
+        "title": {
+          "translate": "item.unicopia.spectral_clock"
+        },
+        "level": 0,
+        "elements": [
+          { "item": { "item": "unicopia:spectral_clock" } },
+          "gui.unicopia.spellbook.chapter.artefacts.status.unconfirmed",
+          "gui.unicopia.spellbook.chapter.artefacts.spectral_clock.1.body",
+          {
+            "translate": "gui.unicopia.spellbook.chapter.artefacts.altar.3.body",
+            "color": "red"
+          }
+        ]
+      },
+      {
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.spectral_clock.title"
+        },
+        "level": 0,
+        "elements": [
+          "gui.unicopia.spellbook.chapter.artefacts.spectral_clock.2.body",
+          "gui.unicopia.spellbook.author1.sign_off",
+          "gui.unicopia.spellbook.author1.name"
+        ]
+      },
+      {
+        "title": {
+          "translate": "item.unicopia.dragon_breath_scroll"
+        },
         "level": 0,
         "elements": [
           { "item": { "item": "unicopia:dragon_breath_scroll" } },
-          "Status: Confirmed",
-          "It's, um a scroll that you write somepony's name on it and you hold it in one hoof and something in the other hoof and, like, um it goes whooosh and the item is sent to that pony",
-          "- XOXOX Lulu"
+          "gui.unicopia.spellbook.chapter.artefacts.status.confirmed",
+          "gui.unicopia.spellbook.chapter.artefacts.dragon_breath_scroll.2.body",
+          "gui.unicopia.spellbook.author3.name"
         ]
       },
       {
-        "title": "2nd Hoof '12",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.dragon_breath_scroll.title"
+        },
         "level": 0,
         "elements": [
-          "P.S. Uncle Starswirly is a dunderhead",
+          "gui.unicopia.spellbook.chapter.artefacts.dragon_breath_scroll.3.body",
           { "recipe": "unicopia:dragon_breath_scroll" }
         ]
       },
       {
-        "title": "Bangle of Comradery",
+        "title": {
+          "translate": "item.unicopia.friendship_bracelet"
+        },
         "level": 0,
         "elements": [
           { "item": { "item": "unicopia:friendship_bracelet" } },
-          "Status: Confirmed",
-          "Used in the past by spellcasters to communicate over long distances, this band has long since lost its old use.",
-          "Unicorns who sign and hand out this band can use it to share certain magic effects with their friends."
+          "gui.unicopia.spellbook.chapter.artefacts.status.confirmed",
+          "gui.unicopia.spellbook.chapter.artefacts.friendship_bracelet.1.body",
+          "gui.unicopia.spellbook.chapter.artefacts.friendship_bracelet.2.body"
         ]
       },
       {
-        "title": "13th Mare '12",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.friendship_bracelet.title"
+        },
         "level": 0,
         "elements": [
-          "Anyone wearing a bangle you have signed will be able to benefit from the positive effects of your spells, or will be allowed through protection and shield spells.",
-          "Mana costs are also shared equally between all nearby members."
+          "gui.unicopia.spellbook.chapter.artefacts.friendship_bracelet.3.body",
+          "gui.unicopia.spellbook.chapter.artefacts.friendship_bracelet.4.body"
         ]
       },
       {
-        "title": "Wings of Icarus",
+        "title": {
+          "translate": "item.unicopia.pegasus_amulet"
+        },
         "level": 0,
         "elements": [
           { "item": { "item": "unicopia:pegasus_amulet" } },
-          "Status: Lost",
-          "Commander Hurricane informed me of this, though I've found little texts to back up his claims.",
-          "The Pegasus Amulet is claimed to grant the wearer temporary flight, like a pegasus."
+          "gui.unicopia.spellbook.chapter.artefacts.status.lost",
+          "gui.unicopia.spellbook.chapter.artefacts.pegasus_amulet.1.body",
+          "gui.unicopia.spellbook.chapter.artefacts.pegasus_amulet.2.body"
         ]
       },
       {
-        "title": "22nd Trot '12",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.pegasus_amulet.title"
+        },
         "level": 0,
         "elements": [
-          "It was intended as an aide for early unicorn ambassadors to Cloud Heights, but was lost after negotiations broke down."
+          "gui.unicopia.spellbook.chapter.artefacts.pegasus_amulet.3.body"
         ]
       },
       {
-        "title": "Alicorn Amulet",
+        "title": {
+          "translate": "item.unicopia.meadowbrooks_staff"
+        },
+        "level": 3,
+        "elements": [
+          { "item": { "item": "unicopia:meadowbrooks_staff" } },
+          "gui.unicopia.spellbook.chapter.artefacts.status.confirmed",
+          "gui.unicopia.spellbook.chapter.artefacts.meadowbrooks_staff.1.body",
+          "gui.unicopia.spellbook.chapter.artefacts.meadowbrooks_staff.2.body"
+        ]
+      },
+      {
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.meadowbrooks_staff.title"
+        },
+        "level": 3,
+        "elements": [
+          "gui.unicopia.spellbook.chapter.artefacts.meadowbrooks_staff.3.body",
+          "gui.unicopia.spellbook.chapter.artefacts.meadowbrooks_staff.4.body"
+        ]
+      },
+      {
+        "title": {
+          "translate": "item.unicopia.magic_staff"
+        },
+        "level": 5,
+        "elements": [
+          { "item": { "item": "unicopia:magic_staff" } },
+          "gui.unicopia.spellbook.chapter.artefacts.status.unconfirmed",
+          "gui.unicopia.spellbook.chapter.artefacts.magic_staff.1.body"
+        ]
+      },
+      {
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.magic_staff.title"
+        },
+        "level": 5,
+        "elements": [
+          "gui.unicopia.spellbook.chapter.artefacts.magic_staff.2.body",
+          "gui.unicopia.spellbook.chapter.artefacts.magic_staff.3.body"
+        ]
+      },
+      {
+        "title": {
+          "translate": "item.unicopia.grogars_bell"
+        },
+        "level": 0,
+        "elements": [
+          { "item": { "item": "unicopia:grogars_bell" } },
+          "gui.unicopia.spellbook.chapter.artefacts.status.lost",
+          "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.1.body",
+          "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.2.body"
+        ]
+      },
+      {
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.title"
+        },
+        "level": 80,
+        "elements": [
+          "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.3.body",
+          "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.4.body"
+        ]
+      },
+      {
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.2.title"
+        },
+        "level": 80,
+        "elements": [
+          "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.5.body",
+          "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.6.body"
+        ]
+      },
+      {
+        "title": {
+          "translate": "item.unicopia.alicorn_amulet"
+        },
         "level": 0,
         "elements": [
           { "item": { "item": "unicopia:alicorn_amulet" } },
-          "Status: Unconfirmed",
-          "Like the crystal heart, little is known of this artefact and thus nothing, not even its existance can be confirmed."
+          "gui.unicopia.spellbook.chapter.artefacts.status.unconfirmed",
+          "gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.1.body"
         ]
       },
       {
-        "title": "22nd Trot '12",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.title"
+        },
         "level": 999,
         "elements": [
-          "The alicorn amulet is a powerful force of dark magic created created by an unknown mage as their attempt to create the perfect being.",
-          "It combines the traits of all races into one powerful form, but it hard to control and addictive in nature. Anyone who uses it quickly becomes reliant on it and few attempt to remove it survive the ordeal."
+          "gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.2.body",
+          "gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.3.body"
         ]
       }
     ]

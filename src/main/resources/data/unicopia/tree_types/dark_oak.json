@@ -3,6 +3,7 @@
 	"leaves": [ "minecraft:dark_oak_leaves" ],
 	"wideTrunk": true,
 	"rarity": 5,
+	"leavesRatio": 0.5,
 	"drops": [
 		{ "weight": 1, "item": "unicopia:rotten_apple" },
 		{ "weight": 2, "item": "unicopia:sweet_apple" },

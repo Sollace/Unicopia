@@ -2,6 +2,10 @@
   "replace": false,
   "traits": "knowledge:9 order:3",
   "items": [
+    "#minecraft:decorated_pot_sherds",
+    "#minecraft:trim_templates",
+    "#minecraft:signs",
+    "#minecraft:hanging_signs",
     "minecraft:flower_banner_pattern",
     "minecraft:creeper_banner_pattern",
     "minecraft:skull_banner_pattern",

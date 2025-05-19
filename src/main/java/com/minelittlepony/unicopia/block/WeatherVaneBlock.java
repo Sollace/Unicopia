@@ -3,14 +3,18 @@ package com.minelittlepony.unicopia.block;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.block.data.WeatherConditions;
+import com.minelittlepony.unicopia.particle.TargetBoundParticleEffect;
+import com.minelittlepony.unicopia.particle.UParticles;
+import com.minelittlepony.unicopia.server.world.WeatherConditions;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.*;
 import net.minecraft.block.entity.*;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.*;
@@ -20,22 +24,24 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class WeatherVaneBlock extends BlockWithEntity {
-    /*private static final VoxelShape SHAPE = VoxelShapes.union(
+    public static final MapCodec<WeatherVaneBlock> CODEC = createCodec(WeatherVaneBlock::new);
+    private static final VoxelShape SHAPE = VoxelShapes.union(
             Block.createCuboidShape(7.5F, 0, 7.5F, 8.5F, 14, 8.5F),
             Block.createCuboidShape(7, 0, 7, 9, 1, 9)
-    );*/
+    );
 
     protected WeatherVaneBlock(Settings settings) {
         super(settings);
     }
 
-    @Deprecated
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return VoxelShapes.union(
-                Block.createCuboidShape(7.5F, 0, 7.5F, 8.5F, 14, 8.5F),
-                Block.createCuboidShape(7, 0, 7, 9, 1, 9)
-        );
+    protected MapCodec<? extends WeatherVaneBlock> getCodec() {
+        return CODEC;
+    }
+
+    @Override
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return SHAPE;
     }
 
     @Override
@@ -46,7 +52,7 @@ public class WeatherVaneBlock extends BlockWithEntity {
     @Override
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return BellBlock.checkType(type, UBlockEntities.WEATHER_VANE, world.isClient ? WeatherVane::clientTick : WeatherVane::serverTick);
+        return validateTicker(type, UBlockEntities.WEATHER_VANE, world.isClient ? WeatherVane::clientTick : WeatherVane::serverTick);
     }
 
     public static class WeatherVane extends BlockEntity {
@@ -54,6 +60,9 @@ public class WeatherVaneBlock extends BlockWithEntity {
 
         private float clientAngle;
         private float prevAngle;
+        private float lastAngle;
+
+        private Vec3d airflow = Vec3d.ZERO;
 
         public WeatherVane(BlockPos pos, BlockState state) {
             super(UBlockEntities.WEATHER_VANE, pos, state);
@@ -64,13 +73,16 @@ public class WeatherVaneBlock extends BlockWithEntity {
         }
 
         @Override
-        public void readNbt(NbtCompound nbt) {
+        public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
             angle = nbt.getFloat("angle");
+            airflow = new Vec3d(nbt.getDouble("windX"), 0, nbt.getDouble("windZ"));
         }
 
         @Override
-        protected void writeNbt(NbtCompound nbt) {
+        protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
             nbt.putFloat("angle", angle);
+            nbt.putDouble("windX", airflow.x);
+            nbt.putDouble("windZ", airflow.z);
         }
 
         @Override
@@ -79,27 +91,30 @@ public class WeatherVaneBlock extends BlockWithEntity {
         }
 
         @Override
-        public NbtCompound toInitialChunkDataNbt() {
-            return createNbt();
+        public NbtCompound toInitialChunkDataNbt(WrapperLookup lookup) {
+            return createNbt(lookup);
         }
 
         public static void serverTick(World world, BlockPos pos, BlockState state, WeatherVane entity) {
             Vec3d airflow = WeatherConditions.get(world).getWindDirection();
-            float angle = (float)Math.atan2(airflow.x, airflow.z) + MathHelper.PI;
-            if (Math.signum(entity.angle) != Math.signum(angle)) {
-                angle = MathHelper.PI - angle;
-            }
-            angle %= MathHelper.PI;
+            float angle = (WeatherConditions.get(world).getWindYaw() % MathHelper.PI);
 
+            entity.lastAngle = entity.prevAngle;
+            entity.prevAngle = entity.angle;
             if (angle != entity.angle) {
                 entity.angle = angle;
+
+                entity.airflow = airflow;
                 entity.markDirty();
-                if (world instanceof ServerWorld serverWorld) {
-                    serverWorld.getChunkManager().markForUpdate(pos);
+                if (world instanceof ServerWorld sw) {
+                    sw.getChunkManager().markForUpdate(pos);
                 }
 
-                world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), USounds.BLOCK_WEATHER_VANE_ROTATE, SoundCategory.BLOCKS, 1, 0.5F + (float)world.random.nextGaussian());
+                if (entity.lastAngle == entity.prevAngle) {
+                    world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), USounds.BLOCK_WEATHER_VANE_ROTATE, SoundCategory.BLOCKS, 1, 0.5F + (float)world.random.nextGaussian());
+                }
             }
+
         }
 
         public static void clientTick(World world, BlockPos pos, BlockState state, WeatherVane entity) {
@@ -113,6 +128,18 @@ public class WeatherVaneBlock extends BlockWithEntity {
                 entity.clientAngle += step;
             } else if (entity.clientAngle > angle) {
                 entity.clientAngle -= step;
+            }
+
+            if (world.random.nextInt(3) == 0) {
+                float radius = 10;
+                for (int i = 0; i < 5; i++) {
+                    world.addImportantParticle(new TargetBoundParticleEffect(UParticles.WIND, null),
+                            world.getRandom().nextTriangular(pos.getX(), radius),
+                            world.getRandom().nextTriangular(pos.getY(), radius),
+                            world.getRandom().nextTriangular(pos.getZ(), radius),
+                            entity.airflow.x / 10F, 0, entity.airflow.z / 10F
+                    );
+                }
             }
         }
     }

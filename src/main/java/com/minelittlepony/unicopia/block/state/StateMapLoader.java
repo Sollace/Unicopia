@@ -50,8 +50,7 @@ public class StateMapLoader extends JsonDataLoader implements IdentifiableResour
 
         resourceManager.findAllResources(DATA_TYPE, id -> id.getPath().endsWith(FILE_SUFFIX)).entrySet().stream().forEach(entry -> {
             Identifier resId = entry.getKey();
-            String path = resId.getPath();
-            Identifier id = new Identifier(resId.getNamespace(), path.substring(i, path.length() - FILE_SUFFIX_LENGTH));
+            Identifier id = resId.withPath(p -> p.substring(i, p.length() - FILE_SUFFIX_LENGTH));
 
             JsonArray entries = new JsonArray();
             for (var resource : entry.getValue()) {

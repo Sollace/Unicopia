@@ -1,38 +1,35 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlock;
-import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
 import com.minelittlepony.unicopia.util.Tickable;
 
+import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FallingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
+import net.minecraft.block.enums.BedPart;
+import net.minecraft.block.enums.ChestType;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 
 public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
-
-    private static final Vec3d UP = Vec3d.of(Direction.UP.getVector());
-
-    private static final Optional<EntityDimensions> FULL_BLOCK = Optional.of(EntityDimensions.changing(0.6F, 0.9F));
+    private static final Optional<EntityDimensions> FULL_BLOCK = Optional.of(EntityDimensions.changing(0.6F, 0.9F).withEyeHeight(0.5F));
 
     @Override
     public Optional<EntityDimensions> getDimensions(FallingBlockEntity entity, Optional<EntityDimensions> current) {
@@ -41,15 +38,20 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
 
     @Override
     public void onImpact(Caster<?> source, FallingBlockEntity entity, float distance, float damageMultiplier, DamageSource cause) {
-        if (source.getEntity().fallDistance > 3) {
-            entity.fallDistance = source.getEntity().fallDistance;
+        if (source.asEntity().fallDistance > 3) {
+            entity.fallDistance = source.asEntity().fallDistance;
             entity.handleFallDamage(distance, damageMultiplier, cause);
 
             BlockState state = entity.getBlockState();
             if (state.getBlock() instanceof FallingBlock fb) {
-                fb.onLanding(entity.world, entity.getBlockPos(), state, state, entity);
+                fb.onLanding(entity.getWorld(), entity.getBlockPos(), state, state, entity);
             }
         }
+    }
+
+    @Override
+    public boolean isEqual(FallingBlockEntity a, Entity b) {
+        return b instanceof FallingBlockEntity f && f.getBlockState() == a.getBlockState();
     }
 
     private FallingBlockEntity configure(FallingBlockEntity entity, Block block) {
@@ -65,44 +67,44 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
     public FallingBlockEntity onCreate(FallingBlockEntity entity, EntityAppearance context, boolean replaceOld) {
         super.onCreate(entity, context, replaceOld);
 
-        BlockState state = entity.getBlockState();
+        BlockState state = entity.getBlockState()
+                .withIfExists(Properties.CHEST_TYPE, ChestType.SINGLE)
+                .withIfExists(Properties.BED_PART, BedPart.HEAD)
+                .withIfExists(Properties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.LOWER);
         Block block = state.getBlock();
+        context.setBlockEntity(block instanceof BlockEntityProvider bep ? bep.createBlockEntity(entity.getBlockPos(), state) : null);
 
-        if (state.isIn(BlockTags.DOORS) && block instanceof DoorBlock) {
-            BlockState lowerState = state.with(DoorBlock.HALF, DoubleBlockHalf.LOWER);
-            BlockState upperState = state.with(DoorBlock.HALF, DoubleBlockHalf.UPPER);
-
-            context.attachExtraEntity(configure(MixinFallingBlockEntity.createInstance(entity.world, entity.getX(), entity.getY(), entity.getZ(), upperState), block));
-
-            return configure(MixinFallingBlockEntity.createInstance(entity.world, entity.getX(), entity.getY() + 1, entity.getZ(), lowerState), block);
+        if (state.contains(Properties.BED_PART)) {
+            Vec3i offset = BedBlock.getOppositePartDirection(state).getVector();
+            BlockState foot = state.with(Properties.BED_PART, BedPart.FOOT);
+            context.attachExtraEntity(Vec3d.of(offset), configure(new FallingBlockEntity(entity.getWorld(), entity.getX() + offset.getX(), entity.getY() + offset.getY(), entity.getZ() + offset.getZ(), foot), block));
         }
 
-        if (block instanceof BlockEntityProvider bep) {
-            context.addBlockEntity(bep.createBlockEntity(entity.getBlockPos(), state));
+        if (state.contains(Properties.DOUBLE_BLOCK_HALF)) {
+            BlockState upperState = state.with(Properties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER);
+            context.attachExtraEntity(new Vec3d(0, 1, 0), configure(new FallingBlockEntity(entity.getWorld(), entity.getX(), entity.getY() + 1, entity.getZ(), upperState), block));
         }
 
+        if (state != entity.getBlockState()) {
+            entity = new FallingBlockEntity(entity.getWorld(), entity.getX(), entity.getY(), entity.getZ(), state);
+        }
         return configure(entity, block);
     }
 
     @Override
-    public void update(Caster<?> source, FallingBlockEntity entity, Disguise spell) {
+    public void update(Living<?> source, FallingBlockEntity entity, Disguise spell) {
 
         BlockState state = entity.getBlockState();
         if (state.contains(Properties.WATERLOGGED)) {
-            boolean logged = entity.world.isWater(entity.getBlockPos());
+            boolean logged = entity.getWorld().isWater(entity.getBlockPos());
 
             if (state.get(Properties.WATERLOGGED) != logged) {
-                entity = MixinFallingBlockEntity.createInstance(entity.world, entity.getX(), entity.getY(), entity.getZ(), state.with(Properties.WATERLOGGED, logged));
+                entity = new FallingBlockEntity(entity.getWorld(), entity.getX(), entity.getY(), entity.getZ(), state.with(Properties.WATERLOGGED, logged));
                 spell.getDisguise().setAppearance(entity);
-                return;
             }
         }
 
         EntityAppearance disguise = spell.getDisguise();
-        List<Entity> attachments = disguise.getAttachments();
-        if (attachments.size() > 0) {
-            copyBaseAttributes(source.getMaster(), attachments.get(0), UP);
-        }
 
         BlockEntity be = disguise.getBlockEntity();
 
@@ -111,14 +113,14 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
                 be.onSyncedBlockEvent(1, isSneakingOnGround(source) ? 1 : 0);
             }
 
-            be.setWorld(entity.world);
-            ((Positioned)be).setPos(entity.getBlockPos());
+            be.setWorld(entity.getWorld());
+            ((MixinBlockEntity)be).setPos(entity.getBlockPos());
             ceb.tick();
             be.setWorld(null);
         }
-    }
 
-    public interface Positioned {
-        void setPos(BlockPos pos);
+        for (var attachment : disguise.getAttachments()) {
+            copyBaseAttributes(source.asEntity(), attachment.entity(), attachment.offset());
+        }
     }
 }

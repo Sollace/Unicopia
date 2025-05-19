@@ -1,12 +1,23 @@
 package com.minelittlepony.unicopia.client.gui;
 
+import java.util.Optional;
+
+import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.AbilitySlot;
+import com.minelittlepony.unicopia.ability.ActivationType;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
+import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
+import net.minecraft.text.MutableText;
+import net.minecraft.util.Arm;
+import net.minecraft.util.Colors;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 
 class Slot {
@@ -74,26 +85,36 @@ class Slot {
         return y;
     }
 
-    void renderBackground(MatrixStack matrices, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
+    void renderBackground(DrawContext context, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
 
         if (aSlot != bSlot) {
             bSwap |= !abilities.isFilled(aSlot);
             bSwap &= abilities.isFilled(bSlot);
         }
 
+        int page = Unicopia.getConfig().hudPage.get();
+        AbilityDispatcher.Stat stat = abilities.getStat(bSwap ? bSlot : aSlot);
+
+        if (stat.getAbility(page).isEmpty()) {
+            if (aSlot != AbilitySlot.PRIMARY
+                    || (!abilities.getStat(AbilitySlot.SECONDARY).getAbility(page).isEmpty()
+                    && !abilities.getStat(AbilitySlot.TERTIARY).getAbility(page).isEmpty())) {
+                return;
+            }
+        }
+
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.enableBlend();
+        MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(getX(), getY(), 0);
 
         // background
-        UHud.drawTexture(matrices, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
+        context.drawTexture(UHud.HUD_TEXTURE, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
 
-        AbilityDispatcher.Stat stat = abilities.getStat(bSwap ? bSlot : aSlot);
-
-
+        int iconPosition = ((size - iconSize + slotPadding + 1) / 2);
         int sz = iconSize - slotPadding;
-        uHud.renderAbilityIcon(matrices, stat, slotPadding, slotPadding, sz, sz, sz, sz);
+        uHud.renderAbilityIcon(context, stat, iconPosition, iconPosition, sz, sz, sz, sz);
 
         float cooldown = stat.getFillProgress();
 
@@ -107,22 +128,32 @@ class Slot {
             int progressTop = progressBottom - (int)(progressMax * cooldown);
 
             // progress
-            UHud.fill(matrices, slotPadding, progressTop, size - slotPadding, progressBottom, 0xCFFFFFFF);
+            context.fill(slotPadding, progressTop, size - slotPadding, progressBottom, 0xCFFFFFFF);
         }
 
-        renderContents(matrices, abilities, bSwap, tickDelta);
+        renderContents(context, abilities, bSwap, tickDelta);
         matrices.pop();
     }
 
-    protected void renderContents(MatrixStack matrices, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
+    protected void renderContents(DrawContext context, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
         // contents
-        UHud.drawTexture(matrices, 0, 0, foregroundU, foregroundV, size, size, 128, 128);
+        boolean flip = MinecraftClient.getInstance().player.getMainArm() == Arm.LEFT;
+        if (flip) {
+            context.drawTexture(UHud.HUD_TEXTURE, 0, 0, size, size, foregroundU + size, foregroundV, -size, size, 128, 128);
+        } else {
+            context.drawTexture(UHud.HUD_TEXTURE, 0, 0, foregroundU, foregroundV, size, size, 128, 128);
+        }
     }
 
-    void renderLabel(MatrixStack matrices, AbilityDispatcher abilities, float tickDelta) {
-        Text label = KeyBindingsHandler.INSTANCE.getBinding(aSlot).getLabel();
+    void renderLabel(DrawContext context, AbilityDispatcher abilities, float tickDelta) {
 
-        matrices.push();
+        Optional<Ability<?>> ability = abilities.getStat(aSlot).getAbility(Unicopia.getConfig().hudPage.get());
+
+        if (ability.isEmpty()) {
+            return;
+        }
+
+        MutableText label = KeyBindingsHandler.INSTANCE.getBinding(aSlot).getLabel().copy();
 
         int x = getX();
         if (uHud.xDirection > 0) {
@@ -132,11 +163,14 @@ class Slot {
             x -= uHud.client.textRenderer.getWidth(label)/2;
         }
 
-        matrices.translate(x, getY() + labelY, 0);
-        matrices.scale(0.5F, 0.5F, 0.5F);
+        ActivationType activation = KeyBindingsHandler.INSTANCE.getForcedActivationType();
+        if (activation.isResult()) {
+            label = label.append("+T" + activation.getTapCount());
+            if (!ability.get().acceptsQuickAction(UnicopiaClient.getClientPony(), activation)) {
+                label = label.formatted(Formatting.RED);
+            }
+        }
 
-        UHud.drawTextWithShadow(matrices, uHud.font, label, 0, 0, 0xFFFFFF);
-
-        matrices.pop();
+        DrawableUtil.drawScaledText(context, label, x, getY() + labelY, 0.5F, Colors.WHITE);
     }
 }

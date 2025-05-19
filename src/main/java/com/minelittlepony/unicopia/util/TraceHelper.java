@@ -66,7 +66,7 @@ public class TraceHelper {
         final Vec3d start = e.getCameraPosVec(tickDelta);
 
         return BlockView.raycast(start, start.add(orientation.multiply(distance)), new ArrayList<BlockPos>(), (ctx, pos) -> {
-            if (predicate.test(e.world.getBlockState(pos))) {
+            if (predicate.test(e.getWorld().getBlockState(pos))) {
                 ctx.add(pos);
             }
             return null;

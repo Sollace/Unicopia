@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "traits": "strength:3 life:1 kindness:-1",
+  "items": [
+    "minecraft:goat_horn"
+  ]
+}

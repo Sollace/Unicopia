@@ -15,8 +15,8 @@ import com.minelittlepony.unicopia.Config;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -89,7 +89,7 @@ public class LanSettingsScreen extends GameGui {
 
         if (whitelist.isEmpty() && forceShowWhitelist) {
             for (Race r : Race.REGISTRY) {
-                if (!r.isDefault()) {
+                if (!r.isUnset()) {
                     whitelist.add(r.getId().toString());
                 }
             }
@@ -113,7 +113,7 @@ public class LanSettingsScreen extends GameGui {
             WHITELIST_GRID_PACKER.start();
 
             for (Race race : Race.REGISTRY) {
-                if (!race.isDefault()) {
+                if (!race.isUnset() && race.availability().isGrantable()) {
                     Bounds bound = WHITELIST_GRID_PACKER.next();
 
                     Button button = content.addButton(new Toggle(LEFT + bound.left + 10, row + bound.top, whitelist.contains(race.getId().toString())))
@@ -135,10 +135,9 @@ public class LanSettingsScreen extends GameGui {
     }
 
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float tickDelta) {
-        renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, tickDelta);
-        content.render(matrices, mouseX, mouseY, tickDelta);
+    public void render(DrawContext context, int mouseX, int mouseY, float tickDelta) {
+        super.render(context, mouseX, mouseY, tickDelta);
+        content.render(context, mouseX, mouseY, tickDelta);
     }
 
     @Override

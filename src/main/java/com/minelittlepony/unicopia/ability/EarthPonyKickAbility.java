@@ -6,16 +6,17 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.data.tree.TreeType;
-import com.minelittlepony.unicopia.block.data.BlockDestructionManager;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
+import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
+import com.minelittlepony.unicopia.server.world.ModificationType;
 import com.minelittlepony.unicopia.util.*;
 
 import net.minecraft.block.BeehiveBlock;
@@ -28,8 +29,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -52,16 +56,17 @@ public class EarthPonyKickAbility implements Ability<Pos> {
     }
 
     @Override
-    public boolean canUse(Race race) {
-        return race.canUseEarth();
+    public Identifier getIcon(Pony player) {
+        return getId().withPath(p -> "textures/gui/ability/" + p
+            + "_" + (player.getObservedSpecies().isHuman() ? Race.EARTH : player.getObservedSpecies()).getId().getPath()
+            + "_" + (getKickDirection(player) > 0 ? "forward" : "backward")
+            + ".png");
     }
 
     @Override
     public double getCostEstimate(Pony player) {
-        double distance = MineLPDelegate.getInstance().getPlayerPonyRace(player.getMaster()).isDefault() ? 6 : -6;
-
-        return TraceHelper.findBlock(player.getMaster(), distance, 1)
-                .filter(pos -> TreeType.at(pos, player.getReferenceWorld()) != TreeType.NONE)
+        return TraceHelper.findBlock(player.asEntity(), getKickDirection(player) * 6, 1)
+                .filter(pos -> TreeType.at(pos, player.asWorld()) != TreeType.NONE)
                 .isPresent() ? 3 : 1;
     }
 
@@ -77,145 +82,156 @@ public class EarthPonyKickAbility implements Ability<Pos> {
             if (!player.isClient()) {
                 data.ifPresent(kickLocation -> {
                     Vec3d origin = player.getOriginVector();
-                    World w = player.getReferenceWorld();
+                    World w = player.asWorld();
 
-                    for (var e : VecHelper.findInRange(player.getEntity(), w, kickLocation.vec(), 2, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
+                    player.asEntity().addExhaustion(3);
+
+                    for (var e : VecHelper.findInRange(player.asEntity(), w, kickLocation.vec(), 2.5, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
                         if (e instanceof LivingEntity entity) {
                             float calculatedStrength = 0.5F * (1 + player.getLevel().getScaled(9));
-                            entity.damage(MagicalDamageSource.KICK, player.getReferenceWorld().random.nextBetween(2, 10) + calculatedStrength);
+
+                            entity.damage(player.damageOf(UDamageTypes.KICK, player), player.asWorld().random.nextBetween(2, 10) + calculatedStrength);
                             entity.takeKnockback(calculatedStrength, origin.x - entity.getX(), origin.z - entity.getZ());
                             Living.updateVelocity(entity);
                             player.subtractEnergyCost(3);
-                            player.setAnimation(Animation.KICK);
+                            player.setAnimation(Animation.KICK, Animation.Recipient.ANYONE);
                             return;
                         }
                     }
 
                     BlockPos pos = kickLocation.pos();
-                    EarthPonyStompAbility.stompBlock(w, pos, 10 * (1 + player.getLevel().getScaled(5)) * w.getBlockState(pos).calcBlockBreakingDelta(player.getMaster(), w, pos));
-                    player.setAnimation(Animation.KICK);
+                    EarthPonyStompAbility.stompBlock(player, w, pos, 10 * (1 + player.getLevel().getScaled(5)) * w.getBlockState(pos).calcBlockBreakingDelta(player.asEntity(), w, pos));
+                    player.setAnimation(Animation.KICK, Animation.Recipient.ANYONE);
                 });
             }
 
             return true;
         }
 
+        if (type == ActivationType.DOUBLE_TAP && player.asEntity().isOnGround() && player.getMagicalReserves().getMana().get() > 40) {
+            player.getPhysics().dashForward((float)player.asWorld().random.nextTriangular(3.5F, 0.3F));
+            player.subtractEnergyCost(4);
+            player.asEntity().addExhaustion(5);
+            return true;
+        }
+
         return false;
+    }
+
+    @Override
+    public boolean acceptsQuickAction(Pony player, ActivationType type) {
+        return type == ActivationType.NONE || type == ActivationType.TAP || type == ActivationType.DOUBLE_TAP;
     }
 
     @Nullable
     @Override
-    public Pos tryActivate(Pony player) {
-        return TraceHelper.findBlock(player.getMaster(), 6 * getKickDirection(player), 1)
-                .filter(pos -> TreeType.at(pos, player.getReferenceWorld()) != TreeType.NONE)
+    public Optional<Pos> prepare(Pony player) {
+        return TraceHelper.findBlock(player.asEntity(), 6 * getKickDirection(player), 1)
+                .filter(pos -> TreeType.at(pos, player.asWorld()) != TreeType.NONE)
                 .map(Pos::new)
-                .orElseGet(() -> getDefaultKickLocation(player));
+                .or(() -> Optional.of(getDefaultKickLocation(player)));
     }
 
     private int getKickDirection(Pony player) {
-        return MineLPDelegate.getInstance().getPlayerPonyRace(player.getMaster()).isDefault() ? 1 : -1;
+        return MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isEquine() && player.asEntity().isInSneakingPose() ? -1 : 1;
     }
 
     private Pos getDefaultKickLocation(Pony player) {
-        Vec3d kickVector = player.getMaster().getRotationVector().multiply(1, 0, 1);
-        player.getMaster();
-        if (!MineLPDelegate.getInstance().getPlayerPonyRace(player.getMaster()).isDefault()) {
+        Vec3d kickVector = player.asEntity().getRotationVector().multiply(1, 0, 1);
+
+        if (MineLPDelegate.getInstance().getPlayerPonyRace(player.asEntity()).isEquine()) {
             kickVector = kickVector.rotateY((float)Math.PI);
         }
-        return new Pos(new BlockPos(player.getOriginVector().add(kickVector)));
+        return new Pos(BlockPos.ofFloored(player.getOriginVector().add(kickVector)));
     }
 
     @Override
-    public boolean canApply(Pony player, Pos data) {
+    public PacketCodec<? super RegistryByteBuf, Pos> getSerializer() {
+        return Pos.CODEC;
+    }
+
+    @Override
+    public boolean apply(Pony iplayer, Pos data) {
+
         BlockPos pos = data.pos();
-        TreeType tree = TreeType.at(pos, player.getReferenceWorld());
+        TreeType treeType = TreeType.at(pos, iplayer.asWorld());
 
-        return tree == TreeType.NONE || tree.findBase(player.getReferenceWorld(), pos)
-                .map(base -> tree.countBlocks(player.getReferenceWorld(), pos) > 0)
-                .orElse(false);
-    }
+        iplayer.setAnimation(Animation.KICK, Animation.Recipient.ANYONE);
+        iplayer.subtractEnergyCost(treeType == TreeType.NONE ? 1 : 3);
+        iplayer.asEntity().addExhaustion(3);
 
-    @Override
-    public Hit.Serializer<Pos> getSerializer() {
-        return Pos.SERIALIZER;
-    }
+        return treeType.collectBlocks(iplayer.asWorld(), pos).filter(tree -> {
+            ParticleUtils.spawnParticle(iplayer.asWorld(), UParticles.GROUND_POUND, data.vec(), Vec3d.ZERO);
 
-    @Override
-    public void apply(Pony iplayer, Pos data) {
-        BlockPos pos = data.pos();
-        TreeType tree = TreeType.at(pos, iplayer.getReferenceWorld());
+            PlayerEntity player = iplayer.asEntity();
 
-        iplayer.setAnimation(Animation.KICK);
-        iplayer.subtractEnergyCost(tree == TreeType.NONE ? 1 : 3);
+            if (BlockDestructionManager.of(player.getWorld()).getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
+                if (player.getWorld().random.nextInt(30) == 0) {
+                    tree.logs().forEach(player.getWorld(), (w, state, p) -> {
+                        if (iplayer.canModifyAt(p, ModificationType.PHYSICAL)) {
+                            w.breakBlock(p, true);
+                        }
+                    });
+                    tree.leaves().forEach(player.getWorld(), (w, state, p) -> {
+                        if (iplayer.canModifyAt(p, ModificationType.PHYSICAL)) {
+                            Block.dropStacks(w.getBlockState(p), w, p);
+                            w.setBlockState(p, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+                        }
+                    });
+                }
 
-        if (tree == TreeType.NONE) {
-            return;
-        } else {
-            ParticleUtils.spawnParticle(iplayer.getReferenceWorld(), UParticles.GROUND_POUND, data.vec(), Vec3d.ZERO);
-        }
-
-        PlayerEntity player = iplayer.getMaster();
-
-        if (BlockDestructionManager.of(player.world).getBlockDestruction(pos) + 4 >= BlockDestructionManager.MAX_DAMAGE) {
-            if (player.world.random.nextInt(30) == 0) {
-                tree.traverse(player.world, pos, (w, state, p, recurseLevel) -> {
-                    if (recurseLevel < 5) {
-                        w.breakBlock(p, true);
-                    } else {
-                        Block.dropStacks(w.getBlockState(p), w, p);
-                        w.setBlockState(p, Blocks.AIR.getDefaultState(), 3);
+                iplayer.subtractEnergyCost(3);
+            } else {
+                tree.leaves().forEach(player.getWorld(), (w, state, p) -> {
+                    if (w.random.nextInt(30) == 0) {
+                        w.syncWorldEvent(WorldEvents.BLOCK_BROKEN, p, Block.getRawIdFromState(state));
                     }
                 });
+
+                int cost = dropApples(player, pos);
+
+                if (cost > 0) {
+                    iplayer.subtractEnergyCost(cost / 7F);
+                }
             }
 
-            iplayer.subtractEnergyCost(3);
-        } else {
-            int cost = dropApples(player, pos);
-
-            if (cost > 0) {
-                iplayer.subtractEnergyCost(cost / 7F);
-            }
-        }
+            return true;
+        }).isPresent();
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
-        player.getMagicalReserves().getExertion().add(40);
+    public void warmUp(Pony player, AbilitySlot slot) {
+        player.getMagicalReserves().getExertion().addPercent(40);
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
+        player.asEntity().getHungerManager().addExhaustion(0.1F);
     }
 
     private int dropApples(PlayerEntity player, BlockPos pos) {
-        TreeType tree = TreeType.at(pos, player.world);
-
-        if (tree.countBlocks(player.world, pos) > 0) {
-            List<ItemEntity> capturedDrops = new ArrayList<>();
-
-            tree.traverse(player.world, pos, (world, state, position, recurse) -> {
+        TreeType treeType = TreeType.at(pos, player.getWorld());
+        return treeType.collectBlocks(player.getWorld(), pos).map(tree -> {
+            tree.logs().forEach(player.getWorld(), (world, state, position) -> {
                 affectBlockChange(player, position);
-            }, (world, state, position, recurse) -> {
+            });
+
+            int[] dropCount = {0};
+            tree.leaves().forEach(player.getWorld(), (world, state, position) -> {
                 affectBlockChange(player, position);
-                List<ItemEntity> drops = buckBlock(tree, state, world, position)
+                if (!buckBlock(treeType, state, world, position)
                         .filter(i -> !i.isEmpty())
-                        .map(stack -> createDrop(stack, position, world))
-                        .toList();
-                if (!drops.isEmpty()) {
+                        .map(stack -> createDrop(stack, position, world, dropCount))
+                        .toList().isEmpty()) {
                     world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, position, Block.getRawIdFromState(state));
-                    capturedDrops.addAll(drops);
                 }
             });
 
-            capturedDrops.forEach(player.world::spawnEntity);
-
-            return capturedDrops.size() / 3;
-        }
-
-        return 0;
+            return dropCount[0] / 3;
+        }).orElse(0);
     }
 
-    private ItemEntity createDrop(ItemStack stack, BlockPos pos, World world) {
+    private ItemEntity createDrop(ItemStack stack, BlockPos pos, World world, int[] dropCount) {
         ItemEntity entity = new ItemEntity(world,
             pos.getX() + world.random.nextFloat(),
             pos.getY() - 0.5,
@@ -223,10 +239,12 @@ public class EarthPonyKickAbility implements Ability<Pos> {
             stack
         );
         entity.setToDefaultPickupDelay();
+        world.spawnEntity(entity);
+        dropCount[0]++;
         return entity;
     }
 
-    private Stream<ItemStack> buckBlock(TreeType tree, BlockState treeState, World world, BlockPos position) {
+    private Stream<ItemStack> buckBlock(TreeType treeType, BlockState treeState, World world, BlockPos position) {
 
         if (treeState.getBlock() instanceof Buckable buckable) {
             return buckable.onBucked((ServerWorld)world, treeState, position).stream();
@@ -236,35 +254,39 @@ public class EarthPonyKickAbility implements Ability<Pos> {
         BlockState below = world.getBlockState(down);
 
         if (below.isAir()) {
-            return Stream.of(tree.pickRandomStack(world.random, treeState));
+            return Stream.of(treeType.pickRandomStack(world.random, treeState));
+        }
+
+        if (below.getBlock() instanceof Buckable buckable) {
+            return buckable.onBucked((ServerWorld)world, below, down).stream();
         }
 
         return Stream.empty();
     }
 
     private void affectBlockChange(PlayerEntity player, BlockPos position) {
-        BlockDestructionManager.of(player.world).damageBlock(position, 4);
+        BlockDestructionManager.of(player.getWorld()).damageBlock(position, 4);
 
-        PosHelper.all(position, p -> {
-            BlockState s = player.world.getBlockState(p);
+        PosHelper.fastAll(position, p -> {
+            BlockState s = player.getWorld().getBlockState(p);
 
             if (s.getBlock() instanceof BeehiveBlock) {
-                if (player.world.getBlockEntity(p) instanceof BeehiveBlockEntity hive) {
+                if (player.getWorld().getBlockEntity(p) instanceof BeehiveBlockEntity hive) {
                     hive.angerBees(player, s, BeehiveBlockEntity.BeeState.EMERGENCY);
                 }
 
-                player.world.updateComparators(position, s.getBlock());
+                player.getWorld().updateComparators(position, s.getBlock());
 
                 Box area = new Box(position).expand(8, 6, 8);
-                List<BeeEntity> nearbyBees = player.world.getNonSpectatingEntities(BeeEntity.class, area);
+                List<BeeEntity> nearbyBees = player.getWorld().getNonSpectatingEntities(BeeEntity.class, area);
 
                 if (!nearbyBees.isEmpty()) {
-                    List<PlayerEntity> nearbyPlayers = player.world.getNonSpectatingEntities(PlayerEntity.class, area);
+                    List<PlayerEntity> nearbyPlayers = player.getWorld().getNonSpectatingEntities(PlayerEntity.class, area);
                     int i = nearbyPlayers.size();
 
                     for (BeeEntity bee : nearbyBees) {
                         if (bee.getTarget() == null) {
-                            bee.setTarget(nearbyPlayers.get(player.world.random.nextInt(i)));
+                            bee.setTarget(nearbyPlayers.get(player.getWorld().random.nextInt(i)));
                         }
                     }
                 }

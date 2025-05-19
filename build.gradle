@@ -1,15 +1,25 @@
-plugins {
-    id 'java-library'
-    id 'fabric-loom' version '0.12-SNAPSHOT'
-    id 'org.ajoberstar.reckon' version '0.13.0'
+buildscript {
+    dependencies {
+        classpath 'com.github.dexman545:Outlet:1.6.1'
+    }
 }
+plugins {
+    id 'fabric-loom' version '1.7-SNAPSHOT'
+    id 'maven-publish'
+    id 'com.modrinth.minotaur' version '2.+'
+    id 'org.ajoberstar.reckon' version '0.13.1'
+}
+apply plugin: 'io.github.dexman545.outlet'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
     withSourcesJar()
 }
+
+outlet.allowSnapshotsForProject = false
+outlet.mcVersionRange = project.minecraft_version_range
 
 group = project.group
 description = project.displayname
@@ -20,33 +30,30 @@ loom {
     accessWidenerPath = file('src/main/resources/unicopia.aw')
 }
 
+fabricApi {
+    configureDataGeneration {
+      modId = 'unicopia'
+    }
+}
+
 reckon {
     scopeFromProp()
-    stageFromProp('beta', 'rc', 'final')
+    stageFromProp 'beta', 'rc', 'final'
 }
 
 repositories {
     mavenLocal()
-    maven {
-        name = 'modmenu'
-        url = 'https://maven.terraformersmc.com/releases'
-    }
-    maven {
-        name = 'minelp'
-        url = 'https://repo.minelittlepony-mod.com/maven/snapshot'
-    }
-    maven {
-        name = 'minelp-release'
-        url = 'https://repo.minelittlepony-mod.com/maven/release'
-    }
-    maven {
-        name = "TerraformersMC"
-        url = "https://maven.terraformersmc.com/"
-    }
-    maven {
-        name = "Ladysnake Libs"
-        url = "https://ladysnake.jfrog.io/artifactory/mods"
-    }
+    flatDir { dirs 'lib' }
+    maven { name 'trinkets'; url 'https://maven.ladysnake.org/releases' }
+    maven { name 'mod-menu'; url 'https://maven.terraformersmc.com/' }
+    maven { name 'minelp-snapshot'; url 'https://repo.minelittlepony-mod.com/maven/snapshot' }
+    maven { name 'minelp-releases'; url 'https://repo.minelittlepony-mod.com/maven/release' }
+    maven { name 'TerraformersMC'; url 'https://maven.terraformersmc.com/' }
+    maven { name 'Iris Deps'; url "https://maven.covers1624.net/" }
+    maven { name 'Greenhouse Maven For Farmers delight'; url 'https://maven.greenhouseteam.dev/releases/' }
+    maven { name 'Porting Lib For Farmers delight'; url = 'https://mvn.devos.one/releases/' }
+    maven { name 'Modrinth'; url 'https://api.modrinth.com/maven' }
+    maven { name 'JitPack'; url 'https://jitpack.io'; content { includeGroup "com.github.Virtuoel" } }
 }
 
 dependencies {
@@ -60,21 +67,136 @@ dependencies {
     modApi "com.minelittlepony:kirin:${project.kirin_version}"
     include "com.minelittlepony:kirin:${project.kirin_version}"
 
-    modCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}")
-    // implementation 'org.jetbrains:intellij-fernflower:1.2.1.16'
-    // modCompileOnly("net.caffienemc.sodium:sodium-fabric-mc1.19.2:0.4.4+build.18")
+    modApi "com.sollace:fabwork:${project.fabwork_version}"
+    include "com.sollace:fabwork:${project.fabwork_version}"
 
-    modCompileOnly "dev.emi:trinkets:3.4.0"
+    compileOnly "com.sollace:Romanizer:Romanizer:1.0.2"
+    include "com.sollace:Romanizer:Romanizer:1.0.2"
+
+    modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
+
+    modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
+    include "com.terraformersmc.terraform-api:terraform-wood-api-v1:${project.terraformer_api_version}"
+
+    modImplementation "com.github.MattiDragon:TlaApi:${project.tla_version}"
+    include "com.github.MattiDragon:TlaApi:${project.tla_version}"
+
+    if (project.use_trinkets == '1') {
+      modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
+      modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.3.0"
+      modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0"
+    } else {
+      modCompileOnly "dev.emi:trinkets-dummy:${project.trinkets_version}"
+    }
+
+    if (project.use_farmers_delight == '1') {
+      modImplementation "vectorwing:FarmersDelight-Refabricated:${project.farmers_delight_version}", {
+        exclude group: "net.fabricmc"
+      }
+    }
+    if (project.use_pehkui == '1') {
+      modCompileOnly "maven.modrinth:pehkui:${project.pehkui_version}", { exclude group: "net.fabricmc.fabric-api" }
+      modCompileOnly "com.github.Virtuoel:KanosConfig:0.4.1", { exclude group: "net.fabricmc.fabric-api" }
+    }
+
+    if (project.use_sodium == '1') {
+      modCompileOnly "maven.modrinth:indium:${project.indium_version}", { exclude group: "net.fabricmc.fabric-api" }
+      modCompileOnly "maven.modrinth:sodium:${project.sodium_version}", { exclude group: "net.fabricmc.fabric-api" }
+      if (project.use_iris == '1') {
+        modCompileOnly "maven.modrinth:iris:${project.iris_version}", { exclude group: "net.fabricmc.fabric-api" }
+        modImplementation "org.anarres:jcpp:1.4.14"
+        modImplementation "org.antlr:antlr4-runtime:4.13.1"
+        modImplementation "io.github.douira:glsl-transformer:2.0.1"
+      }
+    }
+
+    if (project.tmi_type == 'emi') {
+      modCompileOnly "dev.emi:emi-fabric:${project.emi_version}"
+    }
+    if (project.tmi_type == 'rei') {
+      modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin-fabric:${project.rei_version}"
+      modCompileOnly "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+      modCompileOnly "dev.architectury:architectury-fabric:${project.rei_architectury_version}"
+      modCompileOnly "me.shedaniel.cloth:basic-math:${project.rei_cloth_basic_math_version}"
+      modCompileOnly "me.shedaniel.cloth:cloth-config-fabric:${project.rei_cloth_config_version}"
+    }
+}
+
+remapJar {
+    addNestedDependencies = true
 }
 
 processResources {
     inputs.property "version", project.version.toString()
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version.toString()
+        expand "version": project.version.toString(),
+                "minecraftVersion": project.minecraft_version_range,
+                "loaderVersion": ">=${project.loader_version}",
+                "fabricVersion": ">=${project.fabric_version}",
+                "fabworkVersion": ">=${project.fabwork_version}",
+                "kirinVersion": ">=${project.kirin_version}"
     }
 }
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
 }
+
+tasks.modrinth {
+    onlyIf {
+      def stage = version.version.stage.value
+      stage == null || stage.name != 'beta'
+    }
+}
+
+modrinth {
+    token = System.env.MODRINTH_KEY
+    projectId = project.modrinth_project_id
+    //featured = true
+    versionNumber = version.toString()
+    versionName = archivesBaseName + '-' + version
+    changelog = "[Changelog](https://github.com/Sollace/Unicopia/releases/tag/${version.toString()})"
+    loaders = ['fabric', 'quilt']
+    uploadFile = remapJar
+    outlet.mcVersions().each{ver ->
+      gameVersions.add ver
+    }
+    dependencies {
+       required.project 'P7dR8mSH'
+       optional.project '5aaWibi9'
+       optional.project 'JBjInUXM'
+       optional.project 'fRiHVvU7'
+    }
+}
+
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+
+            pom {
+                name = "Unicopia"
+                description = "Pony abilities mod for minecraft"
+                licenses {
+                    license {
+                        name = "MIT Public License"
+                        url = "https://tlo.mit.edu/learn-about-intellectual-property/software-and-open-source-licensing"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "sollace"
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/Sollace/Unicopia.git'
+                    developerConnection = 'scm:git:ssh://github.com/Sollace/Unicopia.git'
+                    url = 'https://github.com/Sollace/Unicopia'
+                }
+            }
+        }
+    }
+}
+

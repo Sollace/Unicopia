@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
+
 import net.minecraft.entity.Entity;
 
 /**
@@ -27,31 +29,46 @@ public interface Owned<E extends Entity> {
      * Since {@link Owned#getMaster()} will only return if the owner is loaded, use this to perform checks
      * in the owner's absence.
      */
-    default Optional<UUID> getMasterId() {
-        return Optional.of(getMaster()).map(Entity::getUuid);
+    Optional<UUID> getMasterId();
+
+    default boolean isOwnerOrFriend(Entity target) {
+        return isFriend(target) || isOwnerOrVehicle(target);
     }
 
-    /**
-     * Updates the owner of this object.
-     */
-    void setMaster(@Nullable E owner);
+    default boolean isFriend(Entity target) {
+        return FriendshipBraceletItem.isComrade(this, target);
+    }
 
-    /**
-     * Updated the owner of this object to be the same as another.
-     *
-     * @param sibling
-     */
-    default void setMaster(Owned<? extends E> sibling) {
-        setMaster(sibling.getMaster());
+    default boolean isOwnerOrVehicle(@Nullable Entity target) {
+        if (isOwnedBy(target)) {
+            return true;
+        }
+
+        Entity owner = getMaster();
+        return target != null && owner != null && owner.isConnectedThroughVehicle(target);
     }
 
     default boolean isOwnedBy(@Nullable Object owner) {
-        return owner instanceof Entity e
-                && getMasterId().isPresent()
-                && e.getUuid().equals(getMasterId().get());
+        return owner instanceof Entity e && e.getUuid().equals(getMasterId().orElse(null));
     }
 
     default boolean hasCommonOwner(Owned<?> sibling) {
-        return getMasterId().isPresent() && getMasterId().equals(sibling.getMasterId());
+        return getMasterId().equals(sibling.getMasterId());
+    }
+
+    interface Mutable<E extends Entity> {
+        /**
+         * Updates the owner of this object.
+         */
+        void setMaster(@Nullable E owner);
+
+        /**
+         * Updated the owner of this object to be the same as another.
+         *
+         * @param sibling
+         */
+        default void setMaster(Owned<? extends E> sibling) {
+            setMaster(sibling.getMaster());
+        }
     }
 }

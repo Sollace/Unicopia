@@ -8,8 +8,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -28,9 +28,8 @@ public class TribeButton extends Button {
     }
 
     @Override
-    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float partialTicks) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, TribeSelectionScreen.TEXTURE);
+    public void renderWidget(DrawContext context, int mouseX, int mouseY, float partialTicks) {
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1, 1, 1, alpha);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -41,31 +40,36 @@ public class TribeButton extends Button {
 
         MinecraftClient mc = MinecraftClient.getInstance();
 
-        drawTexture(matrices, x  - 3, y - 13, 0, 0, 76, 69);
-        if (isHovered()) {
-            drawTexture(matrices, x  - 4, y - 14, 76, 0, 78, 71);
+        context.drawTexture(TribeSelectionScreen.TEXTURE, getX()  - 3, getY() - 13, 0, 0, 76, 69);
+        if (isSelected()) {
+            context.drawTexture(TribeSelectionScreen.TEXTURE, getX()  - 4, getY() - 14, 76, 0, 78, 71);
 
-            if (hovered && screenWidth > 0) {
+            if (isFocused() && screenWidth > 0) {
                 Identifier id = Race.REGISTRY.getId(race);
-                drawCenteredText(matrices, getFont(), Text.translatable("gui.unicopia.tribe_selection.describe." + id.getNamespace() + "." + id.getPath()), screenWidth / 2, y + height, 0xFFFFFFFF);
+                context.drawCenteredTextWithShadow(getFont(), Text.translatable("gui.unicopia.tribe_selection.describe." + id.getNamespace() + "." + id.getPath()), screenWidth / 2, getY() + height, 0xFFFFFFFF);
             }
         }
 
+        ISprite icon = getStyle().getIcon();
+
         if (getStyle().hasIcon()) {
-            getStyle().getIcon().render(matrices, x, y, mouseX, mouseY, partialTicks);
+            icon.render(context, getX(), getY(), mouseX, mouseY, partialTicks);
         }
 
         int foreColor = getStyle().getColor();
         if (!active) {
             foreColor = 10526880;
-        } else if (isHovered()) {
+        } else if (isSelected()) {
             foreColor = 16777120;
         }
 
         setMessage(getStyle().getText());
 
+        getStyle().setIcon(ISprite.EMPTY);
 
-        renderForground(matrices, mc, mouseX, mouseY, foreColor | MathHelper.ceil(alpha * 255.0F) << 24);
+        renderForeground(context, mc, mouseX, mouseY, foreColor | MathHelper.ceil(alpha * 255.0F) << 24);
+
+        getStyle().setIcon(icon);
     }
 
     public static ISprite createSprite(Race race, int x, int y, int size) {

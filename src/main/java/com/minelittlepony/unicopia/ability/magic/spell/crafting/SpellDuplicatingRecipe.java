@@ -1,35 +1,33 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
-import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
 import com.minelittlepony.unicopia.item.*;
+import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.world.World;
 
 /**
  * A recipe for creating a new spell from input traits and items.
  */
-public class SpellDuplicatingRecipe implements SpellbookRecipe {
-    private final Identifier id;
-
-    private final IngredientWithSpell material;
-
-    private SpellDuplicatingRecipe(Identifier id, IngredientWithSpell material) {
-        this.id = id;
-        this.material = material;
-    }
+public record SpellDuplicatingRecipe (IngredientWithSpell material) implements SpellbookRecipe {
+    public static final MapCodec<SpellDuplicatingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            IngredientWithSpell.CODEC.fieldOf("material").forGetter(recipe -> recipe.material)
+    ).apply(instance, SpellDuplicatingRecipe::new));
+    public static final PacketCodec<RegistryByteBuf, SpellDuplicatingRecipe> PACKET_CODEC = IngredientWithSpell.PACKET_CODEC.xmap(SpellDuplicatingRecipe::new, SpellDuplicatingRecipe::material);
 
     @Override
     public void buildCraftingTree(CraftingTreeBuilder builder) {
         ItemStack[] spells = SpellType.REGISTRY.stream()
                 .filter(SpellType::isObtainable)
-                .map(type -> GemstoneItem.enchant(UItems.GEMSTONE.getDefaultStack(), type))
+                .map(i -> EnchantableItem.enchant(UItems.GEMSTONE.getDefaultStack(), i))
                 .toArray(ItemStack[]::new);
         builder.input(UItems.BOTCHED_GEM.getDefaultStack());
         builder.input(spells);
@@ -42,21 +40,21 @@ public class SpellDuplicatingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public boolean matches(SpellbookInventory inventory, World world) {
-        ItemStack stack = inventory.getItemToModify();
+    public boolean matches(Input inventory, World world) {
+        ItemStack stack = inventory.stackToModify();
         return InventoryUtil.stream(inventory)
-                .limit(inventory.size() - 1)
+                .limit(inventory.getSize() - 1)
                 .filter(i -> !i.isEmpty())
-                .noneMatch(i -> !i.isOf(UItems.GEMSTONE) || !GemstoneItem.isEnchanted(i))
+                .noneMatch(i -> !i.isOf(UItems.GEMSTONE) || !EnchantableItem.isEnchanted(i))
                 && material.test(stack)
-                && !GemstoneItem.isEnchanted(stack);
+                && !EnchantableItem.isEnchanted(stack);
     }
 
     @Override
-    public ItemStack craft(SpellbookInventory inventory) {
+    public ItemStack craft(Input inventory, WrapperLookup registries) {
         return InventoryUtil.stream(inventory)
             .filter(i -> i.isOf(UItems.GEMSTONE))
-            .filter(GemstoneItem::isEnchanted)
+            .filter(EnchantableItem::isEnchanted)
             .map(stack -> stack.copy())
             .map(stack -> {
                 stack.setCount(2);
@@ -71,36 +69,14 @@ public class SpellDuplicatingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public ItemStack getOutput() {
+    public ItemStack getResult(WrapperLookup registries) {
         ItemStack stack = UItems.GEMSTONE.getDefaultStack();
         stack.setCount(2);
         return stack;
     }
 
     @Override
-    public Identifier getId() {
-        return id;
-    }
-
-    @Override
     public RecipeSerializer<?> getSerializer() {
         return URecipes.SPELL_DUPLICATING;
-    }
-
-    public static class Serializer implements RecipeSerializer<SpellDuplicatingRecipe> {
-        @Override
-        public SpellDuplicatingRecipe read(Identifier id, JsonObject json) {
-            return new SpellDuplicatingRecipe(id, IngredientWithSpell.fromJson(json.get("material")));
-        }
-
-        @Override
-        public SpellDuplicatingRecipe read(Identifier id, PacketByteBuf buf) {
-            return new SpellDuplicatingRecipe(id, IngredientWithSpell.fromPacket(buf));
-        }
-
-        @Override
-        public void write(PacketByteBuf buf, SpellDuplicatingRecipe recipe) {
-            recipe.material.write(buf);
-        }
     }
 }

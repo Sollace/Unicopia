@@ -1,46 +1,57 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.Optional;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
-import com.minelittlepony.unicopia.particle.ParticleHandle.Attachment;
+import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
+import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.network.track.TrackableDataType;
+import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
+import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
-import com.minelittlepony.unicopia.particle.SphereParticleEffect;
 import com.minelittlepony.unicopia.particle.UParticles;
+import com.minelittlepony.unicopia.projectile.MagicBeamEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
+import com.minelittlepony.unicopia.server.world.UGameRules;
+import com.minelittlepony.unicopia.util.Lerp;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.explosion.Explosion.DestructionType;
+import net.minecraft.world.World.ExplosionSourceType;
 
 /**
  * More powerful version of the vortex spell which creates a black hole.
- *
- * TODO: Possible uses
- *  - Garbage bin
- *  - Link with a teleportation spell to create a wormhole
  */
-public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelegate.BlockHitListener {
+public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate.BlockHitListener {
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
             .with(Trait.CHAOS, 5)
             .with(Trait.KNOWLEDGE, 1)
@@ -48,27 +59,38 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
             .with(Trait.DARKNESS, 100)
             .build();
 
-    private static final Vec3d SPHERE_OFFSET = new Vec3d(0, 2, 0);
+    private final DataTracker.Entry<Float> accumulatedMass = this.dataTracker.startTracking(TrackableDataType.FLOAT, 0F);
 
-    private int age = 0;
-    private float accumulatedMass = 0;
+    private final TargetSelecter targetSelecter = new TargetSelecter(this).setFilter(this::isValidTarget).setTargetowner(true).setTargetAllies(true);
+
+    private final Lerp radius = new Lerp(0);
 
     protected DarkVortexSpell(CustomisedSpellType<?> type) {
         super(type);
     }
+    // 1. force decreases with distance: distance scale 1 -> 0
+    // 2. max force (at dist 0) is taken from accumulated mass
+    // 3. force reaches 0 at distance of drawDropOffRange
 
-    @Override
-    public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
-        if (!projectile.isClient()) {
-            BlockPos pos = hit.getBlockPos();
-            projectile.world.createExplosion(projectile, pos.getX(), pos.getY(), pos.getZ(), 3, DestructionType.NONE);
-            toPlaceable().tick(projectile, Situation.BODY);
-        }
+    private double getMass() {
+        return 0.1F + accumulatedMass.get() / 10F;
+    }
+
+    public double getEventHorizonRadius() {
+        return radius.getValue();
+    }
+
+    public double getDrawDropOffRange() {
+        return getEventHorizonRadius() * 20;
+    }
+
+    private double getAttractiveForce(Caster<?> source, Entity target) {
+        return AttractionUtils.getAttractiveForce(getMass(), getOrigin(source), target);
     }
 
     @Override
-    public boolean apply(Caster<?> source) {
-        return toPlaceable().apply(source);
+    public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
+        return method == CastingMethod.STAFF ? toThrowable() : toPlaceable();
     }
 
     @Override
@@ -82,131 +104,160 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
             return true;
         }
 
-        age++;
-        setDirty();
+        Vec3d origin = getOrigin(source);
+        double mass = getMass() * 0.1;
+        double logarithm = 1 - (1D / (1 + (mass * mass)));
+        radius.update((float)Math.max(0.01, logarithm * source.asWorld().getGameRules().getInt(UGameRules.MAX_DARK_VORTEX_SIZE)), 200L);
 
-        if (age % 20 == 0) {
-            source.getReferenceWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_ADDITIONS, SoundCategory.AMBIENT, 1, 1);
+        if (source.asEntity().age % 20 == 0) {
+            source.asWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_ADDITIONS, SoundCategory.AMBIENT, 1, 1);
         }
 
-        source.subtractEnergyCost(-accumulatedMass);
+        double eventHorizon = getEventHorizonRadius();
 
-        if (!source.isClient() && source.getReferenceWorld().random.nextInt(300) == 0) {
-            ParticleUtils.spawnParticle(source.getReferenceWorld(), UParticles.LIGHTNING_BOLT, getOrigin(source), Vec3d.ZERO);
-        }
+        if (source.isClient()) {
+            if (eventHorizon > 0.3) {
+                double range = eventHorizon * 2;
+                source.spawnParticles(origin, new Sphere(false, range), 50, p -> {
+                    source.addParticle(
+                            new FollowingParticleEffect(UParticles.HEALTH_DRAIN, origin, 0.4F)
+                            .withChild(source.asWorld().isAir(BlockPos.ofFloored(p)) ? ParticleTypes.SMOKE : ParticleTypes.CAMPFIRE_SIGNAL_SMOKE),
+                            p,
+                            Vec3d.ZERO
+                    );
+                });
+            }
 
-        return super.tick(source, situation);
-    }
-
-    @Override
-    public boolean isFriendlyTogether(Affine other) {
-        return accumulatedMass < 4;
-    }
-
-    @Override
-    protected boolean isValidTarget(Caster<?> source, Entity entity) {
-        return EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity) && getAttractiveForce(source, entity) > 0;
-    }
-
-    @Override
-    public void generateParticles(Caster<?> source) {
-        super.generateParticles(source);
-
-        float radius = (float)getEventHorizonRadius();
-
-        particlEffect.update(getUuid(), source, spawner -> {
-            spawner.addParticle(new SphereParticleEffect(UParticles.SPHERE, getType().getColor(), 0.99F, radius, SPHERE_OFFSET), source.getOriginVector(), Vec3d.ZERO);
-        }).ifPresent(p -> {
-            p.setAttribute(Attachment.ATTR_RADIUS, radius);
-        });
-        particlEffect.update(getUuid(), "_ring", source, spawner -> {
-            spawner.addParticle(new SphereParticleEffect(UParticles.DISK, 0xFFFFFFFF, 0.4F, radius + 1, SPHERE_OFFSET), getOrigin(source), Vec3d.ZERO);
-        }).ifPresent(p -> {
-            p.setAttribute(Attachment.ATTR_RADIUS, radius * 2F);
-            p.setAttribute(Attachment.ATTR_COLOR, 0xAAAAAA);
-        });
-
-        double angle = age % 260;
-
-        source.spawnParticles(ParticleTypes.SMOKE, 3);
-
-        if (radius > 2) {
-            source.addParticle(new SphereParticleEffect(UParticles.DISK, 0xFF0000, 1, radius),
-                getOrigin(source).add(0, 0.2, 0), new Vec3d(0, angle, 10));
-            source.addParticle(new SphereParticleEffect(UParticles.DISK, 0xFF0000, 1, radius),
-                getOrigin(source).add(0, -0.2, 0), new Vec3d(0, angle, 10));
-        }
-    }
-
-    @Override
-    public double getDrawDropOffRange(Caster<?> source) {
-        return getEventHorizonRadius() * 20;
-    }
-
-    @Override
-    protected Vec3d getOrigin(Caster<?> source) {
-        return source.getOriginVector().add(SPHERE_OFFSET);
-    }
-
-    @Override
-    protected long applyEntities(Caster<?> source) {
-        if (!source.isClient()) {
-
-            double radius = getEventHorizonRadius();
-
-            if (radius > 2) {
-                Vec3d origin = getOrigin(source);
-                new Sphere(false, radius).translate(origin).getBlockPositions().forEach(i -> {
-                    if (!canAffect(source, i)) {
-                        return;
-                    }
-                    if (source.getOrigin().isWithinDistance(i, getEventHorizonRadius() / 2)) {
-                        source.getReferenceWorld().breakBlock(i, false);
-                    } else {
-                        CatapultSpell.createBlockEntity(source.getReferenceWorld(), i, e -> {
-                            applyRadialEffect(source, e, e.getPos().distanceTo(origin), radius);
+            if (source.asWorld().random.nextInt(300) == 0) {
+                ParticleUtils.spawnParticle(source.asWorld(), LightningBoltParticleEffect.DEFAULT, origin, Vec3d.ZERO);
+            }
+        } else {
+            if (eventHorizon > 2) {
+                new Sphere(false, eventHorizon + 3).translate(origin).randomPoints(10, source.asWorld().random).forEach(i -> {
+                    BlockPos pos = BlockPos.ofFloored(i);
+                    if (!source.asWorld().isAir(pos)) {
+                        new Sphere(false, 3).translate(i).getBlockPositions().forEach(p -> {
+                            affectBlock(source, p, origin);
                         });
+                        ParticleUtils.spawnParticle(source.asWorld(), new LightningBoltParticleEffect(true, 10, 6, 3, Optional.of(i)), getOrigin(source), Vec3d.ZERO);
                     }
-                    setDirty();
                 });
             }
         }
 
-        return super.applyEntities(source);
+
+        for (Entity insideEntity : source.findAllEntitiesInRange(eventHorizon * 0.5F).toList()) {
+            insideEntity.setVelocity(Vec3d.ZERO);
+            Living.updateVelocity(insideEntity);
+
+            if (insideEntity instanceof CastSpellEntity s && getType().isOn(insideEntity)) {
+                setDead();
+                s.getSpellSlot().clear();
+                source.asWorld().createExplosion(source.asEntity(), origin.x, origin.y, origin.z, 12, ExplosionSourceType.NONE);
+                source.asWorld().createExplosion(source.asEntity(), insideEntity.getX(), insideEntity.getY(), insideEntity.getZ(), 12, ExplosionSourceType.NONE);
+                return false;
+            }
+        }
+        targetSelecter.getEntities(source, getDrawDropOffRange()).forEach(i -> {
+            try {
+                affectEntity(source, i, origin);
+            } catch (Throwable e) {
+                Unicopia.LOGGER.error("Error updating radial effect", e);
+            }
+        });
+
+        if (!source.subtractEnergyCost(0.01)) {
+            setDead();
+            source.asWorld().createExplosion(source.asEntity(), origin.x, origin.y, origin.z, 3, ExplosionSourceType.NONE);
+        }
+
+        return true;
     }
 
-    protected boolean canAffect(Caster<?> source, BlockPos pos) {
-        return source.canModifyAt(pos)
-            && source.getReferenceWorld().getFluidState(pos).isEmpty()
-            && source.getReferenceWorld().getBlockState(pos).getHardness(source.getReferenceWorld(), pos) >= 0;
-    }
 
-    // 1. force decreases with distance: distance scale 1 -> 0
-    // 2. max force (at dist 0) is taken from accumulated mass
-    // 3. force reaches 0 at distance of drawDropOffRange
+    @Override
+    public void tickDying(Caster<?> source) {
+        float m = accumulatedMass.get() - 0.8F;
+        accumulatedMass.set(m);
+        double mass = getMass() * 0.1;
+        double logarithm = 1 - (1D / (1 + (mass * mass)));
+        radius.update((float)Math.max(0.1, logarithm * source.asWorld().getGameRules().getInt(UGameRules.MAX_DARK_VORTEX_SIZE)), 200L);
+        if (m < 1) {
+            super.tickDying(source);
+        }
 
-    private double getEventHorizonRadius() {
-        return Math.sqrt(Math.max(0.001, getMass() - 12));
-    }
+        Vec3d origin = getOrigin(source);
+        ParticleUtils.spawnParticle(source.asWorld(), ParticleTypes.SMOKE, origin, new Vec3d(0, 0.2F, 0));
+        ParticleUtils.spawnParticle(source.asWorld(), ParticleTypes.SMOKE, origin, new Vec3d(0, -0.2F, 0));
 
-    private double getAttractiveForce(Caster<?> source, Entity target) {
-        return AttractionUtils.getAttractiveForce(getMass(), getOrigin(source), target);
-    }
-
-    private double getMass() {
-        float pulse = (float)Math.sin(age * 8) / 1F;
-        return 10 + Math.min(15, Math.min(0.5F + pulse, (float)Math.exp(age) / 8F - 90) + accumulatedMass / 10F) + pulse;
+        if (!source.isClient() && source.asWorld().getRandom().nextInt(10) == 0) {
+            Block.dropStack(source.asWorld(), BlockPos.ofFloored(origin), (source.asWorld().getRandom().nextInt(75) == 0 ? Items.ANCIENT_DEBRIS : Items.IRON_NUGGET).getDefaultStack());
+        }
     }
 
     @Override
-    protected void applyRadialEffect(Caster<?> source, Entity target, double distance, double radius) {
+    public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
+        if (!projectile.isClient() && projectile instanceof MagicBeamEntity source) {
+            Vec3d pos = hit.getPos();
+            projectile.getWorld().createExplosion(projectile, pos.x, pos.y, pos.z, 12, ExplosionSourceType.NONE);
+            toPlaceable().tick(source, Situation.BODY);
+        }
+    }
 
-        if (target instanceof FallingBlockEntity && source.isClient()) {
+    @Override
+    public boolean isFriendlyTogether(Affine other) {
+        return accumulatedMass.get() < 4;
+    }
+
+    private boolean isValidTarget(Caster<?> source, Entity entity) {
+        return EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity) && getAttractiveForce(source, entity) > 0;
+    }
+
+    public Vec3d getOrigin(Caster<?> source) {
+        return source.asEntity().getPos().add(0, getYOffset(), 0);
+    }
+
+    public double getYOffset() {
+        return 2;
+    }
+
+    private boolean canAffect(Caster<?> source, BlockPos pos) {
+        return source.canModifyAt(pos)
+            && source.asWorld().getBlockState(pos).getHardness(source.asWorld(), pos) >= 0
+            && !source.asWorld().getBlockState(pos).isIn(UTags.Blocks.CATAPULT_IMMUNE);
+    }
+
+    private void affectBlock(Caster<?> source, BlockPos pos, Vec3d origin) {
+        if (!canAffect(source, pos)) {
+            if (source.asWorld().getBlockState(pos).isOf(Blocks.BEDROCK)) {
+                source.asWorld().setBlockState(pos, Blocks.BARRIER.getDefaultState());
+            }
             return;
         }
+        if (pos.isWithinDistance(origin, getEventHorizonRadius())) {
+            source.asWorld().breakBlock(pos, false);
+            updateStatePostRemoval(source, pos);
+        } else {
+            CatapultSpell.createBlockEntity(source.asWorld(), pos, e -> {
+                updateStatePostRemoval(source, pos);
+                e.addVelocity(0, 0.1, 0);
+            });
+        }
+    }
 
-        if (distance <= getEventHorizonRadius()) {
-            target.setVelocity(target.getVelocity().multiply(distance / (2 * radius)));
+    private void updateStatePostRemoval(Caster<?> source, BlockPos pos) {
+        if (!source.asWorld().getFluidState(pos).isEmpty()) {
+            source.asWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
+        }
+    }
+
+    private void affectEntity(Caster<?> source, Entity target, Vec3d origin) {
+        double distance = target.getPos().distanceTo(origin);
+        double eventHorizonRadius = getEventHorizonRadius();
+
+        if (distance <= eventHorizonRadius + 0.5) {
+            target.setVelocity(target.getVelocity().multiply(distance < 1 ? distance : distance / (2 * eventHorizonRadius)));
+            Living.updateVelocity(target);
 
             @Nullable
             Entity master = source.getMaster();
@@ -218,7 +269,7 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
                 }
             } else if (target instanceof PersistentProjectileEntity) {
                 if (master != null) {
-                    master.damage(DamageSource.thrownProjectile(target, ((PersistentProjectileEntity)target).getOwner()), 4);
+                    master.damage(master.getDamageSources().thrown(target, ((PersistentProjectileEntity)target).getOwner()), 4);
                 }
                 target.discard();
                 return;
@@ -226,35 +277,41 @@ public class DarkVortexSpell extends AttractiveSpell implements ProjectileDelega
 
             double massOfTarget = AttractionUtils.getMass(target);
 
-            accumulatedMass += massOfTarget;
-            setDirty();
-            target.damage(MagicalDamageSource.create("black_hole"), Integer.MAX_VALUE);
+            if (!source.isClient() && massOfTarget != 0) {
+                accumulatedMass.set((float)(accumulatedMass.get() + massOfTarget));
+            }
+
+            target.damage(source.damageOf(UDamageTypes.GAVITY_WELL_RECOIL, source), Integer.MAX_VALUE);
             if (!(target instanceof PlayerEntity)) {
                 target.discard();
+                source.asWorld().playSound(null, target.getBlockPos(), USounds.AMBIENT_DARK_VORTEX_MOOD, SoundCategory.AMBIENT, 2, 0.002F);
+            }
+            if (target.isAlive()) {
+                target.damage(source.asEntity().getDamageSources().outOfWorld(), Integer.MAX_VALUE);
             }
 
             source.subtractEnergyCost(-massOfTarget * 10);
-            source.getReferenceWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_MOOD, SoundCategory.AMBIENT, 2, 0.02F);
+
+            if (target instanceof PlayerEntity && distance < eventHorizonRadius + 5) {
+                source.asWorld().playSound(null, target.getBlockPos(), USounds.AMBIENT_DARK_VORTEX_MOOD, SoundCategory.AMBIENT, 2, 0.02F);
+            }
+
         } else {
             double force = getAttractiveForce(source, target);
 
-            AttractionUtils.applyForce(getOrigin(source), target, -force, 0, true);
-
-            source.subtractEnergyCost(-2);
+            AttractionUtils.applyForce(origin, target, -force, 0, true);
         }
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        compound.putInt("age", age);
-        compound.putFloat("accumulatedMass", accumulatedMass);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        compound.putFloat("accumulatedMass", accumulatedMass.get());
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        age = compound.getInt("age");
-        accumulatedMass = compound.getFloat("accumulatedMass");
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
+        accumulatedMass.set(compound.getFloat("accumulatedMass"));
     }
 }

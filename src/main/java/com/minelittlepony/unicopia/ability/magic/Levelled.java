@@ -1,43 +1,43 @@
 package com.minelittlepony.unicopia.ability.magic;
 
+import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 
-import net.minecraft.nbt.NbtCompound;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 /**
  * Object with levelling capabilities.
  */
 public interface Levelled {
-    LevelStore EMPTY = fixed(0);
+    Codec<LevelStore> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.INT.fieldOf("max").forGetter(LevelStore::getMax),
+            Codec.INT.fieldOf("value").forGetter(LevelStore::get)
+    ).apply(instance, Levelled::of));
 
-    static LevelStore fixed(int level) {
-        return of(() -> level);
-    }
+    LevelStore ZERO = of(0, 1);
 
-    static LevelStore of(IntSupplier supplier) {
+    static LevelStore of(IntSupplier getter, IntConsumer setter, IntSupplier max) {
         return new LevelStore() {
             @Override
             public int get() {
-                return supplier.getAsInt();
+                return getter.getAsInt();
             }
 
             @Override
             public void set(int level) {
+                setter.accept(level);
             }
 
             @Override
             public int getMax() {
-                return get();
+                return max.getAsInt();
             }
         };
     }
 
     static LevelStore copyOf(LevelStore store) {
         return of(store.get(), store.getMax());
-    }
-
-    static LevelStore fromNbt(NbtCompound compound) {
-        return of(compound.getInt("value"), compound.getInt("max"));
     }
 
     static LevelStore of(int level, int max) {
@@ -70,6 +70,9 @@ public interface Levelled {
         void set(int level);
 
         default float getScaled(float max) {
+            if (getMax() == 0) {
+                return max;
+            }
             return ((float)get() / getMax()) * max;
         }
 
@@ -80,13 +83,6 @@ public interface Levelled {
 
         default void add(int levels) {
             set(get() + levels);
-        }
-
-        default NbtCompound toNbt() {
-            NbtCompound compound = new NbtCompound();
-            compound.putInt("value", get());
-            compound.putInt("max", getMax());
-            return compound;
         }
     }
 }

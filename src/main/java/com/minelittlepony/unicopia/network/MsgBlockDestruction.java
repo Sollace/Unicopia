@@ -1,47 +1,17 @@
 package com.minelittlepony.unicopia.network;
 
-import com.minelittlepony.unicopia.InteractionManager;
-import com.minelittlepony.unicopia.util.network.Packet;
-
+import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 
 /**
  * Sent by the server to update block destruction progress on the client.
  */
-public class MsgBlockDestruction implements Packet<PlayerEntity> {
-
-    private final Long2ObjectMap<Float> destructions;
-
-    MsgBlockDestruction(PacketByteBuf buffer) {
-        destructions = new Long2ObjectOpenHashMap<>();
-        int size = buffer.readInt();
-        for (int i = 0; i < size; i++) {
-            destructions.put(buffer.readLong(), (Float)buffer.readFloat());
-        }
-    }
-
-    public MsgBlockDestruction(Long2ObjectMap<Float> destructions) {
-        this.destructions = destructions;
-    }
-
-    public Long2ObjectMap<Float> getDestructions() {
-        return destructions;
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeInt(destructions.size());
-        destructions.forEach((p, i) -> {
-            buffer.writeLong(p);
-            buffer.writeFloat(i);
-        });
-    }
-
-    @Override
-    public void handle(PlayerEntity sender) {
-        InteractionManager.instance().getClientNetworkHandler().handleBlockDestruction(this);
-    }
+public record MsgBlockDestruction(Long2ObjectMap<Float> destructions) {
+    public static final PacketCodec<ByteBuf, MsgBlockDestruction> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.map(Long2ObjectOpenHashMap::new, PacketCodecs.VAR_LONG, PacketCodecs.FLOAT), MsgBlockDestruction::destructions,
+            MsgBlockDestruction::new
+    );
 }

@@ -1,9 +1,10 @@
 package com.minelittlepony.unicopia.ability;
 
-import org.jetbrains.annotations.Nullable;
+import java.util.Optional;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.data.Hit;
+import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.HomingSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
@@ -11,13 +12,13 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
+import com.minelittlepony.unicopia.item.component.Charges;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.TraceHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -32,35 +33,20 @@ import net.minecraft.util.math.random.Random;
  * 2. If the player is holding a gem, consumes it and casts whatever spell is contained within onto the user.
  * 3. If the player is holding a amulet, charges it.
  */
-public class UnicornCastingAbility implements Ability<Hit> {
+public class UnicornCastingAbility extends AbstractSpellCastingAbility {
 
     @Override
     public int getWarmupTime(Pony player) {
-        return 20;
+        return (int)(20 - Math.min(17F, player.getLevel().get() * 0.75F));
     }
 
     @Override
-    public int getCooldownTime(Pony player) {
-        return 0;
-    }
-
-    @Override
-    public boolean canUse(Race race) {
-        return race.canCast();
-    }
-
-    @Override
-    @Nullable
-    public Hit tryActivate(Pony player) {
-        if (!player.canCast()) {
-            return null;
-        }
-        return Hit.of(player.getMagicalReserves().getMana().get() >= getCostEstimate(player));
-    }
-
-    @Override
-    public Hit.Serializer<Hit> getSerializer() {
-        return Hit.SERIALIZER;
+    public Optional<Hit> prepare(Pony player) {
+        TypedActionResult<CustomisedSpellType<?>> spell = player.getCharms().getSpellInHand(false);
+        return Hit.of(player.canCast()
+                && player.getMagicalReserves().getMana().get() >= getCostEstimate(player)
+                && (!spell.getResult().isAccepted() || canCast(spell.getValue().type()))
+        );
     }
 
     @Override
@@ -70,70 +56,93 @@ public class UnicornCastingAbility implements Ability<Hit> {
         if (amulet.getResult().isAccepted()) {
             float manaLevel = player.getMagicalReserves().getMana().get();
 
-            return Math.min(manaLevel, ((AmuletItem)amulet.getValue().getItem()).getChargeRemainder(amulet.getValue()));
+            return Math.min(manaLevel, Charges.of(amulet.getValue()).energy());
         }
 
-        TypedActionResult<CustomisedSpellType<?>> spell = player.getCharms().getSpellInHand(Hand.MAIN_HAND);
+        TypedActionResult<CustomisedSpellType<?>> spell = player.getCharms().getSpellInHand(false);
 
         return !spell.getResult().isAccepted() || spell.getValue().isOn(player) ? 2 : 4;
     }
 
     @Override
-    public void apply(Pony player, Hit data) {
+    public int getColor(Pony player) {
+        TypedActionResult<ItemStack> amulet = getAmulet(player);
+        if (amulet.getResult().isAccepted()) {
+            return 0x000000;
+        }
+
+        return super.getColor(player);
+    }
+
+    @Override
+    public boolean apply(Pony player, Hit data) {
         if (!player.canCast()) {
-            return;
+            return false;
         }
 
         TypedActionResult<ItemStack> amulet = getAmulet(player);
 
         if (amulet.getResult().isAccepted()) {
             ItemStack stack = amulet.getValue();
-            AmuletItem item = (AmuletItem)stack.getItem();
-
-            if (item.canCharge(stack)) {
-                float amount = -Math.min(player.getMagicalReserves().getMana().get(), item.getChargeRemainder(stack));
+            if (Charges.of(stack).canHoldCharge()) {
+                int amount = -(int)Math.min(player.getMagicalReserves().getMana().get(), Charges.of(stack).energy());
 
                 if (amount < 0) {
-                    AmuletItem.consumeEnergy(stack, amount);
-                    player.getMagicalReserves().getMana().add(amount * player.getMagicalReserves().getMana().getMax());
-                    player.getReferenceWorld().playSoundFromEntity(null, player.getMaster(), USounds.ITEM_AMULET_RECHARGE, SoundCategory.PLAYERS, 1, 1);
+                    Charges.discharge(stack, amount);
+                    player.getMagicalReserves().getMana().add(amount);
+                    player.asWorld().playSoundFromEntity(null, player.asEntity(), USounds.ITEM_AMULET_RECHARGE, SoundCategory.PLAYERS, 1, 1);
                 }
             }
         } else {
-            TypedActionResult<CustomisedSpellType<?>> newSpell = player.getCharms().getSpellInHand(Hand.MAIN_HAND);
+            TypedActionResult<CustomisedSpellType<?>> newSpell = player.getCharms().getSpellInHand(true);
 
-            if (newSpell.getResult() != ActionResult.FAIL) {
+            if (newSpell.getResult() != ActionResult.FAIL && canCast(newSpell.getValue().type())) {
                 CustomisedSpellType<?> spell = newSpell.getValue();
+                if (newSpell.getResult() == ActionResult.CONSUME) {
+                    CustomisedSpellType<?> equippedType = player.getCharms().getEquippedSpell(player.getCharms().getHand());
+                    if (equippedType.type() == spell.type()) {
+                        player.getCharms().equipSpell(player.getCharms().getHand(), spell);
+                    }
+                }
 
-                boolean removed = player.getSpellSlot().removeWhere(s -> {
-                    return s.findMatches(spell).findAny().isPresent() && (spell.isEmpty() || !SpellType.PLACED_SPELL.test(s));
-                }, true);
+                if (spell.isEmpty()) {
+                    return false;
+                }
+
+                boolean has = !spell.isStackable() && player.getSpellSlot().contains(spell);
+                boolean removed = !spell.isStackable() && player.getSpellSlot().removeWhere(spell.type());
                 player.subtractEnergyCost(removed ? 2 : 4);
-                if (!removed) {
-                    Spell s = spell.apply(player);
+                if (!has) {
+                    Spell s = spell.apply(player, CastingMethod.DIRECT);
                     if (s == null) {
                         player.spawnParticles(ParticleTypes.LARGE_SMOKE, 6);
                         player.playSound(USounds.SPELL_CAST_FAIL, 1, 0.5F);
                     } else {
-                        player.setAnimation(Animation.ARMS_UP);
+                        player.setAnimation(Animation.ARMS_UP, Animation.Recipient.HUMAN);
                         if (s instanceof HomingSpell homer) {
-                            TraceHelper.findEntity(player.getMaster(), homer.getRange(player), 1, EntityPredicates.VALID_ENTITY).ifPresent(homer::setTarget);
+                            TraceHelper.findEntity(player.asEntity(), homer.getRange(player), 1, EquinePredicates.EXCEPT_MAGIC_IMMUNE).ifPresent(homer::setTarget);
                         }
                         player.playSound(USounds.SPELL_CAST_SUCCESS, 0.05F, 2.2F);
                     }
                 } else {
-                    player.setAnimation(Animation.WOLOLO);
+                    player.setAnimation(Animation.WOLOLO, Animation.Recipient.ANYONE);
                 }
             }
         }
+
+        return true;
+    }
+
+    protected boolean canCast(SpellType<?> type) {
+        return true;
     }
 
     private TypedActionResult<ItemStack> getAmulet(Pony player) {
 
-        ItemStack stack = player.getMaster().getStackInHand(Hand.MAIN_HAND);
+        ItemStack stack = player.asEntity().getStackInHand(Hand.MAIN_HAND);
 
         if (stack.getItem() instanceof AmuletItem) {
-            if (((AmuletItem)stack.getItem()).isChargable()) {
+            if (Charges.of(stack).canHoldCharge()) {
                 return TypedActionResult.consume(stack);
             }
 
@@ -144,24 +153,19 @@ public class UnicornCastingAbility implements Ability<Hit> {
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getExhaustion().multiply(3.3F);
 
         if (getAmulet(player).getResult() == ActionResult.CONSUME) {
-            Vec3d eyes = player.getMaster().getCameraPosVec(1);
+            Vec3d eyes = player.asEntity().getCameraPosVec(1);
 
             float i = player.getAbilities().getStat(slot).getFillProgress();
 
-            Random rng = player.getReferenceWorld().random;
+            Random rng = player.asWorld().random;
             player.addParticle(i > 0.5F ? ParticleTypes.LARGE_SMOKE : ParticleTypes.CLOUD, eyes, VecHelper.supply(() -> (rng.nextGaussian() - 0.5) / 10));
             player.playSound(USounds.ITEM_AMULET_CHARGING, 1, i / 20);
         } else {
             player.spawnParticles(MagicParticleEffect.UNICORN, 5);
         }
-    }
-
-    @Override
-    public void postApply(Pony player, AbilitySlot slot) {
-        player.spawnParticles(MagicParticleEffect.UNICORN, 5);
     }
 }

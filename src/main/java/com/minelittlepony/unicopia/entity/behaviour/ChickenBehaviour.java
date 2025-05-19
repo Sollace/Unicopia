@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
-import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.entity.Entity;
@@ -9,7 +10,6 @@ import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
 public class ChickenBehaviour extends EntityBehaviour<ChickenEntity> {
@@ -20,23 +20,23 @@ public class ChickenBehaviour extends EntityBehaviour<ChickenEntity> {
     }
 
     @Override
-    public void update(Caster<?> source, ChickenEntity entity, Disguise spell) {
+    public void update(Living<?> source, ChickenEntity entity, Disguise spell) {
         entity.eggLayTime = Integer.MAX_VALUE;
 
         if (source instanceof Pony player) {
             if (player.sneakingChanged()) {
                 ItemStack egg = entity.getEquippedStack(EquipmentSlot.OFFHAND);
 
-                if (player.getMaster().isSneaking()) {
+                if (player.asEntity().isSneaking()) {
                     if (egg.isEmpty()) {
                         egg = new ItemStack(Items.EGG);
 
-                        int slot = player.getMaster().getInventory().indexOf(egg);
+                        int slot = player.asEntity().getInventory().indexOf(egg);
                         if (slot > -1) {
-                            player.getMaster().getInventory().removeStack(slot, 1);
-                            entity.playSound(SoundEvents.ENTITY_CHICKEN_EGG,
+                            player.asEntity().getInventory().removeStack(slot, 1);
+                            entity.playSound(USounds.Vanilla.ENTITY_CHICKEN_EGG,
                                     1,
-                                    (entity.world.random.nextFloat() - entity.world.random.nextFloat()) * 0.2F + 4
+                                    (entity.getWorld().random.nextFloat() - entity.getWorld().random.nextFloat()) * 0.2F + 4
                             );
                             entity.equipStack(EquipmentSlot.OFFHAND, egg);
                         }
@@ -48,7 +48,7 @@ public class ChickenBehaviour extends EntityBehaviour<ChickenEntity> {
             }
         }
 
-        Entity src = source.getEntity();
+        Entity src = source.asEntity();
 
         if (src.isOnGround() || src instanceof PlayerEntity player && player.getAbilities().flying) {
             return;

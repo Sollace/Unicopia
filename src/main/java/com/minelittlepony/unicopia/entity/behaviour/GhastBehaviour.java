@@ -13,25 +13,22 @@ public class GhastBehaviour extends MobBehaviour<GhastEntity> {
     public void update(Pony player, GhastEntity entity, Disguise spell) {
 
         if (player.sneakingChanged()) {
-            boolean sneaking = player.getMaster().isSneaking();
+            boolean sneaking = player.asEntity().isSneaking();
             entity.setShooting(sneaking);
             entity.setTarget(sneaking ? findTarget(player, entity) : null);
 
             if (sneaking) {
                 if (!entity.isSilent()) {
-                    entity.world.syncWorldEvent(null, WorldEvents.GHAST_WARNS, entity.getBlockPos(), 0);
+                    entity.getWorld().syncWorldEvent(null, WorldEvents.GHAST_WARNS, entity.getBlockPos(), 0);
                 }
             } else {
                 if (!entity.isSilent()) {
-                    entity.world.syncWorldEvent(null, WorldEvents.GHAST_SHOOTS, entity.getBlockPos(), 0);
+                    entity.getWorld().syncWorldEvent(null, WorldEvents.GHAST_SHOOTS, entity.getBlockPos(), 0);
                 }
 
-                Vec3d rot = player.getEntity().getRotationVec(1);
+                Vec3d rot = player.asEntity().getRotationVec(1);
 
-                FireballEntity proj = new FireballEntity(entity.world, player.getMaster(),
-                        rot.getX(),
-                        rot.getY(),
-                        rot.getZ(),
+                FireballEntity proj = new FireballEntity(entity.getWorld(), player.asEntity(), rot,
                         (int)player.getLevel().getScaled(entity.getFireballStrength())
                 );
                 proj.updatePosition(
@@ -40,7 +37,7 @@ public class GhastBehaviour extends MobBehaviour<GhastEntity> {
                         proj.getZ() + rot.z * 4
                 );
 
-                entity.world.spawnEntity(proj);
+                entity.getWorld().spawnEntity(proj);
             }
         }
     }

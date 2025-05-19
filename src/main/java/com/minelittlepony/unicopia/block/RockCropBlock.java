@@ -1,22 +1,27 @@
 package com.minelittlepony.unicopia.block;
 
+import org.jetbrains.annotations.Nullable;
+
+import com.minelittlepony.unicopia.EquineContext;
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.item.UItems;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldEvents;
+import net.minecraft.world.*;
 
 public class RockCropBlock extends CropBlock {
+    public static final MapCodec<RockCropBlock> CODEC = createCodec(RockCropBlock::new);
     private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[] {
             VoxelShapes.union(
                     createCuboidShape(7, -1, 11, 8, 0, 12),
@@ -61,24 +66,28 @@ public class RockCropBlock extends CropBlock {
     };
 
     protected RockCropBlock(Settings settings) {
-        super(settings);
+        super(settings.notSolid());
     }
 
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public MapCodec<? extends RockCropBlock> getCodec() {
+        return CODEC;
+    }
+
+    @Override
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return AGE_TO_SHAPE[state.get(getAgeProperty())];
     }
 
     @Override
-    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+    protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (canGrow(world, random, pos, state)) {
             super.randomTick(state, world, pos, random);
         }
     }
 
     @Override
-    @Deprecated
-    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
         super.onStateReplaced(state, world, pos, newState, moved);
         if (!moved && !(state.getBlock() == this && newState.getBlock() == this)) {
             if (!world.isClient) {
@@ -93,15 +102,25 @@ public class RockCropBlock extends CropBlock {
     }
 
     @Override
-    public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
+    public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
         if (world instanceof World && !canGrow((World)world, ((World)world).random, pos, state)) {
             return false;
         }
-        return super.isFertilizable(world, pos, state, isClient);
+        return super.isFertilizable(world, pos, state);
     }
 
     @Override
     protected ItemConvertible getSeedsItem() {
         return UItems.PEBBLES;
+    }
+
+    @Override
+    @Nullable
+    public final BlockState getPlacementState(ItemPlacementContext context) {
+        if (!EquineContext.of(context).getCompositeRace().any(Race::canUseEarth)) {
+            return null;
+        }
+
+        return super.getPlacementState(context);
     }
 }

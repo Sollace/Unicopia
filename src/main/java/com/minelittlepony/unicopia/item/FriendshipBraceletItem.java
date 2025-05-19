@@ -1,35 +1,32 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.EquinePredicates;
+import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
+import com.minelittlepony.unicopia.entity.AmuletSelectors;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.minecraft.client.item.TooltipContext;
+import com.minelittlepony.unicopia.item.component.Issuer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.DyeableItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
-import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
 
-public class FriendshipBraceletItem extends WearableItem implements DyeableItem, GlowableItem {
+public class FriendshipBraceletItem extends WearableItem {
 
-    public FriendshipBraceletItem(FabricItemSettings settings) {
+    public FriendshipBraceletItem(Item.Settings settings) {
         super(settings);
     }
 
@@ -37,13 +34,14 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
-        if (!isSigned(stack) && EquinePredicates.PLAYER_UNICORN.test(player)) {
+        if (!Issuer.isSigned(stack) && (
+                   EquinePredicates.PLAYER_UNICORN.test(player)
+                || EquinePredicates.RACE_CAN_INFLUENCE_WEATHER.test(player)
+                || AmuletSelectors.PEARL_NECKLACE.test(player)
+        )) {
             player.setCurrentHand(hand);
 
-            ItemStack result = stack.copy();
-            result.setCount(1);
-            result.getOrCreateNbt().putString("issuer", player.getName().getString());
-            result.getOrCreateNbt().putUuid("issuer_id", player.getUuid());
+            ItemStack result = Issuer.set(stack.copyWithCount(1), player);
 
             if (!player.getAbilities().creativeMode) {
                 stack.decrement(1);
@@ -65,77 +63,67 @@ public class FriendshipBraceletItem extends WearableItem implements DyeableItem,
     }
 
     @Override
-    @Environment(EnvType.CLIENT)
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
-        if (isSigned(stack)) {
-            list.add(Text.translatable("item.unicopia.friendship_bracelet.issuer", getSignatorName(stack)));
-        }
-        if (isGlowing(stack)) {
-            list.add(Text.translatable("item.unicopia.friendship_bracelet.glowing").formatted(Formatting.ITALIC, Formatting.GRAY));
-        }
-    }
-
-    @Override
-    public EquipmentSlot getPreferredSlot(ItemStack stack) {
-        return isSigned(stack) ? EquipmentSlot.CHEST : super.getPreferredSlot(stack);
-    }
-
-    private boolean checkSignature(ItemStack stack, PlayerEntity player) {
-        return checkSignature(stack, player.getUuid());
-    }
-
-    private boolean checkSignature(ItemStack stack, UUID player) {
-        return player.equals(getSignatorId(stack));
+    public EquipmentSlot getSlotType(ItemStack stack) {
+        return Issuer.isSigned(stack) ? EquipmentSlot.CHEST : super.getSlotType(stack);
     }
 
     @Nullable
     public static String getSignatorName(ItemStack stack) {
-        return isSigned(stack) ? stack.getNbt().getString("issuer") : null;
+        return Issuer.getSignatorName(stack);
     }
 
     @Nullable
     public static UUID getSignatorId(ItemStack stack) {
-        return isSigned(stack) ? stack.getNbt().getUuid("issuer_id") : null;
+        return Issuer.getSignatorId(stack);
     }
 
+    @Deprecated
     public static boolean isSigned(ItemStack stack) {
-        return stack.hasNbt() && stack.getNbt().contains("issuer_id");
+        return Issuer.isSigned(stack);
     }
 
+    @Deprecated
     public static boolean isSignedBy(ItemStack stack, PlayerEntity player) {
-        return stack.getItem() instanceof FriendshipBraceletItem
-                && ((FriendshipBraceletItem)stack.getItem()).checkSignature(stack, player);
+        return Issuer.isSignedBy(stack, player);
     }
 
+    @Deprecated
     public static boolean isSignedBy(ItemStack stack, UUID player) {
-        return stack.getItem() instanceof FriendshipBraceletItem
-                && ((FriendshipBraceletItem)stack.getItem()).checkSignature(stack, player);
+        return Issuer.isSignedBy(stack, player);
     }
 
-    public static boolean isComrade(Caster<?> caster, Entity entity) {
-        if (entity instanceof LivingEntity) {
-            return caster.getMasterId()
-                    .filter(id -> getWornBangles((LivingEntity)entity)
-                            .anyMatch(stack -> isSignedBy(stack, id))
-                    )
-                    .isPresent();
-        }
-        return false;
+    public static boolean isComrade(Owned<?> caster, Entity entity) {
+        return entity instanceof LivingEntity l && caster.getMasterId()
+                .filter(id -> getWornBangles(l).anyMatch(stack -> Issuer.isSignedBy(stack.stack(), id)))
+                .isPresent();
+    }
+
+    public static boolean isComrade(UUID signator, Entity entity) {
+        return entity instanceof LivingEntity l && getWornBangles(l, stack -> Issuer.isSignedBy(stack, signator)).findAny().isPresent();
     }
 
     public static Stream<Pony> getPartyMembers(Caster<?> caster, double radius) {
         return Pony.stream(caster.findAllEntitiesInRange(radius, entity -> isComrade(caster, entity)));
     }
 
-    public static Stream<ItemStack> getWornBangles(LivingEntity entity) {
+    private static final Predicate<ItemStack> IS_BANGLE = stack -> stack.isOf(UItems.FRIENDSHIP_BRACELET);
+
+    public static Stream<TrinketsDelegate.EquippedStack> getWornBangles(LivingEntity entity) {
         return Stream.concat(
-                TrinketsDelegate.getInstance().getEquipped(entity, TrinketsDelegate.MAINHAND),
-                TrinketsDelegate.getInstance().getEquipped(entity, TrinketsDelegate.OFFHAND)
-        ).filter(stack -> stack.getItem() == UItems.FRIENDSHIP_BRACELET);
+                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.MAIN_GLOVE, IS_BANGLE),
+                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.SECONDARY_GLOVE, IS_BANGLE)
+        );
     }
 
-    public static Stream<ItemStack> getWornBangles(LivingEntity entity, Identifier slot) {
-        return TrinketsDelegate.getInstance().getEquipped(entity, slot)
-                .filter(stack -> stack.getItem() == UItems.FRIENDSHIP_BRACELET);
+    public static Stream<TrinketsDelegate.EquippedStack> getWornBangles(LivingEntity entity, @Nullable Predicate<ItemStack> predicate) {
+        predicate = predicate == null ? IS_BANGLE : IS_BANGLE.and(predicate);
+        return Stream.concat(
+                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.MAIN_GLOVE, predicate),
+                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.SECONDARY_GLOVE, predicate)
+        );
+    }
+
+    public static Stream<TrinketsDelegate.EquippedStack> getWornBangles(LivingEntity entity, Identifier slot) {
+        return TrinketsDelegate.getInstance(entity).getEquipped(entity, slot, IS_BANGLE);
     }
 }

@@ -27,6 +27,11 @@
     "minecraft:smooth_sandstone",
     "minecraft:smooth_stone",
     
+    "#minecraft:stone_bricks",
+    "#minecraft:stone_tool_materials",
+    "#minecraft:stone_crafting_materials",
+    "#minecraft:walls",
+    
     "minecraft:brick_stairs",
     "minecraft:stone_brick_stairs",
     "minecraft:brick_wall",

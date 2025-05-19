@@ -1,10 +1,13 @@
 package com.minelittlepony.unicopia.ability;
 
-import com.minelittlepony.unicopia.Race;
+import java.util.Optional;
+
 import com.minelittlepony.unicopia.ability.data.Multi;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.TraceHelper;
 
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -29,46 +32,42 @@ public class BatPonyHangAbility implements Ability<Multi> {
     }
 
     @Override
-    public boolean canUse(Race race) {
-        return race == Race.BAT;
-    }
+    public Optional<Multi> prepare(Pony player) {
 
-    @Override
-    public Multi tryActivate(Pony player) {
-
-        if (player.isHanging()) {
-            return new Multi(BlockPos.ZERO, 0);
+        if (player.getAcrobatics().isHanging()) {
+            return Optional.of(new Multi(BlockPos.ZERO, 0));
         }
 
-        return TraceHelper.findBlock(player.getMaster(), 5, 1)
-                .map(BlockPos::down)
-                .filter(player::canHangAt)
-                .map(pos -> new Multi(pos, 1))
-                .orElse(null);
+        return TraceHelper.findBlock(player.asEntity(), 5, 1)
+                .map(pos -> pos.down(player.getPhysics().getGravitySignum()))
+                .filter(player.getAcrobatics()::canHangAt)
+                .map(pos -> new Multi(pos, 1));
     }
 
     @Override
-    public Multi.Serializer<Multi> getSerializer() {
-        return Multi.SERIALIZER;
+    public PacketCodec<? super RegistryByteBuf, Multi> getSerializer() {
+        return Multi.CODEC;
     }
 
     @Override
-    public void apply(Pony player, Multi data) {
-        if (data.hitType == 0 && player.isHanging()) {
-            player.stopHanging();
-            return;
+    public boolean apply(Pony player, Multi data) {
+        if (data.hitType() == 0 && player.getAcrobatics().isHanging()) {
+            player.getAcrobatics().stopHanging();
+            return true;
         }
 
-        if (data.hitType == 1 && player.canHangAt(data.pos())) {
-            player.startHanging(data.pos());
+        if (data.hitType() == 1 && player.getAcrobatics().canHangAt(data.pos().pos())) {
+            player.getAcrobatics().startHanging(data.pos().pos());
         }
+
+        return true;
     }
 
     @Override
-    public void preApply(Pony player, AbilitySlot slot) {
+    public void warmUp(Pony player, AbilitySlot slot) {
     }
 
     @Override
-    public void postApply(Pony player, AbilitySlot slot) {
+    public void coolDown(Pony player, AbilitySlot slot) {
     }
 }

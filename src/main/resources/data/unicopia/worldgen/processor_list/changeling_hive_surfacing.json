@@ -1,0 +1,13 @@
+[
+  {
+    "processor_type": "unicopia:surface_growth",
+    "input_predicate": {
+      "predicate_type": "block_match",
+      "block": "unicopia:chitin"
+    },
+    "output_state": {
+      "name": "unicopia:surface_chitin",
+      "Name": "unicopia:surface_chitin"
+    }
+  }
+]

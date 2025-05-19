@@ -15,6 +15,7 @@
     "minecraft:slime_ball": "rot:2",
     "minecraft:ink_sac": "darkness:4",
     "minecraft:glow_ink_sac": "focus:1 chaos:3",
-    "minecraft:nautilus_shell": "water:6 life:3"
+    "minecraft:nautilus_shell": "water:6 life:3",
+    "minecraft:disc_fragment_5": "knowledge:1 darkness:1"
   }
 }

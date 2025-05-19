@@ -1,27 +1,14 @@
 package com.minelittlepony.unicopia.network;
 
-import com.minelittlepony.unicopia.InteractionManager;
-import com.minelittlepony.unicopia.util.network.Packet;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 
 /**
  * Sent to the client when an ability fails its server-side activation checks.
  */
-public class MsgCancelPlayerAbility implements Packet<PlayerEntity> {
+public final class MsgCancelPlayerAbility {
+    public static final MsgCancelPlayerAbility INSTANCE = new MsgCancelPlayerAbility();
+    public static final PacketCodec<ByteBuf, MsgCancelPlayerAbility> PACKET_CODEC = PacketCodec.unit(INSTANCE);
 
-    MsgCancelPlayerAbility(PacketByteBuf buffer) {
-    }
-
-    public MsgCancelPlayerAbility() {
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buffer) {
-    }
-
-    @Override
-    public void handle(PlayerEntity sender) {
-        InteractionManager.instance().getClientNetworkHandler().handleCancelAbility(this);
-    }
+    private MsgCancelPlayerAbility() {}
 }

@@ -22,7 +22,7 @@ public class AnimalPoser {
                 .filter(eq -> eq instanceof Creature)
                 .map(Creature.class::cast)
                 .ifPresent(creature -> {
-                    float tickDelta = MinecraftClient.getInstance().getTickDelta();
+                    float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
                     float headAngle = creature.getHeadAngle(tickDelta);
                     float neckAngle = 12;
 

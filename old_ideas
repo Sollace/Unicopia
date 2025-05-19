@@ -1,0 +1,63 @@
+ 
+  Corruption:
+     Corruption is gained in small amounts by using dark magic and has the effects described by wearing the alicorn amulet
+     Using light magic has the potential to reduce a player's corruption
+     
+     - Increasing corruption should corrupt spell's effects (higher chance of failing)
+     - Visual effects of corruption is a greyscale darkening of the player's view
+     - Players and spells with high corruption "leak" in to the surrounding areas
+        and corrupts other spells in the vicinity causing them to fail or turn against the caster
+        
+     - Areas with high corruption will see higher hostile mob spawns
+       Chances of blocks being turned into sculk when corruption is gained in an area
+       
+       
+     - Certain spells cannot be used above a certain corruption threshold
+     - Other spells (from the otherworldly category) cannot be used without a minimum amount of corruption
+  
+  
+  Lighting
+   - Gemstone Lamp
+      - A light source similar to torches
+        - Can be placed on clouds
+  
+  https://mixkit.co/free-sound-effects/magic/?page=2
+  
+  Spell ideas (via https://www.dndbeyond.com/spells/class/sorcerer?filter-search=&filter-level=0&filter-verbal=&filter-somatic=&filter-material=&filter-concentration=&filter-ritual=&filter-sub-class= )
+  
+    - Immobalise
+      Offensive
+      Trap the targetted entity in a floating bubble.
+      They have to struggle to pop the bubble and escape
+  
+    - Dark Whip
+        Offense
+        A dark magic spell that lashes out at a position or entity with a black tendril
+        - Needs corruption to cast
+        
+        To craft this one you have to defeat the Rift Lurker
+        - Throw a alicorn amulet into a large black hole
+        - The black hole's lightning effects change to black lightning
+        - The black hole collapses into a small ball
+        - The ball turns into an eye and tentacles crawl out revealing the Rift Lurker (an other-worldly beast from across the dimensions)
+        - Whilst fighting the Rift Lurker the black hole is still pulling in entities
+        - Every entity that falls into the black hole restores the rift lurker's health
+        - Every time you summon it, the rift lurker will be more powerful
+        
+        - The rift-lurker can only be defeated using magic
+        - When killed, the rift-lurker drops one of its tentacles
+        - Combine the tentacle in a spellbook with the blood, focus, and life traits to create the dark whip spell
+  
+      - To avoid having to fight the Rift Lurker every time, you can farm the tentacles
+      - Tentacles are edible, like carrots, but why would you eat them? Ew.
+  
+   - Dark Grip
+      - Corrupt version of the Arcane Grip
+         - Causes damage to living entities affected
+      - Requires corruption to cast
+  
+   - Come to life spell
+     - Requires corruption to cast
+     - Used on any container block (chest, furnace, etc) will cause it to grow legs and follow the player around
+     - With the darkness trait will add a chance of the block also obtaining a mouth and attacking the caster
+     -----Player's corruption increases chances of any spells going wrong (increases darkness trait effects)

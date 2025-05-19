@@ -1,103 +1,135 @@
 package com.minelittlepony.unicopia.client;
 
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.ability.magic.CasterView;
-import com.minelittlepony.unicopia.block.data.Ether;
 import com.minelittlepony.unicopia.client.gui.DismissSpellScreen;
-import com.minelittlepony.unicopia.client.sound.LoopedEntityTrackingSoundInstance;
-import com.minelittlepony.unicopia.client.sound.LoopingSoundInstance;
-import com.minelittlepony.unicopia.client.sound.MotionBasedSoundInstance;
-import com.minelittlepony.unicopia.entity.effect.UEffects;
+import com.minelittlepony.unicopia.client.gui.spellbook.ClientChapters;
+import com.minelittlepony.unicopia.client.particle.ClientBoundParticleSpawner;
+import com.minelittlepony.unicopia.client.sound.*;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyClientPlayerEntity;
-import com.minelittlepony.unicopia.network.handler.ClientNetworkHandler;
-import com.minelittlepony.unicopia.network.handler.ClientNetworkHandlerImpl;
+import com.minelittlepony.unicopia.particle.ParticleSpawner;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.sound.AggressiveBeeSoundInstance;
 import net.minecraft.client.sound.MovingMinecartSoundInstance;
 import net.minecraft.client.sound.PassiveBeeSoundInstance;
-import net.minecraft.client.sound.SoundManager;
+import net.minecraft.client.sound.TickableSoundInstance;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class ClientInteractionManager extends InteractionManager {
-
-    private final ClientNetworkHandler handler = new ClientNetworkHandlerImpl();
     private final MinecraftClient client = MinecraftClient.getInstance();
 
-    private final Optional<CasterView> clientWorld = Optional.of(() -> MinecraftClient.getInstance().world);
+    private final Int2ObjectMap<WeakReference<TickableSoundInstance>> playingSounds = new Int2ObjectOpenHashMap<>();
+    private final Map<UUID, Int2ObjectMap<WeakReference<TickableSoundInstance>>> entitySounds = new HashMap<>();
 
     @Override
-    public Optional<CasterView> getCasterView(BlockView view) {
-        if (view instanceof ServerWorld world) {
-            return Optional.of(Ether.get(world));
-        }
-        return clientWorld;
-    }
-
-    @Override
-    public MinecraftSessionService getSessionService(World world) {
-        return MinecraftClient.getInstance().getSessionService();
-    }
-
-    @Override
-    @Nullable
-    public ClientNetworkHandler getClientNetworkHandler() {
-        return handler;
+    public SpellbookChapter readChapter(PacketByteBuf buffer) {
+        return ClientChapters.loadChapter(buffer);
     }
 
     @Override
     public void playLoopingSound(Entity source, int type, long seed) {
         client.execute(() -> {
-            SoundManager soundManager = client.getSoundManager();
-
-            if (type == SOUND_EARS_RINGING && source instanceof LivingEntity) {
-                soundManager.play(new LoopingSoundInstance<>((LivingEntity)source,
-                        createTicker(100).and(e -> e.hasStatusEffect(UEffects.SUN_BLINDNESS)),
+            if (type == SOUND_EARS_RINGING && source instanceof LivingEntity living) {
+                play(type, () -> new LoopingSoundInstance<>(living,
+                        createTicker(100).and(e -> !e.isRemoved()),
                         USounds.ENTITY_PLAYER_EARS_RINGING, 0.01F, 2, Random.create(seed)).setFadeIn()
                 );
-            } else if (type == SOUND_BEE && source instanceof BeeEntity) {
-                soundManager.playNextTick(
-                        ((BeeEntity)source).hasAngerTime()
-                            ? new AggressiveBeeSoundInstance(((BeeEntity)source))
-                            : new PassiveBeeSoundInstance(((BeeEntity)source))
+            } else if (type == SOUND_BEE && source instanceof BeeEntity bee) {
+                play(type, () ->
+                        bee.hasAngerTime()
+                            ? new AggressiveBeeSoundInstance(bee)
+                            : new PassiveBeeSoundInstance(bee)
                 );
-            } else if (type == SOUND_MINECART && source instanceof AbstractMinecartEntity) {
-                soundManager.play(new MovingMinecartSoundInstance((AbstractMinecartEntity)source));
-            } else if (type == SOUND_CHANGELING_BUZZ && source instanceof PlayerEntity) {
-                soundManager.play(new LoopingSoundInstance<>((PlayerEntity)source, e -> {
+            } else if (type == SOUND_MINECART && source instanceof AbstractMinecartEntity minecart) {
+                play(type, () -> new MovingMinecartSoundInstance(minecart));
+            } else if (type == SOUND_CHANGELING_BUZZ && source instanceof PlayerEntity player) {
+                play(type, () -> new MotionBasedSoundInstance<>(USounds.ENTITY_PLAYER_CHANGELING_BUZZ, player, e -> {
                     PlayerPhysics physics = Pony.of(e).getPhysics();
                     return physics.isFlying() && physics.getFlightType() == FlightType.INSECTOID;
-                }, USounds.ENTITY_PLAYER_CHANGELING_BUZZ, 1F, 1F, Random.create(seed)));
-            } else if (type == SOUND_GLIDING && source instanceof PlayerEntity && isClientPlayer((PlayerEntity) source)) {
-                soundManager.play(new MotionBasedSoundInstance(SoundEvents.ITEM_ELYTRA_FLYING, (PlayerEntity)source, Random.create(seed)));
-            } else if (type == SOUND_GLIDING && source instanceof PlayerEntity) {
-                soundManager.play(new MotionBasedSoundInstance(USounds.ENTITY_PLAYER_PEGASUS_FLYING, (PlayerEntity)source, Random.create(seed)));
+                }, 0.25F, 0.5F, 0.66F, Random.create(seed)));
+            } else if (type == SOUND_GLIDING && source instanceof PlayerEntity player && isClientPlayer(player)) {
+                play(type, () -> new MotionBasedSoundInstance<>(USounds.Vanilla.ITEM_ELYTRA_FLYING, player, e -> {
+                    Pony pony = Pony.of(e);
+                    return pony.getPhysics().isFlying() && pony.getPhysics().getFlightType().isAvian();
+                }, 0, 1, 1, Random.create(seed)));
+            } else if (type == SOUND_GLIDING && source instanceof PlayerEntity player) {
+                play(type, () -> new MotionBasedSoundInstance<>(USounds.ENTITY_PLAYER_PEGASUS_FLYING, player, e -> {
+                    Pony pony = Pony.of(e);
+                    return pony.getPhysics().isFlying() && pony.getPhysics().getFlightType().isAvian();
+                }, 0, 1, 1, Random.create(seed)));
             } else if (type == SOUND_MAGIC_BEAM) {
-                soundManager.play(new LoopedEntityTrackingSoundInstance(USounds.SPELL_CAST_SHOOT, 0.3F, 1F, source, seed));
+                play(type, () -> new LoopedEntityTrackingSoundInstance(USounds.SPELL_CAST_SHOOT, 0.3F, 1F, source, seed));
+            } else if (type == SOUND_HEART_BEAT) {
+                play(type, () -> new NonLoopingFadeOutSoundInstance(USounds.ENTITY_PLAYER_HEARTBEAT_LOOP, SoundCategory.PLAYERS, 0.3F, Random.create(seed), 80L));
+            } else if (type == SOUND_KIRIN_RAGE) {
+                play(type, () -> new FadeOutSoundInstance(USounds.ENTITY_PLAYER_KIRIN_RAGE_LOOP, SoundCategory.AMBIENT, 0.3F, Random.create(seed)) {
+                    @Override
+                    protected boolean shouldKeepPlaying() {
+                        return EquinePredicates.RAGING.test(source);
+                    }
+                });
+            } else if (type == SOUND_GEM_FINDING_MAGIC_HUM) {
+                play(source.getUuid(), type, () -> {
+                    return new MagicAuraSoundInstance(source.getSoundCategory(), Living.living(source), source.getWorld().getRandom());
+                });
             }
         });
+    }
+
+    private void play(UUID sourceId, int type, Supplier<TickableSoundInstance> soundSupplier) {
+        play(entitySounds.computeIfAbsent(sourceId, id -> new Int2ObjectOpenHashMap<>()), type, soundSupplier);
+    }
+
+    private void play(int type, Supplier<TickableSoundInstance> soundSupplier) {
+        play(playingSounds, type, soundSupplier);
+    }
+
+    private void play(Int2ObjectMap<WeakReference<TickableSoundInstance>> playingSounds, int type, Supplier<TickableSoundInstance> soundSupplier) {
+        WeakReference<TickableSoundInstance> activeSound = playingSounds.get(type);
+        TickableSoundInstance existing;
+        if (activeSound == null || (existing = activeSound.get()) == null || existing.isDone()) {
+            existing = soundSupplier.get();
+            playingSounds.put(type, new WeakReference<>(existing));
+            playNow(existing);
+        }
+    }
+
+    private void playNow(TickableSoundInstance sound) {
+        client.getSoundManager().playNextTick(sound);
     }
 
     static Predicate<LivingEntity> createTicker(int ticks) {
@@ -133,5 +165,32 @@ public class ClientInteractionManager extends InteractionManager {
     @Override
     public int getViewMode() {
         return client.options.getPerspective().ordinal();
+    }
+
+    @Override
+    public float getTickRate() {
+        return client.world == null ? 20 : client.world.getTickManager().getTickRate();
+    }
+
+    @Override
+    public ParticleSpawner createBoundParticle(UUID id) {
+        return new ClientBoundParticleSpawner(id);
+    }
+
+    @Override
+    public void sendPlayerLookAngles(PlayerEntity player) {
+        if (player instanceof ClientPlayerEntity c) {
+            c.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(player.getYaw(), player.getPitch(), player.isOnGround()));
+        }
+    }
+
+    @Override
+    public void addBlockBreakingParticles(BlockPos pos, Direction direction) {
+        client.particleManager.addBlockBreakingParticles(pos, direction);
+    }
+
+    @Override
+    public Optional<Pony> getClientPony() {
+        return Optional.ofNullable(client.player).map(Pony::of);
     }
 }

@@ -1,0 +1,26 @@
+{
+  "type": "unicopia:cloud",
+  "config": {
+    "probability": 0.05,
+    "y": {
+      "type": "minecraft:uniform",
+      "min_inclusive": {
+        "absolute": 240
+      },
+      "max_inclusive": {
+        "absolute": 600
+      }
+    },
+    "yScale": 0.15,
+    "lava_level": {
+      "above_bottom": 8
+    },
+    "replaceable": "minecraft:air",
+    "horizontal_radius_multiplier": 3.7,
+    "vertical_radius_multiplier": 2.8,
+    "floor_level": {
+      "type": "minecraft:constant",
+      "value": 0
+    }
+  }
+}

@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.block.data.WaterLoggingManager;
+import com.minelittlepony.unicopia.server.world.WaterLoggingManager;
 
 import net.minecraft.block.*;
 import net.minecraft.fluid.FluidState;

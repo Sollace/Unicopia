@@ -1,16 +1,22 @@
 package com.minelittlepony.unicopia.item;
 
-import com.minelittlepony.unicopia.UTags;
-import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.advancement.UCriteria;
-import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.toxin.*;
-import com.minelittlepony.unicopia.particle.ParticleUtils;
-import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
-import com.minelittlepony.unicopia.util.TraceHelper;
-import com.minelittlepony.unicopia.util.Registries;
+import java.util.List;
 
+import com.minelittlepony.unicopia.InteractionManager;
+import com.minelittlepony.unicopia.UConventionalTags;
+import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
+import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.component.Appearance;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
+import com.minelittlepony.unicopia.item.group.MultiItem;
+import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
+import com.minelittlepony.unicopia.util.TraceHelper;
+import com.minelittlepony.unicopia.util.RegistryUtils;
+
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -24,18 +30,16 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder {
+public class ZapAppleItem extends Item implements MultiItem, Appearance.AppearanceChangeCallback {
     public ZapAppleItem(Settings settings) {
-        super(settings);
+        super(settings.rarity(Rarity.RARE).component(UDataComponentTypes.APPEARANCE, Appearance.DEFAULT_FULLY_DISGUISED));
     }
 
     @Override
@@ -50,7 +54,7 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder {
     public ItemStack finishUsing(ItemStack stack, World w, LivingEntity player) {
         stack = super.finishUsing(stack, w, player);
 
-        player.damage(MagicalDamageSource.ZAP_APPLE, 120);
+        player.damage(Living.living(player).damageOf(UDamageTypes.ZAP_APPLE), 120);
 
         if (w instanceof ServerWorld) {
             LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(w);
@@ -59,12 +63,12 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder {
             player.onStruckByLightning((ServerWorld)w, lightning);
 
             if (player instanceof PlayerEntity) {
-                UCriteria.EAT_TRICK_APPLE.trigger((PlayerEntity)player);
+                UCriteria.EAT_TRICK_APPLE.trigger(player);
             }
         }
 
         player.emitGameEvent(GameEvent.LIGHTNING_STRIKE);
-        ParticleUtils.spawnParticle(w, UParticles.LIGHTNING_BOLT, player.getPos(), Vec3d.ZERO);
+        ParticleUtils.spawnParticle(w, LightningBoltParticleEffect.DEFAULT, player.getPos(), Vec3d.ZERO);
 
         return stack;
     }
@@ -77,18 +81,18 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder {
 
     public TypedActionResult<ItemStack> onFedTo(ItemStack stack, PlayerEntity player, Entity e) {
 
-        LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(e.world);
+        LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(e.getWorld());
         lightning.refreshPositionAfterTeleport(e.getX(), e.getY(), e.getZ());
         lightning.setCosmetic(true);
         if (player instanceof ServerPlayerEntity) {
             lightning.setChanneler((ServerPlayerEntity)player);
         }
 
-        if (e.world instanceof ServerWorld) {
-            e.onStruckByLightning((ServerWorld)e.world, lightning);
+        if (!e.getWorld().isClient) {
+            e.onStruckByLightning((ServerWorld)e.getWorld(), lightning);
             UCriteria.FEED_TRICK_APPLE.trigger(player);
         }
-        player.world.spawnEntity(lightning);
+        player.getWorld().spawnEntity(lightning);
 
         if (!player.getAbilities().creativeMode) {
             stack.decrement(1);
@@ -98,36 +102,23 @@ public class ZapAppleItem extends Item implements ChameleonItem, ToxicHolder {
     }
 
     @Override
-    public void appendStacks(ItemGroup tab, DefaultedList<ItemStack> items) {
-        super.appendStacks(tab, items);
-        if (isIn(tab)) {
-            Unicopia.SIDE.getPony().map(Pony::getReferenceWorld)
-                    .stream()
-                    .flatMap(world -> Registries.valuesForTag(world, UTags.APPLES))
-                    .filter(a -> a != this).forEach(item -> {
-                ItemStack stack = new ItemStack(this);
-                stack.getOrCreateNbt().putString("appearance", Registry.ITEM.getId(item).toString());
-                items.add(stack);
-            });
-        }
+    public List<ItemStack> getDefaultStacks() {
+        return InteractionManager.getInstance().getClientPony().map(Pony::asWorld)
+                .stream()
+                .flatMap(world -> RegistryUtils.valuesForTag(world, UConventionalTags.Items.APPLES))
+                .filter(a -> a != this).map(item -> {
+            return Appearance.set(getDefaultStack(), item.getDefaultStack());
+        }).toList();
     }
 
     @Override
     public Text getName(ItemStack stack) {
-        return hasAppearance(stack) ? getAppearanceStack(stack).getName() : super.getName(stack);
+        Appearance appearance = stack.get(UDataComponentTypes.APPEARANCE);
+        return appearance != null ? appearance.item().getName() : super.getName(stack);
     }
 
     @Override
-    public Toxic getToxic(ItemStack stack) {
-        return hasAppearance(stack) ? Toxics.SEVERE_INNERT : Toxics.FORAGE_EDIBLE;
-    }
-
-    @Override
-    public Rarity getRarity(ItemStack stack) {
-        if (hasAppearance(stack)) {
-            return Rarity.EPIC;
-        }
-
-        return Rarity.RARE;
+    public void onAppearanceSet(ItemStack stack, Appearance appearance) {
+        stack.set(DataComponentTypes.RARITY, appearance.item().isEmpty() ? stack.getDefaultComponents().get(DataComponentTypes.RARITY) : Rarity.EPIC);
     }
 }

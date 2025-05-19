@@ -2,17 +2,20 @@ package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.*;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class MimicSpell extends AbstractDisguiseSpell implements HomingSpell, TimedSpell {
 
-    private final Timer timer;
+    static final TooltipFactory TOOLTIP = TimedSpell.TIME;
+
+    private final Timer timer = new Timer(TIME.get(getTraits()));
 
     protected MimicSpell(CustomisedSpellType<?> type) {
         super(type);
-        timer = new Timer((120 + (int)(getTraits().get(Trait.FOCUS, 0, 160) * 19)) * 20);
     }
 
     @Override
@@ -28,8 +31,6 @@ public class MimicSpell extends AbstractDisguiseSpell implements HomingSpell, Ti
             return false;
         }
 
-        setDirty();
-
         return super.tick(caster, situation);
     }
 
@@ -40,14 +41,14 @@ public class MimicSpell extends AbstractDisguiseSpell implements HomingSpell, Ti
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        timer.toNBT(compound);
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        timer.toNBT(compound, lookup);
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        timer.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
+        timer.fromNBT(compound, lookup);
     }
 }

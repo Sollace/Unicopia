@@ -14,13 +14,16 @@ import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.entity.ButterflyEntity;
-import com.minelittlepony.unicopia.entity.UEntityAttributes;
+import com.minelittlepony.unicopia.compat.pehkui.PehkUtil;
 import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
+import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
+import com.minelittlepony.unicopia.entity.mob.SombraEntity;
+import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.PlayerDimensions;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.network.track.TrackableObject;
 import com.minelittlepony.unicopia.projectile.ProjectileUtil;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.block.ShapeContext;
@@ -46,21 +49,21 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 
-public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provider, FlightType.Provider, EntityCollisions.ComplexCollidable {
-    private static final Optional<Float> BLOCK_HEIGHT = Optional.of(0.5F);
-
+public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provider, FlightType.Provider, EntityCollisions.ComplexCollidable, TrackableObject<EntityAppearance> {
     @NotNull
-    private String entityId = "";
+    private transient String entityId = "";
 
     @Nullable
-    private Entity entity;
+    private transient Entity entity;
 
     @Nullable
-    private BlockEntity blockEntity;
+    private transient BlockEntity blockEntity;
 
-    private List<Entity> attachments = new ArrayList<>();
+    private transient List<Attachment> attachments = new ArrayList<>();
 
     private Optional<EntityDimensions> dimensions = Optional.empty();
 
@@ -69,10 +72,12 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
      * This is not serialized, so should only be used for server-side data.
      */
     @Nullable
-    private NbtCompound tag;
+    private transient NbtCompound tag;
 
     @Nullable
     private NbtCompound entityNbt;
+
+    private boolean dirty;
 
     @Nullable
     public Entity getAppearance() {
@@ -84,16 +89,21 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         return blockEntity;
     }
 
-    public List<Entity> getAttachments() {
+    public List<Attachment> getAttachments() {
         return attachments;
     }
 
-    public void addBlockEntity(BlockEntity blockEntity) {
+    public record Attachment(Vec3d offset, Entity entity) {}
+
+    public void setBlockEntity(@Nullable BlockEntity blockEntity) {
+        if (this.blockEntity != null) {
+            this.blockEntity.markRemoved();
+        }
         this.blockEntity = blockEntity;
     }
 
-    public void attachExtraEntity(Entity entity) {
-        attachments.add(entity);
+    public void attachExtraEntity(Vec3d offset, Entity entity) {
+        attachments.add(new Attachment(offset, entity));
     }
 
     public void setAppearance(@Nullable Entity entity) {
@@ -101,10 +111,15 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
 
         entityNbt = entity == null ? null : encodeEntityToNBT(entity);
         entityId = entityNbt == null ? "" : entityNbt.getString("id");
+        markDirty();
     }
 
     public boolean isPresent() {
         return entity != null;
+    }
+
+    public boolean isOf(@Nullable Entity entity) {
+        return isPresent() && entity != null && EntityBehaviour.forEntity(this.entity).isEqual(this.entity, entity);
     }
 
     public NbtCompound getOrCreateTag() {
@@ -125,7 +140,9 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
             entity = null;
         }
         if (blockEntity != null) {
-            blockEntity.markRemoved();
+            try {
+                blockEntity.markRemoved();
+            } catch (Throwable ignored) {}
             blockEntity = null;
         }
     }
@@ -133,8 +150,8 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     private synchronized void createPlayer(NbtCompound nbt, GameProfile profile, Caster<?> source) {
         remove();
 
-        entity = InteractionManager.instance().createPlayer(source.getEntity(), profile);
-        entity.setCustomName(source.getMaster().getName());
+        entity = InteractionManager.getInstance().createPlayer(source.asEntity(), profile);
+        entity.setCustomName(source.asEntity().getName());
         ((PlayerEntity)entity).readNbt(nbt.getCompound("playerNbt"));
         if (nbt.contains("playerVisibleParts", NbtElement.BYTE_TYPE)) {
             entity.getDataTracker().set(Disguise.PlayerAccess.getModelBitFlag(), nbt.getByte("playerVisibleParts"));
@@ -158,13 +175,12 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                                 nbt.getString("playerName")
                             ), source);
 
-                SkullBlockEntity.loadProperties(new GameProfile(
-                        nbt.containsUuid("playerId") ? nbt.getUuid("playerId") : null,
-                                nbt.getString("playerName")
-                            ), p -> createPlayer(nbt, p, source));
+                SkullBlockEntity.fetchProfileByName(nbt.getString("playerName")).thenAccept(profile -> {
+                    profile.ifPresent(p -> createPlayer(nbt, p, source));
+                });
             } else {
                 if (source.isClient()) {
-                    entity = EntityType.fromNbt(nbt).map(type -> type.create(source.getReferenceWorld())).orElse(null);
+                    entity = EntityType.fromNbt(nbt).map(type -> type.create(source.asWorld())).orElse(null);
                     if (entity != null) {
                         try {
                             entity.readNbt(nbt);
@@ -174,7 +190,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                         entity = EntityBehaviour.forEntity(entity).onCreate(entity, this, true);
                     }
                 } else {
-                    entity = EntityType.loadEntityWithPassengers(nbt, source.getReferenceWorld(), e -> {
+                    entity = EntityType.loadEntityWithPassengers(nbt, source.asWorld(), e -> {
                         return EntityBehaviour.forEntity(e).onCreate(e, this, true);
                     });
                 }
@@ -191,18 +207,24 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     }
 
     private void onEntityLoaded(Caster<?> source) {
-        source.getEntity().calculateDimensions();
+        source.asEntity().calculateDimensions();
 
         if (entity == null) {
             return;
         }
 
-        if (entity instanceof LivingEntity) {
-            ((LivingEntity) entity).getAttributeInstance(UEntityAttributes.ENTITY_GRAVTY_MODIFIER).clearModifiers();
+        if (entity instanceof LivingEntity l) {
+            l.getAttributeInstance(UEntityAttributes.ENTITY_GRAVITY_MODIFIER).clearModifiers();
+        }
+
+        if (entity instanceof Guest guest) {
+            guest.setHost(source);
         }
 
         if (source.isClient()) {
-            source.getReferenceWorld().spawnEntity(entity);
+            source.asWorld().spawnEntity(entity);
+        } else {
+            entity.setId(source.asEntity().getId());
         }
     }
 
@@ -220,7 +242,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
             @SuppressWarnings("unchecked")
             Pony iplayer = Pony.of(((Owned<PlayerEntity>)entity).getMaster());
 
-            return iplayer == null ? FlightType.NONE : iplayer.getSpecies().getFlightType();
+            return iplayer == null ? FlightType.NONE : iplayer.getSpecies().flightType();
         }
 
         if (entity instanceof FlyingEntity
@@ -232,6 +254,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                 || entity instanceof ButterflyEntity
                 || entity instanceof ShulkerBulletEntity
                 || entity instanceof Flutterer
+                || entity instanceof SombraEntity
                 || ProjectileUtil.isFlyingProjectile(entity)) {
             return FlightType.INSECTOID;
         }
@@ -239,34 +262,24 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         return FlightType.NONE;
     }
 
-    @Override
-    public Optional<Float> getTargetEyeHeight(Pony player) {
-        if (entity != null) {
-            if (entity instanceof FallingBlockEntity) {
-                return BLOCK_HEIGHT;
-            }
-            return Optional.of(entity.getStandingEyeHeight());
-        }
-        return Optional.empty();
-    }
-
     public float getHeight() {
         if (entity != null) {
             if (entity instanceof FallingBlockEntity) {
                 return 0.9F;
             }
-            return entity.getHeight() - 0.1F;
+
+            return PehkUtil.ignoreScaleFor(entity, Entity::getHeight) - 0.1F;
         }
         return -1;
     }
 
-    public Optional<Double> getDistance(Pony player) {
-        return EntityBehaviour.forEntity(entity).getCameraDistance(entity, player);
+    public Optional<Float> getDistance(Pony player) {
+        return PehkUtil.ignoreScaleFor(entity, e -> EntityBehaviour.forEntity(e).getCameraDistance(e, player));
     }
 
     @Override
     public Optional<EntityDimensions> getTargetDimensions(Pony player) {
-        return dimensions = EntityBehaviour.forEntity(entity).getDimensions(entity, dimensions);
+        return dimensions = PehkUtil.ignoreScaleFor(entity, e -> EntityBehaviour.forEntity(e).getDimensions(e, dimensions));
     }
 
     public boolean skipsUpdate() {
@@ -285,7 +298,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         compound.putString("entityId", entityId);
 
         if (entityNbt != null) {
@@ -296,7 +309,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         String newId = compound.getString("entityId");
 
         String newPlayerName = null;
@@ -353,7 +366,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                 playerNbt.remove("unicopia_caster");
                 Pony pony = Pony.of(player);
                 if (pony != null) {
-                    NbtSerialisable.subTag("unicopia_caster", playerNbt, pony::toSyncronisedNbt);
+                    NbtSerialisable.subTag("unicopia_caster", playerNbt, comp -> pony.toSyncronisedNbt(comp, pony.asEntity().getRegistryManager()));
                 }
             });
         }
@@ -367,7 +380,47 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     @Override
     public void getCollissionShapes(ShapeContext context, Consumer<VoxelShape> output) {
         EntityCollisions.getCollissionShapes(getAppearance(), context, output);
-        getAttachments().forEach(e -> EntityCollisions.getCollissionShapes(e, context, output));
+        getAttachments().forEach(e -> EntityCollisions.getCollissionShapes(e.entity(), context, output));
+    }
+
+    public void markDirty() {
+        dirty = true;
+    }
+
+    @Override
+    public Status getStatus() {
+        if (dirty) {
+            dirty = false;
+            return Status.UPDATED;
+        }
+        return Status.DEFAULT;
+    }
+
+    @Override
+    public void readTrackedNbt(NbtCompound nbt, WrapperLookup lookup) {
+        fromNBT(nbt, lookup);
+    }
+
+    @Override
+    public NbtCompound writeTrackedNbt(WrapperLookup lookup) {
+        return toNBT(lookup);
+    }
+
+    @Override
+    public void discard(boolean immediate) {
+        setAppearance(null);
+        dirty = false;
+    }
+
+    @Override
+    public void copyTo(EntityAppearance destination) {
+        destination.entityId = entityId;
+        destination.entity = entity;
+        destination.blockEntity = blockEntity;
+        destination.attachments.addAll(attachments);
+        destination.dimensions = dimensions;
+        destination.tag = tag == null ? null : tag.copy();
+        destination.entityNbt = entityNbt == null ? null : entityNbt.copy();
     }
 
 }

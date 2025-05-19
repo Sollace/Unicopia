@@ -1,9 +1,7 @@
 {
    "replace": false,
-   "traits": "chaos:5",
+   "traits": "chaos:15",
    "items": [
-     "minecraft:gunpowder",
-     "minecraft:bow",
-     "minecraft:tnt_minecart"
+     "minecraft:string"
    ]
 }

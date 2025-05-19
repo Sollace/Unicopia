@@ -5,12 +5,16 @@ import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.compat.pehkui.PehkUtil;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.util.Registries;
+import com.minelittlepony.unicopia.util.LimbAnimationUtil;
+import com.minelittlepony.unicopia.util.RegistryUtils;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.Entity.RemovalReason;
@@ -30,22 +34,20 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 
 public class EntityBehaviour<T extends Entity> {
 
     private static final EntityBehaviour<Entity> DEFAULT = new EntityBehaviour<>();
-    private static final Registry<EntityBehaviour<?>> REGISTRY = Registries.createSimple(Unicopia.id("entity_behaviour"));
+    private static final Registry<EntityBehaviour<?>> REGISTRY = RegistryUtils.createSimple(Unicopia.id("entity_behaviour"));
 
     /**
      * Equivalent of the entity#tick method. Called every tick to update th logic for a disguise.
      * <br>
      * We use this to add entity-specific behaviours.
      */
-    public void update(Caster<?> source, T entity, Disguise spell) {
+    public void update(Living<?> source, T entity, Disguise spell) {
         if (source instanceof Pony) {
             update((Pony)source, entity, spell);
         }
@@ -61,6 +63,7 @@ public class EntityBehaviour<T extends Entity> {
 
     public T onCreate(T entity, EntityAppearance context, boolean wasNew) {
         entity.extinguish();
+        PehkUtil.clearScale(entity);
         return entity;
     }
 
@@ -70,15 +73,19 @@ public class EntityBehaviour<T extends Entity> {
         entity.remove(RemovalReason.KILLED);
     }
 
-    public Optional<Double> getCameraDistance(Entity entity, Pony player) {
+    public boolean isEqual(T a, Entity b) {
+        return a.getType() == b.getType();
+    }
+
+    public Optional<Float> getCameraDistance(Entity entity, Pony player) {
         if (entity == null) {
             return Optional.empty();
         }
 
-        double normalHeight = PlayerEntity.STANDING_DIMENSIONS.height;
-        double entityHeight = entity.getDimensions(entity.getPose()).height;
+        double normalHeight = PlayerEntity.STANDING_DIMENSIONS.height();
+        double entityHeight = entity.getDimensions(entity.getPose()).height();
 
-        return Optional.of(entityHeight / normalHeight);
+        return Optional.of((float)(entityHeight / normalHeight));
     }
 
     public Optional<EntityDimensions> getDimensions(T entity, Optional<EntityDimensions> current) {
@@ -88,10 +95,10 @@ public class EntityBehaviour<T extends Entity> {
 
         EntityDimensions dims = entity.getDimensions(entity.getPose());
 
-        float h = Math.max(0.001F, dims.height);
-        float w = Math.max(0.001F, dims.width);
+        float h = Math.max(0.001F, dims.height());
+        float w = Math.max(0.001F, dims.width());
 
-        if (current.isPresent() && h == current.get().height && w == current.get().width) {
+        if (current.isPresent() && h == current.get().height() && w == current.get().width()) {
             return current;
         }
 
@@ -108,7 +115,7 @@ public class EntityBehaviour<T extends Entity> {
         ((EntityDuck)to).setRemovalReason(from.getRemovalReason());
         to.setOnGround(from.isOnGround());
 
-        if (!from.world.isClient) {
+        if (!from.getWorld().isClient) {
             // player collision is not known on the server
             boolean clip = to.noClip;
             to.noClip = false;
@@ -129,12 +136,6 @@ public class EntityBehaviour<T extends Entity> {
             double x = positionOffset.x + Math.floor(from.getX()) + 0.5;
             double y = positionOffset.y + Math.floor(from.getY());
             double z = positionOffset.z + Math.floor(from.getZ()) + 0.5;
-
-            BlockPos pos = new BlockPos(x, y, z);
-
-            if (!from.world.isAir(pos) && !from.world.isWater(pos)) {
-                y++;
-            }
 
             to.prevX = x;
             to.prevY = y;
@@ -181,9 +182,7 @@ public class EntityBehaviour<T extends Entity> {
             l.bodyYaw = from.bodyYaw;
             l.prevBodyYaw = from.prevBodyYaw;
 
-            l.limbDistance = from.limbDistance;
-            l.limbAngle = from.limbAngle;
-            l.lastLimbDistance = from.lastLimbDistance;
+            LimbAnimationUtil.copy(from.limbAnimator, l.limbAnimator);
 
             l.handSwingProgress = from.handSwingProgress;
             l.lastHandSwingProgress = from.lastHandSwingProgress;
@@ -249,7 +248,7 @@ public class EntityBehaviour<T extends Entity> {
     }
 
     protected boolean isSneakingOnGround(Caster<?> source) {
-        Entity e = source.getEntity();
+        Entity e = source.asEntity();
         return e.isSneaking() && (e.isOnGround() && !(e instanceof PlayerEntity player && player.getAbilities().flying));
     }
 
@@ -270,7 +269,8 @@ public class EntityBehaviour<T extends Entity> {
     static {
         register(PlayerBehaviour::new, EntityType.PLAYER);
         register(FallingBlockBehaviour::new, EntityType.FALLING_BLOCK);
-        register(MobBehaviour::new, EntityType.RAVAGER, EntityType.IRON_GOLEM);
+        register(MobBehaviour::new, EntityType.RAVAGER);
+        register(IronGolemBehaviour::new, EntityType.IRON_GOLEM);
         register(HoppingBehaviour::new, EntityType.RABBIT, EntityType.SLIME, EntityType.MAGMA_CUBE);
         register(TraderBehaviour::new, EntityType.VILLAGER, EntityType.WANDERING_TRADER);
         register(SteedBehaviour::new, EntityType.HORSE, EntityType.DONKEY, EntityType.SKELETON_HORSE, EntityType.ZOMBIE_HORSE);
@@ -279,15 +279,17 @@ public class EntityBehaviour<T extends Entity> {
         register(GhastBehaviour::new, EntityType.GHAST);
         register(AxolotlBehaviour::new, EntityType.AXOLOTL);
         register(EndermanBehaviour::new, EntityType.ENDERMAN);
-        EntityBehaviour.<LlamaEntity>register(() -> new RangedAttackBehaviour<>(SoundEvents.ENTITY_LLAMA_SPIT, LlamaSpitEntity::new), EntityType.LLAMA, EntityType.TRADER_LLAMA);
-        EntityBehaviour.<SnowGolemEntity>register(() -> new RangedAttackBehaviour<>(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, SnowballEntity::new), EntityType.SNOW_GOLEM);
+        EntityBehaviour.<LlamaEntity>register(() -> new RangedAttackBehaviour<>(USounds.Vanilla.ENTITY_LLAMA_SPIT, LlamaSpitEntity::new), EntityType.LLAMA, EntityType.TRADER_LLAMA);
+        EntityBehaviour.<SnowGolemEntity>register(() -> new RangedAttackBehaviour<>(USounds.Vanilla.ENTITY_SNOW_GOLEM_SHOOT, SnowballEntity::new), EntityType.SNOW_GOLEM);
         register(SpellcastingIllagerBehaviour::new, EntityType.ILLUSIONER, EntityType.EVOKER);
         register(ShulkerBehaviour::new, EntityType.SHULKER);
         register(CreeperBehaviour::new, EntityType.CREEPER);
         register(SilverfishBehaviour::new, EntityType.SILVERFISH);
         register(ChickenBehaviour::new, EntityType.CHICKEN);
         register(BlazeBehaviour::new, EntityType.BLAZE);
+        register(BreezeBehaviour::new, EntityType.BREEZE);
         register(MinecartBehaviour::new, EntityType.CHEST_MINECART, EntityType.COMMAND_BLOCK_MINECART, EntityType.FURNACE_MINECART, EntityType.HOPPER_MINECART, EntityType.MINECART, EntityType.SPAWNER_MINECART, EntityType.TNT_MINECART);
+        register(CamelBehaviour::new, EntityType.CAMEL);
     }
 
     public static void bootstrap() {}

@@ -1,6 +1,9 @@
 package com.minelittlepony.unicopia.client.render;
 
+import com.minelittlepony.unicopia.FlightType;
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.entity.AmuletSelectors;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.client.model.Dilation;
@@ -21,6 +24,7 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
 public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
@@ -42,15 +46,18 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
     public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch) {
         if (canRender(entity)) {
             Identifier texture = getTexture(entity);
-            VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getEntityTranslucent(texture), false, false);
+            VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getEntityTranslucent(texture), false);
 
             model.setAngles(entity, context.getModel());
-            model.render(matrices, consumer, lightUv, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
+            model.render(matrices, consumer, lightUv, OverlayTexture.DEFAULT_UV, Colors.WHITE);
         }
     }
 
     protected boolean canRender(E entity) {
-        return entity instanceof PlayerEntity && Pony.of((PlayerEntity)entity).getSpecies().canInteractWithClouds();
+        return entity instanceof PlayerEntity player
+                && Pony.of(player).getObservedSpecies().flightType() == FlightType.AVIAN
+                && Pony.of(player).getObservedSpecies() != Race.BAT
+                && !AmuletSelectors.PEGASUS_AMULET.test(entity);
     }
 
     protected Identifier getTexture(E entity) {
@@ -100,8 +107,8 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
         }
 
         @Override
-        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int i, int j, float f, float g, float h, float k) {
-            root.render(matrices, vertexConsumer, i, j, f, g, h, k);
+        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+            root.render(matrices, vertexConsumer, light, overlay, color);
         }
 
         static class Wing {

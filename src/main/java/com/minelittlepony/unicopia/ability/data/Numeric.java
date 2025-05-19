@@ -1,22 +1,15 @@
 package com.minelittlepony.unicopia.ability.data;
 
-import net.minecraft.network.PacketByteBuf;
+import java.util.Optional;
 
-public class Numeric extends Hit {
-    public static final Serializer<Numeric> SERIALIZER = Numeric::new;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 
-    public int type;
+public record Numeric (int type) implements Hit {
+    public static final PacketCodec<ByteBuf, Numeric> CODEC = PacketCodecs.INTEGER.xmap(Numeric::new, Numeric::type);
 
-    Numeric(PacketByteBuf buf) {
-        type = buf.readInt();
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buf) {
-        buf.writeInt(type);
-    }
-
-    public Numeric(int t) {
-        type = t;
+    public static Optional<Numeric> of(int type) {
+        return Optional.of(new Numeric(type));
     }
 }

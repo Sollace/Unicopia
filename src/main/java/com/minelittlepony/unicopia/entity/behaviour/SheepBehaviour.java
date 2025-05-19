@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinSheepEntity;
 
@@ -10,7 +11,6 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldEvents;
@@ -22,27 +22,27 @@ public class SheepBehaviour extends EntityBehaviour<SheepEntity> {
         if (player.sneakingChanged()) {
 
             BlockPos pos = entity.getBlockPos().down();
-            BlockState state = entity.world.getBlockState(pos);
+            BlockState state = entity.getWorld().getBlockState(pos);
             boolean grass = state.isOf(Blocks.GRASS_BLOCK);
 
-            if (player.getMaster().isSneaking()) {
-                if (grass && entity.world.isClient && entity.isSheared()) {
+            if (player.asEntity().isSneaking()) {
+                if (grass && entity.getWorld().isClient && entity.isSheared()) {
                     entity.handleStatus((byte)10);
                 }
             } else {
                 if (entity.isSheared() && grass) {
-                    entity.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
-                    entity.world.setBlockState(pos, Blocks.DIRT.getDefaultState(), 2);
+                    entity.getWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
+                    entity.getWorld().setBlockState(pos, Blocks.DIRT.getDefaultState(), 2);
 
                     entity.onEatingGrass();
                 } else if (!entity.isSheared()) {
                     ItemStack dropType = new ItemStack(MixinSheepEntity.getDrops().get(entity.getColor()).asItem());
 
-                    player.getMaster().playSound(SoundEvents.ENTITY_SHEEP_SHEAR, 1, 1);
+                    player.asEntity().playSound(USounds.Vanilla.ENTITY_SHEEP_SHEAR, 1, 1);
                     entity.setSheared(true);
 
-                    Random rng = entity.world.random;
-                    PlayerInventory inv = player.getMaster().getInventory();
+                    Random rng = entity.getWorld().random;
+                    PlayerInventory inv = player.asEntity().getInventory();
 
                     int dropAmount = rng.nextInt(3);
                     int slot;
@@ -65,7 +65,7 @@ public class SheepBehaviour extends EntityBehaviour<SheepEntity> {
                         }
                     } while (dropAmount-- > 0);
                 }
-                spell.setDirty();
+                spell.getAppearance().ifPresent(EntityAppearance::markDirty);
             }
         }
     }

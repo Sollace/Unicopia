@@ -15,6 +15,8 @@
     "minecraft:baked_potato": "earth:2",
     "minecraft:poisonous_potato": "earth:2 poison:1",
     "minecraft:melon_slice": "life:1",
-    "minecraft:cookie": "happiness:6"
+    "minecraft:cookie": "happiness:6",
+    "#c:grain": "life:3 earth:3",
+    "#unicopia:food_types/raw_sea_vegitable": "life:2 water:10"
   }
 }

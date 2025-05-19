@@ -12,13 +12,16 @@ import com.google.common.base.Predicates;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.*;
 import net.minecraft.state.property.Property;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.world.World;
 
 public abstract class StatePredicate implements Predicate<BlockState> {
@@ -52,7 +55,7 @@ public abstract class StatePredicate implements Predicate<BlockState> {
             predicates.add(ofState(JsonHelper.getString(o, "state")));
         }
         if (o.has("tag")) {
-            Optional.of(JsonHelper.getString(o, "tag")).map(s -> TagKey.of(Registry.BLOCK_KEY, new Identifier(s))).ifPresent(tag -> {
+            Optional.of(JsonHelper.getString(o, "tag")).map(s -> TagKey.of(RegistryKeys.BLOCK, Identifier.of(s))).ifPresent(tag -> {
                 predicates.add(new StatePredicate() {
                     @Override
                     public StateChange getInverse() {
@@ -65,7 +68,7 @@ public abstract class StatePredicate implements Predicate<BlockState> {
 
                             @Override
                             public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
-                                return Registry.BLOCK.getOrCreateEntryList(tag)
+                                return Registries.BLOCK.getOrCreateEntryList(tag)
                                         .getRandom(world.random)
                                         .map(RegistryEntry::value)
                                         .map(Block::getDefaultState)
@@ -117,19 +120,24 @@ public abstract class StatePredicate implements Predicate<BlockState> {
     }
 
     static boolean isOre(BlockState s) {
-        return s.getBlock() instanceof OreBlock;
+        return s.isIn(ConventionalBlockTags.ORES);
     }
 
     static boolean isWater(BlockState s) {
-        return s.getMaterial() == Material.WATER;
+        return isFluid(s) && s.getFluidState().isIn(FluidTags.WATER);
     }
 
     static boolean isLava(BlockState s) {
-        return s.getMaterial() == Material.LAVA;
+        return isFluid(s) && s.getFluidState().isIn(FluidTags.LAVA);
+    }
+
+    @SuppressWarnings("deprecation")
+    public static boolean isFluid(BlockState s) {
+        return s.isLiquid();
     }
 
     public static Predicate<BlockState> ofState(String state) {
-        Identifier id = new Identifier(state.split("\\{")[0]);
+        Identifier id = Identifier.of(state.split("\\{")[0]);
         List<PropertyOp> properties = Optional.of(state)
                 .filter(s -> s.contains("{"))
                 .stream()
@@ -152,14 +160,14 @@ public abstract class StatePredicate implements Predicate<BlockState> {
 
                         @Override
                         public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
-                            return Registry.BLOCK.getOrEmpty(id).map(Block::getDefaultState).orElse(state);
+                            return Registries.BLOCK.getOrEmpty(id).map(Block::getDefaultState).orElse(state);
                         }
                     };
                 }
 
                 @Override
                 public boolean test(BlockState state) {
-                    return Registry.BLOCK.getOrEmpty(id).filter(state::isOf).isPresent();
+                    return Registries.BLOCK.getOrEmpty(id).filter(state::isOf).isPresent();
                 }
             };
         }
@@ -176,7 +184,7 @@ public abstract class StatePredicate implements Predicate<BlockState> {
 
                     @Override
                     public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
-                        return Registry.BLOCK.getOrEmpty(id).map(Block::getDefaultState).map(newState -> {
+                        return Registries.BLOCK.getOrEmpty(id).map(Block::getDefaultState).map(newState -> {
                             for (PropertyOp prop : properties) {
                                 newState = prop.applyTo(world, newState);
                             }
@@ -188,7 +196,7 @@ public abstract class StatePredicate implements Predicate<BlockState> {
 
             @Override
             public boolean test(BlockState state) {
-                return Registry.BLOCK.getOrEmpty(id).filter(state::isOf).isPresent() && properties.stream().allMatch(p -> p.test(state));
+                return Registries.BLOCK.getOrEmpty(id).filter(state::isOf).isPresent() && properties.stream().allMatch(p -> p.test(state));
             }
         };
     }

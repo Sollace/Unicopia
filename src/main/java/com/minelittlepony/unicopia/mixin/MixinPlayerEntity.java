@@ -7,13 +7,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.minelittlepony.unicopia.entity.PonyContainer;
 import com.minelittlepony.unicopia.entity.duck.PlayerEntityDuck;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.datafixers.util.Either;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.ItemEntity;
@@ -22,12 +24,13 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.stat.Stats;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 @Mixin(PlayerEntity.class)
-abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<Pony>, PlayerEntityDuck {
+abstract class MixinPlayerEntity extends LivingEntity implements Equine.Container<Pony>, PlayerEntityDuck {
     private MixinPlayerEntity() { super(null, null); }
     @Override
     @Invoker("updateCapeAngles")
@@ -38,38 +41,29 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
         return new Pony((PlayerEntity)(Object)this);
     }
 
-    @ModifyVariable(method = "applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V", at = @At("HEAD"), ordinal = 0)
+    @ModifyReturnValue(method = "createPlayerAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
+    private static DefaultAttributeContainer.Builder onCreateAttributes(DefaultAttributeContainer.Builder builder) {
+        Pony.registerAttributes(builder);
+        return builder;
+    }
+
+    @ModifyVariable(method = "applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     protected float modifyDamageAmount(float amount, DamageSource source) {
         return get().modifyDamage(source, amount).orElse(amount);
     }
 
-    @Inject(method = "handleFallDamage(FFLnet/minecraft/entity/damage/DamageSource;)Z", at = @At("HEAD"), cancellable = true)
-    private void onHandleFallDamage(float distance, float damageMultiplier, DamageSource cause, CallbackInfoReturnable<Boolean> info) {
-        get().onImpact(fallDistance, damageMultiplier, cause).ifPresent(newDistance -> {
-            PlayerEntity self = (PlayerEntity)(Object)this;
-
-            if (distance >= 2) {
-                self.increaseStat(Stats.FALL_ONE_CM, Math.round(distance * 100));
-            }
-
-            info.setReturnValue(super.handleFallDamage(newDistance, damageMultiplier, cause));
-        });
+    @ModifyVariable(method = "eatFood(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;Lnet/minecraft/component/type/FoodComponent;)Lnet/minecraft/item/ItemStack;", at = @At("HEAD"), argsOnly = true)
+    private FoodComponent onEatFood(FoodComponent initial, World world, ItemStack stack, FoodComponent food) {
+        return get().onEat(stack, food);
     }
 
-    @Inject(method = "createPlayerAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
-    private static void onCreateAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {
-        Pony.registerAttributes(info.getReturnValue());
-    }
-
-    @Inject(method = "trySleep(Lnet/minecraft/util/math/BlockPos;)Lcom/mojang/datafixers/util/Either;",
-            at = @At("HEAD"),
-            cancellable = true)
+    @Inject(method = "trySleep(Lnet/minecraft/util/math/BlockPos;)Lcom/mojang/datafixers/util/Either;", at = @At("HEAD"), cancellable = true)
     private void onTrySleep(BlockPos pos, CallbackInfoReturnable<Either<PlayerEntity.SleepFailureReason, Unit>> info) {
-        if (!world.isClient) {
+        if (!getWorld().isClient) {
             get().trySleep(pos).ifPresent(reason -> {
                 ((PlayerEntity)(Object)this).sendMessage(reason, true);
 
-                info.setReturnValue(Either.right(Unit.INSTANCE));
+                info.setReturnValue(Either.left(ServerPlayerEntity.SleepFailureReason.OTHER_PROBLEM));
             });
         }
     }
@@ -77,24 +71,12 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
     @Inject(method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;",
             at = @At("RETURN"))
     private void onDropItem(ItemStack itemStack_1, boolean scatter, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> info) {
-        Equine.of(info.getReturnValue()).ifPresent(eq -> {
-            eq.setSpecies(get().getSpecies());
-            eq.getPhysics().setBaseGravityModifier(get().getPhysics().getGravityModifier());
-        });
+        get().onDropItem(info.getReturnValue());
     }
 
-    @Inject(method = "getActiveEyeHeight(Lnet/minecraft/entity/EntityPose;Lnet/minecraft/entity/EntityDimensions;)F",
-            at = @At("RETURN"),
-            cancellable = true)
-    private void onGetActiveEyeHeight(EntityPose pose, EntityDimensions dimensions, CallbackInfoReturnable<Float> info) {
-        get().getMotion().getDimensions().calculateActiveEyeHeight(dimensions).ifPresent(info::setReturnValue);
-    }
-
-    @Inject(method = "getDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;",
-            at = @At("RETURN"),
-            cancellable = true)
-    private void onGetDimensions(EntityPose pose, CallbackInfoReturnable<EntityDimensions> info) {
-        get().getMotion().getDimensions().calculateDimensions().ifPresent(info::setReturnValue);
+    @ModifyReturnValue(method = "getBaseDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;", at = @At("RETURN"))
+    private EntityDimensions modifyEyeHeight(EntityDimensions dimensions, EntityPose pose) {
+        return get().getMotion().getDimensions().calculateDimensions(dimensions);
     }
 
     @Inject(method = "getBlockBreakingSpeed(Lnet/minecraft/block/BlockState;)F",
@@ -102,5 +84,21 @@ abstract class MixinPlayerEntity extends LivingEntity implements PonyContainer<P
             cancellable = true)
     private void onGetBlockBreakingSpeed(BlockState state, CallbackInfoReturnable<Float> info) {
         info.setReturnValue(info.getReturnValue() * get().getBlockBreakingSpeed());
+    }
+
+    @Override
+    protected int getNextAirUnderwater(int air) {
+        if (EquinePredicates.PLAYER_SEAPONY.test(this)) {
+            return super.getNextAirOnLand(air);
+        }
+        return super.getNextAirUnderwater(air);
+    }
+
+    @Override
+    protected int getNextAirOnLand(int air) {
+        if (EquinePredicates.PLAYER_SEAPONY.test(this)) {
+            return super.getNextAirUnderwater(air);
+        }
+        return super.getNextAirOnLand(air);
     }
 }

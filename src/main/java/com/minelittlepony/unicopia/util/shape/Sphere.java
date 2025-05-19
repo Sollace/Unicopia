@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.util.shape;
 
+import org.spongepowered.include.com.google.common.base.Objects;
+
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -100,6 +102,19 @@ public class Sphere implements Shape {
     @Override
     public Vec3d getUpperBound() {
         return stretch.multiply(rad);
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other instanceof Sphere o
+                && Objects.equal(stretch, o.stretch)
+                && hollow == o.hollow
+                && Double.compare(rad, o.rad) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(stretch, hollow, rad);
     }
 
     public static double computeEllipsoidArea(double rad, Vec3d stretch) {

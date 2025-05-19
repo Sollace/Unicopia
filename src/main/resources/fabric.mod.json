@@ -5,6 +5,7 @@
   "name": "Unicopia",
   "description": "Magical Abilities for Mine Little Pony!",
   "authors": [ "Sollace" ],
+  "contributors": [ "LingVarr", "Cryghast", "FollowSlipstream", "FuTou2333" ],
   "contact": {
     "sources": "https://github.com/Sollace/Unicopia",
     "issues": "https://github.com/Sollace/Unicopia/issues"
@@ -17,34 +18,47 @@
   "accessWidener": "unicopia.aw",
   "environment": "*",
   "entrypoints": {
-  	"main": [
+    "main": [
       "com.minelittlepony.unicopia.Unicopia"
     ],
     "client": [
       "com.minelittlepony.unicopia.client.UnicopiaClient"
     ],
+    "fabric-datagen": [
+      "com.minelittlepony.unicopia.datagen.Datagen"
+    ],
     "modmenu": [
       "com.minelittlepony.unicopia.modmenu.UMenuFactory"
+    ],
+    "tla-api": [
+      "com.minelittlepony.unicopia.compat.tla.Main"
     ],
     "minelittlepony": [
       "com.minelittlepony.unicopia.client.minelittlepony.Main"
     ]
   },
   "depends": {
-    "fabricloader": ">=0.12.0",
+    "minecraft": "${minecraftVersion}",
+    "fabricloader": "${loaderVersion}",
     "java": ">=17",
-    "fabric-api-base": ">=0.1.0",
-    "kirin": "*"
+    "fabric-api": "${fabricVersion}",
+    "kirin": "${kirinVersion}"
   },
   "suggests": {
     "minelp": "*",
     "modmenu": "*"
   },
   "custom": {
+    "fabwork": {
+      "requiredOn": "*"
+    },
     "modmenu": {
       "links": {
-        "modmenu.discord": "https://discord.gg/zKSZ8Mg"
-      }
+        "modmenu.discord": "https://discord.gg/zKSZ8Mg",
+        "modmenu.github_releases": "https://github.com/Sollace/Unicopia/releases",
+        "modmenu.modrinth": "https://modrinth.com/mod/unicopia"
+      },
+      "update_checker": true
     }
   }
 }

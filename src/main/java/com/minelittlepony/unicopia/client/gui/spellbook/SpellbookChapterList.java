@@ -6,16 +6,13 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.unicopia.Debug;
-import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
+import com.minelittlepony.unicopia.container.spellbook.TabSide;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.util.Identifier;
 
 public class SpellbookChapterList {
-    public static final Identifier CRAFTING_ID = Unicopia.id("crafting");
-    public static final Identifier PROFILE_ID = Unicopia.id("profile");
-    public static final Identifier TRAIT_DEX_ID = Unicopia.id("traits");
-
     private final SpellbookScreen screen;
 
     private final Chapter craftingChapter;
@@ -25,9 +22,7 @@ public class SpellbookChapterList {
     public SpellbookChapterList(SpellbookScreen screen, Chapter craftingChapter, Chapter... builtIn) {
         this.screen = screen;
         this.craftingChapter = craftingChapter;
-        ClientChapters.getChapters().forEach(chapter -> {
-            chapters.put(chapter.id(), chapter);
-        });
+        chapters.putAll(ClientChapters.getChapters());
         chapters.put(craftingChapter.id(), craftingChapter);
         for (Chapter i : builtIn) {
             chapters.put(i.id(), i);
@@ -39,12 +34,14 @@ public class SpellbookChapterList {
     }
 
     public Chapter getCurrentChapter() {
-        if (Debug.DEBUG_SPELLBOOK_CHAPTERS) {
-            ClientChapters.getChapters().forEach(chapter -> {
-                Optional.ofNullable(chapters.get(chapter.id())).flatMap(Chapter::content).ifPresent(old -> {
-                    chapter.content().ifPresent(neu -> neu.copyStateFrom(old));
+        if (Debug.SPELLBOOK_CHAPTERS) {
+            ClientChapters.getChapters().forEach((id, chapter) -> {
+                chapters.compute(id, (key, old) -> {
+                    Optional.ofNullable(old).flatMap(Chapter::content).ifPresent(o -> {
+                        chapter.content().ifPresent(neu -> neu.copyStateFrom(o));
+                    });
+                    return chapter;
                 });
-                chapters.put(chapter.id(), chapter);
             });
         }
 
@@ -56,26 +53,17 @@ public class SpellbookChapterList {
         TabSide side,
         int tabY,
         int color,
-        Optional<Content> content) {
+        Optional<Content> content) implements SpellbookChapter {
 
         public static Identifier createIcon(Identifier id, String suffex) {
-            return new Identifier(id.getNamespace(), "textures/gui/container/pages/" + id.getPath() + suffex + ".png");
+            return id.withPath(p -> "textures/gui/container/pages/" + p + suffex + ".png");
         }
-    }
-
-    public enum TabSide {
-        LEFT,
-        RIGHT
     }
 
     public interface Content extends Drawable {
         void init(SpellbookScreen screen, Identifier pageId);
 
         default void copyStateFrom(Content old) {}
-
-        default boolean showInventory() {
-            return false;
-        }
 
         default Identifier getIcon(Chapter chapter, Identifier icon) {
             return icon;
@@ -89,14 +77,14 @@ public class SpellbookChapterList {
                 }
 
                 @Override
-                public void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container) {
-                    obj.draw(matrices, mouseX, mouseY, container);
+                public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
+                    obj.draw(context, mouseX, mouseY, container);
                 }
             });
         }
     }
 
     public interface Drawable {
-        void draw(MatrixStack matrices, int mouseX, int mouseY, IViewRoot container);
+        void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container);
     }
 }

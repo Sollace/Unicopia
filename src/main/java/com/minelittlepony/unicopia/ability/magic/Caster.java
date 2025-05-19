@@ -6,61 +6,56 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.Owned;
+import com.minelittlepony.unicopia.*;
+import com.minelittlepony.unicopia.ability.Ability;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.AreaProtectionSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.block.data.ModificationType;
-import com.minelittlepony.unicopia.entity.Physics;
-import com.minelittlepony.unicopia.entity.PonyContainer;
+import com.minelittlepony.unicopia.entity.*;
+import com.minelittlepony.unicopia.entity.damage.UDamageSources;
 import com.minelittlepony.unicopia.particle.ParticleSource;
+import com.minelittlepony.unicopia.server.world.Ether;
+import com.minelittlepony.unicopia.server.world.ModificationType;
+import com.minelittlepony.unicopia.server.world.OfflinePlayerCache;
 import com.minelittlepony.unicopia.util.SoundEmitter;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
 
 /**
  * Interface for any magically capable entities that can cast or persist spells.
  */
-public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affine, ParticleSource, SoundEmitter {
+public interface Caster<E extends Entity> extends
+        Owned<LivingEntity>,
+        Levelled,
+        Affine,
+        ParticleSource<E>,
+        SoundEmitter<E>,
+        EntityConvertable<E>,
+        UDamageSources {
 
     Physics getPhysics();
 
-    SpellContainer getSpellSlot();
+    SpellSlots getSpellSlot();
 
     /**
-     * Gets the entity directly responsible for casting.
+     * Removes the desired amount of mana or health from this caster in exchange for a spell's benefits.
+     * <p>
+     * @return False if the transaction has depleted the caster's reserves.
      */
-    @Override
-    default Entity getEntity() {
-        return getMaster();
-    }
+    boolean subtractEnergyCost(double amount);
 
     /**
-     * Gets the minecraft world
+     * Gets the original caster responsible for this spell.
+     * If none is found, will return itself.
      */
-    @Override
-    default World getReferenceWorld() {
-        return getEntity().getEntityWorld();
-    }
-
-    /**
-     * Returns true if we're executing on the client.
-     */
-    default boolean isClient() {
-        return getReferenceWorld().isClient();
-    }
-
-    /**
-     * Gets the center position where this caster is located.
-     */
-    default BlockPos getOrigin() {
-        return getEntity().getBlockPos();
+    default Caster<?> getOriginatingCaster() {
+        return of(getMaster()).orElse(this);
     }
 
     default boolean canModifyAt(BlockPos pos) {
@@ -70,12 +65,24 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     default boolean canModifyAt(BlockPos pos, ModificationType mod) {
 
         if (mod.checkPhysical()) {
+            if (asWorld().getBlockState(pos).getHardness(asWorld(), pos) < 0) {
+                return false;
+            }
+
             if (getMaster() instanceof PlayerEntity player) {
-                if (!getReferenceWorld().canPlayerModifyAt(player, pos)) {
+                if (!player.canModifyBlocks() || !asWorld().canPlayerModifyAt(player, pos)) {
                     return false;
                 }
             } else {
-                if (!getReferenceWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+                if (asWorld() instanceof ServerWorld sw) {
+                    @Nullable
+                    PlayerEntity player = OfflinePlayerCache.getOfflinePlayer(sw, getMasterId().orElse(null));
+                    if (player != null && !player.canModifyBlocks() || !sw.canPlayerModifyAt(player, pos)) {
+                        return false;
+                    }
+                }
+
+                if (!asWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                     return false;
                 }
             }
@@ -83,13 +90,6 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
 
         return !mod.checkMagical() || canCastAt(Vec3d.ofCenter(pos));
     }
-
-    /**
-     * Removes the desired amount of mana or health from this caster in exchange for a spell's benefits.
-     * <p>
-     * @return False if the transaction has depleted the caster's reserves.
-     */
-    boolean subtractEnergyCost(double amount);
 
     default Stream<Caster<?>> findAllSpellsInRange(double radius) {
         return findAllSpellsInRange(radius, null);
@@ -100,7 +100,7 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     }
 
     default Stream<Entity> findAllEntitiesInRange(double radius, @Nullable Predicate<Entity> test) {
-        return VecHelper.findInRange(getEntity(), getReferenceWorld(), getOriginVector(), radius, test).stream();
+        return VecHelper.findInRange(asEntity(), asWorld(), getOriginVector(), radius, test).stream();
     }
 
     default Stream<Entity> findAllEntitiesInRange(double radius) {
@@ -112,11 +112,23 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
     }
 
     default boolean canCastAt(Vec3d pos) {
-        return findAllSpellsInRange(500, SpellType.ARCANE_PROTECTION::isOn).noneMatch(caster -> caster
-                .getSpellSlot().get(SpellType.ARCANE_PROTECTION, false)
-                .filter(spell -> spell.blocksMagicFor(caster, this, pos))
-                .isPresent()
-        );
+        return !Ether.get(asWorld()).anyMatch(SpellType.ARCANE_PROTECTION, entry -> {
+            var target = entry.entity.getTarget().orElse(null);
+            if (target != null && target.pos().distanceTo(pos) <= entry.getRadius()) {
+                Caster<?> caster = entry.getCaster();
+                if (caster != null) {
+                    AreaProtectionSpell spell = entry.getSpell();
+                    if (spell != null) {
+                        return spell.blocksMagicFor(caster, this, pos);
+                    }
+                }
+            }
+            return false;
+        });
+    }
+
+    default boolean canUse(Ability<?> ability) {
+        return false;
     }
 
     static Stream<Caster<?>> stream(Stream<Entity> entities) {
@@ -131,9 +143,6 @@ public interface Caster<E extends LivingEntity> extends Owned<E>, Levelled, Affi
             return Optional.of((Caster<?>)entity);
         }
 
-        return PonyContainer.of(entity)
-                .map(PonyContainer::get)
-                .filter(c -> c instanceof Caster<?>)
-                .map(c -> (Caster<?>)c);
+        return Equine.<Entity, Caster<?>>of(entity, c -> c instanceof Caster<?>);
     }
 }

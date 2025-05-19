@@ -1,10 +1,12 @@
 package com.minelittlepony.unicopia.block;
 
 import java.util.Arrays;
+import com.minelittlepony.unicopia.util.PosHelper;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -46,18 +48,10 @@ public interface SegmentedBlock {
     boolean isNext(BlockState state);
 
     default BlockPos getTip(BlockView world, BlockPos startingPos) {
-        while (isNext(world.getBlockState(startingPos.up())) && !world.isOutOfHeightLimit(startingPos)) {
-            startingPos = startingPos.up();
-        }
-
-        return startingPos;
+        return PosHelper.traverseChain(world, startingPos, Direction.UP, this::isNext);
     }
 
     default BlockPos getRoot(BlockView world, BlockPos startingPos) {
-        while (isBase(world.getBlockState(startingPos.down())) && !world.isOutOfHeightLimit(startingPos)) {
-            startingPos = startingPos.down();
-        }
-
-        return startingPos;
+        return PosHelper.traverseChain(world, startingPos, Direction.DOWN, this::isBase);
     }
 }

@@ -1,7 +1,10 @@
 package com.minelittlepony.unicopia.client.gui;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import org.lwjgl.glfw.GLFW;
 
 import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.common.client.gui.element.Label;
@@ -10,21 +13,38 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgRequestSpeciesChange;
 
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.ScreenRect;
+import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 public class TribeSelectionScreen extends GameGui implements HidesHud {
     static final Identifier TEXTURE = Unicopia.id("textures/gui/tribe_selection.png");
 
     final Set<Race> allowedRaces;
 
+    final Text journeyText;
+    final Text choiceText;
+
     private boolean finished;
 
-    public TribeSelectionScreen(Set<Race> allowedRaces) {
-        super(Text.translatable("gui.unicopia.tribe_selection"));
+    private final List<TribeButton> options = new ArrayList<>();
+    private static int SELECTION = -1;
+
+    private int prevScrollPosition;
+    private int scrollPosition;
+    private int targetScroll;
+
+    public TribeSelectionScreen(Set<Race> allowedRaces, String baseString) {
+        super(Text.translatable(baseString));
         this.allowedRaces = allowedRaces;
+        this.journeyText = Text.translatable(baseString + ".journey");
+        this.choiceText = Text.translatable(baseString + ".choice");
     }
 
     @Override
@@ -39,64 +59,138 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
         top += height / 8;
 
         TextBlock block = addDrawable(new TextBlock(left, top += 10, pageWidth));
-        block.getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.welcome.journey"));
+        block.getStyle().setText(journeyText);
         top += block.getBounds().height;
 
         block = addDrawable(new TextBlock(left, top += 7, pageWidth));
-        block.getStyle().setText(Text.translatable("gui.unicopia.tribe_selection.welcome.choice"));
+        block.getStyle().setText(choiceText);
         top += block.getBounds().height;
         top += 30;
 
-        final int itemWidth = 70 + 10;
-
-        List<Race> options = Race.REGISTRY.stream().filter(race -> !race.isDefault() && !race.isOp()).toList();
-
-        int columns = Math.min(width / itemWidth, options.size());
-
-        int x = (width - (columns * itemWidth)) / 2;
-        int y = top;
-
-        int column = 0;
-        int row = 0;
+        List<Race> options = Race.REGISTRY.stream().filter(race -> race.availability().isSelectable()).toList();
+        this.options.clear();
 
         for (Race race : options) {
-            addOption(race, x + (column * itemWidth), y + (row * itemWidth));
-            column++;
-            if (column >= columns) {
-                column = 0;
-                row++;
+            if (race.isHuman()) {
+                final Race r = race;
+                addButton(new Link(width / 2, height - getFont().fontHeight - 10).setCentered())
+                    .onClick(s -> selectRace(r))
+                    .getStyle().setText("[Or Play as None of these]");
+            } else {
+                addOption(race, top);
             }
         }
 
-        top = height - 20;
+        scroll(SELECTION == -1 ? options.size() / 2 : SELECTION, false);
     }
 
-    private void addOption(Race race, int x, int y) {
-        addDrawableChild(new TribeButton(x, y, width, race)).onClick(b -> {
-            finished = true;
-            client.setScreen(new TribeConfirmationScreen(result -> {
-                finished = false;
-
-                if (result) {
-                    Channel.CLIENT_REQUEST_SPECIES_CHANGE.send(new MsgRequestSpeciesChange(race, true));
-                    finish();
-                } else {
-                    client.setScreen(this);
-                }
-            }, race));
+    private void addOption(Race race, int y) {
+        var option = new TribeButton(0, y, width, race);
+        int index = options.size();
+        options.add(addDrawableChild(option));
+        option.onClick(b -> {
+            scroll(index, false);
+            selectRace(race);
         }).setEnabled(allowedRaces.contains(race));
     }
 
+    private void selectRace(Race race) {
+        finished = true;
+        client.setScreen(new TribeConfirmationScreen(result -> {
+            finished = false;
+
+            if (result) {
+                Channel.CLIENT_REQUEST_SPECIES_CHANGE.sendToServer(new MsgRequestSpeciesChange(true, race));
+                finish();
+            } else {
+                client.setScreen(this);
+            }
+        }, race));
+    }
+
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
+    public void tick() {
+        prevScrollPosition = scrollPosition;
+        if (scrollPosition < targetScroll) {
+            scrollPosition++;
+        }
+        if (scrollPosition > targetScroll) {
+            scrollPosition--;
+        }
+    }
+
+    private void updateScolling() {
+        final int itemWidth = 70 + 10;
+        int x = (width - itemWidth) / 2;
+        float diff = MathHelper.lerp(client.getRenderTickCounter().getTickDelta(false), prevScrollPosition, scrollPosition) / 4F;
+
+        for (int i = 0; i < options.size(); i++) {
+            var option = options.get(i);
+            option.setX((int)(x + (i - diff) * itemWidth));
+            option.setFocused(i == SELECTION);
+        }
+    }
+
+    @Override
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        updateScolling();
+        super.render(context, mouseX, mouseY, delta);
+
+        if (!options.isEmpty()) {
+            var element = options.get(0);
+
+            float diff = (targetScroll - MathHelper.lerp(client.getRenderTickCounter().getTickDelta(false), prevScrollPosition, scrollPosition)) * 7;
+            context.drawTexture(TEXTURE, (width / 2) + 40 + (scrollPosition < targetScroll ? (int)diff : 0), element.getY() - 20, 10, 165, 153, 30, 85, 312, 312);
+            context.drawTexture(TEXTURE, (width / 2) - 80 + (scrollPosition > targetScroll ? (int)diff : 0), element.getY() - 20, 10, 195, 153, 30, 85, 312, 312);
+            if (element.getBounds().left < 0) {
+                context.drawTexture(TEXTURE, 20, element.getY() - 10, 10, 188, 235, 24, 60, 312, 312);
+            }
+            element = options.get(options.size() - 1);
+            if (element.getBounds().right() > width) {
+                context.drawTexture(TEXTURE, width - 50, element.getY() - 10, 10, 164, 235, 24, 60, 312, 312);
+            }
+        }
     }
 
     @Override
     public void finish() {
         finished = true;
         close();
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+
+        if (keyCode == GLFW.GLFW_KEY_LEFT) {
+            scroll(Math.max(SELECTION - 1, 0), true);
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_RIGHT) {
+            scroll(Math.min(SELECTION + 1, options.size() - 1), true);
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_ENTER) {
+            if (options.get(SELECTION).active) {
+                options.get(SELECTION).onPress();
+            }
+        }
+
+        return false;
+    }
+
+    private void scroll(int target, boolean animate) {
+        SELECTION = target;
+        target *= 4;
+        if (targetScroll == target) {
+            return;
+        }
+        targetScroll = target;
+        if (!animate) {
+            scrollPosition = targetScroll;
+            prevScrollPosition = scrollPosition;
+        } else {
+            playSound(SoundEvents.UI_BUTTON_CLICK);
+        }
     }
 
     @Override
@@ -112,6 +206,34 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
                 client.setScreen(this);
                 finished = false;
             });
+        }
+    }
+
+    static class Link extends Label implements Widget {
+        public Link(int x, int y) {
+            super(x, y);
+        }
+
+        @Override
+        protected boolean isValidClickButton(int button) {
+            return button == 0;
+        }
+
+        @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            return getBounds().contains(mouseX, mouseY);
+        }
+
+        @Override
+        public ScreenRect getNavigationFocus() {
+            return new ScreenRect(getX(), getY(), getWidth(), getHeight());
+        }
+
+        @Override
+        public void renderWidget(DrawContext context, int mouseX, int mouseY, float partialTicks) {
+            this.hovered = isMouseOver(mouseX, mouseY);
+            getStyle().setColor(isSelected() ? Colors.ALTERNATE_WHITE : Colors.GRAY);
+            super.renderWidget(context, mouseX, mouseY, partialTicks);
         }
     }
 }

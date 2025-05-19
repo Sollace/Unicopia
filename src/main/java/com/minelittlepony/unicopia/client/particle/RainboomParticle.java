@@ -1,11 +1,11 @@
 package com.minelittlepony.unicopia.client.particle;
 
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -38,8 +38,8 @@ public class RainboomParticle extends OrientedBillboardParticle {
         baseSize++;
 
         if (age == 1) {
-            world.playSound(x, y, z, SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.AMBIENT, 5, 0.3F, true);
-            world.playSound(x, y, z, SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.AMBIENT, 10, 1.3F, true);
+            world.playSound(x, y, z, USounds.PARTICLE_RAINBOOM_THUNDER, SoundCategory.AMBIENT, 5, 0.3F, true);
+            world.playSound(x, y, z, USounds.PARTICLE_RAINBOOM_REVERB, SoundCategory.AMBIENT, 10, 1.3F, true);
         }
     }
 }

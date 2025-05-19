@@ -1,0 +1,51 @@
+package com.minelittlepony.unicopia.item.enchantment;
+
+import java.util.function.DoubleSupplier;
+
+import org.jetbrains.annotations.Nullable;
+
+import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.advancement.UCriteria;
+import com.minelittlepony.unicopia.util.VecHelper;
+
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ExperienceOrbEntity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+
+public class ConsumptionEnchantmentUtil {
+    public static boolean applyConsumption(World w, BlockState state, BlockPos pos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack tool) {
+
+        if (!(w instanceof ServerWorld world)) {
+            return false;
+        }
+
+        if (tool.isEmpty() && entity instanceof LivingEntity l) {
+            tool = l.getMainHandStack();
+        }
+
+        if (!EnchantmentHelper.hasAnyEnchantmentsIn(tool, UTags.Enchantments.CONVERTS_DROPS_TO_XP)) {
+            return false;
+        }
+
+        DoubleSupplier vecComponentFactory = () -> world.random.nextTriangular(0, 0.3);
+
+        Block.getDroppedStacks(state, world, pos, blockEntity, entity, tool).forEach(s -> {
+            world.playSound(null, pos, USounds.ENCHANTMENT_CONSUMPTION_CONSUME, SoundCategory.BLOCKS, 0.05F, (float)world.random.nextTriangular(0.6F, 0.2F));
+            ExperienceOrbEntity.spawn(world, pos.toCenterPos().add(VecHelper.supply(vecComponentFactory)), s.getCount());
+            UCriteria.USE_CONSUMPTION.trigger(entity);
+        });
+        state.onStacksDropped(world, pos, tool, true);
+
+        return true;
+    }
+}

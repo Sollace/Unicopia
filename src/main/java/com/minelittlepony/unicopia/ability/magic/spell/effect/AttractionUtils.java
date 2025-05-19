@@ -1,11 +1,14 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
-import com.minelittlepony.unicopia.entity.Living;
-import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
+import org.jetbrains.annotations.Nullable;
 
-import net.minecraft.enchantment.EnchantmentHelper;
+import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.effect.EffectUtils;
+import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -17,7 +20,16 @@ public interface AttractionUtils {
     }
 
     static double getMass(Entity entity) {
-        return entity.getWidth() * entity.getHeight();
+        double baseMass = entity.getWidth() * entity.getHeight();
+        if (entity instanceof ItemEntity item) {
+            baseMass *= item.getStack().getCount();
+            @Nullable
+            Block block = Block.getBlockFromItem(item.getStack().getItem());
+            if (block != null) {
+                baseMass *= MathHelper.clamp(1 + block.getHardness(), 1, 5);
+            }
+        }
+        return baseMass;
     }
 
     /**
@@ -30,7 +42,7 @@ public interface AttractionUtils {
         center = target.getPos().subtract(center).normalize().multiply(force);
 
         if (target instanceof LivingEntity) {
-            center = center.multiply(1 / (1 + EnchantmentHelper.getEquipmentLevel(UEnchantments.HEAVY, (LivingEntity)target)));
+            center = center.multiply(1 / EnchantmentUtil.getWeight((LivingEntity)target));
         }
 
         target.addVelocity(
@@ -48,13 +60,11 @@ public interface AttractionUtils {
         return Pony.of(entity).map(pony -> {
             double force = 0.75;
 
-            if (pony.getSpecies().canUseEarth()) {
+            if (EffectUtils.hasExtraDefenses(pony.asEntity())) {
+                force /= 12;
+            } else if (pony.getCompositeRace().canUseEarth()) {
                 force /= 2;
-
-                if (pony.getMaster().isSneaking()) {
-                    force /= 6;
-                }
-            } else if (pony.getSpecies().canFly()) {
+            } else if (pony.getCompositeRace().canFly()) {
                 force *= 2;
             }
 

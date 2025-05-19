@@ -1,112 +1,152 @@
 package com.minelittlepony.unicopia;
 
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.include.com.google.common.base.Objects;
-
 import com.google.common.base.Strings;
+import com.minelittlepony.unicopia.ability.Abilities;
+import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.magic.Affine;
-import com.minelittlepony.unicopia.util.Registries;
+import com.minelittlepony.unicopia.util.RegistryUtils;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.command.argument.RegistryKeyArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.util.Util;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 
-public final class Race implements Affine {
-    public static final String DEFAULT_ID = "unicopia:human";
-    public static final Registry<Race> REGISTRY = Registries.createDefaulted(Unicopia.id("race"), DEFAULT_ID);
+public record Race (
+        List<Ability<?>> abilities,
+        Affinity affinity,
+        Availability availability,
+        FlightType flightType,
+        boolean canCast,
+        boolean hasIronGut,
+        boolean canUseEarth,
+        boolean isNocturnal,
+        boolean canHang,
+        boolean isFish,
+        boolean canInfluenceWeather,
+        boolean canInteractWithClouds
+    ) implements Affine {
+    public static final String DEFAULT_ID = "unicopia:unset";
+    public static final Registry<Race> REGISTRY = RegistryUtils.createSynced(Unicopia.id("race"), DEFAULT_ID);
+    public static final Registry<Race> COMMAND_REGISTRY = RegistryUtils.createSynced(Unicopia.id("race/grantable"), DEFAULT_ID);
     public static final RegistryKey<? extends Registry<Race>> REGISTRY_KEY = REGISTRY.getKey();
-    private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("race.unknown", id));
+    private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("commands.race.fail", id));
+    private static final Function<Race, Composite> COMPOSITES = Util.memoize(race -> new Composite(race, null, null));
 
-    public static Race register(String name, boolean magic, FlightType flight, boolean earth) {
-        return register(Unicopia.id(name), magic, flight, earth);
-    }
-
-    public static Race register(Identifier id, boolean magic, FlightType flight, boolean earth) {
-        return Registry.register(REGISTRY, id, new Race(magic, flight, earth));
-    }
-
-    public static RegistryKeyArgumentType<Race> argument() {
-        return RegistryKeyArgumentType.registryKey(REGISTRY_KEY);
-    }
+    public static final Codec<Race> CODEC = RecordCodecBuilder.create(i -> i.group(
+            Abilities.REGISTRY.getCodec().listOf().fieldOf("abilities").forGetter(Race::abilities),
+            Affinity.CODEC.fieldOf("affinity").forGetter(Race::affinity),
+            Availability.CODEC.fieldOf("availability").forGetter(Race::availability),
+            FlightType.CODEC.fieldOf("flight").forGetter(Race::flightType),
+            Codec.BOOL.fieldOf("magic").forGetter(Race::canCast),
+            Codec.BOOL.fieldOf("can_forage").forGetter(Race::hasIronGut),
+            Codec.BOOL.fieldOf("earth_pony_strength").forGetter(Race::canUseEarth),
+            Codec.BOOL.fieldOf("nocturnal").forGetter(Race::isNocturnal),
+            Codec.BOOL.fieldOf("hanging").forGetter(Race::canHang),
+            Codec.BOOL.fieldOf("aquatic").forGetter(Race::isFish),
+            Codec.BOOL.fieldOf("weather_magic").forGetter(Race::canInfluenceWeather),
+            Codec.BOOL.fieldOf("cloud_magic").forGetter(Race::canInteractWithClouds)
+    ).apply(i, Race::new));
 
     /**
      * The default, unset race.
      * This is used if there are no other races.
      */
-    public static final Race HUMAN = register("human", false, FlightType.NONE, false);
-    public static final Race EARTH = register("earth", false, FlightType.NONE, true);
-    public static final Race UNICORN = register("unicorn", true, FlightType.NONE, false);
-    public static final Race PEGASUS = register("pegasus", false, FlightType.AVIAN, false);
-    public static final Race BAT = register("bat", false, FlightType.AVIAN, false);
-    public static final Race ALICORN = register("alicorn", true, FlightType.AVIAN, true);
-    public static final Race CHANGELING = register("changeling", false, FlightType.INSECTOID, false);
+    public static final Race UNSET = register("unset", new Builder().availability(Availability.COMMANDS));
+    public static final Race HUMAN = register("human", new Builder());
+    public static final Race EARTH = register("earth", new Builder().foraging().earth()
+            .abilities(Abilities.HUG, Abilities.STOMP, Abilities.KICK, Abilities.GROW)
+    );
+    public static final Race UNICORN = register("unicorn", new Builder().foraging().magic()
+            .abilities(Abilities.TELEPORT, Abilities.CAST, Abilities.GROUP_TELEPORT, Abilities.SHOOT, Abilities.DISPELL)
+    );
+    public static final Race PEGASUS = register("pegasus", new Builder().foraging().flight(FlightType.AVIAN).weatherMagic().cloudMagic()
+            .abilities(Abilities.TOGGLE_FLIGHT, Abilities.RAINBOOM, Abilities.CAPTURE_CLOUD, Abilities.CARRY)
+    );
+    public static final Race BAT = register("bat", new Builder().foraging().flight(FlightType.AVIAN).canHang().cloudMagic().nocturnal()
+            .abilities(Abilities.TOGGLE_FLIGHT, Abilities.CARRY, Abilities.HANG, Abilities.EEEE)
+    );
+    public static final Race ALICORN = register("alicorn", new Builder().foraging().availability(Availability.COMMANDS).flight(FlightType.AVIAN).earth().magic().weatherMagic().cloudMagic()
+            .abilities(
+                    Abilities.TELEPORT, Abilities.GROUP_TELEPORT, Abilities.CAST, Abilities.SHOOT, Abilities.DISPELL,
+                    Abilities.TOGGLE_FLIGHT, Abilities.RAINBOOM, Abilities.CAPTURE_CLOUD, Abilities.CARRY,
+                    Abilities.HUG, Abilities.STOMP, Abilities.KICK, Abilities.GROW,
+                    Abilities.TIME
+            )
+    );
+    public static final Race CHANGELING = register("changeling", new Builder().foraging().affinity(Affinity.BAD).flight(FlightType.INSECTOID).canHang()
+            .abilities(Abilities.DISPELL, Abilities.TOGGLE_FLIGHT, Abilities.FEED, Abilities.DISGUISE, Abilities.CARRY)
+    );
+    public static final Race KIRIN = register("kirin", new Builder().foraging().magic()
+            .abilities(Abilities.DISPELL, Abilities.RAGE, Abilities.NIRIK_BLAST, Abilities.KIRIN_CAST)
+    );
+    public static final Race HIPPOGRIFF = register("hippogriff", new Builder().foraging().flight(FlightType.AVIAN).cloudMagic()
+            .abilities(Abilities.TOGGLE_FLIGHT, Abilities.SCREECH, Abilities.PECK, Abilities.DASH, Abilities.CARRY)
+    );
+    public static final Race SEAPONY = register("seapony", new Builder().availability(Availability.COMMANDS).foraging().fish()
+            .abilities(Abilities.SONAR_PULSE)
+    );
 
     public static void bootstrap() {}
 
-    private final boolean magic;
-    private final FlightType flight;
-    private final boolean earth;
+    public Composite composite() {
+        return COMPOSITES.apply(this);
+    }
 
-    Race(boolean magic, FlightType flight, boolean earth) {
-        this.magic = magic;
-        this.flight = flight;
-        this.earth = earth;
+    public Composite composite(@Nullable Race pseudo, @Nullable Race potential) {
+        return pseudo == null && potential == null ? composite() : new Composite(this, pseudo, potential);
     }
 
     @Override
     public Affinity getAffinity() {
-        return this == CHANGELING ? Affinity.BAD : Affinity.NEUTRAL;
+        return affinity;
     }
 
-    public boolean hasIronGut() {
-        return isUsable() && this != CHANGELING;
+    public boolean isUnset() {
+        return this == UNSET;
     }
 
-    public boolean isUsable() {
-        return !isDefault();
+    public boolean isEquine() {
+        return !isHuman();
     }
 
-    public boolean isDefault() {
-        return this == HUMAN;
+    public boolean isHuman() {
+        return isUnset() || this == HUMAN;
     }
 
-    public boolean isOp() {
-        return this == ALICORN;
-    }
-
-    public FlightType getFlightType() {
-        return flight;
+    public boolean isDayurnal() {
+        return !isNocturnal();
     }
 
     public boolean canFly() {
-        return !getFlightType().isGrounded();
+        return !flightType().isGrounded();
     }
 
-    public boolean canCast() {
-        return magic;
+    public boolean hasPersistentWeatherMagic() {
+        return canInfluenceWeather();
     }
 
-    public boolean canUseEarth() {
-        return earth;
-    }
-
-    public boolean canInteractWithClouds() {
-        return canFly() && this != CHANGELING && this != BAT;
+    public boolean canUse(Ability<?> ability) {
+        return abilities.contains(ability);
     }
 
     public Identifier getId() {
-        Identifier id = REGISTRY.getId(this);
-        return id;
+        return REGISTRY.getId(this);
     }
 
     public Text getDisplayName() {
@@ -118,47 +158,31 @@ public final class Race implements Affine {
     }
 
     public String getTranslationKey() {
-        Identifier id = getId();
-        return String.format("%s.race.%s", id.getNamespace(), id.getPath().toLowerCase());
+        return Util.createTranslationKey("race", getId());
     }
 
     public Identifier getIcon() {
-        Identifier id = getId();
-        return new Identifier(id.getNamespace(), "textures/gui/race/" + id.getPath() + ".png");
+        return getId().withPath(p -> "textures/gui/race/" + p + ".png");
     }
 
     public boolean isPermitted(@Nullable PlayerEntity sender) {
-        if (isOp() && (sender == null || !sender.getAbilities().creativeMode)) {
-            return false;
-        }
-
-        Set<String> whitelist = Unicopia.getConfig().speciesWhiteList.get();
-
-        return isDefault()
-                || whitelist.isEmpty()
-                || whitelist.contains(getId().toString());
+        return AllowList.INSTANCE.permits(this);
     }
 
     public Race validate(PlayerEntity sender) {
         if (!isPermitted(sender)) {
-            if (this == EARTH) {
-                return HUMAN;
+            Race alternative = this == EARTH ? HUMAN : EARTH.validate(sender);
+            if (alternative != this && sender instanceof ServerPlayerEntity spe) {
+                spe.sendMessageToClient(Text.translatable("respawn.reason.illegal_race", getDisplayName()), false);
             }
-
-            return EARTH.validate(sender);
+            return alternative;
         }
 
         return this;
     }
 
-    @Override
-    public int hashCode() {
-        return getId().hashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return o instanceof Race race && Objects.equal(race.getId(), getId());
+    public Race or(Race other) {
+        return isEquine() ? this : other;
     }
 
     @Override
@@ -176,7 +200,7 @@ public final class Race implements Affine {
             Identifier id = Identifier.tryParse(s);
             if (id != null) {
                 if (id.getNamespace() == Identifier.DEFAULT_NAMESPACE) {
-                    id = new Identifier(Unicopia.DEFAULT_NAMESPACE, id.getPath());
+                    id = Unicopia.id(id.getPath());
                 }
                 return REGISTRY.getOrEmpty(id).orElse(def);
             }
@@ -185,17 +209,161 @@ public final class Race implements Affine {
         return def;
     }
 
-    public static Race fromName(String name) {
-        return fromName(name, EARTH);
+    public static Race register(String name, Builder builder) {
+        return register(Unicopia.id(name), builder);
+    }
+
+    public static Race register(Identifier id, Builder builder) {
+        Race race = Registry.register(REGISTRY, id, builder.build());
+        if (race.availability().isGrantable()) {
+            Registry.register(COMMAND_REGISTRY, id, race);
+        }
+        return race;
+    }
+
+    public static RegistryKeyArgumentType<Race> argument() {
+        return RegistryKeyArgumentType.registryKey(COMMAND_REGISTRY.getKey());
     }
 
     public static Race fromArgument(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
         Identifier id = context.getArgument(name, RegistryKey.class).getValue();
-        return REGISTRY.getOrEmpty(id).orElseThrow(() -> UNKNOWN_RACE_EXCEPTION.create(id));
+        final Identifier idf = id;
+        if (id.getNamespace() == Identifier.DEFAULT_NAMESPACE && !REGISTRY.containsId(id)) {
+            id = REGISTRY_KEY.getValue().withPath(id.getPath());
+        }
+        return REGISTRY.getOrEmpty(id).orElseThrow(() -> UNKNOWN_RACE_EXCEPTION.create(idf));
     }
 
     public static Set<Race> allPermitted(PlayerEntity player) {
         return REGISTRY.stream().filter(r -> r.isPermitted(player)).collect(Collectors.toSet());
+    }
+
+    public record Composite (Race physical, @Nullable Race pseudo, @Nullable Race potential) {
+        public Race collapsed() {
+            return pseudo == null ? physical : pseudo;
+        }
+
+        public boolean includes(Race race) {
+            return physical == race || pseudo == race;
+        }
+
+        public boolean any(Predicate<Race> test) {
+            return test.test(physical) || (pseudo != null && test.test(pseudo));
+        }
+
+        public boolean canUseEarth() {
+            return any(Race::canUseEarth);
+        }
+
+        public boolean canFly() {
+            return any(Race::canFly);
+        }
+
+        public boolean canCast() {
+            return any(Race::canCast);
+        }
+
+        public boolean canUse(Ability<?> ability) {
+            return any(r -> r.canUse(ability));
+        }
+
+        public boolean canInteractWithClouds() {
+            return any(Race::canInteractWithClouds);
+        }
+
+        public boolean canInfluenceWeather() {
+            return any(Race::canInfluenceWeather);
+        }
+
+        public boolean hasPersistentWeatherMagic() {
+            return any(Race::hasPersistentWeatherMagic);
+        }
+
+        public FlightType flightType() {
+            if (pseudo() == null) {
+                return physical().flightType();
+            }
+            return physical().flightType().or(pseudo().flightType());
+        }
+    }
+
+    public static final class Builder {
+        private final List<Ability<?>> abilities = new ArrayList<>();
+        private Affinity affinity = Affinity.NEUTRAL;
+        private Availability availability = Availability.DEFAULT;
+        private boolean canCast;
+        private boolean hasIronGut;
+        private FlightType flightType = FlightType.NONE;
+        private boolean canUseEarth;
+        private boolean isNocturnal;
+        private boolean canHang;
+        private boolean isFish;
+        private boolean canInfluenceWeather;
+        private boolean canInteractWithClouds;
+
+        public Builder abilities(Ability<?>...abilities) {
+            this.abilities.addAll(List.of(abilities));
+            return this;
+        }
+
+        public Builder foraging() {
+            hasIronGut = true;
+            return this;
+        }
+
+        public Builder affinity(Affinity affinity) {
+            this.affinity = affinity;
+            return this;
+        }
+
+        public Builder availability(Availability availability) {
+            this.availability = availability;
+            return this;
+        }
+
+        public Builder flight(FlightType flight) {
+            flightType = flight;
+            return this;
+        }
+
+        public Builder magic() {
+            canCast = true;
+            return this;
+        }
+
+        public Builder earth() {
+            canUseEarth = true;
+            return this;
+        }
+
+        public Builder nocturnal() {
+            isNocturnal = true;
+            return this;
+        }
+
+        public Builder canHang() {
+            canHang = true;
+            return this;
+        }
+
+        public Builder fish() {
+            isFish = true;
+            return this;
+        }
+
+        public Builder weatherMagic() {
+            canInfluenceWeather = true;
+            return this;
+        }
+
+        public Builder cloudMagic() {
+            canInteractWithClouds = true;
+            return this;
+        }
+
+        public Race build() {
+            return new Race(List.copyOf(abilities), affinity, availability, flightType, canCast, hasIronGut, canUseEarth, isNocturnal, canHang, isFish, canInfluenceWeather, canInteractWithClouds);
+        }
     }
 }
 

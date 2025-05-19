@@ -10,6 +10,8 @@ public interface RotatedView {
 
     boolean hasTransform();
 
+    void setMirrorEntityStatuses(boolean enable);
+
     default void pushRotation(int y) {
         getRotations().add(y);
     }
@@ -37,7 +39,8 @@ public interface RotatedView {
             if (!hasTransform() || rotations.isEmpty()) {
                 return y;
             }
-            return y - ((y - rotations.peek()) * 2);
+
+            return (rotations.peek() * 2) - y;
         }
     }
 

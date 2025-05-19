@@ -3,39 +3,20 @@ package com.minelittlepony.unicopia.ability.data;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.math.*;
 
-public class Pos extends Hit {
+public record Pos (int x, int y, int z) implements Hit {
+    public static final PacketCodec<PacketByteBuf, Pos> CODEC = PacketCodec.tuple(
+                PacketCodecs.INTEGER, Pos::x,
+                PacketCodecs.INTEGER, Pos::y,
+                PacketCodecs.INTEGER, Pos::z,
+                Pos::new
+    );
 
-    public static final Serializer<Pos> SERIALIZER = Pos::new;
-
-    public final int x;
-    public final int y;
-    public final int z;
-
-    Pos(PacketByteBuf buf) {
-        x = buf.readInt();
-        y = buf.readInt();
-        z = buf.readInt();
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buf) {
-        buf.writeInt(x);
-        buf.writeInt(y);
-        buf.writeInt(z);
-    }
-
-    public Pos(int x, int y, int z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-
-    public Pos(BlockPos pos) {
-        x = pos.getX();
-        y = pos.getY();
-        z = pos.getZ();
+    public Pos(Vec3i pos) {
+        this(pos.getX(), pos.getY(), pos.getZ());
     }
 
     public BlockPos pos() {
@@ -47,6 +28,6 @@ public class Pos extends Hit {
     }
 
     public double distanceTo(Caster<?> caster) {
-        return Math.sqrt(caster.getEntity().squaredDistanceTo(x, y, z));
+        return Math.sqrt(caster.asEntity().squaredDistanceTo(x, y, z));
     }
 }

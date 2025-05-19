@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity.player.dummy;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,20 +15,21 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
-import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 
-public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implements Owned<PlayerEntity> {
+public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implements Owned<PlayerEntity>, Owned.Mutable<PlayerEntity> {
 
     private PlayerListEntry playerInfo;
 
     private PlayerEntity owner;
 
     public DummyClientPlayerEntity(ClientWorld world, GameProfile profile) {
-        super(world, profile, null);
+        super(world, profile);
     }
 
     @Override
@@ -49,7 +51,7 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
             playerInfo = connection.getPlayerListEntry(getGameProfile().getId());
 
             if (playerInfo == null) {
-                playerInfo = new PlayerListEntry(new Packet().entry(), MinecraftClient.getInstance().getServicesSignatureVerifier(), false);
+                playerInfo = new PlayerListEntry(getGameProfile(), false);
             }
         }
 
@@ -57,13 +59,18 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
     }
 
     @Override
-    protected void playEquipSound(ItemStack stack) {
+    public void onEquipStack(EquipmentSlot slot, ItemStack oldStack, ItemStack newStack) {
         /*noop*/
     }
 
     @Override
     public boolean shouldRenderName() {
-        return !InteractionManager.instance().isClientPlayer(getMaster());
+        return !InteractionManager.getInstance().isClientPlayer(getMaster());
+    }
+
+    @Override
+    public boolean isPartVisible(PlayerModelPart modelPart) {
+        return owner == null ? super.isPartVisible(modelPart) : owner.isPartVisible(modelPart);
     }
 
     @Override
@@ -77,17 +84,8 @@ public class DummyClientPlayerEntity extends AbstractClientPlayerEntity implemen
         this.owner = owner;
     }
 
-    private final class Packet extends PlayerListS2CPacket {
-        public Packet() {
-            super(PlayerListS2CPacket.Action.ADD_PLAYER, List.of());
-        }
-
-        PlayerListS2CPacket.Entry entry() {
-            return new PlayerListS2CPacket.Entry(
-                    getGameProfile(),
-                    0,
-                    GameMode.DEFAULT,
-                    Text.literal(getGameProfile().getName()), null);
-        }
+    @Override
+    public Optional<UUID> getMasterId() {
+        return Optional.ofNullable(owner).map(Entity::getUuid);
     }
 }

@@ -5,6 +5,7 @@ import net.minecraft.client.sound.MovingSoundInstance;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 
 public abstract class FadeOutSoundInstance extends MovingSoundInstance {
@@ -28,6 +29,12 @@ public abstract class FadeOutSoundInstance extends MovingSoundInstance {
         this.repeat = true;
         this.volume = volume;
         setTargetVolume(volume);
+    }
+
+    protected void setPosition(Vec3d pos) {
+        x = pos.x;
+        y = pos.y;
+        z = pos.z;
     }
 
     @Override
@@ -88,7 +95,7 @@ public abstract class FadeOutSoundInstance extends MovingSoundInstance {
     }
 
     private float getLerpedVolume() {
-        float delta = MinecraftClient.getInstance().getTickDelta();
+        float delta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
         float interpolate = MathHelper.clamp(MathHelper.lerp(delta, prevProgress, progress) / transitionTicks, 0, 1);
         return MathHelper.lerp(interpolate, sourceVolume, targetVolume);
     }
@@ -98,6 +105,6 @@ public abstract class FadeOutSoundInstance extends MovingSoundInstance {
         if (muted) {
             return 0.001F;
         }
-        return getLerpedVolume() * sound.getVolume().get(field_38800);
+        return getLerpedVolume() * sound.getVolume().get(random);
     }
 }

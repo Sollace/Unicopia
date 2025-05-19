@@ -1,8 +1,9 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
-import com.minelittlepony.unicopia.client.particle.SphereModel;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
-import com.minelittlepony.unicopia.entity.FairyEntity;
+import com.minelittlepony.unicopia.client.render.model.SphereModel;
+import com.minelittlepony.unicopia.entity.mob.FairyEntity;
+
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
@@ -10,6 +11,7 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper.Argb;
 
 public class FairyEntityRenderer extends MobEntityRenderer<FairyEntity, FairyEntityRenderer.Model> {
     public FairyEntityRenderer(EntityRendererFactory.Context context) {
@@ -30,14 +32,15 @@ public class FairyEntityRenderer extends MobEntityRenderer<FairyEntity, FairyEnt
         }
 
         @Override
-        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
             float thickness = 0.05F;
 
             matrices.push();
             matrices.translate(0, 1.5, 0);
 
-            SphereModel.SPHERE.render(matrices, vertexConsumer, light, overlay, radius - thickness, red, green, blue, 0.5F);
-            SphereModel.SPHERE.render(matrices, vertexConsumer, light, overlay, radius, red, green, blue, 0.3F);
+
+            SphereModel.SPHERE.render(matrices, vertexConsumer, light, overlay, radius - thickness, Argb.withAlpha(color, 127));
+            SphereModel.SPHERE.render(matrices, vertexConsumer, light, overlay, radius, Argb.withAlpha(color, 85));
 
             matrices.pop();
         }

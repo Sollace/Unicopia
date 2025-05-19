@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.entity.behaviour;
 
-import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinBlazeEntity;
 
@@ -14,10 +14,10 @@ import net.minecraft.world.WorldEvents;
 
 public class BlazeBehaviour extends EntityBehaviour<BlazeEntity> {
     @Override
-    public void update(Caster<?> source, BlazeEntity entity, Disguise spell) {
+    public void update(Living<?> source, BlazeEntity entity, Disguise spell) {
         super.update(source, entity, spell);
 
-        Entity src = source.getEntity();
+        Entity src = source.asEntity();
 
         if (src.isOnGround() || src instanceof PlayerEntity player && player.getAbilities().flying) {
             return;
@@ -40,7 +40,7 @@ public class BlazeBehaviour extends EntityBehaviour<BlazeEntity> {
         int fireballsFired = tag.getInt("fireballsFired");
 
         if (player.sneakingChanged()) {
-            boolean sneaking = player.getMaster().isSneaking();
+            boolean sneaking = player.asEntity().isSneaking();
 
             if (sneaking) {
                 firing = true;
@@ -67,19 +67,19 @@ public class BlazeBehaviour extends EntityBehaviour<BlazeEntity> {
 
             if (fireballsFired > 0) {
                 if (!entity.isSilent()) {
-                    entity.world.syncWorldEvent(null, WorldEvents.BLAZE_SHOOTS, entity.getBlockPos(), 0);
+                    entity.getWorld().syncWorldEvent(null, WorldEvents.BLAZE_SHOOTS, entity.getBlockPos(), 0);
                 }
 
-                Vec3d rot = player.getEntity().getRotationVec(1);
+                Vec3d rot = player.asEntity().getRotationVec(1);
 
                 for (int i = 0; i < 1; ++i) {
-                   SmallFireballEntity proj = new SmallFireballEntity(entity.world, player.getMaster(),
-                           rot.getX() + entity.getRandom().nextGaussian(),
-                           rot.getY(),
-                           rot.getZ() + entity.getRandom().nextGaussian()
+                   SmallFireballEntity proj = new SmallFireballEntity(
+                           entity.getWorld(),
+                           player.asEntity(),
+                           rot.add(entity.getRandom().nextGaussian(), 0, entity.getRandom().nextGaussian())
                    );
                    proj.setPosition(proj.getX(), entity.getBodyY(0.5D) + 0.5D, proj.getZ());
-                   entity.world.spawnEntity(proj);
+                   entity.getWorld().spawnEntity(proj);
                 }
             }
         } else if (!firing) {

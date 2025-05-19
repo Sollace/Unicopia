@@ -2,11 +2,11 @@ package com.minelittlepony.unicopia.client;
 
 import java.util.SortedSet;
 import com.google.common.collect.Sets;
-import com.minelittlepony.unicopia.block.data.BlockDestructionManager;
+import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.minecraft.client.render.BlockBreakingInfo;
+import net.minecraft.entity.player.BlockBreakingInfo;
 import net.minecraft.util.math.BlockPos;
 
 public class ClientBlockDestructionManager {

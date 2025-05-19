@@ -24,7 +24,7 @@ public class FollowingParticle extends NoRenderParticle {
         scale(0.125F);
         this.parameters = parameters;
         this.collidesWithWorld = false;
-        this.particle = parameters.getChildEffect().map(child -> MinecraftClient.getInstance().particleManager.addParticle(child, x, y, z, velocityX, velocityY, velocityZ)).orElse(null);
+        this.particle = parameters.childEffect().map(child -> MinecraftClient.getInstance().particleManager.addParticle(child, x, y, z, velocityX, velocityY, velocityZ)).orElse(null);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class FollowingParticle extends NoRenderParticle {
 
         super.tick();
 
-        Vec3d target = parameters.getTarget(world);
+        Vec3d target = parameters.target().getPosition(world);
         Vec3d pos = new Vec3d(x, y, z);
 
         if (scale * 1.5F < 0.5F) {
@@ -62,12 +62,12 @@ public class FollowingParticle extends NoRenderParticle {
             age = 0;
         }
 
-        Vec3d motion = target.subtract(pos).normalize().multiply(Math.min(distance, parameters.getSpeed()));
+        Vec3d motion = target.subtract(pos).normalize().multiply(Math.min(distance, parameters.followSpeed()));
         move(motion.x, motion.y, motion.z);
     }
 
     @Override
     public String toString() {
-        return super.toString() + ", Speed " + parameters.getSpeed() + ", Target (" + parameters.getTargetDescriptor() + ") Sub-Particle (" + particle + ")";
+        return super.toString() + ", Speed " + parameters.followSpeed() + ", Target (" + parameters.target() + ") Sub-Particle (" + particle + ")";
     }
 }

@@ -1,37 +1,33 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
-import com.minelittlepony.unicopia.entity.UEntities;
-import com.minelittlepony.unicopia.item.GemstoneItem;
-import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.projectile.MagicBeamEntity;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.world.World;
 
-public final class ThrowableSpell extends AbstractDelegatingSpell {
-
-    private Spell spell;
+public final class ThrowableSpell extends AbstractDelegatingSpell implements
+    ProjectileDelegate.ConfigurationListener, ProjectileDelegate.BlockHitListener, ProjectileDelegate.EntityHitListener {
 
     public ThrowableSpell(CustomisedSpellType<?> type) {
         super(type);
     }
 
-    public ThrowableSpell setSpell(Spell spell) {
-        this.spell = spell;
-        return this;
+    public ThrowableSpell(Spell delegate) {
+        super(SpellType.THROWN_SPELL.withTraits(delegate.getTypeAndTraits().traits()), delegate);
     }
 
     @Override
-    public Collection<Spell> getDelegates() {
-        return List.of(spell);
+    public boolean apply(Caster<?> source) {
+        return throwProjectile(source).isPresent();
     }
 
     /**
@@ -39,7 +35,7 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
      *
      * Returns the resulting projectile entity for customization (or null if on the client).
      */
-    public Optional<MagicProjectileEntity> throwProjectile(Caster<?> caster) {
+    public Optional<MagicBeamEntity> throwProjectile(Caster<?> caster) {
         return throwProjectile(caster, 1);
     }
 
@@ -48,46 +44,57 @@ public final class ThrowableSpell extends AbstractDelegatingSpell {
      *
      * Returns the resulting projectile entity for customization (or null if on the client).
      */
-    public Optional<MagicProjectileEntity> throwProjectile(Caster<?> caster, float divergance) {
-        World world = caster.getReferenceWorld();
-
-        LivingEntity entity = caster.getMaster();
-
-        if (entity == null) {
-            return Optional.empty();
-        }
+    public Optional<MagicBeamEntity> throwProjectile(Caster<?> caster, float divergance) {
+        World world = caster.asWorld();
 
         caster.playSound(USounds.SPELL_CAST_SHOOT, 0.7F, 0.4F / (world.random.nextFloat() * 0.4F + 0.8F));
 
-        if (!caster.isClient()) {
-            MagicProjectileEntity projectile = UEntities.MAGIC_BEAM.create(world);
-            projectile.setPosition(entity.getX(), entity.getEyeY() - 0.1F, entity.getZ());
-            projectile.setOwner(entity);
-            projectile.setItem(GemstoneItem.enchant(UItems.GEMSTONE.getDefaultStack(), spell.getType()));
-            projectile.getSpellSlot().put(spell);
-            projectile.setVelocity(entity, entity.getPitch(), entity.getYaw(), 0, 1.5F, divergance);
-            projectile.setNoGravity(true);
+        if (caster.isClient()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(delegate.get().prepareForCast(caster, CastingMethod.STORED)).map(s -> {
+            MagicBeamEntity projectile = new MagicBeamEntity(world, caster.asEntity(), divergance, s);
+
             configureProjectile(projectile, caster);
             world.spawnEntity(projectile);
 
-            return Optional.of(projectile);
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
-    protected void loadDelegates(NbtCompound compound) {
-        spell = Spell.SERIALIZER.read(compound.getCompound("spell"));
-    }
-
-    @Override
-    protected void saveDelegates(NbtCompound compound) {
-        compound.put("spell", Spell.SERIALIZER.write(spell));
+            return projectile;
+        });
     }
 
     @Override
     public ThrowableSpell toThrowable() {
         return this;
+    }
+
+    @Override
+    public boolean isHidden() {
+        return true;
+    }
+
+    @Override
+    public void setHidden(boolean hidden) {
+    }
+
+    @Override
+    public void onImpact(MagicProjectileEntity projectile, BlockHitResult hit) {
+        if (delegate.get() instanceof BlockHitListener listener) {
+            listener.onImpact(projectile, hit);
+        }
+    }
+
+    @Override
+    public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
+        if (delegate.get() instanceof EntityHitListener listener) {
+            listener.onImpact(projectile, hit);
+        }
+    }
+
+    @Override
+    public void configureProjectile(MagicProjectileEntity projectile, Caster<?> caster) {
+        if (delegate.get() instanceof ConfigurationListener listener) {
+            listener.configureProjectile(projectile, caster);
+        }
     }
 }

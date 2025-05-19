@@ -1,21 +1,23 @@
 package com.minelittlepony.unicopia;
 
 import java.util.Optional;
+import java.util.Stack;
+import java.util.UUID;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.ability.magic.CasterView;
-import com.minelittlepony.unicopia.block.data.Ether;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyPlayerEntity;
-import com.minelittlepony.unicopia.network.handler.ClientNetworkHandler;
+import com.minelittlepony.unicopia.particle.ParticleSpawner;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.BlockView;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class InteractionManager {
@@ -25,35 +27,33 @@ public class InteractionManager {
     public static final int SOUND_MINECART = 3;
     public static final int SOUND_GLIDING = 4;
     public static final int SOUND_MAGIC_BEAM = 5;
+    public static final int SOUND_HEART_BEAT = 6;
+    public static final int SOUND_KIRIN_RAGE = 7;
+    public static final int SOUND_GEM_FINDING_MAGIC_HUM = 8;
 
     public static final int SCREEN_DISPELL_ABILITY = 0;
 
-    public static InteractionManager INSTANCE = new InteractionManager();
+    private static InteractionManager INSTANCE = new InteractionManager();
 
-    public static InteractionManager instance() {
+    @Nullable
+    private SyncedConfig config;
+
+    private final Stack<EquineContext> equineContext = new Stack<>();
+
+    public static InteractionManager getInstance() {
         return INSTANCE;
     }
 
-    public Optional<CasterView> getCasterView(BlockView view) {
-        if (view instanceof ServerWorld world) {
-            return Optional.of(Ether.get(world));
-        }
-        return Optional.empty();
+    public InteractionManager() {
+        INSTANCE = this;
     }
 
-    public MinecraftSessionService getSessionService(World world) {
-        if (world instanceof ServerWorld) {
-            return ((ServerWorld)world).getServer().getSessionService();
-        }
-
-        throw new NullPointerException("Cannot get session service");
+    public ParticleSpawner createBoundParticle(UUID id) {
+        return ParticleSpawner.EMPTY;
     }
 
-    /**
-     * Returns the client network handler, or throws if called on the server.
-     */
-    public ClientNetworkHandler getClientNetworkHandler() {
-        throw new NullPointerException("Client network handler called by the server");
+    public SpellbookChapter readChapter(PacketByteBuf buf) {
+        throw new RuntimeException("Method not supported");
     }
 
     /**
@@ -78,6 +78,10 @@ public class InteractionManager {
         return 0;
     }
 
+    public float getTickRate() {
+        return 20;
+    }
+
     public void openScreen(int type) {
     }
 
@@ -88,7 +92,7 @@ public class InteractionManager {
      */
     @NotNull
     public final PlayerEntity createPlayer(Entity observer, GameProfile profile) {
-        return createPlayer(observer.world, profile);
+        return createPlayer(observer.getWorld(), profile);
     }
 
     /**
@@ -99,5 +103,50 @@ public class InteractionManager {
     @NotNull
     public PlayerEntity createPlayer(World world, GameProfile profile) {
         return new DummyPlayerEntity(world, profile);
+    }
+
+    public void sendPlayerLookAngles(PlayerEntity player) {
+
+    }
+
+    public void addBlockBreakingParticles(BlockPos pos, Direction direction) {
+
+    }
+
+    public void setEquineContext(EquineContext context) {
+        equineContext.push(context);
+    }
+
+    public void clearEquineContext() {
+        if (!equineContext.isEmpty()) {
+            equineContext.pop();
+        }
+    }
+
+    public EquineContext getEquineContext() {
+        return getClientPony().map(EquineContext.class::cast).orElseGet(this::getPathingEquineContext);
+    }
+
+    public EquineContext getPathingEquineContext() {
+        return equineContext.isEmpty() ? EquineContext.ABSENT : equineContext.peek();
+    }
+
+    public Optional<Pony> getClientPony() {
+        return Optional.empty();
+    }
+
+    public final Race getClientSpecies() {
+        return getClientPony().map(Pony::getSpecies).orElse(Race.HUMAN);
+    }
+
+    public void setSyncedConfig(SyncedConfig config) {
+        this.config = config;
+    }
+
+    public SyncedConfig getSyncedConfig() {
+        if (config == null) {
+            config = Unicopia.getConfig().toSynced();
+        }
+        return config;
     }
 }

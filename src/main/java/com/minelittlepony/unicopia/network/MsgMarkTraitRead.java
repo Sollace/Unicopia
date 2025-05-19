@@ -5,31 +5,17 @@ import java.util.Set;
 
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.util.network.Packet;
-
+import com.sollace.fabwork.api.packets.Handled;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-public class MsgMarkTraitRead implements Packet<ServerPlayerEntity> {
-
-    public final Set<Trait> traits = new HashSet<>();
-
-    MsgMarkTraitRead(PacketByteBuf buffer) {
-        int length = buffer.readInt();
-        for (int i = 0; i < length; i++) {
-            Trait.fromId(buffer.readIdentifier()).ifPresent(traits::add);
-        }
-    }
-
-    public MsgMarkTraitRead(Set<Trait> traits) {
-        this.traits.addAll(traits);
-    }
-
-    @Override
-    public void toBuffer(PacketByteBuf buffer) {
-        buffer.writeInt(traits.size());
-        traits.forEach(trait -> buffer.writeIdentifier(trait.getId()));
-    }
+public record MsgMarkTraitRead (Set<Trait> traits) implements Handled<ServerPlayerEntity> {
+    public static final PacketCodec<PacketByteBuf, MsgMarkTraitRead> PACKET_CODEC = PacketCodec.tuple(
+            Trait.PACKET_CODEC.collect(PacketCodecs.toCollection(HashSet::new)), MsgMarkTraitRead::traits,
+            MsgMarkTraitRead::new
+    );
 
     @Override
     public void handle(ServerPlayerEntity sender) {

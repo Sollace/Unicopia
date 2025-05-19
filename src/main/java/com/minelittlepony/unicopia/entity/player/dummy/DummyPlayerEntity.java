@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.entity.player.dummy;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.InteractionManager;
@@ -7,21 +10,23 @@ import com.minelittlepony.unicopia.Owned;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class DummyPlayerEntity extends PlayerEntity implements Owned<PlayerEntity> {
+public class DummyPlayerEntity extends PlayerEntity implements Owned<PlayerEntity>, Owned.Mutable<PlayerEntity> {
 
     private PlayerEntity owner;
 
     public DummyPlayerEntity(World world, GameProfile profile) {
-        super(world, BlockPos.ORIGIN, 0, profile, null);
+        super(world, BlockPos.ORIGIN, 0, profile);
     }
 
     @Override
-    protected void playEquipSound(ItemStack stack) {
+    public void onEquipStack(EquipmentSlot slot, ItemStack oldStack, ItemStack newStack) {
         /*noop*/
     }
 
@@ -42,8 +47,13 @@ public class DummyPlayerEntity extends PlayerEntity implements Owned<PlayerEntit
     }
 
     @Override
+    public Optional<UUID> getMasterId() {
+        return Optional.ofNullable(owner).map(Entity::getUuid);
+    }
+
+    @Override
     public boolean shouldRenderName() {
-        return !InteractionManager.instance().isClientPlayer(getMaster());
+        return !InteractionManager.getInstance().isClientPlayer(getMaster());
     }
 
     @Override

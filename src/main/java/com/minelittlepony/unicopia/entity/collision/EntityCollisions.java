@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.EntityView;
 
 public class EntityCollisions {
 
@@ -34,17 +34,17 @@ public class EntityCollisions {
         } else if (entity instanceof FallingBlockEntity) {
             BlockPos pos = entity.getBlockPos();
             output.accept(((FallingBlockEntity) entity).getBlockState()
-                    .getCollisionShape(entity.world, entity.getBlockPos(), context)
+                    .getCollisionShape(entity.getWorld(), entity.getBlockPos(), context)
                     .offset(pos.getX(), pos.getY(), pos.getZ())
             );
         }
     }
 
-    public static List<VoxelShape> getColissonShapes(@Nullable Entity entity, WorldAccess world, Box box) {
+    public static List<VoxelShape> getColissonShapes(@Nullable Entity entity, EntityView world, Box box) {
         ShapeContext ctx = entity == null ? ShapeContext.absent() : ShapeContext.of(entity);
         return collectCollisionBoxes(box, collector -> {
             world.getOtherEntities(entity, box.expand(50), e -> {
-                Caster.of(e).flatMap(c -> c.getSpellSlot().get(SpellPredicate.IS_DISGUISE, false)).ifPresent(p -> {
+                Caster.of(e).flatMap(c -> c.getSpellSlot().get(SpellPredicate.IS_DISGUISE)).ifPresent(p -> {
                     p.getDisguise().getCollissionShapes(ctx, collector);
                 });
                 if (e instanceof ComplexCollidable collidable) {

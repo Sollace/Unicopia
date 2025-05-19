@@ -1,36 +1,45 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.UUID;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.include.com.google.common.base.Objects;
 
+import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.network.track.DataTracker;
+import com.minelittlepony.unicopia.server.world.Ether;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.util.Util;
 
 /**
  * Interface for a magic spells
  */
 public interface Spell extends NbtSerialisable, Affine {
-    Serializer<Spell> SERIALIZER = Serializer.of(Spell::readNbt, Spell::writeNbt);
-
     /**
-     * Returns the registered type of this spell.
+     * Returns the full type that describes this spell.
      */
-    SpellType<?> getType();
+    CustomisedSpellType<?> getTypeAndTraits();
 
-    /**
-     * Gets the traits of this spell.
-     */
-    SpellTraits getTraits();
+    DataTracker getDataTracker();
+
+    default boolean isOf(SpellType<?> type) {
+        return getTypeAndTraits().type() == type;
+    }
+
+    @Override
+    default Affinity getAffinity() {
+        return getTypeAndTraits().type().getAffinity();
+    }
 
     /**
      * The unique id of this particular spell instance.
@@ -47,8 +56,9 @@ public interface Spell extends NbtSerialisable, Affine {
     /**
      * Returns an optional containing the spell that matched the given predicate.
      */
-    default Stream<Spell> findMatches(Predicate<Spell> predicate) {
-        return predicate.test(this) ? Stream.of(this) : Stream.empty();
+    @SuppressWarnings("unchecked")
+    default <T extends Spell> Stream<T> findMatches(SpellPredicate<T> predicate) {
+        return predicate == null || predicate.test(this) ? Stream.of((T)this) : Stream.empty();
     }
 
     /**
@@ -61,17 +71,27 @@ public interface Spell extends NbtSerialisable, Affine {
      */
     boolean isDead();
 
-    /**
-     * Returns true if this effect has changes that need to be sent to the client.
-     */
-    boolean isDirty();
+    boolean isDying();
 
     /**
      * Applies this spell to the supplied caster.
+     * @param caster    The caster to apply the spell to
      */
     default boolean apply(Caster<?> caster) {
         caster.getSpellSlot().put(this);
+        if (!caster.isClient()) {
+            Ether.get(caster.asWorld()).getOrCreate(this, caster);
+        }
         return true;
+    }
+
+    /**
+     * Gets the default form of this spell used to apply to a caster.
+     * @param caster    The caster currently fueling this spell
+     */
+    @Nullable
+    default Spell prepareForCast(Caster<?> caster, CastingMethod method) {
+        return this;
     }
 
     /**
@@ -82,20 +102,25 @@ public interface Spell extends NbtSerialisable, Affine {
     boolean tick(Caster<?> caster, Situation situation);
 
     /**
-     * Marks this effect as dirty.
+     * Called on spells that are actively dying to update any post-death animations before removal.
+     * @param caster    The caster currently fueling this spell
      */
-    void setDirty();
+    void tickDying(Caster<?> caster);
+
+    boolean isHidden();
+
+    void setHidden(boolean hidden);
 
     /**
      * Called when a gem is destroyed.
      */
-    void onDestroyed(Caster<?> caster);
+    void destroy(Caster<?> caster);
 
     /**
      * Converts this spell into a placeable spell.
      */
-    default PlaceableSpell toPlaceable() {
-        return SpellType.PLACED_SPELL.withTraits().create().setSpell(this);
+    default PlacementControlSpell toPlaceable() {
+        return new PlacementControlSpell(this);
     }
 
     /**
@@ -103,20 +128,14 @@ public interface Spell extends NbtSerialisable, Affine {
      * @return
      */
     default ThrowableSpell toThrowable() {
-        return SpellType.THROWN_SPELL.withTraits().create().setSpell(this);
+        return new ThrowableSpell(this);
     }
 
     @Nullable
-    static Spell readNbt(@Nullable NbtCompound compound) {
+    static <T extends Spell> T readNbt(@Nullable NbtCompound compound, WrapperLookup lookup) {
         try {
-            if (compound != null && compound.contains("effect_id")) {
-                Spell effect = SpellType.getKey(compound).withTraits().create();
-
-                if (effect != null) {
-                    effect.fromNBT(compound);
-                }
-
-                return effect;
+            if (compound != null) {
+                return CustomisedSpellType.<T>fromNBT(compound).create(compound, lookup);
             }
         } catch (Exception e) {
             Unicopia.LOGGER.fatal("Invalid spell nbt {}", e);
@@ -125,9 +144,20 @@ public interface Spell extends NbtSerialisable, Affine {
         return null;
     }
 
-    static NbtCompound writeNbt(Spell effect) {
-        NbtCompound compound = effect.toNBT();
-        effect.getType().toNbt(compound);
+    static UUID getUuid(@Nullable NbtCompound compound) {
+        return compound == null || !compound.containsUuid("uuid") ? Util.NIL_UUID :  compound.getUuid("uuid");
+    }
+
+    static NbtCompound writeNbt(@Nullable Spell effect, WrapperLookup lookup) {
+        if (effect == null) {
+            return new NbtCompound();
+        }
+        NbtCompound compound = effect.toNBT(lookup);
+        effect.getTypeAndTraits().toNbt(compound);
         return compound;
+    }
+
+    static <T extends Spell> Spell copy(T spell, WrapperLookup lookup) {
+        return readNbt(writeNbt(spell, lookup), lookup);
     }
 }

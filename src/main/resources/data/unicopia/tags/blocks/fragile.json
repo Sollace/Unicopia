@@ -1,9 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "#unicopia:glass_blocks",
-    "#unicopia:glass_panes",
-    "minecraft:vine",
-    "minecraft:lily_pad"
-  ]
-}

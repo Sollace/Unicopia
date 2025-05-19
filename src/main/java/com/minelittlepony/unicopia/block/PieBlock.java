@@ -1,10 +1,15 @@
 package com.minelittlepony.unicopia.block;
 
 import com.minelittlepony.unicopia.*;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.SoundEmitter;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -12,12 +17,11 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
@@ -27,6 +31,12 @@ import net.minecraft.world.*;
 import net.minecraft.world.event.GameEvent;
 
 public class PieBlock extends Block implements Waterloggable {
+    public static final MapCodec<PieBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            CodecUtils.ITEM.fieldOf("slice_item").forGetter(b -> b.sliceItem),
+            CodecUtils.ITEM.fieldOf("normal_item").forGetter(b -> b.normalItem),
+            CodecUtils.ITEM.fieldOf("stomped_item").forGetter(b -> b.stompedItem),
+            BedBlock.createSettingsCodec()
+    ).apply(instance, PieBlock::new));
     public static final int MAX_BITES = 3;
     public static final IntProperty BITES = IntProperty.of("bites", 0, MAX_BITES);
     public static final BooleanProperty STOMPED = BooleanProperty.of("stomped");
@@ -34,11 +44,11 @@ public class PieBlock extends Block implements Waterloggable {
 
     private static final VoxelShape[] SHAPES;
     static {
-        final int PIE_HEIGHT = 5;
-        final VoxelShape WEDGE = Block.createCuboidShape(1, 0, 1, 8, PIE_HEIGHT, 8);
-        final float OFFSET_AMOUNT = 7F/16F;
+        final int PIE_HEIGHT = 4;
+        final VoxelShape WEDGE = Block.createCuboidShape(2, 0, 2, 8, PIE_HEIGHT, 8);
+        final float OFFSET_AMOUNT = 6F/16F;
         SHAPES = new VoxelShape[] {
-                Block.createCuboidShape(1, 0, 1, 15, PIE_HEIGHT, 15),
+                Block.createCuboidShape(2, 0, 2, 14, PIE_HEIGHT, 14),
                 VoxelShapes.union(WEDGE, WEDGE.offset(OFFSET_AMOUNT, 0, 0), WEDGE.offset(OFFSET_AMOUNT, 0, OFFSET_AMOUNT)),
                 VoxelShapes.union(WEDGE, WEDGE.offset(OFFSET_AMOUNT, 0, 0)),
                 WEDGE
@@ -46,67 +56,74 @@ public class PieBlock extends Block implements Waterloggable {
     }
 
     private final ItemConvertible sliceItem;
+    private final ItemConvertible normalItem;
+    private final ItemConvertible stompedItem;
 
-    public PieBlock(Settings settings, ItemConvertible sliceItem) {
+    public PieBlock(ItemConvertible sliceItem, ItemConvertible normalItem, ItemConvertible stompedItem, Settings settings) {
         super(settings);
         setDefaultState(getDefaultState().with(STOMPED, false).with(WATERLOGGED, false));
         this.sliceItem = sliceItem;
+        this.normalItem = normalItem;
+        this.stompedItem = stompedItem;
     }
 
-    @Deprecated
     @Override
-    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    protected MapCodec<? extends PieBlock> getCodec() {
+        return CODEC;
+    }
+
+    @Override
+    protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPES[state.get(BITES)];
     }
 
-    @Deprecated
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ItemStack itemStack = player.getStackInHand(hand);
+    protected ItemActionResult onUseWithItem(ItemStack itemStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
         if (world.isClient) {
 
-            if (itemStack.getItem() == Items.SHEARS) {
-                return ActionResult.SUCCESS;
+            if (itemStack.isIn(UTags.Items.CAN_CUT_PIE)) {
+                return ItemActionResult.SUCCESS;
             }
 
             if (tryEat(world, pos, state, player).isAccepted()) {
-                return ActionResult.SUCCESS;
+                return ItemActionResult.SUCCESS;
             }
 
             if (itemStack.isEmpty()) {
-                return ActionResult.CONSUME;
+                return ItemActionResult.CONSUME;
             }
         }
 
-        if (itemStack.getItem() == Items.SHEARS) {
+        if (itemStack.isIn(UTags.Items.CAN_CUT_PIE)) {
             SoundEmitter.playSoundAt(player, USounds.BLOCK_PIE_SLICE, SoundCategory.NEUTRAL, 1, 1);
             removeSlice(world, pos, state, player);
-            SoundEmitter.playSoundAt(player, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.NEUTRAL, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
+            itemStack.damage(1, player, LivingEntity.getSlotForHand(hand));
+            SoundEmitter.playSoundAt(player, USounds.BLOCK_PIE_SLICE_POP, SoundCategory.NEUTRAL, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
             Block.dropStack(world, pos, sliceItem.asItem().getDefaultStack());
-            return ActionResult.SUCCESS;
+            return ItemActionResult.SUCCESS;
         }
 
         return tryEat(world, pos, state, player);
     }
 
-    protected ActionResult tryEat(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {
+    protected ItemActionResult tryEat(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (!player.canConsume(false)) {
-            return ActionResult.PASS;
+            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         player.incrementStat(Stats.EAT_CAKE_SLICE);
         player.getHungerManager().add(state.get(STOMPED) ? 1 : 2, 0.1f);
 
         world.emitGameEvent(player, GameEvent.EAT, pos);
-        SoundEmitter.playSoundAt(player, SoundEvents.ENTITY_GENERIC_EAT, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
+        SoundEmitter.playSoundAt(player, USounds.Vanilla.ENTITY_GENERIC_EAT, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
         if (world instanceof World ww && (!player.canConsume(false) || world.getRandom().nextInt(10) == 0)) {
             AwaitTickQueue.scheduleTask(ww, w -> {
-                SoundEmitter.playSoundAt(player, SoundEvents.ENTITY_PLAYER_BURP, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
+                SoundEmitter.playSoundAt(player, USounds.Vanilla.ENTITY_PLAYER_BURP, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
             }, 5);
         }
 
         removeSlice(world, pos, state, player);
-        return ActionResult.SUCCESS;
+        return ItemActionResult.SUCCESS;
     }
 
     protected void removeSlice(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {
@@ -118,6 +135,11 @@ public class PieBlock extends Block implements Waterloggable {
             world.removeBlock(pos, false);
             world.emitGameEvent(player, GameEvent.BLOCK_DESTROY, pos);
         }
+    }
+
+    @Override
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+        return (state.get(STOMPED) ? stompedItem : normalItem).asItem().getDefaultStack();
     }
 
     @Override
@@ -149,40 +171,38 @@ public class PieBlock extends Block implements Waterloggable {
 
     @Override
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-        if (!state.get(STOMPED)) {
+        if (!state.get(STOMPED) && entity instanceof LivingEntity && !entity.bypassesSteppingEffects()) {
             world.setBlockState(pos, state.cycle(STOMPED));
             world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
             world.emitGameEvent(UGameEvents.PIE_STOMP, pos, GameEvent.Emitter.of(entity, state));
         }
     }
 
-    @Deprecated
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
         if (state.get(WATERLOGGED)) {
-            world.createAndScheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
-    @Deprecated
     @Override
-    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+    protected boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         return world.getBlockState(pos.down()).isSideSolidFullSquare(world, pos, Direction.UP);
     }
 
-    @Deprecated
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return super.getDefaultState().with(WATERLOGGED, ctx.getWorld().getFluidState(ctx.getBlockPos()).getFluid() == Fluids.WATER);
+        return super.getDefaultState()
+                .with(WATERLOGGED, ctx.getWorld().getFluidState(ctx.getBlockPos()).getFluid() == Fluids.WATER)
+                .with(STOMPED, ctx.getStack().isOf(UItems.APPLE_PIE_HOOF));
     }
 
-    @Deprecated
     @Override
-    public FluidState getFluidState(BlockState state) {
+    protected FluidState getFluidState(BlockState state) {
         if (state.get(WATERLOGGED)) {
             return Fluids.WATER.getStill(false);
         }
@@ -195,17 +215,17 @@ public class PieBlock extends Block implements Waterloggable {
     }
 
     @Override
-    public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
+    protected int getComparatorOutput(BlockState state, World world, BlockPos pos) {
         return (5 - state.get(BITES)) * 2;
     }
 
     @Override
-    public boolean hasComparatorOutput(BlockState state) {
+    protected boolean hasComparatorOutput(BlockState state) {
         return true;
     }
 
     @Override
-    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+    protected boolean canPathfindThrough(BlockState state, NavigationType type) {
         return false;
     }
 }

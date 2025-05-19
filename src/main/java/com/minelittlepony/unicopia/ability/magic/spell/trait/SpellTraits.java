@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.trait;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -16,32 +17,60 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     public static final SpellTraits EMPTY = new SpellTraits(Map.of());
+    private static final SpellTraits SPAWN_EGG_TRAITS = new SpellTraits(Map.of(Trait.LIFE, 20F));
 
     private static Map<Identifier, SpellTraits> REGISTRY = new HashMap<>();
+    static final Map<Trait, List<Item>> ITEMS = new HashMap<>();
+
+    public static final Codec<SpellTraits> CODEC = Codec.unboundedMap(Trait.CODEC, Codec.FLOAT).flatXmap(
+            map -> DataResult.success(fromEntries(map.entrySet().stream()).orElse(EMPTY)),
+            traits -> DataResult.success(traits.traits)
+    );
+    public static final PacketCodec<PacketByteBuf, SpellTraits> PACKET_CODEC = PacketCodec.ofStatic((a, b) -> b.write(a), SpellTraits::fromPacket);
 
     public static void load(Map<Identifier, SpellTraits> newRegistry) {
-        REGISTRY = new HashMap<>(newRegistry);
+        REGISTRY = newRegistry;
+        ITEMS.clear();
+        REGISTRY.forEach((itemId, traits) -> {
+            Registries.ITEM.getOrEmpty(itemId).ifPresent(item -> {
+                traits.forEach(entry -> {
+                    List<Item> items = ITEMS.computeIfAbsent(entry.getKey(), k -> new ArrayList<>());
+                    if (!items.contains(item)) {
+                        items.add(item);
+                    }
+                 });
+            });
+        });
+    }
+
+    public static SpellTraits empty() {
+        return EMPTY;
     }
 
     public static Map<Identifier, SpellTraits> all() {
@@ -142,6 +171,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return nbt;
     }
 
+    @Deprecated
     public void write(PacketByteBuf buf) {
         buf.writeInt(traits.size());
         traits.forEach((trait, value) -> {
@@ -152,7 +182,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
 
     @Override
     public String toString() {
-        return super.toString() + "[" + traits.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(",")) + "]";
+        return "SpellTraits[" + traits.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(",")) + "]";
     }
 
     @Override
@@ -199,7 +229,13 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static SpellTraits of(Item item) {
-        return REGISTRY.getOrDefault(Registry.ITEM.getId(item), EMPTY);
+        if (item instanceof ItemWithTraits i) {
+            return i.getDefaultTraits();
+        }
+        if (item instanceof SpawnEggItem) {
+            return SPAWN_EGG_TRAITS;
+        }
+        return REGISTRY.getOrDefault(Registries.ITEM.getId(item), EMPTY);
     }
 
     public static SpellTraits of(Block block) {
@@ -207,43 +243,34 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static Stream<Item> getItems(Trait trait) {
-        return REGISTRY.entrySet().stream()
-            .filter(e -> e.getValue().get(trait) > 0)
-            .map(Map.Entry::getKey)
-            .flatMap(id -> Registry.ITEM.getOrEmpty(id).stream());
+        return ITEMS.getOrDefault(trait, List.of()).stream();
     }
 
     public static Optional<SpellTraits> getEmbeddedTraits(ItemStack stack) {
-        if (!stack.hasNbt() || !stack.getNbt().contains("spell_traits", NbtElement.COMPOUND_TYPE)) {
-            return Optional.empty();
-        }
-        return fromNbt(stack.getNbt().getCompound("spell_traits"));
+        return Optional.ofNullable(stack.get(UDataComponentTypes.SPELL_TRAITS));
     }
 
     public ItemStack applyTo(ItemStack stack) {
         stack = stack.copy();
         if (isEmpty()) {
-            stack.removeSubNbt("spell_traits");
+            stack.remove(UDataComponentTypes.SPELL_TRAITS);
             return stack;
         }
-        stack.getOrCreateNbt().put("spell_traits", toNbt());
+        stack.set(UDataComponentTypes.SPELL_TRAITS, this);
         return stack;
     }
 
     public static Optional<SpellTraits> fromNbt(NbtCompound traits) {
-        return fromEntries(streamFromNbt(traits));
+        return CODEC.decode(NbtOps.INSTANCE, traits).result().map(Pair::getFirst);
     }
 
-    public static Optional<SpellTraits> fromJson(JsonObject traits) {
-        return fromEntries(streamFromJson(traits));
-    }
-
+    @Deprecated
     public static Optional<SpellTraits> fromPacketOrEmpty(PacketByteBuf buf) {
         return buf.readOptional(SpellTraits::fromPacket).filter(SpellTraits::isPresent);
     }
 
+    @Deprecated
     public static SpellTraits fromPacket(PacketByteBuf buf) {
-
         Map<Trait, Float> entries = new HashMap<>();
         int count = buf.readInt();
         if (count <= 0) {
@@ -268,7 +295,12 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static Optional<SpellTraits> fromString(String traits) {
-        return fromEntries(Arrays.stream(traits.split(" ")).map(a -> a.split(":")).map(pair -> {
+        return fromString(traits, " ");
+    }
+
+    @Deprecated
+    private static Optional<SpellTraits> fromString(String traits, String delimiter) {
+        return fromEntries(Arrays.stream(traits.split(delimiter)).map(a -> a.split(":")).map(pair -> {
             Trait key = Trait.fromName(pair[0]).orElse(null);
             if (key == null) {
                 Unicopia.LOGGER.warn("Skipping unknown trait {}", pair[0]);
@@ -276,26 +308,6 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
             }
             return Map.entry(key, Float.parseFloat(pair[1]));
         }));
-    }
-
-    public static Stream<Map.Entry<Trait, Float>> streamFromNbt(NbtCompound traits) {
-        return traits.getKeys().stream().map(key -> {
-            Trait trait = Trait.fromId(key).orElse(null);
-            if (trait == null || !traits.contains(key, NbtElement.NUMBER_TYPE)) {
-                return null;
-            }
-            return Map.entry(trait, traits.getFloat(key));
-        });
-    }
-
-    public static Stream<Map.Entry<Trait, Float>> streamFromJson(JsonObject traits) {
-        return traits.entrySet().stream().map(entry -> {
-            Trait trait = Trait.fromName(entry.getKey()).orElse(null);
-            if (trait == null || !entry.getValue().isJsonPrimitive() && !entry.getValue().getAsJsonPrimitive().isNumber()) {
-                return null;
-            }
-            return Map.entry(trait, entry.getValue().getAsJsonPrimitive().getAsFloat());
-        });
     }
 
     public static Optional<SpellTraits> fromEntries(Stream<Map.Entry<Trait, Float>> entries) {

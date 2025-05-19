@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.command;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -14,31 +13,27 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.*;
 import net.minecraft.util.Hand;
+import net.minecraft.world.GameRules;
 
 class TraitCommand {
-    static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder<ServerCommandSource> builder = CommandManager
-                .literal("trait")
-                .requires(s -> s.hasPermissionLevel(4));
-
-        builder.then(CommandManager.literal("add")
-                .then(CommandManager.argument("trait", EnumArgumentType.of(Trait.class))
-                .then(CommandManager.argument("value", FloatArgumentType.floatArg()).executes(source -> add(
-                        source.getSource(),
-                        source.getSource().getPlayer(),
-                        source.getArgument("trait", Trait.class),
-                        FloatArgumentType.getFloat(source, "value")
-                )))
-        ));
-        builder.then(CommandManager.literal("remove")
-                .then(CommandManager.argument("trait", EnumArgumentType.of(Trait.class)).executes(source -> remove(
-                        source.getSource(),
-                        source.getSource().getPlayer(),
-                        source.getArgument("trait", Trait.class)
-                ))
-        ));
-
-        dispatcher.register(builder);
+    static LiteralArgumentBuilder<ServerCommandSource> create() {
+        return CommandManager.literal("trait").requires(s -> s.hasPermissionLevel(2))
+            .then(CommandManager.literal("add")
+                    .then(CommandManager.argument("trait", Trait.argument())
+                    .then(CommandManager.argument("value", FloatArgumentType.floatArg()).executes(source -> add(
+                            source.getSource(),
+                            source.getSource().getPlayer(),
+                            source.getArgument("trait", Trait.class),
+                            FloatArgumentType.getFloat(source, "value")
+                    )))
+            ))
+            .then(CommandManager.literal("remove")
+                    .then(CommandManager.argument("trait", Trait.argument()).executes(source -> remove(
+                            source.getSource(),
+                            source.getSource().getPlayer(),
+                            source.getArgument("trait", Trait.class)
+                    ))
+            ));
     }
 
     static int add(ServerCommandSource source, PlayerEntity player, Trait trait, float amount) throws CommandSyntaxException {
@@ -84,9 +79,11 @@ class TraitCommand {
         float gravity = iplayer.getPhysics().getGravityModifier();
 
         if (source.getPlayer() == player) {
-            player.sendMessage(Text.translatable(translationKey, gravity), false);
+            if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
+                player.sendMessage(Text.translatable(translationKey, gravity), false);
+            }
         } else {
-            source.sendFeedback(Text.translatable(translationKey + ".other", player.getName(), gravity), true);
+            source.sendFeedback(() -> Text.translatable(translationKey + ".other", player.getName(), gravity), true);
         }
 
         return 0;

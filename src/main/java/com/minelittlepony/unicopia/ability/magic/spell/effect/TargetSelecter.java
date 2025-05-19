@@ -10,59 +10,72 @@ import java.util.stream.Stream;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.magic.Affine;
 import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
-import com.minelittlepony.unicopia.entity.SpellbookEntity;
-import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import net.minecraft.entity.Entity;
 
 public class TargetSelecter {
-
     private final Map<UUID, Target> targets = new TreeMap<>();
 
     private final Spell spell;
+
+    private BiPredicate<Caster<?>, Entity> filter = (a, b) -> true;
+
+    private boolean targetOwner;
+    private boolean targetAllies;
 
     public TargetSelecter(Spell spell) {
         this.spell = spell;
     }
 
-    public Stream<Entity> getEntities(Caster<?> source, double radius, BiPredicate<Caster<?>, Entity> filter) {
+    public TargetSelecter setFilter(BiPredicate<Caster<?>, Entity> filter) {
+        this.filter = filter;
+        return this;
+    }
+
+    public TargetSelecter setTargetowner(boolean targetOwner) {
+        this.targetOwner = targetOwner;
+        return this;
+    }
+
+    public TargetSelecter setTargetAllies(boolean targetAllies) {
+        this.targetAllies = targetAllies;
+        return this;
+    }
+
+    public Stream<Entity> getEntities(Caster<?> source, double radius) {
         targets.values().removeIf(Target::tick);
-
-        Predicate<Entity> ownerCheck = isOwnerOrFriend(spell, source);
-
         return source.findAllEntitiesInRange(radius)
-            .filter(entity -> entity.isAlive() && !entity.isRemoved() && !ownerCheck.test(entity) && !SpellPredicate.IS_SHIELD_LIKE.isOn(entity))
-            .filter(entity -> !(entity instanceof SpellbookEntity))
-            .filter(e -> filter.test(source, e))
+            .filter(EquinePredicates.EXCEPT_MAGIC_IMMUNE)
+            .filter(entity -> entity != source.asEntity() && checkAlliegance(spell, source, entity) && filter.test(source, entity))
             .map(i -> {
                 targets.computeIfAbsent(i.getUuid(), Target::new);
                 return i;
             });
     }
 
+    private boolean checkAlliegance(Affine affine, Caster<?> source, Entity target) {
+        boolean isOwner = !targetOwner && source.isOwnerOrVehicle(target);
+        boolean isFriend = !targetAllies && affine.applyInversion(source, source.isFriend(target));
+        return !(isOwner || isFriend);
+    }
+
     public long getTotalDamaged() {
         return targets.values().stream().filter(Target::canHurt).count();
     }
 
-    public static <T extends Entity> Predicate<T> notOwnerOrFriend(Affine spell, Caster<?> source) {
-        return TargetSelecter.<T>isOwnerOrFriend(spell, source).negate();
+    public static <T extends Entity> Predicate<T> validTarget(Affine affine, Caster<?> source) {
+        return target -> validTarget(affine, source, target);
     }
 
-    public static <T extends Entity> Predicate<T> isOwnerOrFriend(Affine spell, Caster<?> source) {
-        Entity owner = source.getMaster();
-
-        if (!(spell.isFriendlyTogether(source) && EquinePredicates.PLAYER_UNICORN.test(owner))) {
-            return e -> FriendshipBraceletItem.isComrade(source, e);
-        }
-
-        return entity -> {
-            return FriendshipBraceletItem.isComrade(source, entity) || (owner != null && (Pony.equal(entity, owner) || owner.isConnectedThroughVehicle(entity)));
-        };
+    public static boolean validTarget(Affine affine, Caster<?> source, Entity target) {
+        return !isOwnerOrFriend(affine, source, target);
     }
 
-    static final class Target {
+    public static boolean isOwnerOrFriend(Affine affine, Caster<?> source, Entity target) {
+        return affine.applyInversion(source, source.isOwnerOrFriend(target));
+    }
+
+    private static final class Target {
         private int cooldown = 20;
 
         Target(UUID id) { }

@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.trait;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -8,13 +9,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.jetbrains.annotations.Nullable;
-
+import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgMarkTraitRead;
 import com.minelittlepony.unicopia.network.MsgUnlockTraits;
-import com.minelittlepony.unicopia.util.NbtSerialisable;
+import com.minelittlepony.unicopia.util.Copyable;
+import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -28,10 +29,10 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
-public class TraitDiscovery implements NbtSerialisable {
+public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery> {
     private final Set<Trait> unreadTraits = new HashSet<>();
 
     private final Set<Trait> traits = new HashSet<>();
@@ -52,7 +53,7 @@ public class TraitDiscovery implements NbtSerialisable {
 
     @Environment(EnvType.CLIENT)
     public void markRead(Trait trait) {
-        Channel.MARK_TRAIT_READ.send(new MsgMarkTraitRead(Set.of(trait)));
+        Channel.MARK_TRAIT_READ.sendToServer(new MsgMarkTraitRead(Set.of(trait)));
     }
 
     public void markRead(Set<Trait> traits) {
@@ -66,7 +67,7 @@ public class TraitDiscovery implements NbtSerialisable {
             return;
         }
         SpellTraits traits = SpellTraits.of(item);
-        items.put(Registry.ITEM.getId(item), traits);
+        items.put(Registries.ITEM.getId(item), traits);
         Set<Trait> newTraits = new HashSet<>();
         traits.entries().forEach(e -> {
             if (this.traits.add(e.getKey())) {
@@ -75,19 +76,22 @@ public class TraitDiscovery implements NbtSerialisable {
         });
         unreadTraits.addAll(newTraits);
         pony.setDirty();
-        if (!newTraits.isEmpty() && !pony.getReferenceWorld().isClient) {
-            Channel.UNLOCK_TRAITS.send((ServerPlayerEntity)pony.getMaster(), new MsgUnlockTraits(newTraits));
+        if (!newTraits.isEmpty()) {
+            if (!pony.asWorld().isClient) {
+                Channel.UNLOCK_TRAITS.sendToPlayer(new MsgUnlockTraits(newTraits), (ServerPlayerEntity)pony.asEntity());
+            }
+            UCriteria.TRAIT_DISCOVERED.trigger(pony.asEntity());
         }
     }
 
     public SpellTraits getKnownTraits(Item item) {
-        return items.getOrDefault(Registry.ITEM.getId(item), SpellTraits.EMPTY);
+        return items.getOrDefault(Registries.ITEM.getId(item), SpellTraits.EMPTY);
     }
 
     public Stream<Item> getKnownItems(Trait trait) {
         return items.entrySet().stream()
                 .filter(entry -> entry.getValue().get(trait) > 0)
-                .flatMap(entry -> Registry.ITEM.getOrEmpty(entry.getKey()).stream());
+                .flatMap(entry -> Registries.ITEM.getOrEmpty(entry.getKey()).stream());
     }
 
     public boolean isUnread() {
@@ -102,15 +106,19 @@ public class TraitDiscovery implements NbtSerialisable {
         return traits.contains(trait);
     }
 
+    public boolean isKnown(Collection<Trait> traits) {
+        return traits.containsAll(traits);
+    }
+
     @Environment(EnvType.CLIENT)
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip) {
+    public void appendTooltip(ItemStack stack, List<Text> tooltip) {
         SpellTraits.getEmbeddedTraits(stack)
             .orElseGet(() -> getKnownTraits(stack.getItem()))
             .appendTooltip(tooltip);
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         NbtCompound disco = new NbtCompound();
         items.forEach((key, val) -> {
             disco.put(key.toString(), val.toNbt());
@@ -127,7 +135,7 @@ public class TraitDiscovery implements NbtSerialisable {
     }
 
     @Override
-    public void fromNBT(NbtCompound compound) {
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         clear();
         NbtCompound disco = compound.getCompound("items");
         disco.getKeys().forEach(key -> {
@@ -143,7 +151,7 @@ public class TraitDiscovery implements NbtSerialisable {
 
     private Optional<SpellTraits> loadTraits(Identifier itemId, NbtCompound nbt) {
         if (!pony.isClient()) {
-            return Registry.ITEM.getOrEmpty(itemId)
+            return Registries.ITEM.getOrEmpty(itemId)
                     .flatMap(item -> Optional.of(SpellTraits.of(item)))
                     .filter(SpellTraits::isPresent)
                     .or(() -> SpellTraits.fromNbt(nbt));
@@ -152,7 +160,8 @@ public class TraitDiscovery implements NbtSerialisable {
         return SpellTraits.fromNbt(nbt);
     }
 
-    public void copyFrom(TraitDiscovery old) {
+    @Override
+    public void copyFrom(TraitDiscovery old, boolean alive) {
         clear();
         unreadTraits.addAll(old.unreadTraits);
         traits.addAll(old.traits);

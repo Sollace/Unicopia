@@ -2,64 +2,45 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
+import com.minelittlepony.unicopia.item.component.Charges;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 
-import org.jetbrains.annotations.Nullable;
-
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
-import com.minelittlepony.unicopia.particle.ParticleUtils;
-import com.minelittlepony.unicopia.trinkets.TrinketsDelegate;
-
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.Entity;
+import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.item.ArmorMaterials;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
+import net.minecraft.util.Identifier;
 
 public class AmuletItem extends WearableItem {
+    public static final Identifier AMULET_MODIFIERS_ID = Unicopia.id("amulet_modifiers");
 
-    private final int maxEnergy;
-
-    private final ImmutableMultimap<EntityAttribute, EntityAttributeModifier> modifiers;
-
-    public AmuletItem(FabricItemSettings settings, int maxEnergy) {
-        this(settings, maxEnergy, ImmutableMultimap.of());
+    public AmuletItem(Item.Settings settings, int maxEnergy) {
+        super(settings.component(UDataComponentTypes.CHARGES, Charges.of(maxEnergy, maxEnergy)));
     }
 
-    public AmuletItem(FabricItemSettings settings, int maxEnergy, ImmutableMultimap<EntityAttribute, EntityAttributeModifier> modifiers) {
+    public AmuletItem(Item.Settings settings) {
         super(settings);
-        this.maxEnergy = maxEnergy;
-        this.modifiers = modifiers;
+    }
+
+    public AmuletItem(Item.Settings settings, int maxEnergy, AttributeModifiersComponent modifiers) {
+        this(settings.attributeModifiers(modifiers), maxEnergy);
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        if (this == UItems.PEGASUS_AMULET
-                && entity.world.getTime() % 6 == 0
-                && entity instanceof LivingEntity
-                && ((LivingEntity) entity).getEquippedStack(EquipmentSlot.CHEST) == stack
-                && isApplicable((LivingEntity)entity)) {
-            ParticleUtils.spawnParticles(entity.world.getDimension().ultrawarm() ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.COMPOSTER, entity, 1);
-        }
-    }
-
-    @Override
-    public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> list, TooltipContext tooltipContext) {
-
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> list, TooltipType type) {
         for (StringVisitable line : MinecraftClient.getInstance().textRenderer.getTextHandler().wrapLines(
                 Text.translatable(getTranslationKey(stack) + ".lore"), 150, Style.EMPTY)) {
             MutableText compiled = Text.literal("").formatted(Formatting.ITALIC, Formatting.GRAY);
@@ -69,87 +50,41 @@ public class AmuletItem extends WearableItem {
             });
             list.add(compiled);
         }
-
-        if (isChargable()) {
-            list.add(Text.translatable("item.unicopia.amulet.energy", (int)Math.floor(getEnergy(stack)), maxEnergy));
-        }
+        super.appendTooltip(stack, context, list, type);
     }
 
     @Override
-    public SoundEvent getEquipSound() {
-        return ArmorMaterials.IRON.getEquipSound();
+    public RegistryEntry<SoundEvent> getEquipSound() {
+        return ArmorMaterials.IRON.value().equipSound();
     }
 
     @Override
-    public EquipmentSlot getPreferredSlot(ItemStack stack) {
-        return EquipmentSlot.CHEST;
+    public EquipmentSlot getSlotType(ItemStack stack) {
+        return TrinketsDelegate.hasTrinkets() ? EquipmentSlot.OFFHAND : EquipmentSlot.CHEST;
     }
 
     @Override
     public boolean hasGlint(ItemStack stack) {
-        return !isChargable() || stack.hasEnchantments() || getEnergy(stack) > 0;
-    }
-
-    @Override
-    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-        return slot == EquipmentSlot.CHEST ? modifiers : ImmutableMultimap.of();
+        return stack.hasEnchantments() || Charges.of(stack).maximum() == 0 || Charges.of(stack).energy() > 0;
     }
 
     public boolean isApplicable(ItemStack stack) {
-        return stack.getItem() == this && (!isChargable() || getEnergy(stack) > 0);
+        return stack.getItem() == this && (Charges.of(stack).maximum() == 0 || Charges.of(stack).energy() > 0);
     }
 
-    public boolean isApplicable(LivingEntity entity) {
-        return isApplicable(getForEntity(entity));
+    public final boolean isApplicable(LivingEntity entity) {
+        return !getForEntity(entity).stack().isEmpty();
     }
 
-    public static ItemStack getForEntity(LivingEntity entity) {
-        return TrinketsDelegate.getInstance().getEquipped(entity, TrinketsDelegate.NECKLACE)
-                .filter(stack -> stack.getItem() instanceof AmuletItem)
+    public TrinketsDelegate.EquippedStack getForEntity(LivingEntity entity) {
+        return TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.NECKLACE, this::isApplicable)
                 .findFirst()
-                .orElse(ItemStack.EMPTY);
+                .orElse(TrinketsDelegate.EquippedStack.EMPTY);
     }
 
-    public boolean isChargable() {
-        return maxEnergy > 0;
-    }
-
-    public boolean canCharge(ItemStack stack) {
-        return isChargable() && getEnergy(stack) < maxEnergy;
-    }
-
-    public float getChargeRemainder(ItemStack stack) {
-        return Math.max(0, maxEnergy - getEnergy(stack));
-    }
-
-    public static void consumeEnergy(ItemStack stack, float amount) {
-        setEnergy(stack, getEnergy(stack) - amount);
-    }
-
-    public static float getEnergy(ItemStack stack) {
-        return stack.hasNbt() && stack.getNbt().contains("energy") ? stack.getNbt().getFloat("energy") : 0;
-    }
-
-    public static void setEnergy(ItemStack stack, float energy) {
-        if (energy <= 0) {
-            stack.removeSubNbt("energy");
-        } else {
-            stack.getOrCreateNbt().putFloat("energy", energy);
-        }
-    }
-
-    public static class ModifiersBuilder {
-        private static final UUID SLOT_UUID = UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E");
-
-        private final ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> modifiers = new ImmutableMultimap.Builder<>();
-
-        public ModifiersBuilder add(EntityAttribute attribute, double amount) {
-            modifiers.put(attribute, new EntityAttributeModifier(SLOT_UUID, "Armor modifier", amount, EntityAttributeModifier.Operation.ADDITION));
-            return this;
-        }
-
-        public ImmutableMultimap<EntityAttribute, EntityAttributeModifier> build() {
-            return modifiers.build();
-        }
+    public static TrinketsDelegate.EquippedStack get(LivingEntity entity) {
+        return TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.NECKLACE, stack -> stack.getItem() instanceof AmuletItem)
+                .findFirst()
+                .orElse(TrinketsDelegate.EquippedStack.EMPTY);
     }
 }

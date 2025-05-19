@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
-import com.minelittlepony.unicopia.entity.SpellbookEntity;
+import com.minelittlepony.unicopia.entity.mob.SpellbookEntity;
 
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.TexturedModelData;
@@ -24,8 +24,8 @@ public class SpellbookModel extends EntityModel<SpellbookEntity> {
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-       book.render(matrices, vertexConsumer, light, overlay, red, green, blue, alpha);
+    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+       book.render(matrices, vertexConsumer, light, overlay, color);
     }
 
     @Override

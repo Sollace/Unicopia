@@ -1,109 +1,77 @@
 package com.minelittlepony.unicopia.advancement;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.minelittlepony.unicopia.Race;
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.advancement.criterion.AbstractCriterion;
-import net.minecraft.advancement.criterion.AbstractCriterionConditions;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate.Extended;
+import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.advancement.AdvancementCriterion;
+import net.minecraft.entity.Entity;
+import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 
-public class CustomEventCriterion extends AbstractCriterion<CustomEventCriterion.Conditions> {
-
-    private static final Identifier ID = Unicopia.id("custom");
-
+public class CustomEventCriterion extends AbstractRepeatingCriterion<CustomEventCriterion.Conditions> {
     @Override
-    public Identifier getId() {
-        return ID;
-    }
-
-    @Override
-    protected Conditions conditionsFromJson(JsonObject json, Extended playerPredicate, AdvancementEntityPredicateDeserializer deserializer) {
-
-        Set<Race> races = new HashSet<>();
-
-        if (json.has("race")) {
-            json.get("race").getAsJsonArray().forEach(el -> {
-                races.add(Race.fromName(el.getAsString(), Race.EARTH));
-            });
-        }
-
-        return new Conditions(
-                playerPredicate,
-                JsonHelper.getString(json, "event"),
-                races,
-                json.has("flying") ? json.get("flying").getAsBoolean() : null,
-                JsonHelper.getInt(json, "repeats", 0)
-        );
+    public Codec<Conditions> getConditionsCodec() {
+        return Conditions.CODEC;
     }
 
     public CustomEventCriterion.Trigger createTrigger(String name) {
         return player -> {
             if (player instanceof ServerPlayerEntity p) {
-                int counter = Pony.of(player).getAdvancementProgress().compute(name, (key, i) -> i == null ? 1 : i + 1);
-
-                trigger(p, c -> c.test(name, counter, p));
+                trigger(p,
+                    condition -> condition.event().equalsIgnoreCase(name),
+                    (count, condition) -> condition.test(count, p)
+                );
             }
         };
     }
 
     public interface Trigger {
-        void trigger(@Nullable PlayerEntity player);
+        void trigger(@Nullable Entity player);
     }
 
-    public static class Conditions extends AbstractCriterionConditions {
-        private final String event;
+    public static AdvancementCriterion<?> create(String name) {
+        return UCriteria.CUSTOM_EVENT.create(new Conditions(Optional.empty(), name, RacePredicate.EMPTY, TriState.DEFAULT, 1));
+    }
 
-        private final Set<Race> races;
+    public static AdvancementCriterion<?> create(String name, int count) {
+        return UCriteria.CUSTOM_EVENT.create(new Conditions(Optional.empty(), name, RacePredicate.EMPTY, TriState.DEFAULT, count));
+    }
 
-        private final Boolean flying;
+    public static AdvancementCriterion<?> createFlying(String name) {
+        return UCriteria.CUSTOM_EVENT.create(new Conditions(Optional.empty(), name, RacePredicate.EMPTY, TriState.TRUE, 1));
+    }
 
-        private final int repeatCount;
+    public static AdvancementCriterion<?> createFlying(String name, int count) {
+        return UCriteria.CUSTOM_EVENT.create(new Conditions(Optional.empty(), name, RacePredicate.EMPTY, TriState.TRUE, count));
+    }
 
-        public Conditions(Extended playerPredicate, String event, Set<Race> races, Boolean flying, int repeatCount) {
-            super(ID, playerPredicate);
-            this.event = event;
-            this.races = races;
-            this.flying = flying;
-            this.repeatCount = repeatCount;
-        }
+    public record Conditions (
+            Optional<LootContextPredicate> player,
+            String event,
+            RacePredicate races,
+            TriState flying,
+            int repeatCount) implements AbstractRepeatingCriterion.Conditions {
+        public static final Codec<Conditions> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                EntityPredicate.LOOT_CONTEXT_PREDICATE_CODEC.optionalFieldOf("player").forGetter(Conditions::player),
+                Codec.STRING.fieldOf("event").forGetter(Conditions::event),
+                RacePredicate.CODEC.optionalFieldOf("races", RacePredicate.EMPTY).forGetter(Conditions::races),
+                CodecUtils.tristateOf("flying").forGetter(Conditions::flying),
+                Codec.INT.optionalFieldOf("repeatCount", 0).forGetter(Conditions::repeatCount)
+            ).apply(instance, Conditions::new));
 
-        public boolean test(String event, int count, ServerPlayerEntity player) {
-            return this.event.equalsIgnoreCase(event)
-                    && (races.isEmpty() || races.contains(Pony.of(player).getActualSpecies()))
-                    && (flying == null || flying == Pony.of(player).getPhysics().isFlying())
-                    && (repeatCount <= 0 || (count > 0 && count % repeatCount == 0));
-        }
-
-        @Override
-        public JsonObject toJson(AdvancementEntityPredicateSerializer serializer) {
-            JsonObject json = super.toJson(serializer);
-            json.addProperty("event", event);
-            if (!races.isEmpty()) {
-                JsonArray arr = new JsonArray();
-                races.forEach(r -> arr.add(Race.REGISTRY.getId(r).toString()));
-                json.add("race", arr);
-            }
-            if (flying != null) {
-                json.addProperty("flying", flying);
-            }
-            if (repeatCount > 0) {
-                json.addProperty("repeats", repeatCount);
-            }
-            return json;
+        public boolean test(int count, ServerPlayerEntity player) {
+            boolean isFlying = Pony.of(player).getPhysics().isFlying();
+            return races.test(player)
+                    && flying.orElse(isFlying) == isFlying
+                    && (repeatCount < 0 || repeatCount <= count);
         }
     }
 }

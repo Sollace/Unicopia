@@ -1,27 +1,32 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.List;
+
+import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
+import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.block.state.StatePredicate;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
-import com.minelittlepony.unicopia.util.MagicalDamageSource;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
-import com.minelittlepony.unicopia.util.shape.Shape;
 import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.FluidTags;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -31,8 +36,9 @@ public class IceSpell extends AbstractSpell {
             .with(Trait.ICE, 15)
             .build();
 
-    private static final int RADIUS = 3;
-    private static final Shape OUTER_RANGE = new Sphere(false, RADIUS);
+    private static final SpellAttribute<Float> RANGE = SpellAttribute.create(SpellAttributeType.RANGE, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.POWER, power -> Math.max(0, 3 + power));
+
+    static final TooltipFactory TOOLTIP = RANGE;
 
     protected IceSpell(CustomisedSpellType<?> type) {
         super(type);
@@ -40,24 +46,25 @@ public class IceSpell extends AbstractSpell {
 
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
-        boolean submerged = source.getEntity().isSubmergedInWater() || source.getEntity().isSubmergedIn(FluidTags.LAVA);
+        boolean submerged = source.asEntity().isSubmergedInWater() || source.asEntity().isSubmergedIn(FluidTags.LAVA);
+        float radius = RANGE.get(getTraits());
 
-        long blocksAffected = OUTER_RANGE.translate(source.getOrigin()).getBlockPositions().filter(i -> {
-            if (source.canModifyAt(i) && applyBlockSingle(source.getEntity(), source.getReferenceWorld(), i, situation)) {
+        long blocksAffected = new Sphere(false, radius).translate(source.getOrigin()).getBlockPositions().filter(i -> {
+            if (source.canModifyAt(i) && applyBlockSingle(source.asEntity(), source.asWorld(), i, situation)) {
 
-                if (submerged & source.getOrigin().isWithinDistance(i, RADIUS - 1)) {
-                    BlockState state = source.getReferenceWorld().getBlockState(i);
+                if (submerged & source.getOrigin().isWithinDistance(i, RANGE.get(getTraits()) - 1)) {
+                    BlockState state = source.asWorld().getBlockState(i);
                     if (state.isIn(BlockTags.ICE) || state.isOf(Blocks.OBSIDIAN)) {
-                        source.getReferenceWorld().setBlockState(i, Blocks.AIR.getDefaultState(), Block.NOTIFY_NEIGHBORS);
+                        source.asWorld().setBlockState(i, Blocks.AIR.getDefaultState(), Block.NOTIFY_NEIGHBORS);
                     } else if (!state.getFluidState().isEmpty()) {
-                        source.getReferenceWorld().setBlockState(i, state.with(Properties.WATERLOGGED, false), Block.NOTIFY_NEIGHBORS);
+                        source.asWorld().setBlockState(i, state.with(Properties.WATERLOGGED, false), Block.NOTIFY_NEIGHBORS);
                     }
                 }
 
-                ParticleUtils.spawnParticle(source.getReferenceWorld(), ParticleTypes.SPLASH, new Vec3d(
-                        i.getX() + source.getReferenceWorld().random.nextFloat(),
+                ParticleUtils.spawnParticle(source.asWorld(), ParticleTypes.SPLASH, new Vec3d(
+                        i.getX() + source.asWorld().random.nextFloat(),
                         i.getY() + 1,
-                        i.getZ() + source.getReferenceWorld().random.nextFloat()), Vec3d.ZERO);
+                        i.getZ() + source.asWorld().random.nextFloat()), Vec3d.ZERO);
 
                 return true;
             }
@@ -65,26 +72,32 @@ public class IceSpell extends AbstractSpell {
             return false;
         }).count();
 
-        source.subtractEnergyCost(Math.min(10, blocksAffected));
+        if (!source.subtractEnergyCost(Math.min(10, blocksAffected / 30))) {
+            setDead();
+        }
 
-        return applyEntities(source.getMaster(), source.getReferenceWorld(), source.getOriginVector()) && situation == Situation.PROJECTILE;
+        return applyEntities(source, source.getOriginVector()) && situation == Situation.PROJECTILE && !isDead();
     }
 
-    protected boolean applyEntities(LivingEntity owner, World world, Vec3d pos) {
-        return !VecHelper.findInRange(owner, world, pos, 3, i -> applyEntitySingle(owner, i)).isEmpty();
+    protected boolean applyEntities(Caster<?> source, Vec3d pos) {
+        List<Entity> entities = VecHelper.findInRange(source.asEntity(), source.asWorld(), pos, 3);
+        entities.forEach(entity -> applyEntitySingle(source, entity));
+        return !entities.isEmpty();
+
     }
 
-    protected boolean applyEntitySingle(LivingEntity owner, Entity e) {
+    protected void applyEntitySingle(Caster<?> source, Entity e) {
+        if (source.asEntity() == e || source.isOwnedBy(e) || (e instanceof Owned<?> sibling && source.hasCommonOwner(sibling))) {
+            return;
+        }
         if (e instanceof TntEntity) {
             e.remove(RemovalReason.DISCARDED);
             e.getEntityWorld().setBlockState(e.getBlockPos(), Blocks.TNT.getDefaultState());
         } else if (e.isOnFire()) {
             e.extinguish();
         } else {
-            e.damage(MagicalDamageSource.create("cold", owner), 2);
+            e.damage(source.damageOf(DamageTypes.FREEZE, source), 2);
         }
-
-        return true;
     }
 
     private boolean applyBlockSingle(Entity owner, World world, BlockPos pos, Situation situation) {
@@ -102,7 +115,7 @@ public class IceSpell extends AbstractSpell {
             return true;
         }
 
-        if (state.getMaterial() == Material.ICE
+        if (state.isIn(BlockTags.ICE)
                 && world.random.nextInt(10) == 0
                 && isSurroundedByIce(world, pos)) {
             world.setBlockState(pos, Blocks.PACKED_ICE.getDefaultState());
@@ -114,7 +127,7 @@ public class IceSpell extends AbstractSpell {
 
     private static boolean isSurroundedByIce(World w, BlockPos pos) {
         return PosHelper.adjacentNeighbours(pos).allMatch(i ->
-            w.getBlockState(i).getMaterial() == Material.ICE
+            w.getBlockState(i).isIn(BlockTags.ICE)
         );
     }
 

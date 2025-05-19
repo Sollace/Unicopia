@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "traits": "kindness:3",
+  "items": [
+    "#unicopia:bed_sheets",
+    "#unicopia:floats_on_clouds",
+    "#unicopia:pies"
+  ]
+}

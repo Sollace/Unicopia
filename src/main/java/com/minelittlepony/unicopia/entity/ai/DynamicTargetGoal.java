@@ -48,7 +48,11 @@ public class DynamicTargetGoal extends Goal {
         if (interval-- <= 0) {
             interval = 20;
 
-            target = VecHelper.findInRange(mob, mob.world, mob.getPos(), 26, test)
+            if (mob.getTarget() != null && mob.getTarget().isDead()) {
+                mob.setTarget(null);
+            }
+
+            target = VecHelper.findInRange(mob, mob.getWorld(), mob.getPos(), 26, test)
                 .stream()
                 .sorted(Comparator.comparing(e -> mob.distanceTo(e)))
                 .findFirst();

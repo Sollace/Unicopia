@@ -2,13 +2,11 @@ package com.minelittlepony.unicopia.mixin;
 
 import java.util.Optional;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -18,8 +16,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.duck.*;
-import com.minelittlepony.unicopia.entity.player.Pony;
 
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -28,9 +26,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 @Mixin(LivingEntity.class)
-abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
+abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equine.Container<Living<?>> {
     @Shadow
     protected ItemStack activeItemStack;
     @Shadow
@@ -52,11 +51,13 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
     }
 
     @Override
-    public Equine<?> get() {
-        if (caster == null) {
-            caster = create();
+    public Living<?> get() {
+        synchronized (this) {
+            if (caster == null) {
+                caster = create();
+            }
+            return (Living<?>)caster;
         }
-        return caster;
     }
 
     @Override
@@ -79,6 +80,18 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
     @Accessor("lastLeaningPitch")
     public abstract void setLastLeaningPitch(float pitch);
 
+    @Override
+    @Accessor
+    public abstract double getServerX();
+
+    @Override
+    @Accessor
+    public abstract double getServerY();
+
+    @Override
+    @Accessor
+    public abstract double getServerZ();
+
     @Inject(method = "createLivingAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
     private static void onCreateAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {
         Creature.registerAttributes(info.getReturnValue());
@@ -86,12 +99,9 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
 
     @Inject(method = "isClimbing()Z", at = @At("HEAD"), cancellable = true)
     public void onIsClimbing(CallbackInfoReturnable<Boolean> info) {
-        if (get() instanceof Pony && horizontalCollision) {
-            ((Pony)get()).getSpellSlot().get(SpellPredicate.IS_DISGUISE, false)
-            .map(AbstractDisguiseSpell::getDisguise)
-            .filter(EntityAppearance::canClimbWalls)
-            .ifPresent(v -> {
-                climbingPos = Optional.of(getBlockPos());
+        if (horizontalCollision) {
+            get().chooseClimbingPos().ifPresent(pos -> {
+                climbingPos = Optional.of(pos);
                 info.setReturnValue(true);
             });
         }
@@ -100,7 +110,7 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
     @Inject(method = "isPushable()Z", at = @At("HEAD"), cancellable = true)
     private void onIsPushable(CallbackInfoReturnable<Boolean> info) {
         Caster.of(this)
-            .flatMap(c -> c.getSpellSlot().get(SpellPredicate.IS_DISGUISE, false))
+            .flatMap(c -> c.getSpellSlot().get(SpellPredicate.IS_DISGUISE))
             .map(AbstractDisguiseSpell::getDisguise)
             .map(EntityAppearance::getAppearance)
             .filter(Entity::isPushable)
@@ -111,14 +121,14 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
 
     @Inject(method = "canSee(Lnet/minecraft/entity/Entity;)Z", at = @At("HEAD"), cancellable = true)
     private void onCanSee(Entity other, CallbackInfoReturnable<Boolean> info) {
-        if (get().isInvisible()) {
+        if (!get().canBeSeenBy(other)) {
             info.setReturnValue(false);
         }
     }
 
-    @Inject(method = "jump()V", at = @At("RETURN"))
-    private void onJump(CallbackInfo info) {
-        get().onJump();
+    @Inject(method = "applyFluidMovingSpeed", at = @At("RETURN"), cancellable = true)
+    private void applyFluidMovingSpeed(double gravity, boolean falling, Vec3d motion, CallbackInfoReturnable<Vec3d> info) {
+        get().adjustMovementSpeedInWater(info.getReturnValue()).ifPresent(info::setReturnValue);
     }
 
     @Inject(method = "tick()V", at = @At("HEAD"), cancellable = true)
@@ -133,6 +143,7 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
         get().tick();
     }
 
+    @Dynamic("Compiler-generated class-init() method")
     @Inject(method = "<clinit>()V", at = @At("RETURN"), remap = false)
     private static void clinit(CallbackInfo info) {
         Creature.boostrap();
@@ -143,24 +154,29 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
         get().onDamage(source, amount).ifPresent(info::setReturnValue);
     }
 
+    @ModifyVariable(method = "handleFallDamage(FFLnet/minecraft/entity/damage/DamageSource;)Z", at = @At("HEAD"), ordinal = 0, argsOnly = true)
+    private float onHandleFallDamage(float distance, float distanceAgain, float damageMultiplier, DamageSource cause) {
+        return get().onImpact(distance, damageMultiplier, cause);
+    }
+
+    @Inject(method = "hurtByWater()Z", at = @At("HEAD"), cancellable = true)
+    private void onCanBeHurtByWater(CallbackInfoReturnable<Boolean> info) {
+        TriState hurtByWater = get().canBeHurtByWater();
+        if (hurtByWater != TriState.DEFAULT) {
+            info.setReturnValue(hurtByWater.get());
+        }
+    }
+
     @Inject(method = "writeCustomDataToNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("HEAD"))
     private void onWriteCustomDataToTag(NbtCompound tag, CallbackInfo info) {
-        tag.put("unicopia_caster", get().toNBT());
+        tag.put("unicopia_caster", get().toNBT(getWorld().getRegistryManager()));
     }
 
     @Inject(method = "readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("HEAD"))
     private void onReadCustomDataFromTag(NbtCompound tag, CallbackInfo info) {
         if (tag.contains("unicopia_caster")) {
-            get().fromNBT(tag.getCompound("unicopia_caster"));
+            get().fromNBT(tag.getCompound("unicopia_caster"), getWorld().getRegistryManager());
         }
-    }
-
-    @ModifyConstant(method = "travel(Lnet/minecraft/util/math/Vec3d;)V", constant = {
-            @Constant(doubleValue = 0.08D),
-            @Constant(doubleValue = 0.01D)
-    })
-    private double modifyGravity(double initial) {
-        return get().getPhysics().calcGravity(initial);
     }
 
     @Override
@@ -168,26 +184,9 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck {
         activeItemStack = stack;
         itemUseTimeLeft = time;
 
-        if (!world.isClient) {
+        if (!getWorld().isClient) {
             setLivingFlag(1, !stack.isEmpty());
             setLivingFlag(2, hand == Hand.OFF_HAND);
-        }
-    }
-
-    @Override
-    public BlockPos getBlockPos() {
-        if (get().getPhysics().isGravityNegative()) {
-            return get().getPhysics().getHeadPosition();
-        }
-        return super.getBlockPos();
-    }
-
-    @Override
-    protected void spawnSprintingParticles() {
-        if (get().getPhysics().isGravityNegative()) {
-            get().getPhysics().spawnSprintingParticles();
-        } else {
-            super.spawnSprintingParticles();
         }
     }
 }

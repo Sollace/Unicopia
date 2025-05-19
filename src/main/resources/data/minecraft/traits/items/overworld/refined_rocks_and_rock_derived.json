@@ -6,7 +6,7 @@
     "minecraft:quartz": "earth:-1.3 strength:-1 darkness:1",
     "minecraft:amethyst_shard": "earth:-0.1 order:9",
     
-    "minecraft:lapis_lazuli": "order:2 power:4 order:5",
+    "minecraft:lapis_lazuli": "power:4 order:5",
 
     "minecraft:raw_iron": "focus:2 earth:-0.7 strength:4",
     "minecraft:raw_copper": "focus:1.5 earth:-0.7 strength:4",

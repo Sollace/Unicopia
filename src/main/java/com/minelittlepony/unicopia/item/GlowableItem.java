@@ -1,15 +1,16 @@
 package com.minelittlepony.unicopia.item;
 
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
+
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 
 public interface GlowableItem {
-    default boolean isGlowing(ItemStack stack) {
-        NbtCompound tag = stack.getSubNbt("display");
-        return tag != null && tag.getBoolean("glowing");
+    static boolean isGlowing(ItemStack stack) {
+        Boolean glowing = stack.get(UDataComponentTypes.GLOWING);
+        return glowing != null && glowing;
     }
 
-    default void setGlowing(ItemStack stack, boolean glowing) {
-        stack.getOrCreateSubNbt("display").putBoolean("glowing", glowing);
+    static void setGlowing(ItemStack stack, boolean glowing) {
+        stack.set(UDataComponentTypes.GLOWING, glowing);
     }
 }

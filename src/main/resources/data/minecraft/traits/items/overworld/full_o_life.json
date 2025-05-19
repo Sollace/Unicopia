@@ -2,14 +2,13 @@
   "replace": false,
   "traits": "life:10 earth:2",
   "items": [
-    "minecraft:pumpkin_seeds",
-    "minecraft:beetroot_seeds",
-    "minecraft:melon_seeds",
+    "#c:seeds",
+    "#minecraft:villager_plantable_seeds",
     "minecraft:cocoa_beans",
     "minecraft:egg",
-    "minecraft:wheat_seeds",
     "minecraft:wheat",
     "minecraft:bone_meal",
-    "minecraft:honeycomb"
+    "minecraft:honeycomb",
+    "minecraft:sniffer_egg"
   ]
 }

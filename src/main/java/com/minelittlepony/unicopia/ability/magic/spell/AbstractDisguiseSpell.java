@@ -14,24 +14,26 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 /**
  * Base implementation for a spell that changes the player's appearance.
  */
 public abstract class AbstractDisguiseSpell extends AbstractSpell implements Disguise, ProjectileImpactListener {
 
-    private final EntityAppearance disguise = new EntityAppearance();
+    private final EntityAppearance disguise = dataTracker.startTracking(new EntityAppearance());
 
     public AbstractDisguiseSpell(CustomisedSpellType<?> type) {
         super(type);
     }
 
     @Override
-    public void onDestroyed(Caster<?> caster) {
-        caster.getEntity().calculateDimensions();
-        caster.getEntity().setInvisible(false);
-        if (caster instanceof Pony) {
-            ((Pony) caster).setInvisible(false);
+    protected void onDestroyed(Caster<?> caster) {
+        super.onDestroyed(caster);
+        caster.asEntity().calculateDimensions();
+        caster.asEntity().setInvisible(false);
+        if (caster instanceof Pony pony) {
+            pony.setInvisible(false);
         }
         disguise.remove();
     }
@@ -52,21 +54,15 @@ public abstract class AbstractDisguiseSpell extends AbstractSpell implements Dis
     }
 
     @Override
-    public void setDead() {
-        super.setDead();
-        disguise.remove();
+    public void toNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.toNBT(compound, lookup);
+        disguise.toNBT(compound, lookup);
     }
 
     @Override
-    public void toNBT(NbtCompound compound) {
-        super.toNBT(compound);
-        disguise.toNBT(compound);
-    }
-
-    @Override
-    public void fromNBT(NbtCompound compound) {
-        super.fromNBT(compound);
-        disguise.fromNBT(compound);
+    public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
+        super.fromNBT(compound, lookup);
+        disguise.fromNBT(compound, lookup);
     }
 
     @Override
@@ -77,7 +73,7 @@ public abstract class AbstractDisguiseSpell extends AbstractSpell implements Dis
     public static Entity getAppearance(Entity e) {
         return e instanceof PlayerEntity ? Pony.of((PlayerEntity)e)
                 .getSpellSlot()
-                .get(SpellPredicate.IS_DISGUISE, true)
+                .get(SpellPredicate.IS_DISGUISE)
                 .map(AbstractDisguiseSpell::getDisguise)
                 .map(EntityAppearance::getAppearance)
                 .orElse(e) : e;

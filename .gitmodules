@@ -1,0 +1,3 @@
+[submodule "BlockusAddon"]
+    path = BlockusAddon
+    url = https://github.com/Sollace/Unicopia-Blockus-Addon

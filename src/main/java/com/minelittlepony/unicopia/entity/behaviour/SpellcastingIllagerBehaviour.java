@@ -16,9 +16,9 @@ public class SpellcastingIllagerBehaviour extends EntityBehaviour<SpellcastingIl
         SpellCastAccess() {super(null, null);}
 
         static void setSpell(Pony player, SpellcastingIllagerEntity entity, Disguise s) {
-            if (player.getMaster().isSneaking()) {
+            if (player.asEntity().isSneaking()) {
                 SpellcastingIllagerEntity.Spell[] spells = SpellcastingIllagerEntity.Spell.values();
-                SpellcastingIllagerEntity.Spell spell = spells[entity.world.random.nextInt(spells.length - 1) + 1];
+                SpellcastingIllagerEntity.Spell spell = spells[entity.getWorld().random.nextInt(spells.length - 1) + 1];
 
                 entity.setSpell(spell);
                 entity.setTarget(entity);

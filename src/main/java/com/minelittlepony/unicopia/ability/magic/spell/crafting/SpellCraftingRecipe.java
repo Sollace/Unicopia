@@ -2,54 +2,72 @@ package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
-import com.minelittlepony.unicopia.container.inventory.SpellbookInventory;
-import com.minelittlepony.unicopia.item.GemstoneItem;
-import com.minelittlepony.unicopia.item.URecipes;
+import com.minelittlepony.unicopia.item.EnchantableItem;
+import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.ShapedRecipe;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.world.World;
 
 /**
  * A recipe for creating a new spell from input traits and items.
  */
 public class SpellCraftingRecipe implements SpellbookRecipe {
-    private final Identifier id;
+    private static final Codec<ItemStack> RESULT_CODEC = CodecUtils.extend(ItemStack.CODEC, SpellType.REGISTRY.getCodec().fieldOf("spell")).xmap(
+            pair -> pair.getSecond().map(spell -> EnchantableItem.enchant(pair.getFirst().orElse(ItemStack.EMPTY), spell)).orElse(pair.getFirst().orElse(ItemStack.EMPTY)),
+            stack -> Pair.of(Optional.of(stack), EnchantableItem.getSpellKeyOrEmpty(stack))
+    );
+
+    public static final MapCodec<SpellCraftingRecipe> CODEC = RecordCodecBuilder.<SpellCraftingRecipe>mapCodec(instance -> instance.group(
+            IngredientWithSpell.CODEC.fieldOf("material").forGetter(recipe -> recipe.material),
+            TraitIngredient.CODEC.fieldOf("traits").forGetter(recipe -> recipe.requiredTraits),
+            IngredientWithSpell.CODEC.listOf().fieldOf("ingredients").forGetter(recipe -> recipe.requiredItems),
+            RESULT_CODEC.fieldOf("result").forGetter(recipe -> recipe.output)
+    ).apply(instance, SpellCraftingRecipe::new));
+    public static final PacketCodec<RegistryByteBuf, SpellCraftingRecipe> PACKET_CODEC = PacketCodec.tuple(
+            IngredientWithSpell.PACKET_CODEC, recipe -> recipe.material,
+            TraitIngredient.PACKET_CODEC, recipe -> recipe.requiredTraits,
+            IngredientWithSpell.PACKET_CODEC.collect(PacketCodecs.toList()), recipe -> recipe.requiredItems,
+            ItemStack.PACKET_CODEC, recipe -> recipe.output,
+            SpellCraftingRecipe::new
+    );
 
     /**
      * The ingredient to modify
      */
-    private final IngredientWithSpell material;
+    final IngredientWithSpell material;
 
     /**
      * The required traits
      */
-    private final TraitIngredient requiredTraits;
+    final TraitIngredient requiredTraits;
 
     /**
      * Items required for crafting.
      */
-    private final List<IngredientWithSpell> requiredItems;
+    final List<IngredientWithSpell> requiredItems;
 
     /**
      * The resulting item
      */
-    private final ItemStack output;
+    final ItemStack output;
 
-    private SpellCraftingRecipe(Identifier id, IngredientWithSpell material, TraitIngredient requiredTraits, List<IngredientWithSpell> requiredItems, ItemStack output) {
-        this.id = id;
+    public SpellCraftingRecipe(IngredientWithSpell material, TraitIngredient requiredTraits, List<IngredientWithSpell> requiredItems, ItemStack output) {
         this.material = material;
         this.requiredTraits = requiredTraits;
         this.requiredItems = requiredItems;
@@ -74,20 +92,20 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public boolean matches(SpellbookInventory inventory, World world) {
+    public boolean matches(Input inventory, World world) {
 
-        if (!material.test(inventory.getItemToModify())) {
+        if (!material.test(inventory.stackToModify())) {
             return false;
         }
 
         if (requiredItems.isEmpty()) {
-            return requiredTraits.test(inventory.getTraits());
+            return requiredTraits.test(inventory.traits());
         }
 
         var outstandingRequirements = new ArrayList<>(requiredItems);
         var ingredients = InventoryUtil.slots(inventory)
-                .filter(slot -> !inventory.getStack(slot).isEmpty())
-                .map(slot -> Pair.of(slot, inventory.getStack(slot)))
+                .filter(slot -> !inventory.getStackInSlot(slot).isEmpty())
+                .map(slot -> Pair.of(slot, inventory.getStackInSlot(slot)))
                 .collect(Collectors.toList());
 
         outstandingRequirements.removeIf(requirement -> {
@@ -106,8 +124,8 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public ItemStack craft(SpellbookInventory inventory) {
-        return getOutput().copy();
+    public ItemStack craft(Input inventory, WrapperLookup registries) {
+        return getResult(registries).copy();
     }
 
     @Override
@@ -116,58 +134,12 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public ItemStack getOutput() {
+    public ItemStack getResult(WrapperLookup registries) {
         return output;
-    }
-
-    @Override
-    public Identifier getId() {
-        return id;
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
         return URecipes.TRAIT_REQUIREMENT;
-    }
-
-    public static ItemStack outputFromJson(JsonObject json) {
-        ItemStack stack = ShapedRecipe.outputFromJson(json);
-        SpellTraits.fromJson(JsonHelper.getObject(json, "traits", new JsonObject()))
-            .map(traits -> traits.applyTo(stack)).orElse(stack);
-
-        SpellType<?> spell = SpellType.getKey(Identifier.tryParse(JsonHelper.getString(json, "spell", "")));
-        if (spell != SpellType.EMPTY_KEY) {
-            return GemstoneItem.enchant(stack, spell);
-        }
-        return stack;
-    }
-
-    public static class Serializer implements RecipeSerializer<SpellCraftingRecipe> {
-        @Override
-        public SpellCraftingRecipe read(Identifier id, JsonObject json) {
-            return new SpellCraftingRecipe(id,
-                    IngredientWithSpell.fromJson(json.get("material")),
-                    TraitIngredient.fromJson(JsonHelper.getObject(json, "traits")),
-                    IngredientWithSpell.fromJson(JsonHelper.asArray(json.get("ingredients"), "ingredients")),
-                    outputFromJson(JsonHelper.getObject(json, "result")));
-        }
-
-        @Override
-        public SpellCraftingRecipe read(Identifier id, PacketByteBuf buf) {
-            return new SpellCraftingRecipe(id,
-                    IngredientWithSpell.fromPacket(buf),
-                    TraitIngredient.fromPacket(buf),
-                    buf.readCollection(DefaultedList::ofSize, IngredientWithSpell::fromPacket),
-                    buf.readItemStack()
-            );
-        }
-
-        @Override
-        public void write(PacketByteBuf buf, SpellCraftingRecipe recipe) {
-            recipe.material.write(buf);
-            recipe.requiredTraits.write(buf);
-            buf.writeCollection(recipe.requiredItems, (b, i) -> i.write(b));
-            buf.writeItemStack(recipe.output);
-        }
     }
 }
