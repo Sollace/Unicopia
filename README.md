@@ -103,13 +103,5 @@ cd Unicopia
 ./gradlew build
 ```
 
-Windows:
-```bash
-git clone https://github.com/Sollace/Unicopia.git
-cd Unicopia
-gradlew.bat rundatagen
-gradlew.bat build
-```
-
 Built jars are located in `build/libs` within the Unicopia folder after performing the above commands.
 
