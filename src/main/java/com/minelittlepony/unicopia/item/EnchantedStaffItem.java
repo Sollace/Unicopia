@@ -141,19 +141,25 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Mu
             if (i > 20) {
                 if (Charges.discharge(stack, 1)) {
                     Pony.of(entity).ifPresent(pony -> {
-                        pony.subtractEnergyCost(4);
-                        stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
-                        EnchantableItem.getSpellEffect(stack).create().toThrowable().throwProjectile(pony);
+                        Spell spell = EnchantableItem.getSpellEffect(stack).create();
+                        if (spell != null) {
+                            spell.toThrowable().throwProjectile(pony);
+                        }
                         pony.setAnimation(Animation.ARMS_UP, Animation.Recipient.ANYONE, 10);
+                        stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
+                        pony.subtractEnergyCost(4);
                     });
                 }
             } else if (i > 5) {
                 if (Charges.discharge(stack, 1)) {
                     Pony.of(entity).ifPresent(pony -> {
-                        pony.subtractEnergyCost(4);
-                        stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
-                        EnchantableItem.getSpellEffect(stack).create().toThrowable().throwProjectile(pony);
+                        Spell spell = EnchantableItem.getSpellEffect(stack).create();
+                        if (spell != null) {
+                            spell.toThrowable().throwProjectile(pony);
+                        }
                         pony.setAnimation(Animation.ARMS_UP, Animation.Recipient.ANYONE, 10);
+                        stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
+                        pony.subtractEnergyCost(4);
                     });
                 }
             }

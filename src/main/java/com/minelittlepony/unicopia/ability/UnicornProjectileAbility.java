@@ -44,10 +44,13 @@ public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
                 TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(true);
 
                 if (thrown.getResult() != ActionResult.FAIL) {
-                    thrown.getValue().create().toThrowable().throwProjectile(player).ifPresent(projectile -> {
-                        player.subtractEnergyCost(getCostEstimate(player));
-                        player.setAnimation(Animation.ARMS_FORWARD, Animation.Recipient.ANYONE, 2);
-                    });
+                    Spell spell = thrown.getValue().create();
+                    if (spell != null) {
+                        spell.toThrowable().throwProjectile(player).ifPresent(projectile -> {
+                            player.subtractEnergyCost(getCostEstimate(player));
+                            player.setAnimation(Animation.ARMS_FORWARD, Animation.Recipient.ANYONE, 2);
+                        });
+                    }
                 }
             }
             return true;
@@ -68,17 +71,19 @@ public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
         if (thrown.getResult() != ActionResult.FAIL) {
             Spell spell = thrown.getValue().create();
 
-            spell.toThrowable().throwProjectile(player).ifPresent(projectile -> {
-                player.subtractEnergyCost(getCostEstimate(player));
-                player.setAnimation(Animation.ARMS_FORWARD, Animation.Recipient.ANYONE);
-                projectile.setHydrophobic();
+            if (spell != null) {
+                spell.toThrowable().throwProjectile(player).ifPresent(projectile -> {
+                    player.subtractEnergyCost(getCostEstimate(player));
+                    player.setAnimation(Animation.ARMS_FORWARD, Animation.Recipient.ANYONE);
+                    projectile.setHydrophobic();
 
-                if (spell instanceof HomingSpell homer) {
-                    TraceHelper.findEntity(player.asEntity(), homer.getRange(player), 1, EquinePredicates.VALID_LIVING_AND_NOT_MAGIC_IMMUNE).filter(((HomingSpell)spell)::setTarget).ifPresent(projectile::setHomingTarget);
-                }
-            });
+                    if (spell instanceof HomingSpell homer) {
+                        TraceHelper.findEntity(player.asEntity(), homer.getRange(player), 1, EquinePredicates.VALID_LIVING_AND_NOT_MAGIC_IMMUNE).filter(((HomingSpell)spell)::setTarget).ifPresent(projectile::setHomingTarget);
+                    }
+                });
 
-            return true;
+                return true;
+            }
         }
 
         return false;
