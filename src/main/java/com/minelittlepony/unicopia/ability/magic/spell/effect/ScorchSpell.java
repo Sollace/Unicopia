@@ -28,7 +28,7 @@ public class ScorchSpell extends FireSpell implements ProjectileDelegate.Configu
 
     @Override
     public Spell prepareForCast(Caster<?> caster, CastingMethod method) {
-        return method == CastingMethod.STAFF ? this : toPlaceable();
+        return method == CastingMethod.STAFF ? toThrowable() : toPlaceable();
     }
 
     @Override

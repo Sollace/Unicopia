@@ -137,41 +137,28 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Mu
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity entity, int timeLeft) {
         int i = getMaxUseTime(stack, entity) - timeLeft;
 
-        if (EnchantableItem.isEnchanted(stack)) {
-            if (i > 20) {
-                if (Charges.discharge(stack, 1)) {
-                    Pony.of(entity).ifPresent(pony -> {
-                        Spell spell = EnchantableItem.getSpellEffect(stack).create();
-                        if (spell != null) {
-                            spell.toThrowable().throwProjectile(pony);
-                        }
-                        pony.setAnimation(Animation.ARMS_UP, Animation.Recipient.ANYONE, 10);
-                        stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
-                        pony.subtractEnergyCost(4);
-                    });
-                }
-            } else if (i > 5) {
-                if (Charges.discharge(stack, 1)) {
-                    Pony.of(entity).ifPresent(pony -> {
-                        Spell spell = EnchantableItem.getSpellEffect(stack).create();
-                        if (spell != null) {
-                            spell.toThrowable().throwProjectile(pony);
-                        }
-                        pony.setAnimation(Animation.ARMS_UP, Animation.Recipient.ANYONE, 10);
-                        stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
-                        pony.subtractEnergyCost(4);
-                    });
-                }
+        if (i > 5 && EnchantableItem.isEnchanted(stack)) {
+            CustomisedSpellType<?> spellType = EnchantableItem.getSpellEffect(stack);
+            if (Charges.discharge(stack, 1)) {
+                Pony.of(entity).ifPresent(pony -> {
+                    spellType.apply(pony, CastingMethod.STAFF);
+                    pony.setAnimation(Animation.ARMS_UP, Animation.Recipient.ANYONE, 10);
+                    stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
+                    pony.subtractEnergyCost(4);
+                });
             }
         }
     }
 
     @Override
     protected boolean castContainedEffect(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        if (attacker.isSneaking() && Charges.discharge(stack, 1)) {
-            stack.damage(50, attacker, EquipmentSlot.MAINHAND);
-            Caster.of(attacker).ifPresent(c -> c.subtractEnergyCost(4));
-            Caster.of(target).ifPresent(c -> EnchantableItem.getSpellEffect(stack).apply(c, CastingMethod.STAFF));
+        if (attacker.isSneaking()) {
+            CustomisedSpellType<?> spellType = EnchantableItem.getSpellEffect(stack);
+            if (Charges.discharge(stack, 1)) {
+                stack.damage(50, attacker, EquipmentSlot.MAINHAND);
+                Caster.of(attacker).ifPresent(c -> c.subtractEnergyCost(4));
+                Caster.of(target).ifPresent(c -> spellType.apply(c, CastingMethod.STAFF));
+            }
         }
 
         return false;
@@ -197,8 +184,11 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Mu
                 if (i > 200) {
                     living.clearActiveItem();
                     living.damage(entity.getDamageSources().magic(), 1);
-                    if (EnchantableItem.isEnchanted(stack) && Charges.discharge(stack, 1)) {
-                        Caster.of(entity).ifPresent(c -> EnchantableItem.getSpellEffect(stack).apply(c, CastingMethod.STAFF));
+                    if (EnchantableItem.isEnchanted(stack)) {
+                        CustomisedSpellType<?> spellType = EnchantableItem.getSpellEffect(stack);
+                        if (Charges.discharge(stack, 1)) {
+                            Caster.of(entity).ifPresent(c -> spellType.apply(c, CastingMethod.STAFF));
+                        }
                     }
                 }
             }

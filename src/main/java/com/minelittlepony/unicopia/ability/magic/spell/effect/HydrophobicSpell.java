@@ -57,6 +57,9 @@ public class HydrophobicSpell extends AbstractSpell {
         if ((method == CastingMethod.DIRECT || method == CastingMethod.STAFF) && ShieldSpell.CAST_ON.get(getTraits()) == CastOn.LOCATION) {
             return toPlaceable();
         }
+        if (method == CastingMethod.STAFF) {
+            return toThrowable();
+        }
         return this;
     }
 
