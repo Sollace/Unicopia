@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.recipe;
 
-import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.util.Untyped;
 
 import net.minecraft.item.ItemStack;
@@ -27,10 +26,5 @@ public class CloudShapingRecipe extends StonecuttingRecipe {
     @Override
     public RecipeSerializer<StonecuttingRecipe> getSerializer() {
         return Untyped.cast(URecipes.CLOUD_SHAPING_SERIALIZER);
-    }
-
-    @Override
-    public ItemStack createIcon() {
-        return new ItemStack(UBlocks.SHAPING_BENCH);
     }
 }

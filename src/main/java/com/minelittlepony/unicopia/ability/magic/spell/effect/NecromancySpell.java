@@ -25,6 +25,7 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.*;
+import net.minecraft.entity.conversion.EntityConversionContext;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
@@ -181,7 +182,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
     }
 
     protected void spawnMonster(Caster<?> source, Vec3d pos, EntityType<? extends LivingEntity> type) {
-        LivingEntity minion = type.create(source.asWorld());
+        LivingEntity minion = type.create(source.asWorld(), SpawnReason.EVENT);
 
         if (!source.subtractEnergyCost(3)) {
             setDead();
@@ -268,11 +269,10 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
     @Override
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
         NECROMANTIC_CONVERSIONS.entrySet().stream().filter(entry -> entry.getKey().test(hit.getEntity())).findFirst().ifPresent(entry -> {
-            MobEntity newEntity = ((MobEntity)hit.getEntity()).convertTo(entry.getValue(), true);
-
-            if (newEntity != null) {
+            MobEntity target = ((MobEntity)hit.getEntity());
+            target.convertTo(entry.getValue(), EntityConversionContext.create(target, true, true), newEntity -> {
                 newEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
-            }
+            });
         });
     }
 }

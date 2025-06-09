@@ -3,6 +3,9 @@ package com.minelittlepony.unicopia.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import java.util.List;
+
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.component.Appearance;
 
@@ -14,7 +17,6 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapelessRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.registry.Registries;
 
 public class ZapAppleRecipe extends ShapelessRecipe {
@@ -24,23 +26,29 @@ public class ZapAppleRecipe extends ShapelessRecipe {
             Registries.ITEM.getCodec().xmap(
                 item -> Appearance.set(UItems.ZAP_APPLE.getDefaultStack(), item.getDefaultStack()),
                 stack -> Appearance.upwrapAppearance(stack).getItem()
-            ).fieldOf("appearance").forGetter(recipe -> recipe.getResult(null)),
-            URecipes.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(ZapAppleRecipe::getIngredients)
+            ).fieldOf("appearance").forGetter(recipe -> recipe.result),
+            URecipes.SHAPELESS_RECIPE_INGREDIENTS_CODEC.fieldOf("ingredients").forGetter(r -> r.ingredients)
         ).apply(instance, ZapAppleRecipe::new));
     public static final PacketCodec<RegistryByteBuf, ZapAppleRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, ZapAppleRecipe::getGroup,
             CraftingRecipeCategory.PACKET_CODEC, ZapAppleRecipe::getCategory,
-            ItemStack.PACKET_CODEC, recipe -> recipe.getResult(null),
-            Ingredient.PACKET_CODEC.collect(PacketCodecs.toCollection(DefaultedList::ofSize)), ZapAppleRecipe::getIngredients,
+            ItemStack.PACKET_CODEC, recipe -> recipe.result,
+            Ingredient.PACKET_CODEC.collect(PacketCodecs.toList()), r -> r.ingredients,
             ZapAppleRecipe::new
     );
 
-    public ZapAppleRecipe(String group, CraftingRecipeCategory category, ItemStack output, DefaultedList<Ingredient> input) {
+    final ItemStack result;
+    final List<Ingredient> ingredients;
+
+    public ZapAppleRecipe(String group, CraftingRecipeCategory category, ItemStack output, List<Ingredient> input) {
         super(group, category, output, input);
+        this.result = output;
+        this.ingredients = input;
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public RecipeSerializer<?> getSerializer() {
-        return URecipes.ZAP_APPLE_SERIALIZER;
+    public RecipeSerializer<ShapelessRecipe> getSerializer() {
+        return (RecipeSerializer)URecipes.ZAP_APPLE_SERIALIZER;
     }
 }

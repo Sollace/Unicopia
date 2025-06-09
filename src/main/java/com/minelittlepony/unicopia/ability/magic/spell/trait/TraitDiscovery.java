@@ -91,7 +91,7 @@ public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery>
     public Stream<Item> getKnownItems(Trait trait) {
         return items.entrySet().stream()
                 .filter(entry -> entry.getValue().get(trait) > 0)
-                .flatMap(entry -> Registries.ITEM.getOrEmpty(entry.getKey()).stream());
+                .flatMap(entry -> Registries.ITEM.getOptionalValue(entry.getKey()).stream());
     }
 
     public boolean isUnread() {
@@ -151,7 +151,7 @@ public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery>
 
     private Optional<SpellTraits> loadTraits(Identifier itemId, NbtCompound nbt) {
         if (!pony.isClient()) {
-            return Registries.ITEM.getOrEmpty(itemId)
+            return Registries.ITEM.getOptionalValue(itemId)
                     .flatMap(item -> Optional.of(SpellTraits.of(item)))
                     .filter(SpellTraits::isPresent)
                     .or(() -> SpellTraits.fromNbt(nbt));

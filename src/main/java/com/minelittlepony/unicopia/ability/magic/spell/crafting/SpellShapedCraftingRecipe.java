@@ -43,6 +43,11 @@ public class SpellShapedCraftingRecipe extends ShapedRecipe {
     }
 
     @Override
+    public RecipeSerializer<SpellShapedCraftingRecipe> getSerializer() {
+        return URecipes.CRAFTING_MAGICAL_SERIALIZER;
+    }
+
+    @Override
     public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
         return inventory.getStacks().stream()
             .filter(stack -> stack.getItem() instanceof EnchantableItem)
@@ -51,10 +56,5 @@ public class SpellShapedCraftingRecipe extends ShapedRecipe {
             .findFirst()
             .map(spell -> spell.traits().applyTo(EnchantableItem.enchant(super.craft(inventory, registries), spell.type())))
             .orElseGet(() -> super.craft(inventory, registries));
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return URecipes.CRAFTING_MAGICAL_SERIALIZER;
     }
 }

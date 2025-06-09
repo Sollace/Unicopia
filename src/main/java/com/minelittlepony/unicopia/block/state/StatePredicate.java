@@ -8,15 +8,17 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.google.common.base.Predicates;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalBlockTags;
 import net.minecraft.block.*;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -24,28 +26,32 @@ import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.world.World;
 
-public abstract class StatePredicate implements Predicate<BlockState> {
+public interface StatePredicate extends Predicate<BlockState> {
+    Codec<StatePredicate> CODEC = Codecs.JSON_ELEMENT.flatXmap(
+            json -> DataResult.success(of(json)),
+            predicate -> DataResult.error(() -> "Cannot serialize a predicate")
+    );
 
-    public abstract StateChange getInverse();
+    StatePredicate FALSE = state -> false;
 
-    @Override
-    public abstract boolean test(BlockState state);
+    default Optional<StateChange> getInverse() {
+        return Optional.empty();
+    }
 
-    public static Optional<StateChange> getInverse(Predicate<BlockState> predicate) {
+    static Optional<StateChange> getInverse(Predicate<BlockState> predicate) {
         if (predicate instanceof StatePredicate p) {
-            return Optional.of(p.getInverse());
+            return p.getInverse();
         }
         return Optional.empty();
     }
 
-    public static Predicate<BlockState> of(JsonElement json) {
-
+    static StatePredicate of(JsonElement json) {
         List<Predicate<BlockState>> predicates = new ArrayList<>();
 
         if (json.isJsonArray()) {
             json.getAsJsonArray().forEach(element -> predicates.add(of(element)));
             if (predicates.isEmpty()) {
-                return Predicates.alwaysFalse();
+                return FALSE;
             }
             return state -> predicates.stream().anyMatch(pred -> pred.test(state));
         }
@@ -58,23 +64,28 @@ public abstract class StatePredicate implements Predicate<BlockState> {
             Optional.of(JsonHelper.getString(o, "tag")).map(s -> TagKey.of(RegistryKeys.BLOCK, Identifier.of(s))).ifPresent(tag -> {
                 predicates.add(new StatePredicate() {
                     @Override
-                    public StateChange getInverse() {
-                        final Optional<Predicate<BlockState>> self = Optional.of(this);
-                        return new StateChange() {
+                    public Optional<StateChange> getInverse() {
+                        final Optional<StatePredicate> self = Optional.of(this);
+                        return Optional.of(new StateChange() {
                             @Override
-                            public Optional<Predicate<BlockState>> getInverse() {
+                            public Optional<StatePredicate> getInverse() {
                                 return self;
                             }
 
                             @Override
                             public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
-                                return Registries.BLOCK.getOrCreateEntryList(tag)
-                                        .getRandom(world.random)
+                                return Registries.BLOCK.getOptional(tag)
+                                        .flatMap(i -> i.getRandom(world.random))
                                         .map(RegistryEntry::value)
                                         .map(Block::getDefaultState)
                                         .orElse(state);
                             }
-                        };
+
+                            @Override
+                            public Serializer<?> getSerializer() {
+                                return null;
+                            }
+                        });
                     }
 
                     @Override
@@ -89,17 +100,17 @@ public abstract class StatePredicate implements Predicate<BlockState> {
         }
 
         if (predicates.isEmpty()) {
-            return Predicates.alwaysFalse();
+            return FALSE;
         }
 
         if (predicates.size() == 1) {
-            return predicates.get(0);
+            return state -> predicates.get(0).test(state);
         }
 
         return allOf(predicates);
     }
 
-    private static Predicate<BlockState> allOf(List<Predicate<BlockState>> predicates) {
+    private static StatePredicate allOf(List<Predicate<BlockState>> predicates) {
         return state -> {
             return predicates.isEmpty() || predicates.stream().allMatch(p -> p.test(state));
         };
@@ -115,7 +126,7 @@ public abstract class StatePredicate implements Predicate<BlockState> {
         }
     }
 
-    public static boolean isPlant(BlockState s) {
+    static boolean isPlant(BlockState s) {
         return s.getBlock() instanceof PlantBlock;
     }
 
@@ -132,11 +143,11 @@ public abstract class StatePredicate implements Predicate<BlockState> {
     }
 
     @SuppressWarnings("deprecation")
-    public static boolean isFluid(BlockState s) {
+    static boolean isFluid(BlockState s) {
         return s.isLiquid();
     }
 
-    public static Predicate<BlockState> ofState(String state) {
+    static Predicate<BlockState> ofState(String state) {
         Identifier id = Identifier.of(state.split("\\{")[0]);
         List<PropertyOp> properties = Optional.of(state)
                 .filter(s -> s.contains("{"))
@@ -150,58 +161,68 @@ public abstract class StatePredicate implements Predicate<BlockState> {
         if (properties.isEmpty()) {
             return new StatePredicate() {
                 @Override
-                public StateChange getInverse() {
-                    final Optional<Predicate<BlockState>> self = Optional.of(this);
-                    return new StateChange() {
+                public Optional<StateChange> getInverse() {
+                    final Optional<StatePredicate> self = Optional.of(this);
+                    return Optional.of(new StateChange() {
                         @Override
-                        public Optional<Predicate<BlockState>> getInverse() {
+                        public Optional<StatePredicate> getInverse() {
                             return self;
                         }
 
                         @Override
                         public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
-                            return Registries.BLOCK.getOrEmpty(id).map(Block::getDefaultState).orElse(state);
+                            return Registries.BLOCK.getOptionalValue(id).map(Block::getDefaultState).orElse(state);
                         }
-                    };
+
+                        @Override
+                        public Serializer<?> getSerializer() {
+                            return null;
+                        }
+                    });
                 }
 
                 @Override
                 public boolean test(BlockState state) {
-                    return Registries.BLOCK.getOrEmpty(id).filter(state::isOf).isPresent();
+                    return Registries.BLOCK.getOptionalValue(id).filter(state::isOf).isPresent();
                 }
             };
         }
 
         return new StatePredicate() {
             @Override
-            public StateChange getInverse() {
-                final Optional<Predicate<BlockState>> self = Optional.of(this);
-                return new StateChange() {
+            public Optional<StateChange> getInverse() {
+                final Optional<StatePredicate> self = Optional.of(this);
+                return Optional.of(new StateChange() {
                     @Override
-                    public Optional<Predicate<BlockState>> getInverse() {
+                    public Optional<StatePredicate> getInverse() {
                         return self;
                     }
 
                     @Override
                     public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
-                        return Registries.BLOCK.getOrEmpty(id).map(Block::getDefaultState).map(newState -> {
+                        return Registries.BLOCK.getOptionalValue(id).map(Block::getDefaultState).map(newState -> {
                             for (PropertyOp prop : properties) {
                                 newState = prop.applyTo(world, newState);
                             }
                             return newState;
                         }).orElse(state);
                     }
-                };
+
+                    @Override
+                    public Serializer<?> getSerializer() {
+                        return null;
+                    }
+                });
             }
 
             @Override
             public boolean test(BlockState state) {
-                return Registries.BLOCK.getOrEmpty(id).filter(state::isOf).isPresent() && properties.stream().allMatch(p -> p.test(state));
+                return Registries.BLOCK.getOptionalValue(id).filter(state::isOf).isPresent() && properties.stream().allMatch(p -> p.test(state));
             }
         };
     }
 
-    private record PropertyOp (String name, String value, Comparison op) implements Predicate<BlockState> {
+    record PropertyOp (String name, String value, Comparison op) implements Predicate<BlockState> {
         public static Optional<PropertyOp> of(String pattern) {
             String[] splitten = pattern.split("[=<>]", 2);
             if (pattern.indexOf('=') == splitten[0].length()) {
@@ -272,7 +293,7 @@ public abstract class StatePredicate implements Predicate<BlockState> {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Comparable<T>> Optional<Property<T>> getProperty(BlockState state, String name) {
+    static <T extends Comparable<T>> Optional<Property<T>> getProperty(BlockState state, String name) {
         return (Optional<Property<T>>)(Object)state.getProperties().stream()
                 .filter(property -> property.getName().contentEquals(name))
                 .findFirst();

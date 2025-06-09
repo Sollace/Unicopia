@@ -24,6 +24,11 @@ public record SpellDuplicatingRecipe (IngredientWithSpell material) implements S
     public static final PacketCodec<RegistryByteBuf, SpellDuplicatingRecipe> PACKET_CODEC = IngredientWithSpell.PACKET_CODEC.xmap(SpellDuplicatingRecipe::new, SpellDuplicatingRecipe::material);
 
     @Override
+    public RecipeSerializer<SpellDuplicatingRecipe> getSerializer() {
+        return URecipes.SPELL_DUPLICATING;
+    }
+
+    @Override
     public void buildCraftingTree(CraftingTreeBuilder builder) {
         ItemStack[] spells = SpellType.REGISTRY.stream()
                 .filter(SpellType::isObtainable)
@@ -43,7 +48,7 @@ public record SpellDuplicatingRecipe (IngredientWithSpell material) implements S
     public boolean matches(Input inventory, World world) {
         ItemStack stack = inventory.stackToModify();
         return InventoryUtil.stream(inventory)
-                .limit(inventory.getSize() - 1)
+                .limit(inventory.size() - 1)
                 .filter(i -> !i.isEmpty())
                 .noneMatch(i -> !i.isOf(UItems.GEMSTONE) || !EnchantableItem.isEnchanted(i))
                 && material.test(stack)
@@ -61,22 +66,5 @@ public record SpellDuplicatingRecipe (IngredientWithSpell material) implements S
                 return stack;
             })
             .findFirst().get();
-    }
-
-    @Override
-    public boolean fits(int width, int height) {
-        return (width * height) > 0;
-    }
-
-    @Override
-    public ItemStack getResult(WrapperLookup registries) {
-        ItemStack stack = UItems.GEMSTONE.getDefaultStack();
-        stack.setCount(2);
-        return stack;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return URecipes.SPELL_DUPLICATING;
     }
 }

@@ -288,7 +288,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
     }
 
     @Override
-    public boolean canBreakBlocks(World world) {
+    public boolean canBreakBlocks(ServerWorld world) {
         return !isBouncy() && super.canBreakBlocks(world);
     }
 

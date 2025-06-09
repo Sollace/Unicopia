@@ -43,8 +43,8 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell, Projectile
             UEntityAttributes.ENTITY_GRAVITY_MODIFIER, GRAVITY_MODIFIER,
             UEntityAttributes.EXTENDED_REACH_DISTANCE, GRAVITY_MODIFIER,
             UEntityAttributes.EXTENDED_ATTACK_DISTANCE, GRAVITY_MODIFIER,
-            EntityAttributes.GENERIC_MOVEMENT_SPEED, SPEED_MODIFIER,
-            EntityAttributes.GENERIC_FLYING_SPEED, SPEED_MODIFIER
+            EntityAttributes.MOVEMENT_SPEED, SPEED_MODIFIER,
+            EntityAttributes.FLYING_SPEED, SPEED_MODIFIER
     );
 
     public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()

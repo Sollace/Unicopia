@@ -1,103 +1,129 @@
 package com.minelittlepony.unicopia.block.state;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.Unicopia;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.registry.Registries;
 import net.minecraft.world.World;
 
-public abstract class StateChange {
-    private static final Map<Identifier, Function<JsonObject, StateChange>> SERIALIZERS = new HashMap<>();
+public interface StateChange {
+    Map<Identifier, Serializer<?>> SERIALIZERS = new HashMap<>();
 
-    static {
-        SERIALIZERS.put(Unicopia.id("set_state"), json -> {
-            final String sstate = JsonHelper.getString(json, "state");
-            final Identifier id = Identifier.of(sstate);
-            final float chance = JsonHelper.getFloat(json, "chance", -1);
+    Codec<Serializer<?>> SERIALIZER_CODEC = Identifier.CODEC.flatComapMap(
+        id -> SERIALIZERS.get(id),
+        serializer -> DataResult.success(serializer.id())
+    );
+    Codec<StateChange> CODEC = SERIALIZER_CODEC.dispatch("action", StateChange::getSerializer, Serializer::codec);
 
-            return new StateChange() {
+    Serializer<SetStateChange> SET_STATE = register("set_state", SetStateChange.CODEC);
+    Serializer<SetPropertyChange> SET_PROPERTY = register("set_property", SetPropertyChange.CODEC);
+    Serializer<CyclePropertyChange> CYCLE_PROPERTY = register("cycle_property", CyclePropertyChange.CODEC);
+
+    record Serializer<T extends StateChange>(Identifier id, MapCodec<T> codec) {}
+    record SetStateChange(String state, float chance) implements StateChange {
+        static final MapCodec<SetStateChange> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Codec.STRING.fieldOf("state").forGetter(SetStateChange::state),
+                Codec.FLOAT.optionalFieldOf("chance", -1F).forGetter(SetStateChange::chance)
+        ).apply(i, SetStateChange::new));
+
+        @Override
+        public Optional<StatePredicate> getInverse() {
+            final Optional<StateChange> self = Optional.of(this);
+            final Predicate<BlockState> test = StatePredicate.ofState(state);
+            return Optional.of(new StatePredicate() {
                 @Override
-                public Optional<Predicate<BlockState>> getInverse() {
-                    final StateChange self = this;
-                    final Predicate<BlockState> test = StatePredicate.ofState(sstate);
-                    return Optional.of(new StatePredicate() {
-                        @Override
-                        public StateChange getInverse() {
-                            return self;
-                        }
-
-                        @Override
-                        public boolean test(BlockState state) {
-                            return test.test(state);
-                        }
-                    });
+                public Optional<StateChange> getInverse() {
+                    return self;
                 }
 
                 @Override
-                public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
-                    if (chance > 0 && world.random.nextFloat() > chance) {
-                        return state;
-                    }
-                    return Registries.BLOCK.getOrEmpty(id).map(Block::getDefaultState)
-                            .map(newState -> StateUtil.copyState(state, newState))
-                            .orElse(state);
+                public boolean test(BlockState state) {
+                    return test.test(state);
                 }
-            };
-        });
-        SERIALIZERS.put(Unicopia.id("set_property"), json -> {
-            final String name = JsonHelper.getString(json, "property");
-            final String value = json.get("value").getAsString();
-            final float chance = JsonHelper.getFloat(json, "chance", -1);
+            });
+        }
 
-            return new StateChange() {
-                @Override
-                public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
-                    if (chance > 0 && world.random.nextFloat() > chance) {
-                        return state;
-                    }
-                    return StatePredicate.getProperty(state, name).flatMap(property -> {
-                        return property.parse(value).map(v -> state.with(property, v));
-                    }).orElse(state);
-                }
+        @Override
+        public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
+            if (chance > 0 && world.random.nextFloat() > chance) {
+                return state;
+            }
+            return Registries.BLOCK.getOptionalValue(Identifier.of(this.state)).map(Block::getDefaultState)
+                    .map(newState -> StateUtil.copyState(state, newState))
+                    .orElse(state);
+        }
 
-            };
-        });
-        SERIALIZERS.put(Unicopia.id("cycle_property"), json -> {
-            final String name = JsonHelper.getString(json, "property");
-            final float chance = JsonHelper.getFloat(json, "chance", -1);
-
-            return new StateChange() {
-                @Override
-                public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
-                    if (chance > 0 && world.random.nextFloat() > chance) {
-                        return state;
-                    }
-                    return StatePredicate.getProperty(state, name).map(property -> state.cycle(property)).orElse(state);
-                }
-            };
-        });
+        @Override
+        public Serializer<SetStateChange> getSerializer() {
+            return SET_STATE;
+        }
     }
 
-    public Optional<Predicate<BlockState>> getInverse() {
+    record SetPropertyChange(String property, String value, float chance) implements StateChange {
+        static final MapCodec<SetPropertyChange> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Codec.STRING.fieldOf("property").forGetter(SetPropertyChange::property),
+                Codec.STRING.fieldOf("value").forGetter(SetPropertyChange::value),
+                Codec.FLOAT.optionalFieldOf("chance", -1F).forGetter(SetPropertyChange::chance)
+        ).apply(i, SetPropertyChange::new));
+
+        @Override
+        public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
+            if (chance > 0 && world.random.nextFloat() > chance) {
+                return state;
+            }
+            return StatePredicate.getProperty(state, property).flatMap(property -> {
+                return property.parse(value).map(v -> state.with(property, v));
+            }).orElse(state);
+        }
+
+        @Override
+        public Serializer<SetPropertyChange> getSerializer() {
+            return SET_PROPERTY;
+        }
+    }
+
+    record CyclePropertyChange(String property, float chance) implements StateChange {
+        static final MapCodec<CyclePropertyChange> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Codec.STRING.fieldOf("property").forGetter(CyclePropertyChange::property),
+                Codec.FLOAT.optionalFieldOf("chance", -1F).forGetter(CyclePropertyChange::chance)
+        ).apply(i, CyclePropertyChange::new));
+
+        @Override
+        public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
+            if (chance > 0 && world.random.nextFloat() > chance) {
+                return state;
+            }
+            return StatePredicate.getProperty(state, property).map(property -> state.cycle(property)).orElse(state);
+        }
+
+        @Override
+        public Serializer<CyclePropertyChange> getSerializer() {
+            return CYCLE_PROPERTY;
+        }
+    }
+
+    static <T extends StateChange> Serializer<T> register(String name, MapCodec<T> codec) {
+        var serializer = new Serializer<>(Unicopia.id(name), codec);
+        SERIALIZERS.put(serializer.id(), serializer);
+        return serializer;
+    }
+
+    default Optional<StatePredicate> getInverse() {
         return Optional.empty();
     }
 
-    public abstract @NotNull BlockState getConverted(World world, @NotNull BlockState state);
+    @NotNull BlockState getConverted(World world, @NotNull BlockState state);
 
-    public static StateChange fromJson(JsonObject json) {
-        String action = JsonHelper.getString(json, "action");
-        return Optional.of(SERIALIZERS.get(Identifier.of(action))).map(serializer -> {
-            return serializer.apply(json);
-        }).orElseThrow(() -> new IllegalArgumentException("Invalid action " + action));
-    }
+    Serializer<?> getSerializer();
 }

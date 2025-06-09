@@ -21,10 +21,10 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -55,7 +55,7 @@ public class CompactedCloudBlock extends CloudBlock {
     private final BlockState baseState;
 
     public CompactedCloudBlock(BlockState baseState) {
-        super(true, Settings.copy(baseState.getBlock()).dropsLike(baseState.getBlock()));
+        super(true, Settings.copy(baseState.getBlock()).lootTable(baseState.getBlock().getLootTableKey()));
         this.baseState = baseState;
         PROPERTIES.forEach(property -> {
             setDefaultState(getDefaultState().with(property, true));
@@ -83,7 +83,7 @@ public class CompactedCloudBlock extends CloudBlock {
     }
 
     @Override
-    public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    public ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
         if (stack.isIn(ItemTags.SHOVELS)) {
             BooleanProperty property = FACING_PROPERTIES.get(hit.getSide());
@@ -91,11 +91,11 @@ public class CompactedCloudBlock extends CloudBlock {
                 world.setBlockState(pos, state.with(property, false));
                 stack.damage(1, player, LivingEntity.getSlotForHand(hand));
                 world.playSound(null, pos, SoundEvents.ITEM_SHOVEL_FLATTEN, SoundCategory.BLOCKS);
-                return ItemActionResult.SUCCESS;
+                return ActionResult.SUCCESS;
             }
         }
 
-        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
     }
 
     @Override

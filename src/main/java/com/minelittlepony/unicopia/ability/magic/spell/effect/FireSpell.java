@@ -133,7 +133,9 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
                     && !(e instanceof Caster<?>);
         }).filter(e -> {
             e.setOnFireFor(60);
-            e.damage(getDamageCause(source, e), 0.1f);
+            if (!source.isClient()) {
+                e.damage(source.asServerWorld(), getDamageCause(source, e), 0.1f);
+            }
             playEffect(source.asWorld(), e.getBlockPos());
             return true;
         })

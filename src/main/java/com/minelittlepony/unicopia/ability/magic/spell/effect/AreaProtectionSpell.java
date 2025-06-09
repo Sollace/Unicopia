@@ -60,11 +60,13 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
             });
         } else {
             Ether.get(source.asWorld()).getOrCreate(this, source).setRadius(radius);
+
+            source.findAllSpellsInRange(radius, e -> isValidTarget(source, e)).filter(caster -> !caster.hasCommonOwner(source)).forEach(caster -> {
+                caster.asEntity().kill(source.asServerWorld());
+            });
         }
 
-        source.findAllSpellsInRange(radius, e -> isValidTarget(source, e)).filter(caster -> !caster.hasCommonOwner(source)).forEach(caster -> {
-            caster.asEntity().kill();
-        });
+
 
         return !isDead();
     }

@@ -4,12 +4,12 @@ import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
+import com.minelittlepony.unicopia.util.TypedActionResult;
 
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.TypedActionResult;
 
 abstract class AbstractSpellCastingAbility implements Ability<Hit> {
     @Override
@@ -24,9 +24,9 @@ abstract class AbstractSpellCastingAbility implements Ability<Hit> {
         var active = !player.getAbilities().getStat(AbilitySlot.PRIMARY).getActiveAbility().isEmpty();
         if (!spell.isEmpty()) {
             if (active) {
-                if (gemSpell.getResult().isAccepted()) {
+                if (gemSpell.result().isAccepted()) {
                     return Text.translatable(getTranslationKey() + ".with_spell.hand",
-                        gemSpell.getValue().type().getName().copy().formatted(gemSpell.getValue().type().getAffinity().getColor())
+                        gemSpell.value().type().getName().copy().formatted(gemSpell.value().type().getAffinity().getColor())
                     );
                 }
 
@@ -35,9 +35,9 @@ abstract class AbstractSpellCastingAbility implements Ability<Hit> {
                 );
             }
 
-            return Text.translatable(getTranslationKey() + ".with_spell" + (gemSpell.getResult().isAccepted() ? ".replacing" : ""),
+            return Text.translatable(getTranslationKey() + ".with_spell" + (gemSpell.result().isAccepted() ? ".replacing" : ""),
                 spell.type().getName().copy().formatted(spell.type().getAffinity().getColor()),
-                gemSpell.getValue().type().getName().copy().formatted(gemSpell.getValue().type().getAffinity().getColor())
+                gemSpell.value().type().getName().copy().formatted(gemSpell.value().type().getAffinity().getColor())
             );
         }
         return Ability.super.getName(player);
@@ -47,8 +47,8 @@ abstract class AbstractSpellCastingAbility implements Ability<Hit> {
     public int getColor(Pony player) {
         TypedActionResult<CustomisedSpellType<?>> newSpell = player.getCharms().getSpellInHand(false);
 
-        if (newSpell.getResult() != ActionResult.FAIL) {
-            return newSpell.getValue().type().getColor();
+        if (newSpell.result() != ActionResult.FAIL) {
+            return newSpell.value().type().getColor();
         }
         return -1;
     }

@@ -20,6 +20,7 @@ import com.minelittlepony.unicopia.util.shape.Sphere;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -58,11 +59,11 @@ public class RainboomAbilitySpell extends AbstractSpell {
             if (age == 0) {
                 source.addParticle(new OrientedBillboardParticleEffect(UParticles.RAINBOOM_RING, source.getPhysics().getMotionAngle()), source.getOriginVector(), Vec3d.ZERO);
             }
+        } else {
+            source.findAllEntitiesInRange(RADIUS, e -> !source.isOwnerOrFriend(e)).forEach(e -> {
+                e.damage((ServerWorld)source.asWorld(), source.damageOf(UDamageTypes.RAINBOOM, source), 6);
+            });
         }
-
-        source.findAllEntitiesInRange(RADIUS, e -> !source.isOwnerOrFriend(e)).forEach(e -> {
-            e.damage(source.damageOf(UDamageTypes.RAINBOOM, source), 6);
-        });
         EFFECT_RANGE.translate(source.getOrigin()).getBlockPositions().forEach(pos -> {
             BlockState state = source.asWorld().getBlockState(pos);
             if (state.isIn(UTags.Blocks.FRAGILE) && source.canModifyAt(pos, ModificationType.PHYSICAL)) {

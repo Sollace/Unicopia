@@ -28,7 +28,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -118,13 +117,13 @@ public class EdibleBlock extends HayBlock {
                 Block match = edibleBlock.getBaseBlock();
                 if (match != Blocks.AIR && state.isOf(match)) {
                     BlockState copiedState = StateUtil.copyState(state, edibleBlock.getDefaultState());
-                    ItemActionResult result = copiedState.onUseWithItem(player.getStackInHand(hand), world, player, hand, hitResult);
+                    ActionResult result = copiedState.onUseWithItem(player.getStackInHand(hand), world, player, hand, hitResult);
 
                     if (result.isAccepted()) {
-                        return result.toActionResult();
+                        return result;
                     }
 
-                    if (result == ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION && hand == Hand.MAIN_HAND) {
+                    if (result == ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION && hand == Hand.MAIN_HAND) {
                         ActionResult actionResult = copiedState.onUse(world, player, hitResult);
                         if (actionResult.isAccepted()) {
                             return actionResult;
@@ -141,7 +140,7 @@ public class EdibleBlock extends HayBlock {
     private final Identifier material;
 
     public EdibleBlock(Identifier baseBlock, Identifier material, boolean register) {
-        super(Settings.copy(Blocks.HAY_BLOCK));
+        super(Settings.copy(Blocks.HAY_BLOCK).overrideTranslationKey(Util.createTranslationKey("block", baseBlock)));
         for (BooleanProperty segment : SEGMENTS) {
             setDefaultState(getDefaultState().with(segment, true));
         }
@@ -158,11 +157,6 @@ public class EdibleBlock extends HayBlock {
     }
 
     @Override
-    public String getTranslationKey() {
-        return getBaseBlock().getTranslationKey();
-    }
-
-    @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         super.appendProperties(builder);
         builder.add(SEGMENTS);
@@ -175,9 +169,9 @@ public class EdibleBlock extends HayBlock {
 
     @Override
     @Deprecated
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (player.isSpectator()) {
-            return ItemActionResult.FAIL;
+            return ActionResult.FAIL;
         }
 
         if (!stack.isEmpty() && stack.isOf(Registries.ITEM.get(material))) {
@@ -196,23 +190,23 @@ public class EdibleBlock extends HayBlock {
                 }
                 world.playSound(player, pos, getSoundGroup(state).getPlaceSound(), SoundCategory.BLOCKS);
 
-                return ItemActionResult.SUCCESS;
+                return ActionResult.SUCCESS;
             }
 
-            return ItemActionResult.FAIL;
+            return ActionResult.FAIL;
         }
 
         BooleanProperty corner = getHitCorner(hit, -1);
 
         if (!state.get(corner)) {
-            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
         }
 
         boolean usingHoe = stack.isIn(ItemTags.HOES);
 
         if (!usingHoe) {
             if (!(player.isCreative() || player.getHungerManager().isNotFull()) || !player.isSneaking()) {
-                return ItemActionResult.FAIL;
+                return ActionResult.FAIL;
             }
         }
 
@@ -230,13 +224,13 @@ public class EdibleBlock extends HayBlock {
             dropStack(world, pos, Registries.ITEM.get(material).getDefaultStack());
             player.playSound(USounds.Vanilla.ITEM_HOE_TILL, 1, 1);
         } else {
-            player.playSound(USounds.Vanilla.ENTITY_GENERIC_EAT, 1, 1);
+            player.playSound(USounds.Vanilla.ENTITY_GENERIC_EAT.value(), 1, 1);
             if (world.random.nextInt(10) == 0) {
                 player.playSound(USounds.Vanilla.ENTITY_PLAYER_BURP, 1, player.getSoundPitch());
             }
             player.getHungerManager().add(2, 1.3F);
         }
-        return ItemActionResult.SUCCESS;
+        return ActionResult.SUCCESS;
     }
 
     static BooleanProperty getHitCorner(BlockHitResult hit, int direction) {

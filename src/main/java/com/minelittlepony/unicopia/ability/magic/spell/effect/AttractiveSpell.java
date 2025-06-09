@@ -91,8 +91,8 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
             force *= AttractionUtils.getForceAdjustment(target);
         }
 
-        if (!isGood && source.asWorld().random.nextInt(4500) == 0) {
-            source.asEntity().damage(source.damageOf(UDamageTypes.GAVITY_WELL_RECOIL, source), 4);
+        if (!source.isClient() && !isGood && source.asWorld().random.nextInt(4500) == 0) {
+            source.asEntity().damage(source.asServerWorld(), source.damageOf(UDamageTypes.GAVITY_WELL_RECOIL, source), 4);
         }
 
         AttractionUtils.applyForce(getOrigin(source), target, -force, 0, false);

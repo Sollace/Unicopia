@@ -3,8 +3,6 @@ package com.minelittlepony.unicopia.block;
 import java.util.Arrays;
 import java.util.Locale;
 
-import org.joml.Vector3f;
-
 import com.minelittlepony.unicopia.USounds;
 import com.mojang.serialization.MapCodec;
 
@@ -14,6 +12,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.SideShapeType;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -29,6 +28,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.math.MathHelper;
@@ -37,8 +37,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class SlimePustuleBlock extends Block {
     public static final MapCodec<SlimePustuleBlock> CODEC = createCodec(SlimePustuleBlock::new);
@@ -60,7 +60,7 @@ public class SlimePustuleBlock extends Block {
             Block.createCuboidShape(7, 13, 7, 9, 20, 9)
     );
     private static final VoxelShape CAP_SHAPE = VoxelShapes.union(SHAFT_SHAPE, DRIP_SHAPE);
-    private static final Vector3f DUST_COLOR = new Vector3f(1, 0.2F, 0.1F);
+    private static final int DUST_COLOR = ColorHelper.fromFloats(1, 1F, 0.2F, 0.1F);
 
     public SlimePustuleBlock(Settings settings) {
         super(settings.ticksRandomly());
@@ -87,8 +87,7 @@ public class SlimePustuleBlock extends Block {
         super.randomDisplayTick(state, world, pos, random);
 
         if (state.get(POWERED)) {
-
-            VoxelShape shape = state.getCullingShape(world, pos);
+            VoxelShape shape = state.getCullingShape();
             float x = (float)MathHelper.lerp(random.nextFloat(), shape.getMin(Axis.X), shape.getMax(Axis.X));
             float z = (float)MathHelper.lerp(random.nextFloat(), shape.getMin(Axis.Z), shape.getMax(Axis.Z));
             world.addParticle(new DustParticleEffect(DUST_COLOR, 1),
@@ -98,7 +97,7 @@ public class SlimePustuleBlock extends Block {
         }
 
         if (random.nextInt(15) == 0) {
-            VoxelShape shape = state.getCullingShape(world, pos);
+            VoxelShape shape = state.getCullingShape();
             float x = (float)MathHelper.lerp(random.nextFloat(), shape.getMin(Axis.X), shape.getMax(Axis.X));
             float z = (float)MathHelper.lerp(random.nextFloat(), shape.getMin(Axis.Z), shape.getMax(Axis.Z));
             world.addParticle(ParticleTypes.DRIPPING_HONEY,
@@ -111,7 +110,7 @@ public class SlimePustuleBlock extends Block {
     @Override
     protected void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (state.get(SHAPE) == Shape.POD && random.nextInt(130) == 0) {
-            SlimeEntity slime = EntityType.SLIME.create(world);
+            SlimeEntity slime = EntityType.SLIME.create(world, SpawnReason.NATURAL);
             slime.setSize(1, true);
             slime.setPosition(pos.toCenterPos());
             world.spawnEntity(slime);
@@ -121,10 +120,12 @@ public class SlimePustuleBlock extends Block {
     @Override
     public BlockState onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (state.get(SHAPE) == Shape.POD) {
-            world.getOtherEntities(player.canHarvest(state) ? player : null, new Box(pos).expand(1)).forEach(entity -> {
-                entity.damage(entity.getDamageSources().inFire(), 2);
-                entity.setFireTicks(3);
-            });
+            if (world instanceof ServerWorld sw) {
+                world.getOtherEntities(player.canHarvest(state) ? player : null, new Box(pos).expand(1)).forEach(entity -> {
+                    entity.damage(sw, entity.getDamageSources().inFire(), 2);
+                    entity.setFireTicks(3);
+                });
+            }
 
             world.playSound(null, pos, USounds.BLOCK_SLIME_PUSTULE_POP, SoundCategory.BLOCKS, 5, 1);
             for (int i = 0; i < 8; i++) {
@@ -173,7 +174,7 @@ public class SlimePustuleBlock extends Block {
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, WorldView world, ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, Random random) {
         if (!canPlaceAt(state, world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
@@ -240,7 +241,7 @@ public class SlimePustuleBlock extends Block {
         return Math.min(15, power);
     }
 
-    private Shape determineShape(WorldAccess world, BlockPos pos) {
+    private Shape determineShape(WorldView world, BlockPos pos) {
         BlockState above = world.getBlockState(pos.up());
         BlockState below = world.getBlockState(pos.down());
 

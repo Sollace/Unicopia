@@ -58,7 +58,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         REGISTRY = newRegistry;
         ITEMS.clear();
         REGISTRY.forEach((itemId, traits) -> {
-            Registries.ITEM.getOrEmpty(itemId).ifPresent(item -> {
+            Registries.ITEM.getOptionalValue(itemId).ifPresent(item -> {
                 traits.forEach(entry -> {
                     List<Item> items = ITEMS.computeIfAbsent(entry.getKey(), k -> new ArrayList<>());
                     if (!items.contains(item)) {

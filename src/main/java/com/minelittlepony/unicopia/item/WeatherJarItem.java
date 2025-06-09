@@ -15,6 +15,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -28,11 +29,11 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
-public class WeatherJarItem extends AliasedBlockItem implements Projectile, ProjectileDelegate.HitListener {
+public class WeatherJarItem extends BlockItem implements Projectile, ProjectileDelegate.HitListener {
     private final Type type;
 
     public WeatherJarItem(Block block, Item.Settings settings, Type type) {
-        super(block, settings);
+        super(block, settings.translationKey(block.getTranslationKey()));
         this.type = type;
         Projectile.makeDispensable(this);
     }
@@ -85,7 +86,7 @@ public class WeatherJarItem extends AliasedBlockItem implements Projectile, Proj
                 if (type == Type.THUNDER) {
                     for (int i = world.random.nextInt(7); i > 0; i--) {
                         AwaitTickQueue.scheduleTask(world, w -> {
-                            LightningEntity bolt = EntityType.LIGHTNING_BOLT.create(world);
+                            LightningEntity bolt = EntityType.LIGHTNING_BOLT.create(world, SpawnReason.EVENT);
                             bolt.setCosmetic(true);
                             bolt.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, world.getRandomPosInChunk(
                                     ChunkSectionPos.getBlockCoord(ChunkSectionPos.getSectionCoord(pos.getX())),

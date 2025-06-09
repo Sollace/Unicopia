@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.block.state;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -13,6 +11,7 @@ import com.google.gson.*;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.Resources;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.JsonOps;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.block.BlockState;
@@ -22,7 +21,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.World;
 
-public class StateMapLoader extends JsonDataLoader implements IdentifiableResourceReloadListener {
+public class StateMapLoader extends JsonDataLoader<JsonReversableBlockStateConverter> implements IdentifiableResourceReloadListener {
     private static final Identifier ID = Unicopia.id("data/state_maps");
 
     public static final StateMapLoader INSTANCE = new StateMapLoader();
@@ -32,10 +31,10 @@ public class StateMapLoader extends JsonDataLoader implements IdentifiableResour
     private static final int FILE_SUFFIX_LENGTH = ".json".length();
     private static final String DATA_TYPE = "state_maps";
 
-    private Map<Identifier, ReversableBlockStateConverter> converters = new HashMap<>();
+    private Map<Identifier, JsonReversableBlockStateConverter> converters = new HashMap<>();
 
     public StateMapLoader() {
-        super(Resources.GSON, "state_maps");
+        super(JsonReversableBlockStateConverter.CODEC, "state_maps");
     }
 
     @Override
@@ -44,8 +43,8 @@ public class StateMapLoader extends JsonDataLoader implements IdentifiableResour
     }
 
     @Override
-    protected Map<Identifier, JsonElement> prepare(ResourceManager resourceManager, Profiler profiler) {
-        Map<Identifier, JsonElement> map = Maps.newHashMap();
+    protected Map<Identifier, JsonReversableBlockStateConverter> prepare(ResourceManager resourceManager, Profiler profiler) {
+        Map<Identifier, JsonReversableBlockStateConverter> map = Maps.newHashMap();
         int i = DATA_TYPE.length() + 1;
 
         resourceManager.findAllResources(DATA_TYPE, id -> id.getPath().endsWith(FILE_SUFFIX)).entrySet().stream().forEach(entry -> {
@@ -77,17 +76,16 @@ public class StateMapLoader extends JsonDataLoader implements IdentifiableResour
                 }
             }
 
-            map.put(id, entries);
+            JsonReversableBlockStateConverter.CODEC.decode(JsonOps.INSTANCE, entries).result().ifPresent(pair -> {
+                map.put(id, pair.getFirst());
+            });
         });
         return map;
     }
 
     @Override
-    protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
-        converters = data.entrySet().stream().collect(Collectors.toMap(
-                Map.Entry::getKey,
-                entry -> new JsonReversableBlockStateConverter(entry.getValue())
-        ));
+    protected void apply(Map<Identifier, JsonReversableBlockStateConverter> data, ResourceManager manager, Profiler profiler) {
+        converters = data;
     }
 
     static class Indirect<T extends BlockStateConverter> implements ReversableBlockStateConverter {

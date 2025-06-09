@@ -95,8 +95,8 @@ public class IceSpell extends AbstractSpell {
             e.getEntityWorld().setBlockState(e.getBlockPos(), Blocks.TNT.getDefaultState());
         } else if (e.isOnFire()) {
             e.extinguish();
-        } else {
-            e.damage(source.damageOf(DamageTypes.FREEZE, source), 2);
+        } else if (!source.isClient()) {
+            e.damage(source.asServerWorld(), source.damageOf(DamageTypes.FREEZE, source), 2);
         }
     }
 

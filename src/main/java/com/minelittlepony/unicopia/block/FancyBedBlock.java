@@ -99,14 +99,14 @@ public class FancyBedBlock extends BedBlock {
                 world.setBlockState(otherHalfPos, otherHalfState.getFluidState().getBlockState(), Block.NOTIFY_ALL | Block.SKIP_DROPS);
             }
             spawnBreakParticles(world, player, otherHalfPos, otherHalfState);
-            if (state.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
-                PiglinBrain.onGuardedBlockInteracted(player, false);
+            if (state.isIn(BlockTags.GUARDED_BY_PIGLINS) && !world.isClient) {
+                PiglinBrain.onGuardedBlockInteracted((ServerWorld)world, player, false);
             }
             world.emitGameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Emitter.of(player, state));
         } else {
             spawnBreakParticles(world, player, pos, state);
-            if (state.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
-                PiglinBrain.onGuardedBlockInteracted(player, false);
+            if (state.isIn(BlockTags.GUARDED_BY_PIGLINS) && !world.isClient) {
+                PiglinBrain.onGuardedBlockInteracted((ServerWorld)world, player, false);
             }
             world.emitGameEvent(GameEvent.BLOCK_DESTROY, pos, GameEvent.Emitter.of(player, state));
         }

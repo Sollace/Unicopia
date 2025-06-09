@@ -97,7 +97,7 @@ public class UnstableCloudBlock extends CloudBlock {
                         0, 0, 0
                 );
                 world.getOtherEntities(null, new Box(shockPosition).expand(2)).forEach(e -> {
-                    e.damage(entity.getDamageSources().lightningBolt(), 1);
+                    e.damage(sw, entity.getDamageSources().lightningBolt(), 1);
                 });
                 lightningRodPos.ifPresent(rodPos -> {
                     BlockState rod = sw.getBlockState(rodPos);

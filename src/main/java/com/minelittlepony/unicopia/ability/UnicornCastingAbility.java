@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.component.Charges;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.TraceHelper;
+import com.minelittlepony.unicopia.util.TypedActionResult;
 import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.item.ItemStack;
@@ -22,7 +23,6 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 
@@ -45,7 +45,7 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
         TypedActionResult<CustomisedSpellType<?>> spell = player.getCharms().getSpellInHand(false);
         return Hit.of(player.canCast()
                 && player.getMagicalReserves().getMana().get() >= getCostEstimate(player)
-                && (!spell.getResult().isAccepted() || canCast(spell.getValue().type()))
+                && (!spell.result().isAccepted() || canCast(spell.value().type()))
         );
     }
 
@@ -53,21 +53,21 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
     public double getCostEstimate(Pony player) {
         TypedActionResult<ItemStack> amulet = getAmulet(player);
 
-        if (amulet.getResult().isAccepted()) {
+        if (amulet.result().isAccepted()) {
             float manaLevel = player.getMagicalReserves().getMana().get();
 
-            return Math.min(manaLevel, Charges.of(amulet.getValue()).energy());
+            return Math.min(manaLevel, Charges.of(amulet.value()).energy());
         }
 
         TypedActionResult<CustomisedSpellType<?>> spell = player.getCharms().getSpellInHand(false);
 
-        return !spell.getResult().isAccepted() || spell.getValue().isOn(player) ? 2 : 4;
+        return !spell.result().isAccepted() || spell.value().isOn(player) ? 2 : 4;
     }
 
     @Override
     public int getColor(Pony player) {
         TypedActionResult<ItemStack> amulet = getAmulet(player);
-        if (amulet.getResult().isAccepted()) {
+        if (amulet.result().isAccepted()) {
             return 0x000000;
         }
 
@@ -82,8 +82,8 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
 
         TypedActionResult<ItemStack> amulet = getAmulet(player);
 
-        if (amulet.getResult().isAccepted()) {
-            ItemStack stack = amulet.getValue();
+        if (amulet.result().isAccepted()) {
+            ItemStack stack = amulet.value();
             if (Charges.of(stack).canHoldCharge()) {
                 int amount = -(int)Math.min(player.getMagicalReserves().getMana().get(), Charges.of(stack).energy());
 
@@ -96,9 +96,9 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
         } else {
             TypedActionResult<CustomisedSpellType<?>> newSpell = player.getCharms().getSpellInHand(true);
 
-            if (newSpell.getResult() != ActionResult.FAIL && canCast(newSpell.getValue().type())) {
-                CustomisedSpellType<?> spell = newSpell.getValue();
-                if (newSpell.getResult() == ActionResult.CONSUME) {
+            if (newSpell.result() != ActionResult.FAIL && canCast(newSpell.value().type())) {
+                CustomisedSpellType<?> spell = newSpell.value();
+                if (newSpell.result() == ActionResult.CONSUME) {
                     CustomisedSpellType<?> equippedType = player.getCharms().getEquippedSpell(player.getCharms().getHand());
                     if (equippedType.type() == spell.type()) {
                         player.getCharms().equipSpell(player.getCharms().getHand(), spell);
@@ -156,7 +156,7 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
     public void warmUp(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getExhaustion().multiply(3.3F);
 
-        if (getAmulet(player).getResult() == ActionResult.CONSUME) {
+        if (getAmulet(player).result() == ActionResult.CONSUME) {
             Vec3d eyes = player.asEntity().getCameraPosVec(1);
 
             float i = player.getAbilities().getStat(slot).getFillProgress();

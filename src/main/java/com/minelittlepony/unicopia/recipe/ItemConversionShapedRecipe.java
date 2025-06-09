@@ -47,7 +47,7 @@ public class ItemConversionShapedRecipe extends ShapedRecipe {
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<ItemConversionShapedRecipe> getSerializer() {
         return URecipes.CONVERSION_SERIALIZER;
     }
 
@@ -60,6 +60,6 @@ public class ItemConversionShapedRecipe extends ShapedRecipe {
                 })
                 .findFirst()
                 .map(base -> base.withItem(result.getItem()))
-                .orElseGet(() -> getResult(lookup).copy());
+                .orElseGet(() -> super.craft(input, lookup));
     }
 }

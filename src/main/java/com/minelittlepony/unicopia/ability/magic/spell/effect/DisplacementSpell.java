@@ -110,8 +110,8 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pro
         entity.playSound(USounds.SPELL_DISPLACEMENT_TELEPORT, 1, 1);
 
         float damage = DAMAGE_TO_TARGET.get(getTraits());
-        if (damage > 0) {
-            entity.damage(source.damageOf(UDamageTypes.EXHAUSTION, source), damage);
+        if (damage > 0 && !source.isClient()) {
+            entity.damage(source.asServerWorld(), source.damageOf(UDamageTypes.EXHAUSTION, source), damage);
         }
         return oldVehicle;
     }

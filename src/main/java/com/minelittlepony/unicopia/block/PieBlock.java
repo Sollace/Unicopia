@@ -21,7 +21,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.*;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
@@ -29,6 +29,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.*;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class PieBlock extends Block implements Waterloggable {
     public static final MapCodec<PieBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -78,20 +79,20 @@ public class PieBlock extends Block implements Waterloggable {
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack itemStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUseWithItem(ItemStack itemStack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 
         if (world.isClient) {
 
             if (itemStack.isIn(UTags.Items.CAN_CUT_PIE)) {
-                return ItemActionResult.SUCCESS;
+                return ActionResult.SUCCESS;
             }
 
             if (tryEat(world, pos, state, player).isAccepted()) {
-                return ItemActionResult.SUCCESS;
+                return ActionResult.SUCCESS;
             }
 
             if (itemStack.isEmpty()) {
-                return ItemActionResult.CONSUME;
+                return ActionResult.CONSUME;
             }
         }
 
@@ -101,21 +102,21 @@ public class PieBlock extends Block implements Waterloggable {
             itemStack.damage(1, player, LivingEntity.getSlotForHand(hand));
             SoundEmitter.playSoundAt(player, USounds.BLOCK_PIE_SLICE_POP, SoundCategory.NEUTRAL, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
             Block.dropStack(world, pos, sliceItem.asItem().getDefaultStack());
-            return ItemActionResult.SUCCESS;
+            return ActionResult.SUCCESS;
         }
 
         return tryEat(world, pos, state, player);
     }
 
-    protected ItemActionResult tryEat(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {
+    protected ActionResult tryEat(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (!player.canConsume(false)) {
-            return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
         }
         player.incrementStat(Stats.EAT_CAKE_SLICE);
         player.getHungerManager().add(state.get(STOMPED) ? 1 : 2, 0.1f);
 
         world.emitGameEvent(player, GameEvent.EAT, pos);
-        SoundEmitter.playSoundAt(player, USounds.Vanilla.ENTITY_GENERIC_EAT, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
+        SoundEmitter.playSoundAt(player, USounds.Vanilla.ENTITY_GENERIC_EAT.value(), 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
         if (world instanceof World ww && (!player.canConsume(false) || world.getRandom().nextInt(10) == 0)) {
             AwaitTickQueue.scheduleTask(ww, w -> {
                 SoundEmitter.playSoundAt(player, USounds.Vanilla.ENTITY_PLAYER_BURP, 0.5F, world.getRandom().nextFloat() * 0.1F + 0.9F);
@@ -123,7 +124,7 @@ public class PieBlock extends Block implements Waterloggable {
         }
 
         removeSlice(world, pos, state, player);
-        return ItemActionResult.SUCCESS;
+        return ActionResult.SUCCESS;
     }
 
     protected void removeSlice(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {
@@ -179,14 +180,14 @@ public class PieBlock extends Block implements Waterloggable {
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, WorldView world, ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, Random random) {
         if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
         if (state.get(WATERLOGGED)) {
-            world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+            tickView.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
     }
 
     @Override

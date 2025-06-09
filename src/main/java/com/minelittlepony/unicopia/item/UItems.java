@@ -29,10 +29,9 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.*;
 import net.minecraft.item.Item.Settings;
+import net.minecraft.item.consume.UseAction;
 import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
-import net.fabricmc.fabric.api.registry.FuelRegistry;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.UseAction;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -77,7 +76,7 @@ public interface UItems {
     Item PEGASUS_FEATHER = register("pegasus_feather", new Item(new Item.Settings()), ItemGroups.NATURAL);
     Item GRYPHON_FEATHER = register("gryphon_feather", new Item(new Item.Settings()), ItemGroups.NATURAL);
 
-    Item OAT_SEEDS = register("oat_seeds", new AliasedBlockItem(UBlocks.OATS, new Item.Settings()), ItemGroups.NATURAL);
+    Item OAT_SEEDS = register("oat_seeds", new BlockItem(UBlocks.OATS, new Item.Settings().translationKey(UBlocks.OATS.getTranslationKey())), ItemGroups.NATURAL);
     Item OATS = register("oats", new Item(new Item.Settings().food(UFoodComponents.OATS)), ItemGroups.FOOD_AND_DRINK);
     Item IMPORTED_OATS = register("imported_oats", new Item(new Item.Settings().food(UFoodComponents.IMPORTED_OATS)), ItemGroups.FOOD_AND_DRINK);
     Item OATMEAL = register("oatmeal", new OatmealItem(new Item.Settings().recipeRemainder(Items.BOWL).maxCount(1).food(UFoodComponents.OATMEAL)), ItemGroups.FOOD_AND_DRINK);
@@ -106,31 +105,31 @@ public interface UItems {
     Item BANANA = register("banana", new Item(new Item.Settings().food(UFoodComponents.BANANA)), ItemGroups.FOOD_AND_DRINK);
     Item CURING_JOKE = register("curing_joke", new CuringJokeItem(UBlocks.CURING_JOKE, new Item.Settings().food(UFoodComponents.POISON_JOKE)), ItemGroups.NATURAL);
     Item PINEAPPLE = register("pineapple", new PineappleItem(new Item.Settings().food(UFoodComponents.BANANA).maxDamage(3)), ItemGroups.FOOD_AND_DRINK);
-    Item PINEAPPLE_CROWN = register("pineapple_crown", new AliasedBlockItem(UBlocks.PINEAPPLE, new Item.Settings()), ItemGroups.NATURAL);
+    Item PINEAPPLE_CROWN = register("pineapple_crown", new BlockItem(UBlocks.PINEAPPLE, new Item.Settings().translationKey(UBlocks.PINEAPPLE.getTranslationKey())), ItemGroups.NATURAL);
 
-    Item PEBBLES = register("pebbles", new AliasedBlockItem(UBlocks.ROCKS, new Item.Settings()), ItemGroups.NATURAL);
+    Item PEBBLES = register("pebbles", new BlockItem(UBlocks.ROCKS, new Item.Settings().translationKey(UBlocks.ROCKS.getTranslationKey())), ItemGroups.NATURAL);
     Item ROCK = register("rock", new HeavyProjectileItem(new Item.Settings(), 3), ItemGroups.NATURAL);
     Item WEIRD_ROCK = register("weird_rock", new Item(new Item.Settings().attributeModifiers(AttributeModifiersComponent.builder()
-            .add(EntityAttributes.GENERIC_LUCK, new EntityAttributeModifier(UItemModifierIds.LUCK_MODIFIER_ID, 9, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND)
+            .add(EntityAttributes.LUCK, new EntityAttributeModifier(UItemModifierIds.LUCK_MODIFIER_ID, 9, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND)
             .build())), ItemGroups.NATURAL);
     Item TOM = register("tom", new Item(new Item.Settings().attributeModifiers(AttributeModifiersComponent.builder()
-            .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, new EntityAttributeModifier(UItemModifierIds.KNOCKBACK_MODIFIER_ID, 0.9, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND)
+            .add(EntityAttributes.KNOCKBACK_RESISTANCE, new EntityAttributeModifier(UItemModifierIds.KNOCKBACK_MODIFIER_ID, 0.9, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND)
             .build())), ItemGroups.NATURAL);
     Item ROCK_STEW = register("rock_stew", new Item(new Item.Settings().food(FoodComponents.MUSHROOM_STEW).maxCount(1).recipeRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
     Item ROCK_CANDY = register("rock_candy", new Item(new Item.Settings().food(UFoodComponents.CANDY).maxCount(16)), ItemGroups.FOOD_AND_DRINK);
     Item SALT_CUBE = register("salt_cube", new Item(new Item.Settings().food(UFoodComponents.SALT_CUBE)), ItemGroups.FOOD_AND_DRINK);
 
-    Item GREEN_APPLE_SEEDS = register("green_apple_seeds", new AliasedBlockItem(UBlocks.GREEN_APPLE_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
-    Item SWEET_APPLE_SEEDS = register("sweet_apple_seeds", new AliasedBlockItem(UBlocks.SWEET_APPLE_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
-    Item SOUR_APPLE_SEEDS = register("sour_apple_seeds", new AliasedBlockItem(UBlocks.SOUR_APPLE_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
-    Item GOLDEN_OAK_SEEDS = register("golden_oak_seeds", new AliasedBlockItem(UBlocks.GOLDEN_OAK_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
+    Item GREEN_APPLE_SEEDS = register("green_apple_seeds", new BlockItem(UBlocks.GREEN_APPLE_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
+    Item SWEET_APPLE_SEEDS = register("sweet_apple_seeds", new BlockItem(UBlocks.SWEET_APPLE_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
+    Item SOUR_APPLE_SEEDS = register("sour_apple_seeds", new BlockItem(UBlocks.SOUR_APPLE_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
+    Item GOLDEN_OAK_SEEDS = register("golden_oak_seeds", new BlockItem(UBlocks.GOLDEN_OAK_SPROUT, new Item.Settings()), ItemGroups.NATURAL);
 
     Item MUG = register("mug", new Item(new Settings()), ItemGroups.TOOLS);
     Item CIDER = register("cider", new ConsumableItem(new Item.Settings().food(UFoodComponents.CIDER).maxCount(16).recipeRemainder(MUG), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
     Item JUICE = register("juice", new ConsumableItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE).maxCount(16).food(UFoodComponents.JUICE), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
     Item BURNED_JUICE = register("burned_juice", new ConsumableItem(new Item.Settings().recipeRemainder(Items.GLASS_BOTTLE).maxCount(16).food(UFoodComponents.BURNED_JUICE), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE = register("apple_pie", new BlockItem(UBlocks.APPLE_PIE, new Item.Settings().maxCount(1)), ItemGroups.FOOD_AND_DRINK);
-    Item APPLE_PIE_HOOF = register("apple_pie_hoof", new AliasedBlockItem(UBlocks.APPLE_PIE, new Item.Settings().maxCount(1)), ItemGroups.FOOD_AND_DRINK);
+    Item APPLE_PIE_HOOF = register("apple_pie_hoof", new BlockItem(UBlocks.APPLE_PIE, new Item.Settings().maxCount(1)), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE_SLICE = register("apple_pie_slice", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.PIE)), ItemGroups.FOOD_AND_DRINK);
     Item CANDIED_APPLE = register("candied_apple", new StagedFoodItem(new Item.Settings().food(UFoodComponents.CANDY).maxDamage(3), () -> Items.STICK), ItemGroups.FOOD_AND_DRINK);
 

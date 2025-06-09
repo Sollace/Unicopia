@@ -111,6 +111,6 @@ public class GrowableBlock extends SpreadableBlock {
             return false;
         }
 
-        return ChunkLightProvider.getRealisticOpacity(world, state, pos, stateAbove, above, Direction.UP, stateAbove.getOpacity(world, above)) < world.getMaxLightLevel();
+        return ChunkLightProvider.getRealisticOpacity(state, stateAbove, Direction.UP, stateAbove.getOpacity()) < 15;
     }
 }

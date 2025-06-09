@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.block.ItemJarBlock.JarContents;
 import com.minelittlepony.unicopia.block.ItemJarBlock.TileData;
 import com.minelittlepony.unicopia.util.FluidHelper;
+import com.minelittlepony.unicopia.util.TypedActionResult;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -18,7 +19,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
 
 public record FakeFluidJarContents (
         TileData tile,

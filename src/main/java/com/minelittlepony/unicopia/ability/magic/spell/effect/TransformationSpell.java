@@ -18,6 +18,7 @@ import com.minelittlepony.unicopia.util.RegistryUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.conversion.EntityConversionContext;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.Util;
@@ -55,9 +56,9 @@ public class TransformationSpell extends AbstractSpell implements ProjectileDele
         if (entity instanceof MobEntity) {
             MobEntity mob = (MobEntity)entity;
             try {
-                return Optional.ofNullable(mob.convertTo(type, true));
+                return Optional.ofNullable(mob.convertTo(type, EntityConversionContext.create(mob, true, true), i -> {}));
             } catch (Exception e) {
-                return Optional.ofNullable(mob.convertTo(UEntities.BUTTERFLY, true));
+                return Optional.ofNullable(mob.convertTo(UEntities.BUTTERFLY, EntityConversionContext.create(mob, true, true), i -> {}));
             }
         }
 

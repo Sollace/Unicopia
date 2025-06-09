@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.mixin.MixinEntityBucketItem;
 import com.minelittlepony.unicopia.util.FluidHelper;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
+import com.minelittlepony.unicopia.util.TypedActionResult;
 import com.mojang.serialization.Codec;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -23,7 +24,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Direction;
 
 public record ItemsJarContents (

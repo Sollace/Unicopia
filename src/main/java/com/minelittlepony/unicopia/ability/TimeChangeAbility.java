@@ -42,7 +42,7 @@ public class TimeChangeAbility implements Ability<Rot> {
     @Override
     public Optional<Rot> prepare(Pony player) {
 
-        if (!player.asWorld().getGameRules().getBoolean(UGameRules.DO_TIME_MAGIC)) {
+        if (!player.asWorld().getServer().getGameRules().getBoolean(UGameRules.DO_TIME_MAGIC)) {
             return Optional.empty();
         }
 
@@ -55,7 +55,7 @@ public class TimeChangeAbility implements Ability<Rot> {
 
     @Override
     public boolean apply(Pony player, Rot data) {
-        if (!player.asWorld().getGameRules().getBoolean(UGameRules.DO_TIME_MAGIC)) {
+        if (!player.asWorld().getServer().getGameRules().getBoolean(UGameRules.DO_TIME_MAGIC)) {
             return false;
         }
 

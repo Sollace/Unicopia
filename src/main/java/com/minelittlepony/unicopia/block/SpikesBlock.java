@@ -13,13 +13,15 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class SpikesBlock extends OrientedBlock {
     public static final MapCodec<SpikesBlock> CODEC = createCodec(SpikesBlock::new);
@@ -39,25 +41,25 @@ public class SpikesBlock extends OrientedBlock {
             return;
         }
 
-        if (!world.isClient) {
+        if (world instanceof ServerWorld sw) {
             Vec3d vel = entity.getVelocity().add(entity.getX() - entity.lastRenderX, entity.getY() - entity.lastRenderY, entity.getZ() - entity.lastRenderZ);
             Vector3f normVel = state.get(FACING).getUnitVector().mul(vel.toVector3f());
 
             if ((normVel.x + normVel.y + normVel.z) < -0.08F) {
                 float damage = (float)vel.lengthSquared() * 26;
-                entity.damage(world.getDamageSources().create(UDamageTypes.SPIKES), damage);
+                entity.damage(sw, world.getDamageSources().create(UDamageTypes.SPIKES), damage);
             }
         }
     }
 
     @Override
     protected void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (!world.isClient && !oldState.isOf(this)) {
+        if (world instanceof ServerWorld sw && !oldState.isOf(this)) {
             for (Entity e : world.getOtherEntities(null, new Box(pos))) {
                 if (!(e instanceof LivingEntity) || e.getType() == EntityType.FOX || e.getType() == EntityType.BEE) {
                     continue;
                 }
-                e.damage(world.getDamageSources().create(UDamageTypes.SPIKES), 6);
+                e.damage(sw, world.getDamageSources().create(UDamageTypes.SPIKES), 6);
             }
         }
     }
@@ -77,7 +79,7 @@ public class SpikesBlock extends OrientedBlock {
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, WorldView world, ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, Random random) {
         if (direction == state.get(FACING).getOpposite() && !canPlaceAt(state, world, pos)) {
             if (!(neighborState.isOf(Blocks.STICKY_PISTON)
                     || neighborState.isOf(Blocks.PISTON)
@@ -87,7 +89,7 @@ public class SpikesBlock extends OrientedBlock {
                 return Blocks.AIR.getDefaultState();
             }
         }
-        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+        return super.getStateForNeighborUpdate(state, world, tickView, pos, direction, neighborPos, neighborState, random);
     }
 
     @Override

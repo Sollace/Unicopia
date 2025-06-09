@@ -5,6 +5,7 @@ import com.minelittlepony.unicopia.block.ItemJarBlock.JarContents;
 import com.minelittlepony.unicopia.block.ItemJarBlock.TileData;
 import com.minelittlepony.unicopia.util.FluidHelper;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
+import com.minelittlepony.unicopia.util.TypedActionResult;
 
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants;
@@ -14,7 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 
 public record FluidOnlyJarContents (
         TileData tile,

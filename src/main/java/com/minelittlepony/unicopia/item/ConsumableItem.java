@@ -8,9 +8,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
 public class ConsumableItem extends Item {
@@ -32,11 +32,11 @@ public class ConsumableItem extends Item {
         }
 
         if (stack.isEmpty()) {
-            return stack.isEmpty() ? Optional.ofNullable(getRecipeRemainder()).map(Item::getDefaultStack).orElse(ItemStack.EMPTY) : stack;
+            return getRecipeRemainder();
         }
 
         if (user instanceof PlayerEntity player) {
-            return Optional.ofNullable(getRecipeRemainder()).map(Item::getDefaultStack).map(remainder -> {
+            return Optional.ofNullable(getRecipeRemainder()).filter(i -> !i.isEmpty()).map(remainder -> {
                 return ItemUsage.exchangeStack(stack, player, remainder);
             }).orElse(stack);
         }

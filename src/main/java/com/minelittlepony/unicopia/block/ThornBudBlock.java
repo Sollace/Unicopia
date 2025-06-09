@@ -16,7 +16,7 @@ import net.minecraft.block.Fertilizable;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Util;
@@ -24,15 +24,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class ThornBudBlock extends Block implements EarthPonyGrowAbility.Growable, Fertilizable {
     public static final MapCodec<ThornBudBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             BlockState.CODEC.fieldOf("branch_state").forGetter(b -> b.branchState),
             BedBlock.createSettingsCodec()
     ).apply(instance, ThornBudBlock::new));
-    static final DirectionProperty FACING = Properties.FACING;
+    static final EnumProperty<Direction> FACING = Properties.FACING;
     static final int MAX_DISTANCE = 25;
     static final IntProperty DISTANCE = IntProperty.of("distance", 0, MAX_DISTANCE);
 
@@ -62,7 +62,7 @@ public class ThornBudBlock extends Block implements EarthPonyGrowAbility.Growabl
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, WorldView world, ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, Random random) {
         if (direction == state.get(FACING) && !(neighborState.isOf(this) || neighborState.isOf(branchState.getBlock()))) {
             return Blocks.AIR.getDefaultState();
         }

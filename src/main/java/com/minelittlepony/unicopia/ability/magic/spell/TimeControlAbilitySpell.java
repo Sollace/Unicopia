@@ -31,7 +31,7 @@ public class TimeControlAbilitySpell extends AbstractSpell {
     @Override
     public boolean tick(Caster<?> source, Situation situation) {
 
-        if (!source.asWorld().getGameRules().getBoolean(UGameRules.DO_TIME_MAGIC) || situation != Situation.BODY || !source.canUse(Abilities.TIME)) {
+        if (!source.asWorld().getServer().getGameRules().getBoolean(UGameRules.DO_TIME_MAGIC) || situation != Situation.BODY || !source.canUse(Abilities.TIME)) {
             return false;
         }
 
@@ -40,7 +40,7 @@ public class TimeControlAbilitySpell extends AbstractSpell {
     }
 
     public void update(Caster<?> source, Rot rotation) {
-        if (!source.asWorld().getGameRules().getBoolean(UGameRules.DO_TIME_MAGIC)) {
+        if (!source.asWorld().getServer().getGameRules().getBoolean(UGameRules.DO_TIME_MAGIC)) {
             return;
         }
         if (!(source.asWorld() instanceof ServerWorld sw)) {

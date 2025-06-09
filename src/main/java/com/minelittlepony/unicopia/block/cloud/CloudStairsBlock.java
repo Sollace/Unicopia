@@ -17,6 +17,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
 
 public class CloudStairsBlock extends StairsBlock implements CloudLike {
@@ -43,8 +44,8 @@ public class CloudStairsBlock extends StairsBlock implements CloudLike {
     }
 
     @Override
-    protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
-        return baseBlock.isTransparent(state, world, pos);
+    protected boolean isTransparent(BlockState state) {
+        return baseBlock.isTransparent(state);
     }
 
     @Override
@@ -71,8 +72,8 @@ public class CloudStairsBlock extends StairsBlock implements CloudLike {
     }
 
     @Override
-    protected final VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
-        return super.getOutlineShape(state, world, pos, ShapeContext.absent());
+    protected final VoxelShape getCullingShape(BlockState state) {
+        return super.getOutlineShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
     }
 
     @Override

@@ -11,9 +11,9 @@ import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.TraceHelper;
+import com.minelittlepony.unicopia.util.TypedActionResult;
 
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.TypedActionResult;
 
 /**
  * Fires a spell as a projectile.
@@ -29,7 +29,7 @@ public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
 
     @Override
     public Optional<Hit> prepare(Pony player) {
-        return Hit.of(player.getCharms().getSpellInHand(false).getResult() != ActionResult.FAIL);
+        return Hit.of(player.getCharms().getSpellInHand(false).result() != ActionResult.FAIL);
     }
 
     @Override
@@ -43,8 +43,8 @@ public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
             if (!player.isClient()) {
                 TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(true);
 
-                if (thrown.getResult() != ActionResult.FAIL) {
-                    Spell spell = thrown.getValue().create();
+                if (thrown.result() != ActionResult.FAIL) {
+                    Spell spell = thrown.value().create();
                     if (spell != null) {
                         spell.toThrowable().throwProjectile(player).ifPresent(projectile -> {
                             player.subtractEnergyCost(getCostEstimate(player));
@@ -68,8 +68,8 @@ public class UnicornProjectileAbility extends AbstractSpellCastingAbility {
     public boolean apply(Pony player, Hit data) {
         TypedActionResult<CustomisedSpellType<?>> thrown = player.getCharms().getSpellInHand(true);
 
-        if (thrown.getResult() != ActionResult.FAIL) {
-            Spell spell = thrown.getValue().create();
+        if (thrown.result() != ActionResult.FAIL) {
+            Spell spell = thrown.value().create();
 
             if (spell != null) {
                 spell.toThrowable().throwProjectile(player).ifPresent(projectile -> {

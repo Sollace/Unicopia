@@ -37,7 +37,9 @@ public class DispellEvilSpell extends AbstractSpell implements ProjectileDelegat
         }
 
         source.findAllEntitiesInRange(RANGE.get(getTraits()), e -> e.getType() == EntityType.PHANTOM).forEach(entity -> {
-            entity.damage(entity.getDamageSources().magic(), 50);
+            if (!source.isClient()) {
+                entity.damage(source.asServerWorld(), entity.getDamageSources().magic(), 50);
+            }
             if (entity instanceof LivingEntity l) {
                 double d = source.getOriginVector().getX() - entity.getX();
                 double e = source.getOriginVector().getZ() - entity.getZ();

@@ -5,24 +5,25 @@ import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ArmorMaterials;
-import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.equipment.ArmorMaterials;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 
-public abstract class WearableItem extends Item implements Equipment {
+public abstract class WearableItem extends Item {
 
     public WearableItem(Item.Settings settings) {
-        super(configureEquipmentSlotSupplier(settings));
+        super(configureEquipmentSlotSupplier(settings.component(DataComponentTypes.EQUIPPABLE, EquippableComponent.builder(EquipmentSlot.OFFHAND)
+                .equipSound(ArmorMaterials.LEATHER.equipSound())
+                .build())));
         DispenserBlock.registerBehavior(this, DISPENSER_BEHAVIOR);
         TrinketsDelegate.getInstance(null).registerTrinket(this);
     }
@@ -35,24 +36,13 @@ public abstract class WearableItem extends Item implements Equipment {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    public ActionResult use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
         return TrinketsDelegate.getInstance(player).getAvailableTrinketSlots(player, TrinketsDelegate.ALL).stream()
                 .filter(slotId -> TrinketsDelegate.getInstance(player).equipStack(player, slotId, stack))
                 .findAny()
-                .map(slotId -> TypedActionResult.success(stack, world.isClient()))
-                .orElseGet(() -> TypedActionResult.fail(stack));
-    }
-
-    @Override
-    public RegistryEntry<SoundEvent> getEquipSound() {
-        return ArmorMaterials.LEATHER.value().equipSound();
-    }
-
-    @Deprecated
-    @Override
-    public final EquipmentSlot getSlotType() {
-        return getSlotType(getDefaultStack());
+                .map(slotId -> (ActionResult)ActionResult.SUCCESS)
+                .orElseGet(() -> ActionResult.FAIL);
     }
 
     public EquipmentSlot getSlotType(ItemStack stack) {

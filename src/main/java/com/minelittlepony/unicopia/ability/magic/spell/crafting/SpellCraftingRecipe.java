@@ -125,21 +125,11 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
 
     @Override
     public ItemStack craft(Input inventory, WrapperLookup registries) {
-        return getResult(registries).copy();
+        return output.copy();
     }
 
     @Override
-    public boolean fits(int width, int height) {
-        return (width * height) > 0;
-    }
-
-    @Override
-    public ItemStack getResult(WrapperLookup registries) {
-        return output;
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<SpellCraftingRecipe> getSerializer() {
         return URecipes.TRAIT_REQUIREMENT;
     }
 }

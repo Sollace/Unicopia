@@ -1,9 +1,8 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.google.common.base.Suppliers;
@@ -13,20 +12,23 @@ import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 
+import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
+import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
-public class IngredientWithSpell implements Predicate<ItemStack> {
+public class IngredientWithSpell implements CustomIngredient {
     private static final IngredientWithSpell EMPTY = new IngredientWithSpell(Optional.empty(), Optional.empty());
-    private static final Predicate<Ingredient> INGREDIENT_IS_PRESENT = ((Predicate<Ingredient>)(Ingredient::isEmpty)).negate();
 
-    public static final Codec<IngredientWithSpell> CODEC = CodecUtils.extend(Ingredient.ALLOW_EMPTY_CODEC, SpellType.REGISTRY.getCodec().fieldOf("spell")).xmap(
+    public static final Codec<IngredientWithSpell> CODEC = CodecUtils.extend(Ingredient.CODEC, SpellType.REGISTRY.getCodec().fieldOf("spell")).xmap(
         pair -> new IngredientWithSpell(pair.getFirst(), pair.getSecond()),
         ingredient -> new Pair<>(ingredient.stack, ingredient.spell)
     );
@@ -62,11 +64,22 @@ public class IngredientWithSpell implements Predicate<ItemStack> {
         this.spell = spell;
         stacks = Suppliers.memoize(() -> {
             return stack.stream()
-                    .map(Ingredient::getMatchingStacks)
-                    .flatMap(Arrays::stream)
+                    .map(Ingredient::getMatchingItems)
+                    .flatMap(List::stream)
+                    .map(item -> item.value().getDefaultStack())
                     .map(s -> spell.map(p -> EnchantableItem.enchant(s, p)).orElse(s))
                     .toArray(ItemStack[]::new);
         });
+    }
+
+    @Override
+    public CustomIngredientSerializer<?> getSerializer() {
+        return UIngredients.ENCHANTED_ITEM;
+    }
+
+    @Override
+    public boolean requiresTesting() {
+        return true;
     }
 
     @Override
@@ -76,11 +89,16 @@ public class IngredientWithSpell implements Predicate<ItemStack> {
         return stackMatch && spellMatch;
     }
 
+    @Override
+    public List<RegistryEntry<Item>> getMatchingItems() {
+        return stack.map(i -> i.getMatchingItems()).orElseGet(List::of);
+    }
+
     public ItemStack[] getMatchingStacks() {
         return stacks.get();
     }
 
     public boolean isEmpty() {
-        return stack.filter(INGREDIENT_IS_PRESENT).isEmpty() && spell.isEmpty();
+        return stack.isEmpty() && spell.isEmpty();
     }
 }

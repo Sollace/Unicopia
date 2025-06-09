@@ -6,7 +6,6 @@ import com.minelittlepony.unicopia.item.component.Appearance;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
@@ -44,7 +43,7 @@ public class JarInsertRecipe extends ItemCombinationRecipe {
     }
 
     @Override
-    public DefaultedList<ItemStack> getRemainder(CraftingRecipeInput inventory) {
-        return DefaultedList.ofSize(inventory.getSize(), ItemStack.EMPTY);
+    public DefaultedList<ItemStack> getRecipeRemainders(CraftingRecipeInput inventory) {
+        return DefaultedList.ofSize(inventory.size(), ItemStack.EMPTY);
     }
 }

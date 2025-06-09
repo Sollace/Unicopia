@@ -30,13 +30,14 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.event.GameEvent;
 
 public class CrystalDoorBlock extends DoorBlock implements BlockEntityProvider {
@@ -76,7 +77,7 @@ public class CrystalDoorBlock extends DoorBlock implements BlockEntityProvider {
     }
 
     @Override
-    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation, boolean notify) {
         if (!state.get(LOCKED)) {
             boolean powered = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.offset(state.get(HALF) == DoubleBlockHalf.LOWER ? Direction.UP : Direction.DOWN));
             if (!getDefaultState().isOf(sourceBlock) && powered != state.get(POWERED)) {
@@ -90,20 +91,20 @@ public class CrystalDoorBlock extends DoorBlock implements BlockEntityProvider {
             }
         }
 
-        if (state.get(HALF) == DoubleBlockHalf.LOWER && sourcePos.getY() == pos.getY() - 1) {
-            if (!canPlaceAt(state, world, pos) && world.isAir(sourcePos)) {
-                world.setBlockState(sourcePos, Blocks.DIRT.getDefaultState());
+        if (state.get(HALF) == DoubleBlockHalf.LOWER) {
+            if (!canPlaceAt(state, world, pos) && world.isAir(pos.down())) {
+                world.setBlockState(pos.down(), Blocks.DIRT.getDefaultState());
             }
         }
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!shouldProvideAccess(world, pos, player)) {
             if (isLocked(world, pos) || !stack.isOf(UItems.MEADOWBROOKS_STAFF)) {
                 playOpenCloseSound(player, world, pos, false);
                 setOnGuard(state, world, pos, true);
-                return ItemActionResult.CONSUME;
+                return ActionResult.CONSUME;
             } else {
                 world.playSound(player, pos, USounds.ENTITY_CRYSTAL_SHARDS_AMBIENT, SoundCategory.BLOCKS, 1, world.getRandom().nextFloat() * 0.1F + 0.9F);
             }
@@ -117,7 +118,7 @@ public class CrystalDoorBlock extends DoorBlock implements BlockEntityProvider {
                         setOnGuard(state, world, pos, true);
                         world.playSound(player, pos, USounds.ENTITY_CRYSTAL_SHARDS_AMBIENT, SoundCategory.BLOCKS, 1, world.getRandom().nextFloat() * 0.1F + 0.9F);
                     });
-                    return ItemActionResult.SUCCESS;
+                    return ActionResult.SUCCESS;
                 }
             } else {
                 setOnGuard(state, world, pos, false);

@@ -16,13 +16,14 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.World;
 
 public class CloudBedBlock extends FancyBedBlock implements CloudLike {
@@ -56,8 +57,8 @@ public class CloudBedBlock extends FancyBedBlock implements CloudLike {
     }
 
     @Override
-    protected final VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
-        return super.getOutlineShape(state, world, pos, ShapeContext.absent());
+    protected final VoxelShape getCullingShape(BlockState state) {
+        return super.getOutlineShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
     }
 
     @Override
@@ -75,9 +76,9 @@ public class CloudBedBlock extends FancyBedBlock implements CloudLike {
     }
 
     @Override
-    protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    protected ActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!baseBlock.canInteract(baseState, world, pos, EquineContext.of(player))) {
-            return ItemActionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+            return ActionResult.PASS;
         }
         return super.onUseWithItem(stack, state, world, pos, player, hand, hit);
     }

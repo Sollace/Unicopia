@@ -42,6 +42,6 @@ public class FrostedObsidianBlock extends FrostedIceBlock {
             return;
         }
         world.setBlockState(pos, Blocks.LAVA.getDefaultState());
-        world.updateNeighbor(pos, Blocks.LAVA, pos);
+        world.updateNeighbor(pos, Blocks.LAVA, null);
     }
 }

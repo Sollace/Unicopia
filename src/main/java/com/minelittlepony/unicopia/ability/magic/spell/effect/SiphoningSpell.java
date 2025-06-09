@@ -104,7 +104,9 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
                 if (source.asWorld().random.nextInt(3000) == 0) {
                     setDead();
                 } else {
-                    e.damage(damage, e.getHealth() / 4);
+                    if (!source.isClient()) {
+                        e.damage(source.asServerWorld(), damage, e.getHealth() / 4);
+                    }
                     ticksUpset = 100;
                     upset.set(true);
                 }
@@ -152,7 +154,9 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
                     }
                 }
 
-                e.damage(damage, dealt);
+                if (!source.isClient()) {
+                    e.damage(source.asServerWorld(), damage, dealt);
+                }
                 ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, owner, 0.2F), e, 1);
 
                 healthGain += dealt;

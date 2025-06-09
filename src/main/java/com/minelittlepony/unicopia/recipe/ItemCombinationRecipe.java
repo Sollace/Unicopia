@@ -14,11 +14,6 @@ public abstract class ItemCombinationRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public final boolean fits(int i, int j) {
-        return i * j >= 2;
-    }
-
-    @Override
     public final boolean matches(CraftingRecipeInput inventory, World world) {
         Pair<ItemStack, ItemStack> result = runMatch(inventory);
 
@@ -29,7 +24,7 @@ public abstract class ItemCombinationRecipe extends SpecialCraftingRecipe {
         ItemStack bangle = ItemStack.EMPTY;
         ItemStack dust = ItemStack.EMPTY;
 
-        for(int i = 0; i < inventory.getSize(); i++) {
+        for(int i = 0; i < inventory.size(); i++) {
            ItemStack stack = inventory.getStackInSlot(i);
 
            if (!stack.isEmpty()) {

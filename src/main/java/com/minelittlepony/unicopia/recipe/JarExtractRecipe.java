@@ -19,11 +19,6 @@ public class JarExtractRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public final boolean fits(int i, int j) {
-        return i * j >= 1;
-    }
-
-    @Override
     public final boolean matches(CraftingRecipeInput inventory, World world) {
         return !craft(inventory, null).isEmpty();
     }
@@ -55,8 +50,9 @@ public class JarExtractRecipe extends SpecialCraftingRecipe {
         return Appearance.upwrapAppearance(jar);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public RecipeSerializer<? extends JarExtractRecipe> getSerializer() {
-        return URecipes.JAR_INSERT_SERIALIZER;
+    public RecipeSerializer<JarExtractRecipe> getSerializer() {
+        return (RecipeSerializer)URecipes.JAR_INSERT_SERIALIZER;
     }
 }

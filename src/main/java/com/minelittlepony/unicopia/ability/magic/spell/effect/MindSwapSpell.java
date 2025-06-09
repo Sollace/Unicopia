@@ -65,9 +65,9 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
                 caster.getSpellSlot().removeIf(getType());
 
                 if (!isValidTarget(master) || !isValidTarget(e)) {
-                    master.damage(caster.asWorld().getDamageSources().magic(), Float.MAX_VALUE);
+                    master.damage(caster.asServerWorld(), caster.asWorld().getDamageSources().magic(), Float.MAX_VALUE);
                     master.setHealth(0);
-                    e.damage(caster.asWorld().getDamageSources().magic(), Float.MAX_VALUE);
+                    e.damage(caster.asServerWorld(), caster.asWorld().getDamageSources().magic(), Float.MAX_VALUE);
                     e.setHealth(0);
                 } else {
                     if (master instanceof ServerPlayerEntity sMaster && e instanceof ServerPlayerEntity sE) {
@@ -142,7 +142,7 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
                 LivingEntity other = counterpart.get(caster.asWorld());
 
                 if (other == null) {
-                    caster.getOriginatingCaster().asEntity().damage(caster.asWorld().getDamageSources().magic(), Float.MAX_VALUE);
+                    caster.getOriginatingCaster().asEntity().damage(caster.asServerWorld(), caster.asWorld().getDamageSources().magic(), Float.MAX_VALUE);
                     destroy(caster);
                     return false;
                 }
@@ -155,7 +155,7 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
 
             if (!caster.asEntity().isAlive()) {
                 counterpart.ifPresent(caster.asWorld(), e -> {
-                    e.damage(e.getDamageSources().magic(), Float.MAX_VALUE);
+                    e.damage(caster.asServerWorld(), e.getDamageSources().magic(), Float.MAX_VALUE);
                 });
                 destroy(caster);
                 return false;

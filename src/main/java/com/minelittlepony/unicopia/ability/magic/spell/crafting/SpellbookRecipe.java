@@ -8,13 +8,16 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.recipe.URecipes;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.IngredientPlacement;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.book.RecipeBookCategories;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.input.RecipeInput;
 
 public interface SpellbookRecipe extends Recipe<SpellbookRecipe.Input> {
     @Override
-    default RecipeType<?> getType() {
+    default RecipeType<? extends SpellbookRecipe> getType() {
         return URecipes.SPELLBOOK;
     }
 
@@ -24,8 +27,18 @@ public interface SpellbookRecipe extends Recipe<SpellbookRecipe.Input> {
     }
 
     @Override
-    default ItemStack createIcon() {
-        return new ItemStack(UItems.SPELLBOOK);
+    default boolean isIgnoredInRecipeBook() {
+        return true;
+    }
+
+    @Override
+    default RecipeBookCategory getRecipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
+    }
+
+    @Override
+    default IngredientPlacement getIngredientPlacement() {
+        return IngredientPlacement.NONE;
     }
 
     void buildCraftingTree(CraftingTreeBuilder builder);
@@ -65,7 +78,7 @@ public interface SpellbookRecipe extends Recipe<SpellbookRecipe.Input> {
         }
 
         @Override
-        public int getSize() {
+        public int size() {
             return stacks.length;
         }
 

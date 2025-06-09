@@ -1,34 +1,42 @@
 package com.minelittlepony.unicopia.block.state;
 
 import java.util.*;
-import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.google.gson.*;
+import com.google.common.base.Suppliers;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.world.World;
 
 public class JsonReversableBlockStateConverter implements ReversableBlockStateConverter {
+    @SuppressWarnings("unchecked")
+    public static final Codec<JsonReversableBlockStateConverter> CODEC = Entry.CODEC.listOf().xmap(
+            entries -> new JsonReversableBlockStateConverter(entries, null),
+            c -> (List<Entry>)c.entries
+    );
 
-    private final List<BlockStateConverter> entries;
+    private final List<? extends BlockStateConverter> entries;
 
-    @Nullable
-    private ReversableBlockStateConverter inverse;
+    private final Supplier<ReversableBlockStateConverter> inverse;
 
-    public JsonReversableBlockStateConverter(JsonElement json) {
-        this(new ArrayList<>(), null);
-        json.getAsJsonArray().forEach(entry -> {
-            entries.add(Entry.of(entry.getAsJsonObject(), true));
-        });
+    public JsonReversableBlockStateConverter(List<? extends BlockStateConverter> entries, @Nullable ReversableBlockStateConverter inverse) {
+        this.inverse = inverse == null ? Suppliers.memoize(() -> new JsonReversableBlockStateConverter(entries.stream()
+                    .filter(entry -> entry instanceof ReversableBlockStateConverter)
+                    .map(entry -> ((ReversableBlockStateConverter)entry).getInverse())
+                    .filter(Objects::nonNull)
+                    .toList(), this)) : () -> inverse;
+        this.entries = entries;
     }
 
-    public JsonReversableBlockStateConverter(List<BlockStateConverter> entries, @Nullable ReversableBlockStateConverter inverse) {
-        this.inverse = inverse;
-        this.entries = entries;
+    @Override
+    public BlockStateConverter getInverse() {
+        return inverse.get();
     }
 
     @Override
@@ -44,30 +52,20 @@ public class JsonReversableBlockStateConverter implements ReversableBlockStateCo
                 .orElse(state);
     }
 
-    @Override
-    public BlockStateConverter getInverse() {
-        if (inverse == null) {
-            inverse = new JsonReversableBlockStateConverter(entries.stream()
-                    .filter(entry -> entry instanceof ReversableBlockStateConverter)
-                    .map(entry -> ((ReversableBlockStateConverter)entry).getInverse())
-                    .filter(Objects::nonNull)
-                    .toList(), this);
-        }
-        return inverse;
-    }
-
     record Entry (
-            Predicate<BlockState> match,
+            StatePredicate match,
             StateChange stateChange,
             Optional<Entry> inverse
     ) implements ReversableBlockStateConverter {
-        public static Entry of(JsonObject json, boolean allowInversion) {
-            return new Entry(
-                StatePredicate.of(json.get("match")),
-                StateChange.fromJson(JsonHelper.getObject(json, "apply")),
-                allowInversion && json.has("inverse") ? Optional.of(of(JsonHelper.getObject(json, "inverse"), false)) : Optional.empty()
-            );
-        }
+        public static final MapCodec<Entry> UN_REVERSABLE_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                StatePredicate.CODEC.fieldOf("match").forGetter(Entry::match),
+                StateChange.CODEC.fieldOf("apply").forGetter(Entry::stateChange)
+        ).apply(i, (match, stateChange) -> new Entry(match, stateChange, Optional.empty())));
+        public static final Codec<Entry> CODEC = RecordCodecBuilder.create(i -> i.group(
+                StatePredicate.CODEC.fieldOf("match").forGetter(Entry::match),
+                StateChange.CODEC.fieldOf("apply").forGetter(Entry::stateChange),
+                UN_REVERSABLE_CODEC.codec().optionalFieldOf("inverse").forGetter(Entry::inverse)
+        ).apply(i, Entry::new));
 
         @Override
         public boolean canConvert(@Nullable BlockState state) {

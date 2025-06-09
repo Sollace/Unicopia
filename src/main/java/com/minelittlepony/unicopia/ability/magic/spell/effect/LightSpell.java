@@ -21,6 +21,7 @@ import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
 import com.minelittlepony.unicopia.util.VecHelper;
 
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -75,7 +76,7 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
 
             lights.forEach(ref -> {
                 if (ref.getOrEmpty(caster.asWorld()).isEmpty()) {
-                    FairyEntity entity = UEntities.TWITTERMITE.create(caster.asWorld());
+                    FairyEntity entity = UEntities.TWITTERMITE.create(caster.asWorld(), SpawnReason.EVENT);
                     entity.setPosition(ref.getTarget().map(EntityValues::pos).orElseGet(() -> {
                         return caster.getOriginVector().add(VecHelper.supply(() -> caster.asWorld().random.nextInt(3) - 1));
                     }));

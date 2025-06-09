@@ -22,6 +22,11 @@ public record SpellEnhancingRecipe (IngredientWithSpell material) implements Spe
     ).apply(instance, SpellEnhancingRecipe::new));
     public static final PacketCodec<RegistryByteBuf, SpellEnhancingRecipe> PACKET_CODEC = IngredientWithSpell.PACKET_CODEC.xmap(SpellEnhancingRecipe::new, SpellEnhancingRecipe::material);
 
+    @Override
+    public RecipeSerializer<SpellEnhancingRecipe> getSerializer() {
+        return URecipes.TRAIT_COMBINING;
+    }
+
     public IngredientWithSpell getBaseMaterial() {
         return material;
     }
@@ -47,20 +52,5 @@ public record SpellEnhancingRecipe (IngredientWithSpell material) implements Spe
         return SpellTraits.of(inventory.stackToModify())
                 .add(inventory.traits())
                 .applyTo(inventory.stackToModify());
-    }
-
-    @Override
-    public boolean fits(int width, int height) {
-        return (width * height) > 0;
-    }
-
-    @Override
-    public ItemStack getResult(WrapperLookup registries) {
-        return UItems.GEMSTONE.getDefaultStack();
-    }
-
-    @Override
-    public RecipeSerializer<?> getSerializer() {
-        return URecipes.TRAIT_COMBINING;
     }
 }

@@ -15,9 +15,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.recipe.IngredientPlacement;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.book.RecipeBookCategories;
+import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.input.RecipeInput;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
@@ -56,6 +59,16 @@ public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.Placeme
         this.catalyst = catalyst;
     }
 
+    @Override
+    public IngredientPlacement getIngredientPlacement() {
+        return IngredientPlacement.NONE;
+    }
+
+    @Override
+    public RecipeBookCategory getRecipeBookCategory() {
+        return RecipeBookCategories.CRAFTING_MISC;
+    }
+
     public BlockState getCatalystState() {
         return catalyst;
     }
@@ -77,12 +90,12 @@ public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.Placeme
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<TransformCropsRecipe> getSerializer() {
         return URecipes.TRANSFORM_CROP_SERIALIZER;
     }
 
     @Override
-    public RecipeType<?> getType() {
+    public RecipeType<TransformCropsRecipe> getType() {
         return URecipes.GROWING;
     }
 
@@ -93,11 +106,6 @@ public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.Placeme
 
     @Override
     public ItemStack craft(PlacementArea inventory, WrapperLookup manager) {
-        return getResult(manager);
-    }
-
-    @Override
-    public ItemStack getResult(WrapperLookup manager) {
         return output.getBlock().asItem().getDefaultStack();
     }
 
@@ -118,11 +126,6 @@ public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.Placeme
 
     public BlockState getResult(World world, BlockPos pos) {
         return StateUtil.copyState(world.getBlockState(pos), output);
-    }
-
-    @Override
-    public boolean fits(int width, int height) {
-        return width >= SIDE_LENGTH && height >= SIDE_LENGTH;
     }
 
     public static record PlacementArea (Pony pony, BlockPos position) implements RecipeInput {

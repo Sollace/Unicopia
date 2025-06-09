@@ -52,7 +52,9 @@ public interface UPOIs {
         DynamicRegistrySetupCallback.EVENT.register(registries -> {
             if (type.blockStates().isEmpty()) {
                 type.blockStates().addAll(states.get().collect(Collectors.toSet()));
-                PointOfInterestTypesAccessor.registerStates(Registries.POINT_OF_INTEREST_TYPE.entryOf(CHESTS), type.blockStates());
+                Registries.POINT_OF_INTEREST_TYPE.getEntry(CHESTS.getValue()).ifPresent(entry -> {
+                    PointOfInterestTypesAccessor.registerStates(entry, type.blockStates());
+                });
             }
         });
         return RegistryKey.of(RegistryKeys.POINT_OF_INTEREST_TYPE, id);

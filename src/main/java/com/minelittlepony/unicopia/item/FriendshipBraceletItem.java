@@ -20,6 +20,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
@@ -31,7 +32,7 @@ public class FriendshipBraceletItem extends WearableItem {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    public ActionResult use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
         if (!Issuer.isSigned(stack) && (
@@ -51,12 +52,12 @@ public class FriendshipBraceletItem extends WearableItem {
             player.playSound(USounds.ITEM_BRACELET_SIGN, 1, 1);
 
             if (stack.isEmpty()) {
-                return TypedActionResult.consume(result);
+                return ActionResult.CONSUME;
             }
-            if (!player.giveItemStack(result)) {
-                player.dropStack(result);
+            if (!player.giveItemStack(result) && world instanceof ServerWorld sw) {
+                player.dropStack(sw, result);
             }
-            return TypedActionResult.consume(stack);
+            return ActionResult.CONSUME;
         }
 
         return super.use(world, player, hand);

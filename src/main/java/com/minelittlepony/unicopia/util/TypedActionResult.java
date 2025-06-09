@@ -14,4 +14,8 @@ public record TypedActionResult<T> (ActionResult result, T value) {
     public static <T> TypedActionResult<T> fail(T value) {
         return new TypedActionResult<>(ActionResult.FAIL, value);
     }
+
+    public static <T> TypedActionResult<T> consume(T value) {
+        return new TypedActionResult<>(ActionResult.CONSUME, value);
+    }
 }

@@ -21,7 +21,7 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
@@ -30,8 +30,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 public class ThornBlock extends ConnectingBlock implements EarthPonyGrowAbility.Growable, Fertilizable {
     public static final MapCodec<ThornBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -39,7 +39,7 @@ public class ThornBlock extends ConnectingBlock implements EarthPonyGrowAbility.
             BedBlock.createSettingsCodec()
     ).apply(instance, ThornBlock::new));
     static final Collection<BooleanProperty> PROPERTIES = FACING_PROPERTIES.values();
-    static final DirectionProperty FACING = Properties.FACING;
+    static final EnumProperty<Direction> FACING = Properties.FACING;
     static final int MAX_DISTANCE = 25;
     static final int MAX_AGE = Properties.AGE_4_MAX;
     static final IntProperty DISTANCE = IntProperty.of("distance", 0, MAX_DISTANCE);
@@ -95,9 +95,9 @@ public class ThornBlock extends ConnectingBlock implements EarthPonyGrowAbility.
     }
 
     @Override
-    protected BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+    protected BlockState getStateForNeighborUpdate(BlockState state, WorldView world, ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, Random random) {
         if (direction == state.get(FACING) && !state.canPlaceAt(world, pos)) {
-            world.scheduleBlockTick(pos, this, 1);
+            tickView.scheduleBlockTick(pos, this, 1);
         }
         return state;
     }

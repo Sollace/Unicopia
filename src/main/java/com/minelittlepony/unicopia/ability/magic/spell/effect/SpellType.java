@@ -224,12 +224,12 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     @SuppressWarnings("unchecked")
     public static <T extends Spell> SpellType<T> getKey(@Nullable Identifier id) {
-        return (SpellType<T>)REGISTRY.getOrEmpty(id).orElse(EMPTY_KEY);
+        return (SpellType<T>)REGISTRY.getOptionalValue(id).orElse(EMPTY_KEY);
     }
 
     public static SpellType<?> fromArgument(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
         Identifier id = context.getArgument(name, RegistryKey.class).getValue();
-        return REGISTRY.getOrEmpty(id).orElseThrow(() -> UNKNOWN_SPELL_TYPE_EXCEPTION.create(id));
+        return REGISTRY.getOptionalValue(id).orElseThrow(() -> UNKNOWN_SPELL_TYPE_EXCEPTION.create(id));
     }
 
     public interface Factory<T extends Spell> {

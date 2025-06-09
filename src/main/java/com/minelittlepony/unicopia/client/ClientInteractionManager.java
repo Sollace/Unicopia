@@ -180,7 +180,7 @@ public class ClientInteractionManager extends InteractionManager {
     @Override
     public void sendPlayerLookAngles(PlayerEntity player) {
         if (player instanceof ClientPlayerEntity c) {
-            c.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(player.getYaw(), player.getPitch(), player.isOnGround()));
+            c.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(player.getYaw(), player.getPitch(), player.isOnGround(), player.horizontalCollision));
         }
     }
 

@@ -22,7 +22,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.Hand;
-import net.minecraft.util.ItemActionResult;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -55,7 +55,7 @@ public interface Soakable {
         }
     }
 
-    static ItemActionResult tryCollectMoisture(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    static ActionResult tryCollectMoisture(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (state.getBlock() instanceof Soakable soakable) {
             if (stack.isOf(Items.GLASS_BOTTLE)) {
                 player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, Items.POTION.getDefaultStack(), false));
@@ -63,14 +63,14 @@ public interface Soakable {
                 world.emitGameEvent(player, GameEvent.FLUID_PICKUP, pos);
                 updateMoisture(soakable, state, world, pos, soakable.getMoisture(state) - 1);
 
-                return ItemActionResult.SUCCESS;
+                return ActionResult.SUCCESS;
             }
         }
 
         return tryDepositMoisture(stack, state, world, pos, player, hand, hit);
     }
 
-    static ItemActionResult tryDepositMoisture(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+    static ActionResult tryDepositMoisture(ItemStack stack, BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (state.getBlock() instanceof Soakable soakable) {
             if (soakable.getMoisture(state) < 7
                     && stack.isOf(Items.POTION)
@@ -80,11 +80,11 @@ public interface Soakable {
                 world.emitGameEvent(player, GameEvent.FLUID_PLACE, pos);
                 updateMoisture(soakable, state, world, pos, soakable.getMoisture(state) + 1);
 
-                return ItemActionResult.SUCCESS;
+                return ActionResult.SUCCESS;
             }
         }
 
-        return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return ActionResult.PASS_TO_DEFAULT_BLOCK_ACTION;
     }
 
     static void tickMoisture(BlockState state, ServerWorld world, BlockPos pos, Random random) {

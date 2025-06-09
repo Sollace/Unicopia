@@ -107,7 +107,7 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
         Vec3d origin = getOrigin(source);
         double mass = getMass() * 0.1;
         double logarithm = 1 - (1D / (1 + (mass * mass)));
-        radius.update((float)Math.max(0.01, logarithm * source.asWorld().getGameRules().getInt(UGameRules.MAX_DARK_VORTEX_SIZE)), 200L);
+        radius.update((float)Math.max(0.01, logarithm * source.asWorld().getServer().getGameRules().getInt(UGameRules.MAX_DARK_VORTEX_SIZE)), 200L);
 
         if (source.asEntity().age % 20 == 0) {
             source.asWorld().playSound(null, source.getOrigin(), USounds.AMBIENT_DARK_VORTEX_ADDITIONS, SoundCategory.AMBIENT, 1, 1);
@@ -181,7 +181,7 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
         accumulatedMass.set(m);
         double mass = getMass() * 0.1;
         double logarithm = 1 - (1D / (1 + (mass * mass)));
-        radius.update((float)Math.max(0.1, logarithm * source.asWorld().getGameRules().getInt(UGameRules.MAX_DARK_VORTEX_SIZE)), 200L);
+        radius.update((float)Math.max(0.1, logarithm * source.asWorld().getServer().getGameRules().getInt(UGameRules.MAX_DARK_VORTEX_SIZE)), 200L);
         if (m < 1) {
             super.tickDying(source);
         }
@@ -268,8 +268,8 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
                     p.onImpact(projectile, new EntityHitResult(master));
                 }
             } else if (target instanceof PersistentProjectileEntity) {
-                if (master != null) {
-                    master.damage(master.getDamageSources().thrown(target, ((PersistentProjectileEntity)target).getOwner()), 4);
+                if (master != null && !source.isClient()) {
+                    master.damage(source.asServerWorld(), master.getDamageSources().thrown(target, ((PersistentProjectileEntity)target).getOwner()), 4);
                 }
                 target.discard();
                 return;
@@ -277,17 +277,19 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
 
             double massOfTarget = AttractionUtils.getMass(target);
 
-            if (!source.isClient() && massOfTarget != 0) {
-                accumulatedMass.set((float)(accumulatedMass.get() + massOfTarget));
-            }
+            if (!source.isClient()) {
+                if (massOfTarget != 0) {
+                    accumulatedMass.set((float)(accumulatedMass.get() + massOfTarget));
+                }
 
-            target.damage(source.damageOf(UDamageTypes.GAVITY_WELL_RECOIL, source), Integer.MAX_VALUE);
+                target.damage(source.asServerWorld(), source.damageOf(UDamageTypes.GAVITY_WELL_RECOIL, source), Integer.MAX_VALUE);
+            }
             if (!(target instanceof PlayerEntity)) {
                 target.discard();
                 source.asWorld().playSound(null, target.getBlockPos(), USounds.AMBIENT_DARK_VORTEX_MOOD, SoundCategory.AMBIENT, 2, 0.002F);
             }
-            if (target.isAlive()) {
-                target.damage(source.asEntity().getDamageSources().outOfWorld(), Integer.MAX_VALUE);
+            if (!source.isClient() && target.isAlive()) {
+                target.damage(source.asServerWorld(), source.asEntity().getDamageSources().outOfWorld(), Integer.MAX_VALUE);
             }
 
             source.subtractEnergyCost(-massOfTarget * 10);

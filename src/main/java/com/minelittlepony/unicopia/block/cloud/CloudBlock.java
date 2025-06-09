@@ -55,7 +55,7 @@ public class CloudBlock extends Block implements CloudLike {
     }
 
     @Override
-    protected boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
+    protected boolean isTransparent(BlockState state) {
         return true;
     }
 
@@ -93,7 +93,7 @@ public class CloudBlock extends Block implements CloudLike {
     }
 
     protected void generateSurfaceParticles(World world, BlockState state, BlockPos pos, ShapeContext context, int count) {
-        VoxelShape shape = state.getCullingShape(world, pos);
+        VoxelShape shape = state.getCullingShape();
         Random rng = world.random;
         Box box = shape.getBoundingBox();
 
@@ -144,8 +144,8 @@ public class CloudBlock extends Block implements CloudLike {
     }
 
     @Override
-    protected final VoxelShape getCullingShape(BlockState state, BlockView world, BlockPos pos) {
-        return getOutlineShape(state, world, pos, ShapeContext.absent(), EquineContext.ABSENT);
+    protected final VoxelShape getCullingShape(BlockState state) {
+        return getOutlineShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent(), EquineContext.ABSENT);
     }
 
     @Override
@@ -174,8 +174,8 @@ public class CloudBlock extends Block implements CloudLike {
 
     @Override
     protected boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
-        VoxelShape shape = state.getCullingShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-        VoxelShape shapeFrom = stateFrom.getCullingShape(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+        VoxelShape shape = state.getCullingShape();
+        VoxelShape shapeFrom = stateFrom.getCullingShape();
         return !shape.isEmpty() && !shapeFrom.isEmpty() && VoxelShapes.isSideCovered(shape, shapeFrom, direction);
     }
 

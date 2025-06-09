@@ -24,6 +24,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 
 public class ChangelingFeedingSpell extends AbstractSpell {
@@ -55,7 +56,7 @@ public class ChangelingFeedingSpell extends AbstractSpell {
 
         PlayerEntity player = changeling.asEntity();
         if (!canFeed(changeling)) {
-            changeling.playSound(USounds.Vanilla.ENTITY_PLAYER_BURP, 1, (float)player.getWorld().random.nextTriangular(1F, 0.2F));
+            changeling.playSound(USounds.Vanilla.ENTITY_PLAYER_BURP, 1, player.getWorld().random.nextTriangular(1F, 0.2F));
             return false;
         }
 
@@ -79,9 +80,9 @@ public class ChangelingFeedingSpell extends AbstractSpell {
             player.heal(healAmount);
 
             if (!canFeed(changeling)) {
-                changeling.playSound(USounds.Vanilla.ENTITY_PLAYER_BURP, 1, (float)player.getWorld().random.nextTriangular(1F, 0.2F));
+                changeling.playSound(USounds.Vanilla.ENTITY_PLAYER_BURP, 1, player.getWorld().random.nextTriangular(1F, 0.2F));
             } else {
-                changeling.playSound(USounds.ENTITY_PLAYER_CHANGELING_FEED, 0.1F, changeling.getRandomPitch());
+                changeling.playSound(USounds.ENTITY_PLAYER_CHANGELING_FEED.value(), 0.1F, changeling.getRandomPitch());
             }
 
             foodToDrain -= foodAmount;
@@ -109,8 +110,8 @@ public class ChangelingFeedingSpell extends AbstractSpell {
     public float drainFrom(Pony changeling, LivingEntity living, float damage) {
         DamageSource d = changeling.damageOf(UDamageTypes.LOVE_DRAINING, changeling);
 
-        if (damage > 0) {
-            living.damage(d, damage);
+        if (damage > 0 && living.getWorld() instanceof ServerWorld sw) {
+            living.damage(sw, d, damage);
         }
 
         ParticleUtils.spawnParticles(UParticles.CHANGELING_MAGIC, living, 7);

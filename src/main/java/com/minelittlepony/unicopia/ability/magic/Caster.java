@@ -82,7 +82,7 @@ public interface Caster<E extends Entity> extends
                     }
                 }
 
-                if (!asWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+                if (!asWorld().getServer().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                     return false;
                 }
             }
