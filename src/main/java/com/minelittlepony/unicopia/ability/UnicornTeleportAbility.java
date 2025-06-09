@@ -186,7 +186,7 @@ public class UnicornTeleportAbility implements Ability<Pos> {
         }
         teleporter.subtractEnergyCost(distance);
 
-        participant.fallDistance /= distance;
+        participant.fallDistance /= Math.min(distance, 1);
 
         BlockPos blockPos = BlockPos.ofFloored(dest);
 

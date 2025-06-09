@@ -91,7 +91,7 @@ public interface Spell extends NbtSerialisable, Affine {
      */
     @Nullable
     default Spell prepareForCast(Caster<?> caster, CastingMethod method) {
-        return this;
+        return method == CastingMethod.STAFF ? toThrowable() : this;
     }
 
     /**

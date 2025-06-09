@@ -7,9 +7,15 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.render.bezier.BezierSegment;
 import com.minelittlepony.unicopia.client.render.bezier.Trail;
 import com.minelittlepony.unicopia.particle.TargetBoundParticleEffect;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
@@ -18,6 +24,8 @@ import net.minecraft.util.math.Vec3d;
 
 public class WindParticle extends AbstractBillboardParticle {
     private static final Identifier TEXTURE = Unicopia.id("textures/particle/wind.png");
+
+    private final BezierSegment bezier = new BezierSegment();
 
     private final Trail trail;
 
@@ -60,18 +68,31 @@ public class WindParticle extends AbstractBillboardParticle {
     @Override
     protected void renderQuads(Tessellator te, float x, float y, float z, float tickDelta) {
         float alpha = this.alpha * (1 - (float)age / maxAge);
+        int light = getBrightness(tickDelta);
+        float scale = getScale(tickDelta);
 
         List<Trail.Segment> segments = trail.getSegments();
 
+        @Nullable
+        BufferBuilder buffer = null;
+
         for (int i = 0; i < segments.size() - 1; i++) {
-            BezierSegment corners = segments.get(i).getPlane(segments.get(i + 1));
-            float scale = getScale(tickDelta);
+            segments.get(i).getPlane(segments.get(i + 1), bezier);
 
-            corners.forEachCorner(corner -> {
+            for (var corner : bezier.corners()) {
                 corner.position().mul(scale).add(x, y, z);
-            });
+            }
 
-            renderQuad(te, corners.corners(), segments.get(i).getAlpha() * alpha, tickDelta);
+            if (buffer == null) {
+                RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+                buffer = te.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+            }
+
+            quad(buffer, bezier.corners(), segments.get(i).getAlpha() * alpha, tickDelta, light);
+        }
+
+        if (buffer != null) {
+            BufferRenderer.drawWithGlobalProgram(buffer.end());
         }
     }
 

@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.minelittlepony.common.util.GamePaths;
 import com.minelittlepony.common.util.registry.RegistryTypeAdapter;
 import com.minelittlepony.common.util.settings.*;
+import com.minelittlepony.unicopia.client.gui.HudPosition;
 
 public class Config extends com.minelittlepony.common.util.settings.Config {
     public final Setting<Set<String>> speciesWhiteList = value("server", "speciesWhiteList", (Set<String>)new HashSet<String>())
@@ -15,16 +16,17 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
             .addComment("whilst any ones left off are not permitted")
             .addComment("An empty list disables whitelisting entirely.");
 
-    @Deprecated
-    public final Setting<Set<String>> wantItNeedItEntityExcludelist = value("server", "wantItNeedItEntityExcludelist", (Set<String>)new HashSet<>(Set.of("minecraft:creeper")))
+    private final Setting<Set<String>> wantItNeedItEntityExcludelist = value("server", "wantItNeedItEntityExcludelist", (Set<String>)new HashSet<>(Set.of("minecraft:creeper")))
             .addComment("A list of entity types that are immune to the want it need it spell's effects");
 
-    @Deprecated
-    public final Setting<Set<String>> dimensionsWithoutAtmosphere = value("server", "dimensionsWithoutAtmosphere", (Set<String>)new HashSet<String>())
+    private final Setting<Set<String>> dimensionsWithoutAtmosphere = value("server", "dimensionsWithoutAtmosphere", (Set<String>)new HashSet<String>())
             .addComment("A list of dimensions ids that do not have an atmosphere, and thus shouldn't allow pegasi to fly.");
 
     public final Setting<Boolean> enableCheats = value("server", "enableCheats", false)
             .addComment("Allows use of the /tribe, /unicopia disguise, and /unicopia gravity commands");
+
+    public final Setting<Boolean> enableCloudGen = value("server", "enableCloudGen", true)
+            .addComment("Sets whether clouds generate");
 
     public final Setting<Race> preferredRace = value("client", "preferredRace", Race.EARTH)
             .addComment("The default preferred race")
@@ -41,6 +43,9 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
 
     public final Setting<Integer> hudPage = value("client", "hudActivePage", 0)
             .addComment("The page of abilities currently visible in the HUD. You can change this in-game using the PG_UP and PG_DWN keys (configurable)");
+
+    public final Setting<HudPosition> hudPosition = value("client", "hudPosition", HudPosition.MAIN_HAND)
+            .addComment("Location of the HUD on-screen");
 
     public final Setting<Boolean> disableWaterPlantsFix = value("compatibility", "disableWaterPlantsFix", false)
             .addComment("Disables this mod's built in fix for making sea plants waterlogged")

@@ -48,7 +48,7 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 Blocks.STRUCTURE_VOID, Blocks.STRUCTURE_BLOCK,
                 Blocks.COMMAND_BLOCK, Blocks.CHAIN_COMMAND_BLOCK, Blocks.REPEATING_COMMAND_BLOCK,
                 Blocks.LIGHT, Blocks.JIGSAW, Blocks.BARRIER, Blocks.BEDROCK
-        ).forceAddTag(BlockTags.DOORS).forceAddTag(BlockTags.TRAPDOORS);
+        ).forceAddTag(BlockTags.DOORS).forceAddTag(BlockTags.TRAPDOORS).forceAddTag(BlockTags.BEDS);
         getOrCreateTagBuilder(UTags.Blocks.ANGERS_GUARDIANS).add(
                 Blocks.PRISMARINE, Blocks.PRISMARINE_SLAB, Blocks.PRISMARINE_STAIRS, Blocks.PRISMARINE_WALL,
                 Blocks.PRISMARINE_BRICKS, Blocks.PRISMARINE_BRICK_SLAB, Blocks.PRISMARINE_BRICK_STAIRS,

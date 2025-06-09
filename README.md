@@ -89,24 +89,18 @@ View the HOW_TO_PLAY.md file for more details.
 
 # Dependencies & Building
 
-### 1.19.3 Only
-
-This project uses reach-entity-attributes, which may not be updated at the time of this writing.
-If you're building for 1.19.3, you may follow these steps to make sure it's available to git:
-
-`git clone https://github.com/Sollace/reach-entity-attributes`
-
-`cd reach-entity-attributes`
-
-`gradlew build publishToMavenLocal`
+### Dependencies
+- git
+- java 21
 
 ### Building Unicopia
 
-`git clone https://github.com/Sollace/Unicopia`
+```bash
+git clone https://github.com/Sollace/Unicopia.git
+cd Unicopia
+./gradlew rundatagen
+./gradlew build
+```
 
-`cd Unicopia` 
-
-`gradlew build`
-
-Built jars are located in /build/bin` within the Unicopia folder after performing the above two command.
+Built jars are located in `build/libs` within the Unicopia folder after performing the above commands.
 

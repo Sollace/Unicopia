@@ -258,7 +258,7 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
 
                     if (consumed.add(adjacent.toImmutable()) && !storedBlocks.containsKey(adjacent)) {
                         BlockEntity data = world.getBlockEntity(adjacent);
-                        storedBlocks.put(adjacent.toImmutable(), new Entry(adjacent.toImmutable(), s, data instanceof TileData ? Optional.empty() : Optional.ofNullable(data.createNbtWithId(world.getRegistryManager()))));
+                        storedBlocks.put(adjacent.toImmutable(), new Entry(adjacent.toImmutable(), s, data instanceof TileData ? Optional.empty() : Optional.ofNullable(data).map(d -> d.createNbtWithId(world.getRegistryManager()))));
 
                         if (s.isOf(UBlocks.CHITIN)) {
                             world.breakBlock(adjacent, false);

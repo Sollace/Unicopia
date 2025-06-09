@@ -3,11 +3,13 @@ package com.minelittlepony.unicopia.client.particle;
 import org.joml.Vector3f;
 
 import com.minelittlepony.unicopia.client.render.RenderUtil;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexFormat;
@@ -42,6 +44,7 @@ public abstract class AbstractGeometryBasedParticle extends Particle {
 
     protected final void renderQuad(MatrixStack matrices, Tessellator te, RenderUtil.Vertex[] corners, float alpha, float tickDelta) {
         int light = getBrightness(tickDelta);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
         BufferBuilder buffer = te.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
         for (RenderUtil.Vertex corner : corners) {
             var position = corner.position(matrices.peek().getPositionMatrix());
@@ -52,11 +55,16 @@ public abstract class AbstractGeometryBasedParticle extends Particle {
 
     protected final void renderQuad(Tessellator te, RenderUtil.Vertex[] corners, float alpha, float tickDelta) {
         int light = getBrightness(tickDelta);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
         BufferBuilder buffer = te.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+        quad(buffer, corners, alpha, tickDelta, light);
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
+    }
+
+    protected final void quad(BufferBuilder buffer, RenderUtil.Vertex[] corners, float alpha, float tickDelta, int light) {
         for (RenderUtil.Vertex corner : corners) {
             buffer.vertex(corner.position().x, corner.position().y, corner.position().z).texture(corner.texture().x, corner.texture().y).color(red, green, blue, alpha).light(light);
         }
-        BufferRenderer.drawWithGlobalProgram(buffer.end());
     }
 
     protected final void renderQuad(VertexConsumer buffer, Vector3f[] corners, float alpha, float tickDelta) {

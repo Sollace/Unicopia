@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.PlacementControlSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -88,17 +89,23 @@ public class CastCommand {
 
     private static int thrown(CommandContext<ServerCommandSource> source, TraitsFunc traits, float speed) throws CommandSyntaxException {
         ServerPlayerEntity player = source.getSource().getPlayerOrThrow();
-        getSpell(source, traits).create().toThrowable().throwProjectile(Caster.of(player).orElseThrow()).ifPresent(projectile -> {
-            Vec2f rotation = RotationArgumentType.getRotation(source, "rot").toAbsoluteRotation(source.getSource());
-            projectile.setVelocity(player, rotation.x, rotation.y, 0, speed, 1);
-        });
-
+        Spell spell = getSpell(source, traits).create();
+        if (spell != null) {
+            spell.toThrowable().throwProjectile(Caster.of(player).orElseThrow()).ifPresent(projectile -> {
+                Vec2f rotation = RotationArgumentType.getRotation(source, "rot").toAbsoluteRotation(source.getSource());
+                projectile.setVelocity(player, rotation.x, rotation.y, 0, speed, 1);
+            });
+        }
         return 0;
     }
 
     private static int placed(CommandContext<ServerCommandSource> source, TraitsFunc traits, Optional<Vec3d> position, Vec2f rotation) throws CommandSyntaxException {
         ServerPlayerEntity player = source.getSource().getPlayerOrThrow();
-        PlacementControlSpell spell = getSpell(source, traits).create().toPlaceable();
+        Spell spellType = getSpell(source, traits).create();
+        if (spellType == null) {
+            return 0;
+        }
+        PlacementControlSpell spell = spellType.toPlaceable();
         Caster<?> caster = Caster.of(player).orElseThrow();
 
         spell.setOrientation(caster, rotation.x, rotation.y);

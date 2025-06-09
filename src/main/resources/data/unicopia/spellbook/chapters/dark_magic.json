@@ -5,14 +5,18 @@
   "content": {
     "pages": [
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p1.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p1.title"
+        },
         "level": 10,
         "elements": [
           { "x": 15, "y": -10, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/dark_magic.png" }
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p2.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p2.title"
+        },
         "level": 8,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p2.1.body",
@@ -21,7 +25,9 @@
       },
       { },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p3.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p3.title"
+        },
         "level": 9,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p3.1.body"
@@ -29,7 +35,9 @@
       },
       { },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p4.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p4.title"
+        },
         "level": 10,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p4.1.body",
@@ -38,7 +46,9 @@
         ]
       },
       {
-        "title": "spell.unicopia.vortex",
+        "title": {
+          "translate": "spell.unicopia.vortex"
+        },
         "level": 5,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.vortex.1.body",
@@ -70,7 +80,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p6.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p6.title"
+        },
         "level": 6,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p6.1.body",
@@ -79,7 +91,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p7.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p7.title"
+        },
         "level": 6,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p7.1.body",
@@ -88,7 +102,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p8.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p8.title"
+        },
         "level": 6,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p8.1.body",
@@ -104,7 +120,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p9.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p9.title"
+        },
         "level": 11,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p9.1.body",
@@ -114,7 +132,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p10.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p10.title"
+        },
         "level": 11,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p10.1.body",
@@ -126,7 +146,9 @@
       { },
       { },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p11.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p11.title"
+        },
         "level": 13,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p11.1.body",
@@ -145,7 +167,9 @@
         ]
       },
       {
-        "title": "spell.unicopia.transformation",
+        "title": {
+          "translate": "spell.unicopia.transformation"
+        },
         "level": 13,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.transformation.1.body",
@@ -170,7 +194,9 @@
         ]
       },
       {
-        "title": "spell.unicopia.reveal",
+        "title": {
+          "translate": "spell.unicopia.reveal"
+        },
         "level": 15,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.reveal.1.body",
@@ -197,7 +223,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p14.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p14.title"
+        },
         "level": 14,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p14.1.body",
@@ -205,7 +233,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p15.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p15.title"
+        },
         "level": 15,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p15.1.body",
@@ -213,7 +243,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p16.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p16.title"
+        },
         "level": 15,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p16.1.body",
@@ -223,7 +255,9 @@
       },
       { },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p17.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p17.title"
+        },
         "level": 18,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p17.1.body",
@@ -233,7 +267,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p18.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p18.title"
+        },
         "level": 14,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p18.1.body",
@@ -242,7 +278,9 @@
         ]
       },
       {
-        "title": "spell.unicopia.arcane_protection",
+        "title": {
+          "translate": "spell.unicopia.arcane_protection"
+        },
         "level": 16,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.arcane_protection.1.body",
@@ -269,7 +307,9 @@
         ]
       },
       {
-        "title": "spell.unicopia.displacement",
+        "title": {
+          "translate": "spell.unicopia.displacement"
+        },
         "level": 17,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.displacement.1.body",
@@ -293,7 +333,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p21.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p21.title"
+        },
         "level": 14,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p21.1.body",
@@ -302,12 +344,16 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p22.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p22.title"
+        },
         "level": 15,
         "elements": []
       },
       {
-        "title": "spell.unicopia.mimic",
+        "title": {
+          "translate": "spell.unicopia.mimic"
+        },
         "level": 17,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.mimic.1.body",
@@ -351,7 +397,9 @@
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.dark_magic.p26.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.dark_magic.p26.title"
+        },
         "level": 21,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p26.1.body"

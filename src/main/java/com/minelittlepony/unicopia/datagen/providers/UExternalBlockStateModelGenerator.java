@@ -7,7 +7,6 @@ import static net.minecraft.data.client.VariantSettings.X;
 import static net.minecraft.data.client.VariantSettings.Y;
 import static net.minecraft.data.client.VariantSettings.Rotation.R0;
 import static net.minecraft.data.client.VariantSettings.Rotation.R90;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -53,14 +52,25 @@ public class UExternalBlockStateModelGenerator extends UBlockStateModelGenerator
 
         for (Direction.Axis axis : Direction.Axis.VALUES) {
             for (int i = 0; i < EdibleBlock.SEGMENTS.length; i++) {
-                BooleanProperty segment = EdibleBlock.SEGMENTS[i];
-                segment.getName();
+                int index = i;
+                if (axis == Direction.Axis.X) {
+                    index = EdibleBlock.rotate(Direction.Axis.Z, index);
+                    index = EdibleBlock.rotate(Direction.Axis.Z, index);
+                    index = EdibleBlock.rotate(Direction.Axis.Z, index);
+                    index = EdibleBlock.rotate(Direction.Axis.X, index);
+                }
+                if (axis == Direction.Axis.Z) {
+                    index = EdibleBlock.rotate(Direction.Axis.X, index);
+                }
+
+                BooleanProperty segment = EdibleBlock.SEGMENTS[index];
+
                 supplier.with(When.create().set(EdibleBlock.AXIS, axis).set(segment, true), BlockStateVariant.create()
                         .put(MODEL, uploadedModels.computeIfAbsent(i, ii -> {
                             return BlockModels.BALE_MODELS[ii].getLeft().upload(blockId.withPath(p -> "block/" + p + BlockModels.BALE_MODELS[ii].getRight()), textures, modelCollector);
                         }))
-                        .put(X, axis == Direction.Axis.Y ? R0 : R90)
-                        .put(Y, axis == Direction.Axis.X ? R90 : R0)
+                        .put(X, axis == Direction.Axis.Y ? R0 : axis == Direction.Axis.X ? R90 : R90)
+                        .put(Y, axis == Direction.Axis.Y ? R0 : axis == Direction.Axis.X ? R90 : R0)
                 );
             }
         }

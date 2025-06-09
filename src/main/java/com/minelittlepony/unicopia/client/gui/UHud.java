@@ -97,7 +97,14 @@ public class UHud {
         }
 
         font = client.textRenderer;
-        xDirection = client.player.getMainArm() == Arm.LEFT ? -1 : 1;
+
+        HudPosition hudPos = Unicopia.getConfig().hudPosition.get();
+        HudPosition.Alignment armAlignment = client.player.getMainArm() == Arm.LEFT ? HudPosition.Alignment.START : HudPosition.Alignment.END;
+        if (hudPos == HudPosition.OFF_HAND) {
+            armAlignment = armAlignment.opposite();
+        }
+
+        xDirection = hudPos.getHorizontal().or(armAlignment.opposite()).opposite().getSignum();
 
         matrices.push();
         matrices.translate(scaledWidth / 2, scaledHeight / 2, 0);
@@ -111,10 +118,12 @@ public class UHud {
         matrices.pop();
         matrices.push();
 
-        int hudX = ((scaledWidth - 50) / 2) + (109 * xDirection);
-        int hudY = scaledHeight - 50;
+        int hudX = hudPos.getHorizontal().pick(2, scaledWidth - 50, ((scaledWidth - 50) / 2) + (109 * armAlignment.getSignum()));
+        int hudY = hudPos.getVertical().pick(12, scaledHeight - 50, scaledHeight - 50);
+        if (hudPos == HudPosition.BOTTOM_CENTER) {
+            hudY -= 22;
+        }
         int hudZ = hotbarZ;
-
 
         float exhaustion = pony.getMagicalReserves().getExhaustion().getPercentFill();
 
@@ -205,12 +214,14 @@ public class UHud {
         int progress = Math.min(255, (int)(time * 255F / 20F));
 
         if (progress > 8) {
-            int color = Colors.WHITE;
-            int alpha = progress << 24 & -16777216;
+            int color = ColorHelper.Argb.withAlpha(progress, Colors.WHITE);
 
-            color |= alpha;
+            HudPosition hudPos = Unicopia.getConfig().hudPosition.get();
 
-            context.drawCenteredTextWithShadow(font, message, 25, -15, color);
+            int messageWidth = font.getWidth(message);
+            int messageX = hudPos.getHorizontal().pick(0, 25 - messageWidth/2, -messageWidth + 45, 25 - messageWidth/2);
+            int messageY = hudPos.getVertical().pick(55, -17, -17, -17);
+            context.drawText(font, message, messageX, messageY, color, true);
         }
     }
 
@@ -374,7 +385,7 @@ public class UHud {
     }
 
     public void tick() {
-        if (messageTime > 0) {
+        if (!client.isPaused() && messageTime > 0) {
             messageTime--;
         }
     }

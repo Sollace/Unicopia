@@ -5,14 +5,18 @@
   "content": {
     "pages": [
       {
-        "title": "gui.unicopia.spellbook.chapter.otherworldly.p1.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.otherworldly.p1.title"
+        },
         "level": 10,
         "elements": [
           { "x": 15, "y": -10, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/the_otherworldly.png" }
         ]
       },
       {
-        "title": "gui.unicopia.spellbook.chapter.otherworldly.p2.title",
+        "title": {
+          "translate": "gui.unicopia.spellbook.chapter.otherworldly.p2.title"
+        },
         "level": 20,
         "elements": [
           "gui.unicopia.spellbook.chapter.otherworldly.p2.1.body",
@@ -21,7 +25,9 @@
         ]
       },
       {
-        "title": "spell.unicopia.siphoning",
+        "title": {
+          "translate": "spell.unicopia.siphoning"
+        },
         "level": 20,
         "elements": [
           "gui.unicopia.spellbook.chapter.otherworldly.siphoning.1.body",
@@ -45,7 +51,9 @@
         ]
       },
       {
-        "title": "spell.unicopia.necromancy",
+        "title": {
+          "translate": "spell.unicopia.necromancy"
+        },
         "level": 21,
         "elements": [
           "gui.unicopia.spellbook.chapter.otherworldly.necromancy.1.body",
@@ -74,7 +82,9 @@
         ]
       },
       {
-        "title": "spell.unicopia.dark_vortex",
+        "title": {
+          "translate": "spell.unicopia.dark_vortex"
+        },
         "level": 23,
         "elements": [
           "gui.unicopia.spellbook.chapter.otherworldly.dark_vortex.1.body",
@@ -101,7 +111,9 @@
         ]
       },
       {
-        "title": "spell.unicopia.portal",
+        "title": {
+          "translate": "spell.unicopia.portal"
+        },
         "level": 24,
         "elements": [
           "gui.unicopia.spellbook.chapter.otherworldly.portal.1.body",
@@ -128,7 +140,9 @@
         ]
       },
       {
-        "title": "spell.unicopia.mind_swap",
+        "title": {
+          "translate": "spell.unicopia.mind_swap"
+        },
         "level": 27,
         "elements": [
           "gui.unicopia.spellbook.chapter.otherworldly.mind_swap.1.body",

@@ -509,9 +509,11 @@ public class URecipeProvider extends FabricRecipeProvider {
         // worms
         offerReversibleCompactingRecipes(exporter, RecipeCategory.BUILDING_BLOCKS, UItems.WHEAT_WORMS, RecipeCategory.BUILDING_BLOCKS, UBlocks.WORM_BLOCK);
         // fishing
-        ShapelessRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.BAITED_FISHING_ROD)
-            .input(Items.FISHING_ROD).criterion(hasItem(Items.FISHING_ROD), conditionsFromItem(Items.FISHING_ROD))
-            .input(UItems.WHEAT_WORMS)
+        ItemConversionShapedRecipeBuilder.create(RecipeCategory.MISC, Items.FISHING_ROD, UItems.BAITED_FISHING_ROD)
+            .input('#', Items.FISHING_ROD).criterion(hasItem(Items.FISHING_ROD), conditionsFromItem(Items.FISHING_ROD))
+            .input('*', UItems.WHEAT_WORMS).criterion("has_wheat_worms", conditionsFromItem(UItems.WHEAT_WORMS))
+            .pattern("# ")
+            .pattern(" *")
             .group("fishing_rod")
             .offerTo(exporter);
 
@@ -704,7 +706,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         UBlockFamilies.WAXED_ZAP.getVariants().forEach((variant, waxed) -> {
             if (variant == Variant.WALL_SIGN) return;
             var unwaxed = UBlockFamilies.ZAP.getVariant(variant);
-            CuttingBoardRecipeJsonBuilder.create(unwaxed, ItemTags.AXES)
+            CuttingBoardRecipeJsonBuilder.create(unwaxed, "axe_strip")
                 .input(waxed).criterion(hasItem(waxed), conditionsFromItem(waxed))
                 .result(Items.HONEYCOMB)
                 .sound(SoundEvents.ITEM_AXE_WAX_OFF)
@@ -713,13 +715,13 @@ public class URecipeProvider extends FabricRecipeProvider {
         List.of(UBlockFamilies.ZAP, UBlockFamilies.PALM).forEach(family -> {
             family.getVariants().forEach((variant, block) -> {
                 if (variant == Variant.WALL_SIGN) return;
-                CuttingBoardRecipeJsonBuilder.create(family.getBaseBlock(), ItemTags.AXES)
+                CuttingBoardRecipeJsonBuilder.create(family.getBaseBlock(), "axe_strip")
                     .input(block).criterion(hasItem(block), conditionsFromItem(block))
                     .sound(SoundEvents.ITEM_AXE_STRIP)
                     .offerTo(exporter, getItemPath(block));
             });
         });
-        CuttingBoardRecipeJsonBuilder.create(UBlocks.PALM_PLANKS, ItemTags.AXES)
+        CuttingBoardRecipeJsonBuilder.create(UBlocks.PALM_PLANKS, "axe_dig")
             .input(UBlocks.PALM_HANGING_SIGN).criterion(hasItem(UBlocks.PALM_HANGING_SIGN), conditionsFromItem(UBlocks.PALM_HANGING_SIGN))
             .sound(SoundEvents.ITEM_AXE_STRIP)
             .offerTo(exporter);
@@ -730,7 +732,7 @@ public class URecipeProvider extends FabricRecipeProvider {
                 UBlocks.ZAP_LOG, UBlocks.STRIPPED_ZAP_LOG,
                 UBlocks.ZAP_WOOD, UBlocks.STRIPPED_ZAP_WOOD
         ).forEach((unstripped, stripped) -> {
-            CuttingBoardRecipeJsonBuilder.create(stripped, ItemTags.AXES)
+            CuttingBoardRecipeJsonBuilder.create(stripped, "axe_strip")
                 .input(unstripped).criterion(hasItem(unstripped), conditionsFromItem(unstripped))
                 .sound(SoundEvents.ITEM_AXE_STRIP)
                 .result(Identifier.of("farmersdelight:tree_bark"))

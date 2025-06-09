@@ -1422,6 +1422,7 @@
   "unicopia.options.ignore_mine_lp.detected": "%s sᴉ ǝɔɐɹ pǝʇɔǝʇǝp ɹno⅄ *",
   "unicopia.options.ignore_mine_lp.undetected": "ǝɔɐɹ pǝʇɔǝʇǝp ɹnoʎ ǝsn ʇou llᴉʍ ǝM *",
   "unicopia.options.preferred_race": "%s :ǝɔɐᴚ pǝɹɹǝɟǝɹԀ",
+  "unicopia.options.hud_position": "HUD Position: %s",
   "unicopia.options.whitelist": "ʇsᴉlǝʇᴉɥM ǝlqɐuƎ",
   "unicopia.options.whitelist.race": "s%s ʍoll∀",
   "unicopia.options.whitelist.details": "ʍollɐ oʇ ɥsᴉʍ noʎ sǝɔɐɹ ǝɥʇ ʇɔǝlǝS *",

@@ -45,6 +45,7 @@ public record CustomisedSpellType<T extends Spell> (
         return traitsDifferenceSupplier.get();
     }
 
+    @Nullable
     public T create() {
         try {
             return type.getFactory().create(this);

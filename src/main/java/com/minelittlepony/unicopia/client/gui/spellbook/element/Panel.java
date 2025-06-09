@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
+import com.minelittlepony.common.client.gui.dimension.Padding;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen;
 import com.minelittlepony.unicopia.client.gui.spellbook.element.DynamicContent.Page;
 
@@ -26,7 +27,7 @@ class Panel extends ScrollContainer {
 
         int width = screen.getBackgroundWidth() / 2;
         margin.top = screen.getY() + 35;
-        margin.bottom = screen.height - screen.getBackgroundHeight() - screen.getY() + 40;
+        margin.bottom = screen.height - screen.getBackgroundHeight() - screen.getY() + 20;
         margin.left = screen.getX() + 30;
 
         if (pageIndex % 2 == 1) {
@@ -42,6 +43,15 @@ class Panel extends ScrollContainer {
 
     @Override
     protected void renderContents(DrawContext context, int mouseX, int mouseY, float partialTicks) {
+        var scissorBounds = getBounds();
+
+        context.disableScissor();
+        context.enableScissor(
+                scissorBounds.left,
+                scissorBounds.top,
+                scissorBounds.right(),
+                scissorBounds.bottom()
+        );
         page.ifPresent(p -> {
             int oldHeight = p.getBounds().height;
             p.draw(context, mouseX, mouseY, this);
@@ -55,15 +65,22 @@ class Panel extends ScrollContainer {
     @Override
     public Bounds getContentBounds() {
         return page == null ? Bounds.empty() : page.map(page -> {
-            return new Bounds(0, 0, 1, page.getBounds().height);
-        }).orElse(Bounds.empty());
+            return page.getBounds();
+        }).orElse(Bounds.empty()).offset(new Padding(
+            getBounds().top + getScrollY(),
+            getBounds().left + getScrollX(), 0, 0)
+        ).offset(getContentPadding());
     }
 
     @Override
-    protected void drawBackground(DrawContext context, int mouseX, int mouseY, float partialTicks) { }
+    protected void drawBackground(DrawContext context, int mouseX, int mouseY, float partialTicks) {
+
+    }
 
     @Override
-    protected void drawDecorations(DrawContext context, int mouseX, int mouseY, float partialTicks) { }
+    protected void drawDecorations(DrawContext context, int mouseX, int mouseY, float partialTicks) {
+
+    }
 
     @Override
     protected void drawOverlays(DrawContext context, int mouseX, int mouseY, float partialTicks) {

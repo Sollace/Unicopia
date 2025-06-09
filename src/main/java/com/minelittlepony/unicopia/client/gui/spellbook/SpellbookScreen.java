@@ -10,7 +10,6 @@ import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
-import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
@@ -146,10 +145,6 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight, 512, 256);
-
-        if (Debug.SPELLBOOK_CHAPTERS) {
-            clearAndInit();
-        }
 
         tabs.getAllTabs().forEach(tab -> {
             Bounds bounds = tab.bounds();

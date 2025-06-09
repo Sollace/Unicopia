@@ -1568,6 +1568,7 @@
   "unicopia.options.ignore_mine_lp.detected": "* Your detected race is %s",
   "unicopia.options.ignore_mine_lp.undetected": "* We will not use your detected race",
   "unicopia.options.preferred_race": "Preferred Race: %s",
+  "unicopia.options.hud_position": "HUD Position: %s",
   "unicopia.options.whitelist": "Enable Whitelist",
   "unicopia.options.whitelist.race": "Allow %ss",
   "unicopia.options.whitelist.details": "* Select the races you wish to allow",

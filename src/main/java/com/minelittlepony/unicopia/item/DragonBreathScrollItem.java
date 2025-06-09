@@ -30,9 +30,9 @@ public class DragonBreathScrollItem extends Item {
             return TypedActionResult.fail(stack);
         }
 
-        stack.split(1);
+        ItemStack scroll = stack.splitUnlessCreative(1, player);
         if (!world.isClient) {
-            String recipient = stack.get(DataComponentTypes.CUSTOM_NAME).getString();
+            String recipient = scroll.get(DataComponentTypes.CUSTOM_NAME).getString();
             UCriteria.SEND_DRAGON_BREATH.triggerSent(player, payload, recipient, (counterName, count) -> {
                if (count == 1 && "dings_on_celestias_head".equals(counterName)) {
                    UnicopiaWorldProperties properties = UnicopiaWorldProperties.forWorld((ServerWorld)world);

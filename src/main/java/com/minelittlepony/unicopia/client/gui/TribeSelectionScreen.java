@@ -14,8 +14,11 @@ import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgRequestSpeciesChange;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.ScreenRect;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -68,7 +71,14 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
         this.options.clear();
 
         for (Race race : options) {
-            addOption(race, top);
+            if (race.isHuman()) {
+                final Race r = race;
+                addButton(new Link(width / 2, height - getFont().fontHeight - 10).setCentered())
+                    .onClick(s -> selectRace(r))
+                    .getStyle().setText("[Or Play as None of these]");
+            } else {
+                addOption(race, top);
+            }
         }
 
         scroll(SELECTION == -1 ? options.size() / 2 : SELECTION, false);
@@ -79,19 +89,23 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
         int index = options.size();
         options.add(addDrawableChild(option));
         option.onClick(b -> {
-            finished = true;
             scroll(index, false);
-            client.setScreen(new TribeConfirmationScreen(result -> {
-                finished = false;
-
-                if (result) {
-                    Channel.CLIENT_REQUEST_SPECIES_CHANGE.sendToServer(new MsgRequestSpeciesChange(true, race));
-                    finish();
-                } else {
-                    client.setScreen(this);
-                }
-            }, race));
+            selectRace(race);
         }).setEnabled(allowedRaces.contains(race));
+    }
+
+    private void selectRace(Race race) {
+        finished = true;
+        client.setScreen(new TribeConfirmationScreen(result -> {
+            finished = false;
+
+            if (result) {
+                Channel.CLIENT_REQUEST_SPECIES_CHANGE.sendToServer(new MsgRequestSpeciesChange(true, race));
+                finish();
+            } else {
+                client.setScreen(this);
+            }
+        }, race));
     }
 
     @Override
@@ -192,6 +206,34 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
                 client.setScreen(this);
                 finished = false;
             });
+        }
+    }
+
+    static class Link extends Label implements Widget {
+        public Link(int x, int y) {
+            super(x, y);
+        }
+
+        @Override
+        protected boolean isValidClickButton(int button) {
+            return button == 0;
+        }
+
+        @Override
+        public boolean isMouseOver(double mouseX, double mouseY) {
+            return getBounds().contains(mouseX, mouseY);
+        }
+
+        @Override
+        public ScreenRect getNavigationFocus() {
+            return new ScreenRect(getX(), getY(), getWidth(), getHeight());
+        }
+
+        @Override
+        public void renderWidget(DrawContext context, int mouseX, int mouseY, float partialTicks) {
+            this.hovered = isMouseOver(mouseX, mouseY);
+            getStyle().setColor(isSelected() ? Colors.ALTERNATE_WHITE : Colors.GRAY);
+            super.renderWidget(context, mouseX, mouseY, partialTicks);
         }
     }
 }

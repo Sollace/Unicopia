@@ -32,6 +32,7 @@ import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -53,15 +54,13 @@ public class EdibleBlock extends HayBlock {
 
     // [up/down][north/south][west/east]
     public static final BooleanProperty[] SEGMENTS = {
-            BOTTOM_NORTH_WEST,
-            BOTTOM_NORTH_EAST,
-            BOTTOM_SOUTH_WEST,
-            BOTTOM_SOUTH_EAST,
-            TOP_NORTH_WEST,
-            TOP_NORTH_EAST,
-            TOP_SOUTH_WEST,
-            TOP_SOUTH_EAST
+            BOTTOM_NORTH_WEST, BOTTOM_NORTH_EAST,
+            BOTTOM_SOUTH_WEST, BOTTOM_SOUTH_EAST,
+
+            TOP_NORTH_WEST, TOP_NORTH_EAST,
+            TOP_SOUTH_WEST, TOP_SOUTH_EAST
     };
+
     private static final VoxelShape[] SHAPES = {
             Block.createCuboidShape(0, 0, 0, 8, 8, 8),
             Block.createCuboidShape(8, 0, 0, 16, 8, 8),
@@ -82,6 +81,28 @@ public class EdibleBlock extends HayBlock {
         }
         return shape == null ? VoxelShapes.fullCube() : shape.simplify();
     });
+
+    public static int rotate(Direction.Axis axis, int index) {
+        Direction x = ((index & 1) == 0 ? Direction.EAST : Direction.WEST).rotateClockwise(axis);
+        Direction y = ((index & 4) == 0 ? Direction.DOWN : Direction.UP).rotateClockwise(axis);
+        Direction z = ((index & 2) == 0 ? Direction.NORTH : Direction.SOUTH).rotateClockwise(axis);
+        return toIndex(x) | toIndex(y) | toIndex(z);
+    }
+
+    private static int toIndex(Direction direction) {
+        if (direction.getAxis() == Direction.Axis.X) {
+            direction = direction.getOpposite();
+        }
+        return direction.getDirection() == Direction.AxisDirection.POSITIVE ? getOffset(direction.getAxis()) : 0;
+    }
+
+    private static int getOffset(Direction.Axis axis) {
+        return switch (axis) {
+            case X -> 1;
+            case Z -> 2;
+            case Y -> 4;
+        };
+    }
 
     static void bootstrap() {
         UseBlockCallback.EVENT.register((PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) -> {

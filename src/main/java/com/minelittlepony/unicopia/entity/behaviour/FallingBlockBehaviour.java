@@ -7,7 +7,6 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
 import com.minelittlepony.unicopia.mixin.MixinFallingBlock;
-import com.minelittlepony.unicopia.mixin.MixinFallingBlockEntity;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import net.minecraft.block.BedBlock;
@@ -78,16 +77,16 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
         if (state.contains(Properties.BED_PART)) {
             Vec3i offset = BedBlock.getOppositePartDirection(state).getVector();
             BlockState foot = state.with(Properties.BED_PART, BedPart.FOOT);
-            context.attachExtraEntity(Vec3d.of(offset), configure(MixinFallingBlockEntity.createInstance(entity.getWorld(), entity.getX() + offset.getX(), entity.getY() + offset.getY(), entity.getZ() + offset.getZ(), foot), block));
+            context.attachExtraEntity(Vec3d.of(offset), configure(new FallingBlockEntity(entity.getWorld(), entity.getX() + offset.getX(), entity.getY() + offset.getY(), entity.getZ() + offset.getZ(), foot), block));
         }
 
         if (state.contains(Properties.DOUBLE_BLOCK_HALF)) {
             BlockState upperState = state.with(Properties.DOUBLE_BLOCK_HALF, DoubleBlockHalf.UPPER);
-            context.attachExtraEntity(new Vec3d(0, 1, 0), configure(MixinFallingBlockEntity.createInstance(entity.getWorld(), entity.getX(), entity.getY() + 1, entity.getZ(), upperState), block));
+            context.attachExtraEntity(new Vec3d(0, 1, 0), configure(new FallingBlockEntity(entity.getWorld(), entity.getX(), entity.getY() + 1, entity.getZ(), upperState), block));
         }
 
         if (state != entity.getBlockState()) {
-            entity = MixinFallingBlockEntity.createInstance(entity.getWorld(), entity.getX(), entity.getY(), entity.getZ(), state);
+            entity = new FallingBlockEntity(entity.getWorld(), entity.getX(), entity.getY(), entity.getZ(), state);
         }
         return configure(entity, block);
     }
@@ -100,7 +99,7 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
             boolean logged = entity.getWorld().isWater(entity.getBlockPos());
 
             if (state.get(Properties.WATERLOGGED) != logged) {
-                entity = MixinFallingBlockEntity.createInstance(entity.getWorld(), entity.getX(), entity.getY(), entity.getZ(), state.with(Properties.WATERLOGGED, logged));
+                entity = new FallingBlockEntity(entity.getWorld(), entity.getX(), entity.getY(), entity.getZ(), state.with(Properties.WATERLOGGED, logged));
                 spell.getDisguise().setAppearance(entity);
             }
         }

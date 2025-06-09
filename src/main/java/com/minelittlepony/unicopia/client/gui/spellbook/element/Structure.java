@@ -28,8 +28,8 @@ public record Structure(Bounds bounds, Schematic schematic) implements PageEleme
 
         matrices.push();
         if (container != null) {
-            matrices.translate(container.getBounds().width / 2, container.getBounds().height / 2, 100);
-            float minDimensions = Math.min(container.getBounds().width, container.getBounds().height) - 30;
+            matrices.translate(container.getBounds().width / 2, container.getBounds().height / 2 - 20, 100);
+            float minDimensions = Math.min(container.getBounds().width * 0.7F, container.getBounds().height) - 30;
             int minSize = (Math.max(schematic.dx(), Math.max(schematic.dy(), schematic.dz())) + 1) * 16;
             float scale = minDimensions / minSize;
             matrices.scale(scale, scale, 1);

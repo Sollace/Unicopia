@@ -16,7 +16,6 @@ import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.data.server.recipe.RecipeExporter;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
@@ -28,9 +27,7 @@ import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
@@ -40,20 +37,20 @@ public class CuttingBoardRecipeJsonBuilder {
     private final Map<String, AdvancementCriterion<?>> criterions = new LinkedHashMap<>();
 
     private final ItemConvertible output;
-    private final TagKey<Item> tool;
+    private final String action;
 
     private final List<Result> results = new ArrayList<>();
     private final List<Ingredient> ingredients = new ArrayList<>();
 
     private Identifier sound = Identifier.ofVanilla("item.axe.strip");
 
-    public static CuttingBoardRecipeJsonBuilder create(ItemConvertible output, TagKey<Item> tool) {
-        return new CuttingBoardRecipeJsonBuilder(output, tool);
+    public static CuttingBoardRecipeJsonBuilder create(ItemConvertible output, String action) {
+        return new CuttingBoardRecipeJsonBuilder(output, action);
     }
 
-    protected CuttingBoardRecipeJsonBuilder(ItemConvertible output, TagKey<Item> tool) {
+    protected CuttingBoardRecipeJsonBuilder(ItemConvertible output, String action) {
         this.output = output;
-        this.tool = tool;
+        this.action = action;
         result(output);
     }
 
@@ -92,7 +89,7 @@ public class CuttingBoardRecipeJsonBuilder {
         exporter.accept(id,
             new CuttingBoardRecipe(
                     ingredients,
-                    new Tool(Identifier.of("farmersdelight:tool"), tool),
+                    new Tool(Identifier.of("farmersdelight:tool_action"), action),
                     sound,
                     results
             ),
@@ -112,10 +109,10 @@ public class CuttingBoardRecipeJsonBuilder {
         offerTo(exporter, recipeId);
     }
 
-    public record Tool(Identifier type, TagKey<Item> tag) {
+    public record Tool(Identifier type, String action) {
         static final Codec<Tool> CODEC = RecordCodecBuilder.create(ii -> ii.group(
-                Identifier.CODEC.fieldOf("type").forGetter(Tool::type),
-                TagKey.unprefixedCodec(RegistryKeys.ITEM).fieldOf("tag").forGetter(Tool::tag)
+                Identifier.CODEC.fieldOf("fabric:type").forGetter(Tool::type),
+                Codec.STRING.fieldOf("action").forGetter(Tool::action)
         ).apply(ii, Tool::new));
     }
     public record Result(Identifier item, int count) {
