@@ -114,12 +114,16 @@ public class InteractionManager {
     }
 
     public void setEquineContext(EquineContext context) {
-        equineContext.push(context);
+        synchronized (equineContext) {
+            equineContext.push(context);
+        }
     }
 
     public void clearEquineContext() {
-        if (!equineContext.isEmpty()) {
-            equineContext.pop();
+        synchronized (equineContext) {
+            if (!equineContext.isEmpty()) {
+                equineContext.pop();
+            }
         }
     }
 
@@ -128,7 +132,9 @@ public class InteractionManager {
     }
 
     public EquineContext getPathingEquineContext() {
-        return equineContext.isEmpty() ? EquineContext.ABSENT : equineContext.peek();
+        synchronized (equineContext) {
+            return equineContext.isEmpty() ? EquineContext.ABSENT : equineContext.peek();
+        }
     }
 
     public Optional<Pony> getClientPony() {
