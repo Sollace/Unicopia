@@ -1,15 +1,13 @@
 package com.minelittlepony.unicopia.client;
 
 import com.minelittlepony.unicopia.item.UItems;
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.spongepowered.include.com.google.common.base.Objects;
 
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -45,10 +43,7 @@ public class DiscoveryToast implements Toast {
 
     @Override
     public void draw(DrawContext context, TextRenderer textRenderer, long startTime) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.setShaderColor(1.0F, 1, 1, 1);
-
-        context.drawGuiTexture(TEXTURE, 0, 0, getWidth(), getHeight());
+        context.drawGuiTexture(RenderLayer::getGuiTextured, TEXTURE, 0, 0, getWidth(), getHeight());
         context.drawText(textRenderer, TITLE, 30, 7, -11534256, false);
         context.drawText(textRenderer, DESCRIPTION, 30, 18, -16777216, false);
 
@@ -60,9 +55,7 @@ public class DiscoveryToast implements Toast {
         context.drawItem(UItems.SPELLBOOK.getDefaultStack(), 3, 3);
         matrices.pop();
 
-        context.drawTexture(icon, 8, 8, 1, 0, 0, 16, 16, 16, 16);
-
-        RenderSystem.setShaderColor(1, 1, 1, 1);
+        context.drawTexture(RenderLayer::getGuiTextured, icon, 8, 8, 1, 0, 0, 16, 16, 16, 16);
     }
 
     public DiscoveryToast addDiscoveries(Identifier icon) {

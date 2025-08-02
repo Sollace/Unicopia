@@ -2,19 +2,14 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.List;
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
-
 import net.minecraft.block.Blocks;
-import net.minecraft.component.type.AttributeModifierSlot;
-import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
-import net.minecraft.item.ToolMaterials;
+import net.minecraft.item.ToolMaterial;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -22,30 +17,12 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class StaffItem extends SwordItem {
     public StaffItem(Settings settings) {
-        super(ToolMaterials.WOOD, settings.attributeModifiers(createAttributeModifiers(2, 3)));
-    }
-
-    public static AttributeModifiersComponent createAttributeModifiers(int attackDamage, float attackReach) {
-        return AttributeModifiersComponent.builder()
-            .add(
-                EntityAttributes.GENERIC_ATTACK_DAMAGE,
-                new EntityAttributeModifier(
-                    BASE_ATTACK_DAMAGE_MODIFIER_ID, (attackDamage), EntityAttributeModifier.Operation.ADD_VALUE
-                ),
-                AttributeModifierSlot.MAINHAND
-            )
-            .add(
-                UEntityAttributes.EXTENDED_ATTACK_DISTANCE,
-                new EntityAttributeModifier(UItemModifierIds.ATTACK_RANGE_MODIFIER_ID, attackReach, EntityAttributeModifier.Operation.ADD_VALUE),
-                AttributeModifierSlot.MAINHAND
-            )
-            .build();
+        super(ToolMaterial.WOOD, 2, 3, settings);
     }
 
     @Override
@@ -68,7 +45,7 @@ public class StaffItem extends SwordItem {
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.translatable(getTranslationKey(stack) + ".lore").formatted(Formatting.GRAY));
+        tooltip.add(Text.translatable(getTranslationKey() + ".lore").formatted(Formatting.GRAY));
     }
 
     @Override

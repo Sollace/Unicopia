@@ -14,6 +14,8 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -21,12 +23,12 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 
-public class HeldEntityFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
-    public HeldEntityFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
+public class HeldEntityFeatureRenderer<S extends BipedEntityRenderState, E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<S> {
+    public HeldEntityFeatureRenderer(FeatureRendererContext<S, ? extends BipedEntityModel<S>> context) {
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, E entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, S entity, float limbAngle, float limbDistance) {
         Pony.of(entity).flatMap(Pony::getEntityInArms).ifPresent(passenger -> {
             float leanAmount = ((LivingEntityDuck)entity).getLeaningPitch();
 
@@ -48,12 +50,12 @@ public class HeldEntityFeatureRenderer<E extends LivingEntity> implements Access
     }
 
     @Override
-    public void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, E entity, ModelPart arm, Arm side) {
+    public void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, S entity, ModelPart arm, Arm side) {
 
     }
 
     @Override
-    public boolean beforeRenderArms(ArmRenderer sender, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, E entity, int light) {
+    public boolean beforeRenderArms(ArmRenderer sender, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, S entity, int light) {
         return Pony.of(entity).flatMap(Pony::getEntityInArms).filter(passenger -> {
             float swingProgress = entity.getHandSwingProgress(MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false));
             float f = -0.4f * MathHelper.sin(MathHelper.sqrt(swingProgress) * (float)Math.PI);
@@ -81,35 +83,23 @@ public class HeldEntityFeatureRenderer<E extends LivingEntity> implements Access
     }
 
     private void renderCarriedEntity(LivingEntity p, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float tickDelta) {
+        @SuppressWarnings("unchecked")
+        var renderer = (EntityRenderer<LivingEntity, LivingEntityRenderState>)MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(p);
+
         LimbAnimationUtil.resetToZero(p.limbAnimator);
         Entity vehicle = p.getVehicle();
         ((EntityDuck)p).setVehicle(null);
 
-        p.prevBodyYaw = 0;
-        p.bodyYaw = 0;
-
-        float oldHeadYaw = p.headYaw;
-        float oldPrevHeadYaw = p.prevHeadYaw;
-        float oldPrevYaw = p.prevYaw;
-        float oldYaw = p.getYaw();
         boolean onGround = p.isOnGround();
-        p.headYaw = 0;
-        p.prevHeadYaw = 0;
-        p.prevYaw = 0;
-        p.setYaw(0);
-        p.setBodyYaw(0);
         p.setOnGround(true);
-        @SuppressWarnings("unchecked")
-        EntityRenderer<LivingEntity> renderer = (EntityRenderer<LivingEntity>)MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(p);
-        renderer.render(p, 0, tickDelta, matrices, vertexConsumers, light);
-
-        p.headYaw = oldHeadYaw;
-        p.prevHeadYaw = oldPrevHeadYaw;
-        p.prevYaw = oldPrevYaw;
-        p.setYaw(oldYaw);
+        var state = renderer.getAndUpdateRenderState(p, tickDelta);
+        state.yawDegrees = 0;
+        state.bodyYaw = 0;
         p.setOnGround(onGround);
 
         ((EntityDuck)p).setVehicle(vehicle);
+        renderer.render(state, matrices, vertexConsumers, light);
+
     }
 
     public static Vec3d getCarryPosition(Living<?> entity, Living<?> passenger) {

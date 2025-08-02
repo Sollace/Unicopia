@@ -12,12 +12,12 @@ import com.minelittlepony.unicopia.util.Dispensable;
 
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BookItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -25,14 +25,14 @@ import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class SpellbookItem extends BookItem implements Dispensable {
+public class SpellbookItem extends Item implements Dispensable {
     public SpellbookItem(Settings settings) {
         super(settings);
         DispenserBlock.registerBehavior(this, createDispenserBehaviour());
     }
 
     @Override
-    public TypedActionResult<ItemStack> dispenseStack(BlockPointer pointer, ItemStack stack) {
+    public ActionResult dispenseStack(BlockPointer pointer, ItemStack stack) {
         Direction facing = pointer.state().get(DispenserBlock.FACING);
         Position pos = DispenserBlock.getOutputLocation(pointer);
 
@@ -40,10 +40,10 @@ public class SpellbookItem extends BookItem implements Dispensable {
         if (placeBook(stack, pointer.world(), pos, yaw, null)) {
             stack.decrement(1);
 
-            return new TypedActionResult<>(ActionResult.SUCCESS, stack);
+            return ActionResult.SUCCESS;
         }
 
-        return new TypedActionResult<>(ActionResult.FAIL, stack);
+        return ActionResult.FAIL;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class SpellbookItem extends BookItem implements Dispensable {
     }
 
     private static boolean placeBook(ItemStack stack, World world, Position pos, float yaw, @Nullable Entity placer) {
-        SpellbookEntity book = UEntities.SPELLBOOK.create(world);
+        SpellbookEntity book = UEntities.SPELLBOOK.create(world, SpawnReason.MOB_SUMMONED);
 
         book.refreshPositionAndAngles(pos.getX(), pos.getY(), pos.getZ(), 0, 0);
         book.setHeadYaw(yaw);

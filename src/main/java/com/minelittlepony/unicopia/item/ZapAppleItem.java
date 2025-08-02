@@ -21,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -33,7 +34,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -43,7 +43,7 @@ public class ZapAppleItem extends Item implements MultiItem, Appearance.Appearan
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    public ActionResult use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
         return TraceHelper.findEntity(player, 5, 1, e -> canFeedTo(stack, e))
                 .map(entity -> onFedTo(stack, player, entity))
@@ -54,10 +54,10 @@ public class ZapAppleItem extends Item implements MultiItem, Appearance.Appearan
     public ItemStack finishUsing(ItemStack stack, World w, LivingEntity player) {
         stack = super.finishUsing(stack, w, player);
 
-        player.damage(Living.living(player).damageOf(UDamageTypes.ZAP_APPLE), 120);
+        if (w instanceof ServerWorld sw) {
+            player.damage(sw, Living.living(player).damageOf(UDamageTypes.ZAP_APPLE), 120);
 
-        if (w instanceof ServerWorld) {
-            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(w);
+            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(sw, SpawnReason.EVENT);
             lightning.refreshPositionAfterTeleport(player.getX(), player.getY(), player.getZ());
 
             player.onStruckByLightning((ServerWorld)w, lightning);
@@ -79,9 +79,8 @@ public class ZapAppleItem extends Item implements MultiItem, Appearance.Appearan
                 || e instanceof PigEntity;
     }
 
-    public TypedActionResult<ItemStack> onFedTo(ItemStack stack, PlayerEntity player, Entity e) {
-
-        LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(e.getWorld());
+    public ActionResult onFedTo(ItemStack stack, PlayerEntity player, Entity e) {
+        LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(e.getWorld(), SpawnReason.EVENT);
         lightning.refreshPositionAfterTeleport(e.getX(), e.getY(), e.getZ());
         lightning.setCosmetic(true);
         if (player instanceof ServerPlayerEntity) {
@@ -98,7 +97,7 @@ public class ZapAppleItem extends Item implements MultiItem, Appearance.Appearan
             stack.decrement(1);
         }
 
-        return new TypedActionResult<>(ActionResult.SUCCESS, stack);
+        return ActionResult.SUCCESS;
     }
 
     @Override

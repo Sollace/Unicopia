@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
@@ -46,7 +47,7 @@ class EntityReplacementManager implements Disguise {
             EntityType<?> type = mobTypes.get(Math.abs((int)caster.asEntity().getUuid().getMostSignificantBits()) % mobTypes.size());
             if (type != currentType) {
                 currentType = type;
-                disguise.setAppearance(type.create(caster.asWorld()));
+                disguise.setAppearance(type.create(caster.asWorld(), SpawnReason.LOAD));
             }
             return Optional.of(this);
         }

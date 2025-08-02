@@ -41,11 +41,6 @@ public class HorseShoeItem extends HeavyProjectileItem {
     }
 
     @Override
-    public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-        return ingredient.isOf(this);
-    }
-
-    @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         float degradation = (stack.getDamage() / (float)stack.getMaxDamage());
         float inaccuracy = projectileInnacuracy + degradation * 30;

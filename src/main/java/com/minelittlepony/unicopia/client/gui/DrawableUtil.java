@@ -6,10 +6,11 @@ import com.minelittlepony.unicopia.Race;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -46,13 +47,12 @@ public interface DrawableUtil {
     }
 
     static void renderRaceIcon(DrawContext context, Race race, int x, int y, int size) {
-        context.drawTexture(race.getIcon(), x - size / 2, y - size / 2, 0, 0, 0, size, size, size, size);
+        context.drawTexture(RenderLayer::getGuiTextured, race.getIcon(), x - size / 2, y - size / 2, 0, 0, 0, size, size, size, size);
     }
 
     static void drawLine(MatrixStack matrices, int x1, int y1, int x2, int y2, int color) {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
@@ -62,7 +62,7 @@ public interface DrawableUtil {
         float k = (color & 255) / 255F;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
         BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(matrix, x1, y1, 0).color(r, g, b, k);
         bufferBuilder.vertex(matrix, x2, y2, 0).color(r, g, b, k);
@@ -126,7 +126,7 @@ public interface DrawableUtil {
 
         if (shouldDraw) {
             RenderSystem.setShaderColor(1, 1, 1, 1);
-            RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+            RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());

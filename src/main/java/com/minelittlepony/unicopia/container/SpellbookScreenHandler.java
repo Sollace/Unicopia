@@ -10,14 +10,16 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.recipe.URecipes;
 import com.mojang.datafixers.util.Pair;
 
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Equipment;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.recipe.RecipeEntry;
@@ -120,8 +122,8 @@ public class SpellbookScreenHandler extends ScreenHandler {
 
                 @Override
                 public boolean canInsert(ItemStack stack) {
-                    Equipment equipment = Equipment.fromStack(stack);
-                    return equipment != null && eq == equipment.getSlotType();
+                    EquippableComponent equipment = stack.get(DataComponentTypes.EQUIPPABLE);
+                    return equipment != null && eq == equipment.slot();
                 }
 
                 @Override
@@ -188,11 +190,16 @@ public class SpellbookScreenHandler extends ScreenHandler {
             if (!world.isClient && !gemSlot.getStack().isEmpty()) {
                 Comparator<RecipeEntry<SpellbookRecipe>> comparator = Comparator.comparing(e -> e.value().getPriority());
                 SpellbookRecipe.Input input = this.input.createInput();
+                @SuppressWarnings("unchecked")
                 ItemStack resultStack = input.hasIngredients() ? world.getServer().getRecipeManager()
-                        .getAllMatches(URecipes.SPELLBOOK, input, world)
-                        .stream().sorted(comparator)
+                        .values()
+                        .stream()
+                        .filter(recipe -> recipe.value() instanceof SpellbookRecipe)
+                        .map(i -> (RecipeEntry<SpellbookRecipe>)i)
+                        .filter(recipe -> recipe.value().getType() == URecipes.SPELLBOOK && recipe.value().matches(input, world))
+                        .sorted(comparator)
                         .findFirst()
-                        .filter(recipe -> result.shouldCraftRecipe(world, (ServerPlayerEntity)this.inventory.player, recipe))
+                        .filter(recipe -> result.shouldCraftRecipe((ServerPlayerEntity)this.inventory.player, recipe))
                         .map(recipe -> recipe.value().craft(input, world.getRegistryManager()))
                         .orElseGet(input::getFallbackStack) : ItemStack.EMPTY;
                 outputSlot.setStack(resultStack);

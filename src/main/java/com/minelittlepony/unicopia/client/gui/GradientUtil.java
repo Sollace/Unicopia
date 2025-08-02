@@ -4,6 +4,7 @@ import org.joml.Matrix4f;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
@@ -13,7 +14,7 @@ public interface GradientUtil {
     static void fillVerticalGradient(MatrixStack matrices, int startX, int startY, int stopY, int endX, int endY, int colorStart, int colorStop, int colorEnd, int z) {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
         fillVerticalGradient(matrices.peek().getPositionMatrix(), Tessellator.getInstance(), startX, startY, stopY, endX, endY, z, colorStart, colorStop, colorEnd);
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.disableBlend();
@@ -48,7 +49,7 @@ public interface GradientUtil {
     static void fillRadialGradient(MatrixStack matrices, int startX, int startY, int endX, int endY, int colorStart, int colorEnd, int z, float radius) {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
         fillRadials(matrices.peek().getPositionMatrix(), Tessellator.getInstance(), startX, startY, endX, endY, z, colorStart, colorEnd, radius);
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.disableBlend();

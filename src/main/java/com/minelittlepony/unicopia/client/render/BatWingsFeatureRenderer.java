@@ -11,15 +11,16 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
-public class BatWingsFeatureRenderer<E extends LivingEntity> extends WingsFeatureRenderer<E> {
+public class BatWingsFeatureRenderer<S extends BipedEntityRenderState, E extends LivingEntity> extends WingsFeatureRenderer<S> {
 
     private static final Identifier TEXTURE = Unicopia.id("textures/models/wings/bat.png");
 
-    public BatWingsFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
+    public BatWingsFeatureRenderer(FeatureRendererContext<S, ? extends BipedEntityModel<S>> context) {
         super(context);
     }
 
@@ -56,14 +57,14 @@ public class BatWingsFeatureRenderer<E extends LivingEntity> extends WingsFeatur
     }
 
     @Override
-    protected boolean canRender(E entity) {
+    protected boolean canRender(S entity) {
         return entity instanceof PlayerEntity
                 && Pony.of((PlayerEntity)entity).getObservedSpecies() == Race.BAT
                 && !AmuletSelectors.PEGASUS_AMULET.test(entity);
     }
 
     @Override
-    protected Identifier getTexture(E entity) {
+    protected Identifier getTexture(S entity) {
         return TEXTURE;
     }
 }

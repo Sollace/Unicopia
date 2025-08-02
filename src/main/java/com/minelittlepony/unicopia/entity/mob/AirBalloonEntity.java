@@ -3,14 +3,13 @@ package com.minelittlepony.unicopia.entity.mob;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.block.entity.FurnaceBlockEntity;
+import net.minecraft.block.WoodType;
 import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.*;
 import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -36,7 +35,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -664,7 +662,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         double wallThickness = 0.3;
         double halfDoorWidth = 0.5;
 
-        if (!getBasketType().isOf(BoatEntity.Type.BAMBOO)) {
+        if (!getBasketType().isOf(WoodType.BAMBOO)) {
 
             // front left (next to door)
             boxes.add(new Box(mainBox.minX, mainBox.minY, mainBox.minZ, mainBox.minX + wallThickness + halfDoorWidth, wallheight, box.minZ + wallThickness));
@@ -877,27 +875,24 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         }
     }
 
-    public record BasketType(Identifier id, @Nullable BoatEntity.Type boatType) {
+    public record BasketType(Identifier id, WoodType woodType) {
         private static final Map<Identifier, BasketType> REGISTRY = new HashMap<>();
-        public static final BasketType DEFAULT = of(BoatEntity.Type.OAK);
-        static {
-            Arrays.stream(BoatEntity.Type.values()).forEach(BasketType::of);
+        public static final BasketType DEFAULT = of(WoodType.OAK);
+
+        public boolean isOf(WoodType woodType) {
+            return this.woodType == woodType;
         }
 
-        public boolean isOf(BoatEntity.Type boatType) {
-            return this.boatType == boatType;
-        }
-
-        public static BasketType of(String name) {
+        public static BasketType of(@Nullable String name) {
             Identifier id = name == null || name.isEmpty() ? null : Identifier.tryParse(name);
             if (id == null) {
-                return of(BoatEntity.Type.OAK);
+                return of(WoodType.OAK);
             }
             return REGISTRY.get(id);
         }
 
-        public static BasketType of(BoatEntity.Type boatType) {
-            return REGISTRY.computeIfAbsent(Identifier.of(boatType.asString()), id -> new BasketType(id, boatType));
+        public static BasketType of(WoodType woodType) {
+            return REGISTRY.computeIfAbsent(Identifier.of(woodType.name()), id -> new BasketType(id, woodType));
         }
 
         public static BasketType of(RegistryKey<TerraformBoatType> id) {

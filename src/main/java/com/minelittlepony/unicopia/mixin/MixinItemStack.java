@@ -18,6 +18,7 @@ import com.minelittlepony.unicopia.item.DamageChecker;
 import com.minelittlepony.unicopia.item.ItemStackDuck;
 import com.minelittlepony.unicopia.item.component.TransientComponentMap;
 import com.minelittlepony.unicopia.item.component.TransientComponentMapImpl;
+import com.minelittlepony.unicopia.util.TypedActionResult;
 
 import net.minecraft.component.ComponentHolder;
 import net.minecraft.component.ComponentType;
@@ -30,7 +31,6 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 @Mixin(ItemStack.class)
@@ -46,7 +46,7 @@ abstract class MixinItemStack implements ItemStackDuck {
     private void onUse(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> info) {
         getTransientComponents().setCarrier(user);
         TypedActionResult<ItemStack> result = FoodPoisoningStatusEffect.apply((ItemStack)(Object)this, user);
-        if (result.getResult() != ActionResult.PASS) {
+        if (result.result() != ActionResult.PASS) {
             info.setReturnValue(result) ;
         }
     }

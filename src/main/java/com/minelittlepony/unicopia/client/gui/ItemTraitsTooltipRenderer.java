@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.*;
+import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.client.MinecraftClient;
@@ -29,7 +30,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
     }
 
     @Override
-    public int getHeight() {
+    public int getHeight(TextRenderer textRenderer) {
         return getRows() * 17 + 2;
     }
 
@@ -51,7 +52,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
     }
 
     @Override
-    public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
+    public void drawItems(TextRenderer textRenderer, int x, int y, int width, int height, DrawContext context) {
         int columns = getColumns();
         int i = 0;
 
@@ -133,7 +134,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
         matrices.push();
         matrices.translate(xx, yy, 300F);
 
-        context.drawTexture(reveal ? trait.getSprite() : UNKNOWN, 2, 1, 0, 0, 0, size, size, size, size);
+        context.drawTexture(RenderLayers::getGuiTextured, reveal ? trait.getSprite() : UNKNOWN, 2, 1, 0, 0, 0, size, size, size, size);
 
         matrices.translate(9, 3 + size / 2, 0);
         matrices.scale(0.5F, 0.5F, 1);

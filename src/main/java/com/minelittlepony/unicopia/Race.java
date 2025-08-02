@@ -202,7 +202,7 @@ public record Race (
                 if (id.getNamespace() == Identifier.DEFAULT_NAMESPACE) {
                     id = Unicopia.id(id.getPath());
                 }
-                return REGISTRY.getOrEmpty(id).orElse(def);
+                return REGISTRY.getOptionalValue(id).orElse(def);
             }
         }
 
@@ -231,7 +231,7 @@ public record Race (
         if (id.getNamespace() == Identifier.DEFAULT_NAMESPACE && !REGISTRY.containsId(id)) {
             id = REGISTRY_KEY.getValue().withPath(id.getPath());
         }
-        return REGISTRY.getOrEmpty(id).orElseThrow(() -> UNKNOWN_RACE_EXCEPTION.create(idf));
+        return REGISTRY.getOptionalValue(id).orElseThrow(() -> UNKNOWN_RACE_EXCEPTION.create(idf));
     }
 
     public static Set<Race> allPermitted(PlayerEntity player) {

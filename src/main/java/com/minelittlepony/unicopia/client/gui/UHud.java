@@ -19,6 +19,7 @@ import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.util.TypedActionResult;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
@@ -28,6 +29,7 @@ import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
@@ -42,6 +44,7 @@ public class UHud {
     public static final UHud INSTANCE = new UHud();
 
     public static final Identifier HUD_TEXTURE = Unicopia.id("textures/gui/hud.png");
+    public static final int HUD_TEXTURE_SIZE = 128;
 
     public static final int PRIMARY_SLOT_SIZE = 49;
 
@@ -89,7 +92,7 @@ public class UHud {
 
         matrices.push();
         matrices.translate(0, 0, hotbarZ - 9800);
-        renderViewEffects(pony, context, scaledWidth, scaledHeight, tickDelta);
+        renderViewEffects(pony, context, tickDelta);
         matrices.pop();
 
         if (client.currentScreen instanceof HidesHud || client.player.isSpectator() || client.options.hudHidden) {
@@ -162,9 +165,9 @@ public class UHud {
             matrices.translate(PRIMARY_SLOT_SIZE / 2F, PRIMARY_SLOT_SIZE / 2F, 0);
             boolean first = !pony.asEntity().isSneaking();
             TypedActionResult<CustomisedSpellType<?>> inHand = pony.getCharms().getSpellInHand(false);
-            boolean replacing = inHand.getResult().isAccepted() && pony.getAbilities().getStat(AbilitySlot.PRIMARY).getActiveAbility().isEmpty();
-            if (first != prevPointed || replacing != prevReplacing || inHand.getValue().type() != focusedType) {
-                focusedType = inHand.getValue().type();
+            boolean replacing = inHand.result().isAccepted() && pony.getAbilities().getStat(AbilitySlot.PRIMARY).getActiveAbility().isEmpty();
+            if (first != prevPointed || replacing != prevReplacing || inHand.value().type() != focusedType) {
+                focusedType = inHand.value().type();
                 prevPointed = first;
                 prevReplacing = replacing;
                 setMessage(ability.getName(pony));
@@ -176,7 +179,7 @@ public class UHud {
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-26));
             matrices.scale(0.8F, 0.8F, 1);
             int u = replacing ? 16 : 3;
-            context.drawTexture(HUD_TEXTURE, 0, 0, u, 120, 13, 7, 128, 128);
+            context.drawTexture(RenderLayers::getGuiTextured, HUD_TEXTURE, 0, 0, u, 120, 13, 7, HUD_TEXTURE_SIZE, HUD_TEXTURE_SIZE);
             matrices.pop();
         }
 
@@ -189,9 +192,9 @@ public class UHud {
         //if (maxPages > 0) {
             DrawableUtil.drawScaledText(context, Text.literal((currentPage + 1) + "/" + (maxPages + 1)), 44, 38, 0.5F, Colors.WHITE);
             //down
-            context.drawTexture(HUD_TEXTURE, 42, 43, 52, currentPage == 0 ? 6 : 0, 6, 6, 128, 128);
+            context.drawTexture(RenderLayers::getGuiTextured, HUD_TEXTURE, 42, 43, 52, currentPage == 0 ? 6 : 0, 6, 6, HUD_TEXTURE_SIZE, HUD_TEXTURE_SIZE);
             //up
-            context.drawTexture(HUD_TEXTURE, 48, 43, 57, currentPage < maxPages ? 0 : 6, 8, 6, 128, 128);
+            context.drawTexture(RenderLayers::getGuiTextured, HUD_TEXTURE, 48, 43, 57, currentPage < maxPages ? 0 : 6, 8, 6, HUD_TEXTURE_SIZE, HUD_TEXTURE_SIZE);
         //}
 
         matrices.pop();
@@ -214,7 +217,7 @@ public class UHud {
         int progress = Math.min(255, (int)(time * 255F / 20F));
 
         if (progress > 8) {
-            int color = ColorHelper.Argb.withAlpha(progress, Colors.WHITE);
+            int color = ColorHelper.withAlpha(progress, Colors.WHITE);
 
             HudPosition hudPos = Unicopia.getConfig().hudPosition.get();
 
@@ -225,9 +228,12 @@ public class UHud {
         }
     }
 
-    protected void renderViewEffects(Pony pony, DrawContext context, int scaledWidth, int scaledHeight, float tickDelta) {
+    protected void renderViewEffects(Pony pony, DrawContext context, float tickDelta) {
 
         float vortexDistortion = DarkVortexSpellRenderer.getCameraDistortion();
+
+        int scaledWidth = context.getScaledWindowWidth();
+        int scaledHeight = context.getScaledWindowHeight();
 
         if (vortexDistortion > 25) {
             context.fill(RenderLayers.getEndPortal(), 0, 0, scaledWidth, scaledHeight, 0);
@@ -337,32 +343,40 @@ public class UHud {
         }
 
         if (pony.getPhysics().isFlyingSurvival) {
-            float effectStrength = (float)MathHelper.clamp(pony.getPhysics().getClientVelocity().length() / 15F, 0, 1);
-
-            VertexConsumer vertexConsumer = context.getVertexConsumers().getBuffer(RenderLayer.getGui());
-
-            float innerRadiusPulse = MathHelper.cos((pony.asEntity().age + tickDelta) / 2F) * 6 + (effectStrength * scaledHeight / 2F);
-
-            double points = 22;
-            float wedgeAngle = 0.05F + MathHelper.sin((pony.asEntity().age + tickDelta) / 3F) * 0.01F;
-            float outerRadius = Math.max(scaledWidth, scaledHeight);
-            float alpha = effectStrength * (0.6F + Math.abs(MathHelper.sin((pony.asEntity().age + tickDelta) / 10F)));
-            context.getMatrices().push();
-            context.getMatrices().translate(scaledWidth / 2F, scaledHeight / 2F, 0);
-            Matrix4f matrix4f = context.getMatrices().peek().getPositionMatrix();
-            for (int i = 0; i < points; i++) {
-                float angle = (MathHelper.TAU * i / (float)points) - wedgeAngle * 0.5F;
-                float innerRadius = Math.max(0, (scaledHeight / 2F) + (i % 2) * 72 + 14 * (1 - effectStrength) - innerRadiusPulse);
-                float centerX = MathHelper.sin(angle) * innerRadius;
-                float centerY = MathHelper.cos(angle) * innerRadius;
-
-                vertexConsumer.vertex(matrix4f, centerX, centerY, 0).color(1F, 1F, 1F, alpha * 0.3F);
-                vertexConsumer.vertex(matrix4f, MathHelper.sin(angle - wedgeAngle) * outerRadius, MathHelper.cos(angle - wedgeAngle) * outerRadius, 0).color(1F, 1F, 1F, alpha);
-                vertexConsumer.vertex(matrix4f, MathHelper.sin(angle + wedgeAngle) * outerRadius, MathHelper.cos(angle + wedgeAngle) * outerRadius, 0).color(1F, 1F, 1F, alpha);
-                vertexConsumer.vertex(matrix4f, centerX, centerY, 0).color(1F, 1F, 1F, alpha * 0.3F);
-            }
-            context.getMatrices().pop();
+            context.draw(provider -> {
+                renderVelocityOverlay(provider, pony, context, tickDelta);
+            });
         }
+    }
+
+    private void renderVelocityOverlay(VertexConsumerProvider provider, Pony pony, DrawContext context, float tickDelta) {
+        float effectStrength = (float)MathHelper.clamp(pony.getPhysics().getClientVelocity().length() / 15F, 0, 1);
+        VertexConsumer vertexConsumer = provider.getBuffer(RenderLayer.getGui());
+
+        int scaledWidth = context.getScaledWindowWidth();
+        int scaledHeight = context.getScaledWindowHeight();
+
+        float innerRadiusPulse = MathHelper.cos((pony.asEntity().age + tickDelta) / 2F) * 6 + (effectStrength * scaledHeight / 2F);
+
+        double points = 22;
+        float wedgeAngle = 0.05F + MathHelper.sin((pony.asEntity().age + tickDelta) / 3F) * 0.01F;
+        float outerRadius = Math.max(scaledWidth, scaledHeight);
+        float alpha = effectStrength * (0.6F + Math.abs(MathHelper.sin((pony.asEntity().age + tickDelta) / 10F)));
+        context.getMatrices().push();
+        context.getMatrices().translate(scaledWidth / 2F, scaledHeight / 2F, 0);
+        Matrix4f matrix4f = context.getMatrices().peek().getPositionMatrix();
+        for (int i = 0; i < points; i++) {
+            float angle = (MathHelper.TAU * i / (float)points) - wedgeAngle * 0.5F;
+            float innerRadius = Math.max(0, (scaledHeight / 2F) + (i % 2) * 72 + 14 * (1 - effectStrength) - innerRadiusPulse);
+            float centerX = MathHelper.sin(angle) * innerRadius;
+            float centerY = MathHelper.cos(angle) * innerRadius;
+
+            vertexConsumer.vertex(matrix4f, centerX, centerY, 0).color(1F, 1F, 1F, alpha * 0.3F);
+            vertexConsumer.vertex(matrix4f, MathHelper.sin(angle - wedgeAngle) * outerRadius, MathHelper.cos(angle - wedgeAngle) * outerRadius, 0).color(1F, 1F, 1F, alpha);
+            vertexConsumer.vertex(matrix4f, MathHelper.sin(angle + wedgeAngle) * outerRadius, MathHelper.cos(angle + wedgeAngle) * outerRadius, 0).color(1F, 1F, 1F, alpha);
+            vertexConsumer.vertex(matrix4f, centerX, centerY, 0).color(1F, 1F, 1F, alpha * 0.3F);
+        }
+        context.getMatrices().pop();
     }
 
     private void renderVignette(DrawContext context, int color, float alpha, float radius, int scaledWidth, int scaledHeight) {
@@ -392,10 +406,9 @@ public class UHud {
 
     void renderAbilityIcon(DrawContext context, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {
         stat.getAbility(Unicopia.getConfig().hudPage.get()).ifPresent(ability -> {
-            context.drawTexture(ability.getIcon(Pony.of(client.player)), x, y, 0, 0, frameWidth, frameHeight, u, v);
+            context.drawTexture(RenderLayers::getGuiTextured, ability.getIcon(Pony.of(client.player)), x, y, 0, 0, frameWidth, frameHeight, u, v);
         });
     }
-
 
     @Nullable
     public static InGameHud.HeartType getHeartsType(PlayerEntity player) {

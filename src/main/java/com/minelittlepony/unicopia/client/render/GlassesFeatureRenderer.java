@@ -13,6 +13,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
@@ -21,21 +22,21 @@ import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
 
-public class GlassesFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
+public class GlassesFeatureRenderer<S extends BipedEntityRenderState, E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<S> {
 
     private final GlassesModel model;
 
     private final Map<Identifier, Identifier> textures = new HashMap<>();
 
-    private final FeatureRendererContext<E, ? extends BipedEntityModel<E>> context;
+    private final FeatureRendererContext<S, ? extends BipedEntityModel<S>> context;
 
-    public GlassesFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
+    public GlassesFeatureRenderer(FeatureRendererContext<S, ? extends BipedEntityModel<S>> context) {
         this.context = context;
         this.model = new GlassesModel(GlassesModel.getData(Dilation.NONE, -8, -4).createModel());
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch) {
+    public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, S entity, float limbDistance, float limbAngle) {
 
         ItemStack stack = GlassesItem.getForEntity(entity).stack();
 
@@ -51,11 +52,8 @@ public class GlassesFeatureRenderer<E extends LivingEntity> implements Accessory
 
     public static class GlassesModel extends Model {
 
-        private final ModelPart root;
-
         public GlassesModel(ModelPart tree) {
-            super(RenderLayer::getEntityTranslucent);
-            root = tree;
+            super(tree, RenderLayer::getEntityTranslucent);
         }
 
         public static TexturedModelData getData(Dilation dilation, int y, int z) {
@@ -68,14 +66,9 @@ public class GlassesFeatureRenderer<E extends LivingEntity> implements Accessory
             return TexturedModelData.of(data, 64, 32);
         }
 
-        public void setAngles(LivingEntity entity, BipedEntityModel<?> biped) {
+        public void setAngles(BipedEntityRenderState entity, BipedEntityModel<?> biped) {
             root.getChild(EntityModelPartNames.HEAD).copyTransform(biped.head);
             root.getChild(EntityModelPartNames.HAT).copyTransform(biped.hat);
-        }
-
-        @Override
-        public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-            root.render(matrices, vertices, light, overlay, color);
         }
     }
 }

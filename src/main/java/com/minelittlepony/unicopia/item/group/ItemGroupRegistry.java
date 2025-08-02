@@ -58,7 +58,7 @@ public interface ItemGroupRegistry {
 
     static RegistryKey<ItemGroup> createGroupFromTag(String name, TagKey<Item> tag, Supplier<ItemStack> icon) {
         return createDynamic(name, icon, () -> {
-            return Registries.ITEM.getEntryList(tag)
+            return Registries.ITEM.getOptional(tag)
                     .stream()
                     .flatMap(named -> named.stream())
                     .map(entry -> entry.value());

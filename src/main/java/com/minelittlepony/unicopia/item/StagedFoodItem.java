@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.FoodComponent;
+import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,9 +22,9 @@ public class StagedFoodItem extends Item {
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-        FoodComponent food = stack.get(DataComponentTypes.FOOD);
+        ConsumableComponent food = stack.get(DataComponentTypes.CONSUMABLE);
         if (food != null) {
-            user.eatFood(world, stack.copy(), food);
+            food.finishConsumption(world, user, stack);
             if (user instanceof PlayerEntity player && player.getAbilities().creativeMode) {
                 return stack;
             }

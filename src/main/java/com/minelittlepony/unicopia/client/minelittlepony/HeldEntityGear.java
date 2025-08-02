@@ -5,17 +5,19 @@ import java.util.UUID;
 import com.minelittlepony.api.model.BodyPart;
 import com.minelittlepony.api.model.PonyModel;
 import com.minelittlepony.api.model.gear.Gear;
+import com.minelittlepony.api.pony.meta.Wearable;
 import com.minelittlepony.unicopia.client.render.HeldEntityFeatureRenderer;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 
-class HeldEntityGear extends HeldEntityFeatureRenderer<LivingEntity> implements Gear {
+class HeldEntityGear extends HeldEntityFeatureRenderer<BipedEntityRenderState, LivingEntity> implements Gear {
 
     private LivingEntity entity;
 
@@ -35,7 +37,7 @@ class HeldEntityGear extends HeldEntityFeatureRenderer<LivingEntity> implements 
 
     @Override
     public <T extends Entity> Identifier getTexture(T entity, Context<T, ?> context) {
-        return MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity).getTexture(entity);
+        return context.getDefaultTexture(entity, Wearable.NONE);
     }
 
     @Override

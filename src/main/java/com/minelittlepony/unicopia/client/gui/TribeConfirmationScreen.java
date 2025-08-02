@@ -7,6 +7,7 @@ import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.client.render.RenderLayers;
 
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.minecraft.client.gui.DrawContext;
@@ -124,17 +125,17 @@ public class TribeConfirmationScreen extends GameGui implements HidesHud {
         top += 40;
         final int zOffset = 0;
 
-        context.drawTexture(TribeSelectionScreen.TEXTURE, left + zOffset, top, 0, 70, 123, columnHeight);
-        context.drawTexture(TribeSelectionScreen.TEXTURE, left + segmentWidth + zOffset, top, 20, 70, 123, columnHeight);
-        context.drawTexture(TribeSelectionScreen.TEXTURE, width - left - segmentWidth + zOffset + 1, top, 10, 70, 123, columnHeight);
+        context.drawTexture(RenderLayers::getGuiTextured, TribeSelectionScreen.TEXTURE, left + zOffset, top, 0, 70, 123, columnHeight, TribeSelectionScreen.TEXTURE_SIZE, TribeSelectionScreen.TEXTURE_SIZE);
+        context.drawTexture(RenderLayers::getGuiTextured, TribeSelectionScreen.TEXTURE, left + segmentWidth + zOffset, top, 20, 70, 123, columnHeight, TribeSelectionScreen.TEXTURE_SIZE, TribeSelectionScreen.TEXTURE_SIZE);
+        context.drawTexture(RenderLayers::getGuiTextured, TribeSelectionScreen.TEXTURE, width - left - segmentWidth + zOffset + 1, top, 10, 70, 123, columnHeight, TribeSelectionScreen.TEXTURE_SIZE, TribeSelectionScreen.TEXTURE_SIZE);
         top -= 31;
         left = width / 2;
-        context.drawTexture(TribeSelectionScreen.TEXTURE, left - 55, top, 140, 70, 21, 50);
-        context.drawTexture(TribeSelectionScreen.TEXTURE, left + 35, top, 148, 70, 21, 50);
+        context.drawTexture(RenderLayers::getGuiTextured, TribeSelectionScreen.TEXTURE, left - 55, top, 140, 70, 21, 50, TribeSelectionScreen.TEXTURE_SIZE, TribeSelectionScreen.TEXTURE_SIZE);
+        context.drawTexture(RenderLayers::getGuiTextured, TribeSelectionScreen.TEXTURE, left + 35, top, 148, 70, 21, 50, TribeSelectionScreen.TEXTURE_SIZE, TribeSelectionScreen.TEXTURE_SIZE);
         textBody.render(context, mouseX, mouseY, delta);
         context.getMatrices().pop();
-        context.drawTexture(TribeSelectionScreen.TEXTURE, left - 35, top - 5, 10, 70, 69, 50);
-        context.drawTexture(TribeSelectionScreen.TEXTURE, left - 35, top - 15, 10, 70, 69, 50);
+        context.drawTexture(RenderLayers::getGuiTextured, TribeSelectionScreen.TEXTURE, left - 35, top - 5, 10, 70, 69, 50, TribeSelectionScreen.TEXTURE_SIZE, TribeSelectionScreen.TEXTURE_SIZE);
+        context.drawTexture(RenderLayers::getGuiTextured, TribeSelectionScreen.TEXTURE, left - 35, top - 15, 10, 70, 69, 50, TribeSelectionScreen.TEXTURE_SIZE, TribeSelectionScreen.TEXTURE_SIZE);
     }
 
     @Override

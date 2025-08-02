@@ -22,6 +22,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.math.MatrixStack;
@@ -31,16 +32,16 @@ import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 
-public class BraceletFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
+public class BraceletFeatureRenderer<S extends BipedEntityRenderState, E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<S> {
 
     public static final Identifier TEXTURE = Unicopia.id("textures/models/armor/bracelet.png");
 
     private final BraceletModel steveModel;
     private final BraceletModel alexModel;
 
-    private final FeatureRendererContext<E, ? extends BipedEntityModel<E>> context;
+    private final FeatureRendererContext<S, ? extends BipedEntityModel<S>> context;
 
-    public BraceletFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
+    public BraceletFeatureRenderer(FeatureRendererContext<S, ? extends BipedEntityModel<S>> context) {
         this.context = context;
         Dilation dilation = new Dilation(0.3F);
         steveModel = new BraceletModel(BraceletModel.getData(dilation, false, 0, 0, 0).createModel());
@@ -48,7 +49,7 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
     }
 
     @Override
-    public void render(MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, S entity, float limbAngle, float limbDistance) {
         FriendshipBraceletItem.getWornBangles(entity, TrinketsDelegate.MAIN_GLOVE).findFirst().ifPresent(bangle -> {
             renderBangleThirdPerson(bangle.stack(), stack, renderContext, lightUv, entity, limbDistance, limbAngle, tickDelta, age, headYaw, headPitch, entity.getMainArm());
         });
@@ -57,7 +58,7 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
         });
     }
 
-    private void renderBangleThirdPerson(ItemStack item, MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch, Arm mainArm) {
+    private void renderBangleThirdPerson(ItemStack item, MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, S entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch, Arm mainArm) {
         int j = DyedColorComponent.getColor(item, Colors.WHITE);
 
         boolean alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getSkinTextures().model() == SkinTextures.Model.SLIM;
@@ -145,5 +146,4 @@ public class BraceletFeatureRenderer<E extends LivingEntity> implements Accessor
             rightArm.render(matrixStack, vertexConsumer, i, j, color);
         }
     }
-
 }

@@ -29,7 +29,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
     private static final Map<com.minelittlepony.api.pony.meta.Race, Race> PONY_RACE_MAPPING = new HashMap<>();
     private static final Function<com.minelittlepony.api.pony.meta.Race, Race> LOOKUP_CACHE = Util.memoize(race -> {
         return Optional.ofNullable(PONY_RACE_MAPPING.get(race))
-                .or(() -> Race.REGISTRY.getOrEmpty(Unicopia.id(race.name().toLowerCase(Locale.ROOT))))
+                .or(() -> Race.REGISTRY.getOptionalValue(Unicopia.id(race.name().toLowerCase(Locale.ROOT))))
                 .orElse(Race.UNSET);
     });
 

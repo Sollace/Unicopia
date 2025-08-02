@@ -20,6 +20,8 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
+import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
@@ -27,7 +29,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
-public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
+public class WingsFeatureRenderer<S extends BipedEntityRenderState, E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<S> {
 
     protected static final int FEATHER_COUNT = 8;
 
@@ -35,15 +37,15 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
 
     private final WingsModel model;
 
-    private final FeatureRendererContext<E, ? extends BipedEntityModel<E>> context;
+    private final FeatureRendererContext<S, ? extends BipedEntityModel<S>> context;
 
-    public WingsFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
+    public WingsFeatureRenderer(FeatureRendererContext<S, ? extends BipedEntityModel<S>> context) {
         this.context = context;
         this.model = new WingsModel(createModel(Dilation.NONE).createModel());
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch) {
+    public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, S entity, float limbDistance, float limbAngle) {
         if (canRender(entity)) {
             Identifier texture = getTexture(entity);
             VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getEntityTranslucent(texture), false);
@@ -53,14 +55,14 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
         }
     }
 
-    protected boolean canRender(E entity) {
-        return entity instanceof PlayerEntity player
+    protected boolean canRender(S entity) {
+        return entity instanceof PlayerEntityRenderState player
                 && Pony.of(player).getObservedSpecies().flightType() == FlightType.AVIAN
                 && Pony.of(player).getObservedSpecies() != Race.BAT
                 && !AmuletSelectors.PEGASUS_AMULET.test(entity);
     }
 
-    protected Identifier getTexture(E entity) {
+    protected Identifier getTexture(S entity) {
         return PEGASUS_WINGS;
     }
 
@@ -88,27 +90,19 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
     }
 
     private static class WingsModel extends Model {
-        private final ModelPart root;
-
         private final Wing leftWing;
         private final Wing rightWing;
 
         public WingsModel(ModelPart tree) {
-            super(RenderLayer::getEntityTranslucent);
-            root = tree;
+            super(tree, RenderLayer::getEntityTranslucent);
             leftWing = new Wing(tree.getChild("left_wing"), -1);
             rightWing = new Wing(tree.getChild("right_wing"), 1);
         }
 
-        public void setAngles(LivingEntity entity, BipedEntityModel<?> biped) {
+        public void setAngles(BipedEntityRenderState entity, BipedEntityModel<?> biped) {
             root.copyTransform(biped.body);
             leftWing.setAngles(entity);
             rightWing.setAngles(entity);
-        }
-
-        @Override
-        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
-            root.render(matrices, vertexConsumer, light, overlay, color);
         }
 
         static class Wing {
@@ -126,8 +120,8 @@ public class WingsFeatureRenderer<E extends LivingEntity> implements AccessoryFe
                 }
             }
 
-            void setAngles(LivingEntity entity) {
-                float spreadAmount = entity instanceof PlayerEntity ? Pony.of((PlayerEntity)entity).getMotion().getWingAngle() : 0;
+            void setAngles(BipedEntityRenderState entity) {
+                float spreadAmount = entity instanceof PlayerEntityRenderState ? Pony.of((PlayerEntity)entity).getMotion().getWingAngle() : 0;
 
                 base.pitch = 1.5F + 0.8F - spreadAmount / 9F;
                 base.yaw = k * (0.8F + spreadAmount / 3F);

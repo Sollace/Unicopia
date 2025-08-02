@@ -30,7 +30,8 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
-import net.minecraft.client.render.entity.model.SinglePartEntityModel;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -44,7 +45,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
-public class DisguisedArmsFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
+public class DisguisedArmsFeatureRenderer<S extends BipedEntityRenderState, E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
 
     private final MinecraftClient client = MinecraftClient.getInstance();
 
@@ -55,7 +56,7 @@ public class DisguisedArmsFeatureRenderer<E extends LivingEntity> implements Acc
 
     private final Function<EntityType<?>, Set<Pair<ModelPart, ModelPart>>> overlayModelCache = Util.memoize(type -> {
         return EntityModelLayers.getLayers()
-                .filter(layer -> layer.getId().equals(EntityType.getId(type)) && !"main".equals(layer.getName()))
+                .filter(layer -> layer.id().equals(EntityType.getId(type)) && !"main".equals(layer.name()))
                 .map(MinecraftClient.getInstance().getEntityModelLoader()::getModelPart)
                 .map(model -> {
                     ModelPart arms = getPart(model, EntityModelPartNames.ARMS).orElse(null);
@@ -75,7 +76,7 @@ public class DisguisedArmsFeatureRenderer<E extends LivingEntity> implements Acc
         return part.hasChild(childName) ? Optional.of(part.getChild(childName)) : Optional.empty();
     }
 
-    public DisguisedArmsFeatureRenderer(FeatureRendererContext<E, ? extends BipedEntityModel<E>> context) {
+    public DisguisedArmsFeatureRenderer(FeatureRendererContext<S, ? extends BipedEntityModel<S>> context) {
 
     }
 
@@ -120,21 +121,23 @@ public class DisguisedArmsFeatureRenderer<E extends LivingEntity> implements Acc
                 .orElse(null);
     }
 
-    @SuppressWarnings("unchecked")
     @Nullable
     private ModelPart getArmModel(@Nullable EntityModel<?> model, boolean right) {
 
         if (model instanceof BipedEntityModel bipedModel) {
             return right ? bipedModel.rightArm : bipedModel.leftArm;
         }
-        if (model instanceof SinglePartEntityModel quad) {
-            ModelPart arms = (ModelPart)quad.getChild(EntityModelPartNames.ARMS).orElse((ModelPart)null);
-            return (ModelPart)quad.getChild(right ? EntityModelPartNames.RIGHT_ARM : EntityModelPartNames.LEFT_ARM)
-                    .or(() -> quad.getChild(right ? EntityModelPartNames.RIGHT_FRONT_LEG : EntityModelPartNames.LEFT_FRONT_LEG))
-                    .orElse(arms);
-        }
 
-        return null;
+        return getOptionalChild(model.getRootPart(), EntityModelPartNames.ARMS).map(arms -> {
+            return getOptionalChild(arms, right ? EntityModelPartNames.RIGHT_ARM : EntityModelPartNames.LEFT_ARM)
+                    .or(() -> getOptionalChild(arms, right ? EntityModelPartNames.RIGHT_FRONT_LEG : EntityModelPartNames.LEFT_FRONT_LEG))
+                    .orElse(arms);
+        }).orElse(null);
+
+    }
+
+    static Optional<ModelPart> getOptionalChild(ModelPart parent, String key) {
+        return parent.hasChild(key) ? Optional.of(parent.getChild(key)) : Optional.empty();
     }
 
     @SuppressWarnings("unchecked")
@@ -144,7 +147,7 @@ public class DisguisedArmsFeatureRenderer<E extends LivingEntity> implements Acc
         }
 
         boolean right = arm != Arm.LEFT;
-        EntityModel<Entity> model = renderer.getModel();
+        var model = renderer.getModel();
         @Nullable
         ModelPart part = getArmModel(model, right);
 
@@ -152,8 +155,11 @@ public class DisguisedArmsFeatureRenderer<E extends LivingEntity> implements Acc
             return;
         }
 
-        model.animateModel(entity, 0, 0, 0);
-        model.setAngles(entity, 0, 0, 0, 0, client.getRenderTickCounter().getTickDelta(false));
+        float tickDelta = client.getRenderTickCounter().getTickDelta(false);
+
+        LivingEntityRenderState state = (LivingEntityRenderState)renderer.getAndUpdateRenderState(entity, tickDelta);
+
+        model.setAngles(state);
 
         float signum = right ? 1 : -1;
         float srtSwingProgress = MathHelper.sqrt(swingProgress);
@@ -185,7 +191,7 @@ public class DisguisedArmsFeatureRenderer<E extends LivingEntity> implements Acc
             matrices.translate(0, -part.pivotY / 16F, 0);
         }
 
-        Identifier texture = renderer.getTexture(entity);
+        Identifier texture = renderer.getTexture(state);
         RenderSystem.setShaderTexture(0, texture);
         part.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(texture)), light, OverlayTexture.DEFAULT_UV);
 

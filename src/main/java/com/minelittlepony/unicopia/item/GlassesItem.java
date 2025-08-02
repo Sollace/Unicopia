@@ -4,20 +4,12 @@ import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.sound.SoundEvent;
 
 public class GlassesItem extends WearableItem {
     public GlassesItem(Item.Settings settings) {
         super(settings);
-    }
-
-    @Override
-    public RegistryEntry<SoundEvent> getEquipSound() {
-        return ArmorMaterials.LEATHER.value().equipSound();
     }
 
     @Override

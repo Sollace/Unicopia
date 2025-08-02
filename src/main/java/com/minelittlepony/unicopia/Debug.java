@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -9,11 +10,9 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 
+import net.minecraft.block.WoodType;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionTypes;
 
@@ -34,7 +33,7 @@ public interface Debug {
         }
 
         try {
-            for (var type : BoatEntity.Type.values()) {
+            for (var type : WoodType.stream().toList()) {
                 var balloon = UEntities.AIR_BALLOON.create(world, SpawnReason.SPAWN_ITEM_USE);
                 balloon.setBasketType(AirBalloonEntity.BasketType.of(type));
                 balloon.asItem();
@@ -51,15 +50,14 @@ public interface Debug {
                 Sets::union
         )).forEach((namespace, entries) -> {
             @SuppressWarnings("deprecation")
-            var unregistered = entries.stream()
+            List<String> unregistered = entries.stream()
                 .filter(entry -> !entry.getValue().getRegistryEntry().isIn(UTags.Items.HAS_NO_TRAITS) && SpellTraits.of(entry.getValue()).isEmpty())
                 .map(entry -> {
                     String id = entry.getKey().getValue().toString();
 
                     return id + "(" + Registries.ITEM.streamTags()
-                        .filter(entry.getValue().getRegistryEntry()::isIn)
-                        .map(TagKey::id)
-                        .map(Identifier::toString)
+                        .filter(i -> i.contains(entry.getValue().getRegistryEntry()))
+                        .map(i -> i.getTag().id().toString())
                         .collect(Collectors.joining(", ")) +  ")";
                 })
                 .toList();

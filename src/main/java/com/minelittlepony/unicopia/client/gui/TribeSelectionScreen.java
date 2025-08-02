@@ -10,6 +10,7 @@ import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgRequestSpeciesChange;
 
@@ -25,6 +26,7 @@ import net.minecraft.util.math.MathHelper;
 
 public class TribeSelectionScreen extends GameGui implements HidesHud {
     static final Identifier TEXTURE = Unicopia.id("textures/gui/tribe_selection.png");
+    static final int TEXTURE_SIZE = 256;
 
     final Set<Race> allowedRaces;
 
@@ -140,14 +142,14 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
             var element = options.get(0);
 
             float diff = (targetScroll - MathHelper.lerp(client.getRenderTickCounter().getTickDelta(false), prevScrollPosition, scrollPosition)) * 7;
-            context.drawTexture(TEXTURE, (width / 2) + 40 + (scrollPosition < targetScroll ? (int)diff : 0), element.getY() - 20, 10, 165, 153, 30, 85, 312, 312);
-            context.drawTexture(TEXTURE, (width / 2) - 80 + (scrollPosition > targetScroll ? (int)diff : 0), element.getY() - 20, 10, 195, 153, 30, 85, 312, 312);
+            context.drawTexture(RenderLayers::getGuiTextured, TEXTURE, (width / 2) + 40 + (scrollPosition < targetScroll ? (int)diff : 0), element.getY() - 20, 10, 165, 153, 30, 85, 312, 312);
+            context.drawTexture(RenderLayers::getGuiTextured, TEXTURE, (width / 2) - 80 + (scrollPosition > targetScroll ? (int)diff : 0), element.getY() - 20, 10, 195, 153, 30, 85, 312, 312);
             if (element.getBounds().left < 0) {
-                context.drawTexture(TEXTURE, 20, element.getY() - 10, 10, 188, 235, 24, 60, 312, 312);
+                context.drawTexture(RenderLayers::getGuiTextured, TEXTURE, 20, element.getY() - 10, 10, 188, 235, 24, 60, 312, 312);
             }
             element = options.get(options.size() - 1);
             if (element.getBounds().right() > width) {
-                context.drawTexture(TEXTURE, width - 50, element.getY() - 10, 10, 164, 235, 24, 60, 312, 312);
+                context.drawTexture(RenderLayers::getGuiTextured, TEXTURE, width - 50, element.getY() - 10, 10, 164, 235, 24, 60, 312, 312);
             }
         }
     }

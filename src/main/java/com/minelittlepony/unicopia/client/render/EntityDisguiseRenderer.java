@@ -109,27 +109,18 @@ class EntityDisguiseRenderer {
             }
         }
 
-        BipedEntityModel<?> model = getBipedModel(e);
-
-        if (model != null) {
-            model.sneaking = e.isSneaking();
-        }
-
         e.setFireTicks(fireTicks);
 
         EntityRenderDispatcher dispatcher = delegate.client.getEntityRenderDispatcher();
         if (e instanceof FallingBlockEntity) {
             dispatcher.setRenderShadows(false);
         }
-        dispatcher.render(e, x, y, z, e.getYaw(), tickDelta, matrices, vertexConsumers, light);
+        dispatcher.render(e, x, y, z, tickDelta, matrices, vertexConsumers, light);
         if (e instanceof FallingBlockEntity) {
             dispatcher.setRenderShadows(true);
         }
         e.setFireTicks(0);
 
-        if (model != null) {
-            model.sneaking = false;
-        }
     }
 
     @Nullable

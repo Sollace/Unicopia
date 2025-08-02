@@ -4,12 +4,13 @@ import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.client.gui.sprite.ISprite;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -29,7 +30,7 @@ public class TribeButton extends Button {
 
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float partialTicks) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
         RenderSystem.setShaderColor(1, 1, 1, alpha);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -40,9 +41,9 @@ public class TribeButton extends Button {
 
         MinecraftClient mc = MinecraftClient.getInstance();
 
-        context.drawTexture(TribeSelectionScreen.TEXTURE, getX()  - 3, getY() - 13, 0, 0, 76, 69);
+        context.drawTexture(RenderLayers::getGuiTextured, TribeSelectionScreen.TEXTURE, getX()  - 3, getY() - 13, 0, 0, 76, 69, TribeSelectionScreen.TEXTURE_SIZE, TribeSelectionScreen.TEXTURE_SIZE);
         if (isSelected()) {
-            context.drawTexture(TribeSelectionScreen.TEXTURE, getX()  - 4, getY() - 14, 76, 0, 78, 71);
+            context.drawTexture(RenderLayers::getGuiTextured, TribeSelectionScreen.TEXTURE, getX()  - 4, getY() - 14, 76, 0, 78, 71, TribeSelectionScreen.TEXTURE_SIZE, TribeSelectionScreen.TEXTURE_SIZE);
 
             if (isFocused() && screenWidth > 0) {
                 Identifier id = Race.REGISTRY.getId(race);
