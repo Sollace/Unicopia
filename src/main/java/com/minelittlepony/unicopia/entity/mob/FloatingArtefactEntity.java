@@ -190,7 +190,7 @@ public class FloatingArtefactEntity extends StationaryObjectEntity {
             return false;
         }
 
-        if (isInvulnerableTo(source) || !getStack().takesDamageFrom(source)) {
+        if (isAlwaysInvulnerableTo(source) || !getStack().takesDamageFrom(source)) {
             return false;
         }
 
@@ -207,10 +207,10 @@ public class FloatingArtefactEntity extends StationaryObjectEntity {
     protected void onKilled(DamageSource source) {
         ItemStack stack = getStack();
 
-        if (altar.isEmpty()) {
+        if (altar.isEmpty() && getWorld() instanceof ServerWorld sw) {
             if (!(stack.getItem() instanceof Artifact) || ((Artifact)stack.getItem()).onArtifactDestroyed(this) != ActionResult.SUCCESS) {
                 if (!source.isSourceCreativePlayer()) {
-                    dropStack(stack);
+                    dropStack(sw, stack);
                 }
             }
         }

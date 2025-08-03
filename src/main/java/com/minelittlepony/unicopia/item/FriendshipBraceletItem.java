@@ -20,6 +20,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.equipment.ArmorMaterials;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.*;
@@ -28,7 +29,7 @@ import net.minecraft.world.World;
 public class FriendshipBraceletItem extends WearableItem {
 
     public FriendshipBraceletItem(Item.Settings settings) {
-        super(settings);
+        super(settings, ArmorMaterials.LEATHER.equipSound());
     }
 
     @Override

@@ -60,11 +60,11 @@ import net.minecraft.world.World.ExplosionSourceType;
 public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackable, ItemImpl.ClingyItem, TickableItem, DamageChecker {
     private static final Identifier EFFECT_ID = Unicopia.id("alicorn_amulet_modifiers");
     private static final Object2FloatMap<RegistryEntry<EntityAttribute>> EFFECT_SCALES = Object2FloatMaps.unmodifiable(new Object2FloatOpenHashMap<>(Map.of(
-            EntityAttributes.GENERIC_ATTACK_DAMAGE, 0.2F,
-            EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 0.05F,
-            EntityAttributes.GENERIC_ATTACK_SPEED, 0.2F,
-            EntityAttributes.GENERIC_ARMOR_TOUGHNESS, 0.001F,
-            EntityAttributes.GENERIC_ARMOR, 0.01F
+            EntityAttributes.ATTACK_DAMAGE, 0.2F,
+            EntityAttributes.ATTACK_KNOCKBACK, 0.05F,
+            EntityAttributes.ATTACK_SPEED, 0.2F,
+            EntityAttributes.ARMOR_TOUGHNESS, 0.001F,
+            EntityAttributes.ARMOR, 0.01F
     )));
     private static final Float2ObjectFunction<EntityAttributeModifier> EFFECT_FACTORY = v -> {
         return new EntityAttributeModifier(EFFECT_ID, v, EntityAttributeModifier.Operation.ADD_VALUE);
@@ -122,13 +122,9 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                    entity.setPickupDelay(0);
                    entity.onPlayerCollision(player);
 
-                   if (player.getMainHandStack().getItem() == this) {
-                       TypedActionResult<ItemStack> result = use(player.getWorld(), player, Hand.MAIN_HAND);
-
-                       if (result.getResult() == ActionResult.SUCCESS) {
-                           entity.setPickupDelay(1000);
-                           entity.setRemoved(RemovalReason.DISCARDED);
-                       }
+                   if (player.getMainHandStack().isOf(this) && use(player.getWorld(), player, Hand.MAIN_HAND) == ActionResult.SUCCESS) {
+                       entity.setPickupDelay(1000);
+                       entity.setRemoved(RemovalReason.DISCARDED);
                    }
                }
             }
@@ -161,10 +157,12 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
         if (entity instanceof PlayerEntity player) {
             player.getHungerManager().setFoodLevel(1);
         }
-        entity.damage(wearer.damageOf(UDamageTypes.ALICORN_AMULET), amount);
-        entity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 1));
-        if (timeWorn > ItemTracker.HOURS) {
-            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 200, 3));
+        if (!wearer.isClient()) {
+            entity.damage(wearer.asServerWorld(), wearer.damageOf(UDamageTypes.ALICORN_AMULET), amount);
+            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 1));
+            if (timeWorn > ItemTracker.HOURS) {
+                entity.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 200, 3));
+            }
         }
 
         if (attachedTime > ItemTracker.HOURS / 2) {
@@ -209,7 +207,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                         stack.decrement(1);
                         world.createExplosion(null, entity.getX(), entity.getY(), entity.getZ(), 0, ExplosionSourceType.NONE);
                         world.playSound(null, entity.getBlockPos(), USounds.ENTITY_SOMBRA_LAUGH, SoundCategory.AMBIENT, 10, 1);
-                        world.getEntitiesByClass(SpellbookEntity.class, entity.getBoundingBox().expand(6), Predicates.alwaysTrue()).forEach(Entity::kill);
+                        world.getEntitiesByClass(SpellbookEntity.class, entity.getBoundingBox().expand(6), Predicates.alwaysTrue()).forEach(e -> e.kill((ServerWorld)world));
 
                         SombraEntity.startEncounter(world, entity.getBlockPos());
                     }
@@ -288,7 +286,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                 if (attachedTicks % 100 == 0) {
                     player.getHungerManager().addExhaustion(90F);
                     float healthDrop = MathHelper.clamp(player.getMaxHealth() - player.getHealth(), 2, 5);
-                    player.damage(pony.damageOf(UDamageTypes.ALICORN_AMULET), healthDrop);
+                    player.damage((ServerWorld)world, pony.damageOf(UDamageTypes.ALICORN_AMULET), healthDrop);
                 }
 
                 return;

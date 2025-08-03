@@ -21,12 +21,11 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -55,11 +54,11 @@ public class BellItem extends Item {
                 .filter(living -> !(living instanceof Creature c && c.isDiscorded()))
                 .orElse(null) : null;
         pony.setTarget(targetLiving);
-        return targetLiving == null ? ActionResult.FAIL : ActionResult.CONSUME_PARTIAL;
+        return targetLiving == null ? ActionResult.FAIL : ActionResult.CONSUME;
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+    public ActionResult use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
         ItemStack offhandStack = AmuletItem.get(player).stack();
 
@@ -91,11 +90,11 @@ public class BellItem extends Item {
                 pony.addParticle(new MagicParticleEffect(0xAAFFFF), p, Vec3d.ZERO);
             });
 
-            return TypedActionResult.consume(stack);
+            return ActionResult.CONSUME;
         }
 
         pony.playSound(USounds.ITEM_GROGAR_BELL_USE, 0.01F, 0.9F);
-        return TypedActionResult.consume(stack);
+        return ActionResult.CONSUME;
     }
 
     @Override
@@ -116,17 +115,19 @@ public class BellItem extends Item {
         });
     }
 
-    private void onStoppedDraining(Living<?> user, Living<?> target, boolean completed) {
+    private boolean onStoppedDraining(Living<?> user, Living<?> target, boolean completed) {
         user.setTarget(null);
         user.playSound(USounds.ITEM_GROGAR_BELL_STOP_USING, 0.2F, 0.3F);
         if (target instanceof Creature creature && (completed || target.asEntity().getHealth() < (target.asEntity().getMaxHealth() * 0.5F) + 1)) {
             ItemStack handStack = creature.asEntity().getStackInHand(Hand.MAIN_HAND);
             if (!handStack.isEmpty()) {
                 creature.asEntity().setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
-                creature.asEntity().dropStack(handStack);
+                creature.asEntity().dropStack(creature.asServerWorld(), handStack);
             }
             creature.setDiscorded(true);
+            return true;
         }
+        return false;
     }
 
     private boolean tickDraining(Living<?> user, Living<?> living, ItemStack stack, float progress) {
@@ -145,7 +146,7 @@ public class BellItem extends Item {
             }
         } else {
             float damageAmount = Math.min(Math.max(1, living.asEntity().getMaxHealth() / 25F), living.asEntity().getHealth() - 1);
-            living.asEntity().damage(user.damageOf(UDamageTypes.EXHAUSTION, user), damageAmount);
+            living.asEntity().damage(user.asServerWorld(), user.damageOf(UDamageTypes.EXHAUSTION, user), damageAmount);
             living.asEntity().setAttacker(user.asEntity());
             if (living.asEntity() instanceof MobEntity mob) {
                 mob.setTarget(null);
@@ -198,12 +199,12 @@ public class BellItem extends Item {
     }
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        Living.getOrEmpty(user).ifPresent(living -> {
-            living.getTarget().ifPresent(target -> {
-                onStoppedDraining(living, target, false);
-            });
-        });
+    public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
+        return Living.getOrEmpty(user)
+            .filter(living -> living.getTarget()
+                .filter(target -> onStoppedDraining(living, target, false))
+                .isPresent())
+            .isPresent();
     }
 
     @Override

@@ -6,10 +6,11 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.equipment.ArmorMaterials;
 
 public class GlassesItem extends WearableItem {
     public GlassesItem(Item.Settings settings) {
-        super(settings);
+        super(settings, ArmorMaterials.LEATHER.equipSound());
     }
 
     @Override

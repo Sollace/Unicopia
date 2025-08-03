@@ -4,13 +4,15 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.IItemEntity;
 import com.minelittlepony.unicopia.item.TickableItem.GroundTickCallback;
 
-import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 public class AppleItem {
@@ -28,20 +30,14 @@ public class AppleItem {
         if (!entity.isRemoved() && item.getPickupDelay() == 0 && item.getAge() > 2030 && entity.getWorld().random.nextInt(150) < 10) {
 
             if (!entity.getWorld().isClient) {
-                entity.remove(RemovalReason.KILLED);
+                EntityType.ITEM.spawn((ServerWorld)entity.getWorld(), neu -> {
+                    neu.copyPositionAndRotation(entity);
+                    neu.setStack(new ItemStack(UItems.ROTTEN_APPLE));
+                }, BlockPos.ORIGIN, SpawnReason.CONVERSION, false, false);
 
-                ItemEntity neu = EntityType.ITEM.create(entity.getWorld());
-                neu.copyPositionAndRotation(entity);
-                neu.setStack(new ItemStack(UItems.ROTTEN_APPLE));
-
-                entity.getWorld().spawnEntity(neu);
-
-                ItemEntity copy = EntityType.ITEM.create(entity.getWorld());
-                copy.copyPositionAndRotation(entity);
-                copy.setStack(entity.getStack());
-                copy.getStack().decrement(1);
-
-                entity.getWorld().spawnEntity(copy);
+                entity.age = 0;
+                entity.resetPickupDelay();
+                entity.getStack().decrement(1);
             }
 
             float bob = MathHelper.sin(((float)item.getAge() + 1) / 10F + entity.uniqueOffset) * 0.1F + 0.1F;

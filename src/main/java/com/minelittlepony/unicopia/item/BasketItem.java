@@ -12,14 +12,15 @@ import com.minelittlepony.unicopia.util.Dispensable;
 
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BoatItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPointer;
@@ -45,7 +46,7 @@ public class BasketItem extends Item implements Dispensable {
     }
 
     @Override
-    public TypedActionResult<ItemStack> dispenseStack(BlockPointer source, ItemStack stack) {
+    public ActionResult dispenseStack(BlockPointer source, ItemStack stack) {
         Direction facing = source.state().get(DispenserBlock.FACING);
         BlockPos pos = source.pos().offset(facing);
         float yaw = facing.getOpposite().asRotation();
@@ -53,29 +54,29 @@ public class BasketItem extends Item implements Dispensable {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
         BlockHitResult hit = BoatItem.raycast(world, user, RaycastContext.FluidHandling.ANY);
 
         if (hit.getType() == HitResult.Type.MISS) {
-            return TypedActionResult.pass(stack);
+            return ActionResult.PASS;
         }
 
         Vec3d eyePos = user.getEyePos();
         if (world.getOtherEntities(user, user.getBoundingBox().stretch(user.getRotationVec(1).multiply(REACH)).expand(1), RIDERS).stream()
                 .anyMatch(entity -> entity.getBoundingBox().expand(entity.getTargetingMargin()).contains(eyePos))) {
-            return TypedActionResult.pass(stack);
+            return ActionResult.PASS;
         }
 
         if (hit.getType() == HitResult.Type.BLOCK) {
             return placeEntity(stack, world, hit.getPos().x, hit.getPos().y, hit.getPos().z, user.getHorizontalFacing().asRotation(), user);
         }
 
-        return TypedActionResult.pass(stack);
+        return ActionResult.PASS;
     }
 
-    private TypedActionResult<ItemStack> placeEntity(ItemStack stack, World world, double x, double y, double z, float yaw, @Nullable PlayerEntity user) {
-        AirBalloonEntity entity = UEntities.AIR_BALLOON.create(world);
+    private ActionResult placeEntity(ItemStack stack, World world, double x, double y, double z, float yaw, @Nullable PlayerEntity user) {
+        AirBalloonEntity entity = UEntities.AIR_BALLOON.create(world, SpawnReason.SPAWN_ITEM_USE);
         yaw += 180;
         entity.updatePositionAndAngles(x, y, z, yaw, 0);
         entity.setHeadYaw(yaw);
@@ -83,7 +84,7 @@ public class BasketItem extends Item implements Dispensable {
         entity.setYaw(yaw);
         entity.setBasketType(type);
         if (!world.isSpaceEmpty(entity, entity.getBoundingBox())) {
-            return TypedActionResult.fail(stack);
+            return ActionResult.FAIL;
         }
         if (!world.isClient) {
             world.spawnEntity(entity);
@@ -94,6 +95,6 @@ public class BasketItem extends Item implements Dispensable {
                 stack.decrement(1);
             }
         }
-        return TypedActionResult.success(stack, world.isClient());
+        return ActionResult.SUCCESS;
     }
 }

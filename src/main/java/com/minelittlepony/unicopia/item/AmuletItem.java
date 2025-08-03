@@ -11,12 +11,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.equipment.ArmorMaterials;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Style;
@@ -28,11 +26,11 @@ public class AmuletItem extends WearableItem {
     public static final Identifier AMULET_MODIFIERS_ID = Unicopia.id("amulet_modifiers");
 
     public AmuletItem(Item.Settings settings, int maxEnergy) {
-        super(settings.component(UDataComponentTypes.CHARGES, Charges.of(maxEnergy, maxEnergy)));
+        super(settings.component(UDataComponentTypes.CHARGES, Charges.of(maxEnergy, maxEnergy)), ArmorMaterials.IRON.equipSound());
     }
 
     public AmuletItem(Item.Settings settings) {
-        super(settings);
+        super(settings, ArmorMaterials.IRON.equipSound());
     }
 
     public AmuletItem(Item.Settings settings, int maxEnergy, AttributeModifiersComponent modifiers) {
@@ -42,7 +40,7 @@ public class AmuletItem extends WearableItem {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> list, TooltipType type) {
         for (StringVisitable line : MinecraftClient.getInstance().textRenderer.getTextHandler().wrapLines(
-                Text.translatable(getTranslationKey(stack) + ".lore"), 150, Style.EMPTY)) {
+                Text.translatable(getTranslationKey() + ".lore"), 150, Style.EMPTY)) {
             MutableText compiled = Text.literal("").formatted(Formatting.ITALIC, Formatting.GRAY);
             line.visit(s -> {
                 compiled.append(s);
@@ -51,11 +49,6 @@ public class AmuletItem extends WearableItem {
             list.add(compiled);
         }
         super.appendTooltip(stack, context, list, type);
-    }
-
-    @Override
-    public RegistryEntry<SoundEvent> getEquipSound() {
-        return ArmorMaterials.IRON.value().equipSound();
     }
 
     @Override

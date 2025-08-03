@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import com.minelittlepony.unicopia.InteractionManager;
@@ -11,6 +12,8 @@ import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ToolComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
@@ -18,7 +21,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.HoeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolMaterials;
+import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
@@ -84,7 +87,7 @@ public class ForageableItem extends Item {
         spawnChance -= EnchantmentUtil.getLuck(1, player);
 
         if (spawnChance <= 0 || world.random.nextInt((int)(spawnChance * 32)) == 0) {
-            Block.dropStack(world, pos, new ItemStack(this, 1 + EnchantmentHelper.getEquipmentLevel(player.getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(Enchantments.LOOTING).get(), player)));
+            Block.dropStack(world, pos, new ItemStack(this, 1 + EnchantmentHelper.getEquipmentLevel(player.getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).getEntry(Enchantments.LOOTING.getValue()).get(), player)));
             world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
             if (BlockDestructionManager.of(world).damageBlock(pos, world.getRandom().nextBetween(3, 7)) >= BlockDestructionManager.MAX_DAMAGE) {
                 world.breakBlock(pos, true);
@@ -94,20 +97,28 @@ public class ForageableItem extends Item {
         return ActionResult.FAIL;
     }
 
+    static final Map<Item, Float> SPAWN_CHANCES = Map.of(
+            Items.WOODEN_HOE, 0.25F,
+            Items.STONE_HOE, 0.3F,
+            Items.IRON_HOE, 0.4F,
+            Items.GOLDEN_HOE, 0.6F,
+            Items.DIAMOND_HOE, 0.7F,
+            Items.NETHERITE_HOE, 0.8F
+    );
+
     static float getForagingChance(ItemStack stack) {
-        if (!(stack.getItem() instanceof HoeItem hoe)) {
+        if (!(stack.getItem() instanceof HoeItem)) {
             return 0.25F;
         }
 
-        float spawnChance = hoe.getMaterial() instanceof ToolMaterials m ? switch(m) {
-                case WOOD -> 0.25F;
-                case STONE -> 0.3F;
-                case IRON -> 0.4F;
-                case GOLD -> 0.6F;
-                case DIAMOND -> 0.7F;
-                case NETHERITE -> 0.8F;
-                default -> 0.25F;
-        } : MathHelper.clamp(hoe.getMaterial().getMiningSpeedMultiplier(), 0, 1);
+        float spawnChance = SPAWN_CHANCES.getOrDefault(stack.getItem(), -1F);
+        if (spawnChance <= 0) {
+            ToolComponent comp = stack.get(DataComponentTypes.TOOL);
+            if (comp == null) {
+                return 0.25F;
+            }
+            spawnChance = MathHelper.clamp(comp.defaultMiningSpeed(), 0, 1);
+        }
 
         return 1F - spawnChance;
     }

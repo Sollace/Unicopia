@@ -74,7 +74,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
 
         if (world instanceof ServerWorld serverWorld) {
             Consumer<FloatingArtefactEntity> consumer = EntityType.copier(serverWorld, context.getStack(), context.getPlayer());
-            FloatingArtefactEntity entity = UEntities.FLOATING_ARTEFACT.create(serverWorld, consumer, blockPos, SpawnReason.SPAWN_EGG, false, true);
+            FloatingArtefactEntity entity = UEntities.FLOATING_ARTEFACT.create(serverWorld, consumer, blockPos, SpawnReason.SPAWN_ITEM_USE, false, true);
 
             if (entity == null) {
                 return ActionResult.FAIL;
@@ -91,7 +91,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
             context.getStack().decrement(1);
         }
 
-        return ActionResult.success(world.isClient);
+        return ActionResult.SUCCESS;
     }
 
     @Override
@@ -114,7 +114,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                     pos.getZ() + entity.getWorld().getRandom().nextFloat(),
                     0, 0, 0);
 
-            if (entity.age % 80 == 0 && !entity.getWorld().isClient) {
+            if (entity.age % 80 == 0 && entity.getWorld() instanceof ServerWorld sw) {
                 List<LivingEntity> inputs = new ArrayList<>();
                 List<LivingEntity> outputs = new ArrayList<>();
                 List<ItemEntity> containers = new ArrayList<>();
@@ -148,7 +148,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
                 float takes = demand > supply ? demand / supply : 1;
 
                 inputs.forEach(input -> {
-                    input.damage(entity.damageOf(UDamageTypes.LIFE_DRAINING), takes);
+                    input.damage(sw, entity.damageOf(UDamageTypes.LIFE_DRAINING), takes);
                     ParticleUtils.spawnParticles(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, entity, 0.2F), input, 1);
                 });
                 outputs.forEach(output -> {
@@ -171,7 +171,9 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
     @Override
     public ActionResult onArtifactDestroyed(FloatingArtefactEntity entity) {
         entity.playSound(USounds.ENTITY_CRYSTAL_HEART_DEACTIVATE, 0.75F, 1);
-        entity.dropStack(new ItemStack(UItems.CRYSTAL_SHARD, 1 + entity.getWorld().random.nextInt(5)), 0);
+        if (entity.getWorld() instanceof ServerWorld sw) {
+            entity.dropStack(sw, new ItemStack(UItems.CRYSTAL_SHARD, 1 + sw.random.nextInt(5)), 0);
+        }
         return ActionResult.SUCCESS;
     }
 

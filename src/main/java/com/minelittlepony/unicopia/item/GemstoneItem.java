@@ -10,13 +10,14 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.player.PlayerCharmTracker;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.group.MultiItem;
+import com.minelittlepony.unicopia.util.TypedActionResult;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
 
 public class GemstoneItem extends Item implements MultiItem {
@@ -26,10 +27,10 @@ public class GemstoneItem extends Item implements MultiItem {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        TypedActionResult<ItemStack> result = super.use(world, user, hand);
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
+        ActionResult result = super.use(world, user, hand);
 
-        if (!result.getResult().isAccepted()) {
+        if (!result.isAccepted()) {
             ItemStack stack = user.getStackInHand(hand);
             PlayerCharmTracker charms = Pony.of(user).getCharms();
 
@@ -52,8 +53,8 @@ public class GemstoneItem extends Item implements MultiItem {
                 }
             }
 
-            if (spell.getResult().isAccepted()) {
-                charms.equipSpell(hand, spell.getValue());
+            if (spell.result().isAccepted()) {
+                charms.equipSpell(hand, spell.value());
             } else {
 
                 if (existing.isEmpty()) {
@@ -63,8 +64,8 @@ public class GemstoneItem extends Item implements MultiItem {
                 charms.equipSpell(hand, SpellType.EMPTY_KEY.withTraits());
             }
 
-            user.getItemCooldownManager().set(this, 20);
-            return TypedActionResult.success(stack, true);
+            user.getItemCooldownManager().set(stack, 20);
+            return ActionResult.SUCCESS;
         }
 
         return result;
@@ -90,10 +91,10 @@ public class GemstoneItem extends Item implements MultiItem {
     public Text getName(ItemStack stack) {
         if (EnchantableItem.isEnchanted(stack)) {
             if (!InteractionManager.getInstance().getClientSpecies().canCast()) {
-                return Text.translatable(getTranslationKey(stack) + ".obfuscated");
+                return Text.translatable(getTranslationKey() + ".obfuscated");
             }
 
-            return Text.translatable(getTranslationKey(stack) + ".enchanted", EnchantableItem.getSpellKey(stack).getName());
+            return Text.translatable(getTranslationKey() + ".enchanted", EnchantableItem.getSpellKey(stack).getName());
         }
         return super.getName();
     }

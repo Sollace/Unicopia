@@ -44,7 +44,7 @@ public class BedsheetsItem extends Item {
             PlayerEntity player = context.getPlayer();
             world.playSound(player, pos, SoundEvents.ITEM_ARMOR_EQUIP_GENERIC.value(), SoundCategory.BLOCKS, 1, 1);
 
-            return ActionResult.success(world.isClient);
+            return ActionResult.SUCCESS;
         }
 
         return ActionResult.PASS;

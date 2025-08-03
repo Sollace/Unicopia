@@ -14,6 +14,8 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 
 import net.minecraft.block.SideShapeType;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -48,7 +50,7 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
         }
         boolean success = false;
         for (Direction face : getFreeFaces(world, pos)) {
-            CrystalShardsEntity shards = UEntities.CRYSTAL_SHARDS.create(world);
+            CrystalShardsEntity shards = UEntities.CRYSTAL_SHARDS.create(world, SpawnReason.EVENT);
             shards.setPosition(pos.offset(face).toCenterPos());
             shards.setAttachmentFace(face);
             shards.setCorrupt(true);
@@ -176,10 +178,22 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
 
         if (!Guest.of(this).hasHost()) {
             if (isDead() || isInvalid(getWorld(), getBlockPos(), getAttachmentFace())) {
-                kill();
+                if (getWorld() instanceof ServerWorld sw) {
+                    kill(sw);
+                }
                 ParticleUtils.spawnParticles(ParticleTypes.CLOUD, this, 10);
             }
         }
+    }
+
+    @Override
+    public boolean damage(ServerWorld world, DamageSource source, float amount) {
+        onHurt();
+        setHealth(Math.max(0, getHealth() - amount));
+        if (getHealth() <= 0) {
+            kill(world);
+        }
+        return true;
     }
 
     @Override
@@ -192,7 +206,9 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
     public void remove(RemovalReason reason) {
         if (reason == RemovalReason.KILLED) {
             playSound(USounds.ENTITY_CRYSTAL_SHARDS_JOSTLE, 1, 1);
-            dropStack(new ItemStack(UItems.CRYSTAL_SHARD, 6));
+            if (getWorld() instanceof ServerWorld sw) {
+                dropStack(sw, new ItemStack(UItems.CRYSTAL_SHARD, 6));
+            }
         }
         super.remove(reason);
     }

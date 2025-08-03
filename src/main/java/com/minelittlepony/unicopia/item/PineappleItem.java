@@ -6,7 +6,7 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.FoodComponent;
+import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.Item;
@@ -23,9 +23,9 @@ public class PineappleItem extends Item {
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-        FoodComponent food = stack.get(DataComponentTypes.FOOD);
-        if (food != null) {
-            user.eatFood(world, stack.copy(), food);
+        ConsumableComponent consumable = stack.get(DataComponentTypes.CONSUMABLE);
+        if (consumable != null) {
+            stack = consumable.finishConsumption(world, user, stack);
             if (!world.isClient) {
                 stack.damage(1, (ServerWorld)world, user instanceof ServerPlayerEntity p ? p : null, i -> {
                     AwaitTickQueue.scheduleTask(world, w -> {

@@ -17,7 +17,6 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SkinOverlayOwner;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.AttackWithOwnerGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -73,7 +72,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 
-public class FriendlyCreeperEntity extends TameableEntity implements SkinOverlayOwner, Angerable {
+public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
     private static final TrackedData<Integer> FUSE_SPEED = DataTracker.registerData(FriendlyCreeperEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Boolean> CHARGED = DataTracker.registerData(FriendlyCreeperEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> IGNITED = DataTracker.registerData(FriendlyCreeperEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -93,6 +92,7 @@ public class FriendlyCreeperEntity extends TameableEntity implements SkinOverlay
 
     protected FriendlyCreeperEntity(EntityType<? extends FriendlyCreeperEntity> type, World world) {
         super(type, world);
+        CreeperEntity;
         setTamed(false, true);
         setPathfindingPenalty(PathNodeType.POWDER_SNOW, -1);
         setPathfindingPenalty(PathNodeType.DANGER_POWDER_SNOW, -1);

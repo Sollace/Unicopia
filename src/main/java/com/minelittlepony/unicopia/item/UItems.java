@@ -24,6 +24,7 @@ import net.minecraft.block.WoodType;
 import net.minecraft.block.jukebox.JukeboxSong;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.ConsumableComponents;
 import net.minecraft.component.type.FoodComponents;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -43,8 +44,8 @@ public interface UItems {
     Item SWEET_APPLE = register("sweet_apple", AppleItem.registerTickCallback(new Item(new Item.Settings().food(FoodComponents.APPLE))), ItemGroups.FOOD_AND_DRINK);
     Item SOUR_APPLE = register("sour_apple", AppleItem.registerTickCallback(new Item(new Item.Settings().food(FoodComponents.APPLE))), ItemGroups.FOOD_AND_DRINK);
 
-    ZapAppleItem ZAP_APPLE = register("zap_apple", AppleItem.registerTickCallback(new ZapAppleItem(new Item.Settings().food(UFoodComponents.ZAP_APPLE))), ItemGroups.FOOD_AND_DRINK);
-    Item ZAP_BULB = register("zap_bulb", new Item(new Item.Settings().food(UFoodComponents.ZAP_BULB)), ItemGroups.FOOD_AND_DRINK);
+    ZapAppleItem ZAP_APPLE = register("zap_apple", AppleItem.registerTickCallback(new ZapAppleItem(new Item.Settings().food(UFoodComponents.ZAP_APPLE, UConsumableComponents.SNACK))), ItemGroups.FOOD_AND_DRINK);
+    Item ZAP_BULB = register("zap_bulb", new Item(new Item.Settings().food(UFoodComponents.ZAP_BULB, UConsumableComponents.ZAP_BULB)), ItemGroups.FOOD_AND_DRINK);
 
     Item ROTTEN_APPLE = register("rotten_apple", new Item(new Item.Settings().food(FoodComponents.APPLE)), ItemGroups.FOOD_AND_DRINK);
     Item COOKED_ZAP_APPLE = register("cooked_zap_apple", new Item(new Item.Settings().food(FoodComponents.APPLE)), ItemGroups.FOOD_AND_DRINK);
@@ -64,9 +65,9 @@ public interface UItems {
     Item LIGHTNING_JAR  = register("lightning_jar", new WeatherJarItem(UBlocks.LIGHTNING_JAR, new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.LIGHTNING), ItemGroups.FUNCTIONAL);
     Item ZAP_APPLE_JAM_JAR = register("zap_apple_jam_jar", new WeatherJarItem(UBlocks.ZAP_JAR, new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.LIGHTNING), ItemGroups.FUNCTIONAL);
 
-    Item TOAST = register("toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.TOAST)), ItemGroups.FOOD_AND_DRINK);
-    Item BURNED_TOAST = register("burned_toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.BURNED_TOAST)), ItemGroups.FOOD_AND_DRINK);
-    Item JAM_TOAST = register("jam_toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.JAM_TOAST)), ItemGroups.FOOD_AND_DRINK);
+    Item TOAST = register("toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.TOAST, UConsumableComponents.SNACK)), ItemGroups.FOOD_AND_DRINK);
+    Item BURNED_TOAST = register("burned_toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.BURNED_TOAST, UConsumableComponents.SNACK)), ItemGroups.FOOD_AND_DRINK);
+    Item JAM_TOAST = register("jam_toast", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.JAM_TOAST, UConsumableComponents.SNACK)), ItemGroups.FOOD_AND_DRINK);
 
     Item CRYSTAL_HEART = register("crystal_heart", new CrystalHeartItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
     Item CRYSTAL_SHARD = register("crystal_shard", new Item(new Item.Settings()), ItemGroups.NATURAL);
@@ -80,7 +81,7 @@ public interface UItems {
     Item OAT_SEEDS = register("oat_seeds", new BlockItem(UBlocks.OATS, new Item.Settings().translationKey(UBlocks.OATS.getTranslationKey())), ItemGroups.NATURAL);
     Item OATS = register("oats", new Item(new Item.Settings().food(UFoodComponents.OATS)), ItemGroups.FOOD_AND_DRINK);
     Item IMPORTED_OATS = register("imported_oats", new Item(new Item.Settings().food(UFoodComponents.IMPORTED_OATS)), ItemGroups.FOOD_AND_DRINK);
-    Item OATMEAL = register("oatmeal", new OatmealItem(new Item.Settings().recipeRemainder(Items.BOWL).maxCount(1).food(UFoodComponents.OATMEAL)), ItemGroups.FOOD_AND_DRINK);
+    Item OATMEAL = register("oatmeal", new Item(new Item.Settings().recipeRemainder(Items.BOWL).maxCount(1).food(UFoodComponents.OATMEAL, UConsumableComponents.OATMEAL).useRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
 
     Item OATMEAL_COOKIE = register("oatmeal_cookie", new Item(new Item.Settings().food(UFoodComponents.OATMEAL_COOKIE)), ItemGroups.FOOD_AND_DRINK);
     Item CHOCOLATE_OATMEAL_COOKIE = register("chocolate_oatmeal_cookie", new Item(new Item.Settings().food(UFoodComponents.CHOCOLATE_OATMEAL_COOKIE)), ItemGroups.FOOD_AND_DRINK);
@@ -100,11 +101,11 @@ public interface UItems {
     Item WHEAT_WORMS = register("wheat_worms", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.WORMS)), ItemGroups.NATURAL); //ItemTags.WOLF_FOOD
     Item BAITED_FISHING_ROD = register("baited_fishing_rod", new BaitedFishingRodItem(new Item.Settings().maxDamage(64)), ItemGroups.TOOLS);
     Item MUFFIN = register("muffin", new MuffinItem(new Item.Settings().maxCount(32).food(FoodComponents.BREAD), 0), ItemGroups.FOOD_AND_DRINK);
-    Item PINECONE = register("pinecone", new ForageableItem(new Item.Settings().food(UFoodComponents.PINECONE).maxCount(16), () -> Blocks.SPRUCE_LEAVES), ItemGroups.FOOD_AND_DRINK);
-    Item ACORN = register("acorn", new ForageableItem(new Item.Settings().food(UFoodComponents.ACORN).maxCount(16), () -> Blocks.OAK_LEAVES), ItemGroups.FOOD_AND_DRINK);
+    Item PINECONE = register("pinecone", new ForageableItem(new Item.Settings().food(UFoodComponents.PINECONE, UConsumableComponents.SNACK).maxCount(16), () -> Blocks.SPRUCE_LEAVES), ItemGroups.FOOD_AND_DRINK);
+    Item ACORN = register("acorn", new ForageableItem(new Item.Settings().food(UFoodComponents.ACORN, UConsumableComponents.SNACK).maxCount(16), () -> Blocks.OAK_LEAVES), ItemGroups.FOOD_AND_DRINK);
     Item MANGO = register("mango", new Item(new Item.Settings().food(UFoodComponents.MANGO)), ItemGroups.FOOD_AND_DRINK);
     Item BANANA = register("banana", new Item(new Item.Settings().food(UFoodComponents.BANANA)), ItemGroups.FOOD_AND_DRINK);
-    Item CURING_JOKE = register("curing_joke", new CuringJokeItem(UBlocks.CURING_JOKE, new Item.Settings().food(UFoodComponents.POISON_JOKE)), ItemGroups.NATURAL);
+    Item CURING_JOKE = register("curing_joke", new CuringJokeItem(UBlocks.CURING_JOKE, new Item.Settings().food(UFoodComponents.POISON_JOKE, UConsumableComponents.SNACK)), ItemGroups.NATURAL);
     Item PINEAPPLE = register("pineapple", new PineappleItem(new Item.Settings().food(UFoodComponents.BANANA).maxDamage(3)), ItemGroups.FOOD_AND_DRINK);
     Item PINEAPPLE_CROWN = register("pineapple_crown", new BlockItem(UBlocks.PINEAPPLE, new Item.Settings().translationKey(UBlocks.PINEAPPLE.getTranslationKey())), ItemGroups.NATURAL);
 
@@ -134,9 +135,9 @@ public interface UItems {
     Item APPLE_PIE_SLICE = register("apple_pie_slice", new Item(new Item.Settings().maxCount(16).food(UFoodComponents.PIE)), ItemGroups.FOOD_AND_DRINK);
     Item CANDIED_APPLE = register("candied_apple", new StagedFoodItem(new Item.Settings().food(UFoodComponents.CANDY).maxDamage(3), () -> Items.STICK), ItemGroups.FOOD_AND_DRINK);
 
-    Item LOVE_BOTTLE = register("love_bottle", new ConsumableItem(new Item.Settings().food(UFoodComponents.LOVE_BOTTLE).maxCount(1).recipeRemainder(Items.GLASS_BOTTLE), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
-    Item LOVE_BUCKET = register("love_bucket", new ConsumableItem(new Item.Settings().food(UFoodComponents.LOVE_BUCKET).recipeRemainder(Items.BUCKET), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
-    Item LOVE_MUG = register("love_mug", new ConsumableItem(new Item.Settings().food(UFoodComponents.LOVE_MUG).recipeRemainder(MUG), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
+    Item LOVE_BOTTLE = register("love_bottle", new ConsumableItem(new Item.Settings().food(UFoodComponents.LOVE_BOTTLE, ConsumableComponents.DRINK).maxCount(1).recipeRemainder(Items.GLASS_BOTTLE), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
+    Item LOVE_BUCKET = register("love_bucket", new ConsumableItem(new Item.Settings().food(UFoodComponents.LOVE_BUCKET, ConsumableComponents.DRINK).recipeRemainder(Items.BUCKET), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
+    Item LOVE_MUG = register("love_mug", new ConsumableItem(new Item.Settings().food(UFoodComponents.LOVE_MUG, ConsumableComponents.DRINK).recipeRemainder(MUG), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
 
     Item GOLDEN_FEATHER = register("golden_feather", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)), ItemGroups.NATURAL);
     Item GOLDEN_WING = register("golden_wing", new Item(new Item.Settings().rarity(Rarity.UNCOMMON)), ItemGroups.NATURAL);
@@ -246,10 +247,10 @@ public interface UItems {
     Item ROTTEN_COD = register("rotten_cod", new Item(new Item.Settings().food(FoodComponents.ROTTEN_FLESH)), ItemGroups.FOOD_AND_DRINK);
     Item ROTTEN_SALMON = register("rotten_salmon", new Item(new Item.Settings().food(FoodComponents.ROTTEN_FLESH)), ItemGroups.FOOD_AND_DRINK);
     Item ROTTEN_TROPICAL_FISH = register("rotten_tropical_fish", new Item(new Item.Settings().food(FoodComponents.ROTTEN_FLESH)), ItemGroups.FOOD_AND_DRINK);
-    Item ROTTEN_PUFFERFISH = register("rotten_pufferfish", new Item(new Item.Settings().food(UFoodComponents.ROTTEN_PUFFERFISH)), ItemGroups.FOOD_AND_DRINK); //ItemTags.WOLF_FOOD
+    Item ROTTEN_PUFFERFISH = register("rotten_pufferfish", new Item(new Item.Settings().food(UFoodComponents.ROTTEN_PUFFERFISH, UConsumableComponents.poisonedFish(1, 1, 1))), ItemGroups.FOOD_AND_DRINK); //ItemTags.WOLF_FOOD
 
     Item COOKED_TROPICAL_FISH = register("cooked_tropical_fish", new Item(new Item.Settings().food(FoodComponents.COOKED_COD)), ItemGroups.FOOD_AND_DRINK);
-    Item COOKED_PUFFERFISH = register("cooked_pufferfish", new Item(new Item.Settings().food(UFoodComponents.COOKED_PUFFERFISH)), ItemGroups.FOOD_AND_DRINK);
+    Item COOKED_PUFFERFISH = register("cooked_pufferfish", new Item(new Item.Settings().food(UFoodComponents.COOKED_PUFFERFISH, UConsumableComponents.poisonedFish(1, 0.3F, 0.4F))), ItemGroups.FOOD_AND_DRINK);
     Item FRIED_AXOLOTL = register("fried_axolotl", new ConsumableItem(new Item.Settings().food(FoodComponents.COOKED_CHICKEN).maxCount(1).recipeRemainder(Items.BUCKET), UseAction.EAT), ItemGroups.FOOD_AND_DRINK);
     Item GREEN_FRIED_EGG = register("green_fried_egg", new Item(new Item.Settings().food(UFoodComponents.FRIED_EGG)), ItemGroups.FOOD_AND_DRINK);
 

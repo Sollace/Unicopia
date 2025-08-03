@@ -34,6 +34,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
@@ -252,7 +253,7 @@ public class ButterflyEntity extends AmbientEntity {
     private boolean breed() {
         breedingCooldown = MAX_BREEDING_COOLDOWN;
 
-        ButterflyEntity copy = (ButterflyEntity)getType().create(getWorld());
+        ButterflyEntity copy = (ButterflyEntity)getType().create(getWorld(), SpawnReason.BREEDING);
         copy.copyPositionAndRotation(this);
         getWorld().spawnEntity(copy);
         setResting(false);
@@ -325,15 +326,14 @@ public class ButterflyEntity extends AmbientEntity {
     protected void fall(double y, boolean onGroundIn, BlockState state, BlockPos pos) {
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public boolean canSpawn(WorldAccess world, SpawnReason reason) {
         return reason != SpawnReason.NATURAL || (getY() >= world.getSeaLevel() && world.getLightLevel(getBlockPos()) > 3);
     }
 
     @Override
-    public ItemEntity dropStack(ItemStack stack, float yOffset) {
-        return super.dropStack(BufferflyVariantComponent.set(stack, new BufferflyVariantComponent(getVariant(), true)), yOffset);
+    public ItemEntity dropStack(ServerWorld world, ItemStack stack, float yOffset) {
+        return super.dropStack(world, BufferflyVariantComponent.set(stack, new BufferflyVariantComponent(getVariant(), true)), yOffset);
     }
 
     @Override

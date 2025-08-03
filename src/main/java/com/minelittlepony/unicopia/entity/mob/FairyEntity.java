@@ -19,6 +19,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.FuzzyPositions;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
@@ -67,9 +68,9 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
 
     public static DefaultAttributeContainer.Builder createMobAttributes() {
         return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 3)
-                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 100)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25);
+                .add(EntityAttributes.MAX_HEALTH, 3)
+                .add(EntityAttributes.FOLLOW_RANGE, 100)
+                .add(EntityAttributes.MOVEMENT_SPEED, 0.25);
     }
 
     @Override
@@ -201,7 +202,7 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
     @Override
     public boolean handleAttack(Entity attacker) {
         if (getWorld() instanceof ServerWorld serverWorld) {
-            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(getWorld());
+            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(getWorld(), SpawnReason.MOB_SUMMONED);
             lightning.refreshPositionAfterTeleport(getX(), getY(), getZ());
             attacker.onStruckByLightning(serverWorld, lightning);
         }

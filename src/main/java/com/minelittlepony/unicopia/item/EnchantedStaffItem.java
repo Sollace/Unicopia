@@ -28,11 +28,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -127,14 +127,13 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Mu
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        ItemStack itemstack =  player.getStackInHand(hand);
+    public ActionResult use(World world, PlayerEntity player, Hand hand) {
         player.setCurrentHand(hand);
-        return TypedActionResult.consume(itemstack);
+        return ActionResult.CONSUME;
     }
 
     @Override
-    public void onStoppedUsing(ItemStack stack, World world, LivingEntity entity, int timeLeft) {
+    public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity entity, int timeLeft) {
         int i = getMaxUseTime(stack, entity) - timeLeft;
 
         if (i > 5 && EnchantableItem.isEnchanted(stack)) {
@@ -146,8 +145,10 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Mu
                     stack.damage(1, pony.asEntity(), EquipmentSlot.MAINHAND);
                     pony.subtractEnergyCost(4);
                 });
+                return true;
             }
         }
+        return false;
     }
 
     @Override
@@ -181,9 +182,9 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Mu
                 );
                 world.playSound(null, entity.getBlockPos(), USounds.ITEM_MAGIC_STAFF_CHARGE, SoundCategory.PLAYERS, 1, i / 20);
 
-                if (i > 200) {
+                if (i > 200 && world instanceof ServerWorld sw) {
                     living.clearActiveItem();
-                    living.damage(entity.getDamageSources().magic(), 1);
+                    living.damage(sw, entity.getDamageSources().magic(), 1);
                     if (EnchantableItem.isEnchanted(stack)) {
                         CustomisedSpellType<?> spellType = EnchantableItem.getSpellEffect(stack);
                         if (Charges.discharge(stack, 1)) {
@@ -203,7 +204,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Mu
     @Override
     public Text getName(ItemStack stack) {
         if (EnchantableItem.isEnchanted(stack) && Charges.of(stack).energy() > 0) {
-            return Text.translatable(this.getTranslationKey(stack) + ".enchanted", super.getName(stack), EnchantableItem.getSpellKey(stack).getName());
+            return Text.translatable(getTranslationKey() + ".enchanted", super.getName(stack), EnchantableItem.getSpellKey(stack).getName());
         }
         return super.getName(stack);
     }

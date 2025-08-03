@@ -11,8 +11,9 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.equipment.ArmorMaterials;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
@@ -20,9 +21,9 @@ import net.minecraft.world.World;
 
 public abstract class WearableItem extends Item {
 
-    public WearableItem(Item.Settings settings) {
+    public WearableItem(Item.Settings settings, RegistryEntry<SoundEvent> equipSound) {
         super(configureEquipmentSlotSupplier(settings.component(DataComponentTypes.EQUIPPABLE, EquippableComponent.builder(EquipmentSlot.OFFHAND)
-                .equipSound(ArmorMaterials.LEATHER.equipSound())
+                .equipSound(equipSound)
                 .build())));
         DispenserBlock.registerBehavior(this, DISPENSER_BEHAVIOR);
         TrinketsDelegate.getInstance(null).registerTrinket(this);

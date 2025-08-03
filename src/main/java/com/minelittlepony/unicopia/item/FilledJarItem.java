@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.component.Appearance;
 import com.minelittlepony.unicopia.item.component.BufferflyVariantComponent;
@@ -16,6 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileDeflection;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -38,7 +38,7 @@ public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.
     @Override
     public Text getName(ItemStack stack) {
         Appearance appearance = stack.get(UDataComponentTypes.APPEARANCE);
-        return appearance != null ? Text.translatable(getTranslationKey(stack), appearance.item().getName()) : UItems.EMPTY_JAR.getName(UItems.EMPTY_JAR.getDefaultStack());
+        return appearance != null ? Text.translatable(getTranslationKey(), appearance.item().getName()) : UItems.EMPTY_JAR.getName(UItems.EMPTY_JAR.getDefaultStack());
     }
 
     @Override
@@ -62,7 +62,7 @@ public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.
                 owner.onAttacking(entity);
             }
 
-            if (entity.damage(damageSource, damage)) {
+            if (entity.damage(world, damageSource, damage)) {
 
                 if (entity instanceof LivingEntity living) {
                     projectile.knockback(living, damageSource, stack);
@@ -83,16 +83,16 @@ public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.
         ItemStack stack = Appearance.upwrapAppearance(projectile.getStack());
         BufferflyVariantComponent butterflyVariant = stack.get(UDataComponentTypes.BUTTERFLY_VARIANT);
 
-        if (butterflyVariant != null) {
-            ButterflyEntity butterfly = UEntities.BUTTERFLY.create(projectile.getWorld());
-            butterfly.setVariant(butterflyVariant.variant());
-            butterfly.updatePosition(projectile.getX(), projectile.getY(), projectile.getZ());
-            projectile.getWorld().spawnEntity(butterfly);
-        } else {
-            if (projectile.getWorld() instanceof ServerWorld sw) {
+        if (projectile.getWorld() instanceof ServerWorld sw) {
+            if (butterflyVariant != null) {
+                projectile.getWorld().spawnEntity(UEntities.BUTTERFLY.create(sw, b -> {
+                    b.setVariant(butterflyVariant.variant());
+                    b.updatePosition(projectile.getX(), projectile.getY(), projectile.getZ());
+                }, projectile.getBlockPos(), SpawnReason.EVENT, false, false));
+            } else {
                 stack.damage(1, sw, null, i -> {});
+                projectile.dropStack(sw, stack);
             }
-            projectile.dropStack(stack);
         }
         projectile.getWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, projectile.getBlockPos(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
     }
