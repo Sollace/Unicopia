@@ -21,7 +21,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
@@ -47,7 +46,7 @@ public class StructureInteractionTlaRecipe implements TlaRecipe {
         context.addRecipeGenerator(URecipes.GROWING, recipe -> {
             return new StructureInteractionTlaRecipe(
                     category,
-                    recipe.id(),
+                    recipe.id().getValue(),
                     new Schematic.Builder()
                         .fill(0, 0, 0, 6, 0, 6, recipe.value().getCatalystState())
                         .set(3, 0, 3, Blocks.FARMLAND.getDefaultState())
@@ -155,42 +154,42 @@ public class StructureInteractionTlaRecipe implements TlaRecipe {
         if (schematic.volume() == 0) {
             return;
         }
-        MatrixStack matrices = context.getMatrices();
-        Immediate immediate = context.getVertexConsumers();
+        context.draw(immediate -> {
+            MatrixStack matrices = context.getMatrices();
+            MinecraftClient client = MinecraftClient.getInstance();
 
-        MinecraftClient client = MinecraftClient.getInstance();
+            matrices.push();
+            float minSize = (Math.max(schematic.dz(), Math.max(schematic.dx(), schematic.dy())) + 1) * 16;
+            float scale = 60 / minSize;
+            matrices.scale(scale, scale, 1);
+            matrices.translate(95, 40, 100);
+            matrices.scale(16, -16, 16);
 
-        matrices.push();
-        float minSize = (Math.max(schematic.dz(), Math.max(schematic.dx(), schematic.dy())) + 1) * 16;
-        float scale = 60 / minSize;
-        matrices.scale(scale, scale, 1);
-        matrices.translate(95, 40, 100);
-        matrices.scale(16, -16, 16);
+            matrices.peek().getNormalMatrix().scale(1, -1, 1);
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(20));
+            matrices.peek().getPositionMatrix().rotate(RotationAxis.POSITIVE_Y.rotationDegrees(40));
+            matrices.translate(
+                    (-schematic.dx() - 1) / 2F,
+                    (-schematic.dy() - 1) / 2F,
+                    (-schematic.dz() - 1) / 2F
+            );
+            DiffuseLighting.disableGuiDepthLighting();
 
-        matrices.peek().getNormalMatrix().scale(1, -1, 1);
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(20));
-        matrices.peek().getPositionMatrix().rotate(RotationAxis.POSITIVE_Y.rotationDegrees(40));
-        matrices.translate(
-                (-schematic.dx() - 1) / 2F,
-                (-schematic.dy() - 1) / 2F,
-                (-schematic.dz() - 1) / 2F
-        );
-        DiffuseLighting.disableGuiDepthLighting();
+            age++;
 
-        age++;
-
-        for (var entry : schematic.states()) {
-            int x = entry.x() - schematic.dx() / 2;
-            int z = entry.z() - schematic.dz() / 2;
-            int distance = x * x + z * z;
-            if (age >= distance * 2) {
-                matrices.push();
-                matrices.translate(entry.x(), entry.y(), entry.z());
-                client.getBlockRenderManager().renderBlockAsEntity(entry.state(), matrices, immediate, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
-                matrices.pop();
+            for (var entry : schematic.states()) {
+                int x = entry.x() - schematic.dx() / 2;
+                int z = entry.z() - schematic.dz() / 2;
+                int distance = x * x + z * z;
+                if (age >= distance * 2) {
+                    matrices.push();
+                    matrices.translate(entry.x(), entry.y(), entry.z());
+                    client.getBlockRenderManager().renderBlockAsEntity(entry.state(), matrices, immediate, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+                    matrices.pop();
+                }
             }
-        }
 
-        matrices.pop();
+            matrices.pop();
+        });
     }
 }

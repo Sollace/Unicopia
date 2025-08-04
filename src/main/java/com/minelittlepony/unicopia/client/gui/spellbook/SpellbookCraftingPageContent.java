@@ -4,15 +4,16 @@ import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
+import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipeDisplay;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
 import com.minelittlepony.unicopia.client.gui.MagicText;
 import com.minelittlepony.unicopia.container.SpellbookState;
-import com.minelittlepony.unicopia.recipe.URecipes;
+import com.minelittlepony.unicopia.recipe.URecipeBookCategories;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.recipe.RecipeEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -65,10 +66,10 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
 
         if (state.getOffset() == 1) {
             int top = 0;
-            for (RecipeEntry<SpellbookRecipe> recipe : this.client.world.getRecipeManager().listAllOfType(URecipes.SPELLBOOK)) {
-                if (client.player.getRecipeBook().contains(recipe)) {
+            for (var resultSet : client.player.getRecipeBook().getResultsForCategory(URecipeBookCategories.SPELLBOOK)) {
+                for (var recipeDisplay : resultSet.getAllRecipes()) {
                     IngredientTree tree = new IngredientTree(0, top, width - verticalScrollbar.getBounds().width + 2);
-                    recipe.value().buildCraftingTree(tree);
+                    ((SpellbookRecipeDisplay)recipeDisplay.display()).buildCraftingTree(tree);
                     top += tree.build(this);
                 }
             }
@@ -101,20 +102,20 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
         final int bottom = height - tileSize + 4;
         final int right = width - tileSize + 9;
 
-        context.drawTexture(SpellbookScreen.TEXTURE, 0, 0, 405, 62, tileSize, tileSize, 512, 256);
-        context.drawTexture(SpellbookScreen.TEXTURE, right, 0, 425, 62, tileSize, tileSize, 512, 256);
+        context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, 0, 0, 405, 62, tileSize, tileSize, 512, 256);
+        context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, right, 0, 425, 62, tileSize, tileSize, 512, 256);
 
-        context.drawTexture(SpellbookScreen.TEXTURE, 0, bottom, 405, 72, tileSize, tileSize, 512, 256);
-        context.drawTexture(SpellbookScreen.TEXTURE, right, bottom, 425, 72, tileSize, tileSize, 512, 256);
+        context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, 0, bottom, 405, 72, tileSize, tileSize, 512, 256);
+        context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, right, bottom, 425, 72, tileSize, tileSize, 512, 256);
 
         for (int i = tileSize; i < right; i += tileSize) {
-            context.drawTexture(SpellbookScreen.TEXTURE, i, 0, 415, 62, tileSize, tileSize, 512, 256);
-            context.drawTexture(SpellbookScreen.TEXTURE, i, bottom, 415, 72, tileSize, tileSize, 512, 256);
+            context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, i, 0, 415, 62, tileSize, tileSize, 512, 256);
+            context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, i, bottom, 415, 72, tileSize, tileSize, 512, 256);
         }
 
         for (int i = tileSize; i < bottom; i += tileSize) {
-            context.drawTexture(SpellbookScreen.TEXTURE, 0, i, 405, 67, tileSize, tileSize, 512, 256);
-            context.drawTexture(SpellbookScreen.TEXTURE, right, i, 425, 67, tileSize, tileSize, 512, 256);
+            context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, 0, i, 405, 67, tileSize, tileSize, 512, 256);
+            context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, right, i, 425, 67, tileSize, tileSize, 512, 256);
         }
         matrices.pop();
         screen.drawSlots(context, mouseX, mouseY, tickDelta);

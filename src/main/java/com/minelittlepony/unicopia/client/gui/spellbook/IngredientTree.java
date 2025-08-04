@@ -20,11 +20,11 @@ import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.container.SpellbookState;
 
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -149,7 +149,7 @@ public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             RenderSystem.setShaderColor(1, 1, 1, 1);
             RenderSystem.enableBlend();
 
-            context.drawTexture(SpellbookScreen.SLOT, getX() - 8, getY() - 10, 0, 0, 32, 32, 32, 32);
+            context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.SLOT, getX() - 8, getY() - 10, 0, 0, 32, 32, 32, 32);
 
             RenderSystem.disableBlend();
             RenderSystem.setShaderColor(1, 1, 1, 1);
@@ -282,42 +282,39 @@ public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
                 return;
             }
             var model = itemRenderer.getModel(stack, MinecraftClient.getInstance().world, MinecraftClient.getInstance().player, 0);
+            context.draw(immediate -> {
+                try {
+                    MatrixStack matrices = context.getMatrices();
+                    matrices.push();
+                    matrices.translate(x + 8, y + 8, 150);
+                    matrices.scale(16, -16, 16);
 
-            MatrixStack matrices = context.getMatrices();
-            matrices.push();
-            matrices.translate(x + 8, y + 8, 150);
+                    boolean bl = !model.isSideLit();
+                    if (bl) {
+                        DiffuseLighting.disableGuiDepthLighting();
+                    }
 
-            try {
-                matrices.scale(16, -16, 16);
+                    RenderSystem.disableDepthTest();
+                    stack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false);
+                    itemRenderer.renderItem(stack, ModelTransformationMode.GUI, false, matrices, layer -> {
+                        return immediate.getBuffer(RenderLayerUtil.getTexture(layer)
+                                .map(texture -> RenderLayers.getMagicColored(texture, 0x09000000))
+                                .orElse(RenderLayers.getMagicColored(0x09000000)));
+                    }, 0, OverlayTexture.DEFAULT_UV, model);
+                    RenderSystem.enableDepthTest();
 
-                boolean bl = !model.isSideLit();
-                if (bl) {
-                    DiffuseLighting.disableGuiDepthLighting();
+                    if (bl) {
+                        DiffuseLighting.enableGuiDepthLighting();
+                    }
+                    matrices.pop();
+                    RenderSystem.setShaderColor(1, 1, 1, 1);
+                } catch (Throwable t) {
+                    throw new CrashException(Util.make(CrashReport.create(t, "Rendering item"), report -> report.addElement("Item being rendered")
+                            .add("Item Type", () -> String.valueOf(stack.getItem()))
+                            .add("Item Components", () -> String.valueOf(stack.getComponents()))
+                            .add("Item Foil", () -> String.valueOf(stack.hasGlint()))));
                 }
-
-                VertexConsumerProvider.Immediate immediate = context.getVertexConsumers();
-                stack.set(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, false);
-                itemRenderer.renderItem(stack, ModelTransformationMode.GUI, false, matrices, layer -> {
-                    return immediate.getBuffer(RenderLayerUtil.getTexture(layer)
-                            .map(texture -> RenderLayers.getMagicColored(texture, 0x09000000))
-                            .orElse(RenderLayers.getMagicColored(0x09000000)));
-                }, 0, OverlayTexture.DEFAULT_UV, model);
-
-                RenderSystem.disableDepthTest();
-                context.draw();
-                RenderSystem.enableDepthTest();
-
-                if (bl) {
-                    DiffuseLighting.enableGuiDepthLighting();
-                }
-            } catch (Throwable t) {
-                throw new CrashException(Util.make(CrashReport.create(t, "Rendering item"), report -> report.addElement("Item being rendered")
-                        .add("Item Type", () -> String.valueOf(stack.getItem()))
-                        .add("Item Components", () -> String.valueOf(stack.getComponents()))
-                        .add("Item Foil", () -> String.valueOf(stack.hasGlint()))));
-            }
-            matrices.pop();
-            RenderSystem.setShaderColor(1, 1, 1, 1);
+            });
         }
 
         @Override

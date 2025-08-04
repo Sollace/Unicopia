@@ -19,6 +19,11 @@ public class CloudShapingRecipe extends StonecuttingRecipe {
     }
 
     @Override
+    public ItemStack result() {
+        return super.result();
+    }
+
+    @Override
     public RecipeType<StonecuttingRecipe> getType() {
         return Untyped.cast(URecipes.CLOUD_SHAPING);
     }

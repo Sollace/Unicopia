@@ -79,7 +79,7 @@ class TraitCommand {
         float gravity = iplayer.getPhysics().getGravityModifier();
 
         if (source.getPlayer() == player) {
-            if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
+            if (player.getServer().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
                 player.sendMessage(Text.translatable(translationKey, gravity), false);
             }
         } else {

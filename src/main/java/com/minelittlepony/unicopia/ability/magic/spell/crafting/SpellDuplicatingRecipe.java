@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
+import java.util.List;
+
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.*;
 import com.minelittlepony.unicopia.recipe.URecipes;
@@ -11,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.display.RecipeDisplay;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.world.World;
 
@@ -29,14 +32,16 @@ public record SpellDuplicatingRecipe (IngredientWithSpell material) implements S
     }
 
     @Override
-    public void buildCraftingTree(CraftingTreeBuilder builder) {
-        ItemStack[] spells = SpellType.REGISTRY.stream()
-                .filter(SpellType::isObtainable)
-                .map(i -> EnchantableItem.enchant(UItems.GEMSTONE.getDefaultStack(), i))
-                .toArray(ItemStack[]::new);
-        builder.input(UItems.BOTCHED_GEM.getDefaultStack());
-        builder.input(spells);
-        builder.result(spells);
+    public List<RecipeDisplay> getDisplays() {
+        return List.of(SpellbookRecipeDisplay.of(builder -> {
+            ItemStack[] spells = SpellType.REGISTRY.stream()
+                    .filter(SpellType::isObtainable)
+                    .map(i -> EnchantableItem.enchant(UItems.GEMSTONE.getDefaultStack(), i))
+                    .toArray(ItemStack[]::new);
+            builder.input(UItems.BOTCHED_GEM.getDefaultStack());
+            builder.input(spells);
+            builder.result(spells);
+        }));
     }
 
     @Override

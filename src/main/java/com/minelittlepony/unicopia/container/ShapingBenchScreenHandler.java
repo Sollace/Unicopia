@@ -13,6 +13,7 @@ import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.StonecutterScreenHandler;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 
 public class ShapingBenchScreenHandler extends StonecutterScreenHandler {
@@ -74,7 +75,7 @@ public class ShapingBenchScreenHandler extends StonecutterScreenHandler {
                 srcSlot.onQuickTransfer(movingStack, originalStack);
             } else if (slot == 0
                     ? !insertItem(movingStack, 2, 38, false)
-                    : (world.getRecipeManager().getFirstMatch(URecipes.CLOUD_SHAPING, new SingleStackRecipeInput(movingStack), world).isPresent()
+                    : (((ServerWorld)world).getRecipeManager().getFirstMatch(URecipes.CLOUD_SHAPING, new SingleStackRecipeInput(movingStack), world).isPresent()
                             ? !insertItem(movingStack, 0, 1, false)
                             : (slot >= 2 && slot < 29
                                 ? !insertItem(movingStack, 29, 38, false)

@@ -53,7 +53,7 @@ class GravityCommand {
                     source.sendFeedback(() -> Text.translatable("commands.gravity.set.self", gravity), true);
                 } else {
                     if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                        player.sendMessage(Text.translatable("commands.gravity.set", gravity));
+                        player.sendMessage(Text.translatable("commands.gravity.set", gravity), false);
                     }
 
                     source.sendFeedback(() -> Text.translatable("commands.gravity.set.other", l.asEntity().getDisplayName(), gravity), true);

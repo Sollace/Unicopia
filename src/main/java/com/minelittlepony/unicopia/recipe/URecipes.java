@@ -26,7 +26,7 @@ public interface URecipes {
     Codec<List<Ingredient>> SHAPELESS_RECIPE_INGREDIENTS_CODEC = Ingredient.CODEC.listOf(1, 9);
 
     RecipeType<SpellbookRecipe> SPELLBOOK = register("spellbook");
-    RecipeType<StonecuttingRecipe> CLOUD_SHAPING = register("cloud_shaping");
+    RecipeType<CloudShapingRecipe> CLOUD_SHAPING = register("cloud_shaping");
     RecipeType<TransformCropsRecipe> GROWING = register("growing");
 
     RecipeSerializer<ZapAppleRecipe> ZAP_APPLE_SERIALIZER = register("crafting_zap_apple", ZapAppleRecipe.CODEC, ZapAppleRecipe.PACKET_CODEC);

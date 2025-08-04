@@ -69,7 +69,7 @@ public class ConfigCommand {
     }
 
     private static <T> SuggestionProvider<ServerCommandSource> createSuggestion(CommandRegistryAccess registries, RegistryKey<Registry<T>> registryKey) {
-        RegistryWrapper<T> wrapper = registries.getWrapperOrThrow(registryKey);
+        RegistryWrapper<T> wrapper = registries.getOrThrow(registryKey);
         return (context, builder) -> CommandSource.suggestIdentifiers(wrapper.streamKeys().map(RegistryKey::getValue), builder);
     }
 

@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.compat.tla;
 
 import java.util.List;
 
+import com.minelittlepony.unicopia.recipe.CloudShapingRecipe;
 import com.minelittlepony.unicopia.recipe.URecipes;
 
 import io.github.mattidragon.tlaapi.api.gui.GuiBuilder;
@@ -9,9 +10,7 @@ import io.github.mattidragon.tlaapi.api.plugin.PluginContext;
 import io.github.mattidragon.tlaapi.api.recipe.TlaIngredient;
 import io.github.mattidragon.tlaapi.api.recipe.TlaRecipe;
 import io.github.mattidragon.tlaapi.api.recipe.TlaStack;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.util.Identifier;
 
 public class CloudShapingTlaRecipe implements TlaRecipe {
@@ -24,11 +23,11 @@ public class CloudShapingTlaRecipe implements TlaRecipe {
         context.addRecipeGenerator(URecipes.CLOUD_SHAPING, recipe -> new CloudShapingTlaRecipe(category, recipe));
     }
 
-    public CloudShapingTlaRecipe(RecipeCategory category, RecipeEntry<StonecuttingRecipe> recipe) {
-        this.id = recipe.id();
+    public CloudShapingTlaRecipe(RecipeCategory category, RecipeEntry<CloudShapingRecipe> recipe) {
+        this.id = recipe.id().getValue();
         this.category = category;
-        input = TlaIngredient.ofIngredient(recipe.value().getIngredients().get(0));
-        output = TlaStack.of(recipe.value().getResult(MinecraftClient.getInstance().world.getRegistryManager()));
+        input = TlaIngredient.ofIngredient(recipe.value().ingredient());
+        output = TlaStack.of(recipe.value().result());
     }
 
     @Override

@@ -5,13 +5,13 @@ import java.util.List;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.recipe.URecipeBookCategories;
 import com.minelittlepony.unicopia.recipe.URecipes;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.IngredientPlacement;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
-import net.minecraft.recipe.book.RecipeBookCategories;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.input.RecipeInput;
 
@@ -27,21 +27,14 @@ public interface SpellbookRecipe extends Recipe<SpellbookRecipe.Input> {
     }
 
     @Override
-    default boolean isIgnoredInRecipeBook() {
-        return true;
-    }
-
-    @Override
     default RecipeBookCategory getRecipeBookCategory() {
-        return RecipeBookCategories.CRAFTING_MISC;
+        return URecipeBookCategories.SPELLBOOK;
     }
 
     @Override
     default IngredientPlacement getIngredientPlacement() {
         return IngredientPlacement.NONE;
     }
-
-    void buildCraftingTree(CraftingTreeBuilder builder);
 
     int getPriority();
 
@@ -60,6 +53,10 @@ public interface SpellbookRecipe extends Recipe<SpellbookRecipe.Input> {
 
         default void input(List<ItemStack> stacks) {
             input(stacks.toArray(ItemStack[]::new));
+        }
+
+        default void result(List<ItemStack> stacks) {
+            result(stacks.toArray(ItemStack[]::new));
         }
 
         default void mystery(List<ItemStack> stacks) {

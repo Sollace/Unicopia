@@ -25,7 +25,7 @@ public class UCommandSuggestion {
 
     public static <T> SuggestionProvider<ServerCommandSource> suggestFromRegistry(RegistryKey<? extends Registry<T>> registryKey, @Nullable BiPredicate<CommandContext<ServerCommandSource>, T> filter) {
         return (context, builder) -> {
-            Registry<T> registry = context.getSource().getRegistryManager().get(registryKey);
+            Registry<T> registry = context.getSource().getRegistryManager().getOrThrow(registryKey);
             return suggestIdentifiers(
                     filter == null ? registry : registry.stream().filter(v -> filter.test(context, v))::iterator,
                     registry::getId,

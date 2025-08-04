@@ -23,6 +23,7 @@ import net.minecraft.command.argument.*;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryKeys;
@@ -95,8 +96,8 @@ public class DisguiseCommand {
         if (source.getEntity() == player) {
             source.sendFeedback(() -> Text.translatable("commands.disguise.success.self", entity.getName()), true);
         } else {
-            if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendMessage(Text.translatable("commands.disguise.success", entity.getName()));
+            if (player.getServer().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
+                player.sendMessage(Text.translatable("commands.disguise.success", entity.getName()), false);
             }
 
             source.sendFeedback(() -> Text.translatable("commands.disguise.success.other", player.getName(), entity.getName()), true);
@@ -108,7 +109,7 @@ public class DisguiseCommand {
     static Entity loadEntity(ServerCommandSource source, RegistryEntry.Reference<EntityType<?>> entityType, NbtCompound nbt) {
         nbt = nbt.copy();
         nbt.putString("id", entityType.registryKey().getValue().toString());
-        return EntityType.loadEntityWithPassengers(nbt, source.getWorld(), Function.identity());
+        return EntityType.loadEntityWithPassengers(nbt, source.getWorld(), SpawnReason.MOB_SUMMONED, Function.identity());
     }
 
     static Entity loadPlayer(ServerCommandSource source, String username) {
@@ -122,8 +123,8 @@ public class DisguiseCommand {
         if (source.getEntity() == player) {
             source.sendFeedback(() -> Text.translatable("commands.disguise.removed.self"), true);
         } else {
-            if (player.getEntityWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
-                player.sendMessage(Text.translatable("commands.disguise.removed"));
+            if (player.getServer().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
+                player.sendMessage(Text.translatable("commands.disguise.removed"), false);
             }
 
             source.sendFeedback(() -> Text.translatable("commands.disguise.removed.other", player.getName()), true);

@@ -21,6 +21,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.display.RecipeDisplay;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.world.World;
 
@@ -75,15 +76,17 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
     }
 
     @Override
-    public void buildCraftingTree(CraftingTreeBuilder builder) {
-        builder.input(material.getMatchingStacks());
-        for (var ingredient : requiredItems) {
-            builder.input(ingredient.getMatchingStacks());
-        }
-        requiredTraits.min().ifPresent(min -> {
-            min.forEach(e -> builder.input(e.getKey(), e.getValue()));
-        });
-        builder.result(output);
+    public List<RecipeDisplay> getDisplays() {
+        return List.of(SpellbookRecipeDisplay.of(builder -> {
+            builder.input(material.getMatchingStacks());
+            for (var ingredient : requiredItems) {
+                builder.input(ingredient.getMatchingStacks());
+            }
+            requiredTraits.min().ifPresent(min -> {
+                min.forEach(e -> builder.input(e.getKey(), e.getValue()));
+            });
+            builder.result(output);
+        }));
     }
 
     @Override

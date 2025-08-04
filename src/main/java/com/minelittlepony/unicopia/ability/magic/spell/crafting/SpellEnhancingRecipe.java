@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
+import java.util.List;
+
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.item.*;
 import com.mojang.serialization.MapCodec;
@@ -10,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.display.RecipeDisplay;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.world.World;
 
@@ -32,8 +35,10 @@ public record SpellEnhancingRecipe (IngredientWithSpell material) implements Spe
     }
 
     @Override
-    public void buildCraftingTree(CraftingTreeBuilder builder) {
-        builder.input(material.getMatchingStacks());
+    public List<RecipeDisplay> getDisplays() {
+        return List.of(SpellbookRecipeDisplay.of(builder -> {
+            builder.input(material.getMatchingStacks());
+        }));
     }
 
     @Override

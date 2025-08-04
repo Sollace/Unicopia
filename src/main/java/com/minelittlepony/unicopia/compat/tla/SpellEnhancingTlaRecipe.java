@@ -17,7 +17,7 @@ class SpellEnhancingTlaRecipe extends SpellbookTlaRecipe {
 
     public SpellEnhancingTlaRecipe(RecipeEntry<SpellbookRecipe> recipe, Trait trait) {
         super(recipe);
-        id = recipe.id().withPath(p -> p + "/" + trait.getId().getPath());
+        id = recipe.id().getValue().withPath(p -> p + "/" + trait.getId().getPath());
         input(trait);
         getOutputs().addAll(
                 Arrays.stream(((SpellEnhancingRecipe)recipe.value()).getBaseMaterial().getMatchingStacks())

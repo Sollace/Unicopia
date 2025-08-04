@@ -12,6 +12,7 @@ import com.google.common.base.Suppliers;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellDuplicatingRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellEnhancingRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
+import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipeDisplay;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen;
 import com.minelittlepony.unicopia.container.inventory.HexagonalCraftingGrid;
@@ -52,7 +53,7 @@ class SpellbookTlaRecipe implements TlaRecipe, SpellbookRecipe.CraftingTreeBuild
     public SpellbookTlaRecipe(RecipeEntry<SpellbookRecipe> recipe) {
         this.recipe = recipe;
         this.ingredients = Suppliers.memoize(() -> inputs.stream().map(TraitedTlaIngredient::ingredient).toList());
-        recipe.value().buildCraftingTree(this);
+        ((SpellbookRecipeDisplay)recipe.value().getDisplays().get(0)).buildCraftingTree(this);
     }
 
     @Override
@@ -63,7 +64,7 @@ class SpellbookTlaRecipe implements TlaRecipe, SpellbookRecipe.CraftingTreeBuild
     @Nullable
     @Override
     public Identifier getId() {
-        return recipe.id();
+        return recipe.id().getValue();
     }
 
     @Override

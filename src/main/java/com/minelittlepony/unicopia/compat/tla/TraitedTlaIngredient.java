@@ -13,6 +13,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mattidragon.tlaapi.api.gui.GuiBuilder;
 import io.github.mattidragon.tlaapi.api.recipe.TlaIngredient;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayer;
 
 public record TraitedTlaIngredient(Optional<TraitEntry> trait, TlaIngredient ingredient) {
 
@@ -37,7 +38,7 @@ public record TraitedTlaIngredient(Optional<TraitEntry> trait, TlaIngredient ing
     public void buildGui(TlaIngredient ingredientOverride, HexagonalCraftingGrid.Slot slot, GuiBuilder builder) {
         builder.addCustomWidget(slot.left() - 7, slot.top() - 7, 32, 32, (context, mouseX, mouseY, delta) -> {
             RenderSystem.enableBlend();
-            context.drawTexture(SpellbookScreen.SLOT, 0, 0, 0, 0, 0, 32, 32, 32, 32);
+            context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.SLOT, 0, 0, 0, 0, 0, 32, 32, 32, 32);
             RenderSystem.disableBlend();
         });
         builder.addSlot(ingredientOverride, slot.left(), slot.top()).disableBackground();

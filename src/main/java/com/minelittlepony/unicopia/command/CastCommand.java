@@ -66,7 +66,7 @@ public class CastCommand {
                         CommandManager.argument("rot", RotationArgumentType.rotation()).executes(c -> placed(c,
                                 traitsFunc,
                                 Optional.of(BlockPosArgumentType.getBlockPos(c, "loc").toCenterPos()),
-                                RotationArgumentType.getRotation(c, "rot").toAbsoluteRotation(c.getSource())
+                                RotationArgumentType.getRotation(c, "rot").getRotation(c.getSource())
                         ))
                     )
                 )
@@ -92,7 +92,7 @@ public class CastCommand {
         Spell spell = getSpell(source, traits).create();
         if (spell != null) {
             spell.toThrowable().throwProjectile(Caster.of(player).orElseThrow()).ifPresent(projectile -> {
-                Vec2f rotation = RotationArgumentType.getRotation(source, "rot").toAbsoluteRotation(source.getSource());
+                Vec2f rotation = RotationArgumentType.getRotation(source, "rot").getRotation(source.getSource());
                 projectile.setVelocity(player, rotation.x, rotation.y, 0, speed, 1);
             });
         }
