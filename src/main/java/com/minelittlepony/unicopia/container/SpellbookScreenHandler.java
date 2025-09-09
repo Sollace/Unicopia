@@ -22,16 +22,20 @@ import net.minecraft.inventory.Inventory;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
+import net.minecraft.recipe.InputSlotFiller;
 import net.minecraft.recipe.RecipeEntry;
+import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.book.RecipeBookType;
+import net.minecraft.screen.AbstractRecipeScreenHandler;
 import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 
-public class SpellbookScreenHandler extends ScreenHandler {
+public class SpellbookScreenHandler extends AbstractRecipeScreenHandler {
     private static final Identifier[] EMPTY_ARMOR_SLOT_TEXTURES = new Identifier[]{
             PlayerScreenHandler.EMPTY_BOOTS_SLOT_TEXTURE,
             PlayerScreenHandler.EMPTY_LEGGINGS_SLOT_TEXTURE,
@@ -370,4 +374,38 @@ public class SpellbookScreenHandler extends ScreenHandler {
         });
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public PostFillAction fillInputSlots(boolean craftAll, boolean creative, RecipeEntry<?> recipe, ServerWorld world, PlayerInventory inventory) {
+        List<Slot> inputSlots = slots.stream().filter(slot -> slot instanceof IngredientSlot).toList();
+        return InputSlotFiller.fill(new InputSlotFiller.Handler<SpellbookRecipe>() {
+            @Override
+            public void populateRecipeFinder(RecipeFinder finder) {
+                SpellbookScreenHandler.this.populateRecipeFinder(finder);
+            }
+
+            @Override
+            public void clear() {
+                input.clear();
+            }
+
+            @Override
+            public boolean matches(RecipeEntry<SpellbookRecipe> entry) {
+                return entry.value().matches(SpellbookScreenHandler.this.input.createInput(), inventory.player.getWorld());
+            }
+        }, inputSlots.size(), 1, inputSlots, inputSlots, inventory, (RecipeEntry<SpellbookRecipe>)recipe, craftAll, creative);
+    }
+
+    @Override
+    public void populateRecipeFinder(RecipeFinder finder) {
+        input.provideRecipeInputs(finder);
+        for (ItemStack stack : inventory.main) {
+            finder.addInput(stack);
+        }
+    }
+
+    @Override
+    public RecipeBookType getCategory() {
+        return RecipeBookType.CRAFTING;
+    }
 }

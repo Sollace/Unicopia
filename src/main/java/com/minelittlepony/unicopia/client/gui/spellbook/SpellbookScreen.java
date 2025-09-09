@@ -29,11 +29,12 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
-import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.recipe.display.RecipeDisplay;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -51,7 +52,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
     public static final int TITLE_Y = 20;
     public static final int TITLE_COLOR = 0xFF404040;
 
-    private final RecipeBookWidget recipeBook = new RecipeBookWidget();
+    private final RecipeBookWidget<SpellbookScreenHandler> recipeBook;
 
     private final SpellbookTraitDexPageContent traitDex = new SpellbookTraitDexPageContent(this);
     private final SpellbookChapterList chapters = new SpellbookChapterList(this,
@@ -71,6 +72,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
         handler.getSpellbookState().setSynchronizer(state -> {
             Channel.CLIENT_SPELLBOOK_UPDATE.sendToServer(MsgSpellbookStateChanged.create(handler, state));
         });
+        recipeBook = new SpellbookRecipeBookWidget(handler, List.of());
     }
 
     public SpellbookState getState() {
@@ -127,8 +129,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
     }
 
     @Override
-    public RecipeBookWidget getRecipeBookWidget() {
-        return recipeBook;
+    public void onCraftFailed(RecipeDisplay display) {
     }
 
     @Override
@@ -144,7 +145,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
-        context.drawTexture(TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight, 512, 256);
+        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, x, y, 0, 0, backgroundWidth, backgroundHeight, 512, 256);
 
         tabs.getAllTabs().forEach(tab -> {
             Bounds bounds = tab.bounds();
@@ -156,19 +157,19 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
             if (color == 0xFFFFFF || color == 0) {
                 v += 48;
             } else {
-                RenderSystem.setShaderColor(ColorHelper.Abgr.getRed(color) / 255F, ColorHelper.Abgr.getGreen(color) / 255F, ColorHelper.Abgr.getBlue(color) / 255F, 1);
+                RenderSystem.setShaderColor(ColorHelper.getRed(color) / 255F, ColorHelper.getGreen(color) / 255F, ColorHelper.getBlue(color) / 255F, 1);
             }
 
             boolean isRight = tab.chapter().side() == TabSide.RIGHT;
 
-            context.drawTexture(TEXTURE, bounds.left, bounds.top, isRight ? 510 - bounds.width : 402, v, bounds.width, bounds.height, 512, 256);
+            context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, bounds.left, bounds.top, isRight ? 510 - bounds.width : 402, v, bounds.width, bounds.height, 512, 256);
             RenderSystem.setShaderColor(1, 1, 1, 1);
 
             float widthScale = bounds.width / 35F;
             int resolution = (int)(16 * widthScale);
             int iconInset = (int)(Math.min(widthScale * 2, 1) * 10);
 
-            context.drawTexture(tab.icon().get(),
+            context.drawTexture(RenderLayer::getGuiTextured, tab.icon().get(),
                     isRight ? bounds.left + bounds.width - resolution - iconInset : bounds.left + iconInset,
                     bounds.top + (bounds.height - resolution) / 2,
                     0, 0,
@@ -222,7 +223,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
         for (Slot slot : handler.slots) {
             if (slot.isEnabled() && slot instanceof SpellbookSlot p) {
-                context.drawTexture(SLOT, slot.x - 8, slot.y - 8, 0, 0, 32, 32, 32, 32);
+                context.drawTexture(RenderLayer::getGuiTextured, SLOT, slot.x - 8, slot.y - 8, 0, 0, 32, 32, 32, 32);
 
                 if (slot.getStack().isEmpty()) {
                     Identifier foreground = p.getForegroundIdentifier();
@@ -231,7 +232,7 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
                             foreground = TrinketSlotBackSprites.getBackSprite(foreground);
                         }
                         RenderSystem.setShaderColor(1, 1, 1, p.getBackSpriteOpacity());
-                        context.drawTexture(foreground, slot.x, slot.y, 0, 0, 16, 16, 16, 16);
+                        context.drawTexture(RenderLayer::getGuiTextured, foreground, slot.x, slot.y, 0, 0, 16, 16, 16, 16);
                         RenderSystem.setShaderColor(1, 1, 1, 1);
                     }
                 }
@@ -341,8 +342,6 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
         @Override
         public void renderWidget(DrawContext context, int mouseX, int mouseY, float tickDelta) {
-            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-
             RenderSystem.setShaderColor(1, 1, 1, alpha);
             RenderSystem.defaultBlendFunc();
             RenderSystem.blendFunc(
