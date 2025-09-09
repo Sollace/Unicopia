@@ -1,11 +1,19 @@
 package com.minelittlepony.unicopia.client.render.spell;
 
+import java.util.UUID;
+
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.PortalSpell;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
+import com.minelittlepony.unicopia.client.render.spell.SpellRenderer.SpellRenderState;
 import com.minelittlepony.unicopia.entity.EntityReference;
+import com.minelittlepony.unicopia.entity.EntityReference.EntityValues;
 import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 
 import net.minecraft.client.MinecraftClient;
@@ -16,15 +24,41 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.RotationAxis;
 
-public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
+public class PortalSpellRenderer extends SpellRenderer<PortalSpell, PortalSpellRenderer.State> {
     @Override
     public boolean shouldRenderEffectPass(int pass) {
         return pass == 0;
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, PortalSpell spell, Caster<?> caster, int light, float strength, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
-        super.render(matrices, vertices, spell, caster, light, strength, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
+    public State createRenderState() {
+        return new State();
+    }
+
+    @Override
+    public void updateRenderState(PortalSpell spell, State state, Caster<?> caster, float tickDelta) {
+        super.updateRenderState(spell, state, caster, tickDelta);
+        state.destination.copyFrom(spell.getDestinationReference());
+        state.shouldRenderContents = true;
+        state.yaw = spell.getYaw();
+        state.portalUuid = caster.asEntity().getUuid();
+        state.portalState = new EntityReference.EntityValues<>(caster.asEntity());
+        state.orientationChange = spell.getOrientationChange();
+        state.positionMatrix = spell.getPositionMatrix(caster, state.portalState.pos(), state.orientationChange, new Matrix4f());
+        state.pitchChange = -spell.getTargetPitch() + spell.getPitch();
+        state.yawChange = spell.getYawDifference();
+
+        if (client.cameraEntity instanceof CastSpellEntity) {
+            double distance = caster.asEntity().distanceTo(client.cameraEntity);
+            state.shouldRenderContents =
+                    distance <= 50 // don't bother rendering if too far away
+                    && distance >= 2; // don't render ourselves
+        }
+    }
+
+    @Override
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State spell, CasterState caster, int light, float strength, float limbDistance) {
+        super.render(matrices, vertices, spell, caster, light, strength, limbDistance);
 
         VertexConsumer buff = vertices.getBuffer(RenderLayers.getEndGateway());
 
@@ -33,9 +67,7 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
         SphereModel.DISK.render(matrices, buff, light, 0, 2F * strength, Colors.WHITE);
         matrices.pop();
 
-        EntityReference<Entity> destination = spell.getDestinationReference();
-
-        if (Unicopia.getConfig().simplifiedPortals.get() || !destination.isSet()) {
+        if (Unicopia.getConfig().simplifiedPortals.get() || !spell.destination.isSet()) {
             matrices.push();
             matrices.translate(0, -0.02, 0);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
@@ -44,24 +76,18 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
             return;
         }
 
-        if (client.cameraEntity instanceof CastSpellEntity) {
-            double distance = caster.asEntity().distanceTo(client.cameraEntity);
-            if (distance > 50) {
-                return; // don't bother rendering if too far away
-            }
-            if (distance < 2) {
-                return; // don't render ourselves
-            }
+        if (!spell.shouldRenderContents) {
+            return;
         }
 
         matrices.push();
         matrices.scale(strength, strength, strength);
 
-        destination.getTarget().ifPresent(target -> {
-            float grown = Math.min(caster.asEntity().age, 20) / 20F;
+        spell.destination.getTarget().ifPresent(target -> {
+            float grown = Math.min(caster.entityState.age, 20) / 20F;
             matrices.push();
             matrices.translate(0, -0.01, 0);
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-spell.getYaw()));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-spell.yaw));
             matrices.scale(grown, 1, grown);
             boolean inRange = MinecraftClient.getInstance().player.getPos().distanceTo(target.pos()) < MinecraftClient.getInstance().gameRenderer.getViewDistance();
 
@@ -73,14 +99,29 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell> {
                 buffer.draw(matrices, vertices);
             }
             if (!inRange) {
-                buffer = PortalFrameBuffer.unpool(caster.asEntity().getUuid());
+                buffer = PortalFrameBuffer.unpool(spell.portalUuid);
                 if (buffer != null) {
-                    buffer.build(spell, caster, new EntityReference.EntityValues<>(caster.asEntity()));
+                    buffer.build(spell, caster, spell.portalState);
                 }
             }
             matrices.pop();
         });
 
         matrices.pop();
+    }
+
+    static class State extends SpellRenderState {
+        public boolean shouldRenderContents;
+        public final EntityReference<Entity> destination = new EntityReference<>();
+
+        public float yaw;
+        public UUID portalUuid;
+        public EntityValues<Entity> portalState;
+
+        public Quaternionf orientationChange;
+        public Matrix4f positionMatrix;
+
+        public float pitchChange;
+        public float yawChange;
     }
 }

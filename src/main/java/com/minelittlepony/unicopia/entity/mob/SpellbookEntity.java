@@ -320,17 +320,15 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
     }
 
     @Override
-    public boolean damage(DamageSource source, float amount) {
-        if (!getWorld().isClient) {
-            remove(Entity.RemovalReason.KILLED);
+    public boolean damage(ServerWorld world, DamageSource source, float amount) {
+        remove(Entity.RemovalReason.KILLED);
 
-            BlockSoundGroup sound = BlockSoundGroup.WOOD;
+        BlockSoundGroup sound = BlockSoundGroup.WOOD;
 
-            getWorld().playSound(getX(), getY(), getZ(), sound.getBreakSound(), SoundCategory.BLOCKS, sound.getVolume(), sound.getPitch(), true);
+        getWorld().playSound(getX(), getY(), getZ(), sound.getBreakSound(), SoundCategory.BLOCKS, sound.getVolume(), sound.getPitch(), true);
 
-            if (getWorld().getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
-                dropStack(getPickBlockStack(), 1);
-            }
+        if (world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
+            dropStack(world, getPickBlockStack(), 1);
         }
         return false;
     }
@@ -381,8 +379,8 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
     }
 
     @Override
-    public boolean isInvulnerableTo(DamageSource damageSource) {
-        return super.isInvulnerableTo(damageSource) || damageSource.isIn(UTags.DamageTypes.SPELLBOOK_IMMUNE_TO);
+    public boolean isInvulnerableTo(ServerWorld world, DamageSource damageSource) {
+        return super.isInvulnerableTo(world, damageSource) || damageSource.isIn(UTags.DamageTypes.SPELLBOOK_IMMUNE_TO);
     }
 
     @Override

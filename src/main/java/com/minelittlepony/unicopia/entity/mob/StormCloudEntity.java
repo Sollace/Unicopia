@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.entity.mob;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -28,14 +27,13 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -210,7 +208,7 @@ public class StormCloudEntity extends Entity implements MagicImmune {
             if (currentSize == targetSize) {
                 if (isDissipating()) {
                     if (size < 2) {
-                        kill();
+                        kill((ServerWorld)getWorld());
                     } else {
                         if (random.nextInt(4) == 0) {
                             split(2);
@@ -297,18 +295,19 @@ public class StormCloudEntity extends Entity implements MagicImmune {
             if (random.nextInt(35) == 0 || (source.isOf(DamageTypes.PLAYER_ATTACK) && EquineContext.of(source.getAttacker()).collidesWithClouds())) {
                 if (getSize(1) < 2) {
                     if (!world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-                        Optional<RegistryKey<LootTable>> table = getType().getLootTableKey();
-                        LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
-                                .add(LootContextParameters.THIS_ENTITY, this)
-                                .add(LootContextParameters.ORIGIN, this.getPos())
-                                .add(LootContextParameters.DAMAGE_SOURCE, source)
-                                .addOptional(LootContextParameters.ATTACKING_ENTITY, source.getAttacker())
-                                .addOptional(LootContextParameters.DIRECT_ATTACKING_ENTITY, source.getSource());
-                        if (source.getAttacker() instanceof PlayerEntity player) {
-                            builder = builder.add(LootContextParameters.LAST_DAMAGE_PLAYER, player).luck(player.getLuck());
-                        }
-                        getRegistryManager().get(RegistryKeys.LOOT_TABLE).get(table)
-                            .generateLoot(builder.build(LootContextTypes.ENTITY), 0L, this::dropStack);
+                        getType().getLootTableKey().ifPresent(table -> {
+                            LootWorldContext.Builder builder = new LootWorldContext.Builder(world)
+                                    .add(LootContextParameters.THIS_ENTITY, this)
+                                    .add(LootContextParameters.ORIGIN, this.getPos())
+                                    .add(LootContextParameters.DAMAGE_SOURCE, source)
+                                    .addOptional(LootContextParameters.ATTACKING_ENTITY, source.getAttacker())
+                                    .addOptional(LootContextParameters.DIRECT_ATTACKING_ENTITY, source.getSource());
+                            if (source.getAttacker() instanceof PlayerEntity player) {
+                                builder = builder.add(LootContextParameters.LAST_DAMAGE_PLAYER, player).luck(player.getLuck());
+                            }
+                            getRegistryManager().getOrThrow(RegistryKeys.LOOT_TABLE).get(table)
+                                .generateLoot(builder.build(LootContextTypes.ENTITY), 0L, stack -> dropStack(world, stack));
+                        });
                     }
                     kill(world);
                     getWorld().sendEntityStatus(this, EntityStatuses.ADD_DEATH_PARTICLES);
@@ -322,10 +321,10 @@ public class StormCloudEntity extends Entity implements MagicImmune {
 
     @Override
     @Nullable
-    public ItemEntity dropStack(ItemStack stack) {
+    public ItemEntity dropStack(ServerWorld world, ItemStack stack) {
         stack = stack.copy();
         while (!stack.isEmpty()) {
-            ItemEntity drop = super.dropStack(stack.split(1));
+            ItemEntity drop = super.dropStack(world, stack.split(1));
             if (drop != null) {
                 drop.addVelocity(random.nextTriangular(0, 0.3), 0, random.nextTriangular(0, 0.3));
             }
@@ -346,7 +345,7 @@ public class StormCloudEntity extends Entity implements MagicImmune {
         discard();
 
         for (int i = 0; i < splitCount; i++) {
-            StormCloudEntity lump = (StormCloudEntity)getType().create(getWorld());
+            StormCloudEntity lump = (StormCloudEntity)getType().create(getWorld(), SpawnReason.BREEDING);
             lump.setSize(size);
             lump.setStormTicks(stormTicks);
             lump.setPosition(center);

@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.minelittlepony.unicopia.entity.mob.TentacleEntity;
-
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
@@ -15,14 +13,10 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
-public class TentacleEntityModel extends EntityModel<TentacleEntity> {
-	private final ModelPart part;
-
+public class TentacleEntityModel extends EntityModel<TentacleEntityRenderer.State> {
 	private final Map<String, ModelPart> parts = new HashMap<>();
 	private final List<ModelPart> bones = new ArrayList<>();
 	private final List<ModelPart> brushes;
@@ -30,8 +24,7 @@ public class TentacleEntityModel extends EntityModel<TentacleEntity> {
 	private final ModelPart tip;
 
 	public TentacleEntityModel(ModelPart root) {
-	    super(RenderLayer::getEntityTranslucent);
-		this.part = root;
+	    super(root, RenderLayer::getEntityTranslucent);
 		for (String key : List.of("bone_a", "bone_b", "bone_c", "bone_d", "bone_e", "bone_f", "bone_g", "bone_h")) {
     		parts.put(key, root = root.getChild(key));
     		bones.add(root);
@@ -96,33 +89,30 @@ public class TentacleEntityModel extends EntityModel<TentacleEntity> {
 	}
 
 	@Override
-	public void setAngles(TentacleEntity entity, float limbSwing, float limbSwingAmount, float tickDelta, float yaw, float pitch) {
+	public void setAngles(TentacleEntityRenderer.State state) {
 
-	    boolean growing = entity.getGrowth(tickDelta) < 1;
+	    float age = state.animationFrame;
+	    float idleWaveTimer = state.animationTime;
 
-	    float age = entity.age + tickDelta + (entity.getUuid().getMostSignificantBits() % 100);
-	    float idleWaveTimer = entity.getAnimationTimer(tickDelta);
-
-	    float attackProgress = entity.isAttacking() ? Math.abs(MathHelper.sin(entity.getAttackProgress(tickDelta) * MathHelper.PI)) : 0;
-	    float attackCurve = attackProgress * -0.5F;
+	    float attackCurve = state.attackProgress * -0.5F;
 	    float sweepDirection = 1;
 
-	    float bendIntentisty = 1 + entity.getAttackProgress(tickDelta) / 2F;
+	    float bendIntensity = state.bendIntensity;
 
-        part.yaw = (yaw * MathHelper.RADIANS_PER_DEGREE) + MathHelper.HALF_PI * attackProgress;
+        getRootPart().yaw = (state.yaw * MathHelper.RADIANS_PER_DEGREE) + MathHelper.HALF_PI * state.attackProgress;
 
 	    for (ModelPart bone : bones) {
-	        float idlePitch = MathHelper.sin(idleWaveTimer) * 0.0226F * bendIntentisty;
+	        float idlePitch = MathHelper.sin(idleWaveTimer) * 0.0226F * bendIntensity;
 	        float idleYaw = MathHelper.cos(idleWaveTimer + 0.53F) * 0.07F;
-	        float idleRoll = MathHelper.sin(idleWaveTimer * 0.2F) * 0.0226F * bendIntentisty;
+	        float idleRoll = MathHelper.sin(idleWaveTimer * 0.2F) * 0.0226F * bendIntensity;
 	        idleWaveTimer += 1.5F;
-	        bendIntentisty += 3F;
+	        bendIntensity += 3F;
 	        bone.resetTransform();
 
-	        if (!growing) {
-    	        bone.pitch = MathHelper.lerp(attackProgress, idlePitch, bone.pitch + attackCurve);
-    	        bone.yaw = MathHelper.lerp(attackProgress, idleYaw, bone.yaw + sweepDirection * attackCurve);
-    	        bone.roll = MathHelper.lerp(attackProgress, idleRoll, bone.roll);
+	        if (!state.growing) {
+    	        bone.pitch = MathHelper.lerp(state.attackProgress, idlePitch, bone.pitch + attackCurve);
+    	        bone.yaw = MathHelper.lerp(state.attackProgress, idleYaw, bone.yaw + sweepDirection * attackCurve);
+    	        bone.roll = MathHelper.lerp(state.attackProgress, idleRoll, bone.roll);
 	        }
 	        attackCurve *= 1.04F;
 	    }
@@ -138,10 +128,5 @@ public class TentacleEntityModel extends EntityModel<TentacleEntity> {
 	    tip.resetTransform();
 	    tip.pitch += MathHelper.sin(age * 0.003F) * 0.3F;
 	    tip.yaw += MathHelper.sin(age * 0.03F) * 0.3F;
-	}
-
-	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-	    part.render(matrices, vertices, light, overlay, color);
 	}
 }

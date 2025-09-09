@@ -29,6 +29,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -135,10 +136,10 @@ public class TentacleEntity extends AbstractDecorationEntity {
     }
 
     @Override
-    public boolean damage(DamageSource source, float amount) {
+    public boolean damage(ServerWorld world, DamageSource source, float amount) {
         if (source.getAttacker() instanceof PlayerEntity player) {
             if (player.getStackInHand(Hand.MAIN_HAND).isIn(ItemTags.AXES)) {
-                kill();
+                kill(world);
                 ParticleUtils.spawnParticles(ParticleTypes.EFFECT, this, 10);
             }
             if (getWorld().random.nextInt(5) == 0 && canTarget(player)) {
@@ -177,17 +178,19 @@ public class TentacleEntity extends AbstractDecorationEntity {
                     if (!canTarget(target)) {
                         target = null;
                     } else {
-                        target.damage(getDamageSources().create(DamageTypes.MOB_ATTACK, this), 15);
-                        Vec3d diff = target.getPos().subtract(getPos());
-                        target.takeKnockback(1, diff.x, diff.z);
+                        if (getWorld() instanceof ServerWorld sw) {
+                            target.damage(sw, getDamageSources().create(DamageTypes.MOB_ATTACK, this), 15);
+                            Vec3d diff = target.getPos().subtract(getPos());
+                            target.takeKnockback(1, diff.x, diff.z);
 
-                        ParticleUtils.spawnParticles(ParticleTypes.CLOUD, target, 10);
+                            ParticleUtils.spawnParticles(ParticleTypes.CLOUD, target, 10);
 
-                        for (Entity bystander : getWorld().getOtherEntities(target, target.getBoundingBox().expand(3))) {
-                            if (bystander instanceof LivingEntity l) {
-                                diff = l.getPos().subtract(getPos());
-                                l.takeKnockback(1, diff.x, diff.z);
-                                ParticleUtils.spawnParticles(ParticleTypes.CLOUD, target, 10);
+                            for (Entity bystander : getWorld().getOtherEntities(target, target.getBoundingBox().expand(3))) {
+                                if (bystander instanceof LivingEntity l) {
+                                    diff = l.getPos().subtract(getPos());
+                                    l.takeKnockback(1, diff.x, diff.z);
+                                    ParticleUtils.spawnParticles(ParticleTypes.CLOUD, target, 10);
+                                }
                             }
                         }
                     }
@@ -292,7 +295,7 @@ public class TentacleEntity extends AbstractDecorationEntity {
     }
 
     @Override
-    public void onBreak(Entity breaker) {
+    public void onBreak(ServerWorld world, Entity breaker) {
 
     }
 

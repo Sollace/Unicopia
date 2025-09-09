@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.PortalSpell;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.client.render.shader.UShaders;
 import com.minelittlepony.unicopia.entity.EntityReference;
@@ -41,6 +42,7 @@ import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -112,7 +114,7 @@ class PortalFrameBuffer implements AutoCloseable {
         GlStateManager._depthMask(true);
     }
 
-    public void build(PortalSpell spell, Caster<?> caster, EntityReference.EntityValues<Entity> target) {
+    public void build(PortalSpellRenderer.State spell, CasterState caster, EntityReference.EntityValues<Entity> target) {
         closed = false;
 
         long refreshRate = Unicopia.getConfig().fancyPortalRefreshRate.get();
@@ -136,7 +138,7 @@ class PortalFrameBuffer implements AutoCloseable {
         }
     }
 
-    private void innerBuild(PortalSpell spell, Caster<?> caster, EntityReference.EntityValues<Entity> target) {
+    private void innerBuild(PortalSpellRenderer.State spell, CasterState caster, EntityReference.EntityValues<Entity> target) {
         synchronized (client) {
             pendingDraw = false;
 
@@ -155,17 +157,14 @@ class PortalFrameBuffer implements AutoCloseable {
 
                 Camera camera = client.gameRenderer.getCamera();
 
-                Entity cameraEntity = UEntities.CAST_SPELL.create(caster.asWorld());
+                Entity cameraEntity = UEntities.CAST_SPELL.create(MinecraftClient.getInstance().world, SpawnReason.LOAD);
 
                 Vec3d pos = target.pos();
 
-                Quaternionf orientationChange = spell.getOrientationChange();
-                Matrix4f positionMatrix = spell.getPositionMatrix(caster, target.pos(), orientationChange, new Matrix4f());
-
-                Vector4f transformedPos = positionMatrix.transform(new Vector4f(pos.toVector3f(), 1));
+                Vector4f transformedPos = spell.positionMatrix.transform(new Vector4f(pos.toVector3f(), 1));
                 cameraEntity.setPosition(transformedPos.x, transformedPos.y + 0.5F, transformedPos.z);
-                cameraEntity.setPitch(MathHelper.clamp(camera.getPitch() - spell.getTargetPitch() + spell.getPitch(), -90, 90));
-                cameraEntity.setYaw(MathHelper.wrapDegrees(camera.getYaw() + spell.getYawDifference()));
+                cameraEntity.setPitch(MathHelper.clamp(camera.getPitch() + spell.pitchChange, -90, 90));
+                cameraEntity.setYaw(MathHelper.wrapDegrees(camera.getYaw() + spell.yawChange));
 
                 client.cameraEntity = cameraEntity;
                 drawWorld(cameraEntity, 400, 400);

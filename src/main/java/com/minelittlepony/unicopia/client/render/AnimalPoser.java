@@ -2,10 +2,9 @@ package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.Equine;
-import com.minelittlepony.unicopia.mixin.client.MixinAnimalModel;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.QuadrupedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
@@ -26,7 +25,7 @@ public class AnimalPoser {
                     float headAngle = creature.getHeadAngle(tickDelta);
                     float neckAngle = 12;
 
-                    ((MixinAnimalModel)quad).invokeGetHeadParts().forEach(part -> {
+                    quad.getPart(EntityModelPartNames.HEAD).ifPresent(part -> {
                         part.pivotY = neckAngle;
                         part.pitch = headAngle;
                     });

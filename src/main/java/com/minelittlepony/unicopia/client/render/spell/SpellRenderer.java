@@ -1,74 +1,81 @@
 package com.minelittlepony.unicopia.client.render.spell;
 
+import java.util.UUID;
+
 import org.joml.Quaternionf;
 
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
-import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
-import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.Colors;
-import net.minecraft.util.math.ColorHelper.Argb;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
-public class SpellRenderer<T extends Spell> {
-    public static final SpellRenderer<?> DEFAULT = new SpellRenderer<>();
+public abstract class SpellRenderer<T extends Spell, S extends SpellRenderer.SpellRenderState> {
+    public static final SpellRenderer<?, ?> DEFAULT = new SpellRenderer<>() {
+        @Override
+        public SpellRenderState createRenderState() {
+            return new SpellRenderState();
+        }
+    };
 
     protected final MinecraftClient client = MinecraftClient.getInstance();
+
+    private final S state = createRenderState();
+
+    public final S getAndUpdateRenderState(T spell, Caster<?> caster, float tickDelta) {
+        updateRenderState(spell, state, caster, tickDelta);
+        return state;
+    }
+
+    public void updateRenderState(T spell, S state, Caster<?> caster, float tickDelta) {
+        state.uuid = spell.getUuid();
+        state.type = spell.getTypeAndTraits();
+    }
+
+    public abstract S createRenderState();
 
     public boolean shouldRenderEffectPass(int pass) {
         return true;
     }
 
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, T spell, Caster<?> caster,  int light, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
-        if (caster.asEntity() == client.cameraEntity || (caster.asEntity() instanceof MagicProjectileEntity)) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, S spell, CasterState caster, int light, float limbAngle, float limbDistance) {
+        if (caster.isCamera || caster.isProjectile) {
             return;
         }
 
         if (EquinePredicates.IS_CASTER.test(client.player)) {
-            renderGemstone(matrices, vertices, spell, caster, light, tickDelta, animationProgress);
+            renderGemstone(matrices, vertices, spell, caster, light);
         }
     }
 
-    private void renderGemstone(MatrixStack matrices, VertexConsumerProvider vertices, T spell, Caster<?> caster, int light, float tickDelta, float animationProgress) {
+    private void renderGemstone(MatrixStack matrices, VertexConsumerProvider vertices, S spell, CasterState caster, int light) {
         matrices.push();
         float scale = 1/8F;
         matrices.scale(scale, scale, scale);
 
-        transformGemstone(matrices, vertices, spell, caster, animationProgress);
+        transformGemstone(matrices, vertices, spell, caster);
         matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(animationProgress));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(caster.entityState.age));
 
-        client.getItemRenderer().renderItem(spell.getTypeAndTraits().getDefaultStack(), ModelTransformationMode.FIXED, light, 0, matrices, vertices, caster.asWorld(), 0);
+        client.getItemRenderer().renderItem(spell.type.getDefaultStack(), ModelTransformationMode.FIXED, light, 0, matrices, vertices, null, 0);
         matrices.pop();
 
         if (spell instanceof TimedSpell timed) {
-            if (caster.asEntity() instanceof LivingEntity l && !l.isInPose(EntityPose.SLEEPING)) {
-                float bodyYaw = MathHelper.lerpAngleDegrees(tickDelta, l.prevBodyYaw, l.bodyYaw);
-                float headYaw = MathHelper.lerpAngleDegrees(tickDelta, l.prevHeadYaw, l.headYaw);
-                float yawDifference = headYaw - bodyYaw;
-                if (l.hasVehicle() && l.getVehicle() instanceof LivingEntity vehicle) {
-                    bodyYaw = MathHelper.lerpAngleDegrees(tickDelta, vehicle.prevBodyYaw, vehicle.bodyYaw);
-                    yawDifference = headYaw - bodyYaw;
-                    float clampedYawDifference = MathHelper.clamp(MathHelper.wrapDegrees(yawDifference), -85, 85);
-                    bodyYaw = headYaw - clampedYawDifference;
-                    if (clampedYawDifference * clampedYawDifference > 2500) {
-                        bodyYaw += clampedYawDifference * 0.2F;
-                    }
-                    yawDifference = headYaw - bodyYaw;
-                }
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180 - bodyYaw));
+            if (!caster.entityState.isInPose(EntityPose.SLEEPING)) {
+                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180 - caster.entityState.bodyYaw));
             }
-            renderCountdown(matrices, timed, tickDelta);
+            renderCountdown(matrices, timed, caster.entityState.age);
         }
 
         matrices.pop();
@@ -80,15 +87,17 @@ public class SpellRenderer<T extends Spell> {
         float timeRemaining = spell.getTimer().getPercentTimeRemaining(tickDelta);
 
         DrawableUtil.drawArc(matrices, radius, radius + 0.3F, 0, DrawableUtil.TAU * timeRemaining,
-                Argb.lerp(MathHelper.clamp(timeRemaining * 4, 0, 1), Colors.BLUE, Colors.WHITE)
+                ColorHelper.lerp(MathHelper.clamp(timeRemaining * 4, 0, 1), Colors.BLUE, Colors.WHITE)
         );
     }
 
-    protected void transformGemstone(MatrixStack matrices, VertexConsumerProvider vertices, T spell, Caster<?> caster, float animationProgress) {
-        float y = -caster.asEntity().getHeight();
-        if (caster.asEntity() instanceof CastSpellEntity) {
-            y = 1F;
-        }
-        matrices.translate(0, y * 8 + MathHelper.sin(animationProgress / 3F) * 0.2F, 0);
+    protected void transformGemstone(MatrixStack matrices, VertexConsumerProvider vertices, S spell, CasterState caster) {
+        float y = caster.isPlacement ? 1 : -caster.entityState.height;
+        matrices.translate(0, y * 8 + MathHelper.sin(caster.entityState.age / 3F) * 0.2F, 0);
+    }
+
+    public static class SpellRenderState {
+        public UUID uuid;
+        public CustomisedSpellType<?> type;
     }
 }

@@ -89,7 +89,6 @@
     "forgified.MixinPacketAndPayloadAcceptor"
   ],
   "client": [
-    "client.MixinAnimalModel",
     "client.MixinArmorFeatureRenderer",
     "client.MixinBackgroundRenderer",
     "client.MixinCamera",
@@ -103,6 +102,7 @@
     "client.MixinInGameHud$HeartType",
     "client.MixinItemModels",
     "client.MixinKeyboardInput",
+    "client.MixinLivingEntityRenderState",
     "client.MixinLivingEntityRenderer",
     "client.MixinMinecraftClient",
     "client.MixinModelPart",
@@ -110,6 +110,8 @@
     "client.MixinPlayerEntityRenderer",
     "client.MixinTooltipComponent",
     "client.MixinTranslationStorage",
+    "client.MixinWeatherRendering",
+    "client.MixinSkyRendering",
     "client.MixinWorldRenderer",
     "client.sodium.MixinSodiumWorldRenderer",
     "client.minelp.MixinPonyPosture",

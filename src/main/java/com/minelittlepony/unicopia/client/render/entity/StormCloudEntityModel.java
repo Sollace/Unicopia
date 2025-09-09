@@ -4,8 +4,6 @@ import java.util.List;
 
 import org.joml.Vector3f;
 
-import com.minelittlepony.unicopia.entity.mob.StormCloudEntity;
-
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
@@ -18,11 +16,8 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.random.Random;
 
-public class StormCloudEntityModel extends EntityModel<StormCloudEntity> {
-	private final ModelPart part;
-
+public class StormCloudEntityModel extends EntityModel<StormCloudEntityRenderer.State> {
 	private final ModelPart smallPuffs;
 	private final List<ModelPart> smallPuffCubes;
 
@@ -31,17 +26,14 @@ public class StormCloudEntityModel extends EntityModel<StormCloudEntity> {
 
 	private final ModelPart puff;
 
-	private final Random rng = Random.create(0);
-	private final Vector3f puffLocation = new Vector3f();
-
 	public StormCloudEntityModel(ModelPart root) {
-	    super(RenderLayer::getEntityTranslucent);
-		this.part = root;
-		this.smallPuffs = part.getChild("small_puffs");
+	    super(root, RenderLayer::getEntityTranslucent);
+		this.smallPuffs = root.getChild("small_puffs");
 		this.smallPuffCubes = smallPuffs.traverse().toList();
-		this.anvilHeads = part.getChild("anvil_heads");
+		this.anvilHeads = root.getChild("anvil_heads");
 		this.anvilHeadCubes = anvilHeads.traverse().toList();
-		this.puff = part.getChild("puff");
+		this.puff = root.getChild("puff");
+		this.puff.hidden = true;
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -87,12 +79,12 @@ public class StormCloudEntityModel extends EntityModel<StormCloudEntity> {
 	}
 
 	@Override
-	public void setAngles(StormCloudEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	public void setAngles(StormCloudEntityRenderer.State state) {
 	    float dir = 1;
 	    float globalScale = 0.012F;
 
-	    float roll = MathHelper.cos(entity.age / 10F) * globalScale;
-	    float flop = MathHelper.sin(entity.age / 30F) * 0.02F * globalScale;
+	    float roll = MathHelper.cos(state.age / 10F) * globalScale;
+	    float flop = MathHelper.sin(state.age / 30F) * 0.02F * globalScale;
 
 	    for (ModelPart swirl : smallPuffCubes) {
             swirl.resetTransform();
@@ -108,31 +100,17 @@ public class StormCloudEntityModel extends EntityModel<StormCloudEntity> {
 	        swirl.roll += -flop + roll * 0.01F * dir;
 	    }
 
-	    part.pivotY = MathHelper.sin(entity.age * 0.25F) * 0.03F * globalScale;
-	    part.pivotX = MathHelper.cos(entity.age * 0.05125F) * 0.7F * globalScale;
-	    part.pivotZ = MathHelper.sin(entity.age * 0.05125F) * 0.7F * globalScale;
-
-	    rng.setSeed(entity.getId());
+	    ModelPart part = getRootPart();
+	    part.pivotY = MathHelper.sin(state.age * 0.25F) * 0.03F * globalScale;
+	    part.pivotX = MathHelper.cos(state.age * 0.05125F) * 0.7F * globalScale;
+	    part.pivotZ = MathHelper.sin(state.age * 0.05125F) * 0.7F * globalScale;
 	}
 
-	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
-	    matrices.push();
-	    part.rotate(matrices);
-	    smallPuffs.render(matrices, vertexConsumer, light, overlay, color);
-	    anvilHeads.render(matrices, vertexConsumer, light, overlay, color);
-
-
-	    int puffCount = rng.nextInt(7);
-	    for (int i = 0; i < puffCount; i++) {
-	        puff.resetTransform();
-	        puff.translate(puffLocation.set(
-	                rng.nextGaussian(),
-	                rng.nextGaussian(),
-	                rng.nextGaussian()
-            ).mul(16));
-	        puff.render(matrices, vertexConsumer, light, overlay, color);
-	    }
-	    matrices.pop();
+	public void renderPuff(Vector3f position, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
+	    puff.hidden = false;
+	    puff.resetTransform();
+        puff.translate(position);
+        puff.render(matrices, vertexConsumer, light, overlay, color);
+        puff.hidden = true;
 	}
 }

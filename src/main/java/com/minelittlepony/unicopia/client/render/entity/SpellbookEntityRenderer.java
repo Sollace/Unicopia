@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 import com.minelittlepony.unicopia.Unicopia;
@@ -14,11 +15,12 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
-public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntity, SpellbookModel> {
+public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntity, SpellbookEntityRenderer.State, SpellbookModel> {
     private static final Identifier TEXTURE = Unicopia.id("textures/entity/spellbook/normal.png");
     private static final Identifier ALTAR_BEAM_TEXTURE = Identifier.ofVanilla("textures/entity/end_crystal/end_crystal_beam.png");
 
@@ -28,25 +30,51 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
     }
 
     @Override
-    public Identifier getTexture(SpellbookEntity entity) {
+    public State createRenderState() {
+        return new State();
+    }
+
+    @Override
+    public void updateRenderState(SpellbookEntity entity, State state, float tickDelta) {
+        super.updateRenderState(entity, state, tickDelta);
+        state.floatPosition = MathHelper.sin((entity.age + entity.getId()) / 20) * 0.04F;
+        state.hasBeams = entity.hasBeams();
+        state.altar = entity.getAltar().orElse(null);
+
+        if (state.open) {
+            state.breath = MathHelper.sin(entity.age / 20) * 0.01F + 0.1F;
+
+            state.leftPageRot = Math.min(state.limbAmplitudeMultiplier + (state.breath * 10), 1);
+            state.rightPageRot = Math.min(1 - state.leftPageRot, 1);
+            state.openAngle = 0.9f - state.limbFrequency;
+
+            state.leftPageRot = state.age % 250 < 5 ? (state.age % 5) / 5F : state.leftPageRot;
+            state.rightPageRot = state.age % 250 > 105 && state.age % 250 < 110  ? 1-(state.age % 5) / 5F : state.rightPageRot;
+        } else {
+            state.leftPageRot = 0;
+            state.rightPageRot = 0;
+            state.openAngle = 0;
+            state.breath = 0;
+        }
+    }
+
+    @Override
+    public Identifier getTexture(State entity) {
         return TEXTURE;
     }
 
     @Override
-    protected float getLyingAngle(SpellbookEntity entity) {
+    protected float method_3919() {
         return 0;
     }
 
     @Override
-    protected void setupTransforms(SpellbookEntity entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta, float scale) {
-        super.setupTransforms(entity, matrices, animationProgress, bodyYaw + 90, tickDelta, scale);
+    protected void setupTransforms(State state, MatrixStack matrices, float animationProgress, float bodyYaw) {
+        super.setupTransforms(state, matrices, animationProgress, bodyYaw + 90);
 
-        if (entity.isOpen()) {
+        if (state.open) {
             matrices.translate(-1.25F, -0.35F, 0);
-
-            float floatPosition = MathHelper.sin((animationProgress + entity.getId()) / 20) * 0.04F;
-
-            matrices.translate(0, floatPosition, 0);
+            matrices.translate(0, state.floatPosition, 0);
             matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(60));
         } else {
             matrices.translate(-1.5F, 0.1F, 0.2F);
@@ -56,21 +84,21 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
     }
 
     @Override
-    protected boolean hasLabel(SpellbookEntity targetEntity) {
-        return super.hasLabel(targetEntity)
+    protected boolean hasLabel(SpellbookEntity targetEntity, double distance) {
+        return super.hasLabel(targetEntity, distance)
                 && (targetEntity.isCustomNameVisible()
                         || targetEntity.hasCustomName()
                         && targetEntity == dispatcher.targetedEntity);
     }
 
-    static class AltarBeamFeature extends FeatureRenderer<SpellbookEntity, SpellbookModel> {
-        public AltarBeamFeature(FeatureRendererContext<SpellbookEntity, SpellbookModel> context) {
+    static class AltarBeamFeature extends FeatureRenderer<SpellbookEntityRenderer.State, SpellbookModel> {
+        public AltarBeamFeature(FeatureRendererContext<SpellbookEntityRenderer.State, SpellbookModel> context) {
             super(context);
         }
 
         @Override
-        public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, SpellbookEntity entity, float limbPos, float limbSpeed, float tickDelta, float animationProgress, float yaw, float pitch) {
-            if (!entity.hasBeams()) {
+        public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, SpellbookEntityRenderer.State state, float limbPos, float limbSpeed) {
+            if (!state.hasBeams) {
                 return;
             }
 
@@ -79,21 +107,17 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
             matrices.push();
 
 
-            Altar altar = entity.getAltar().get();
-            Vec3d center = altar.origin().toCenterPos().add(0, -1, 0);
+            Vec3d center = state.altar.origin().toCenterPos().add(0, -1, 0);
 
-            float x = (float)MathHelper.lerp(tickDelta, entity.prevX, entity.getX());
-            float y = (float)MathHelper.lerp(tickDelta, entity.prevY, entity.getY());
-            float z = (float)MathHelper.lerp(tickDelta, entity.prevZ, entity.getZ());
-            Vec3d bookPos = new Vec3d(x, y, z);
+            Vec3d bookPos = new Vec3d(state.x, state.y, state.z);
             Vec3d shift = bookPos.subtract(center);
 
             matrices.push();
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180));
             matrices.translate(shift.x, shift.y - 1, shift.z);
 
-            for (BlockPos pillar : altar.pillars()) {
-                renderBeam(center.subtract(pillar.toCenterPos()), -tickDelta, -entity.age, matrices, vertices, light, 1, 0, 1);
+            for (BlockPos pillar : state.altar.pillars()) {
+                renderBeam(center.subtract(pillar.toCenterPos()), state.age, matrices, vertices, light, 1, 0, 1);
             }
 
             matrices.pop();
@@ -105,14 +129,14 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
         }
     }
 
-    public static void renderBeam(Vec3d offset, float tickDelta, int age, MatrixStack matrices, VertexConsumerProvider buffers, int light, float r, float g, float b) {
+    public static void renderBeam(Vec3d offset, float age, MatrixStack matrices, VertexConsumerProvider buffers, int light, float r, float g, float b) {
         final float horizontalDistance = (float)offset.horizontalLength();
         final float distance = (float)offset.length();
         matrices.push();
         matrices.multiply(RotationAxis.POSITIVE_Y.rotation((float)(-Math.atan2(offset.z, offset.x)) - 1.5707964f));
         matrices.multiply(RotationAxis.POSITIVE_X.rotation((float)(-Math.atan2(horizontalDistance, offset.y)) - 1.5707964f));
         VertexConsumer buffer = buffers.getBuffer(RenderLayer.getEntityTranslucent(ALTAR_BEAM_TEXTURE));
-        final float minV = -(age + tickDelta) * 0.01f;
+        final float minV = age * 0.01f;
         final float maxV = minV + (distance / 32F);
         final int sides = 8;
         final float diameter = 0.35F;
@@ -135,5 +159,20 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
             minU = maxU;
         }
         matrices.pop();
+    }
+
+    public static class State extends LivingEntityRenderState {
+        public boolean open;
+        public boolean hasBeams;
+        public float floatPosition;
+
+        @Nullable
+        public Altar altar;
+
+        public float breath;
+
+        public float leftPageRot;
+        public float rightPageRot;
+        public float openAngle;
     }
 }

@@ -9,6 +9,8 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,9 +24,11 @@ public class FirstPersonRendererOverrides {
         return Pony.of(player).getEntityInArms().map(e -> HeldItemRenderer.HandRenderType.RENDER_BOTH_HANDS);
     }
 
+    @SuppressWarnings("unchecked")
     public boolean beforeRenderHands(ArmRenderer sender, float tickDelta, MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, ClientPlayerEntity player, int light) {
         var root = AccessoryFeatureRenderer.FeatureRoot.of(player);
-        boolean cancelled = root != null && root.getAccessories().beforeRenderArms(sender, tickDelta, matrices, vertexConsumers, player, light);
+        var state = ((EntityRenderer<PlayerEntity, BipedEntityRenderState>)root).getAndUpdateRenderState(player, tickDelta);
+        boolean cancelled = root != null && ((AccessoryFeatureRenderer<BipedEntityRenderState, ?>)root.getAccessories()).beforeRenderArms(sender, matrices, vertexConsumers, state, light);
 
         if (cancelled) {
             return true;

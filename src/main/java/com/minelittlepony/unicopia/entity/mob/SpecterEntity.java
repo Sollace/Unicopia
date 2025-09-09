@@ -27,6 +27,7 @@ import net.minecraft.item.Items;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -39,8 +40,8 @@ import net.minecraft.world.World;
 public class SpecterEntity extends HostileEntity {
     public static DefaultAttributeContainer.Builder createAttributes() {
         return HostileEntity.createHostileAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 16F)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.5F);
+                .add(EntityAttributes.MAX_HEALTH, 16F)
+                .add(EntityAttributes.MOVEMENT_SPEED, 0.5F);
     }
 
     private double stepDistance;
@@ -70,13 +71,11 @@ public class SpecterEntity extends HostileEntity {
         if (getTarget() != null) {
             ParticleUtils.spawnParticles(ParticleTypes.EFFECT, this, 6);
 
-            if (getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
-                if (getWorld().getBlockState(getBlockPos()).isIn(BlockTags.REPLACEABLE_BY_TREES)) {
-                    getWorld().breakBlock(getBlockPos(), true);
+            if (getWorld() instanceof ServerWorld sw && sw.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+                if (sw.getBlockState(getBlockPos()).isIn(BlockTags.REPLACEABLE_BY_TREES)) {
+                    sw.breakBlock(getBlockPos(), true);
                 }
             }
-
-
         }
 
         if (!hasVehicle() && isOnGround()) {

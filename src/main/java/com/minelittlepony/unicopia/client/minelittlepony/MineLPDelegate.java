@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.client.minelittlepony;
 import com.minelittlepony.unicopia.Race;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 
@@ -29,6 +30,10 @@ public class MineLPDelegate {
     }
 
     public Race getRace(Entity entity) {
+        return Race.HUMAN;
+    }
+
+    public Race getRace(EntityRenderState state) {
         return Race.HUMAN;
     }
 

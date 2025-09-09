@@ -4,9 +4,9 @@ import java.util.*;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.client.FirstPersonRendererOverrides.ArmRenderer;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.minelittlepony.unicopia.client.render.spell.SpellEffectsRenderDispatcher;
 
 import net.minecraft.client.MinecraftClient;
@@ -23,8 +23,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Arm;
 
 public class AccessoryFeatureRenderer<
-        S extends BipedEntityRenderState,
-        M extends EntityModel<S>> extends FeatureRenderer<S, M> {
+        S extends LivingEntityRenderState,
+        M extends EntityModel<? super S>> extends FeatureRenderer<S, M> {
 
     private static final List<FeatureFactory<?, ?>> REGISTRY = new ArrayList<>();
 
@@ -45,54 +45,56 @@ public class AccessoryFeatureRenderer<
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, S state, float limbAngle, float limbDistance) {
-        if (MineLPDelegate.getInstance().getRace(entity).isEquine()) {
+        if (MineLPDelegate.getInstance().getRace(state).isEquine()) {
             return;
         }
 
         features.forEach(feature -> feature.render(matrices, vertexConsumers, light, state, limbAngle, limbDistance));
 
-        Caster.of(entity).ifPresent(caster -> {
-            SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertexConsumers, light, caster, limbAngle, limbDistance, tickDelta, animationProgress, headYaw, headPitch);
-        });
+
+        CasterState caster = CasterState.of(state);
+        if (caster != null) {
+            SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertexConsumers, light, caster, limbAngle, limbDistance);
+        }
     }
 
     public void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, S entity, ModelPart arm, Arm side) {
         features.forEach(feature -> feature.renderArm(matrices, vertexConsumers, light, entity, arm, side));
     }
 
-    public boolean beforeRenderArms(ArmRenderer sender, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, S entity, int light) {
-        Caster<?> caster = Caster.of(entity).orElse(null);
+    public boolean beforeRenderArms(ArmRenderer sender, MatrixStack matrices, VertexConsumerProvider vertexConsumers, S entity, int light) {
+        CasterState caster = CasterState.of(entity);
         if (caster != null) {
-            SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertexConsumers, light, caster, 0, 0, tickDelta, entity.age + tickDelta, 0, 0);
+            SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertexConsumers, light, caster, 0, 0);
         }
         boolean cancelled = false;
         for (var feature : features) {
-            cancelled |= feature.beforeRenderArms(sender, tickDelta, matrices, vertexConsumers, entity, light);
+            cancelled |= feature.beforeRenderArms(sender, matrices, vertexConsumers, entity, light);
         }
         return cancelled;
     }
 
-    public interface FeatureFactory<S extends BipedEntityRenderState, M extends EntityModel<S>> {
+    public interface FeatureFactory<S extends LivingEntityRenderState, M extends EntityModel<? super S>> {
         Feature<S> create(FeatureRendererContext<S, M> context);
     }
 
-    public interface Feature<S extends BipedEntityRenderState> {
+    public interface Feature<S extends LivingEntityRenderState> {
         void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, S entity, float limbAngle, float limbDistance);
 
         default void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, S entity, ModelPart arm, Arm side) {}
 
-        default boolean beforeRenderArms(ArmRenderer sender, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, S entity, int light) {
+        default boolean beforeRenderArms(ArmRenderer sender, MatrixStack matrices, VertexConsumerProvider vertexConsumers, S entity, int light) {
             return false;
         }
     }
 
     public interface FeatureRoot<
-            S extends BipedEntityRenderState,
-            M extends EntityModel<S>> {
+            S extends LivingEntityRenderState,
+            M extends EntityModel<? super S>> {
         AccessoryFeatureRenderer<S, M> getAccessories();
         @SuppressWarnings("unchecked")
         @Nullable
-        static <T extends LivingEntity, M extends EntityModel<?>> FeatureRoot<?, M> of(T entity) {
+        static <T extends LivingEntity, M extends EntityModel<? super LivingEntityRenderState>> FeatureRoot<?, M> of(T entity) {
             var renderer = MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity);
             if (renderer instanceof FeatureRoot) {
                 return (FeatureRoot<?, M>)renderer;

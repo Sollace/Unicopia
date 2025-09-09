@@ -31,6 +31,7 @@ import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.LongDoorInteractGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
@@ -113,7 +114,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
             return;
         }
 
-        StormCloudEntity cloud = UEntities.STORM_CLOUD.create(world);
+        StormCloudEntity cloud = UEntities.STORM_CLOUD.create(world, SpawnReason.EVENT);
         cloud.setPosition(pos.up(10).toCenterPos());
         cloud.setSize(1);
         cloud.cursed = true;
@@ -137,9 +138,9 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
 
     public static DefaultAttributeContainer.Builder createMobAttributes() {
         return HostileEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 2000)
-                .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.5)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 22);
+                .add(EntityAttributes.MAX_HEALTH, 2000)
+                .add(EntityAttributes.ATTACK_KNOCKBACK, 1.5)
+                .add(EntityAttributes.ATTACK_DAMAGE, 22);
     }
 
     @Override
@@ -331,7 +332,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
         if (getWorld().isClient) {
             generateBodyParticles();
         } else {
-            if (getWorld().getGameRules().get(GameRules.DO_MOB_GRIEFING).get()) {
+            if (((ServerWorld)getWorld()).getGameRules().get(GameRules.DO_MOB_GRIEFING).get()) {
                 for (BlockPos p : BlockPos.iterateOutwards(getBlockPos(), 2, 1, 2)) {
                     if (getWorld().getBlockState(p).getLuminance() > 13) {
                         destroyLightSource(p);
@@ -405,8 +406,8 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
                     random.nextInt(30) == 0 ? USounds.ENTITY_SOMBRA_AMBIENT
                             : random.nextInt(10) == 0 ? USounds.ENTITY_SOMBRA_SCARY
                             : USounds.Vanilla.AMBIENT_CAVE.value(),
-                    (float)random.nextTriangular(1, 0.2F),
-                    (float)random.nextTriangular(0.3F, 0.2F)
+                    random.nextTriangular(1, 0.2F),
+                    random.nextTriangular(0.3F, 0.2F)
             );
         }
 
@@ -463,8 +464,8 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     }
 
     @Override
-    protected void mobTick() {
-        super.mobTick();
+    protected void mobTick(ServerWorld world) {
+        super.mobTick(world);
         bossBar.setPercent(getHealth() / getMaxHealth());
     }
 
@@ -480,12 +481,12 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     }
 
     @Override
-    public boolean damage(DamageSource source, float amount) {
+    public boolean damage(ServerWorld world, DamageSource source, float amount) {
         if (source.getAttacker() instanceof PlayerEntity player) {
             if (AmuletSelectors.ALICORN_AMULET.test(player)) {
                 if (!getWorld().isClient) {
                     playSound(USounds.ENTITY_SOMBRA_SNICKER, 1, 1);
-                    player.sendMessage(Text.translatable("entity.unicopia.sombra.taunt"));
+                    player.sendMessage(Text.translatable("entity.unicopia.sombra.taunt"), false);
                 }
             }
             TrinketsDelegate.EquippedStack amulet = UItems.ALICORN_AMULET.getForEntity(player);
@@ -494,7 +495,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
                 amulet.sendUpdate();
             }
         }
-        boolean damaged = super.damage(source, amount);
+        boolean damaged = super.damage(world, source, amount);
 
         if (!getWorld().isClient) {
             if (source.getAttacker() instanceof LivingEntity attacker) {
@@ -540,7 +541,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     @Override
     protected void dropEquipment(ServerWorld world, DamageSource source, boolean causedByPlayer) {
         super.dropEquipment(world, source, causedByPlayer);
-        ItemEntity itemEntity = dropItem(UItems.BROKEN_ALICORN_AMULET);
+        ItemEntity itemEntity = dropItem(world, UItems.BROKEN_ALICORN_AMULET);
         if (itemEntity != null) {
             itemEntity.setCovetedItem();
         }
@@ -558,7 +559,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
         move(MovementType.SELF, new Vec3d(0, 0.3F, 0));
 
         if (getWorld() instanceof ServerWorld sw) {
-            final boolean dropLoot = this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT);
+            final boolean dropLoot = sw.getGameRules().getBoolean(GameRules.DO_MOB_LOOT);
             final int experience = 500;
 
             if (deathTime > 150 && deathTime % 5 == 0 && dropLoot) {
@@ -605,9 +606,9 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     }
 
     @Override
-    public boolean tryAttack(Entity target) {
+    public boolean tryAttack(ServerWorld world, Entity target) {
         laugh();
-        return super.tryAttack(target);
+        return super.tryAttack(world, target);
     }
 
     @Override

@@ -10,6 +10,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -44,10 +45,10 @@ public abstract class StationaryObjectEntity extends Entity implements UDamageSo
     }
 
     @Override
-    public boolean damage(DamageSource source, float damage) {
+    public boolean damage(ServerWorld world, DamageSource source, float damage) {
         if (!isDead()) {
             if (setHealth(getHealth() - damage) <= 0) {
-                kill();
+                kill(world);
                 onKilled(source);
             } else {
                 onHurt();

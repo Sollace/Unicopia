@@ -18,6 +18,7 @@ import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -41,6 +42,7 @@ import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -85,7 +87,7 @@ public class MimicEntity extends PathAwareEntity {
         }
         world.removeBlockEntity(pos);
         world.setBlockState(pos, Blocks.AIR.getDefaultState());
-        MimicEntity mimic = UEntities.MIMIC.create(world);
+        MimicEntity mimic = UEntities.MIMIC.create(world, SpawnReason.NATURAL);
         BlockState state = be.getCachedState();
         Direction facing = state.getOrEmpty(ChestBlock.FACING).orElse(null);
         float yaw = facing.asRotation();
@@ -356,7 +358,7 @@ public class MimicEntity extends PathAwareEntity {
     }
 
     @Override
-    protected void dropLoot(DamageSource damageSource, boolean causedByPlayer) {
+    protected void dropLoot(ServerWorld world, DamageSource damageSource, boolean causedByPlayer) {
         if (chestData != null) {
             ItemScatterer.spawn(getWorld(), this, chestData);
             ItemScatterer.spawn(getWorld(), getX(), getY(), getZ(), chestData.getCachedState().getBlock().asItem().getDefaultStack());
