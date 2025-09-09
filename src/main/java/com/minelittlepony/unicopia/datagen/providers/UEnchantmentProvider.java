@@ -74,7 +74,7 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
         ).exclusiveSet(enchantments.getOrThrow(EnchantmentTags.ARMOR_EXCLUSIVE_SET))
             .addEffect(EnchantmentEffectComponentTypes.ATTRIBUTES, new AttributeEnchantmentEffect(
                 Unicopia.id("enchantment.heaviness"),
-                EntityAttributes.GENERIC_MOVEMENT_SPEED,
+                EntityAttributes.MOVEMENT_SPEED,
                 EnchantmentLevelBasedValue.linear(-0.1F, -0.1F),
                 EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
             )
@@ -90,7 +90,7 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
             )
         ).addEffect(EnchantmentEffectComponentTypes.TICK, new GroupBasedAttributeEnchantmentEffect(new AttributeEnchantmentEffect(
                 Unicopia.id("enchantment.team.strength"),
-                EntityAttributes.GENERIC_ATTACK_DAMAGE,
+                EntityAttributes.ATTACK_DAMAGE,
                 EnchantmentLevelBasedValue.linear(0, 1),
                 Operation.ADD_VALUE
         ), EnchantmentLevelBasedValue.linear(2, 2), UTags.Enchantments.HERDING)));

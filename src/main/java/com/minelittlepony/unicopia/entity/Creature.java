@@ -174,8 +174,8 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     }
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
-        builder.add(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-        builder.add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
+        builder.add(EntityAttributes.ATTACK_DAMAGE);
+        builder.add(EntityAttributes.ATTACK_KNOCKBACK);
         builder.add(UEntityAttributes.ENTITY_GRAVITY_MODIFIER);
     }
 

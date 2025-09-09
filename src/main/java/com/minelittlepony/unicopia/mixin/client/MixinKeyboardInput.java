@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.input.KeyboardInput;
+import net.minecraft.util.PlayerInput;
 
 @Mixin(KeyboardInput.class)
 abstract class MixinKeyboardInput extends Input {
@@ -21,18 +22,32 @@ abstract class MixinKeyboardInput extends Input {
 
         if (player != null) {
             if (player.getPhysics().isGravityNegative()) {
-                boolean tmp = pressingLeft;
-
-                pressingLeft = pressingRight;
-                pressingRight = tmp;
-
+                playerInput = new PlayerInput(
+                    playerInput.forward(),
+                    playerInput.backward(),
+                    playerInput.right(),
+                    playerInput.left(),
+                    playerInput.jump(),
+                    playerInput.sneak(),
+                    playerInput.sprint()
+                );
                 movementSideways = -movementSideways;
             }
 
             if (EffectUtils.getAmplifier(MinecraftClient.getInstance().player, UEffects.PARALYSIS) > 1) {
                 movementSideways = 0;
                 movementForward = 0;
-                jumping = false;
+                if (playerInput.jump()) {
+                    playerInput = new PlayerInput(
+                        playerInput.forward(),
+                        playerInput.backward(),
+                        playerInput.left(),
+                        playerInput.right(),
+                        false,
+                        playerInput.sneak(),
+                        playerInput.sprint()
+                    );
+                }
             }
 
             if (player.getAcrobatics().isImmobile()) {

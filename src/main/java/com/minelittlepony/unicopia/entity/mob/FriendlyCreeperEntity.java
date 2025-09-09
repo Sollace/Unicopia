@@ -127,7 +127,7 @@ public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
     }
 
     public static DefaultAttributeContainer.Builder createCreeperAttributes() {
-        return HostileEntity.createHostileAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.25);
+        return HostileEntity.createHostileAttributes().add(EntityAttributes.MOVEMENT_SPEED, 0.25);
     }
 
     @Override

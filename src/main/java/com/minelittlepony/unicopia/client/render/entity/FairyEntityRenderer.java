@@ -11,7 +11,7 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper.Argb;
+import net.minecraft.util.math.ColorHelper;
 
 public class FairyEntityRenderer extends MobEntityRenderer<FairyEntity, FairyEntityRenderer.Model> {
     public FairyEntityRenderer(EntityRendererFactory.Context context) {
@@ -39,8 +39,8 @@ public class FairyEntityRenderer extends MobEntityRenderer<FairyEntity, FairyEnt
             matrices.translate(0, 1.5, 0);
 
 
-            SphereModel.SPHERE.render(matrices, vertexConsumer, light, overlay, radius - thickness, Argb.withAlpha(color, 127));
-            SphereModel.SPHERE.render(matrices, vertexConsumer, light, overlay, radius, Argb.withAlpha(color, 85));
+            SphereModel.SPHERE.render(matrices, vertexConsumer, light, overlay, radius - thickness, ColorHelper.withAlpha(color, 127));
+            SphereModel.SPHERE.render(matrices, vertexConsumer, light, overlay, radius, ColorHelper.withAlpha(color, 85));
 
             matrices.pop();
         }

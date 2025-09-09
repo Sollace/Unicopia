@@ -50,11 +50,11 @@ public interface EntitySwap {
     );
     Swap<LivingEntity> MAX_HEALTH = Swap.of(LivingEntity::getMaxHealth, (e, newMax) -> {
         float oldHealthPercentage = e.getHealth() / e.getMaxHealth();
-        e.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).removeModifier(PlayerAttributes.HEALTH_SWAPPING_MODIFIER_ID);
+        e.getAttributeInstance(EntityAttributes.MAX_HEALTH).removeModifier(PlayerAttributes.HEALTH_SWAPPING_MODIFIER_ID);
 
         float change = newMax - e.getMaxHealth();
         if (!MathHelper.approximatelyEquals(change, 0)) {
-            e.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).addPersistentModifier(PlayerAttributes.healthChange(change));
+            e.getAttributeInstance(EntityAttributes.MAX_HEALTH).addPersistentModifier(PlayerAttributes.healthChange(change));
         }
         e.setHealth(oldHealthPercentage * newMax);
     });

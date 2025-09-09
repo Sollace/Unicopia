@@ -10,7 +10,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Colors;
-import net.minecraft.util.math.ColorHelper.Argb;
 import net.minecraft.util.math.MathHelper;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
@@ -18,8 +17,10 @@ import com.minelittlepony.unicopia.particle.SphereParticleEffect;
 import com.minelittlepony.unicopia.util.ColorHelper;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import static net.minecraft.util.math.ColorHelper.*;
+
 public class SphereParticle extends Particle {
-    static final int TRANSLUCENT_WHITE = Argb.withAlpha((int)(0.8F * 255), Colors.WHITE);
+    static final int TRANSLUCENT_WHITE = withAlpha((int)(0.8F * 255), Colors.WHITE);
 
     protected float prevRadius;
     protected float radius;
