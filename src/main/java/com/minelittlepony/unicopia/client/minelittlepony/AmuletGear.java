@@ -53,7 +53,7 @@ class AmuletGear extends AmuletModel implements Gear {
     @Override
     public void pose(PonyModel<?> model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
         if (model instanceof BipedEntityModel<?> biped) {
-            setAngles((LivingEntity)entity, biped);
+            setAngles(biped);
         }
     }
 

@@ -11,7 +11,6 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
@@ -63,15 +62,12 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
 
     @Override
     public void render(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-
         if (mode == ModelTransformationMode.GUI || mode == ModelTransformationMode.GROUND || mode == ModelTransformationMode.FIXED) {
             // render as normal sprite
-            ItemRenderer renderer = MinecraftClient.getInstance().getItemRenderer();
-
-            BakedModel model = renderer.getModels().getModelManager().getModel(getModelId(stack.getItem()));
+            BakedModel model = MinecraftClient.getInstance().getBakedModelManager().getModel(getModelId(stack.getItem()));
             matrices.pop();
             matrices.push();
-            renderer.renderItem(stack, mode, false, matrices, vertexConsumers, light, overlay, model);
+            MinecraftClient.getInstance().getItemRenderer().renderItem(stack, mode, false, matrices, vertexConsumers, light, overlay, model);
             matrices.pop();
             matrices.push();
         } else {
@@ -88,7 +84,7 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
             }
             Identifier id = Registries.ITEM.getId(stack.getItem());
             Identifier texture = id.withPath(p -> "textures/entity/polearm/" + p + ".png");
-            model.render(matrices, ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, RenderLayer.getEntitySolid(texture), false, stack.hasGlint()), light, overlay, Colors.WHITE);
+            model.render(matrices, ItemRenderer.getItemGlintConsumer(vertexConsumers, RenderLayer.getEntitySolid(texture), false, stack.hasGlint()), light, overlay, Colors.WHITE);
             matrices.pop();
         }
     }

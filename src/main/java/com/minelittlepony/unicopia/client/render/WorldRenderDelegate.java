@@ -53,19 +53,36 @@ public class WorldRenderDelegate {
     public void applyFog(Camera camera, FogType fogType, float viewDistance, boolean thickFog, float tickDelta) {
         if (camera.getSubmersionType() == CameraSubmersionType.WATER) {
             if (EquinePredicates.PLAYER_SEAPONY.test(MinecraftClient.getInstance().player)) {
-                RenderSystem.setShaderFogStart(RenderSystem.getShaderFogStart() - 30);
-                RenderSystem.setShaderFogEnd(RenderSystem.getShaderFogEnd() + 190);
+                Fog fog = RenderSystem.getShaderFog();
+                RenderSystem.setShaderFog(new Fog(
+                        fog.start() - 30,
+                        fog.end() + 190,
+                        fog.shape(),
+                        fog.red(),
+                        fog.green(),
+                        fog.blue(),
+                        fog.alpha()
+                ));
             }
         }
         if (camera.getSubmersionType() == CameraSubmersionType.NONE) {
             if (EquinePredicates.PLAYER_SEAPONY.test(MinecraftClient.getInstance().player)) {
-                RenderSystem.setShaderFogStart(-130);
+                Fog fog = RenderSystem.getShaderFog();
+                RenderSystem.setShaderFog(new Fog(
+                        fog.start() - 130,
+                        fog.end(),
+                        fog.shape(),
+                        fog.red(),
+                        fog.green(),
+                        fog.blue(),
+                        fog.alpha()
+                ));
             }
         }
     }
 
     public boolean beforeEntityRender(Entity entity,
-            double x, double y, double z, float yaw,
+            double x, double y, double z,
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
 
         if (!recurseFrosting && entity instanceof BoatEntity && entity instanceof LavaAffine affine && affine.isLavaAffine()) {
@@ -74,7 +91,7 @@ public class WorldRenderDelegate {
             if (MinecraftClient.getInstance().getResourceManager().getResource(frostingTexture).isPresent()) {
                 recurseFrosting = true;
                 RenderLayerUtil.createUnionBuffer(c -> {
-                    client.getEntityRenderDispatcher().render(entity, x, y, z, yaw, tickDelta, matrices, c, light);
+                    client.getEntityRenderDispatcher().render(entity, x, y, z, tickDelta, matrices, c, light);
                 }, vertices, texture -> RenderLayers.getEntityTranslucent(frostingTexture));
                 recurseFrosting = false;
                 return true;
@@ -85,7 +102,7 @@ public class WorldRenderDelegate {
             return false;
         }
 
-        return Equine.of(entity).filter(eq -> onEntityRender(eq, x, y, z, yaw, tickDelta, matrices, vertices, light)).isPresent();
+        return Equine.of(entity).filter(eq -> onEntityRender(eq, x, y, z, tickDelta, matrices, vertices, light)).isPresent();
     }
 
     public void afterEntityRender(Equine<?> pony, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
@@ -128,14 +145,14 @@ public class WorldRenderDelegate {
     }
 
     private boolean onEntityRender(Equine<?> pony,
-            double x, double y, double z, float yaw,
+            double x, double y, double z,
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
 
         if (!recurseMinion && pony instanceof Creature creature && creature.isMinion()) {
             try {
                 recurseMinion = true;
                 RenderLayerUtil.createUnionBuffer(c -> {
-                    client.getEntityRenderDispatcher().render(creature.asEntity(), x, y, z, yaw, tickDelta, matrices, c, light);
+                    client.getEntityRenderDispatcher().render(creature.asEntity(), x, y, z, tickDelta, matrices, c, light);
                 }, vertices, texture -> RenderLayers.getMagicColored(texture, creature.isDiscorded() ? 0x33FF0000 : ColorHelper.getRainbowColor(creature.asEntity(), 25, 1) )); // 0x8800AA00
                 return true;
             } catch (Throwable t) {
@@ -156,14 +173,14 @@ public class WorldRenderDelegate {
         }
 
         if (pony instanceof Living living) {
-            return onLivingRender(living, x, y, z, yaw, tickDelta, matrices, vertices, light);
+            return onLivingRender(living, x, y, z, tickDelta, matrices, vertices, light);
         }
 
         return false;
     }
 
     private boolean onLivingRender(Living<?> pony,
-            double x, double y, double z, float yaw,
+            double x, double y, double z,
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 
         if (pony.isBeingCarried()) {

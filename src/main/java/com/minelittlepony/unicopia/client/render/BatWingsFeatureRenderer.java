@@ -2,9 +2,7 @@ package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.entity.AmuletSelectors;
-import com.minelittlepony.unicopia.entity.player.Pony;
-
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
@@ -12,8 +10,8 @@ import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.state.BipedEntityRenderState;
+import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class BatWingsFeatureRenderer<S extends BipedEntityRenderState, E extends LivingEntity> extends WingsFeatureRenderer<S> {
@@ -58,9 +56,9 @@ public class BatWingsFeatureRenderer<S extends BipedEntityRenderState, E extends
 
     @Override
     protected boolean canRender(S entity) {
-        return entity instanceof PlayerEntity
-                && Pony.of((PlayerEntity)entity).getObservedSpecies() == Race.BAT
-                && !AmuletSelectors.PEGASUS_AMULET.test(entity);
+        return entity instanceof PlayerEntityRenderState
+                && CasterState.of(entity).species.physical() == Race.BAT
+                && !CasterState.of(entity).pegasusAmulet;
     }
 
     @Override

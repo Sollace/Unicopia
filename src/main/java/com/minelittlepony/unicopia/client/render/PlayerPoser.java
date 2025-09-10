@@ -371,7 +371,7 @@ public class PlayerPoser {
             model.rightArm.roll = 0;
         }
 
-        if (model instanceof PlayerEntityModel<?> m) {
+        if (model instanceof PlayerEntityModel m) {
             m.leftSleeve.copyTransform(m.leftArm);
             m.rightSleeve.copyTransform(m.rightArm);
             m.leftPants.copyTransform(m.leftLeg);

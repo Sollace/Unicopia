@@ -12,6 +12,8 @@ import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
+import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
+import com.minelittlepony.unicopia.client.render.HeldEntityFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.spell.SpellEffectsRenderDispatcher;
 import com.minelittlepony.unicopia.client.render.spell.SpellRenderer;
 import com.minelittlepony.unicopia.client.render.spell.SpellRenderer.SpellRenderState;
@@ -20,9 +22,12 @@ import com.minelittlepony.unicopia.entity.AmuletSelectors;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
+import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
+import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
+import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 
 import net.minecraft.client.MinecraftClient;
@@ -36,6 +41,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class CasterState {
@@ -43,6 +49,8 @@ public class CasterState {
     public EntityType<?> type;
 
     public boolean living;
+
+    public boolean ponified;
 
     public List<Text> debugLines;
     public float width;
@@ -77,6 +85,14 @@ public class CasterState {
     public boolean pegasusAmulet;
     public boolean inHell;
 
+    public TrinketsDelegate.EquippedStack mainhandBangle = TrinketsDelegate.EquippedStack.EMPTY;
+    public TrinketsDelegate.EquippedStack offhandBangle = TrinketsDelegate.EquippedStack.EMPTY;
+    public TrinketsDelegate.EquippedStack eyewear = TrinketsDelegate.EquippedStack.EMPTY;
+
+    public float leanAmount;
+
+    public PassengerState carriedEntity = new PassengerState();
+
     @Nullable
     public Entity appearance;
 
@@ -91,18 +107,24 @@ public class CasterState {
         originVector = Vec3d.ZERO;
         isCamera = false;
         isProjectile = false;
+        ponified = false;
         isPlacement = false;
         showDebugInfo = false;
         hasDebugInfo = false;
         pegasusAmulet = false;
         inHell = false;
+        leanAmount = 0;
         type = null;
         masterDisplayName = null;
         appearance = null;
         wingsAngle = 0;
+        carriedEntity = null;
         spells.clear();
         species = Race.UNSET.composite();
         amulet = TrinketsDelegate.EquippedStack.EMPTY;
+        mainhandBangle = TrinketsDelegate.EquippedStack.EMPTY;
+        offhandBangle = TrinketsDelegate.EquippedStack.EMPTY;
+        eyewear = TrinketsDelegate.EquippedStack.EMPTY;
         activeAbility.update(null, null);
     }
 
@@ -148,11 +170,16 @@ public class CasterState {
                 abilities = pony.getAbilities();
                 wingsAngle = pony.getMotion().getWingAngle();
                 activeAbility.update(pony.getAbilities().getActiveStat().orElse(null), pony);
+                ponified = MineLPDelegate.getInstance().getPlayerPonyRace(pony.asEntity()).isEquine();
             }
 
             if (caster instanceof Living l) {
                 amulet = AmuletItem.get(l.asEntity());
                 pegasusAmulet = AmuletSelectors.PEGASUS_AMULET.test(l.asEntity());
+                mainhandBangle = FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.MAIN_GLOVE).findFirst().orElse(null);
+                offhandBangle = FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.SECONDARY_GLOVE).findFirst().orElse(null);
+                eyewear = GlassesItem.getForEntity(l.asEntity());
+                leanAmount = ((LivingEntityDuck)l.asEntity()).getLeaningPitch();
             }
 
             if (client.getEntityRenderDispatcher().shouldRenderHitboxes()
@@ -191,6 +218,10 @@ public class CasterState {
         return ((Container)state).getUnicopiaState();
     }
 
+    public static CasterState of(Entity entity, float tickDelta) {
+        return of(MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity).getAndUpdateRenderState(entity, tickDelta));
+    }
+
     public static class AbilityState {
         public Identifier id;
         public Text name;
@@ -203,6 +234,20 @@ public class CasterState {
             id = ability == null ? null : ability.getId();
             name = ability == null ? null : ability.getName(pony);
             fillProgress = stat == null ? 0 : stat.getFillProgress();
+        }
+    }
+
+    public static class PassengerState {
+        public Vec3d carryPosition;
+        public Living<?> passenger;
+
+        public void update(CasterState state, Living<?> entity, Living<?> passenger) {
+            this.passenger = passenger;
+            if (passenger != null) {
+                carryPosition = HeldEntityFeatureRenderer.getCarryPosition(entity, passenger)
+                        .rotateX(-state.leanAmount * MathHelper.PI / 4F)
+                        .add(new Vec3d(0, -0.5F, 0).multiply(state.leanAmount));
+            }
         }
     }
 }

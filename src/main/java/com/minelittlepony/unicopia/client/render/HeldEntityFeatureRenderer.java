@@ -2,9 +2,9 @@ package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.client.FirstPersonRendererOverrides.ArmRenderer;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.EntityDuck;
-import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.LimbAnimationUtil;
 
@@ -29,24 +29,20 @@ public class HeldEntityFeatureRenderer<S extends BipedEntityRenderState, E exten
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, S entity, float limbAngle, float limbDistance) {
-        Pony.of(entity).flatMap(Pony::getEntityInArms).ifPresent(passenger -> {
-            float leanAmount = ((LivingEntityDuck)entity).getLeaningPitch();
-
+        CasterState state = CasterState.of(entity);
+        CasterState.PassengerState carriedEntity = state.carriedEntity;
+        if (carriedEntity.passenger != null) {
             matrices.push();
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180 - leanAmount * 90));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180 - state.leanAmount * 90));
 
-            Vec3d carryPosition = getCarryPosition(Living.living(entity), passenger)
-                    .rotateX(-leanAmount * MathHelper.PI / 4F)
-                    .add(new Vec3d(0, -0.5F, 0).multiply(leanAmount));
-
-            matrices.translate(carryPosition.x, carryPosition.y, carryPosition.z);
-            if (!(passenger instanceof Pony)) {
+            matrices.translate(carriedEntity.carryPosition.x, carriedEntity.carryPosition.y, carriedEntity.carryPosition.z);
+            if (!(carriedEntity.passenger instanceof Pony)) {
                 matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
             }
 
-            renderCarriedEntity(passenger.asEntity(), matrices, vertexConsumers, light, tickDelta);
+            renderCarriedEntity(carriedEntity.passenger.asEntity(), matrices, vertexConsumers, light, MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false));
             matrices.pop();
-        });
+        }
     }
 
     @Override
@@ -55,31 +51,35 @@ public class HeldEntityFeatureRenderer<S extends BipedEntityRenderState, E exten
     }
 
     @Override
-    public boolean beforeRenderArms(ArmRenderer sender, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, S entity, int light) {
-        return Pony.of(entity).flatMap(Pony::getEntityInArms).filter(passenger -> {
-            float swingProgress = entity.getHandSwingProgress(MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false));
-            float f = -0.4f * MathHelper.sin(MathHelper.sqrt(swingProgress) * (float)Math.PI);
-            float g = 0.2f * MathHelper.sin(MathHelper.sqrt(swingProgress) * ((float)Math.PI * 2));
-            float h = -0.2f * MathHelper.sin(swingProgress * (float)Math.PI);
+    public boolean beforeRenderArms(ArmRenderer sender, MatrixStack matrices, VertexConsumerProvider vertexConsumers, S entity, int light) {
+        CasterState state = CasterState.of(entity);
+        CasterState.PassengerState carriedEntity = state.carriedEntity;
+        if (carriedEntity.passenger != null) {
+            float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+            float f = -0.4f * MathHelper.sin(MathHelper.sqrt(entity.handSwingProgress) * (float)Math.PI);
+            float g = 0.2f * MathHelper.sin(MathHelper.sqrt(entity.handSwingProgress) * ((float)Math.PI * 2));
+            float h = -0.2f * MathHelper.sin(entity.handSwingProgress * (float)Math.PI);
             matrices.push();
             matrices.translate(f, g, h);
-            matrices.translate(0, -1.3F, passenger instanceof Pony ? -1.9F : -1.3F);
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(passenger instanceof Pony ? 33 : 13));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(passenger instanceof Pony ? 180 : 90));
+            matrices.translate(0, -1.3F, carriedEntity.passenger instanceof Pony ? -1.9F : -1.3F);
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(carriedEntity.passenger instanceof Pony ? 33 : 13));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(carriedEntity.passenger instanceof Pony ? 180 : 90));
 
-            renderCarriedEntity(passenger.asEntity(), matrices, vertexConsumers, light, tickDelta);
+            renderCarriedEntity(carriedEntity.passenger.asEntity(), matrices, vertexConsumers, light, tickDelta);
             matrices.pop();
 
             float equipProgress = 1 - sender.getEquipProgress(Hand.MAIN_HAND, tickDelta);
 
             matrices.push();
-            sender.invokeRenderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, swingProgress, Arm.LEFT);
+            sender.invokeRenderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, entity.handSwingProgress, Arm.LEFT);
             matrices.pop();
             matrices.push();
-            sender.invokeRenderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, swingProgress, Arm.RIGHT);
+            sender.invokeRenderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, entity.handSwingProgress, Arm.RIGHT);
             matrices.pop();
-            return false;
-        }).isPresent();
+            return true;
+        }
+
+        return false;
     }
 
     private void renderCarriedEntity(LivingEntity p, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, float tickDelta) {

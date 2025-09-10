@@ -124,8 +124,8 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity>> implements Gear {
         try {
             ((ClientPonyModel)model).copyAttributes(this.model);
             this.model.getAttributes().metadata = dataCache.getUnchecked(data);
-            this.model.animateModel((LivingEntity)entity, move, swing, tickDelta);
-            this.model.setAngles((LivingEntity)entity, move, swing, entity.age + tickDelta, 0, 0);
+            // TODO:
+            this.model.setAngles(null);
         } finally {
             this.model.getAttributes().metadata = data;
         }

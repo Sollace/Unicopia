@@ -3,8 +3,7 @@ package com.minelittlepony.unicopia.client.render;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.minelittlepony.unicopia.item.GlassesItem;
-
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -38,7 +37,7 @@ public class GlassesFeatureRenderer<S extends BipedEntityRenderState, E extends 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, S entity, float limbDistance, float limbAngle) {
 
-        ItemStack stack = GlassesItem.getForEntity(entity).stack();
+        ItemStack stack = CasterState.of(entity).eyewear.stack();
 
         if (!stack.isEmpty()) {
             Identifier texture = textures.computeIfAbsent(Registries.ITEM.getId(stack.getItem()), id -> id.withPath(p -> "textures/models/armor/" + p + ".png"));

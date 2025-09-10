@@ -1,8 +1,7 @@
 package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
-import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.minelittlepony.unicopia.item.*;
 
 import net.minecraft.client.model.Dilation;
@@ -13,22 +12,24 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.ArmorStandEntityRenderer;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
+import net.minecraft.client.render.entity.state.ArmorStandEntityRenderState;
 import net.minecraft.client.render.entity.state.BipedEntityRenderState;
+import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 
@@ -50,26 +51,28 @@ public class BraceletFeatureRenderer<S extends BipedEntityRenderState, E extends
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, S entity, float limbAngle, float limbDistance) {
-        FriendshipBraceletItem.getWornBangles(entity, TrinketsDelegate.MAIN_GLOVE).findFirst().ifPresent(bangle -> {
-            renderBangleThirdPerson(bangle.stack(), stack, renderContext, lightUv, entity, limbDistance, limbAngle, tickDelta, age, headYaw, headPitch, entity.getMainArm());
-        });
-        FriendshipBraceletItem.getWornBangles(entity, TrinketsDelegate.SECONDARY_GLOVE).findFirst().ifPresent(bangle -> {
-            renderBangleThirdPerson(bangle.stack(), stack, renderContext, lightUv, entity, limbDistance, limbAngle, tickDelta, age, headYaw, headPitch, entity.getMainArm().getOpposite());
-        });
+        CasterState caster = CasterState.of(entity);
+        if (caster.mainhandBangle != null) {
+            renderBangleThirdPerson(caster.mainhandBangle.stack(), matrices, vertexConsumers, light, entity, limbDistance, limbAngle, entity.mainArm);
+        }
+        if (caster.offhandBangle != null) {
+            renderBangleThirdPerson(caster.offhandBangle.stack(), matrices, vertexConsumers, light, entity, limbDistance, limbAngle, entity.mainArm.getOpposite());
+        }
     }
 
-    private void renderBangleThirdPerson(ItemStack item, MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, S entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch, Arm mainArm) {
+    private void renderBangleThirdPerson(ItemStack item, MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, S entity, float limbDistance, float limbAngle, Arm mainArm) {
         int j = DyedColorComponent.getColor(item, Colors.WHITE);
 
-        boolean alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getSkinTextures().model() == SkinTextures.Model.SLIM;
+        boolean alex = entity instanceof PlayerEntityRenderState s && s.skinTextures.model() == SkinTextures.Model.SLIM;
 
         BraceletModel model = alex ? alexModel : steveModel;
         boolean isLeft = mainArm == Arm.LEFT;
 
-        if (entity instanceof ArmorStandEntity) {
+        if (entity instanceof ArmorStandEntityRenderState stand) {
             ModelPart arm = isLeft ? context.getModel().leftArm : context.getModel().rightArm;
             arm.visible = true;
-            VertexConsumer consumer = renderContext.getBuffer(context.getModel().getLayer(context.getTexture(entity)));
+            @SuppressWarnings("unchecked")
+            VertexConsumer consumer = renderContext.getBuffer(context.getModel().getLayer(context instanceof LivingEntityRenderer renderer ? renderer.getTexture(stand) : ArmorStandEntityRenderer.TEXTURE));
             arm.render(stack, consumer, lightUv, OverlayTexture.DEFAULT_UV, Colors.WHITE);
         }
 
@@ -81,26 +84,25 @@ public class BraceletFeatureRenderer<S extends BipedEntityRenderState, E extends
     }
 
     @Override
-    public void renderArm(MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, E entity, ModelPart armModel, Arm side) {
-        FriendshipBraceletItem.getWornBangles(entity, side == entity.getMainArm() ? TrinketsDelegate.MAIN_GLOVE : TrinketsDelegate.SECONDARY_GLOVE).findFirst().ifPresent(item -> {
-            int j = DyedColorComponent.getColor(item.stack(), Colors.WHITE);
-
-            boolean alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getSkinTextures().model() == SkinTextures.Model.SLIM;
-
-            BraceletModel model = alex ? alexModel : steveModel;
-
-            if (MineLPDelegate.getInstance().getPlayerPonyRace((ClientPlayerEntity)entity).isEquine()) {
-                stack.translate(side == Arm.LEFT ? 0.06 : -0.06, 0.3, 0);
+    public void renderArm(MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, S entity, ModelPart armModel, Arm arm) {
+        var state = CasterState.of(entity);
+        var bangle = arm == entity.mainArm ? state.mainhandBangle : state.offhandBangle;
+        if (bangle != null) {
+            if (state.ponified) {
+                stack.translate(arm == Arm.LEFT ? 0.06 : -0.06, 0.3, 0);
             } else {
                 stack.translate(0, -0.1, 0);
             }
 
             VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(TEXTURE), false);
+            int j = DyedColorComponent.getColor(bangle.stack(), Colors.WHITE);
 
+            boolean alex = entity instanceof PlayerEntityRenderState s && s.skinTextures.model() == SkinTextures.Model.SLIM;
+            BraceletModel model = alex ? alexModel : steveModel;
             model.setAngles(context.getModel());
-            model.setVisible(side);
-            model.render(stack, consumer, GlowableItem.isGlowing(item.stack()) ? LightmapTextureManager.MAX_LIGHT_COORDINATE : lightUv, OverlayTexture.DEFAULT_UV, j);
-        });
+            model.setVisible(arm);
+            model.render(stack, consumer, GlowableItem.isGlowing(bangle.stack()) ? LightmapTextureManager.MAX_LIGHT_COORDINATE : lightUv, OverlayTexture.DEFAULT_UV, j);
+        }
     }
 
     public static class BraceletModel extends Model {
@@ -109,7 +111,7 @@ public class BraceletFeatureRenderer<S extends BipedEntityRenderState, E extends
         private final ModelPart rightArm;
 
         public BraceletModel(ModelPart tree) {
-            super(RenderLayer::getEntityTranslucent);
+            super(tree, RenderLayer::getEntityTranslucent);
             this.leftArm = tree.getChild(EntityModelPartNames.LEFT_ARM);
             this.rightArm = tree.getChild(EntityModelPartNames.RIGHT_ARM);
         }
@@ -138,12 +140,6 @@ public class BraceletFeatureRenderer<S extends BipedEntityRenderState, E extends
         public void setVisible(Arm arm) {
             leftArm.visible = arm == Arm.LEFT;
             rightArm.visible = arm == Arm.RIGHT;
-        }
-
-        @Override
-        public void render(MatrixStack matrixStack, VertexConsumer vertexConsumer, int i, int j, int color) {
-            leftArm.render(matrixStack, vertexConsumer, i, j, color);
-            rightArm.render(matrixStack, vertexConsumer, i, j, color);
         }
     }
 }

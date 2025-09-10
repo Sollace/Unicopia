@@ -21,14 +21,14 @@ abstract class MixinEntityRenderDispatcher implements SpellEffectsRenderDispatch
     private static final String RENDER = "render(Lnet/minecraft/entity/Entity;DDDFFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V";
 
     @Inject(method = RENDER, at = @At("HEAD"), cancellable = true)
-    private <E extends Entity> void beforeRender(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
-        if (WorldRenderDelegate.INSTANCE.beforeEntityRender(entity, x, y, z, yaw, tickDelta, matrices, vertexConsumers, light)) {
+    private <E extends Entity> void beforeRender(E entity, double x, double y, double z, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
+        if (WorldRenderDelegate.INSTANCE.beforeEntityRender(entity, x, y, z, tickDelta, matrices, vertexConsumers, light)) {
             info.cancel();
         }
     }
 
     @Inject(method = RENDER, at = @At("RETURN"))
-    private <E extends Entity> void afterRender(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
+    private <E extends Entity> void afterRender(E entity, double x, double y, double z, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
         Equine.of(entity).ifPresent(eq -> WorldRenderDelegate.INSTANCE.afterEntityRender(eq, matrices, vertexConsumers, light));
     }
 

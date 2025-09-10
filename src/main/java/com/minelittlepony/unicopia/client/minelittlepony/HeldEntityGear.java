@@ -19,7 +19,7 @@ import net.minecraft.util.Identifier;
 
 class HeldEntityGear extends HeldEntityFeatureRenderer<BipedEntityRenderState, LivingEntity> implements Gear {
 
-    private LivingEntity entity;
+    private BipedEntityRenderState entity;
 
     public HeldEntityGear() {
         super(null);
@@ -47,17 +47,16 @@ class HeldEntityGear extends HeldEntityFeatureRenderer<BipedEntityRenderState, L
 
     @Override
     public void pose(PonyModel<?> model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
-        this.entity = (LivingEntity)entity;
+        this.entity = (BipedEntityRenderState)MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity).getAndUpdateRenderState(entity, ticks);
     }
 
     @Override
-    public void render(MatrixStack stack, VertexConsumer consumer, int light, int overlay, int color, UUID interpolatorId) {
+    public void render(MatrixStack matrices, VertexConsumer buffer, int light, int overlay, int color, UUID interpolatorId) {
         render(
-            stack,
+            matrices,
             MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers(),
             light, entity,
-            0, 0,
-            MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false), 0, 0, 0
+            0, 0
         );
     }
 }

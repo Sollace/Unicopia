@@ -11,16 +11,17 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderPhase;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.ModelBaker;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TriState;
 import net.minecraft.util.Util;
 
 public final class RenderLayers extends RenderLayer {
     private RenderLayers() {
         super(null, null, null, 0, false, false, null, null);
     }
-    private static final List<RenderLayer> BLOCK_DESTRUCTION_STAGE_LAYERS = ModelLoader.BLOCK_DESTRUCTION_STAGE_TEXTURES.stream().map(texture -> {
-        RenderPhase.Texture texture2 = new RenderPhase.Texture(texture, false, false);
+    private static final List<RenderLayer> BLOCK_DESTRUCTION_STAGE_LAYERS = ModelBaker.BLOCK_DESTRUCTION_STAGE_TEXTURES.stream().map(texture -> {
+        RenderPhase.Texture texture2 = new RenderPhase.Texture(texture, TriState.DEFAULT, false);
         return (RenderLayer)RenderLayer.of("alpha_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256,
                 MultiPhaseParameters.builder()
                 .program(CRUMBLING_PROGRAM)
@@ -34,14 +35,14 @@ public final class RenderLayers extends RenderLayer {
 
     private static final RenderLayer MAGIC_NO_COLOR = of("magic_no_color", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
             VertexFormat.DrawMode.QUADS, 256, true, true, MultiPhaseParameters.builder()
-            .program(COLOR_PROGRAM)
+            .program(POSITION_COLOR_PROGRAM)
             .transparency(TRANSLUCENT_TRANSPARENCY)
             .target(TRANSLUCENT_TARGET)
         .build(false));
 
     private static final RenderLayer MAGIC_SHIELD = of("magic_shield", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
             VertexFormat.DrawMode.QUADS, 256, true, true, MultiPhaseParameters.builder()
-            .program(COLOR_PROGRAM)
+            .program(POSITION_COLOR_PROGRAM)
             .transparency(TRANSLUCENT_TRANSPARENCY)
             .target(TRANSLUCENT_TARGET)
             .cull(DISABLE_CULLING)
@@ -53,7 +54,7 @@ public final class RenderLayers extends RenderLayer {
                     VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
                     VertexFormat.DrawMode.QUADS, 256, true, true,
             MultiPhaseParameters.builder()
-                .program(COLOR_PROGRAM)
+                .program(POSITION_COLOR_PROGRAM)
                 .transparency(TRANSLUCENT_TRANSPARENCY)
                 .layering(VIEW_OFFSET_Z_LAYERING)
                // .target(TRANSLUCENT_TARGET)
@@ -120,7 +121,7 @@ public final class RenderLayers extends RenderLayer {
         private final float alpha;
 
         public Colored(Identifier texture, int color) {
-            super(texture, false, false);
+            super(texture, TriState.FALSE, false);
             this.red = Color.r(color);
             this.green = Color.g(color);
             this.blue = Color.b(color);

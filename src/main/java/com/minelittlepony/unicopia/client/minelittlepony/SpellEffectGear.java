@@ -7,6 +7,7 @@ import com.minelittlepony.api.model.PonyModel;
 import com.minelittlepony.api.model.gear.Gear;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer;
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.minelittlepony.unicopia.client.render.spell.SpellEffectsRenderDispatcher;
 
 import net.minecraft.client.MinecraftClient;
@@ -17,10 +18,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 
 class SpellEffectGear implements Gear {
-    private Caster<?> caster;
+    private CasterState caster;
     private float limbAngle;
     private float limbDistance;
-    private float animationProgress;
 
     @Override
     public boolean canRender(PonyModel<?> model, Entity entity) {
@@ -42,11 +42,10 @@ class SpellEffectGear implements Gear {
     }
 
     @Override
-    public void pose(PonyModel<?> model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
-        caster = Caster.of(entity).orElse(null);
-        limbAngle = move;
-        limbDistance = swing;
-        animationProgress = entity.age + ticks;
+    public void pose(PonyModel<?> model, Entity entity, boolean rainboom, UUID interpolatorId, float limbAngle, float limbDistance, float bodySwing, float tickDelta) {
+        caster = CasterState.of(entity, tickDelta);
+        this.limbAngle = limbAngle;
+        this.limbDistance = limbDistance;
     }
 
     @Override
@@ -55,8 +54,7 @@ class SpellEffectGear implements Gear {
             stack,
             MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers(),
             light, caster,
-            limbAngle, limbDistance,
-            MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false), animationProgress, 0, 0
+            limbAngle, limbDistance
         );
     }
 }

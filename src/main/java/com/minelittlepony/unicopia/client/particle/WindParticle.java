@@ -10,9 +10,9 @@ import com.minelittlepony.unicopia.particle.TargetBoundParticleEffect;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -84,7 +84,6 @@ public class WindParticle extends AbstractBillboardParticle {
             }
 
             if (buffer == null) {
-                RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
                 buffer = te.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
             }
 
@@ -92,6 +91,7 @@ public class WindParticle extends AbstractBillboardParticle {
         }
 
         if (buffer != null) {
+            RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
             BufferRenderer.drawWithGlobalProgram(buffer.end());
         }
     }

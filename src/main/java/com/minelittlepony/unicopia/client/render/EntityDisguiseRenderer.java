@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client.render;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.minelittlepony.unicopia.client.render.spell.SpellEffectsRenderDispatcher;
 import com.minelittlepony.unicopia.compat.pehkui.PehkUtil;
 import com.minelittlepony.unicopia.entity.Living;
@@ -21,6 +22,7 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -32,7 +34,7 @@ class EntityDisguiseRenderer {
         this.delegate = delegate;
     }
 
-    public boolean render(Living<?> pony, Disguise disguise,
+    public <T extends LivingEntity> boolean render(Living<T> pony, Disguise disguise,
             double x, double y, double z,
             float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
         int fireTicks = pony.asEntity().doesRenderOnFire() ? 1 : 0;
@@ -63,7 +65,10 @@ class EntityDisguiseRenderer {
 
         matrices.push();
         matrices.translate(x, y, z);
-        SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertices, light, pony, 0, 0, tickDelta, pony.asEntity().age + tickDelta, 0, 0);
+
+        var state = delegate.client.getEntityRenderDispatcher().getRenderer(pony.asEntity()).getAndUpdateRenderState(pony.asEntity(), tickDelta);
+
+        SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertices, light, CasterState.of(state), 0, 0);
         matrices.pop();
 
         delegate.afterEntityRender(pony, matrices, vertices, light);

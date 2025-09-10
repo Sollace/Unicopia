@@ -13,7 +13,7 @@ import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
@@ -47,8 +47,8 @@ public class SmittenEyesRenderer {
 
             if (client.getEntityRenderDispatcher().shouldRenderHitboxes()) {
                 VertexConsumer lines = vertices.getBuffer(RenderLayer.getLines());
-                WorldRenderer.drawBox(matrices, lines, new Box(-0.25, 0, -0.25, 0.25, 0.25, 0.25), 1, 1, 0, 1);
-                WorldRenderer.drawBox(matrices, lines, new Box(-0.25, -0.25, -0.25, 0.25, 0, 0.25), 1, 0, 1, 1);
+                VertexRendering.drawBox(matrices, lines, new Box(-0.25, 0, -0.25, 0.25, 0.25, 0.25), 1, 1, 0, 1);
+                VertexRendering.drawBox(matrices, lines, new Box(-0.25, -0.25, -0.25, 0.25, 0, 0.25), 1, 0, 1, 1);
             }
 
             matrices.pop();
