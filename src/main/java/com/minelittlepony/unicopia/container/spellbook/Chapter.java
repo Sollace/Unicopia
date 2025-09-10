@@ -2,11 +2,10 @@ package com.minelittlepony.unicopia.container.spellbook;
 
 import java.util.List;
 
+import com.minelittlepony.unicopia.util.serialization.ServerBoundByteBuf;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.text.TextColor;
@@ -41,23 +40,19 @@ public record Chapter (
                     ChapterPageElement.CODEC.listOf().optionalFieldOf("elements", List.of()).forGetter(Page::elements)
             ).apply(instance, Page::new));
 
-            public void toBuffer(RegistryByteBuf buffer) {
+            public void toBuffer(ServerBoundByteBuf buffer) {
                 TextCodecs.PACKET_CODEC.encode(buffer, title);
                 buffer.writeInt(level);
                 buffer.writeInt(color);
-                buffer.writeCollection(elements, ChapterPageElement::write);
-            }
-
-            public static void write(PacketByteBuf buffer, Page page) {
-                page.toBuffer((RegistryByteBuf)buffer);
+                buffer.writeCollection(elements, (buf, element) -> element.toBuffer(buffer));
             }
         }
     }
 
-    public void write(RegistryByteBuf buffer) {
+    public void write(ServerBoundByteBuf buffer) {
         buffer.writeEnumConstant(side);
         buffer.writeInt(tabY);
         buffer.writeInt(color);
-        buffer.writeCollection(contents.pages(), Contents.Page::write);
+        buffer.writeCollection(contents.pages(), (buf, page) -> page.toBuffer(buffer));
     }
 }

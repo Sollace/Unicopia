@@ -30,10 +30,10 @@ public class TrinketSlotBackSprites {
 
                for (int x = 0; x < original.getWidth(); x++) {
                    for (int y = 0; y < original.getHeight(); y++) {
-                       int blankColor = blank.getColor((int)(x * widthScale), (int)(y * heightScale));
-                       int originalColor = original.getColor(x, y);
+                       int blankColor = blank.getColorArgb((int)(x * widthScale), (int)(y * heightScale));
+                       int originalColor = original.getColorArgb(x, y);
 
-                       generatedImage.setColor(x, y, blankColor == originalColor ? 0 : originalColor);
+                       generatedImage.setColorArgb(x, y, blankColor == originalColor ? 0 : originalColor);
                    }
                }
 

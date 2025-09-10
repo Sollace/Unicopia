@@ -54,7 +54,7 @@ public interface Channel {
                     Unicopia.LOGGER.info("Setting {}'s race to {} due to host setting", handler.player.getDisplayName().getString(), Race.REGISTRY.getId(race).toString());
                 }
             }
-            sender.sendPacket(SERVER_RESOURCES.toPacket(new MsgServerResources()));
+            sender.sendPacket(SERVER_RESOURCES.toPacket(new MsgServerResources(server)));
             sender.sendPacket(SERVER_SKY_ANGLE.toPacket(new MsgSkyAngle(UnicopiaWorldProperties.forWorld(handler.getPlayer().getServerWorld()).getTangentalSkyAngle())));
             sender.sendPacket(CONFIGURATION_CHANGE.toPacket(new MsgConfigurationChange(InteractionManager.getInstance().getSyncedConfig())));
             sender.sendPacket(SERVER_ZAP_STAGE.toPacket(new MsgZapAppleStage(ZapAppleStageStore.get(handler.player.getServerWorld()).getStage())));

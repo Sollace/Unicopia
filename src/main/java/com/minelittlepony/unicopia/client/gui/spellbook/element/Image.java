@@ -13,7 +13,7 @@ record Image(
     Bounds bounds,
     Flow flow) implements PageElement {
     @Override
-    public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
+    public void draw(DynamicContent.Page page, DrawContext context, int mouseX, int mouseY, IViewRoot container) {
         context.drawTexture(RenderLayer::getGuiTextured, texture, 0, 0, 0, 0, 0, bounds().width, bounds().height, bounds().width, bounds().height);
     }
 }

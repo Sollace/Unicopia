@@ -17,9 +17,10 @@ import dev.emi.trinkets.TrinketSlot;
 import dev.emi.trinkets.api.*;
 import dev.emi.trinkets.api.TrinketEnums.DropRule;
 import dev.emi.trinkets.api.event.TrinketDropCallback;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -48,9 +49,8 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
         return getInventory(entity, slot).map(inventory -> {
             for (int position = 0; position < inventory.size(); position++) {
                 if (inventory.getStack(position).isEmpty() && TrinketSlot.canInsert(stack, new SlotReference(inventory, position), entity)) {
-
-                    Equipment q = Equipment.fromStack(stack);
-                    RegistryEntry<SoundEvent> soundEvent = q == null ? null : q.getEquipSound();
+                    EquippableComponent equippable = stack.get(DataComponentTypes.EQUIPPABLE);
+                    RegistryEntry<SoundEvent> soundEvent = equippable == null ? null : equippable.equipSound();
                     inventory.setStack(position, stack.split(1));
                     if (soundEvent != null) {
                        entity.emitGameEvent(GameEvent.EQUIP);
@@ -66,8 +66,8 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
     @Override
     public void setEquippedStack(LivingEntity entity, Identifier slot, ItemStack stack) {
         getInventory(entity, slot).ifPresent(inventory -> {
-            Equipment q = Equipment.fromStack(stack);
-            RegistryEntry<SoundEvent> soundEvent = q == null ? null : q.getEquipSound();
+            EquippableComponent equippable = stack.get(DataComponentTypes.EQUIPPABLE);
+            RegistryEntry<SoundEvent> soundEvent = equippable == null ? null : equippable.equipSound();
             inventory.clear();
             inventory.setStack(0, stack);
             if (soundEvent != null) {
@@ -180,8 +180,8 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
 
         Trinket trinket = TrinketsApi.getTrinket(stack.getItem());
 
-        Equipment q = Equipment.fromStack(stack);
-        RegistryEntry<SoundEvent> soundEvent = q == null ? null : q.getEquipSound();
+        EquippableComponent equippable = stack.get(DataComponentTypes.EQUIPPABLE);
+        RegistryEntry<SoundEvent> soundEvent = equippable == null ? null : equippable.equipSound();
         inv.setStack(i, stack.split(trinket instanceof UnicopiaTrinket ut ? ut.getMaxCount(stack, ref) : stack.getMaxCount()));
         if (!stack.isEmpty() && soundEvent != null) {
             user.emitGameEvent(GameEvent.EQUIP);

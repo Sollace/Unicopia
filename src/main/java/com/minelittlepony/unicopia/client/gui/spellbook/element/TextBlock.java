@@ -19,19 +19,16 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 class TextBlock implements PageElement {
-    private final DynamicContent.Page page;
-
     private final List<TextBlock.Line> wrappedText = new ArrayList<>();
     private final Bounds bounds = Bounds.empty();
     private final List<Supplier<Text>> uncompiledLines;
 
-    public TextBlock(DynamicContent.Page page, List<Supplier<Text>> uncompiledLines) {
-        this.page = page;
+    public TextBlock(List<Supplier<Text>> uncompiledLines) {
         this.uncompiledLines = uncompiledLines;
     }
 
     @Override
-    public void compile(int y, IViewRoot container) {
+    public void compile(DynamicContent.Page page, int y, IViewRoot container) {
         wrappedText.clear();
         ParagraphWrappingVisitor visitor = new ParagraphWrappingVisitor(
                 yPosition -> page.getLineLimitAt(y + yPosition),
@@ -46,7 +43,7 @@ class TextBlock implements PageElement {
     }
 
     @Override
-    public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
+    public void draw(DynamicContent.Page page, DrawContext context, int mouseX, int mouseY, IViewRoot container) {
         TextRenderer font = MinecraftClient.getInstance().textRenderer;
         boolean needsMoreXp = page.getLevel() < 0 || Pony.of(MinecraftClient.getInstance().player).getLevel().get() < page.getLevel();
         MatrixStack matrices = context.getMatrices();

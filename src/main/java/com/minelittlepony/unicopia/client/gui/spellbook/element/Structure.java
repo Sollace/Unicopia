@@ -14,7 +14,7 @@ import net.minecraft.util.math.RotationAxis;
 
 public record Structure(Bounds bounds, Schematic schematic) implements PageElement {
     @Override
-    public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
+    public void draw(DynamicContent.Page page, DrawContext context, int mouseX, int mouseY, IViewRoot container) {
         if (schematic.volume() == 0) {
             return;
         }

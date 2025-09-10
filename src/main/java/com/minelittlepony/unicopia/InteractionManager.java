@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookChapters;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyPlayerEntity;
 import com.minelittlepony.unicopia.particle.ParticleSpawner;
@@ -15,7 +15,7 @@ import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -52,7 +52,7 @@ public class InteractionManager {
         return ParticleSpawner.EMPTY;
     }
 
-    public SpellbookChapter readChapter(PacketByteBuf buf) {
+    public SpellbookChapters readChapters(RegistryByteBuf buf) {
         throw new RuntimeException("Method not supported");
     }
 

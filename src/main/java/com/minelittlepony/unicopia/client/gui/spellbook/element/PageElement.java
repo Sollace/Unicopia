@@ -8,23 +8,24 @@ import com.google.common.base.Suppliers;
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
+import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipeDisplay;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.state.Schematic;
-import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Drawable;
 import com.minelittlepony.unicopia.container.spellbook.ChapterPageElement;
 import com.minelittlepony.unicopia.container.spellbook.Flow;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 
-public interface PageElement extends Drawable {
-    @Override
-    default void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
+public interface PageElement {
+
+    default void draw(DynamicContent.Page page, DrawContext context, int mouseX, int mouseY, IViewRoot container) {
 
     }
 
@@ -42,16 +43,16 @@ public interface PageElement extends Drawable {
         return !isInline();
     }
 
-    default void compile(int y, IViewRoot Container) {}
+    default void compile(DynamicContent.Page page, int y, IViewRoot Container) {}
 
-    static PageElement read(DynamicContent.Page page, PacketByteBuf buffer) {
+    static PageElement read(RegistryByteBuf buffer) {
         byte type = buffer.readByte();
         return switch (type) {
             case ChapterPageElement.IMAGE -> new Image(buffer.readIdentifier(), boundsFromBuffer(buffer), buffer.readEnumConstant(Flow.class));
-            case ChapterPageElement.RECIPE -> new Recipe(page, buffer.readIdentifier(), Bounds.empty());
-            case ChapterPageElement.STACK -> new Stack(page, IngredientWithSpell.PACKET_CODEC.decode((RegistryByteBuf)buffer), boundsFromBuffer(buffer));
-            case ChapterPageElement.TEXT_BLOCK -> new TextBlock(page, List.of(Suppliers.ofInstance(TextCodecs.PACKET_CODEC.decode(buffer))));
-            case ChapterPageElement.INGREDIENTS -> new TextBlock(page, buffer.readList(b -> {
+            case ChapterPageElement.RECIPE -> new Recipe(buffer.readIdentifier(), SpellbookRecipeDisplay.SERIALIZER.streamCodec().collect(PacketCodecs.toList()).decode(buffer), Bounds.empty());
+            case ChapterPageElement.STACK -> new Stack(IngredientWithSpell.PACKET_CODEC.decode(buffer), boundsFromBuffer(buffer));
+            case ChapterPageElement.TEXT_BLOCK -> new TextBlock(List.of(Suppliers.ofInstance(TextCodecs.PACKET_CODEC.decode(buffer))));
+            case ChapterPageElement.INGREDIENTS -> new TextBlock(buffer.readList(b -> {
                 int count = b.readVarInt();
                 byte t = b.readByte();
                 return switch (t) {

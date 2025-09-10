@@ -15,7 +15,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.*;
@@ -31,8 +31,8 @@ public class DynamicContent implements Content {
     private final Panel leftPanel = new Panel(this);
     private final Panel rightPanel = new Panel(this);
 
-    public DynamicContent(PacketByteBuf buffer) {
-        pages = buffer.readList(Page::new);
+    public DynamicContent(List<Page> pages) {
+        this.pages = pages;
     }
 
     @Override
@@ -91,7 +91,7 @@ public class DynamicContent implements Content {
         rightPanel.init(screen, pageIndex + 1);
     }
 
-    public class Page implements Drawable {
+    public static class Page implements Drawable {
         private final Text title;
         private final int level;
         private final int color;
@@ -102,11 +102,11 @@ public class DynamicContent implements Content {
 
         private Bounds bounds = Bounds.empty();
 
-        public Page(PacketByteBuf buffer) {
+        public Page(RegistryByteBuf buffer) {
             title = TextCodecs.PACKET_CODEC.decode(buffer);
             level = buffer.readInt();
             color = buffer.readInt();
-            elements = buffer.readList(r -> PageElement.read(this, r));
+            elements = buffer.readList(r -> PageElement.read(buffer));
         }
 
         protected int getLineLimitAt(int yPosition) {
@@ -167,7 +167,7 @@ public class DynamicContent implements Content {
                 int relativeY = 0;
                 int textHeight = 0;
                 for (PageElement element : elements.stream().filter(PageElement::isInline).toList()) {
-                    element.compile(relativeY, container);
+                    element.compile(this, relativeY, container);
                     relativeY += element.bounds().height;
                     if (element instanceof TextBlock) {
                         textHeight += element.bounds().height;
@@ -183,13 +183,13 @@ public class DynamicContent implements Content {
             elements.stream().filter(PageElement::isFloating).forEach(element -> {
                 matrices.push();
                 element.bounds().translate(matrices);
-                element.draw(context, mouseX, mouseY, container);
+                element.draw(this, context, mouseX, mouseY, container);
                 matrices.pop();
             });
 
             matrices.push();
             elements.stream().filter(PageElement::isInline).forEach(element -> {
-                element.draw(context, mouseX, mouseY, container);
+                element.draw(this, context, mouseX, mouseY, container);
                 matrices.translate(0, element.bounds().height, 0);
             });
             matrices.pop();

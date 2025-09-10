@@ -5,12 +5,12 @@ import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
 import com.minelittlepony.unicopia.client.gui.spellbook.IngredientTree;
 
-record Stack (DynamicContent.Page page, IngredientWithSpell ingredient, Bounds bounds) implements PageElement {
+record Stack (IngredientWithSpell ingredient, Bounds bounds) implements PageElement {
     @Override
-    public void compile(int y, IViewRoot container) {
+    public void compile(DynamicContent.Page page, int y, IViewRoot container) {
         IngredientTree tree = new IngredientTree(
-                bounds().left + page().getBounds().left,
-                bounds().top + page().getBounds().top + y - 10,
+                bounds().left + page.getBounds().left,
+                bounds().top + page.getBounds().top + y - 10,
                 30
         );
         tree.input(ingredient.getMatchingStacks());

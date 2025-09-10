@@ -9,11 +9,11 @@ import com.minelittlepony.unicopia.item.component.Issuer;
 
 import dev.emi.trinkets.api.*;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -36,8 +36,8 @@ public class UnicopiaTrinket implements Trinket {
         }
 
         if (!(stack.getItem() instanceof ItemTracker.Trackable)) {
-            Equipment q = Equipment.fromStack(stack);
-            RegistryEntry<SoundEvent> soundEvent = q == null ? null : q.getEquipSound();
+            EquippableComponent equippable = stack.get(DataComponentTypes.EQUIPPABLE);
+            RegistryEntry<SoundEvent> soundEvent = equippable == null ? null : equippable.equipSound();
             if (soundEvent != null) {
                 entity.emitGameEvent(GameEvent.EQUIP);
                 entity.playSound(soundEvent.value(), 1, 1);
@@ -51,8 +51,8 @@ public class UnicopiaTrinket implements Trinket {
             Living<?> l = Living.living(entity);
             t.onUnequipped(l, l.getArmour().forceRemove(t));
         }
-        Equipment q = Equipment.fromStack(stack);
-        RegistryEntry<SoundEvent> soundEvent = q == null ? null : q.getEquipSound();
+        EquippableComponent equippable = stack.get(DataComponentTypes.EQUIPPABLE);
+        RegistryEntry<SoundEvent> soundEvent = equippable == null ? null : equippable.equipSound();
         if (soundEvent != null) {
             entity.emitGameEvent(GameEvent.EQUIP);
             entity.playSound(soundEvent.value(), 1, 1);

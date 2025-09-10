@@ -8,13 +8,13 @@ import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.state.StateUtil;
+import com.minelittlepony.unicopia.util.serialization.ServerBoundByteBuf;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
@@ -44,8 +44,8 @@ public interface ChapterPageElement {
         throw new RuntimeException();
     });
 
-    static void write(PacketByteBuf buffer, ChapterPageElement element) {
-        element.toBuffer((RegistryByteBuf)buffer);
+    static void write(ServerBoundByteBuf buffer, ChapterPageElement element) {
+        element.toBuffer(buffer);
     }
 
     private static Bounds boundsFromJson(JsonObject el) {
@@ -64,7 +64,7 @@ public interface ChapterPageElement {
         buffer.writeInt(bounds.height);
     }
 
-    void toBuffer(RegistryByteBuf buffer);
+    void toBuffer(ServerBoundByteBuf buffer);
 
     record Image (Identifier texture, Bounds bounds, Flow flow) implements ChapterPageElement {
         public Image(JsonObject json) {
@@ -75,7 +75,7 @@ public interface ChapterPageElement {
             );
         }
         @Override
-        public void toBuffer(RegistryByteBuf buffer) {
+        public void toBuffer(ServerBoundByteBuf buffer) {
             buffer.writeByte(IMAGE);
             buffer.writeIdentifier(texture);
             boundsToBuffer(bounds, buffer);
@@ -87,8 +87,9 @@ public interface ChapterPageElement {
         public Recipe(JsonObject json) {
             this(Identifier.of(JsonHelper.getString(json, "recipe")));
         }
+
         @Override
-        public void toBuffer(RegistryByteBuf buffer) {
+        public void toBuffer(ServerBoundByteBuf buffer) {
             buffer.writeByte(RECIPE);
             buffer.writeIdentifier(value);
         }
@@ -99,7 +100,7 @@ public interface ChapterPageElement {
             this(IngredientWithSpell.CODEC.decode(JsonOps.INSTANCE, json.get("item")).result().get().getFirst(), boundsFromJson(json));
         }
         @Override
-        public void toBuffer(RegistryByteBuf buffer) {
+        public void toBuffer(ServerBoundByteBuf buffer) {
             buffer.writeByte(STACK);
             IngredientWithSpell.PACKET_CODEC.encode(buffer, ingredient);
             boundsToBuffer(bounds, buffer);
@@ -112,7 +113,7 @@ public interface ChapterPageElement {
         }
 
         @Override
-        public void toBuffer(RegistryByteBuf buffer) {
+        public void toBuffer(ServerBoundByteBuf buffer) {
             buffer.writeByte(TEXT_BLOCK);
             TextCodecs.PACKET_CODEC.encode(buffer, text);
         }
@@ -137,7 +138,7 @@ public interface ChapterPageElement {
 
         record Id(byte id, Identifier value) implements ChapterPageElement {
             @Override
-            public void toBuffer(RegistryByteBuf buffer) {
+            public void toBuffer(ServerBoundByteBuf buffer) {
                 buffer.writeByte(id);
                 buffer.writeIdentifier(value);
             }
@@ -145,14 +146,14 @@ public interface ChapterPageElement {
 
         record Multi(int count, ChapterPageElement element) implements ChapterPageElement {
             @Override
-            public void toBuffer(RegistryByteBuf buffer) {
+            public void toBuffer(ServerBoundByteBuf buffer) {
                 buffer.writeVarInt(count);
                 element.toBuffer(buffer);
             }
         }
 
         @Override
-        public void toBuffer(RegistryByteBuf buffer) {
+        public void toBuffer(ServerBoundByteBuf buffer) {
             buffer.writeByte(INGREDIENTS);
             buffer.writeCollection(entries, (b, c) -> c.toBuffer(buffer));
         }
@@ -185,14 +186,14 @@ public interface ChapterPageElement {
         }
 
         @Override
-        public void toBuffer(RegistryByteBuf buffer) {
+        public void toBuffer(ServerBoundByteBuf buffer) {
             buffer.writeByte(STRUCTURE);
             buffer.writeCollection(commands, (b, c) -> c.toBuffer(buffer));
         }
 
         record Set(int x, int y, int z, BlockState state) implements ChapterPageElement {
             @Override
-            public void toBuffer(RegistryByteBuf buffer) {
+            public void toBuffer(ServerBoundByteBuf buffer) {
                 buffer.writeByte(1);
                 buffer.writeInt(x);
                 buffer.writeInt(y);
@@ -203,7 +204,7 @@ public interface ChapterPageElement {
         }
         record Fill(int x1, int y1, int z1, int x2, int y2, int z2, BlockState state) implements ChapterPageElement {
             @Override
-            public void toBuffer(RegistryByteBuf buffer) {
+            public void toBuffer(ServerBoundByteBuf buffer) {
                 buffer.writeByte(2);
                 buffer.writeInt(x1);
                 buffer.writeInt(y1);
