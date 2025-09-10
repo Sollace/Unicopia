@@ -77,6 +77,7 @@ public class ClientNetworkHandlerImpl {
         ClientChapters.load(packet.chapters());
         TreeTypes.load(packet.treeTypes());
         PonyDiets.load(packet.diets());
+        InteractionManager.getInstance().setCloudShapingRecipes(packet.cloudCuttingRecipes());
     }
 
     private void handlePlayerAnimation(PlayerEntity sender, MsgPlayerAnimationChange packet) {

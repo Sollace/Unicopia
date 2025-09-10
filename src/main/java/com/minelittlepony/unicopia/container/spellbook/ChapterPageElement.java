@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.container.spellbook;
 
 import java.util.List;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
@@ -15,7 +14,13 @@ import com.mojang.serialization.JsonOps;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.recipe.display.RecipeDisplay;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
@@ -84,6 +89,7 @@ public interface ChapterPageElement {
     }
 
     record Recipe(Identifier value) implements ChapterPageElement {
+        private static final PacketCodec<RegistryByteBuf, List<RecipeDisplay>> DISPLAYS_PACKET_CODEC = RecipeDisplay.STREAM_CODEC.collect(PacketCodecs.toList());
         public Recipe(JsonObject json) {
             this(Identifier.of(JsonHelper.getString(json, "recipe")));
         }
@@ -91,7 +97,12 @@ public interface ChapterPageElement {
         @Override
         public void toBuffer(ServerBoundByteBuf buffer) {
             buffer.writeByte(RECIPE);
-            buffer.writeIdentifier(value);
+            DISPLAYS_PACKET_CODEC.encode(buffer, buffer.getServer()
+                    .getRecipeManager()
+                    .get(RegistryKey.of(RegistryKeys.RECIPE, value))
+                    .map(recipe -> recipe.value().getDisplays())
+                    .orElse(List.of())
+            );
         }
     }
 

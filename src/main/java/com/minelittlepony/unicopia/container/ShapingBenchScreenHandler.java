@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia.container;
 
+import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.mixin.StonecutterScreenHandlerRecipesSetter;
 import com.minelittlepony.unicopia.recipe.URecipes;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -8,6 +10,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.display.CuttingRecipeDisplay;
 import net.minecraft.recipe.input.SingleStackRecipeInput;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
@@ -50,11 +53,11 @@ public class ShapingBenchScreenHandler extends StonecutterScreenHandler {
         ItemStack stack = slots.get(0).getStack();
         if (!stack.isOf(inputStack.getItem())) {
             inputStack = stack.copy();
-            getAvailableRecipes().clear();
+            ((StonecutterScreenHandlerRecipesSetter)this).setAvailableRecipes(CuttingRecipeDisplay.Grouping.empty());
             setProperty(0, -1);
             slots.get(1).setStackNoCallbacks(ItemStack.EMPTY);
             if (!stack.isEmpty()) {
-                getAvailableRecipes().addAll(world.getRecipeManager().getAllMatches(URecipes.CLOUD_SHAPING, new SingleStackRecipeInput(input.getStack(0)), world));
+                ((StonecutterScreenHandlerRecipesSetter)this).setAvailableRecipes(InteractionManager.getInstance().getCloudShapingRecipes().filter(input.getStack(0)));
             }
         }
     }

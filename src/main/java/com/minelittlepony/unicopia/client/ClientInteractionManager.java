@@ -25,6 +25,7 @@ import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyClientPlayerEntity;
 import com.minelittlepony.unicopia.particle.ParticleSpawner;
+import com.minelittlepony.unicopia.recipe.CloudShapingRecipe;
 import com.mojang.authlib.GameProfile;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -43,6 +44,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.recipe.display.CuttingRecipeDisplay;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -56,9 +58,21 @@ public class ClientInteractionManager extends InteractionManager {
     private final Int2ObjectMap<WeakReference<TickableSoundInstance>> playingSounds = new Int2ObjectOpenHashMap<>();
     private final Map<UUID, Int2ObjectMap<WeakReference<TickableSoundInstance>>> entitySounds = new HashMap<>();
 
+    private CuttingRecipeDisplay.Grouping<CloudShapingRecipe> recipes = CuttingRecipeDisplay.Grouping.empty();
+
     @Override
     public SpellbookChapters readChapters(RegistryByteBuf buffer) {
         return new SpellbookChapters.Impl(buffer.readMap(Identifier.PACKET_CODEC, b -> ClientChapters.loadChapter(buffer)));
+    }
+
+    @Override
+    public CuttingRecipeDisplay.Grouping<CloudShapingRecipe> getCloudShapingRecipes() {
+        return recipes;
+    }
+
+    @Override
+    public void setCloudShapingRecipes(CuttingRecipeDisplay.Grouping<CloudShapingRecipe> recipes) {
+        this.recipes = recipes;
     }
 
     @Override
