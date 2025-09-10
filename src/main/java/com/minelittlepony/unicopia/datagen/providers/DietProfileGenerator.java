@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.diet.affliction.StatusEffectAffliction;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.item.UFoodComponents;
 
+import net.minecraft.component.type.ConsumableComponents;
 import net.minecraft.component.type.FoodComponents;
 import net.minecraft.entity.effect.StatusEffects;
 
@@ -155,8 +156,14 @@ public class DietProfileGenerator {
         ), List.of(
                 // Candy and rocks gives them a massive saturation boost. Maybe too much?
                 new FoodGroupEffects.Builder().tag(Unicopia.id("candy")).tag(Unicopia.id("rocks")).food(UFoodComponents.builder(5, 12).alwaysEdible()).build(),
-                new FoodGroupEffects.Builder().tag(Unicopia.id("gems")).food(UFoodComponents.builder(2, 1.5F).snack().alwaysEdible()).build(),
-                new FoodGroupEffects.Builder().tag(Unicopia.id("desserts")).food(UFoodComponents.builder(12, 32).snack().alwaysEdible()).build()
+                new FoodGroupEffects.Builder().tag(Unicopia.id("gems")).food(
+                        UFoodComponents.builder(2, 1.5F).alwaysEdible(),
+                        ConsumableComponents.food().consumeSeconds(0.8F)
+                ).build(),
+                new FoodGroupEffects.Builder().tag(Unicopia.id("desserts")).food(
+                        UFoodComponents.builder(12, 32).alwaysEdible(),
+                        ConsumableComponents.food().consumeSeconds(0.8F)
+                ).build()
         ), Optional.empty()));
         // Pegasi prefer fish over other food sources
         exporter.accept(Race.PEGASUS, new DietProfile(0.9F, 1, List.of(

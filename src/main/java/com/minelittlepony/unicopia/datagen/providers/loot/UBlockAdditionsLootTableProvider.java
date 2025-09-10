@@ -45,8 +45,11 @@ import net.minecraft.world.biome.BiomeKeys;
 public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvider {
     public static final float[] GEMSTONES_FORTUNE_CHANCE = { 0.1F, 0.14285715F, 0.25F, 1F };
 
+    private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
+
     public UBlockAdditionsLootTableProvider(FabricDataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
         super(dataOutput, registryLookup);
+        registryLookupFuture = registryLookup;
     }
 
     public LootCondition.Builder createNeedsOceanOrBeachCondition() {
@@ -65,7 +68,7 @@ public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvid
     }
 
     public <T> RegistryEntry<T> entryOf(RegistryKey<T> key) {
-        return registryLookup.getWrapperOrThrow(key.getRegistryRef()).getOrThrow(key);
+        return registryLookupFuture.getNow(null).getOrThrow(key.getRegistryRef()).getOrThrow(key);
     }
 
     @Override
@@ -94,7 +97,9 @@ public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvid
     }
 
     private void addVanillaDrop(Block block, Function<Block, LootTable.Builder> lootTableFunction) {
-        lootTables.put(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of("unicopiamc", block.getLootTableKey().getValue().getPath())), lootTableFunction.apply(block));
+        block.getLootTableKey().ifPresent(key -> {
+            lootTables.put(RegistryKey.of(RegistryKeys.LOOT_TABLE, Identifier.of("unicopiamc", key.getValue().getPath())), lootTableFunction.apply(block));
+        });
     }
 
     public LootTable.Builder shellDrops(Block block) {
@@ -112,7 +117,7 @@ public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvid
         return LootTable.builder()
                 .pool(LootPool.builder()
                         .rolls(ConstantLootNumberProvider.create(1))
-                        .conditionally(createWithoutSilkTouchCondition().and(WITH_SHEARS))
+                        .conditionally(createWithoutSilkTouchCondition().and(createWithShearsCondition()))
                         .with(chanceDrops(block, drop, 1, chance))
                 );
     }

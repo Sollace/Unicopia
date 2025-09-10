@@ -19,9 +19,10 @@ import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.book.RecipeCategory;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.collection.DefaultedList;
 
 public class TrickCraftingRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
@@ -65,16 +66,16 @@ public class TrickCraftingRecipeJsonBuilder implements CraftingRecipeJsonBuilder
     }
 
     @Override
-    public void offerTo(RecipeExporter exporter, Identifier id) {
-        Preconditions.checkState(!criterions.isEmpty(), "No way of obtaining recipe " + id);
+    public void offerTo(RecipeExporter exporter, RegistryKey<Recipe<?>> key) {
+        Preconditions.checkState(!criterions.isEmpty(), "No way of obtaining recipe " + key.getValue());
         Advancement.Builder builder = exporter.getAdvancementBuilder()
-            .criterion("has_the_recipe", RecipeUnlockedCriterion.create(id))
-            .rewards(AdvancementRewards.Builder.recipe(id))
+            .criterion("has_the_recipe", RecipeUnlockedCriterion.create(key))
+            .rewards(AdvancementRewards.Builder.recipe(key))
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
         criterions.forEach(builder::criterion);
-        exporter.accept(id,
+        exporter.accept(key,
                 new ZapAppleRecipe(group == null ? "" : group, CraftingRecipeCategory.MISC, Appearance.set(UItems.ZAP_APPLE.getDefaultStack(), output.getDefaultStack()), inputs),
-                builder.build(id.withPrefixedPath("recipes/" + category.getName() + "/"))
+                builder.build(key.getValue().withPrefixedPath("recipes/" + category.getName() + "/"))
         );
     }
 }

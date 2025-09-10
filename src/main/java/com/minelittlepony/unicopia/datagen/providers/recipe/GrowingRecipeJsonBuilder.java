@@ -6,6 +6,8 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.include.com.google.common.base.Preconditions;
 
 import com.minelittlepony.unicopia.recipe.TransformCropsRecipe;
+
+import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementRequirements;
 import net.minecraft.advancement.AdvancementRewards;
@@ -13,8 +15,11 @@ import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.data.server.recipe.RecipeExporter;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
 public class GrowingRecipeJsonBuilder {
@@ -55,17 +60,18 @@ public class GrowingRecipeJsonBuilder {
         return this;
     }
 
-    public void offerTo(RecipeExporter exporter, Identifier id) {
-        Preconditions.checkState(!criterions.isEmpty(), "No way of obtaining recipe " + id);
-        exporter.accept(id, new TransformCropsRecipe(target, fuel, output), exporter.getAdvancementBuilder()
-                .criterion("has_the_recipe", RecipeUnlockedCriterion.create(id))
-                .rewards(AdvancementRewards.Builder.recipe(id))
-                .criteriaMerger(AdvancementRequirements.CriterionMerger.OR)
-                .build(id.withPrefixedPath("recipes/" + category.getName() + "/")));
+    public void offerTo(RecipeExporter exporter, RegistryKey<Recipe<?>> key) {
+        Preconditions.checkState(!criterions.isEmpty(), "No way of obtaining recipe " + key.getValue());
+        Advancement.Builder advancementBuilder = exporter.getAdvancementBuilder()
+                .criterion("has_the_recipe", RecipeUnlockedCriterion.create(key))
+                .rewards(AdvancementRewards.Builder.recipe(key))
+                .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
+        criterions.forEach(advancementBuilder::criterion);
+        exporter.accept(key, new TransformCropsRecipe(target, fuel, output), advancementBuilder.build(key.getValue().withPrefixedPath("recipes/" + category.getName() + "/")));
     }
 
     public void offerTo(RecipeExporter exporter) {
-        offerTo(exporter, Registries.BLOCK.getId(output.getBlock()));
+        offerTo(exporter, RegistryKey.of(RegistryKeys.RECIPE, Registries.BLOCK.getId(output.getBlock())));
     }
 
     public void offerTo(RecipeExporter exporter, String recipePath) {
@@ -74,6 +80,6 @@ public class GrowingRecipeJsonBuilder {
         if (recipeId.equals(id)) {
             throw new IllegalStateException("Recipe " + recipePath + " should remove its 'save' argument as it is equal to default one");
         }
-        offerTo(exporter, recipeId);
+        offerTo(exporter, RegistryKey.of(RegistryKeys.RECIPE, recipeId));
     }
 }

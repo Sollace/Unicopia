@@ -4,20 +4,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 
-import com.google.gson.JsonElement;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.util.Resources;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
 
 public class DietsLoader implements IdentifiableResourceReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -29,40 +29,20 @@ public class DietsLoader implements IdentifiableResourceReloadListener {
     }
 
     @Override
-    public CompletableFuture<Void> reload(Synchronizer sync, ResourceManager manager,
-            Profiler prepareProfiler, Profiler applyProfiler,
-            Executor prepareExecutor, Executor applyExecutor) {
+    public CompletableFuture<Void> reload(Synchronizer sync, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor) {
 
         CompletableFuture<Map<Identifier, FoodGroup>> foodGroupsFuture = CompletableFuture.supplyAsync(() -> {
-            Map<Identifier, FoodGroup> foodGroups = new HashMap<>();
-            for (var group : loadData(manager, prepareExecutor, "diet/food_groups").entrySet()) {
-                try {
-                    FoodGroup.EFFECTS_CODEC.parse(JsonOps.INSTANCE, group.getValue())
-                        .resultOrPartial(error -> LOGGER.error("Could not load food group {}: {}", group.getKey(), error))
-                        .ifPresent(value -> {
-                            foodGroups.put(group.getKey(), new FoodGroup(group.getKey(), value));
-                        });
-                } catch (Throwable t) {
-                    LOGGER.error("Could not load food effects {}", group.getKey(), t);
-                }
-            }
-            return foodGroups;
+            return loadData(manager, prepareExecutor, "diet/food_groups", FoodGroup.EFFECTS_CODEC)
+                    .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> new FoodGroup(entry.getKey(), entry.getValue())));
         }, prepareExecutor);
+        @SuppressWarnings("unchecked")
         CompletableFuture<Map<Race, DietProfile>> profilesFuture = CompletableFuture.supplyAsync(() -> {
-            Map<Race, DietProfile> profiles = new HashMap<>();
-            for (var entry : loadData(manager, prepareExecutor, "diet/races").entrySet()) {
-                Identifier id = entry.getKey();
-                try {
-                    Race.REGISTRY.getOrEmpty(id).ifPresentOrElse(race -> {
-                        DietProfile.CODEC.parse(JsonOps.INSTANCE, entry.getValue())
-                                .resultOrPartial(error -> LOGGER.error("Could not load diet profile {}: {}", id, error))
-                                .ifPresent(profile -> profiles.put(race, profile));
-                    }, () -> LOGGER.warn("Skipped diet for unknown race: " + id));
-                } catch (Throwable t) {
-                    LOGGER.error("Could not load diet profile {}", id, t);
-                }
-            }
-            return profiles;
+            return Map.<Race, DietProfile>ofEntries(loadData(manager, prepareExecutor, "diet/races", DietProfile.CODEC)
+                    .entrySet().stream().flatMap(entry -> {
+                        return Race.REGISTRY.getOptionalValue(entry.getKey()).map(race -> {
+                            return Map.entry(race, entry.getValue());
+                        }).stream();
+                    }).toArray(Map.Entry[]::new));
         }, prepareExecutor);
 
         return CompletableFuture.allOf(foodGroupsFuture, profilesFuture).thenCompose(sync::whenPrepared).thenAcceptAsync(v -> {
@@ -82,9 +62,9 @@ public class DietsLoader implements IdentifiableResourceReloadListener {
         }, applyExecutor);
     }
 
-    private static Map<Identifier, JsonElement> loadData(ResourceManager manager, Executor prepareExecutor, String path) {
-        Map<Identifier, JsonElement> results = new HashMap<>();
-        JsonDataLoader.load(manager, path, Resources.GSON, results);
+    private static <T> Map<Identifier, T> loadData(ResourceManager manager, Executor prepareExecutor, String path, Codec<T> codec) {
+        Map<Identifier, T> results = new HashMap<>();
+        JsonDataLoader.load(manager, path, JsonOps.INSTANCE, codec, results);
         return results;
     }
 }

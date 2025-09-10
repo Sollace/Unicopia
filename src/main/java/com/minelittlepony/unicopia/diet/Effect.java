@@ -6,19 +6,18 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.consume.UseAction;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.UseAction;
 
 public interface Effect extends Predicate<ItemStack> {
     Effect EMPTY = new FoodGroupEffects(List.of(), Optional.empty(), Ailment.EMPTY);
 
     List<FoodGroupKey> tags();
 
-    Optional<FoodComponent> foodComponent();
+    Optional<FoodAttributes> foodAttributes();
 
     Ailment ailment();
 

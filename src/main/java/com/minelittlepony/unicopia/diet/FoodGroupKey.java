@@ -53,7 +53,7 @@ public interface FoodGroupKey {
             public boolean contains(ItemStack stack) {
                 if (Debug.CHECK_GAME_VALUES && !check) {
                     check = true;
-                    if (Registries.ITEM.getEntryList(tag).isEmpty()) {
+                    if (Registries.ITEM.getOptional(tag).isEmpty()) {
                         Unicopia.LOGGER.info("Tag is empty: " + tag.id());
                     }
                 }

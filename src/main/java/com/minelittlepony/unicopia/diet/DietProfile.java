@@ -11,11 +11,13 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.ItemStackDuck;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
@@ -80,12 +82,36 @@ public record DietProfile(
         return stack.getComponents().get(DataComponentTypes.FOOD) == null;
     }
 
+    public boolean hasFoodAttributes(ItemStack stack, boolean original) {
+        if (this == DietProfile.EMPTY) {
+            return original;
+        }
+
+        return !isInedible(stack) && (original || getFoodAttributeForNonEdibleFood(stack).isPresent());
+    }
+
     @Nullable
-    public FoodComponent getAdjustedFoodComponent(ItemStack stack, FoodComponent food) {
+    public FoodComponent getAdjustedFoodComponent(ItemStack stack, @Nullable FoodComponent food) {
         if (this == EMPTY) {
             return food;
         }
 
+        if (food != null && (food.nutrition() > 0 || food.saturation() > 0)) {
+            return applyFoodQualityRatio(stack, food);
+        }
+
+        return getFoodAttributeForNonEdibleFood(stack).map(FoodAttributes::food).orElse(food);
+    }
+
+    @Nullable
+    public ConsumableComponent getAdjustedConsumableComponent(ItemStack stack, @Nullable ConsumableComponent consumable) {
+        return getFoodAttributeForNonEdibleFood(stack)
+                .map(attributes -> attributes.getConsumableComponent(consumable))
+                .orElse(consumable);
+    }
+
+    @Nullable
+    private FoodComponent applyFoodQualityRatio(ItemStack stack, FoodComponent food) {
         var ratios = getRatios(stack);
         if (isInedible(ratios)) {
             return null;
@@ -97,10 +123,7 @@ public record DietProfile(
         return new FoodComponent(
             Math.max(1, (hunger - baseline) >= 0.5F ? baseline + 1 : baseline),
             food.saturation() * ratios.getSecond(),
-            food.canAlwaysEat(),
-            food.eatSeconds(),
-            food.usingConvertsTo(),
-            food.effects()
+            food.canAlwaysEat()
         );
     }
 
@@ -158,10 +181,26 @@ public record DietProfile(
 
         if (pony != null && pony.getObservedSpecies().hasIronGut()) {
             return findEffect(stack)
-                .flatMap(Effect::foodComponent)
-                .or(() -> PonyDiets.getInstance().getEffects(stack).foodComponent());
+                .flatMap(Effect::foodAttributes)
+                .or(() -> PonyDiets.getInstance().getEffects(stack).foodAttributes())
+                .map(FoodAttributes::food);
         }
 
+        return Optional.empty();
+    }
+
+    private Optional<FoodAttributes> getFoodAttributeForNonEdibleFood(ItemStack stack) {
+        if (this == EMPTY) {
+            return Optional.empty();
+        }
+        if (ItemStackDuck.of(stack).getTransientComponents().getCarrier()
+                .flatMap(Pony::of)
+                .filter(pony -> pony.getObservedSpecies().hasIronGut())
+                .isPresent()) {
+            return findEffect(stack)
+                .flatMap(Effect::foodAttributes)
+                .or(() -> PonyDiets.getInstance().getEffects(stack).foodAttributes());
+        }
         return Optional.empty();
     }
 

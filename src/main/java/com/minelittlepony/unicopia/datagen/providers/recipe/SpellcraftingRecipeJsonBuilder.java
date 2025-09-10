@@ -25,7 +25,10 @@ import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
 public class SpellcraftingRecipeJsonBuilder {
@@ -75,16 +78,18 @@ public class SpellcraftingRecipeJsonBuilder {
         return this;
     }
 
-    public void offerTo(RecipeExporter exporter, Identifier id) {
+    public void offerTo(RecipeExporter exporter, RegistryKey<Recipe<?>> key) {
         if (!traits.isEmpty()) {
             criterions.put("has_traits", TraitDiscoveredCriterion.create(traits.stream().map(Map.Entry::getKey).collect(Collectors.toUnmodifiableSet())));
         }
-        Preconditions.checkState(!criterions.isEmpty(), "No way of obtaining recipe " + id);
+        Preconditions.checkState(!criterions.isEmpty(), "No way of obtaining recipe " + key.getValue());
         Advancement.Builder advancementBuilder = exporter.getAdvancementBuilder()
-            .criterion("has_the_recipe", RecipeUnlockedCriterion.create(id))
-            .rewards(AdvancementRewards.Builder.recipe(id))
+            .criterion("has_the_recipe", RecipeUnlockedCriterion.create(key))
+            .rewards(AdvancementRewards.Builder.recipe(key))
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
-        exporter.accept(id, new SpellCraftingRecipe(base, TraitIngredient.of(traits), ingredients, EnchantableItem.enchant(gem.asItem().getDefaultStack(), spell)), advancementBuilder.build(id.withPrefixedPath("recipes/" + category.getName() + "/")));
+        exporter.accept(key, new SpellCraftingRecipe(base,
+                TraitIngredient.of(traits), ingredients, EnchantableItem.enchant(gem.asItem().getDefaultStack(), spell)),
+                advancementBuilder.build(key.getValue().withPrefixedPath("recipes/" + category.getName() + "/")));
     }
 
     public SpellCraftingRecipe create(IngredientWithSpell material, TraitIngredient traits, List<IngredientWithSpell> ingredients, ItemStack result) {
@@ -92,7 +97,7 @@ public class SpellcraftingRecipeJsonBuilder {
     }
 
     public void offerTo(RecipeExporter exporter) {
-        offerTo(exporter, spell.getId());
+        offerTo(exporter, RegistryKey.of(RegistryKeys.RECIPE, spell.getId()));
     }
 
     public void offerTo(RecipeExporter exporter, String recipePath) {
@@ -100,6 +105,6 @@ public class SpellcraftingRecipeJsonBuilder {
         if (recipeId.equals(spell.getId())) {
             throw new IllegalStateException("Recipe " + recipePath + " should remove its 'save' argument as it is equal to default one");
         }
-        offerTo(exporter, recipeId);
+        offerTo(exporter, RegistryKey.of(RegistryKeys.RECIPE, recipeId));
     }
 }

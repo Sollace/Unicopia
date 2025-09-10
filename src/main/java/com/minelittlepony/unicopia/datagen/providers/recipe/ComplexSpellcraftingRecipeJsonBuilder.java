@@ -6,10 +6,12 @@ import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSp
 import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 
 public interface ComplexSpellcraftingRecipeJsonBuilder {
     static ComplexSpellcraftingRecipeJsonBuilder create(Factory factory, ItemConvertible material) {
-        return (exporter, recipeId) -> exporter.accept(Unicopia.id(recipeId), factory.create(IngredientWithSpell.mundane(material)), null);
+        return (exporter, recipeId) -> exporter.accept(RegistryKey.of(RegistryKeys.RECIPE, Unicopia.id(recipeId)), factory.create(IngredientWithSpell.mundane(material)), null);
     }
 
     public interface Factory {

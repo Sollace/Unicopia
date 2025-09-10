@@ -24,11 +24,14 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RawShapedRecipe;
+import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
 
 public class ItemConversionShapedRecipeBuilder implements CraftingRecipeJsonBuilder {
+    private final RegistryEntryLookup<Item> items;
     private final RecipeCategory category;
     private final Item base;
     private final Item output;
@@ -40,23 +43,24 @@ public class ItemConversionShapedRecipeBuilder implements CraftingRecipeJsonBuil
     private String group;
     private boolean showNotification = true;
 
-    public ItemConversionShapedRecipeBuilder(RecipeCategory category, ItemConvertible base, ItemConvertible output, int count) {
+    public ItemConversionShapedRecipeBuilder(RegistryEntryLookup<Item> items, RecipeCategory category, ItemConvertible base, ItemConvertible output, int count) {
         this.category = category;
+        this.items = items;
         this.base = base.asItem();
         this.output = output.asItem();
         this.count = count;
     }
 
-    public static ItemConversionShapedRecipeBuilder create(RecipeCategory category, ItemConvertible base, ItemConvertible output) {
-        return create(category, base, output, 1);
+    public static ItemConversionShapedRecipeBuilder create(RegistryEntryLookup<Item> items, RecipeCategory category, ItemConvertible base, ItemConvertible output) {
+        return create(items, category, base, output, 1);
     }
 
-    public static ItemConversionShapedRecipeBuilder create(RecipeCategory category, ItemConvertible base, ItemConvertible output, int count) {
-        return new ItemConversionShapedRecipeBuilder(category, base, output, count);
+    public static ItemConversionShapedRecipeBuilder create(RegistryEntryLookup<Item> items, RecipeCategory category, ItemConvertible base, ItemConvertible output, int count) {
+        return new ItemConversionShapedRecipeBuilder(items, category, base, output, count);
     }
 
     public ItemConversionShapedRecipeBuilder input(Character c, TagKey<Item> tag) {
-        return input(c, Ingredient.fromTag(tag));
+        return input(c, Ingredient.fromTag(items.getOrThrow(tag)));
     }
 
     public ItemConversionShapedRecipeBuilder input(Character c, ItemConvertible itemProvider) {
@@ -99,11 +103,11 @@ public class ItemConversionShapedRecipeBuilder implements CraftingRecipeJsonBuil
     }
 
     @Override
-    public void offerTo(RecipeExporter exporter, Identifier recipeId) {
-        Preconditions.checkArgument(!criteria.isEmpty(), "No way of obtaining recipe " + recipeId);
+    public void offerTo(RecipeExporter exporter, RegistryKey<Recipe<?>> key) {
+        Preconditions.checkArgument(!criteria.isEmpty(), "No way of obtaining recipe " + key.getValue());
         Advancement.Builder builder = exporter.getAdvancementBuilder()
-            .criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId))
-            .rewards(AdvancementRewards.Builder.recipe(recipeId))
+            .criterion("has_the_recipe", RecipeUnlockedCriterion.create(key))
+            .rewards(AdvancementRewards.Builder.recipe(key))
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
         criteria.forEach(builder::criterion);
         ItemConversionShapedRecipe shapedRecipe = new ItemConversionShapedRecipe(
@@ -114,6 +118,6 @@ public class ItemConversionShapedRecipeBuilder implements CraftingRecipeJsonBuil
             new ItemStack(output, count),
             showNotification
         );
-        exporter.accept(recipeId, shapedRecipe, builder.build(recipeId.withPrefixedPath("recipes/" + category.getName() + "/")));
+        exporter.accept(key, shapedRecipe, builder.build(key.getValue().withPrefixedPath("recipes/" + category.getName() + "/")));
     }
 }

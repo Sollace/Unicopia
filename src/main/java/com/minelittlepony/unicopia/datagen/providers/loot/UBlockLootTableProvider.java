@@ -59,12 +59,15 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
     protected static final float[] SAPLING_DROP_CHANCE = new float[]{0.05F, 0.0625F, 0.083333336F, 0.1F};
     private static final float[] LEAVES_STICK_DROP_CHANCE = new float[]{0.02F, 0.022222223F, 0.025F, 0.033333335F, 0.1F};
 
+    private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
+
     public UBlockLootTableProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
         super(output, registryLookup);
+        registryLookupFuture = registryLookup;
     }
 
     public <T> RegistryEntry<T> entryOf(RegistryKey<T> key) {
-        return registryLookup.getWrapperOrThrow(key.getRegistryRef()).getOrThrow(key);
+        return registryLookupFuture.getNow(null).getOrThrow(key.getRegistryRef()).getOrThrow(key);
     }
 
     private ConditionalLootFunction.Builder<?> createBasePreservingFortuneBonusCondition() {
@@ -161,7 +164,7 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
                 .pool(applyStateCondition(UBlocks.SLIME_PUSTULE, SlimePustuleBlock.SHAPE, SlimePustuleBlock.Shape.POD,
                         addSurvivesExplosionCondition(UBlocks.SLIME_PUSTULE, LootPool.builder()
                     .rolls(exactly(1))
-                    .with(ItemEntry.builder(UBlocks.SLIME_PUSTULE)).conditionally(createWithShearsOrSilkTouchCondition()))
+                    .with(ItemEntry.builder(UBlocks.SLIME_PUSTULE)).conditionally(createWithSilkTouchOrShearsCondition()))
         )));
         addDrop(UBlocks.MYSTERIOUS_EGG, LootTable.builder()
             .pool(addSurvivesExplosionCondition(UBlocks.MYSTERIOUS_EGG, LootPool.builder()
@@ -268,7 +271,7 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         return LootTable.builder()
             .pool(LootPool.builder()
                 .rolls(exactly(1))
-                .with(ItemEntry.builder(leaves).conditionally(createWithShearsOrSilkTouchCondition())))
+                .with(ItemEntry.builder(leaves).conditionally(createWithSilkTouchOrShearsCondition())))
             .pool(applyExplosionDecay(leaves, LootPool.builder()
                 .rolls(exactly(1))
                 .conditionally(createWithoutShearsOrSilkTouchCondition())

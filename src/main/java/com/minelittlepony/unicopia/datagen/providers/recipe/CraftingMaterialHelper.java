@@ -10,10 +10,9 @@ import com.mojang.datafixers.util.Either;
 
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.advancement.AdvancementCriterion;
-import net.minecraft.data.server.recipe.RecipeProvider;
+import net.minecraft.data.server.recipe.RecipeGenerator;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.StonecuttingRecipeJsonBuilder;
-import net.minecraft.data.server.recipe.VanillaRecipeProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.predicate.ComponentPredicate;
@@ -21,6 +20,7 @@ import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
@@ -35,55 +35,59 @@ public interface CraftingMaterialHelper {
             "netherite", ConventionalItemTags.NETHERITE_INGOTS
     );
 
-    static Either<ItemConvertible, TagKey<Item>> getMaterial(Item output, String toStrip, String suffex) {
+    default RecipeGenerator asGenerator() {
+        return (RecipeGenerator)this;
+    }
+
+    default Either<ItemConvertible, TagKey<Item>> getMaterial(Item output, String toStrip, String suffex) {
         Identifier id = Registries.ITEM.getId(output).withPath(p -> p.replace(toStrip, "") + suffex);
         TagKey<Item> tag = MATERIALS.getOrDefault(id.getPath().replace("en_", "_").split("_")[0], null);
         if (tag != null) {
             return Either.right(tag);
         }
         return Either.left(
-            Registries.ITEM.getOrEmpty(id)
-                .or(() -> Registries.ITEM.getOrEmpty(Identifier.ofVanilla(id.getPath())))
-                .or(() -> Registries.ITEM.getOrEmpty(Identifier.ofVanilla(id.getPath().replace(suffex, ""))))
+            Registries.ITEM.getOptionalValue(id)
+                .or(() -> Registries.ITEM.getOptionalValue(Identifier.ofVanilla(id.getPath())))
+                .or(() -> Registries.ITEM.getOptionalValue(Identifier.ofVanilla(id.getPath().replace(suffex, ""))))
                 .orElseThrow(() -> new NoSuchElementException("No item with id " + id))
         );
     }
 
-    static Item getItem(Identifier id) {
-        return Registries.ITEM.getOrEmpty(id).orElseThrow(() -> new NoSuchElementException("No item with id " + id));
+    default Item getItem(Identifier id) {
+        return Registries.ITEM.getOptionalValue(id).orElseThrow(() -> new NoSuchElementException("No item with id " + id));
     }
 
-    static ShapedRecipeJsonBuilder input(ShapedRecipeJsonBuilder builder, char key, Either<ItemConvertible, TagKey<Item>> material) {
+    default ShapedRecipeJsonBuilder input(ShapedRecipeJsonBuilder builder, char key, Either<ItemConvertible, TagKey<Item>> material) {
         material.ifLeft(i -> builder.input(key, i));
         material.ifRight(i -> builder.input(key, i));
         return builder;
     }
 
-    static AdvancementCriterion<?> conditionsFromEither(Either<ItemConvertible, TagKey<Item>> material) {
-        return material.map(RecipeProvider::conditionsFromItem, RecipeProvider::conditionsFromTag);
+    default AdvancementCriterion<?> conditionsFromEither(Either<ItemConvertible, TagKey<Item>> material) {
+        return material.map(asGenerator()::conditionsFromItem, asGenerator()::conditionsFromTag);
     }
 
-    static String hasEither(Either<ItemConvertible, TagKey<Item>> material) {
-        return material.map(VanillaRecipeProvider::hasItem, CraftingMaterialHelper::hasTag);
+    default String hasEither(Either<ItemConvertible, TagKey<Item>> material) {
+        return material.map(RecipeGenerator::hasItem, this::hasTag);
     }
 
-    static String hasTag(TagKey<Item> tag) {
+    default String hasTag(TagKey<Item> tag) {
         return "has_" + tag.id();
     }
 
-    static AdvancementCriterion<?> conditionsFromSpell(ItemConvertible gem, SpellType<?> spell) {
-        return RecipeProvider.conditionsFromItemPredicates(ItemPredicate.Builder.create()
-                .items(gem)
+    default AdvancementCriterion<?> conditionsFromSpell(RegistryEntryLookup<Item> items, ItemConvertible gem, SpellType<?> spell) {
+        return RecipeGenerator.conditionsFromItemPredicates(ItemPredicate.Builder.create()
+                .items(items, gem)
                 .component(ComponentPredicate.builder().add(UDataComponentTypes.STORED_SPELL, spell).build())
                 .build()
         );
     }
 
-    static String hasSpell(SpellType<?> spell) {
+    default String hasSpell(SpellType<?> spell) {
         return "has_" + spell.getId() + "_gemstone";
     }
 
-    static StonecuttingRecipeJsonBuilder createCloudShaping(Ingredient input, RecipeCategory category, ItemConvertible output, int count) {
+    default StonecuttingRecipeJsonBuilder createCloudShaping(Ingredient input, RecipeCategory category, ItemConvertible output, int count) {
         return new StonecuttingRecipeJsonBuilder(category, CloudShapingRecipe::new, input, output, count);
     }
 }

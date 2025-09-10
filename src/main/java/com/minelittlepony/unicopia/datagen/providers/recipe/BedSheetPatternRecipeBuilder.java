@@ -12,11 +12,13 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.item.UItems;
 
 import net.minecraft.data.server.recipe.RecipeExporter;
-import net.minecraft.data.server.recipe.RecipeProvider;
+import net.minecraft.data.server.recipe.RecipeGenerator;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.ShapelessRecipeJsonBuilder;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.RegistryEntryLookup;
 
 public class BedSheetPatternRecipeBuilder {
     record PatternTemplate(List<Character> symbols, List<Character> uniqueSymbols, String[] pattern) {
@@ -42,19 +44,19 @@ public class BedSheetPatternRecipeBuilder {
             this(symbols, symbols.stream().distinct().toList(), pattern);
         }
 
-        void offerWithoutConversion(RecipeExporter exporter, ItemConvertible output, ItemConvertible...wool) {
-            offerRecipe(this, null, exporter, output, wool);
+        void offerWithoutConversion(RecipeGenerator generator, RegistryEntryLookup<Item> items,RecipeExporter exporter, ItemConvertible output, ItemConvertible...wool) {
+            offerRecipe(generator, items, this, null, exporter, output, wool);
         }
 
-        void offerTo(RecipeExporter exporter, ItemConvertible output, ItemConvertible...wool) {
+        void offerTo(RecipeGenerator generator, RegistryEntryLookup<Item> items, RecipeExporter exporter, ItemConvertible output, ItemConvertible...wool) {
             Map<Character, ItemConvertible> symbolMap = new HashMap<>();
-            offerRecipe(this, symbolMap, exporter, output, wool);
-            offerBedSheetConversionRecipe(exporter, output, symbols.stream().map(symbolMap::get));
+            offerRecipe(generator, items, this, symbolMap, exporter, output, wool);
+            offerBedSheetConversionRecipe(generator, items, exporter, output, symbols.stream().map(symbolMap::get));
         }
     }
 
-    private static void offerRecipe(PatternTemplate template, @Nullable Map<Character, ItemConvertible> symbolMap, RecipeExporter exporter, ItemConvertible output, ItemConvertible...wool) {
-        ShapedRecipeJsonBuilder builder = ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output);
+    private static void offerRecipe(RecipeGenerator generator, RegistryEntryLookup<Item> items, PatternTemplate template, @Nullable Map<Character, ItemConvertible> symbolMap, RecipeExporter exporter, ItemConvertible output, ItemConvertible...wool) {
+        ShapedRecipeJsonBuilder builder = ShapedRecipeJsonBuilder.create(items, RecipeCategory.DECORATIONS, output);
         for (int i = 0; i < template.uniqueSymbols().size(); i++) {
             builder.input(template.uniqueSymbols().get(i), wool[i]);
             if (symbolMap != null) {
@@ -65,18 +67,18 @@ public class BedSheetPatternRecipeBuilder {
             builder.pattern(template.pattern()[i]);
         }
         Arrays.asList(wool).stream().distinct().forEach(input -> {
-            builder.criterion(RecipeProvider.hasItem(input), RecipeProvider.conditionsFromItem(input));
+            builder.criterion(RecipeGenerator.hasItem(input), generator.conditionsFromItem(input));
         });
         builder.group("bed_sheet").offerTo(exporter);
     }
 
-    private static void offerBedSheetConversionRecipe(RecipeExporter exporter, ItemConvertible output, Stream<ItemConvertible> wools) {
-        var builder = ShapelessRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output)
-            .input(UTags.Items.WOOL_BED_SHEETS).criterion("has_bed_sheet", RecipeProvider.conditionsFromTag(UTags.Items.WOOL_BED_SHEETS));
+    private static void offerBedSheetConversionRecipe(RecipeGenerator generator, RegistryEntryLookup<Item> items,RecipeExporter exporter, ItemConvertible output, Stream<ItemConvertible> wools) {
+        var builder = ShapelessRecipeJsonBuilder.create(items, RecipeCategory.DECORATIONS, output)
+            .input(UTags.Items.WOOL_BED_SHEETS).criterion("has_bed_sheet", generator.conditionsFromTag(UTags.Items.WOOL_BED_SHEETS));
         wools.forEach(builder::input);
         builder
             .group("bed_sheet")
-            .offerTo(exporter, RecipeProvider.convertBetween(output, UItems.WHITE_BED_SHEETS));
+            .offerTo(exporter, RecipeGenerator.convertBetween(output, UItems.WHITE_BED_SHEETS));
     }
 
 }

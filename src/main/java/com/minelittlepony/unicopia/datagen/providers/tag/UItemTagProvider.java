@@ -79,7 +79,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(UTags.Items.BASKETS).add(ItemFamilies.BASKETS);
         getOrCreateTagBuilder(UTags.Items.BADGES).add(Race.REGISTRY.stream()
                 .map(race -> race.getId().withPath(p -> p + "_badge"))
-                .flatMap(id -> Registries.ITEM.getOrEmpty(id).stream())
+                .flatMap(id -> Registries.ITEM.getOptionalValue(id).stream())
                 .toArray(Item[]::new));
         getOrCreateTagBuilder(UTags.Items.WOOL_BED_SHEETS).add(BedsheetsItem.ITEMS.values().stream().filter(sheet -> sheet != UItems.KELP_BED_SHEETS).toArray(Item[]::new));
         getOrCreateTagBuilder(UTags.Items.BED_SHEETS).forceAddTag(UTags.Items.WOOL_BED_SHEETS).add(UItems.KELP_BED_SHEETS);
