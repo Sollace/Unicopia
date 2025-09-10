@@ -2,21 +2,18 @@ package com.minelittlepony.unicopia.mixin.client;
 
 import org.spongepowered.asm.mixin.Mixin;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
-import net.minecraft.client.render.entity.feature.FeatureRenderer;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.entity.LivingEntity;
 
 @Mixin(ArmorFeatureRenderer.class)
 // TODO: Remove this
-abstract class MixinArmorFeatureRenderer<
+abstract class MixinArmorFeatureRenderer/*<
         T extends LivingEntity,
         M extends BipedEntityModel<T>,
         A extends BipedEntityModel<T>>
-            extends FeatureRenderer<T, M>/* implements AccessoryFeatureRenderer.FeatureRoot<T, M>*/ {
+            extends FeatureRenderer<T, M> implements AccessoryFeatureRenderer.FeatureRoot<T, M>*/ {
 
     //private AccessoryFeatureRenderer<T, M> accessories;
 
-    MixinArmorFeatureRenderer() { super(null); }
+    //MixinArmorFeatureRenderer() { super(null); }
 
     /*@Override
     public AccessoryFeatureRenderer<T, M> getAccessories() {

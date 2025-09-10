@@ -128,7 +128,7 @@ public class UModelProvider extends FabricModelProvider {
         // badges
         ItemModels.register(itemModelGenerator, Race.REGISTRY.stream()
                 .map(race -> race.getId().withPath(p -> p + "_badge"))
-                .flatMap(id -> Registries.ITEM.getOrEmpty(id).stream())
+                .flatMap(id -> Registries.ITEM.getOptionalValue(id).stream())
                 .toArray(Item[]::new));
 
         ItemModels.registerButterfly(itemModelGenerator, UItems.BUTTERFLY);

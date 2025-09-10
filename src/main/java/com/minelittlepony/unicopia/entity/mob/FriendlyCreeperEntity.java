@@ -17,6 +17,7 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.AttackWithOwnerGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -34,6 +35,7 @@ import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.conversion.EntityConversionContext;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -92,7 +94,6 @@ public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
 
     protected FriendlyCreeperEntity(EntityType<? extends FriendlyCreeperEntity> type, World world) {
         super(type, world);
-        CreeperEntity;
         setTamed(false, true);
         setPathfindingPenalty(PathNodeType.POWDER_SNOW, -1);
         setPathfindingPenalty(PathNodeType.DANGER_POWDER_SNOW, -1);
@@ -217,8 +218,10 @@ public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
                 } else {
                     hugTime = 0;
                     if (!getWorld().isClient) {
-                        getWorld().spawnEntity(convertTo(EntityType.CREEPER, true));
-                        discard();
+                        convertTo(EntityType.CREEPER, EntityConversionContext.create(this, true, true), entity -> {
+                            discard();
+                            getWorld().spawnEntity(entity);
+                        });
                     }
                 }
             } else {
@@ -276,17 +279,16 @@ public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
         super.dropEquipment(world, source, causedByPlayer);
         if (source.getAttacker() instanceof CreeperEntity c && c.shouldDropHead()) {
             c.onHeadDropped();
-            dropItem(Items.CREEPER_HEAD);
+            dropItem(world, Items.CREEPER_HEAD);
         }
     }
 
     @Override
-    public boolean tryAttack(Entity target) {
+    public boolean tryAttack(ServerWorld world, Entity target) {
         return true;
     }
 
-    @Override
-    public boolean shouldRenderOverlay() {
+    public boolean isCharged() {
         return dataTracker.get(CHARGED);
     }
 
@@ -322,7 +324,7 @@ public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
         if (stack.isEmpty() && isOwner(player)) {
             setSitting(!isSitting());
             setInSittingPose(isSitting());
-            return ActionResult.success(getWorld().isClient);
+            return ActionResult.SUCCESS;
         }
 
         if (stack.isIn(ItemTags.CREEPER_IGNITERS)) {
@@ -338,7 +340,7 @@ public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
                 }
             }
 
-            return ActionResult.success(getWorld().isClient);
+            return ActionResult.SUCCESS;
         }
 
         if (stack.isOf(Items.GUNPOWDER) && getHealth() < getMaxHealth()) {
@@ -355,7 +357,7 @@ public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
                 }
             }
 
-            return ActionResult.success(getWorld().isClient);
+            return ActionResult.SUCCESS;
         }
 
         return super.interactMob(player, hand);
@@ -376,7 +378,7 @@ public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
     }
 
     private float getExplosionRadius() {
-        return explosionRadius * (shouldRenderOverlay() ? 2 : 1);
+        return explosionRadius * (isCharged() ? 2 : 1);
     }
 
     private void spawnEffectsCloud() {
@@ -403,7 +405,7 @@ public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
     }
 
     public boolean shouldDropHead() {
-        return shouldRenderOverlay() && headsDropped < 1;
+        return isCharged() && headsDropped < 1;
     }
 
     public void onHeadDropped() {
@@ -412,7 +414,7 @@ public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
 
     @Override
     public PassiveEntity createChild(ServerWorld world, PassiveEntity partner) {
-        FriendlyCreeperEntity child = (FriendlyCreeperEntity)getType().create(world);
+        FriendlyCreeperEntity child = (FriendlyCreeperEntity)getType().create(world, SpawnReason.BREEDING);
         UUID uUID = getOwnerUuid();
         if (uUID != null) {
             child.setOwnerUuid(uUID);

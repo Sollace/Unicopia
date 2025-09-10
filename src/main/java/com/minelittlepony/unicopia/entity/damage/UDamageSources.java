@@ -20,7 +20,7 @@ public interface UDamageSources extends WorldConvertable {
     }
 
     private static RegistryEntry<DamageType> entryOf(WorldConvertable world, RegistryKey<DamageType> type) {
-        return world.asWorld().getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(type);
+        return world.asWorld().getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE).getEntry(type.getValue()).orElseThrow();
     }
 
     default MagicalDamageSource damageOf(RegistryKey<DamageType> type) {

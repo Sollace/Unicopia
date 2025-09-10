@@ -112,7 +112,6 @@ public class MimicEntity extends PathAwareEntity {
 
     MimicEntity(EntityType<? extends MimicEntity> type, World world) {
         super(type, world);
-        ignoreCameraFrustum = true;
     }
 
     @Override

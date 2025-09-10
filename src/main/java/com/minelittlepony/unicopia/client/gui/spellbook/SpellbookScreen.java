@@ -26,22 +26,21 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.ScreenPos;
+import net.minecraft.client.gui.screen.ingame.RecipeBookScreen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
-import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.recipe.display.RecipeDisplay;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 
-public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> implements RecipeBookProvider {
+public class SpellbookScreen extends RecipeBookScreen<SpellbookScreenHandler> implements RecipeBookProvider {
     public static final Identifier TEXTURE = Unicopia.id("textures/gui/container/book.png");
     public static final Identifier SLOT = Unicopia.id("textures/gui/container/slot.png");
     public static final Identifier GEM = Unicopia.id("textures/item/gemstone.png");
@@ -51,8 +50,6 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
     public static final int TITLE_X = 30;
     public static final int TITLE_Y = 20;
     public static final int TITLE_COLOR = 0xFF404040;
-
-    private final RecipeBookWidget<SpellbookScreenHandler> recipeBook;
 
     private final SpellbookTraitDexPageContent traitDex = new SpellbookTraitDexPageContent(this);
     private final SpellbookChapterList chapters = new SpellbookChapterList(this,
@@ -65,14 +62,13 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
     private Bounds contentBounds = Bounds.empty();
 
     public SpellbookScreen(SpellbookScreenHandler handler, PlayerInventory inventory, Text title) {
-        super(handler, inventory, title);
+        super(handler, new SpellbookRecipeBookWidget(handler), inventory, title);
         backgroundWidth = 405;
         backgroundHeight = 219;
         contentBounds = new Bounds(CONTENT_PADDING, CONTENT_PADDING, backgroundWidth - CONTENT_PADDING * 2, backgroundHeight - CONTENT_PADDING * 3 - 2);
         handler.getSpellbookState().setSynchronizer(state -> {
             Channel.CLIENT_SPELLBOOK_UPDATE.sendToServer(MsgSpellbookStateChanged.create(handler, state));
         });
-        recipeBook = new SpellbookRecipeBookWidget(handler, List.of());
     }
 
     public SpellbookState getState() {
@@ -109,6 +105,11 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
     }
 
     @Override
+    protected ScreenPos getRecipeBookButtonPos() {
+        return new ScreenPos(0, 0);
+    }
+
+    @Override
     public <T extends Drawable> T addDrawable(T drawable) {
         return super.addDrawable(drawable);
     }
@@ -122,14 +123,11 @@ public class SpellbookScreen extends HandledScreen<SpellbookScreenHandler> imple
 
     @Override
     public void refreshRecipeBook() {
+        super.refreshRecipeBook();
         chapters.getCurrentChapter()
             .content()
             .map(i -> i instanceof RecipesChangedListener ? (RecipesChangedListener)i : null)
             .ifPresent(RecipesChangedListener::onRecipesChanged);
-    }
-
-    @Override
-    public void onCraftFailed(RecipeDisplay display) {
     }
 
     @Override

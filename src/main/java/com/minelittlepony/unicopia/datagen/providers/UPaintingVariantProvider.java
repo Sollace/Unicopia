@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.datagen.providers;
 
+import java.util.Optional;
+
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.datagen.DataGenRegistryProvider;
 
@@ -9,6 +11,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.PaintingVariantTags;
+import net.minecraft.text.Text;
 
 public class UPaintingVariantProvider extends DataGenRegistryProvider<PaintingVariant> {
     public UPaintingVariantProvider() {
@@ -39,7 +42,12 @@ public class UPaintingVariantProvider extends DataGenRegistryProvider<PaintingVa
 
     private void register(Registerable<PaintingVariant> registerable, String name, int width, int height) {
         RegistryKey<PaintingVariant> key = RegistryKey.of(RegistryKeys.PAINTING_VARIANT, Unicopia.id(name));
-        registerable.register(key, new PaintingVariant(width, height, key.getValue()));
+        registerable.register(key, new PaintingVariant(
+                width, height,
+                key.getValue(),
+                Optional.of(Text.translatable(key.getValue().toTranslationKey("painting", "title"))),
+                Optional.of(Text.translatable(key.getValue().toTranslationKey("painting", "author")))
+        ));
     }
 
     @Override

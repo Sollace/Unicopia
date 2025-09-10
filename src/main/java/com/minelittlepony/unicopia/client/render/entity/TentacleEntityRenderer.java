@@ -11,6 +11,7 @@ import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 
 public class TentacleEntityRenderer extends EntityRenderer<TentacleEntity, TentacleEntityRenderer.State> {
@@ -56,6 +57,12 @@ public class TentacleEntityRenderer extends EntityRenderer<TentacleEntity, Tenta
         model.render(matrices, vertices.getBuffer(model.getLayer(TEXTURE)), light, OverlayTexture.getUv(0, state.hurting), Colors.WHITE);
         matrices.pop();
         super.render(state, matrices, vertices, light);
+    }
+
+
+    @Override
+    protected Box getBoundingBox(TentacleEntity entity) {
+        return super.getBoundingBox(entity).expand(10, 0, 10).stretch(0, 10, 0);
     }
 
     public static class State extends EntityRenderState {

@@ -3,9 +3,7 @@ package com.minelittlepony.unicopia.client.render;
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.entity.AmuletSelectors;
-import com.minelittlepony.unicopia.entity.player.Pony;
-
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelData;
@@ -24,12 +22,10 @@ import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
-public class WingsFeatureRenderer<S extends BipedEntityRenderState, E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<S> {
+public class WingsFeatureRenderer<S extends BipedEntityRenderState> implements AccessoryFeatureRenderer.Feature<S> {
 
     protected static final int FEATHER_COUNT = 8;
 
@@ -50,16 +46,16 @@ public class WingsFeatureRenderer<S extends BipedEntityRenderState, E extends Li
             Identifier texture = getTexture(entity);
             VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getEntityTranslucent(texture), false);
 
-            model.setAngles(entity, context.getModel());
+            model.setAngles(CasterState.of(entity), context.getModel());
             model.render(matrices, consumer, lightUv, OverlayTexture.DEFAULT_UV, Colors.WHITE);
         }
     }
 
     protected boolean canRender(S entity) {
-        return entity instanceof PlayerEntityRenderState player
-                && Pony.of(player).getObservedSpecies().flightType() == FlightType.AVIAN
-                && Pony.of(player).getObservedSpecies() != Race.BAT
-                && !AmuletSelectors.PEGASUS_AMULET.test(entity);
+        return entity instanceof PlayerEntityRenderState
+                && CasterState.of(entity).species.physical().flightType() == FlightType.AVIAN
+                && CasterState.of(entity).species.physical() != Race.BAT
+                && !CasterState.of(entity).pegasusAmulet;
     }
 
     protected Identifier getTexture(S entity) {
@@ -99,7 +95,7 @@ public class WingsFeatureRenderer<S extends BipedEntityRenderState, E extends Li
             rightWing = new Wing(tree.getChild("right_wing"), 1);
         }
 
-        public void setAngles(BipedEntityRenderState entity, BipedEntityModel<?> biped) {
+        public void setAngles(CasterState entity, BipedEntityModel<?> biped) {
             root.copyTransform(biped.body);
             leftWing.setAngles(entity);
             rightWing.setAngles(entity);
@@ -120,8 +116,8 @@ public class WingsFeatureRenderer<S extends BipedEntityRenderState, E extends Li
                 }
             }
 
-            void setAngles(BipedEntityRenderState entity) {
-                float spreadAmount = entity instanceof PlayerEntityRenderState ? Pony.of((PlayerEntity)entity).getMotion().getWingAngle() : 0;
+            void setAngles(CasterState entity) {
+                float spreadAmount = entity.wingsAngle;
 
                 base.pitch = 1.5F + 0.8F - spreadAmount / 9F;
                 base.yaw = k * (0.8F + spreadAmount / 3F);

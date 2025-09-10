@@ -34,6 +34,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.registry.Registry;
 
@@ -168,8 +169,7 @@ public class EntityBehaviour<T extends Entity> {
         to.prevPitch = from.prevPitch;
         to.setYaw(from.getYaw());
         to.prevYaw = from.prevYaw;
-        to.horizontalSpeed = from.horizontalSpeed;
-        to.prevHorizontalSpeed = from.prevHorizontalSpeed;
+        to.speed = from.speed;
         to.fallDistance = 0;
         to.setOnGround(from.isOnGround());
         to.setInvulnerable(from.isInvulnerable() || (from instanceof PlayerEntity player && player.getAbilities().creativeMode));
@@ -263,7 +263,7 @@ public class EntityBehaviour<T extends Entity> {
         if (entity == null) {
             return (EntityBehaviour<T>)DEFAULT;
         }
-        return (EntityBehaviour<T>)REGISTRY.getOrEmpty(EntityType.getId(entity.getType())).orElse(DEFAULT);
+        return (EntityBehaviour<T>)REGISTRY.getOptionalValue(EntityType.getId(entity.getType())).orElse(DEFAULT);
     }
 
     static {
@@ -280,7 +280,7 @@ public class EntityBehaviour<T extends Entity> {
         register(AxolotlBehaviour::new, EntityType.AXOLOTL);
         register(EndermanBehaviour::new, EntityType.ENDERMAN);
         EntityBehaviour.<LlamaEntity>register(() -> new RangedAttackBehaviour<>(USounds.Vanilla.ENTITY_LLAMA_SPIT, LlamaSpitEntity::new), EntityType.LLAMA, EntityType.TRADER_LLAMA);
-        EntityBehaviour.<SnowGolemEntity>register(() -> new RangedAttackBehaviour<>(USounds.Vanilla.ENTITY_SNOW_GOLEM_SHOOT, SnowballEntity::new), EntityType.SNOW_GOLEM);
+        EntityBehaviour.<SnowGolemEntity>register(() -> new RangedAttackBehaviour<>(USounds.Vanilla.ENTITY_SNOW_GOLEM_SHOOT, (world, owner) -> new SnowballEntity(world, owner, Items.SNOWBALL.getDefaultStack())), EntityType.SNOW_GOLEM);
         register(SpellcastingIllagerBehaviour::new, EntityType.ILLUSIONER, EntityType.EVOKER);
         register(ShulkerBehaviour::new, EntityType.SHULKER);
         register(CreeperBehaviour::new, EntityType.CREEPER);

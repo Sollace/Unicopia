@@ -3,8 +3,7 @@ package com.minelittlepony.unicopia.client.render;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.minelittlepony.unicopia.item.AmuletItem;
-
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelData;
@@ -19,15 +18,15 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
 
-public class AmuletFeatureRenderer<E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
+public class AmuletFeatureRenderer<E extends BipedEntityRenderState> implements AccessoryFeatureRenderer.Feature<E> {
 
     private final AmuletModel model;
 
@@ -41,17 +40,18 @@ public class AmuletFeatureRenderer<E extends LivingEntity> implements AccessoryF
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle, float tickDelta, float age, float headYaw, float headPitch) {
+    public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle) {
 
-        ItemStack stack = AmuletItem.get(entity).stack();
+        ItemStack stack = CasterState.of(entity).amulet.stack();
 
         if (!stack.isEmpty()) {
             Identifier texture = textures.computeIfAbsent(Registries.ITEM.getId(stack.getItem()), id -> id.withPath(p -> "textures/models/armor/" + p + ".png"));
 
             VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(texture), false);
 
+            model.getRootPart().resetTransform();
             if (context.getModel() instanceof BipedEntityModel) {
-                model.setAngles(entity, context.getModel());
+                model.setAngles(context.getModel());
             }
             model.render(matrices, consumer, lightUv, OverlayTexture.DEFAULT_UV, Colors.WHITE);
         }
@@ -59,11 +59,8 @@ public class AmuletFeatureRenderer<E extends LivingEntity> implements AccessoryF
 
     public static class AmuletModel extends Model {
 
-        private final ModelPart amulet;
-
         public AmuletModel(ModelPart tree) {
-            super(RenderLayer::getEntityTranslucent);
-            amulet = tree.getChild("amulet");
+            super(tree.getChild("amulet"), RenderLayer::getEntityTranslucent);
         }
 
         public static TexturedModelData getData(Dilation dilation) {
@@ -75,13 +72,8 @@ public class AmuletFeatureRenderer<E extends LivingEntity> implements AccessoryF
             return TexturedModelData.of(data, 64, 32);
         }
 
-        public void setAngles(LivingEntity entity, BipedEntityModel<?> biped) {
-            amulet.copyTransform(biped.body);
-        }
-
-        @Override
-        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int i, int j, int color) {
-            amulet.render(matrices, vertexConsumer, i, j, color);
+        public void setAngles(BipedEntityModel<?> biped) {
+            getRootPart().copyTransform(biped.body);
         }
     }
 }

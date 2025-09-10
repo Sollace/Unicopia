@@ -29,7 +29,7 @@ public interface IndirectionUtils {
             Entry() {
                 super(
                     RegistryEntry.Reference.Type.STAND_ALONE,
-                    registryRef.getEntryOwner(),
+                    registryRef,
                     RegistryKey.of(registry, value),
                     dummyValue
                 );

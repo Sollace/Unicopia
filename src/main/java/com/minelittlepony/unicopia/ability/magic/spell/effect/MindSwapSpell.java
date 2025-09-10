@@ -74,7 +74,7 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
                         swapPlayerData(sMaster, sE);
                     } else {
                         EntitySwap.ALL.accept(e, master);
-                        Inventory.swapInventories(
+                        Inventory.swapInventories(caster.asServerWorld(),
                                 e, myStoredInventory.or(() -> Inventory.of(e)),
                                 master, theirStoredInventory.or(() -> Inventory.of(master)),
                                 a -> {},
@@ -124,7 +124,7 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
                         swapPlayerData(sMaster, sE);
                     } else {
                         EntitySwap.ALL.accept(master, e);
-                        Inventory.swapInventories(
+                        Inventory.swapInventories(caster.asServerWorld(),
                                 master, Inventory.of(master),
                                 e, Inventory.of(e),
                                 a -> myStoredInventory = Optional.of(a),

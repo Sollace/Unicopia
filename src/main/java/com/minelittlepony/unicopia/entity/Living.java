@@ -334,7 +334,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                                 ), Vec3d.ZERO);
                             }
 
-                            ItemEntity itemEntity = EntityType.ITEM.create(entity.getWorld());
+                            ItemEntity itemEntity = EntityType.ITEM.create(entity.getWorld(), SpawnReason.EVENT);
                             itemEntity.setStack(payload);
                             itemEntity.setPosition(randomPos);
                             itemEntity.getWorld().spawnEntity(itemEntity);
@@ -356,22 +356,22 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return attacker;
     }
 
-    public Optional<Boolean> onDamage(DamageSource source, float amount) {
+    public Optional<Boolean> onDamage(ServerWorld world, DamageSource source, float amount) {
 
         if (Guest.of(source.getAttacker()).hostIs(this)
             || Guest.of(source.getSource()).hostIs(this)) {
             var type = source.getTypeRegistryEntry();
-            return Optional.of(entity.damage(
+            return Optional.of(entity.damage(world,
                     type.matchesKey(DamageTypes.FIREBALL) ? entity.getDamageSources().create(DamageTypes.UNATTRIBUTED_FIREBALL) :
                     type.matchesKey(DamageTypes.PLAYER_EXPLOSION) ? entity.getDamageSources().create(DamageTypes.EXPLOSION) :
                     new DamageSource(type, entity, entity), amount));
         }
 
         if (Guest.of(entity).getHost() instanceof Living l) {
-            l.asEntity().damage(source, amount);
+            l.asEntity().damage(world, source, amount);
         }
 
-        if (source.isIn(DamageTypeTags.IS_LIGHTNING) && (invinsibilityTicks > 0 || tryCaptureLightning())) {
+        if (source.isIn(DamageTypeTags.IS_LIGHTNING) && (invinsibilityTicks > 0 || tryCaptureLightning(world))) {
             return Optional.of(false);
         }
 
@@ -415,11 +415,11 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                 .map(v -> entity.getBlockPos());
     }
 
-    private boolean tryCaptureLightning() {
+    private boolean tryCaptureLightning(ServerWorld world) {
         return getInventoryStacks().filter(stack -> !stack.isEmpty() && stack.getItem() == UItems.EMPTY_JAR).findFirst().map(stack -> {
             invinsibilityTicks = 20;
             stack.split(1);
-            giveBackItem(UItems.LIGHTNING_JAR.getDefaultStack());
+            giveBackItem(world, UItems.LIGHTNING_JAR.getDefaultStack());
             return stack;
         }).isPresent();
     }
@@ -438,8 +438,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         );
     }
 
-    protected void giveBackItem(ItemStack stack) {
-        entity.dropStack(stack);
+    protected void giveBackItem(ServerWorld world, ItemStack stack) {
+        entity.dropStack(world, stack);
     }
 
     @Override
@@ -466,7 +466,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     @Override
     public float getCloudWalkingStrength() {
-        return asWorld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(net.minecraft.enchantment.Enchantments.FEATHER_FALLING).map(featherFalling -> {
+        return asWorld().getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).getEntry(net.minecraft.enchantment.Enchantments.FEATHER_FALLING.getValue()).map(featherFalling -> {
             int maxLevel = featherFalling.value().getMaxLevel();
             int level = EnchantmentHelper.getEquipmentLevel(featherFalling, entity);
             return MathHelper.clamp(level / (float)maxLevel, 0, 1);

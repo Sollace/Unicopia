@@ -6,11 +6,12 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.projectile.PhysicsBodyProjectileEntity;
 
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.FoodComponent;
+import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Hand;
 
 public class EatMuffinGoal extends BreakHeartGoal {
 
@@ -72,9 +73,9 @@ public class EatMuffinGoal extends BreakHeartGoal {
 
             if (target instanceof PhysicsBodyProjectileEntity projectile) {
                 @Nullable
-                FoodComponent food = projectile.getStack().get(DataComponentTypes.FOOD);
+                ConsumableComponent food = projectile.getStack().get(DataComponentTypes.CONSUMABLE);
                 if (food != null) {
-                    mob.eatFood(mob.getWorld(), projectile.getStack(), food);
+                    food.consume(mob, projectile.getStack(), Hand.MAIN_HAND);
                 }
                 projectile.discard();
 

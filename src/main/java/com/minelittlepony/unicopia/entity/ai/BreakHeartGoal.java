@@ -83,7 +83,7 @@ public class BreakHeartGoal extends Goal {
 
         if (distance <= reach) {
             mob.swingHand(Hand.MAIN_HAND);
-            mob.tryAttack(target);
+            mob.tryAttack(castToServerWorld(mob.getWorld()), target);
         }
     }
 }

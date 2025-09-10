@@ -35,6 +35,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
@@ -180,7 +181,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                 });
             } else {
                 if (source.isClient()) {
-                    entity = EntityType.fromNbt(nbt).map(type -> type.create(source.asWorld())).orElse(null);
+                    entity = EntityType.fromNbt(nbt).map(type -> type.create(source.asWorld(), SpawnReason.CONVERSION)).orElse(null);
                     if (entity != null) {
                         try {
                             entity.readNbt(nbt);
@@ -190,7 +191,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                         entity = EntityBehaviour.forEntity(entity).onCreate(entity, this, true);
                     }
                 } else {
-                    entity = EntityType.loadEntityWithPassengers(nbt, source.asWorld(), e -> {
+                    entity = EntityType.loadEntityWithPassengers(nbt, source.asWorld(), SpawnReason.CONVERSION, e -> {
                         return EntityBehaviour.forEntity(e).onCreate(e, this, true);
                     });
                 }

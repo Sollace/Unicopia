@@ -48,13 +48,13 @@ public class SheepBehaviour extends EntityBehaviour<SheepEntity> {
                     int slot;
 
                     do {
-                        slot = inv.indexOf(dropType);
+                        slot = inv.getMatchingSlot(dropType.getRegistryEntry());
 
                         if (slot < 0) {
                             break;
                         }
                         inv.removeStack(slot, 1);
-                        ItemEntity itemEntity = entity.dropItem(dropType.getItem(), 1);
+                        ItemEntity itemEntity = entity.dropItem(player.asServerWorld(), dropType.getItem(), 1);
                         if (itemEntity != null) {
                            itemEntity.setVelocity(itemEntity.getVelocity().add(
                                    (rng.nextFloat() - rng.nextFloat()) * 0.1F,

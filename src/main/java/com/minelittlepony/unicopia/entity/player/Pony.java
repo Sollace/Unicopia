@@ -812,7 +812,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     @Override
-    protected void giveBackItem(ItemStack stack) {
+    protected void giveBackItem(ServerWorld world, ItemStack stack) {
         if (!entity.giveItemStack(stack)) {
             entity.dropItem(stack, false);
         }

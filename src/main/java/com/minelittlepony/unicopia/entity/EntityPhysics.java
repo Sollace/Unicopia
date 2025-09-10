@@ -16,6 +16,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
@@ -36,9 +37,9 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
 
     @Override
     public void tick() {
-        if (isGravityNegative()) {
+        if (entity.getWorld() instanceof ServerWorld sw && isGravityNegative()) {
             if (entity.getY() > entity.getWorld().getHeight() + 64) {
-                entity.damage(entity.getDamageSources().outOfWorld(), 4.0F);
+                entity.damage(sw, entity.getDamageSources().outOfWorld(), 4.0F);
             }
         }
 

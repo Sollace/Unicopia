@@ -253,7 +253,9 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     @Override
     public boolean subtractEnergyCost(double amount) {
-        getMaster().damage(asEntity().getDamageSources().magic(), (int)amount/2);
+        if (!isClient()) {
+            getMaster().damage(asServerWorld(), asEntity().getDamageSources().magic(), (int)amount/2);
+        }
         return getMaster().getHealth() > 0;
     }
 
@@ -289,13 +291,13 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
 
     private class ActiveEnemyGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
         public ActiveEnemyGoal(Class<T> targetClass) {
-            super((MobEntity)entity, targetClass, true, Creature.this.targetPredicate);
+            super((MobEntity)entity, targetClass, true, (e, w) -> Creature.this.targetPredicate.test(e));
         }
 
         @Override
         public boolean shouldContinue() {
             LivingEntity target = this.mob.getTarget();
-            return target != null  && targetPredicate.test(mob, target) && super.shouldContinue();
+            return target != null  && targetPredicate.test(castToServerWorld(mob.getWorld()), mob, target) && super.shouldContinue();
         }
     }
 }

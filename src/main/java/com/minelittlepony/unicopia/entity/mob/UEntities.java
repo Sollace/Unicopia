@@ -104,8 +104,8 @@ public interface UEntities {
             .dimensions(0.875F, 0.875F));
 
     static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder) {
-        EntityType<T> type = builder.build();
-        return Registry.register(Registries.ENTITY_TYPE, Unicopia.id(name), type);
+        var key = RegistryKey.of(RegistryKeys.ENTITY_TYPE, Unicopia.id(name));
+        return Registry.register(Registries.ENTITY_TYPE, key, builder.build(key));
     }
 
     static void bootstrap() {

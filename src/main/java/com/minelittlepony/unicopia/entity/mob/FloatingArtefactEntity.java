@@ -200,7 +200,7 @@ public class FloatingArtefactEntity extends StationaryObjectEntity {
             damage = getHealth();
         }
 
-        return super.damage(source, damage);
+        return super.damage(world, source, damage);
     }
 
     @Override

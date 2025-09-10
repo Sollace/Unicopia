@@ -5,6 +5,7 @@ import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.container.spellbook.Flow;
 
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.util.Identifier;
 
 record Image(
@@ -13,6 +14,6 @@ record Image(
     Flow flow) implements PageElement {
     @Override
     public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
-        context.drawTexture(texture, 0, 0, 0, 0, 0, bounds().width, bounds().height, bounds().width, bounds().height);
+        context.drawTexture(RenderLayer::getGuiTextured, texture, 0, 0, 0, 0, 0, bounds().width, bounds().height, bounds().width, bounds().height);
     }
 }

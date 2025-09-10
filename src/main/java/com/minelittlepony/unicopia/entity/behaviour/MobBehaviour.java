@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.TraceHelper;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.item.Items;
@@ -23,7 +24,7 @@ public class MobBehaviour<T extends MobEntity> extends EntityBehaviour<T> {
     public void update(Pony player, T entity, Disguise spell) {
         if (player.sneakingChanged() && isSneakingOnGround(player)) {
             LivingEntity target = findTarget(player, entity);
-            entity.tryAttack(target);
+            entity.tryAttack(player.asServerWorld(), target);
             target.setAttacker(player.asEntity());
         }
 
@@ -44,7 +45,7 @@ public class MobBehaviour<T extends MobEntity> extends EntityBehaviour<T> {
     @SuppressWarnings("unchecked")
     protected T getDummy(T entity) {
         if (dummy == null) {
-            dummy = (T)entity.getType().create(entity.getWorld());
+            dummy = (T)entity.getType().create(entity.getWorld(), SpawnReason.CONVERSION);
         }
 
         return dummy;

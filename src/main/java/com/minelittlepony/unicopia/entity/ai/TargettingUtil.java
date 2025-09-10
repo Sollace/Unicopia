@@ -10,6 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
@@ -19,9 +20,9 @@ public interface TargettingUtil {
     @SuppressWarnings("unchecked")
     static <T extends LivingEntity> Stream<T> getTargets(Class<T> type, TargetPredicate predicate, LivingEntity subject, Box searchArea) {
         if (type == PlayerEntity.class || type == ServerPlayerEntity.class) {
-            return (Stream<T>)subject.getWorld().getPlayers(predicate, subject, searchArea).stream();
+            return (Stream<T>)((ServerWorld)subject.getWorld()).getPlayers(predicate, subject, searchArea).stream();
         }
-        return subject.getWorld().getTargets(type, predicate, subject, searchArea).stream();
+        return ((ServerWorld)subject.getWorld()).getTargets(type, predicate, subject, searchArea).stream();
     }
 
     static <T extends Entity> Comparator<T> nearestTo(LivingEntity subject) {

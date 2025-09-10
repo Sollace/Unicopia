@@ -102,8 +102,8 @@ public class IgnominiousBulbEntity extends MobEntity {
     }
 
     @Override
-    public float getScale() {
-        return super.getScale() * getScale(1);
+    public float getScaleFactor() {
+        return getScale(1);
     }
 
     public boolean isAngry() {

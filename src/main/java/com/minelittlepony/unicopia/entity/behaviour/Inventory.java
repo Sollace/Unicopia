@@ -12,6 +12,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.collection.DefaultedList;
 
 public record Inventory (
@@ -47,7 +48,7 @@ public record Inventory (
      *
      * @return Returns the left overs that could not be copied
      */
-    public Inventory copyInto(LivingEntity into) {
+    public Inventory copyInto(ServerWorld world, LivingEntity into) {
         if (into instanceof PlayerEntity player) {
             mainInventory().ifPresentOrElse(main -> {
                 PlayerInventory pe = player.getInventory();
@@ -56,7 +57,7 @@ public record Inventory (
                     pe.setStack(i, i < main.size() ? main.get(i) : ItemStack.EMPTY);
                 }
                 for (; i < main.size(); i++) {
-                    into.dropStack(main.get(i));
+                    into.dropStack(world, main.get(i));
                 }
             }, () -> {
                 PlayerInventory pe = player.getInventory();
@@ -73,17 +74,17 @@ public record Inventory (
         return this;
     }
 
-    public static void swapInventories(LivingEntity me, Optional<Inventory> myInv, LivingEntity them, Optional<Inventory> theirInv,
+    public static void swapInventories(ServerWorld world, LivingEntity me, Optional<Inventory> myInv, LivingEntity them, Optional<Inventory> theirInv,
             Consumer<Inventory> outOverflowConsumer,
             Consumer<Inventory> inOverflowConsumer) {
-        Optional<Inventory> outOverflow = Inventory.copyInventoryInto(myInv, them);
-        Optional<Inventory> inOverflow = Inventory.copyInventoryInto(theirInv, me);
+        Optional<Inventory> outOverflow = Inventory.copyInventoryInto(world, myInv, them);
+        Optional<Inventory> inOverflow = Inventory.copyInventoryInto(world, theirInv, me);
 
         outOverflow.ifPresent(outOverflowConsumer);
         inOverflow.ifPresent(inOverflowConsumer);
     }
 
-    public static Optional<Inventory> copyInventoryInto(Optional<Inventory> inventory, LivingEntity to) {
-        return inventory.map(inv -> inv.copyInto(to));
+    public static Optional<Inventory> copyInventoryInto(ServerWorld world, Optional<Inventory> inventory, LivingEntity to) {
+        return inventory.map(inv -> inv.copyInto(world, to));
     }
 }

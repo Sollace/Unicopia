@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity.ai;
 
+import java.util.function.Predicate;
+
 import com.minelittlepony.unicopia.AwaitTickQueue;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.Creature;
@@ -17,13 +19,15 @@ import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 
 public class WantItTakeItGoal extends BreakHeartGoal {
 
+    private final Predicate<LivingEntity> entityPredicate = EquinePredicates.LIVING_HAS_WANT_IT_NEED_IT.and(LivingEntity::canTakeDamage).and(EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR);
     private final TargetPredicate predicate = TargetPredicate.createNonAttackable()
             .setBaseMaxDistance(64)
-            .setPredicate(EquinePredicates.LIVING_HAS_WANT_IT_NEED_IT.and(LivingEntity::canTakeDamage).and(EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
+            .setPredicate((e, w) -> entityPredicate.test(e));
 
     protected int cooldown;
 
@@ -37,7 +41,7 @@ public class WantItTakeItGoal extends BreakHeartGoal {
     @Override
     protected boolean canTarget(Entity e) {
         return e != null && !e.isRemoved() && (
-                  (e instanceof LivingEntity l && predicate.test(mob, l)
+                  (e instanceof LivingEntity l && predicate.test((ServerWorld)mob.getWorld(), mob, l)
                || (e instanceof ItemEntity i && EnchantmentUtil.getWantItNeedItLevel(i) > 0)
             )
         );
@@ -69,7 +73,7 @@ public class WantItTakeItGoal extends BreakHeartGoal {
             if (target instanceof LivingEntity living) {
                 if (cooldown <= 0) {
                     cooldown = 20;
-                    mob.tryAttack(target);
+                    mob.tryAttack(castToServerWorld(mob.getWorld()), target);
                     mob.swingHand(Hand.MAIN_HAND);
 
                     if (mob.getWorld().random.nextInt(20) == 0) {
@@ -78,7 +82,7 @@ public class WantItTakeItGoal extends BreakHeartGoal {
                             if (EnchantmentUtil.getWantItNeedItLevel(stack) > 0) {
                                 AwaitTickQueue.scheduleTask(mob.getWorld(), w -> {
                                     living.equipStack(slot, ItemStack.EMPTY);
-                                    mob.tryEquip(stack);
+                                    mob.tryEquip(castToServerWorld(mob.getWorld()), stack);
                                 });
                                 break;
                             }
@@ -91,7 +95,7 @@ public class WantItTakeItGoal extends BreakHeartGoal {
                     ItemStack stack = item.getStack();
 
                     if (!item.isRemoved()) {
-                        ItemStack collected = mob.tryEquip(stack.copy());
+                        ItemStack collected = mob.tryEquip(castToServerWorld(mob.getWorld()), stack.copy());
                         if (!collected.isEmpty()) {
                             mob.triggerItemPickedUpByEntityCriteria(item);
                             mob.sendPickup(item, stack.getCount());

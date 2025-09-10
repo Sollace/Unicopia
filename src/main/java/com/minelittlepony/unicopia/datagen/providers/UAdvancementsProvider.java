@@ -42,6 +42,7 @@ import net.minecraft.predicate.item.EnchantmentsPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.predicate.item.ItemSubPredicateTypes;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
@@ -50,12 +51,16 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 public class UAdvancementsProvider extends FabricAdvancementProvider {
+
+    private RegistryEntryLookup<Item> items;
+
     public UAdvancementsProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup) {
         super(output, registryLookup);
     }
 
     @Override
     public void generateAdvancement(WrapperLookup registryLookup, Consumer<AdvancementEntry> consumer) {
+        items = registryLookup.getOrThrow(RegistryKeys.ITEM);
         AdvancementDisplayBuilder.create(UItems.ALICORN_BADGE).criterion("crafting_table", hasItems(Items.CRAFTING_TABLE)).build(consumer, "root").children(root -> {
             createTribeRootAdvancement(registryLookup, consumer, root, Race.EARTH).children(consumer, this::generateEarthTribeAdvancementsTree);
             createTribeRootAdvancement(registryLookup, consumer, root, Race.BAT).children(consumer, this::generateBatTribeAdvancementsTree);
@@ -87,16 +92,16 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
             p.child(UItems.WEIRD_ROCK).hidden().criterion("has_rock", hasItems(UItems.WEIRD_ROCK)).build(consumer, "thats_unusual");
         });
 
-        parent.child(UItems.FRIED_AXOLOTL).criterion("eaten_axolotl", ConsumeItemCriterion.Conditions.item(UItems.FRIED_AXOLOTL)).build(consumer, "tastes_like_chicken");
+        parent.child(UItems.FRIED_AXOLOTL).criterion("eaten_axolotl", ConsumeItemCriterion.Conditions.item(items, UItems.FRIED_AXOLOTL)).build(consumer, "tastes_like_chicken");
         parent.child(UItems.OATS).criterion("has_oats", hasItems(UItems.OATS)).build(consumer, "oats_so_easy");
-        parent.child(Items.HAY_BLOCK).criterion("eat_hay", ConsumeItemCriterion.Conditions.item(Items.HAY_BLOCK)).build(consumer, "what_the_hay");
+        parent.child(Items.HAY_BLOCK).criterion("eat_hay", ConsumeItemCriterion.Conditions.item(items, Items.HAY_BLOCK)).build(consumer, "what_the_hay");
         parent.child(UItems.COPPER_HORSE_SHOE).criterion("has_horseshoe", hasItems(UTags.Items.HORSE_SHOES)).build(consumer, "blacksmith").children(p -> {
             p.child(UItems.IRON_HORSE_SHOE).criterion("has_iron_horseshoe", hasItems(UItems.IRON_HORSE_SHOE)).build(consumer, "change_of_shoes")
              .child(UItems.GOLDEN_HORSE_SHOE).criterion("has_gold_horseshoe", hasItems(UItems.GOLDEN_HORSE_SHOE)).build(consumer, "fashionably_expensive")
              .child(UItems.NETHERITE_HORSE_SHOE).criterion("has_netherite_horseshoe", hasItems(UItems.NETHERITE_HORSE_SHOE)).build(consumer, "overkill");
             p.child(UItems.IRON_HORSE_SHOE).hidden().frame(AdvancementFrame.CHALLENGE).criterion("killed_entity_with_horseshoe", killWithItems(UTags.DamageTypes.FROM_HORSESHOES)).build(consumer, "dead_ringer");
         });
-        parent.child(UItems.PINECONE).frame(AdvancementFrame.CHALLENGE).criterion("eat_pinecone", ConsumeItemCriterion.Conditions.item(UItems.PINECONE)).build(consumer, "eat_pinecone");
+        parent.child(UItems.PINECONE).frame(AdvancementFrame.CHALLENGE).criterion("eat_pinecone", ConsumeItemCriterion.Conditions.item(items, UItems.PINECONE)).build(consumer, "eat_pinecone");
         parent.child(UItems.OAK_BASKET).doNotAnnounce().criterion("has_basket", hasItems(UTags.Items.BASKETS)).build(consumer, "basket_case")
             .child(Items.LANTERN).criterion("construct_balloon", CustomEventCriterion.create("construct_balloon")).build(consumer, "aeronaut")
             .child(UItems.GIANT_BALLOON).announce().frame(AdvancementFrame.CHALLENGE).criterion("ride_balloon", CustomEventCriterion.create("ride_balloon")).build(consumer, "travelling_in_style");
@@ -209,7 +214,7 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
     }
 
     private void generateEnchantmentsAdvancementsTree(WrapperLookup registryLookup, Consumer<AdvancementEntry> consumer) {
-        var enchantments = registryLookup.getWrapperOrThrow(RegistryKeys.ENCHANTMENT);
+        var enchantments = registryLookup.getOrThrow(RegistryKeys.ENCHANTMENT);
         AdvancementDisplayBuilder.create(Items.NETHERITE_SCRAP).showToast().announce()
             .criterion("enchant_with_consumption", enchant(enchantments.getOrThrow(UEnchantments.CONSUMPTION)))
             .rewards(AdvancementRewards.Builder.experience(120))
@@ -246,8 +251,8 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
         ));
     }
 
-    public static AdvancementCriterion<?> dragonScroll(boolean receiving, ItemConvertible...items) {
-        return dragonScroll(receiving, ItemPredicate.Builder.create().items(items).build());
+    public AdvancementCriterion<?> dragonScroll(boolean receiving, ItemConvertible...items) {
+        return dragonScroll(receiving, ItemPredicate.Builder.create().items(this.items, items).build());
     }
 
     public static AdvancementCriterion<?> dragonScroll(boolean receiving, ItemPredicate items) {
@@ -266,8 +271,8 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
         return InventoryChangedCriterion.Conditions.items(items);
     }
 
-    static AdvancementCriterion<?> hasItems(TagKey<Item> items) {
-        return InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(items).build());
+    public AdvancementCriterion<?> hasItems(TagKey<Item> items) {
+        return InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(this.items, items).build());
     }
 
     static AdvancementCriterion<?> killWithItems(TagKey<DamageType> tag) {
@@ -277,10 +282,10 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
         );
     }
 
-    static AdvancementCriterion<?> dingCelestia(Set<Race> includeTribes, Set<Race> excludeTribes) {
+    public AdvancementCriterion<?> dingCelestia(Set<Race> includeTribes, Set<Race> excludeTribes) {
         return UCriteria.SEND_DRAGON_BREATH.create(new SendViaDragonBreathScrollCriterion.Conditions(
                 Optional.empty(),
-                Optional.of(ItemPredicate.Builder.create().tag(UTags.Items.IS_DELIVERED_AGGRESSIVELY).build()),
+                Optional.of(ItemPredicate.Builder.create().tag(this.items, UTags.Items.IS_DELIVERED_AGGRESSIVELY).build()),
                 false,
                 Optional.of("princess celestia"),
                 TriState.FALSE,

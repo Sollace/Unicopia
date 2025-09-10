@@ -28,7 +28,6 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexConsumers;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
@@ -165,21 +164,21 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
             final int bottom = height - tileSize + 4;
             final int right = width - tileSize + 9;
 
-            context.drawTexture(SpellbookScreen.TEXTURE, 0, 0, 405, 62, tileSize, tileSize, 512, 256);
-            context.drawTexture(SpellbookScreen.TEXTURE, 0, bottom, 405, 72, tileSize, tileSize, 512, 256);
+            context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, 0, 0, 405, 62, tileSize, tileSize, 512, 256);
+            context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, 0, bottom, 405, 72, tileSize, tileSize, 512, 256);
 
             for (int i = tileSize; i < right; i += tileSize) {
-                context.drawTexture(SpellbookScreen.TEXTURE, i, 0, 415, 62, tileSize, tileSize, 512, 256);
-                context.drawTexture(SpellbookScreen.TEXTURE, i, bottom, 415, 72, tileSize, tileSize, 512, 256);
+                context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, i, 0, 415, 62, tileSize, tileSize, 512, 256);
+                context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, i, bottom, 415, 72, tileSize, tileSize, 512, 256);
             }
 
             for (int i = tileSize; i < bottom; i += tileSize) {
-                context.drawTexture(SpellbookScreen.TEXTURE, 0, i, 405, 67, tileSize, tileSize, 512, 256);
-                context.drawTexture(SpellbookScreen.TEXTURE, right, i, 425, 67, tileSize, tileSize, 512, 256);
+                context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, 0, i, 405, 67, tileSize, tileSize, 512, 256);
+                context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, right, i, 425, 67, tileSize, tileSize, 512, 256);
             }
 
-            context.drawTexture(SpellbookScreen.TEXTURE, right, 0, 425, 62, tileSize, tileSize, 512, 256);
-            context.drawTexture(SpellbookScreen.TEXTURE, right, bottom, 425, 72, tileSize, tileSize, 512, 256);
+            context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, right, 0, 425, 62, tileSize, tileSize, 512, 256);
+            context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, right, bottom, 425, 72, tileSize, tileSize, 512, 256);
             matrices.pop();
 
             if (this == rightPage) {
@@ -229,22 +228,22 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
 
             Vector4f vec = new Vector4f();
 
-            VertexConsumerProvider.Immediate vertices = context.getVertexConsumers();
-            VertexConsumer buffer = VertexConsumers.union(
-                    new OverlayVertexConsumer(vertices.getBuffer(RenderLayer.getGlint()), context.getMatrices().peek(), 0.000078125F),
-                    vertices.getBuffer(RenderLayer.getEntityCutout(trait.getSprite()))
-            );
+            context.draw(vertices -> {
+                VertexConsumer buffer = VertexConsumers.union(
+                        new OverlayVertexConsumer(vertices.getBuffer(RenderLayer.getGlint()), context.getMatrices().peek(), 0.000078125F),
+                        vertices.getBuffer(RenderLayer.getEntityCutout(trait.getSprite()))
+                );
 
-            int color = 0xFFFFFFFF;
-            posMat.transform(vec.set(x1, y1, z));
-            buffer.vertex(vec.x(), vec.y(), vec.z(), color, 0, 0, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, normal.x(), normal.y(), normal.z());
-            posMat.transform(vec.set(x1, y2, z));
-            buffer.vertex(vec.x(), vec.y(), vec.z(), color, 0, 1, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, normal.x(), normal.y(), normal.z());
-            posMat.transform(vec.set(x2, y2, z));
-            buffer.vertex(vec.x(), vec.y(), vec.z(), color, 1, 1, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, normal.x(), normal.y(), normal.z());
-            posMat.transform(vec.set(x2, y1, z));
-            buffer.vertex(vec.x(), vec.y(), vec.z(), color, 1, 0, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, normal.x(), normal.y(), normal.z());
-            vertices.draw();
+                int color = 0xFFFFFFFF;
+                posMat.transform(vec.set(x1, y1, z));
+                buffer.vertex(vec.x(), vec.y(), vec.z(), color, 0, 0, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, normal.x(), normal.y(), normal.z());
+                posMat.transform(vec.set(x1, y2, z));
+                buffer.vertex(vec.x(), vec.y(), vec.z(), color, 0, 1, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, normal.x(), normal.y(), normal.z());
+                posMat.transform(vec.set(x2, y2, z));
+                buffer.vertex(vec.x(), vec.y(), vec.z(), color, 1, 1, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, normal.x(), normal.y(), normal.z());
+                posMat.transform(vec.set(x2, y1, z));
+                buffer.vertex(vec.x(), vec.y(), vec.z(), color, 1, 0, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, normal.x(), normal.y(), normal.z());
+            });
         }
 
         @Override
@@ -256,14 +255,14 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
 
             RenderSystem.setShaderColor(1, 1, 1, 1);
             RenderSystem.enableBlend();
-            context.drawTexture(SpellbookScreen.TEXTURE, getX() - 2, getY() - 8, 204, 219, 22, 32, 512, 256);
+            context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, getX() - 2, getY() - 8, 204, 219, 22, 32, 512, 256);
 
             if (!known) {
-                context.drawTexture(SpellbookScreen.TEXTURE, getX() - 2, getY() - 1, 74, 223, 18, 18, 512, 256);
+                context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, getX() - 2, getY() - 1, 74, 223, 18, 18, 512, 256);
             }
 
             if (discoveries.isUnread(trait)) {
-                context.drawTexture(SpellbookScreen.TEXTURE, getX() - 8, getY() - 8, 225, 219, 35, 32, 512, 256);
+                context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, getX() - 8, getY() - 8, 225, 219, 35, 32, 512, 256);
             }
 
             super.renderWidget(context, mouseX, mouseY, tickDelta);

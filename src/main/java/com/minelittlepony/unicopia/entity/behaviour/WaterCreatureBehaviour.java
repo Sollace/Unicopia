@@ -12,7 +12,7 @@ public class WaterCreatureBehaviour extends EntityBehaviour<WaterCreatureEntity>
             source.asEntity().setAir(source.asEntity().getAir() - 1);
             if (source.asEntity().getAir() == -20) {
                 source.asEntity().setAir(0);
-                source.asEntity().damage(source.asEntity().getDamageSources().dryOut(), 2);
+                source.asEntity().damage(source.asServerWorld(), source.asEntity().getDamageSources().dryOut(), 2);
             }
         } else {
             source.asEntity().setAir(300);

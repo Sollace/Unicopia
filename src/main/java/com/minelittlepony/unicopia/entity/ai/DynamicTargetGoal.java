@@ -76,6 +76,6 @@ public class DynamicTargetGoal extends Goal {
     @Override
     public boolean shouldContinue() {
         LivingEntity target = mob.getTarget();
-        return target != null && mob.isTarget(target, TargetPredicate.DEFAULT);
+        return target != null && TargetPredicate.DEFAULT.test(castToServerWorld(mob.getWorld()), mob, target);
     }
 }

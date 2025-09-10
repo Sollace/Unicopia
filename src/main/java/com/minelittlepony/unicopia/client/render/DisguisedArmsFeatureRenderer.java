@@ -9,13 +9,9 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.google.common.base.MoreObjects;
-import com.minelittlepony.unicopia.ability.magic.Caster;
-import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.client.FirstPersonRendererOverrides.ArmRenderer;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
-import com.minelittlepony.unicopia.entity.behaviour.Disguise;
-import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 
@@ -33,7 +29,6 @@ import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -45,7 +40,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
-public class DisguisedArmsFeatureRenderer<S extends BipedEntityRenderState, E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<E> {
+public class DisguisedArmsFeatureRenderer<S extends BipedEntityRenderState> implements AccessoryFeatureRenderer.Feature<S> {
 
     private final MinecraftClient client = MinecraftClient.getInstance();
 
@@ -81,31 +76,31 @@ public class DisguisedArmsFeatureRenderer<S extends BipedEntityRenderState, E ex
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, E entity, float limbAngle, float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, S entity, float limbAngle, float limbDistance) {
     }
 
     @Override
-    public boolean beforeRenderArms(ArmRenderer sender, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, E entity, int light) {
-        Entity appearance = getAppearance(entity);
-        if (appearance instanceof LivingEntity l) {
-            float swingProgress = entity.getHandSwingProgress(tickDelta);
+    public boolean beforeRenderArms(ArmRenderer sender, MatrixStack matrices, VertexConsumerProvider vertexConsumers, S entity, int light) {
+        if (CasterState.of(entity).appearance instanceof LivingEntity l) {
+            float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+            float swingProgress = entity.handSwingProgress;
 
-            Hand hand = MoreObjects.firstNonNull(entity.preferredHand, Hand.MAIN_HAND);
+            Hand hand = entity.preferredArm == entity.mainArm ? Hand.MAIN_HAND : Hand.OFF_HAND;
 
             boolean bothHands = l instanceof ZombieEntity || l instanceof IronGolemEntity;
 
             if (bothHands || hand == Hand.MAIN_HAND) {
                 if (entity.getMainHandStack().isEmpty()) {
                     matrices.push();
-                    renderArmHoldingItem(l, matrices, vertexConsumers, light, 1 - sender.getEquipProgress(Hand.MAIN_HAND, tickDelta), hand == Hand.MAIN_HAND ? swingProgress : 0, entity.getMainArm());
+                    renderArmHoldingItem(l, matrices, vertexConsumers, light, 1 - sender.getEquipProgress(Hand.MAIN_HAND, tickDelta), hand == Hand.MAIN_HAND ? swingProgress : 0, entity.mainArm);
                     matrices.pop();
                 }
             }
 
             if (bothHands || hand == Hand.OFF_HAND) {
-                if (entity.getOffHandStack().isEmpty()) {
+                if ((entity.mainArm == Arm.LEFT ? entity.rightHandStack : entity.leftHandStack).isEmpty()) {
                     matrices.push();
-                    renderArmHoldingItem(l, matrices, vertexConsumers, light, 1 - sender.getEquipProgress(Hand.OFF_HAND, tickDelta), hand == Hand.OFF_HAND ? swingProgress : 0, entity.getMainArm().getOpposite());
+                    renderArmHoldingItem(l, matrices, vertexConsumers, light, 1 - sender.getEquipProgress(Hand.OFF_HAND, tickDelta), hand == Hand.OFF_HAND ? swingProgress : 0, entity.mainArm.getOpposite());
                     matrices.pop();
                 }
             }
@@ -114,16 +109,8 @@ public class DisguisedArmsFeatureRenderer<S extends BipedEntityRenderState, E ex
         return false;
     }
 
-    private Entity getAppearance(E entity) {
-        return Caster.of(entity).flatMap(caster -> caster.getSpellSlot().get(SpellPredicate.IS_DISGUISE)).map(Disguise.class::cast)
-                .flatMap(Disguise::getAppearance)
-                .map(EntityAppearance::getAppearance)
-                .orElse(null);
-    }
-
     @Nullable
     private ModelPart getArmModel(@Nullable EntityModel<?> model, boolean right) {
-
         if (model instanceof BipedEntityModel bipedModel) {
             return right ? bipedModel.rightArm : bipedModel.leftArm;
         }

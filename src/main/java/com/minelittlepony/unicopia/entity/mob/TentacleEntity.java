@@ -47,9 +47,6 @@ public class TentacleEntity extends AbstractDecorationEntity {
     private static final TrackedData<Integer> GROWTH = DataTracker.registerData(TentacleEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> MOTION_OFFSET = DataTracker.registerData(TentacleEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
-    @Nullable
-    private Box visibilityBox;
-
     private int prevGrowth;
     private int attackingTicks;
     private float prevAttackingTicks;
@@ -320,16 +317,7 @@ public class TentacleEntity extends AbstractDecorationEntity {
     }
 
     @Override
-    public Box getVisibilityBoundingBox() {
-        if (visibilityBox == null) {
-            visibilityBox = getBoundingBox().expand(10, 0, 10).stretch(0, 10, 0);
-        }
-        return visibilityBox;
-    }
-
-    @Override
     protected Box calculateBoundingBox(BlockPos pos, Direction side) {
-        visibilityBox = null;
         return Box.of(pos.down().toCenterPos(), 1, 1, 1).stretch(0, 2, 0);
     }
 

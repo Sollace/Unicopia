@@ -60,7 +60,7 @@ public class SpellSlot extends Slot implements SpellbookSlot {
         } else {
             var result = EnchantableItem.consumeSpell(stack, pony.asEntity(), null, true);
 
-            pony.getCharms().equipSpell(hand, result.getValue());
+            pony.getCharms().equipSpell(hand, result.value());
         }
     }
 

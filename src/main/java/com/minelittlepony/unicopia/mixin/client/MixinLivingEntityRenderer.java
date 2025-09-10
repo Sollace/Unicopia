@@ -87,6 +87,6 @@ abstract class MixinLivingEntityRenderer<T extends LivingEntity, S extends Livin
             at = @At("TAIL"))
     private void onUpdateRenderState(T entity, S state, float tickDelta, CallbackInfo info) {
         CasterState caster = CasterState.of(state);
-        caster.update(Caster.of(entity).orElse(null));
+        caster.update(Caster.of(entity).orElse(null), tickDelta);
     }
 }

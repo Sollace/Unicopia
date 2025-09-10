@@ -31,7 +31,7 @@ public class ChickenBehaviour extends EntityBehaviour<ChickenEntity> {
                     if (egg.isEmpty()) {
                         egg = new ItemStack(Items.EGG);
 
-                        int slot = player.asEntity().getInventory().indexOf(egg);
+                        int slot = player.asEntity().getInventory().getMatchingSlot(egg.getRegistryEntry());
                         if (slot > -1) {
                             player.asEntity().getInventory().removeStack(slot, 1);
                             entity.playSound(USounds.Vanilla.ENTITY_CHICKEN_EGG,
@@ -41,7 +41,7 @@ public class ChickenBehaviour extends EntityBehaviour<ChickenEntity> {
                             entity.equipStack(EquipmentSlot.OFFHAND, egg);
                         }
                     }
-                } else if (egg.getItem() == Items.EGG) {
+                } else if (egg.isOf(Items.EGG)) {
                     entity.equipStack(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
                     entity.eggLayTime = 0;
                 }
