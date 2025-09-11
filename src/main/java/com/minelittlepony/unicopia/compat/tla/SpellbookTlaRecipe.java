@@ -37,7 +37,7 @@ class SpellbookTlaRecipe implements TlaRecipe, SpellbookRecipe.CraftingTreeBuild
     private final Supplier<List<TlaIngredient>> ingredients;
 
     static void generate(RecipeCategory category, PluginContext context) {
-        context.addGenerator(client -> client.world.getRecipeManager().listAllOfType(URecipes.SPELLBOOK).stream().flatMap(recipe -> {
+        context.addRecipeMultiGenerator(URecipes.SPELLBOOK, recipe -> {
             if (recipe.value() instanceof SpellDuplicatingRecipe) {
                 return Stream.of(new SpellDuplicatingTlaRecipe(recipe));
             }
@@ -47,7 +47,7 @@ class SpellbookTlaRecipe implements TlaRecipe, SpellbookRecipe.CraftingTreeBuild
             }
 
             return Stream.of((TlaRecipe)new SpellbookTlaRecipe(recipe));
-        }).toList());
+        });
     }
 
     public SpellbookTlaRecipe(RecipeEntry<SpellbookRecipe> recipe) {
