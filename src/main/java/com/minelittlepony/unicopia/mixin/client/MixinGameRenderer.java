@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.client.render.shader.ViewportShader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.client.util.Pool;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.entity.LivingEntity;
@@ -22,6 +23,9 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
 
     @Shadow
     private @Final MinecraftClient client;
+
+    @Shadow
+    private @Final Pool pool;
 
     @ModifyReturnValue(method = "getFov", at = @At("RETURN"))
     private double modifyFov(double initial) {
@@ -53,11 +57,6 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/gl/Framebuffer.beginWrite(Z)V", shift = Shift.BEFORE))
     private void onBeforeFrameEnd(RenderTickCounter tickCounter, boolean tick, CallbackInfo info) {
-        ViewportShader.INSTANCE.render(tickCounter);
-    }
-
-    @Inject(method = "onResized", at = @At("HEAD"))
-    private void onResized(int width, int height, CallbackInfo info) {
-        ViewportShader.INSTANCE.onResized(width, height);
+        ViewportShader.INSTANCE.render(pool, tickCounter.getTickDelta(false));
     }
 }

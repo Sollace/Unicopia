@@ -1,21 +1,21 @@
 package com.minelittlepony.unicopia.client.render.shader;
 
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
-
 import com.minelittlepony.unicopia.Unicopia;
-import net.minecraft.client.gl.ShaderProgram;
+
+import net.minecraft.client.gl.Defines;
+import net.minecraft.client.gl.ShaderProgramKey;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 
 public interface UShaders {
-    Supplier<ShaderProgram> RENDER_TYPE_PORTAL_SURFACE = register("rendertype_portal_surface", VertexFormats.POSITION_COLOR);
+    ShaderProgramKey RENDER_TYPE_PORTAL_SURFACE = register("rendertype_portal_surface", VertexFormats.POSITION_COLOR, Defines.EMPTY);
 
     static void bootstrap() { }
 
-    static Supplier<ShaderProgram> register(String name, VertexFormat format) {
-        AtomicReference<ShaderProgram> holder = new AtomicReference<>();
-        CoreShaderRegistrationCallback.EVENT.register(context -> context.register(Unicopia.id(name), format, holder::set));
-        return holder::get;
+    private static ShaderProgramKey register(String name, VertexFormat format, Defines defines) {
+        ShaderProgramKey key = new ShaderProgramKey(Unicopia.id("core/" + name), format, defines);
+        ShaderProgramKeys.getAll().add(key);
+        return key;
     }
 }
