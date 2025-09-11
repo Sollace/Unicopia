@@ -59,7 +59,9 @@ public interface UBlocks {
     List<Block> TRANSLUCENT_BLOCKS = new ArrayList<>();
     List<Block> SEMI_TRANSPARENT_BLOCKS = new ArrayList<>();
 
+    @SuppressWarnings("deprecation")
     Block ROCKS = register("rocks", new RockCropBlock(Settings.create()
+            .notSolid()
             .mapColor(MapColor.STONE_GRAY)
             .nonOpaque()
             .pistonBehavior(PistonBehavior.DESTROY)
@@ -202,6 +204,7 @@ public interface UBlocks {
     Block SLIME_PUSTULE = register("slime_pustule", new SlimePustuleBlock(Settings.copy(Blocks.SLIME_BLOCK)), ItemGroups.NATURAL);
 
     Block SHAPING_BENCH = register("shaping_bench", new ShapingBenchBlock(Settings.create().mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL)), ItemGroups.FUNCTIONAL);
+    @SuppressWarnings("deprecation")
     Block CLOUD = register("cloud", new NaturalCloudBlock(true,
             () -> UBlocks.SOGGY_CLOUD,
             () -> UBlocks.COMPACTED_CLOUD,

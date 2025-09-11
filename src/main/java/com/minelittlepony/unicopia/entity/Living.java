@@ -34,7 +34,6 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.component.BreaksIntoItemComponent;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
-import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.DataTrackerManager;
 import com.minelittlepony.unicopia.network.track.Trackable;
@@ -255,7 +254,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
         updateDragonBreath();
 
-        if (EnchantmentUtil.getLevel(UEnchantments.GEM_FINDER, entity) > 0) {
+        if (EnchantmentUtil.getGemfinderLevel(entity) > 0) {
             InteractionManager.getInstance().playLoopingSound(entity, InteractionManager.SOUND_GEM_FINDING_MAGIC_HUM, 0);
         }
 

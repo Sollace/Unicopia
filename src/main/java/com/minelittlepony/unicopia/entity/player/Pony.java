@@ -97,8 +97,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private Race.Composite compositeRace = Race.UNSET.composite();
     private Race respawnRace = Race.UNSET;
 
-    private boolean dirty;
-
     private float magicExhaustion = 0;
 
     private int ticksInvulnerable;
@@ -108,7 +106,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private boolean hasShades;
     private int ticksSunImmunity = INITIAL_SUN_IMMUNITY;
 
-    private AnimationInstance animation = new AnimationInstance(Animation.NONE, Animation.Recipient.ANYONE);
+    private AnimationInstance animation = AnimationInstance.NONE;
     private int animationMaxDuration;
     private int animationDuration;
 
@@ -118,8 +116,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public Pony(PlayerEntity player) {
         super(player);
         trackers.addPacketEmitter((sender, initial) -> {
-            if (initial || dirty) {
-                dirty = false;
+            if (initial) {
                 sender.accept(Channel.SERVER_PLAYER_CAPABILITIES.toPacket(new MsgPlayerCapabilities(this)));
             }
         });
@@ -135,6 +132,18 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         addTicker(this::updateCorruptionDecay);
         addTicker(new PlayerAttributes(this));
         addTicker(corruptionHandler);
+    }
+
+    public void sendUpdatePacket() {
+        if (entity instanceof ServerPlayerEntity) {
+            Channel.SERVER_PLAYER_CAPABILITIES.sendToAllPlayers(new MsgPlayerCapabilities(this), entity.getWorld());
+        }
+    }
+
+    public void sendUpdateToPlayer() {
+        if (entity instanceof ServerPlayerEntity pl) {
+            Channel.SERVER_PLAYER_CAPABILITIES.sendToPlayer(new MsgPlayerCapabilities(this), pl);
+        }
     }
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
@@ -183,7 +192,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             animation.animation().getSound().ifPresent(sound -> {
                 playSound(sound, sound == USounds.ENTITY_PLAYER_WOLOLO ? 0.1F : 0.9F, 1);
             });
-            setDirty();
+            sendUpdatePacket();
         }
     }
 
@@ -328,11 +337,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return getSpecies().getAffinity();
     }
 
-    @Deprecated
-    public void setDirty() {
-        dirty = true;
-    }
-
     public AbilityDispatcher getAbilities() {
         return powers;
     }
@@ -387,6 +391,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             }
         }
         ticksSunImmunity = INITIAL_SUN_IMMUNITY;
+        sendUpdatePacket();
     }
 
     public boolean isSpawnInvalid(BlockPos pos) {
@@ -845,18 +850,12 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
-        compound.put("mana", mana.toNBT(lookup));
-        compound.putInt("levels", levels.get());
-        compound.putInt("corruption", corruption.get());
         compound.put("advancementTriggerCounts", NbtSerialisable.encode(TriggerCountTracker.CODEC, advancementProgress, lookup));
         super.toNBT(compound, lookup);
     }
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-        levels.set(compound.getInt("levels"));
-        corruption.set(compound.getInt("corruption"));
-        mana.fromNBT(compound.getCompound("mana"), lookup);
         advancementProgress = NbtSerialisable.decode(TriggerCountTracker.CODEC, compound.get("advancementTriggerCounts"), lookup).orElseGet(() -> new TriggerCountTracker(Map.of()));
         super.fromNBT(compound, lookup);
     }
@@ -864,6 +863,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void toSyncronisedNbt(NbtCompound compound, WrapperLookup lookup) {
         super.toSyncronisedNbt(compound, lookup);
+        compound.put("mana", mana.toNBT(lookup));
+        compound.putInt("levels", levels.get());
+        compound.putInt("corruption", corruption.get());
         compound.putString("playerSpecies", Race.REGISTRY.getId(getSpecies()).toString());
         compound.putString("suppressedSpecies", Race.REGISTRY.getId(getSuppressedRace()).toString());
         compound.putFloat("magicExhaustion", magicExhaustion);
@@ -881,6 +883,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void fromSynchronizedNbt(NbtCompound compound, WrapperLookup lookup) {
         super.fromSynchronizedNbt(compound, lookup);
+        levels.set(compound.getInt("levels"));
+        corruption.set(compound.getInt("corruption"));
+        mana.fromNBT(compound.getCompound("mana"), lookup);
         setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
         setSuppressedRace(Race.fromName(compound.getString("suppressedSpecies"), Race.UNSET));
         powers.fromNBT(compound.getCompound("powers"), lookup);
@@ -943,7 +948,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         mana.copyFrom(oldPlayer.mana, !forcedSwap);
         advancementProgress.copyFrom(oldPlayer.advancementProgress, alive);
-        setDirty();
         onSpawn();
     }
 

@@ -17,6 +17,7 @@ import com.google.common.collect.Multimap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.Resources;
@@ -55,9 +56,9 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
                     profiler.push(resource.getPackId());
 
                     try (InputStreamReader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
-                        JsonObject data = JsonHelper.deserialize(Resources.GSON, reader, JsonObject.class);
+                        JsonObject data = JsonParser.parseReader(reader).getAsJsonObject();
 
-                        TraitStream set = TraitStream.of(path, resource.getPackId(), data);
+                        TraitStream set = TraitStream.of(path, data);
 
                         if (set.replace()) {
                             prepared.removeAll(path);
@@ -111,20 +112,20 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
 
         Stream<Map.Entry<Key, SpellTraits>> entries();
 
-        static TraitStream of(Identifier id, String pack, JsonObject json) {
+        static TraitStream of(Identifier id, JsonObject json) {
 
             if (json.has("items") && json.get("items").isJsonObject()) {
                 return new TraitMap(JsonHelper.getBoolean(json, "replace", false),
                         Resources.GSON.getAdapter(TYPE).fromJsonTree(json.get("items")).entrySet().stream().collect(Collectors.toMap(
                                 a -> Key.of(a.getKey()),
-                                a -> SpellTraits.fromString(a.getValue()).orElse(SpellTraits.EMPTY)
+                                a -> SpellTraits.fromString(a.getValue())
                         ))
                 );
             }
 
             return new TraitSet(
                     JsonHelper.getBoolean(json, "replace", false),
-                    SpellTraits.fromString(JsonHelper.getString(json, "traits")).orElse(SpellTraits.EMPTY),
+                    SpellTraits.fromString(JsonHelper.getString(json, "traits")),
                     StreamSupport.stream(JsonHelper.getArray(json, "items").spliterator(), false)
                         .map(JsonElement::getAsString)
                         .map(Key::of)

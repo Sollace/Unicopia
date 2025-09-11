@@ -53,6 +53,7 @@ public interface ChapterPageElement {
         element.toBuffer(buffer);
     }
 
+    @Deprecated
     private static Bounds boundsFromJson(JsonObject el) {
         return new Bounds(
             JsonHelper.getInt(el, "y", 0),
@@ -72,6 +73,7 @@ public interface ChapterPageElement {
     void toBuffer(ServerBoundByteBuf buffer);
 
     record Image (Identifier texture, Bounds bounds, Flow flow) implements ChapterPageElement {
+        @Deprecated
         public Image(JsonObject json) {
             this(
                 Identifier.of(JsonHelper.getString(json, "texture")),
@@ -90,6 +92,7 @@ public interface ChapterPageElement {
 
     record Recipe(Identifier value) implements ChapterPageElement {
         private static final PacketCodec<RegistryByteBuf, List<RecipeDisplay>> DISPLAYS_PACKET_CODEC = RecipeDisplay.STREAM_CODEC.collect(PacketCodecs.toList());
+        @Deprecated
         public Recipe(JsonObject json) {
             this(Identifier.of(JsonHelper.getString(json, "recipe")));
         }
@@ -107,6 +110,7 @@ public interface ChapterPageElement {
     }
 
     record Stack (IngredientWithSpell ingredient, Bounds bounds) implements ChapterPageElement {
+        @Deprecated
         public Stack(JsonObject json) {
             this(IngredientWithSpell.CODEC.decode(JsonOps.INSTANCE, json.get("item")).result().get().getFirst(), boundsFromJson(json));
         }
@@ -119,6 +123,7 @@ public interface ChapterPageElement {
     }
 
     record TextBlock (Text text) implements ChapterPageElement {
+        @Deprecated
         public TextBlock(JsonElement json) {
             this(json.isJsonPrimitive() ? Text.translatable(json.getAsString()) : Text.Serialization.fromJsonTree(json, DynamicRegistryManager.EMPTY));
         }
@@ -131,6 +136,7 @@ public interface ChapterPageElement {
     }
 
     record Ingredients(List<ChapterPageElement> entries) implements ChapterPageElement {
+        @Deprecated
         public Ingredients(JsonObject json) {
             this(JsonHelper.getArray(json, "ingredients").asList().stream()
                         .map(JsonElement::getAsJsonObject)
@@ -142,7 +148,7 @@ public interface ChapterPageElement {
         static ChapterPageElement loadIngredient(JsonObject json) {
             int count = JsonHelper.getInt(json, "count", 1);
             if (json.has("item")) return new Multi(count, new Id((byte)1, Identifier.tryParse(json.get("item").getAsString())));
-            if (json.has("trait")) return new Multi(count, new Id((byte)2, Trait.fromId(json.get("trait").getAsString()).orElseThrow().getId()));
+            if (json.has("trait")) return new Multi(count, new Id((byte)2, Trait.byName(json.get("trait").getAsString()).orElseThrow().getId()));
             if (json.has("spell")) return new Multi(count, new Id((byte)4, Identifier.tryParse(json.get("spell").getAsString())));
             return new Multi(count, new TextBlock(json.get("text")));
         }
@@ -171,6 +177,7 @@ public interface ChapterPageElement {
     }
 
     record Structure(List<ChapterPageElement> commands) implements ChapterPageElement {
+        @Deprecated
         public Structure(JsonObject json) {
             this(JsonHelper.getArray(json, "structure").asList().stream()
                         .map(JsonElement::getAsJsonObject)
@@ -178,6 +185,7 @@ public interface ChapterPageElement {
                         .toList());
         }
 
+        @Deprecated
         static ChapterPageElement loadCommand(JsonObject json) {
             if (json.has("pos")) {
                 var pos = JsonHelper.getArray(json, "pos");

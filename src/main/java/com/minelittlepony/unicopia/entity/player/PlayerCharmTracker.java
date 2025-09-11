@@ -60,7 +60,7 @@ public class PlayerCharmTracker implements NbtSerialisable, Copyable<PlayerCharm
         if (!Objects.equals(previous, spell)) {
             pony.asEntity().playSound(USounds.GUI_SPELL_EQUIP.value(), 0.25F, 1.75F);
         }
-        pony.setDirty();
+        pony.sendUpdatePacket();
         return previous;
     }
 

@@ -52,7 +52,7 @@ public class JsonReversableBlockStateConverter implements ReversableBlockStateCo
                 .orElse(state);
     }
 
-    record Entry (
+    public record Entry (
             StatePredicate match,
             StateChange stateChange,
             Optional<Entry> inverse

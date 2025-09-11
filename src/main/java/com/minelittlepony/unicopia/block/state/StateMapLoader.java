@@ -9,10 +9,8 @@ import org.slf4j.Logger;
 import com.google.common.collect.Maps;
 import com.google.gson.*;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.util.Resources;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
-
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.block.BlockState;
 import net.minecraft.resource.*;
@@ -44,8 +42,9 @@ public class StateMapLoader extends JsonDataLoader<JsonReversableBlockStateConve
 
     @Override
     protected Map<Identifier, JsonReversableBlockStateConverter> prepare(ResourceManager resourceManager, Profiler profiler) {
-        Map<Identifier, JsonReversableBlockStateConverter> map = Maps.newHashMap();
         int i = DATA_TYPE.length() + 1;
+
+        Map<Identifier, JsonReversableBlockStateConverter> map = Maps.newHashMap();
 
         resourceManager.findAllResources(DATA_TYPE, id -> id.getPath().endsWith(FILE_SUFFIX)).entrySet().stream().forEach(entry -> {
             Identifier resId = entry.getKey();
@@ -54,23 +53,19 @@ public class StateMapLoader extends JsonDataLoader<JsonReversableBlockStateConve
             JsonArray entries = new JsonArray();
             for (var resource : entry.getValue()) {
                 try (BufferedReader reader = resource.getReader()) {
-                    JsonObject json = JsonHelper.deserialize(Resources.GSON, reader, JsonObject.class);
+                    JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
 
-                    if (json != null) {
-                        if (json.has("entries")) {
-
-                            JsonArray incoming = JsonHelper.getArray(json, "entries");
-                            if (json.has("replace") && json.get("replace").getAsBoolean()) {
-                                entries = incoming;
-                            } else {
-                                entries.addAll(incoming);
-                            }
-                        }
-
+                    if (!json.has("entries")) {
+                        LOGGER.error("Couldn't load data file {} from {} as it's null or empty", id, resId);
                         continue;
                     }
 
-                    LOGGER.error("Couldn't load data file {} from {} as it's null or empty", id, resId);
+                    JsonArray incoming = JsonHelper.getArray(json, "entries");
+                    if (json.has("replace") && json.get("replace").getAsBoolean()) {
+                        entries = incoming;
+                    } else {
+                        entries.addAll(incoming);
+                    }
                 } catch (JsonParseException | IOException | IllegalArgumentException e) {
                     LOGGER.error("Couldn't parse data file {} from {}", id, resId, e);
                 }

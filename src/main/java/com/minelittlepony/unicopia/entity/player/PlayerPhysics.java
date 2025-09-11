@@ -236,7 +236,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             entity.calculateDimensions();
         }
 
-        pony.setDirty();
+        pony.sendUpdatePacket();
     }
 
     public double getHorizontalMotion() {
@@ -630,7 +630,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         thrustScale = 0;
         descentRate = 0;
         entity.calculateDimensions();
-        pony.setDirty();
+        pony.sendUpdatePacket();
 
         if (entity.isOnGround() || !force) {
             //BlockState steppingState = pony.asEntity().getSteppingBlockState();

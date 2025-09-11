@@ -4,8 +4,6 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
-import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
-
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -23,7 +21,7 @@ public class MagicAuraSoundInstance extends FadeOutSoundInstance {
 
     @Override
     protected boolean shouldKeepPlaying() {
-        int level = EnchantmentUtil.getLevel(UEnchantments.GEM_FINDER, living.asEntity());
+        int level = EnchantmentUtil.getGemfinderLevel(living.asEntity());
 
         setPosition(living.getOriginVector());
         if (level <= 0 || living.asEntity().isRemoved()) {

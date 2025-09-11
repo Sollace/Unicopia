@@ -48,7 +48,7 @@ public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery>
         unreadTraits.clear();
         items.clear();
         traits.clear();
-        pony.setDirty();
+        pony.sendUpdateToPlayer();
     }
 
     @Environment(EnvType.CLIENT)
@@ -58,7 +58,7 @@ public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery>
 
     public void markRead(Set<Trait> traits) {
         if (unreadTraits.removeAll(traits)) {
-            pony.setDirty();
+            pony.sendUpdateToPlayer();
         }
     }
 
@@ -75,7 +75,7 @@ public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery>
             }
         });
         unreadTraits.addAll(newTraits);
-        pony.setDirty();
+        pony.sendUpdateToPlayer();
         if (!newTraits.isEmpty()) {
             if (!pony.asWorld().isClient) {
                 Channel.UNLOCK_TRAITS.sendToPlayer(new MsgUnlockTraits(newTraits), (ServerPlayerEntity)pony.asEntity());

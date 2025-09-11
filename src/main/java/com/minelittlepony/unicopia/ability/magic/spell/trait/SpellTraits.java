@@ -17,6 +17,9 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.Nullable;
+
+import com.google.gson.JsonPrimitive;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
@@ -24,6 +27,7 @@ import com.minelittlepony.unicopia.util.InventoryUtil;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.JsonOps;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -52,6 +56,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
             map -> DataResult.success(fromEntries(map.entrySet().stream()).orElse(EMPTY)),
             traits -> DataResult.success(traits.traits)
     );
+    public static final Codec<SpellTraits> STRING_CODEC = createStringCodec(" ");
     public static final PacketCodec<PacketByteBuf, SpellTraits> PACKET_CODEC = PacketCodec.ofStatic((a, b) -> b.write(a), SpellTraits::fromPacket);
 
     public static void load(Map<Identifier, SpellTraits> newRegistry) {
@@ -265,12 +270,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     @Deprecated
-    public static Optional<SpellTraits> fromPacketOrEmpty(PacketByteBuf buf) {
-        return buf.readOptional(SpellTraits::fromPacket).filter(SpellTraits::isPresent);
-    }
-
-    @Deprecated
-    public static SpellTraits fromPacket(PacketByteBuf buf) {
+    private static SpellTraits fromPacket(PacketByteBuf buf) {
         Map<Trait, Float> entries = new HashMap<>();
         int count = buf.readInt();
         if (count <= 0) {
@@ -294,20 +294,25 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return new SpellTraits(entries);
     }
 
-    public static Optional<SpellTraits> fromString(String traits) {
-        return fromString(traits, " ");
+    @Deprecated
+    public static SpellTraits fromString(String traits) {
+        return STRING_CODEC.decode(JsonOps.INSTANCE, new JsonPrimitive(traits)).result().map(Pair::getFirst).orElse(EMPTY);
     }
 
-    @Deprecated
-    private static Optional<SpellTraits> fromString(String traits, String delimiter) {
-        return fromEntries(Arrays.stream(traits.split(delimiter)).map(a -> a.split(":")).map(pair -> {
-            Trait key = Trait.fromName(pair[0]).orElse(null);
+    public static Codec<SpellTraits> createStringCodec(String delimiter) {
+        return Codec.STRING.xmap(s -> fromEntries(Arrays.stream(s.split(delimiter))
+                .map(a -> a.split(":"))
+                .map(pair -> {
+            @Nullable
+            Trait key = Trait.byName(pair[0]).orElse(null);
             if (key == null) {
                 Unicopia.LOGGER.warn("Skipping unknown trait {}", pair[0]);
                 return null;
             }
             return Map.entry(key, Float.parseFloat(pair[1]));
-        }));
+        })).orElse(EMPTY), traits -> traits.traits.entrySet().stream()
+                .map(entry -> entry.getKey().asString() + ":" + entry.getValue())
+                .collect(Collectors.joining(delimiter)));
     }
 
     public static Optional<SpellTraits> fromEntries(Stream<Map.Entry<Trait, Float>> entries) {

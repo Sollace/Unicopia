@@ -68,7 +68,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
