@@ -8,18 +8,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.minelittlepony.unicopia.entity.duck.LavaAffine;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.Leashable;
 import net.minecraft.entity.data.*;
 import net.minecraft.entity.data.DataTracker.Builder;
+import net.minecraft.entity.vehicle.AbstractBoatEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.VehicleEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
 
-@Mixin(BoatEntity.class)
-abstract class MixinBoatEntity extends Entity implements LavaAffine {
+@Mixin(AbstractBoatEntity.class)
+abstract class MixinBoatEntity extends VehicleEntity implements Leashable, LavaAffine {
     private static final TrackedData<Boolean> IS_LAVA_BOAT = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     MixinBoatEntity() { super(null, null); }

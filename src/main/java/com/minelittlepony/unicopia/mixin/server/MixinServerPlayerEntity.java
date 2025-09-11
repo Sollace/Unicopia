@@ -14,16 +14,18 @@ import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.duck.ServerPlayerEntityDuck;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.SpawnLocator;
-import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.mojang.datafixers.util.Either;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -35,6 +37,11 @@ abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHan
     @Override
     @Accessor("inTeleportationState")
     public abstract void setPreventMotionChecks(boolean enabled);
+
+    @Inject(method = "dropPlayerItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;", at = @At("RETURN"))
+    private void onDropItem(ItemStack stack, boolean scatter, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> info) {
+        get().onDropItem((ServerWorld)getWorld(), info.getReturnValue());
+    }
 
     @SuppressWarnings("unchecked")
     @Inject(method = "copyFrom(Lnet/minecraft/server/network/ServerPlayerEntity;Z)V", at = @At("HEAD"))

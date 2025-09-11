@@ -15,19 +15,16 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.datafixers.util.Either;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 @Mixin(PlayerEntity.class)
 abstract class MixinPlayerEntity extends LivingEntity implements Equine.Container<Pony>, PlayerEntityDuck {
@@ -47,14 +44,9 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
         return builder;
     }
 
-    @ModifyVariable(method = "applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
-    protected float modifyDamageAmount(float amount, DamageSource source) {
+    @ModifyVariable(method = "applyDamage(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/damage/DamageSource;F)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
+    protected float modifyDamageAmount(ServerWorld world, float amount, DamageSource source) {
         return get().modifyDamage(source, amount).orElse(amount);
-    }
-
-    @ModifyVariable(method = "eatFood(Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;Lnet/minecraft/component/type/FoodComponent;)Lnet/minecraft/item/ItemStack;", at = @At("HEAD"), argsOnly = true)
-    private FoodComponent onEatFood(FoodComponent initial, World world, ItemStack stack, FoodComponent food) {
-        return get().onEat(stack, food);
     }
 
     @Inject(method = "trySleep(Lnet/minecraft/util/math/BlockPos;)Lcom/mojang/datafixers/util/Either;", at = @At("HEAD"), cancellable = true)
@@ -66,12 +58,6 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
                 info.setReturnValue(Either.left(ServerPlayerEntity.SleepFailureReason.OTHER_PROBLEM));
             });
         }
-    }
-
-    @Inject(method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;",
-            at = @At("RETURN"))
-    private void onDropItem(ItemStack itemStack_1, boolean scatter, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> info) {
-        get().onDropItem(info.getReturnValue());
     }
 
     @ModifyReturnValue(method = "getBaseDimensions(Lnet/minecraft/entity/EntityPose;)Lnet/minecraft/entity/EntityDimensions;", at = @At("RETURN"))

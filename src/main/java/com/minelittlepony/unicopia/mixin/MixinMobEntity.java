@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.mob.MobEntity;
@@ -31,9 +32,9 @@ abstract class MixinMobEntity extends LivingEntity implements Equine.Container<C
         get().initAi(goalSelector, targetSelector);
     }
 
-    @Inject(method = "prefersNewEquipment(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;)Z",
+    @Inject(method = "prefersNewEquipment(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemStack;Lnet/minecraft/entity/EquipmentSlot;)Z",
             at = @At("HEAD"), cancellable = true)
-    private void onPrefersNewEquipment(ItemStack newStack, ItemStack oldStack, CallbackInfoReturnable<Boolean> info) {
+    private void onPrefersNewEquipment(ItemStack newStack, ItemStack oldStack, EquipmentSlot slot, CallbackInfoReturnable<Boolean> info) {
         if (EnchantmentUtil.prefersEquipment(newStack, oldStack)) {
             info.setReturnValue(true);
         }

@@ -2,15 +2,17 @@ package com.minelittlepony.unicopia.entity.behaviour;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.mixin.MixinSheepEntity;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.util.DyeColor;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.WorldEvents;
@@ -36,7 +38,13 @@ public class SheepBehaviour extends EntityBehaviour<SheepEntity> {
 
                     entity.onEatingGrass();
                 } else if (!entity.isSheared()) {
-                    ItemStack dropType = new ItemStack(MixinSheepEntity.getDrops().get(entity.getColor()).asItem());
+                    DyeColor color = entity.getColor();
+                    Item wool = Registries.ITEM.get(Identifier.ofVanilla(color.asString() + "_wool"));
+                    if (wool == null) {
+                        return;
+                    }
+
+                    ItemStack dropType = new ItemStack(wool);
 
                     player.asEntity().playSound(USounds.Vanilla.ENTITY_SHEEP_SHEAR, 1, 1);
                     entity.setSheared(true);

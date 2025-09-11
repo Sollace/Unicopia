@@ -715,7 +715,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return Optional.empty();
     }
 
-    public void onDropItem(ItemEntity itemDropped) {
+    public void onDropItem(ServerWorld world, @Nullable ItemEntity itemDropped) {
         Equine.of(itemDropped).ifPresent(eq -> {
             eq.setSpecies(getSpecies());
             eq.getPhysics().setBaseGravityModifier(gravity.getPersistantGravityModifier());
@@ -757,9 +757,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return Math.max(0, distance);
     }
 
-    public FoodComponent onEat(ItemStack stack, FoodComponent food) {
+    public void onEat(ItemStack stack, FoodComponent food) {
         if (isClient()) {
-            return food;
+            return;
         }
 
         if (getObservedSpecies() == Race.KIRIN
@@ -769,8 +769,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         PonyDiets.getInstance().getEffects(stack, this).ailment().effects().afflict(asEntity(), stack);
-
-        return food;
     }
 
     public void onKill(Entity killedEntity, DamageSource damage) {
@@ -835,9 +833,9 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 .map(p -> Text.translatable("block.unicopia.bed.not_safe"));
     }
 
-    public ActionResult canSleepNow() {
-        if (!asWorld().isClient && ((ServerWorld)asWorld()).getGameRules().getBoolean(UGameRules.DO_NOCTURNAL_BAT_PONIES) && getSpecies().isNocturnal()) {
-            return asWorld().isDay() || asWorld().getAmbientDarkness() >= 4 ? ActionResult.SUCCESS : ActionResult.FAIL;
+    public ActionResult canSleepNow(boolean isDay) {
+        if (!asWorld().isClient && asServerWorld().getGameRules().getBoolean(UGameRules.DO_NOCTURNAL_BAT_PONIES) && getSpecies().isNocturnal()) {
+            return isDay || asWorld().getAmbientDarkness() >= 4 ? ActionResult.SUCCESS : ActionResult.FAIL;
         }
 
         return ActionResult.PASS;

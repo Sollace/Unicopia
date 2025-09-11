@@ -55,7 +55,7 @@ public class NocturnalSleepManager extends SleepManager {
     }
 
     public static void bootstrap() {
-        EntitySleepEvents.ALLOW_SLEEP_TIME.register((player, pos, isDay) -> Pony.of(player).canSleepNow());
+        EntitySleepEvents.ALLOW_SLEEP_TIME.register((player, pos, isDay) -> Pony.of(player).canSleepNow(isDay));
     }
 
     public interface Source {

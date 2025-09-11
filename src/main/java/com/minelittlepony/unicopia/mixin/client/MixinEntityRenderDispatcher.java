@@ -18,7 +18,7 @@ import net.minecraft.entity.Entity;
 @Mixin(EntityRenderDispatcher.class)
 abstract class MixinEntityRenderDispatcher implements SpellEffectsRenderDispatcher.RenderDispatcherAccessor {
 
-    private static final String RENDER = "render(Lnet/minecraft/entity/Entity;DDDFFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V";
+    private static final String RENDER = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V";
 
     @Inject(method = RENDER, at = @At("HEAD"), cancellable = true)
     private <E extends Entity> void beforeRender(E entity, double x, double y, double z, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {

@@ -28,6 +28,7 @@ import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 
 @Mixin(Entity.class)
@@ -122,8 +123,8 @@ abstract class MixinEntity implements EntityDuck, Trackable {
         }
     }
 
-    @Inject(method = "dropStack(Lnet/minecraft/item/ItemStack;F)Lnet/minecraft/entity/ItemEntity;", at = @At("HEAD"), cancellable = true)
-    private void onDropStack(ItemStack stack, float yOffset, CallbackInfoReturnable<ItemEntity> info) {
+    @Inject(method = "dropStack(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;F)Lnet/minecraft/entity/ItemEntity;", at = @At("HEAD"), cancellable = true)
+    private void onDropStack(ServerWorld world, ItemStack stack, float yOffset, CallbackInfoReturnable<ItemEntity> info) {
         if (getHost() != null) {
             info.setReturnValue(null);
         }

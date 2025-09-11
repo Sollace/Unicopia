@@ -22,7 +22,7 @@ public interface ProjectileUtil {
      * Checks if the given entity is a projectile that is not stuck in the ground.
      */
     static boolean isFlyingProjectile(Entity e) {
-        return isProjectile(e) && !(e instanceof MixinPersistentProjectileEntity m && m.isInGround());
+        return isProjectile(e) && !(e instanceof MixinPersistentProjectileEntity m && m.callIsInGround());
     }
 
     /**
