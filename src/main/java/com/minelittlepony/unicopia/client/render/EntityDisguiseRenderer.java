@@ -68,7 +68,7 @@ class EntityDisguiseRenderer {
 
         var state = delegate.client.getEntityRenderDispatcher().getRenderer(pony.asEntity()).getAndUpdateRenderState(pony.asEntity(), tickDelta);
 
-        SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertices, light, CasterState.of(state), 0, 0);
+        SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertices, light, CasterState.of(state));
         matrices.pop();
 
         delegate.afterEntityRender(pony, matrices, vertices, light);

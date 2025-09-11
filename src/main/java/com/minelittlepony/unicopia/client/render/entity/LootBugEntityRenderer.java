@@ -3,10 +3,10 @@ package com.minelittlepony.unicopia.client.render.entity;
 import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.client.render.entity.EntityRendererFactory.Context;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.mob.SilverfishEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.client.render.entity.SilverfishEntityRenderer;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
+import net.minecraft.entity.mob.SilverfishEntity;
 
 public class LootBugEntityRenderer extends SilverfishEntityRenderer {
     private static final Identifier TEXTURE = Unicopia.id("textures/entity/loot_bug.png");
@@ -16,13 +16,13 @@ public class LootBugEntityRenderer extends SilverfishEntityRenderer {
     }
 
     @Override
-    public Identifier getTexture(SilverfishEntity entity) {
+    public Identifier getTexture(LivingEntityRenderState entity) {
         return TEXTURE;
     }
 
     @Override
-    protected void scale(SilverfishEntity entity, MatrixStack matrices, float tickDelta) {
-        float scale = 2;
-        matrices.scale(scale, scale, scale);
+    public void updateRenderState(SilverfishEntity entity, LivingEntityRenderState state, float tickDelta) {
+        super.updateRenderState(entity, state, tickDelta);
+        state.baseScale *= 2;
     }
 }

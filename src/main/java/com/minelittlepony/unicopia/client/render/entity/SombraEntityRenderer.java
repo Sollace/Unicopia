@@ -5,9 +5,10 @@ import com.minelittlepony.unicopia.entity.mob.SombraEntity;
 
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.util.Identifier;
 
-public class SombraEntityRenderer extends LivingEntityRenderer<SombraEntity, SombraEntityModel> {
+public class SombraEntityRenderer extends LivingEntityRenderer<SombraEntity, SombraEntityRenderer.State, SombraEntityModel> {
     private static final Identifier TEXTURE = Unicopia.id("textures/entity/sombra/head.png");
 
     public SombraEntityRenderer(EntityRendererFactory.Context context) {
@@ -15,12 +16,25 @@ public class SombraEntityRenderer extends LivingEntityRenderer<SombraEntity, Som
     }
 
     @Override
-    public Identifier getTexture(SombraEntity entity) {
-        return TEXTURE;
+    public State createRenderState() {
+        return new State();
     }
 
     @Override
-    protected boolean hasLabel(SombraEntity targetEntity) {
-        return false;
+    public void updateRenderState(SombraEntity entity, State state, float tickDelta) {
+        super.updateRenderState(entity, state, tickDelta);
+        state.nameLabelPos = null;
+        state.jawsOpenAmount = entity.getBiteAmount(tickDelta);
+        state.scale = entity.getScaleFactor(tickDelta) * 1.7F;
+    }
+
+    @Override
+    public Identifier getTexture(State entity) {
+        return TEXTURE;
+    }
+
+    public static class State extends LivingEntityRenderState {
+        public float jawsOpenAmount;
+        public float scale;
     }
 }

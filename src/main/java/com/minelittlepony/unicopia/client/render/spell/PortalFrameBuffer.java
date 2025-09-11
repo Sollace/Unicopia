@@ -25,6 +25,7 @@ import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.mixin.client.MixinMinecraftClient;
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.ProjectionType;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.SimpleFramebuffer;
@@ -38,6 +39,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.util.Pool;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
@@ -79,6 +81,8 @@ class PortalFrameBuffer implements AutoCloseable {
 
     private final MinecraftClient client = MinecraftClient.getInstance();
 
+    private final Pool pool = new Pool(3);
+
     private boolean pendingDraw;
 
     @Nullable
@@ -97,16 +101,14 @@ class PortalFrameBuffer implements AutoCloseable {
         if (!(closed || framebuffer == null)) {
             Tessellator tessellator = RenderSystem.renderThreadTesselator();
             RenderSystem.setShader(UShaders.RENDER_TYPE_PORTAL_SURFACE);
-            RenderSystem._setShaderTexture(0, framebuffer.getColorAttachment());
+            RenderSystem.setShaderTexture(0, framebuffer.getColorAttachment());
             BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
 
             SphereModel.DISK.render(matrices, buffer, 1, 2F, Colors.WHITE);
             BufferRenderer.drawWithGlobalProgram(buffer.end());
-
-            client.getTextureManager().bindTexture(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE);
         } else {
-            Vec3d skyColor = client.world.getSkyColor(client.gameRenderer.getCamera().getPos(), client.getRenderTickCounter().getTickDelta(false));
-            SphereModel.DISK.render(matrices, vertices.getBuffer(RenderLayers.getMagicShield()), 0, 0, 2, Color.argbToHex(1, (float)skyColor.x, (float)skyColor.y, (float)skyColor.z));
+            int skyColor = client.world.getSkyColor(client.gameRenderer.getCamera().getPos(), client.getRenderTickCounter().getTickDelta(false));
+            SphereModel.DISK.render(matrices, vertices.getBuffer(RenderLayers.getMagicShield()), 0, 0, 2, skyColor);
         }
 
         GlStateManager._enableCull();
@@ -189,17 +191,15 @@ class PortalFrameBuffer implements AutoCloseable {
             client.getFramebuffer().endWrite();
 
             if (framebuffer == null) {
-                framebuffer = new SimpleFramebuffer(width, height, true, MinecraftClient.IS_SYSTEM_MAC);
+                framebuffer = new SimpleFramebuffer(width, height, true);
                 framebuffer.setClearColor(0, 0, 0, 0);
-                framebuffer.clear(MinecraftClient.IS_SYSTEM_MAC);
+                framebuffer.clear();
             }
 
             window.setFramebufferWidth(width);
             window.setFramebufferHeight(height);
 
-            RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT | GlConst.GL_COLOR_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
-            framebuffer.beginWrite(true);
-            BackgroundRenderer.clearFog();
+            RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT | GlConst.GL_COLOR_BUFFER_BIT);
             RenderSystem.enableCull();
 
             if (cameraEntity.getWorld() != world) {
@@ -209,7 +209,7 @@ class PortalFrameBuffer implements AutoCloseable {
             if (renderer == null) {
                 renderer = new WorldRenderer(client, client.getEntityRenderDispatcher(), client.getBlockEntityRenderDispatcher(), client.getBufferBuilders());
                 renderer.setWorld(world);
-                renderer.scheduleBlockRenders(
+                renderer.scheduleChunkRenders3x3x3(
                         ChunkSectionPos.getSectionCoord((int)cameraEntity.getX()),
                         ChunkSectionPos.getSectionCoord((int)cameraEntity.getY()),
                         ChunkSectionPos.getSectionCoord((int)cameraEntity.getZ())
@@ -218,33 +218,30 @@ class PortalFrameBuffer implements AutoCloseable {
 
             camera.update(world, cameraEntity, false, false, 1);
 
-            double fov = 120;
+            float fov = 120;
             Matrix4f projectionMatrix = client.gameRenderer.getBasicProjectionMatrix(fov);
-            Matrix4f cameraTransform = new Matrix4f().rotation(camera.getRotation().conjugate(new Quaternionf()));
-
-            client.gameRenderer.loadProjectionMatrix(projectionMatrix);
-
-            renderer.setupFrustum(
-                    camera.getPos(),
-                    cameraTransform,
-                    client.gameRenderer.getBasicProjectionMatrix(Math.max(fov, client.options.getFov().getValue().intValue()))
-            );
-            renderer.render(client.getRenderTickCounter(), false, camera, client.gameRenderer,
+            RenderSystem.setProjectionMatrix(projectionMatrix, ProjectionType.PERSPECTIVE);
+            Quaternionf cameraInverseRotation = camera.getRotation().conjugate(new Quaternionf());
+            Matrix4f positionMatrix = new Matrix4f().rotation(cameraInverseRotation);
+            renderer.setupFrustum(camera.getPos(), positionMatrix, projectionMatrix);
+            framebuffer.beginWrite(true);
+            renderer.render(pool,
+                    client.getRenderTickCounter(), false, camera, client.gameRenderer,
                     client.gameRenderer.getLightmapTextureManager(),
-                    cameraTransform,
+                    positionMatrix,
                     projectionMatrix
             );
             // Strip transparency
             RenderSystem.colorMask(false, false, false, true);
             RenderSystem.clearColor(1, 1, 1, 1);
-            RenderSystem.clear(GlConst.GL_COLOR_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
+            RenderSystem.clear(GlConst.GL_COLOR_BUFFER_BIT);
             RenderSystem.colorMask(true, true, true, true);
 
             framebuffer.endWrite();
         } finally {
             client.getFramebuffer().beginWrite(true);
-            client.gameRenderer.loadProjectionMatrix(proj);
             client.getBlockEntityRenderDispatcher().setWorld(client.world);
+            RenderSystem.setProjectionMatrix(proj, ProjectionType.PERSPECTIVE);
 
             window.setFramebufferWidth(globalFramebufferWidth);
             window.setFramebufferHeight(globalFramebufferHeight);
@@ -265,6 +262,7 @@ class PortalFrameBuffer implements AutoCloseable {
                 renderer.close();
                 renderer = null;
             }
+            pool.clear();
         }
     }
 }

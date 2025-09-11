@@ -14,7 +14,7 @@ public class RainboomSpellRenderer extends SpellRenderer<RainboomAbilitySpell, S
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, SpellRenderState spell, CasterState caster,  int light, float limbAngle, float limbDistance) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, SpellRenderState spell, CasterState caster,  int light) {
 
     }
 }

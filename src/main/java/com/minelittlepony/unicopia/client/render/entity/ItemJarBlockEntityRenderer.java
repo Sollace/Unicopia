@@ -24,7 +24,6 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.command.argument.EntityAnchorArgumentType.EntityAnchor;
@@ -34,6 +33,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -114,7 +114,6 @@ public class ItemJarBlockEntityRenderer implements BlockEntityRenderer<ItemJarBl
             float scale = desiredSize / size;
             float eyePos = (e.getEyeHeight(e.getPose())) * scale;
 
-            float yaw = 0;
             if (player != null) {
                 Vec3d center = data.getPos().toCenterPos();
                 Vec3d observerPos = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
@@ -126,7 +125,7 @@ public class ItemJarBlockEntityRenderer implements BlockEntityRenderer<ItemJarBl
             matrices.translate(0.5, 0.48 + MathHelper.sin(fullTick / 19F) * 0.02F - eyePos, 0.5);
             matrices.scale(scale, scale, scale);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(10 * MathHelper.sin(fullTick / 19F)));
-            dispatcher.render(e, 0, 0, 0, yaw * MathHelper.RADIANS_PER_DEGREE, tickDelta, matrices, vertices, light);
+            dispatcher.render(e, 0, 0, 0, tickDelta, matrices, vertices, light);
             matrices.pop();
         }
     }

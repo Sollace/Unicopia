@@ -3,10 +3,11 @@ package com.minelittlepony.unicopia.client.render.entity;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.ability.magic.spell.Spell;
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.minelittlepony.unicopia.client.render.model.PlaneModel;
 import com.minelittlepony.unicopia.client.render.spell.SpellEffectsRenderDispatcher;
 import com.minelittlepony.unicopia.client.render.spell.SpellRenderer;
+import com.minelittlepony.unicopia.client.render.spell.SpellRenderer.SpellRenderState;
 import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 
 import net.minecraft.client.MinecraftClient;
@@ -18,8 +19,6 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.screen.PlayerScreenHandler;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -53,8 +52,7 @@ public class CastSpellEntityRenderer extends EntityRenderer<CastSpellEntity, Cas
         state.pitch = entity.getPitch(tickDelta);
         state.yaw = entity.getYaw(tickDelta);
         state.yOffset = (-state.pitch / 90F) * state.height * 0.5F;
-        state.spell = entity.getSpellSlot().get().orElse(null);
-        state.color = state.spell == null ? Colors.WHITE : state.spell.getTypeAndTraits().type().getColor();
+        state.state.update(entity, tickDelta);
     }
 
     @Override
@@ -63,27 +61,25 @@ public class CastSpellEntityRenderer extends EntityRenderer<CastSpellEntity, Cas
     }
 
     @Override
-    public Identifier getTexture(CastSpellEntity entity) {
-        return PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
-    }
-
-    @Override
-    public void render(State entity, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+    public void render(State state, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.cameraEntity instanceof CastSpellEntity) {
             return;
         }
         matrices.push();
-        matrices.translate(0, 0.001 + entity.yOffset, 0);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(entity.yaw));
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-entity.pitch));
+        matrices.translate(0, 0.001 + state.yOffset, 0);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(state.yaw));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-state.pitch));
 
-        renderAmbientEffects(matrices, vertices, entity, light);
-        SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertices, light, entity.scale, entity, 0);
+        SpellRenderState spellState = state.state.spells.getFirst();
+        if (spellState != null) {
+            renderAmbientEffects(matrices, vertices, state, spellState, light);
+            SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertices, light, state.state, spellState);
+        }
         matrices.pop();
     }
 
-    protected void renderAmbientEffects(MatrixStack matrices, VertexConsumerProvider vertices, State state, int light) {
+    protected void renderAmbientEffects(MatrixStack matrices, VertexConsumerProvider vertices, State state, SpellRenderState spell, int light) {
         matrices.push();
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
 
@@ -91,7 +87,7 @@ public class CastSpellEntityRenderer extends EntityRenderer<CastSpellEntity, Cas
         matrices.scale(scale, scale, scale);
 
         @Nullable
-        SpellRenderer<?> renderer = state.spell == null ? null : SpellEffectsRenderDispatcher.INSTANCE.getRenderer(state.spell);
+        SpellRenderer<?, ?> renderer = spell == null ? null : SpellEffectsRenderDispatcher.INSTANCE.getRenderer(spell);
 
         for (int i = 0; i < TEXTURES.length; i++) {
             if (renderer != null && !renderer.shouldRenderEffectPass(i)) {
@@ -106,7 +102,7 @@ public class CastSpellEntityRenderer extends EntityRenderer<CastSpellEntity, Cas
                 matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(state.angle * ringSpeed));
                 matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(state.angle * ringSpeed * dim));
                 matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(state.angle * ringSpeed * dim));
-                PlaneModel.INSTANCE.render(matrices, buffer, light, OverlayTexture.DEFAULT_UV, 1, ColorHelper.withAlpha(state.color, (int)(255 * (scale / ((float)(dim * 3) + 1)))));
+                PlaneModel.INSTANCE.render(matrices, buffer, light, OverlayTexture.DEFAULT_UV, 1, ColorHelper.withAlpha(spell.type.type().getColor(), (int)(255 * (scale / ((float)(dim * 3) + 1)))));
                 matrices.pop();
             }
         }
@@ -123,8 +119,6 @@ public class CastSpellEntityRenderer extends EntityRenderer<CastSpellEntity, Cas
 
         public float angle;
 
-        @Nullable
-        public Spell spell;
-        public int color;
+        public CasterState state = new CasterState(this);
     }
 }

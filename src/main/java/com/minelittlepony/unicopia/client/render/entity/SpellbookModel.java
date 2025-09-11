@@ -21,6 +21,7 @@ public class SpellbookModel extends EntityModel<SpellbookEntityRenderer.State> {
 
     @Override
     public void setAngles(SpellbookEntityRenderer.State state) {
+        book.resetTransforms();
         book.setPageAngles(state.breath, state.leftPageRot, state.rightPageRot, state.openAngle);
     }
 }

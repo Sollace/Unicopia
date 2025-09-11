@@ -14,7 +14,6 @@ import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.ColorHelper;
@@ -49,7 +48,7 @@ public abstract class SpellRenderer<T extends Spell, S extends SpellRenderer.Spe
         return true;
     }
 
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, S spell, CasterState caster, int light, float limbAngle, float limbDistance) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, S spell, CasterState caster, int light) {
         if (caster.isCamera || caster.isProjectile) {
             return;
         }
@@ -72,8 +71,8 @@ public abstract class SpellRenderer<T extends Spell, S extends SpellRenderer.Spe
         matrices.pop();
 
         if (spell instanceof TimedSpell timed) {
-            if (!caster.entityState.isInPose(EntityPose.SLEEPING)) {
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180 - caster.entityState.bodyYaw));
+            if (caster.gemYaw != 0) {
+                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(caster.gemYaw));
             }
             renderCountdown(matrices, timed, caster.entityState.age);
         }

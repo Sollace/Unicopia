@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
-import com.minelittlepony.unicopia.entity.mob.IgnominiousBulbEntity;
-
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
@@ -10,21 +8,16 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
-public class IgnominiousBulbEntityModel extends EntityModel<IgnominiousBulbEntity> {
-
-    private final ModelPart part;
+public class IgnominiousBulbEntityModel extends EntityModel<IgnominiousBulbEntityRenderer.State> {
 
     private final ModelPart head;
     private final ModelPart leaves;
 
     public IgnominiousBulbEntityModel(ModelPart root) {
-        super(RenderLayer::getEntityTranslucent);
-        this.part = root;
+        super(root, RenderLayer::getEntityTranslucent);
         head = root.getChild("head");
         leaves = root.getChild("leaves");
     }
@@ -54,32 +47,25 @@ public class IgnominiousBulbEntityModel extends EntityModel<IgnominiousBulbEntit
     }
 
     @Override
-    public void setAngles(IgnominiousBulbEntity entity, float limbSwing, float limbSwingAmount, float tickDelta, float yaw, float pitch) {
+    public void setAngles(IgnominiousBulbEntityRenderer.State state) {
+        super.setAngles(state);
+        ModelPart part = getRootPart();
+        part.xScale = state.scale;
+        part.yScale = state.scale;
+        part.zScale = state.scale;
+        part.pivotY = (1 - state.scale) * 24;
+        part.yaw = state.yaw;
 
-        float age = entity.age + tickDelta;
-        float scale = entity.getScale(tickDelta);
+        head.yScale = 1 - MathHelper.sin(state.age * 0.05F) * 0.02F;
 
-        part.xScale = scale;
-        part.yScale = scale;
-        part.zScale = scale;
-        part.pivotY = (1 - scale) * 24;
-        part.yaw = yaw * MathHelper.RADIANS_PER_DEGREE;
-
-        head.yScale = 1 - MathHelper.sin(age * 0.05F) * 0.02F;
-
-        float hScale = 1 + MathHelper.cos(age * 0.06F) * 0.02F;
+        float hScale = 1 + MathHelper.cos(state.age * 0.06F) * 0.02F;
         head.xScale = hScale;
         head.zScale = hScale;
 
-        head.pitch = MathHelper.sin(age * 0.02F) * 0.02F;
-        head.yaw = (MathHelper.cos(age * 0.02F) * 0.02F);
+        head.pitch = MathHelper.sin(state.age * 0.02F) * 0.02F;
+        head.yaw = (MathHelper.cos(state.age * 0.02F) * 0.02F);
 
-        leaves.yScale = 1 + MathHelper.sin(age * 0.05F) * 0.12F;
+        leaves.yScale = 1 + MathHelper.sin(state.age * 0.05F) * 0.12F;
         leaves.yaw = -part.yaw;
-    }
-
-    @Override
-    public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, int color) {
-        part.render(matrices, vertices, light, overlay, color);
     }
 }

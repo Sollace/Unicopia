@@ -90,7 +90,7 @@ public class TentacleEntityModel extends EntityModel<TentacleEntityRenderer.Stat
 
 	@Override
 	public void setAngles(TentacleEntityRenderer.State state) {
-
+	    super.setAngles(state);
 	    float age = state.animationFrame;
 	    float idleWaveTimer = state.animationTime;
 

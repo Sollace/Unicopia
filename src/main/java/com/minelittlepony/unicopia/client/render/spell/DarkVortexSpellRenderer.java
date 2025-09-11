@@ -63,7 +63,7 @@ public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell, Dark
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State state, CasterState caster, int light, float limbAngle, float limbDistance) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State state, CasterState caster, int light) {
         Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
 
         Vec3d ray = camera.getPos().subtract(state.origin);
@@ -72,7 +72,7 @@ public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell, Dark
 
         matrices.push();
         matrices.translate(0, state.yOffset, 0);
-        matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(-caster.entityState.yawDegrees));
+        matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(caster.yawOffset));
 
         float visualRadius = Math.min(state.radius * 0.8F, absDistance - 1F);
 
@@ -97,8 +97,7 @@ public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell, Dark
             float pitch = MathHelper.wrapDegrees((float)(-(MathHelper.atan2(ray.y, g) * 180.0F / (float)Math.PI)));
             float yaw = MathHelper.wrapDegrees((float)(MathHelper.atan2(ray.z, ray.x) * 180.0F / (float)Math.PI) - 90.0F);
 
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(caster.entityState.yawDegrees));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-yaw));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-caster.yawOffset - yaw));
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-pitch));
 
             float processionSpeed = age * 0.02F;

@@ -70,22 +70,22 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         return (SpellRenderer<?, S>)renderers.getOrDefault(spell.type.type(), SpellRenderer.DEFAULT);
     }
 
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, SpellRenderState spell, CasterState caster, int light, float limbAngle, float limbDistance) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, CasterState caster, SpellRenderState spell) {
         var renderer = getRenderer(spell);
 
         if (renderer != SpellRenderer.DEFAULT) {
             client.getBufferBuilders().getEntityVertexConsumers().draw();
-            renderer.render(matrices, vertices, spell, caster, light, limbAngle, limbDistance);
+            renderer.render(matrices, vertices, spell, caster, light);
         }
     }
 
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, CasterState caster, float limbAngle, float limbDistance) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, CasterState caster) {
         if (!((RenderDispatcherAccessor)client.getEntityRenderDispatcher()).shouldRenderShadows()) {
             return;
         }
 
         caster.spells.forEach(spell -> {
-            render(matrices, vertices, spell, caster, light, limbAngle, limbDistance);
+            render(matrices, vertices, light, caster, spell);
         });
 
         if (caster.debugLines != null) {

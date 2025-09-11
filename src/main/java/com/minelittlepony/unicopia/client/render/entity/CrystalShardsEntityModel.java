@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.client.render.entity;
 
 import java.util.List;
 
-import com.minelittlepony.unicopia.entity.mob.CrystalShardsEntity;
-
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
@@ -11,18 +9,15 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
-public class CrystalShardsEntityModel extends EntityModel<CrystalShardsEntity> {
-	private final ModelPart part;
+public class CrystalShardsEntityModel extends EntityModel<CrystalShardsEntityRenderer.State> {
 	private final List<ModelPart> crystals;
 
 	public CrystalShardsEntityModel(ModelPart root) {
-		this.part = root;
-		this.crystals = List.of(part.getChild("west"), part.getChild("north"), part.getChild("south"), part.getChild("east"), part.getChild("primary"));
+		super(root);
+		this.crystals = List.of(root.getChild("west"), root.getChild("north"), root.getChild("south"), root.getChild("east"), root.getChild("primary"));
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -37,16 +32,16 @@ public class CrystalShardsEntityModel extends EntityModel<CrystalShardsEntity> {
 	}
 
 	@Override
-	public void setAngles(CrystalShardsEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-
+	public void setAngles(CrystalShardsEntityRenderer.State state) {
+	    super.setAngles(state);
 	    float offset = 0;
 	    float amplitude = 0.02F;
 
 	    for (ModelPart part : crystals) {
 	        part.resetTransform();
 
-	        if (entity.isShaking()) {
-	            float animationTime = (entity.age + ++offset) * 122F;
+	        if (state.shaking) {
+	            float animationTime = (state.age + ++offset) * 122F;
 	            float sin = MathHelper.sin(animationTime) * amplitude;
 
 	            part.pitch += sin;
@@ -54,10 +49,5 @@ public class CrystalShardsEntityModel extends EntityModel<CrystalShardsEntity> {
 	            part.roll += -sin;
 	        }
 	    }
-	}
-
-	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
-		part.render(matrices, vertexConsumer, light, overlay, color);
 	}
 }

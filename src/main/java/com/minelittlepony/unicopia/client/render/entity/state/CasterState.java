@@ -63,7 +63,8 @@ public class CasterState {
 
     public Vec3d originVector = Vec3d.ZERO;
 
-    public final LivingEntityRenderState entityState;
+    public final EntityRenderState entityState;
+
     @Nullable
     public Text masterDisplayName;
 
@@ -90,13 +91,15 @@ public class CasterState {
     public TrinketsDelegate.EquippedStack eyewear = TrinketsDelegate.EquippedStack.EMPTY;
 
     public float leanAmount;
+    public float yawOffset;
+    public float gemYaw;
 
     public PassengerState carriedEntity = new PassengerState();
 
     @Nullable
     public Entity appearance;
 
-    public CasterState(LivingEntityRenderState entityState) {
+    public CasterState(EntityRenderState entityState) {
         this.entityState = entityState;
     }
 
@@ -114,6 +117,8 @@ public class CasterState {
         pegasusAmulet = false;
         inHell = false;
         leanAmount = 0;
+        yawOffset = 0;
+        gemYaw = 0;
         type = null;
         masterDisplayName = null;
         appearance = null;
@@ -180,6 +185,8 @@ public class CasterState {
                 offhandBangle = FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.SECONDARY_GLOVE).findFirst().orElse(null);
                 eyewear = GlassesItem.getForEntity(l.asEntity());
                 leanAmount = ((LivingEntityDuck)l.asEntity()).getLeaningPitch();
+                yawOffset = -(((LivingEntityRenderState)this.entityState).yawDegrees + ((LivingEntityRenderState)this.entityState).bodyYaw);
+                gemYaw = l.asEntity().isSleeping() ? 0 : 180 - ((LivingEntityRenderState)this.entityState).bodyYaw;
             }
 
             if (client.getEntityRenderDispatcher().shouldRenderHitboxes()

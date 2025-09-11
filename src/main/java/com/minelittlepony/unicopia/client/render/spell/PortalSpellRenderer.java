@@ -22,6 +22,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Colors;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
 public class PortalSpellRenderer extends SpellRenderer<PortalSpell, PortalSpellRenderer.State> {
@@ -47,6 +48,7 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell, PortalSpellR
         state.positionMatrix = spell.getPositionMatrix(caster, state.portalState.pos(), state.orientationChange, new Matrix4f());
         state.pitchChange = -spell.getTargetPitch() + spell.getPitch();
         state.yawChange = spell.getYawDifference();
+        state.strength = 1 + MathHelper.sin(caster.asEntity().age + tickDelta) * 0.1F;
 
         if (client.cameraEntity instanceof CastSpellEntity) {
             double distance = caster.asEntity().distanceTo(client.cameraEntity);
@@ -57,21 +59,21 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell, PortalSpellR
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State spell, CasterState caster, int light, float strength, float limbDistance) {
-        super.render(matrices, vertices, spell, caster, light, strength, limbDistance);
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State spell, CasterState caster, int light) {
+        super.render(matrices, vertices, spell, caster, light);
 
         VertexConsumer buff = vertices.getBuffer(RenderLayers.getEndGateway());
 
         matrices.push();
         matrices.translate(0, 0.02, 0);
-        SphereModel.DISK.render(matrices, buff, light, 0, 2F * strength, Colors.WHITE);
+        SphereModel.DISK.render(matrices, buff, light, 0, 2F * spell.strength, Colors.WHITE);
         matrices.pop();
 
         if (Unicopia.getConfig().simplifiedPortals.get() || !spell.destination.isSet()) {
             matrices.push();
             matrices.translate(0, -0.02, 0);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
-            SphereModel.DISK.render(matrices, buff, light, 0, 2F * strength, Colors.WHITE);
+            SphereModel.DISK.render(matrices, buff, light, 0, 2F * spell.strength, Colors.WHITE);
             matrices.pop();
             return;
         }
@@ -81,7 +83,7 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell, PortalSpellR
         }
 
         matrices.push();
-        matrices.scale(strength, strength, strength);
+        matrices.scale(spell.strength, spell.strength, spell.strength);
 
         spell.destination.getTarget().ifPresent(target -> {
             float grown = Math.min(caster.entityState.age, 20) / 20F;
@@ -123,5 +125,6 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell, PortalSpellR
 
         public float pitchChange;
         public float yawChange;
+        public float strength;
     }
 }

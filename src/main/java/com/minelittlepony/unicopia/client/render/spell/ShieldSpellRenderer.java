@@ -42,8 +42,8 @@ public class ShieldSpellRenderer extends SpellRenderer<ShieldSpell, ShieldSpellR
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State spell, CasterState caster, int light, float limbAngle, float limbDistance) {
-        super.render(matrices, vertices, spell, caster, light, limbAngle, limbDistance);
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State spell, CasterState caster, int light) {
+        super.render(matrices, vertices, spell, caster, light);
 
         matrices.push();
         matrices.translate(0, spell.height, 0);

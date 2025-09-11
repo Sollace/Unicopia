@@ -167,15 +167,16 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
         }
 
         @Override
-        public void setAngles(State entity) {
+        public void setAngles(State state) {
+            super.setAngles(state);
             getRootPart().yaw = MathHelper.RADIANS_PER_DEGREE * 180;
-            getRootPart().pitch = -entity.pitch * MathHelper.RADIANS_PER_DEGREE;
-            lid.pitch = entity.mouthOpenAmount;
+            getRootPart().pitch = -state.pitch * MathHelper.RADIANS_PER_DEGREE;
+            lid.pitch = state.mouthOpenAmount;
             rightLeg.resetTransform();
             leftLeg.resetTransform();
-            rightLeg.pitch = MathHelper.cos(entity.limbFrequency * 0.6662F) * 1.4F * entity.limbAmplitudeMultiplier;
-            leftLeg.pitch = MathHelper.cos(entity.limbFrequency * 0.6662F + (float) Math.PI) * 1.4F * entity.limbAmplitudeMultiplier;
-            float revealPercentage = entity.peekAmount;
+            rightLeg.pitch = MathHelper.cos(state.limbFrequency * 0.6662F) * 1.4F * state.limbAmplitudeMultiplier;
+            leftLeg.pitch = MathHelper.cos(state.limbFrequency * 0.6662F + (float) Math.PI) * 1.4F * state.limbAmplitudeMultiplier;
+            float revealPercentage = state.peekAmount;
             float velocy = (1 - revealPercentage) * -10F;
             rightLeg.pivotY += velocy;
             leftLeg.pivotY += velocy;

@@ -33,8 +33,8 @@ public class BubbleSpellRenderer extends SpellRenderer<BubbleSpell, BubbleSpellR
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State state, CasterState caster, int light, float limbAngle, float limbDistance) {
-        super.render(matrices, vertices, state, caster, light, limbAngle, limbDistance);
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State state, CasterState caster, int light) {
+        super.render(matrices, vertices, state, caster, light);
 
         matrices.push();
 

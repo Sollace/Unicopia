@@ -19,8 +19,6 @@ import net.minecraft.util.Identifier;
 
 class SpellEffectGear implements Gear {
     private CasterState caster;
-    private float limbAngle;
-    private float limbDistance;
 
     @Override
     public boolean canRender(PonyModel<?> model, Entity entity) {
@@ -44,8 +42,6 @@ class SpellEffectGear implements Gear {
     @Override
     public void pose(PonyModel<?> model, Entity entity, boolean rainboom, UUID interpolatorId, float limbAngle, float limbDistance, float bodySwing, float tickDelta) {
         caster = CasterState.of(entity, tickDelta);
-        this.limbAngle = limbAngle;
-        this.limbDistance = limbDistance;
     }
 
     @Override
@@ -53,8 +49,7 @@ class SpellEffectGear implements Gear {
         SpellEffectsRenderDispatcher.INSTANCE.render(
             stack,
             MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers(),
-            light, caster,
-            limbAngle, limbDistance
+            light, caster
         );
     }
 }

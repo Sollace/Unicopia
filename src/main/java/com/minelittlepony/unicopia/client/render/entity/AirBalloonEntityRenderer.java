@@ -71,6 +71,7 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
     @Override
     public void updateRenderState(AirBalloonEntity entity, State state, float tickDelta) {
         super.updateRenderState(entity, state, tickDelta);
+        state.yVelocity = MathHelper.clamp((float)Math.abs(entity.getVelocity().getY()) * 3F, 0.25F, 1F);
         state.design = entity.getDesign();
         state.basket = entity.getBasketType();
         state.inflation = entity.getInflation(tickDelta);
@@ -80,19 +81,49 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
         state.boundingBox = entity.getBoundingBox();
         state.hasSoulFlame = entity.getStackInHand(Hand.MAIN_HAND).isOf(Items.SOUL_LANTERN);
         state.pos = entity.getPos();
+        state.burnerWiggleProgress = entity.getBurner().getPullProgress(tickDelta);
+        state.basketRoll = MathHelper.clamp(entity.getXVelocity(tickDelta), -0.5F, 0.5F);
+        state.basketPitch = MathHelper.clamp(entity.getZVelocity(tickDelta), -0.5F, 0.5F);
+        state.accessoriesPivotX = state.inflation * MathHelper.sin(state.limbAmplitudeMultiplier + state.age / 5F) / 4F;
+        state.burnerPivoyY = 32 * (1 - state.inflation) - (9 * state.inflation);
+        state.sandbagsPitch = MathHelper.cos(state.limbAmplitudeMultiplier + state.age / 5F) / 80F;
+        state.sandbagsRoll = MathHelper.sin(state.limbAmplitudeMultiplier + state.age / 5F) / 80F;
+        if (state.leashData != null) {
+            state.basketRoll *= -1;
+            state.basketPitch *= -1;
+        }
+        for (int i = 0; i < state.sandbagPullAmounts.length; i++) {
+            state.sandbagPullAmounts[i] = entity.getSandbag(i).getPullProgress(tickDelta);
+        }
+
     }
 
     public static class State extends LivingEntityRenderState {
         public BalloonDesign design;
         public BasketType basket;
 
+        public float yVelocity;
+
         public float inflation;
+        public float burnerWiggleProgress;
+        public float burnerPivoyY;
+
+        public float basketPitch;
+        public float basketRoll;
+
+        public float accessoriesPivotX;
+
+        public float sandbagsPitch;
+        public float sandbagsRoll;
+
         public boolean hasBurner;
         public boolean hasBalloon;
         public boolean isAscending;
         public boolean hasSoulFlame;
         public Box boundingBox;
         public Vec3d pos;
+
+        public float[] sandbagPullAmounts = new float[4];
     }
 
     @Override
@@ -136,9 +167,15 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
         }
 
         @Override
-        public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, State entity, float limbDistance, float limbAngle) {
-            if (visibilityTest.test(entity)) {
-                render(model, textureFunc.apply(entity), matrices, vertices, lightFunc.apply(light, entity), entity, Colors.WHITE);
+        public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, State state, float limbDistance, float limbAngle) {
+            if (visibilityTest.test(state)) {
+                matrices.push();
+                if (model.isBalloon) {
+                    matrices.translate(0, 1 * (1 - state.inflation), 0);
+                    matrices.scale(1, MathHelper.lerp(state.inflation, -0.05F, 1), 1);
+                }
+                render(model, textureFunc.apply(state), matrices, vertices, lightFunc.apply(light, state), state, Colors.WHITE);
+                matrices.pop();
             }
         }
     }

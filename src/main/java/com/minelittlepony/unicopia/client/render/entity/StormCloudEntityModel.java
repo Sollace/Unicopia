@@ -80,6 +80,7 @@ public class StormCloudEntityModel extends EntityModel<StormCloudEntityRenderer.
 
 	@Override
 	public void setAngles(StormCloudEntityRenderer.State state) {
+	    super.setAngles(state);
 	    float dir = 1;
 	    float globalScale = 0.012F;
 

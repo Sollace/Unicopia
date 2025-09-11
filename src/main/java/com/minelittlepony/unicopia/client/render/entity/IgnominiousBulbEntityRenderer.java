@@ -6,11 +6,13 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
-public class IgnominiousBulbEntityRenderer extends EntityRenderer<IgnominiousBulbEntity> {
+public class IgnominiousBulbEntityRenderer extends EntityRenderer<IgnominiousBulbEntity, IgnominiousBulbEntityRenderer.State> {
     private static final Identifier IDLE_TEXTURE = Unicopia.id("textures/entity/poison_joke/bulb_idle.png");
     private static final Identifier ANGRY_TEXTURE = Unicopia.id("textures/entity/poison_joke/bulb_angry.png");
 
@@ -22,19 +24,37 @@ public class IgnominiousBulbEntityRenderer extends EntityRenderer<IgnominiousBul
     }
 
     @Override
-    public void render(IgnominiousBulbEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+    public State createRenderState() {
+        return new State();
+    }
+
+    @Override
+    public void updateRenderState(IgnominiousBulbEntity entity, State state, float tickDelta) {
+        super.updateRenderState(entity, state, tickDelta);
+        state.angry = entity.isAngry();
+        state.scale = entity.getScale(tickDelta);
+        state.pitch = entity.getPitch(tickDelta);
+        state.yaw = (180 + entity.getYaw(tickDelta)) * MathHelper.RADIANS_PER_DEGREE;
+        state.hurting = entity.hurtTime > 0;
+    }
+
+    @Override
+    public void render(State state, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
         matrices.push();
         matrices.scale(-1, -1, 1);
         matrices.translate(0, -1.5F, 0);
 
-        model.setAngles(entity, 0, 0, tickDelta, 180 + yaw, entity.getPitch(tickDelta));
-        model.render(matrices, vertices.getBuffer(model.getLayer(getTexture(entity))), light, OverlayTexture.getUv(0, entity.hurtTime > 0), Colors.WHITE);
+        model.setAngles(state);
+        model.render(matrices, vertices.getBuffer(model.getLayer(state.angry ? ANGRY_TEXTURE : IDLE_TEXTURE)), light, OverlayTexture.getUv(0, state.hurting), Colors.WHITE);
         matrices.pop();
-        super.render(entity, yaw, tickDelta, matrices, vertices, light);
+        super.render(state, matrices, vertices, light);
     }
 
-    @Override
-    public Identifier getTexture(IgnominiousBulbEntity entity) {
-        return entity.isAngry() ? ANGRY_TEXTURE : IDLE_TEXTURE;
+    public static class State extends EntityRenderState {
+        public boolean angry;
+        public boolean hurting;
+        public float pitch;
+        public float yaw;
+        public float scale;
     }
 }

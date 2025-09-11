@@ -13,17 +13,17 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.state.LivingEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
-public class ButterflyEntityRenderer extends MobEntityRenderer<ButterflyEntity, ButterflyEntityRenderer.ButterflyEntityModel> {
+public class ButterflyEntityRenderer extends MobEntityRenderer<ButterflyEntity, ButterflyEntityRenderer.State, ButterflyEntityRenderer.ButterflyEntityModel> {
     public ButterflyEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new ButterflyEntityModel(ButterflyEntityModel.getData().createModel()), 0.25F);
         shadowRadius = 0.2F;
@@ -31,36 +31,47 @@ public class ButterflyEntityRenderer extends MobEntityRenderer<ButterflyEntity, 
     }
 
     @Override
-    public Identifier getTexture(ButterflyEntity entity) {
-        return entity.getVariant().getSkin();
+    public State createRenderState() {
+        return new State();
     }
 
     @Override
-    protected void scale(ButterflyEntity entity, MatrixStack matrices, float ticks) {
+    public void updateRenderState(ButterflyEntity entity, State state, float tickDelta) {
+        super.updateRenderState(entity, state, tickDelta);
+        state.resting = entity.isResting();
+        state.variant = entity.getVariant();
+        BlockPos pos = entity.getBlockPos();
+        state.translucent = getBlockLight(entity, pos) < 7 && getSkyLight(entity, pos) < 15;
+        state.bodyPitch = state.resting ? 0.8F : ((float)Math.PI / 4) + MathHelper.cos(state.age * 0.1F) * 0.15F;
+        state.wingAngle = state.resting ? MathHelper.cos((state.age + (1 + entity.getId()) % 2) / 20) * (float)Math.PI / 6 + 0.7F : MathHelper.cos(state.age) * (float)Math.PI / 4;
+    }
+
+    @Override
+    public Identifier getTexture(State state) {
+        return state.variant.getSkin();
+    }
+
+    @Override
+    protected void scale(State state, MatrixStack matrices) {
         matrices.scale(0.35F, 0.35F, 0.35F);
         matrices.translate(0.5F, 0, -0.5F);
     }
 
     @Override
-    protected void setupTransforms(ButterflyEntity entity, MatrixStack matrices, float age, float yaw, float ticks, float scale) {
-
-        if (!entity.isResting()) {
-            matrices.translate(0, MathHelper.cos(age / 3F) / 10F, 0);
+    protected void setupTransforms(State state, MatrixStack matrices, float animationProgress, float bodyYaw) {
+        if (!state.resting) {
+            matrices.translate(0, MathHelper.cos(state.age / 3F) / 10F, 0);
         }
-
-        super.setupTransforms(entity, matrices, age, yaw, ticks, scale);
+        super.setupTransforms(state, matrices, animationProgress, bodyYaw);
     }
 
     @Override
     @Nullable
-    protected RenderLayer getRenderLayer(ButterflyEntity entity, boolean showBody, boolean translucent, boolean showOutline) {
-        if (showBody && !translucent) {
-            BlockPos pos = entity.getBlockPos();
-            if (getBlockLight(entity, pos) < 7 && getSkyLight(entity, pos) < 15) {
-                return RenderLayers.getEntityTranslucent(getTexture(entity));
-            }
+    protected RenderLayer getRenderLayer(State state, boolean showBody, boolean translucent, boolean showOutline) {
+        if (showBody && !translucent && state.translucent) {
+            return RenderLayers.getEntityTranslucent(getTexture(state));
         }
-        return super.getRenderLayer(entity, showBody, translucent, showOutline);
+        return super.getRenderLayer(state, showBody, translucent, showOutline);
     }
 
     @Override
@@ -68,16 +79,23 @@ public class ButterflyEntityRenderer extends MobEntityRenderer<ButterflyEntity, 
         return (int)(super.getSkyLight(entity, pos) * (entity.getWorld() instanceof ClientWorld w ? w.getSkyBrightness(MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false)) : 1));
     }
 
-    public static class ButterflyEntityModel extends EntityModel<ButterflyEntity> {
-        private final ModelPart body;
+    public static class State extends LivingEntityRenderState {
+        public boolean resting;
+        public ButterflyEntity.Variant variant = ButterflyEntity.Variant.BUTTERFLY;
+
+        public boolean translucent;
+        public float wingAngle;
+        public float bodyPitch;
+    }
+
+    public static class ButterflyEntityModel extends EntityModel<State> {
         private final ModelPart leftWing;
         private final ModelPart rightWing;
 
         public ButterflyEntityModel(ModelPart tree) {
-            super(RenderLayers::getEntityAlpha);
-            body = tree;
-            body.pivotX = -10;
-            body.pivotY = 12;
+            super(tree, RenderLayers::getEntityAlpha);
+            tree.pivotX = -10;
+            tree.pivotY = 12;
             leftWing = tree.getChild("left_wing");
             rightWing = tree.getChild("right_wing");
         }
@@ -96,24 +114,10 @@ public class ButterflyEntityRenderer extends MobEntityRenderer<ButterflyEntity, 
         }
 
         @Override
-        public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
-            body.render(matrices, vertexConsumer, light, overlay, color);
-        }
-
-        @Override
-        public void setAngles(ButterflyEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float headYaw, float headPitch) {
-
-            float flap = MathHelper.cos(ageInTicks) * (float)Math.PI / 4;
-
-            if (entity.isResting()) {
-                body.pitch = 0.8F;
-                flap = MathHelper.cos((ageInTicks + (1 + entity.getId()) % 2) / 20) * (float)Math.PI / 6 + 0.7F;
-            } else {
-                body.pitch = ((float)Math.PI / 4) + MathHelper.cos(ageInTicks * 0.1F) * 0.15F;
-            }
-
-            leftWing.yaw = -flap;
-            rightWing.yaw = flap;
+        public void setAngles(State state) {
+            getRootPart().pitch = state.bodyPitch;
+            leftWing.yaw = -state.wingAngle;
+            rightWing.yaw = state.wingAngle;
         }
     }
 }

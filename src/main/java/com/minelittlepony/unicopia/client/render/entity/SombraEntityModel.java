@@ -6,19 +6,12 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 
-import com.minelittlepony.unicopia.entity.mob.SombraEntity;
-
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
-public class SombraEntityModel extends EntityModel<SombraEntity> {
-
-	private final ModelPart part;
-
+public class SombraEntityModel extends EntityModel<SombraEntityRenderer.State> {
 	private final ModelPart head;
 	private final ModelPart upperJaw;
 	private final ModelPart lowerJaw;
@@ -26,7 +19,7 @@ public class SombraEntityModel extends EntityModel<SombraEntity> {
 	private final ModelPart body;
 
 	public SombraEntityModel(ModelPart root) {
-		this.part = root;
+		super(root);
 		this.head = root.getChild("head");
 		this.upperJaw = head.getChild("upper_jaw");
 		this.lowerJaw = head.getChild("lower_jaw");
@@ -83,38 +76,29 @@ public class SombraEntityModel extends EntityModel<SombraEntity> {
 	}
 
 	@Override
-    public void animateModel(SombraEntity entity, float limbAngle, float limbDistance, float tickDelta) {
-	    float jawsOpenAmount = entity.getBiteAmount(tickDelta);
-        float scale = entity.getScaleFactor(tickDelta) * 1.7F;
+	public void setAngles(SombraEntityRenderer.State state) {
+	    super.setAngles(state);
+	    ModelPart part = getRootPart();
+        part.pivotY = state.scale * -20;
+        part.xScale = state.scale;
+        part.yScale = state.scale;
+        part.zScale = state.scale;
 
-        part.pivotY = scale * -20;
-        part.xScale = scale;
-        part.yScale = scale;
-        part.zScale = scale;
-
-	    lowerJaw.resetTransform();
-        lowerJaw.pivotY -= jawsOpenAmount * 3;
-        lowerJaw.pivotX -= jawsOpenAmount * 3;
-        lowerJaw.roll += jawsOpenAmount - 0.9F;
+        lowerJaw.resetTransform();
+        lowerJaw.pivotY -= state.jawsOpenAmount * 3;
+        lowerJaw.pivotX -= state.jawsOpenAmount * 3;
+        lowerJaw.roll += state.jawsOpenAmount - 0.9F;
 
         upperJaw.resetTransform();
-        upperJaw.roll -= jawsOpenAmount * 0.2F;
-    }
+        upperJaw.roll -= state.jawsOpenAmount * 0.2F;
 
-	@Override
-	public void setAngles(SombraEntity entity, float limbAngle, float limbDistance, float animationProgress, float netHeadYaw, float headPitch) {
 	    part.yaw = -MathHelper.HALF_PI;
-	    part.pivotY += MathHelper.sin(animationProgress * 0.05F);
-	    part.pivotZ = MathHelper.cos(animationProgress * 0.045F);
+	    part.pivotY += MathHelper.sin(state.age * 0.05F);
+	    part.pivotZ = MathHelper.cos(state.age * 0.045F);
 
-	    head.pitch = headPitch * MathHelper.RADIANS_PER_DEGREE;
-	    head.yaw = netHeadYaw * MathHelper.RADIANS_PER_DEGREE;
+	    head.pitch = state.pitch * MathHelper.RADIANS_PER_DEGREE;
+	    head.yaw = state.yawDegrees * MathHelper.RADIANS_PER_DEGREE;
 
-	    body.roll = limbDistance * 0.3F;
-	}
-
-	@Override
-	public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
-		part.render(matrices, vertexConsumer, light, overlay, color);
+	    body.roll = state.limbAmplitudeMultiplier * 0.3F;
 	}
 }

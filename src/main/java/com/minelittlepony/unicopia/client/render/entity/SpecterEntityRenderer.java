@@ -12,8 +12,7 @@ import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Identifier;
 
-public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, SpecterEntityRenderer.State, SpecterEntityRenderer.SpecterEntityModel> {
-
+public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, BipedEntityRenderState, SpecterEntityRenderer.SpecterEntityModel> {
     public SpecterEntityRenderer(Context context) {
         super(context, new SpecterEntityModel(context.getPart(EntityModelLayers.PLAYER)), 0);
         addFeature(new ArmorFeatureRenderer<>(this,
@@ -23,24 +22,19 @@ public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, Sp
     }
 
     @Override
-    public State createRenderState() {
-        EntityRenderDispatcher s;
-        return new State();
+    public BipedEntityRenderState createRenderState() {
+        return new BipedEntityRenderState();
     }
 
     @Override
-    public Identifier getTexture(State entity) {
+    public Identifier getTexture(BipedEntityRenderState entity) {
         return PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
     }
 
-    static class SpecterEntityModel extends BipedEntityModel<State> {
+    static class SpecterEntityModel extends BipedEntityModel<BipedEntityRenderState> {
         public SpecterEntityModel(ModelPart root) {
             super(root);
             root.hidden = true;
         }
-    }
-
-    public static class State extends BipedEntityRenderState {
-
     }
 }

@@ -10,15 +10,16 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.CreeperEntityModel;
-import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
+import net.minecraft.client.render.entity.state.CreeperEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
-public class FriendlyCreeperEntityRenderer extends MobEntityRenderer<FriendlyCreeperEntity, FriendlyCreeperEntityRenderer.Model> {
+public class FriendlyCreeperEntityRenderer extends MobEntityRenderer<FriendlyCreeperEntity, CreeperEntityRenderState, FriendlyCreeperEntityRenderer.Model> {
     private static final Identifier FRIENDLY_TEXTURE = Unicopia.id("textures/entity/creeper/friendly.png");
     private static final Identifier UNFIRENDLY_TEXTURE = Identifier.ofVanilla("textures/entity/creeper/creeper.png");
 
@@ -28,8 +29,21 @@ public class FriendlyCreeperEntityRenderer extends MobEntityRenderer<FriendlyCre
     }
 
     @Override
-    protected void scale(FriendlyCreeperEntity creeperEntity, MatrixStack matrixStack, float f) {
-        float g = creeperEntity.getClientFuseTime(f);
+    public CreeperEntityRenderState createRenderState() {
+        return new CreeperEntityRenderState();
+    }
+
+    @Override
+    public void updateRenderState(FriendlyCreeperEntity entity, CreeperEntityRenderState state, float tickDelta) {
+        super.updateRenderState(entity, state, tickDelta);
+        state.fuseTime = entity.getClientFuseTime(tickDelta);
+        state.charged = entity.isCharged();
+        state.shaking = entity.isConverting();
+    }
+
+    @Override
+    protected void scale(CreeperEntityRenderState state, MatrixStack matrixStack) {
+        float g = state.fuseTime;
         float h = 1.0f + MathHelper.sin(g * 100.0f) * g * 0.01f;
         g = MathHelper.clamp(g, 0.0f, 1.0f);
         g *= g;
@@ -40,33 +54,25 @@ public class FriendlyCreeperEntityRenderer extends MobEntityRenderer<FriendlyCre
     }
 
     @Override
-    protected void setupTransforms(FriendlyCreeperEntity entity, MatrixStack matrices, float animationProgress, float bodyYaw, float tickDelta, float scale) {
-        super.setupTransforms(entity, matrices, animationProgress, bodyYaw, tickDelta, scale);
-        if (entity.isSitting()) {
+    protected void setupTransforms(CreeperEntityRenderState state, MatrixStack matrices, float animationProgress, float scale) {
+        super.setupTransforms(state, matrices, animationProgress, scale);
+        if (state.isInPose(EntityPose.SITTING)) {
             matrices.translate(0, -0.25, 0);
         }
     }
 
     @Override
-    protected boolean isShaking(FriendlyCreeperEntity entity) {
-        return super.isShaking(entity) || entity.isConverting();
+    protected float getAnimationCounter(CreeperEntityRenderState state) {
+        float f = state.fuseTime;
+        return (int)(f * 10) % 2 == 0 ? 0 : MathHelper.clamp(f, 0.5F, 1);
     }
 
     @Override
-    protected float getAnimationCounter(FriendlyCreeperEntity entity, float f) {
-        float fuseTime = entity.getClientFuseTime(f);
-        if ((int)(fuseTime * 10) % 2 == 0) {
-            return 0;
-        }
-        return MathHelper.clamp(fuseTime, 0.5f, 1.0f);
+    public Identifier getTexture(CreeperEntityRenderState state) {
+        return state.shaking ? UNFIRENDLY_TEXTURE : FRIENDLY_TEXTURE;
     }
 
-    @Override
-    public Identifier getTexture(FriendlyCreeperEntity entity) {
-        return entity.isConverting() ? UNFIRENDLY_TEXTURE : FRIENDLY_TEXTURE;
-    }
-
-    public static class Model extends CreeperEntityModel<FriendlyCreeperEntity> {
+    public static class Model extends CreeperEntityModel {
         private final ModelPart leftHindLeg;
         private final ModelPart rightHindLeg;
         private final ModelPart leftFrontLeg;
@@ -80,13 +86,9 @@ public class FriendlyCreeperEntityRenderer extends MobEntityRenderer<FriendlyCre
         }
 
         @Override
-        public void setAngles(FriendlyCreeperEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-            leftHindLeg.resetTransform();
-            rightHindLeg.resetTransform();
-            leftFrontLeg.resetTransform();
-            rightFrontLeg.resetTransform();
-            super.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
-            if (entity.isSitting()) {
+        public void setAngles(CreeperEntityRenderState state) {
+            super.setAngles(state);
+            if (state.isInPose(EntityPose.SITTING)) {
                 float legSpread = 0.001F;
                 leftHindLeg.pivotZ -= 3;
                 leftHindLeg.pitch = MathHelper.HALF_PI;
@@ -104,13 +106,18 @@ public class FriendlyCreeperEntityRenderer extends MobEntityRenderer<FriendlyCre
         }
     }
 
-    public static class ChargeFeature extends EnergySwirlOverlayFeatureRenderer<FriendlyCreeperEntity, Model> {
+    public static class ChargeFeature extends EnergySwirlOverlayFeatureRenderer<CreeperEntityRenderState, Model> {
         private static final Identifier SKIN = Identifier.ofVanilla("textures/entity/creeper/creeper_armor.png");
-        private final CreeperEntityModel<FriendlyCreeperEntity> model;
+        private final Model model;
 
-        public ChargeFeature(FeatureRendererContext<FriendlyCreeperEntity, Model> context, EntityModelLoader loader) {
+        public ChargeFeature(FeatureRendererContext<CreeperEntityRenderState, Model> context, EntityModelLoader loader) {
             super(context);
             model = new Model(loader.getModelPart(EntityModelLayers.CREEPER_ARMOR));
+        }
+
+        @Override
+        protected boolean shouldRender(CreeperEntityRenderState creeperEntityRenderState) {
+            return creeperEntityRenderState.charged;
         }
 
         @Override
@@ -124,7 +131,7 @@ public class FriendlyCreeperEntityRenderer extends MobEntityRenderer<FriendlyCre
         }
 
         @Override
-        protected EntityModel<FriendlyCreeperEntity> getEnergySwirlModel() {
+        protected Model getEnergySwirlModel() {
             return this.model;
         }
     }

@@ -51,10 +51,9 @@ public class AccessoryFeatureRenderer<
 
         features.forEach(feature -> feature.render(matrices, vertexConsumers, light, state, limbAngle, limbDistance));
 
-
         CasterState caster = CasterState.of(state);
         if (caster != null) {
-            SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertexConsumers, light, caster, limbAngle, limbDistance);
+            SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertexConsumers, light, caster);
         }
     }
 
@@ -65,7 +64,7 @@ public class AccessoryFeatureRenderer<
     public boolean beforeRenderArms(ArmRenderer sender, MatrixStack matrices, VertexConsumerProvider vertexConsumers, S entity, int light) {
         CasterState caster = CasterState.of(entity);
         if (caster != null) {
-            SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertexConsumers, light, caster, 0, 0);
+            SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertexConsumers, light, caster);
         }
         boolean cancelled = false;
         for (var feature : features) {

@@ -2,27 +2,18 @@ package com.minelittlepony.unicopia.client.render.entity;
 
 import java.util.List;
 
-import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
-
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.block.WoodType;
 import net.minecraft.client.model.*;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.math.MathHelper;
 
 public class AirBalloonEntityModel extends EntityModel<AirBalloonEntityRenderer.State> {
 
-    private final ModelPart root;
     private ModelPart main;
 
-    private float inflation;
-
-    private boolean isBurner;
-    private boolean isBalloon;
-    private boolean isSandbags;
+    public final boolean isBurner;
+    public final boolean isBalloon;
+    public final boolean isSandbags;
 
     private final List<ModelPart> ropes;
     private final List<ModelPart> struts;
@@ -30,7 +21,6 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntityRenderer.
 
     public AirBalloonEntityModel(ModelPart root) {
         super(root);
-        this.root = root;
         isBurner = root.hasChild("burner");
         isSandbags = root.hasChild("sandbag_ne");
         isBalloon = root.hasChild("canopy");
@@ -141,32 +131,20 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntityRenderer.
     }
 
     @Override
-    public void setAngles(AirBalloonEntity entity, float limbDistance, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-        float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
-        inflation = entity.getInflation(tickDelta);
-
+    public void setAngles(AirBalloonEntityRenderer.State state) {
+        super.setAngles(state);
         root.yaw = MathHelper.PI;
 
-        float burnerWiggleProgress = entity.getBurner().getPullProgress(tickDelta);
-
         if (isBurner || isBalloon || isSandbags) {
-            root.roll = MathHelper.clamp(entity.getXVelocity(tickDelta), -0.5F, 0.5F);
-            root.pitch = MathHelper.clamp(entity.getZVelocity(tickDelta), -0.5F, 0.5F);
-            if (entity.isLeashed()) {
-                root.roll *= -1;
-                root.pitch *= -1;
-            }
+            root.roll = state.basketRoll;
+            root.pitch = state.basketPitch;
         } else {
             root.pitch = 0;
             root.roll = 0;
         }
 
-        ropes.forEach(ModelPart::resetTransform);
-
         if (isBurner) {
-            boolean lifted = inflation > 0.8F;
-            root.pivotY = 32 * (1 - inflation) - (9 * inflation);
-            root.pivotX = inflation * MathHelper.sin(limbSwingAmount + entity.age / 5F) / 4F;
+            boolean lifted = state.inflation > 0.8F;
             ropes.forEach(rope -> {
                 rope.visible = lifted;
             });
@@ -174,28 +152,25 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntityRenderer.
                 strut.visible = lifted;
             });
 
-            root.pivotX += burnerWiggleProgress * MathHelper.sin((entity.age + tickDelta)) * 2.5F;
-            root.pivotX += burnerWiggleProgress * MathHelper.cos((entity.age + tickDelta)) * 2.5F;
-            root.pivotY += burnerWiggleProgress * 7;
+            root.pivotX = state.accessoriesPivotX + state.burnerWiggleProgress * MathHelper.sin(state.age) * 2.5F;
+            root.pivotZ += state.burnerWiggleProgress * MathHelper.cos(state.age) * 2.5F;
+            root.pivotY = state.burnerPivoyY + state.burnerWiggleProgress * 7;
         }
         if (isBalloon || isSandbags) {
-            root.pivotY = burnerWiggleProgress * 3;
-            root.pivotX = inflation * MathHelper.cos(limbSwingAmount + entity.age / 5F) / 4F;
-            if (entity.getBasketType().isOf(BoatEntity.Type.BAMBOO)) {
+            root.pivotY = state.burnerWiggleProgress * 3;
+            root.pivotX = state.accessoriesPivotX;
+            if (state.basket.isOf(WoodType.BAMBOO)) {
                 ropes.forEach(rope -> rope.pivotY = 0);
             }
         }
 
         if (isSandbags) {
-            float cosWiggle = MathHelper.cos(limbSwingAmount + entity.age / 5F) / 80F;
-            float sinWiggle = MathHelper.sin(limbSwingAmount + entity.age / 5F) / 80F;
             for (int i = 0; i < sandbags.size(); i++) {
                 ModelPart bag = sandbags.get(i);
-                float pullProgress = entity.getSandbag(i).getPullProgress(tickDelta);
-                bag.resetTransform();
-                bag.pitch -= root.pitch * 2.5F * (1 + pullProgress) + cosWiggle;
-                bag.roll -= root.roll * 2.5F * (1 + pullProgress) + sinWiggle;
-                if (entity.isLeashed()) {
+                float pullProgress = state.sandbagPullAmounts[i];
+                bag.pitch -= root.pitch * 2.5F * (1 + pullProgress) + state.sandbagsPitch;
+                bag.roll -= root.roll * 2.5F * (1 + pullProgress) + state.sandbagsRoll;
+                if (state.leashData != null) {
                     bag.roll *= -1;
                     bag.pitch *= -1;
                 }
@@ -228,28 +203,12 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntityRenderer.
             }
 
             if (isBalloon) {
-                double speed = Math.abs(entity.getVelocity().getY()) * 3F;
-
-                rope.zScale = MathHelper.clamp((float)speed, 0.25F, 1F);
+                rope.zScale = state.yVelocity;
                 rope.xScale = 0.001F;
             } else {
                 rope.xScale = 0.3F;
                 rope.zScale = 0.3F;
             }
-        }
-
-    }
-
-    @Override
-    public void render(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
-        if (isBalloon) {
-            matrices.push();
-            matrices.translate(0, 1 * (1 - inflation), 0);
-            matrices.scale(1, MathHelper.lerp(inflation, -0.05F, 1), 1);
-            root.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, color);
-            matrices.pop();
-        } else {
-            root.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, color);
         }
     }
 }
