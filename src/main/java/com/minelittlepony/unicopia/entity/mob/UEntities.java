@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.entity.mob;
 
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.behaviour.EntityBehaviour;
@@ -18,6 +19,9 @@ import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.SpawnLocationTypes;
 import net.minecraft.entity.mob.FlyingEntity;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.entity.vehicle.ChestBoatEntity;
+import net.minecraft.item.Item;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.world.Heightmap.Type;
@@ -76,6 +80,18 @@ public interface UEntities {
     EntityType<StormCloudEntity> STORM_CLOUD = register("storm_cloud", EntityType.Builder.create(StormCloudEntity::new, SpawnGroup.MISC)
             .maxTrackingRange(200)
             .dimensions(20F, 20F));
+    EntityType<BoatEntity> PALM_BOAT = register("oak_boat",
+            EntityType.Builder.create(getBoatFactory(() -> UItems.PALM_BOAT), SpawnGroup.MISC)
+                .dropsNothing()
+                .dimensions(1.375F, 0.5625F)
+                .eyeHeight(0.5625F)
+                .maxTrackingRange(10));
+    EntityType<ChestBoatEntity> PALM_CHEST_BOAT = register("palm_chest_boat",
+        EntityType.Builder.create(getChestBoatFactory(() -> UItems.PALM_CHEST_BOAT), SpawnGroup.MISC)
+            .dropsNothing()
+            .dimensions(1.375F, 0.5625F)
+            .eyeHeight(0.5625F)
+            .maxTrackingRange(10));
     EntityType<AirBalloonEntity> AIR_BALLOON = register("air_balloon", FabricEntityType.Builder.createMob(AirBalloonEntity::new, SpawnGroup.MISC, builder -> builder
                 .defaultAttributes(FlyingEntity::createMobAttributes))
             .maxTrackingRange(1000)
@@ -102,6 +118,14 @@ public interface UEntities {
             .makeFireImmune()
             .disableSummon()
             .dimensions(0.875F, 0.875F));
+
+    private static EntityType.EntityFactory<BoatEntity> getBoatFactory(Supplier<Item> itemSupplier) {
+        return (type, world) -> new BoatEntity(type, world, itemSupplier);
+    }
+
+    private static EntityType.EntityFactory<ChestBoatEntity> getChestBoatFactory(Supplier<Item> itemSupplier) {
+        return (type, world) -> new ChestBoatEntity(type, world, itemSupplier);
+    }
 
     static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder) {
         var key = RegistryKey.of(RegistryKeys.ENTITY_TYPE, Unicopia.id(name));

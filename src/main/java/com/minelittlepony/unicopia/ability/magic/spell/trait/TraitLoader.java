@@ -113,7 +113,6 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
         Stream<Map.Entry<Key, SpellTraits>> entries();
 
         static TraitStream of(Identifier id, JsonObject json) {
-
             if (json.has("items") && json.get("items").isJsonObject()) {
                 return new TraitMap(JsonHelper.getBoolean(json, "replace", false),
                         Resources.GSON.getAdapter(TYPE).fromJsonTree(json.get("items")).entrySet().stream().collect(Collectors.toMap(

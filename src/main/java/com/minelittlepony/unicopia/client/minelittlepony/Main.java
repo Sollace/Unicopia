@@ -11,6 +11,7 @@ import com.minelittlepony.api.model.*;
 import com.minelittlepony.api.model.gear.Gear;
 import com.minelittlepony.api.pony.PonyData;
 import com.minelittlepony.client.render.MobRenderers;
+import com.minelittlepony.client.render.entity.state.PonyRenderState;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
@@ -18,6 +19,9 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.AnimationUtil;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.entity.state.AllayEntityRenderState;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -62,9 +66,10 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
         registerRaceMapping(com.minelittlepony.api.pony.meta.Race.SEAPONY, Race.SEAPONY);
     }
 
-    private void onPonyModelPrepared(Entity entity, PonyModel<?> model, ModelAttributes.Mode mode) {
+    private void onPonyModelPrepared(ModelAttributes attributes, PonyModel<?> model, ModelAttributes.Mode mode) {
         if (hookErroring) return;
         try {
+            Entity entity = ((EntityLookupAccessor)MinecraftClient.getInstance().world).callGetEntityLookup().get(attributes.getEntityId());
             if (entity instanceof PlayerEntity) {
                 if (entity instanceof Owned<?> o && o.getMaster() instanceof PlayerEntity master) {
                     entity = master;
@@ -72,20 +77,20 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
                 Pony pony = Pony.of((PlayerEntity)entity);
 
                 if (pony.getMotion().isFlying()) {
-                    model.getAttributes().wingAngle = MathHelper.clamp(pony.getMotion().getWingAngle() / 3F - (float)Math.PI * 0.4F, -2, 0);
+                    attributes.wingAngle = MathHelper.clamp(pony.getMotion().getWingAngle() / 3F - (float)Math.PI * 0.4F, -2, 0);
 
                     Vec3d motion = pony.getMotion().getClientVelocity();
                     double zMotion = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
-                    model.getAttributes().isGoingFast |= zMotion > 0.4F;
-                    model.getAttributes().isGoingFast |= pony.getMotion().isDiving();
+                    attributes.isGoingFast |= zMotion > 0.4F;
+                    attributes.isGoingFast |= pony.getMotion().isDiving();
                 }
 
-                model.getAttributes().isGoingFast |= pony.getMotion().isRainbooming();
-                model.getAttributes().isGoingFast &= !pony.getEntityInArms().isPresent();
+                attributes.isGoingFast |= pony.getMotion().isRainbooming();
+                attributes.isGoingFast &= !pony.getEntityInArms().isPresent();
 
                 if (pony.getAnimation().isOf(Animation.SPREAD_WINGS)) {
-                    model.getAttributes().wingAngle = -AnimationUtil.seeSitSaw(pony.getAnimationProgress(1), 1.5F) * (float)Math.PI / 1.2F;
-                    model.getAttributes().isFlying = true;
+                    attributes.wingAngle = -AnimationUtil.seeSitSaw(pony.getAnimationProgress(1), 1.5F) * (float)Math.PI / 1.2F;
+                    attributes.isFlying = true;
                 }
             }
         } catch (Throwable t) {
@@ -108,10 +113,18 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
     @Override
     public Race getRace(Entity entity) {
         if (entity instanceof AllayEntity) {
-            return MobRenderers.ALLAY.get() ? Race.PEGASUS : Race.HUMAN;
+            return MobRenderers.ALLAY.option().get() ? Race.PEGASUS : Race.HUMAN;
         }
 
         return com.minelittlepony.api.pony.Pony.getManager().getPony(entity).map(com.minelittlepony.api.pony.Pony::race).map(Main::toUnicopiaRace).orElse(Race.HUMAN);
+    }
+
+    @Override
+    public Race getRace(EntityRenderState state) {
+        if (state instanceof AllayEntityRenderState) {
+            return MobRenderers.ALLAY.option().get() ? Race.PEGASUS : Race.HUMAN;
+        }
+        return state instanceof PonyRenderState s ? toUnicopiaRace(s.getRace()) : Race.HUMAN;
     }
 
     @Override

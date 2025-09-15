@@ -8,15 +8,12 @@ import com.minelittlepony.api.model.BodyPart;
 import com.minelittlepony.api.model.PonyModel;
 import com.minelittlepony.api.model.gear.Gear;
 import com.minelittlepony.unicopia.client.render.GlassesFeatureRenderer.GlassesModel;
-import com.minelittlepony.unicopia.item.GlassesItem;
-
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.registry.Registries;
 
 class GlassesGear extends GlassesModel implements Gear {
 
@@ -27,8 +24,8 @@ class GlassesGear extends GlassesModel implements Gear {
     }
 
     @Override
-    public boolean canRender(PonyModel<?> model, Entity entity) {
-        return entity instanceof LivingEntity living && !GlassesItem.getForEntity(living).stack().isEmpty();
+    public boolean canRender(PonyModel<?> model, EntityRenderState entity) {
+        return !CasterState.of(entity).eyewear.stack().isEmpty();
     }
 
     @Override
@@ -37,8 +34,8 @@ class GlassesGear extends GlassesModel implements Gear {
     }
 
     @Override
-    public <T extends Entity> Identifier getTexture(T entity, Context<T, ?> context) {
-        return textures.computeIfAbsent(Registries.ITEM.getId(GlassesItem.getForEntity((LivingEntity)entity).stack().getItem()), id -> id.withPath(p -> "textures/models/armor/" + p + ".png"));
+    public <S extends EntityRenderState> Identifier getTexture(S entity, Context<S, ?> context) {
+        return textures.computeIfAbsent(CasterState.of(entity).eyewear.stack().getRegistryEntry().getKey().get().getValue(), id -> id.withPath(p -> "textures/models/armor/" + p + ".png"));
     }
 
     @Override

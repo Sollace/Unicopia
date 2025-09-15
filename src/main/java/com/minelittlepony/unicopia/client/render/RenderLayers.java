@@ -15,6 +15,7 @@ import net.minecraft.client.render.model.ModelBaker;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TriState;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.ColorHelper;
 
 public final class RenderLayers extends RenderLayer {
     private RenderLayers() {
@@ -61,7 +62,7 @@ public final class RenderLayers extends RenderLayer {
                 .texturing(solid(color))
             .build(false));
     });
-    private static final RenderLayer MAGIC_COLORED = getMagicColored(Color.argbToHex(0.6F, 0.8F, 0.9F, 1));
+    private static final RenderLayer MAGIC_COLORED = getMagicColored(ColorHelper.fromFloats(0.6F, 0.8F, 0.9F, 1));
 
     private static final BiFunction<Identifier, Integer, RenderLayer> MAGIC_TINT_FUNC = Util.memoize((texture, color) -> {
         return of("magic_tint_" + color,

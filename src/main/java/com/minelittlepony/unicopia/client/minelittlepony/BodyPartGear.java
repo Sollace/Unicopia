@@ -1,9 +1,12 @@
 package com.minelittlepony.unicopia.client.minelittlepony;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -18,45 +21,50 @@ import com.minelittlepony.client.model.entity.race.ChangelingModel;
 import com.minelittlepony.client.model.entity.race.PegasusModel;
 import com.minelittlepony.client.model.entity.race.UnicornModel;
 import com.minelittlepony.client.model.part.UnicornHorn;
+import com.minelittlepony.client.render.entity.state.PlayerPonyRenderState;
+import com.minelittlepony.client.render.entity.state.PonyRenderState;
 import com.minelittlepony.mson.api.MsonModel;
-import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.FlightType;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.entity.AmuletSelectors;
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
+import com.minelittlepony.unicopia.item.UItems;
 
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 
 import com.minelittlepony.api.pony.meta.Race;
 
-class BodyPartGear<M extends ClientPonyModel<LivingEntity>> implements Gear {
-    private static final Predicate<LivingEntity> MINE_LP_HAS_NO_WINGS = e -> !MineLPDelegate.getInstance().getRace(e).canFly();
-    private static final Predicate<LivingEntity> MINE_LP_HAS_NO_HORN = e -> !MineLPDelegate.getInstance().getRace(e).canCast();
+class BodyPartGear<M extends ClientPonyModel<PonyRenderState>> implements Gear {
+    private static final Predicate<PlayerPonyRenderState> MINE_LP_HAS_NO_WINGS = s -> !s.getRace().hasWings() && !s.getRace().hasBugWings();
+    private static final Predicate<PlayerPonyRenderState> MINE_LP_HAS_NO_HORN = s -> !s.getRace().hasHorn();
+
+    private static final Predicate<PlayerPonyRenderState> EXCLUDE_PEGASUS_AMULET = s -> !CasterState.of(s).amulet.stack().isOf(UItems.PEGASUS_AMULET);
+    private static final Predicate<PlayerPonyRenderState> INCLUDE_ALICORN_AMULET = s -> CasterState.of(s).amulet.stack().isOf(UItems.ALICORN_AMULET);
 
     private static final Identifier ICARUS_WINGS = Unicopia.id("textures/models/wings/icarus_pony.png");
     private static final Identifier ICARUS_WINGS_CORRUPTED = Unicopia.id("textures/models/wings/icarus_corrupted_pony.png");
 
-    public static final Predicate<LivingEntity> BUG_WINGS_PREDICATE = MINE_LP_HAS_NO_WINGS.and(AmuletSelectors.PEGASUS_AMULET.negate()).and(EquinePredicates.PLAYER_CHANGELING);
+    public static final Predicate<PlayerPonyRenderState> BUG_WINGS_PREDICATE = MINE_LP_HAS_NO_WINGS.and(EXCLUDE_PEGASUS_AMULET).and(s -> CasterState.of(s).species.any(com.minelittlepony.unicopia.Race.CHANGELING::equals));
     public static final Identifier BUG_WINGS = Unicopia.id("textures/models/wings/bug_pony.png");
 
-    public static final Predicate<LivingEntity> BAT_WINGS_PREDICATE = MINE_LP_HAS_NO_WINGS.and(AmuletSelectors.PEGASUS_AMULET.negate()).and(EquinePredicates.PLAYER_BAT);
+    public static final Predicate<PlayerPonyRenderState> BAT_WINGS_PREDICATE = MINE_LP_HAS_NO_WINGS.and(EXCLUDE_PEGASUS_AMULET).and(s -> CasterState.of(s).species.any(com.minelittlepony.unicopia.Race.BAT::equals));
     public static final Identifier BAT_WINGS = Unicopia.id("textures/models/wings/bat_pony.png");
 
-    public static final Predicate<LivingEntity> UNICORN_HORN_PREDICATE = MINE_LP_HAS_NO_HORN.and(AmuletSelectors.ALICORN_AMULET.or(EquinePredicates.raceMatches(com.minelittlepony.unicopia.Race::canCast)));
+    public static final Predicate<PlayerPonyRenderState> UNICORN_HORN_PREDICATE = MINE_LP_HAS_NO_HORN.and(INCLUDE_ALICORN_AMULET.or(s -> CasterState.of(s).species.any(r -> r.canCast())));
     public static final Identifier UNICORN_HORN = Unicopia.id("textures/models/horn/unicorn.png");
 
-    public static final Predicate<LivingEntity> PEGA_WINGS_PREDICATE = MINE_LP_HAS_NO_WINGS.and(AmuletSelectors.PEGASUS_AMULET.or(EquinePredicates.raceMatches(race -> race != com.minelittlepony.unicopia.Race.BAT && race.flightType() == FlightType.AVIAN)));
+    public static final Predicate<PlayerPonyRenderState> PEGA_WINGS_PREDICATE = MINE_LP_HAS_NO_WINGS.and(INCLUDE_ALICORN_AMULET.or(s -> CasterState.of(s).species.any(race -> race != com.minelittlepony.unicopia.Race.BAT && race.flightType() == FlightType.AVIAN)));
     public static final Identifier PEGASUS_WINGS = Unicopia.id("textures/models/wings/pegasus_pony.png");
 
     public static BodyPartGear<WingsGearModel> pegasusWings() {
         return new BodyPartGear<>(Race.PEGASUS, BodyPart.BODY, ModelType.PEGASUS, PEGA_WINGS_PREDICATE, WingsGearModel::new, WingsGearModel::getWings, e -> {
-            if (AmuletSelectors.PEGASUS_AMULET.test((LivingEntity)e)) {
-                return e.getWorld().getDimension().ultrawarm() ? ICARUS_WINGS_CORRUPTED : ICARUS_WINGS;
+            if (CasterState.of(e).pegasusAmulet) {
+                return CasterState.of(e).inHell ? ICARUS_WINGS_CORRUPTED : ICARUS_WINGS;
             }
             return PEGASUS_WINGS;
         });
@@ -74,30 +82,38 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity>> implements Gear {
         return new BodyPartGear<>(Race.UNICORN, BodyPart.HEAD, ModelType.UNICORN, UNICORN_HORN_PREDICATE, HornGearModel::new, HornGearModel::getHorn, e -> UNICORN_HORN);
     }
 
+    private final Race race;
     private final M model;
-    private final Predicate<LivingEntity> renderTargetPredicate;
-    private final SubModel part;
-    private final Function<Entity, Identifier> textureSupplier;
+    private final Predicate<PlayerPonyRenderState> renderTargetPredicate;
+    private final SubModel<?> part;
+    private final Function<PlayerPonyRenderState, Identifier> textureSupplier;
     private final BodyPart gearLocation;
-    private final LoadingCache<PonyData, PonyData> dataCache;
+    private final LoadingCache<PonyData, PonyData> dataCache = CacheBuilder.newBuilder().expireAfterAccess(3, TimeUnit.SECONDS).build(CacheLoader.from(this::convertMetadata));
+
+    private @Nullable PlayerPonyRenderState state;
 
     public BodyPartGear(
             Race race,
             BodyPart gearLocation,
-            PlayerModelKey<LivingEntity, ? super M> modelKey,
-            Predicate<LivingEntity> renderTargetPredicate,
+            PlayerModelKey<? super M> modelKey,
+            Predicate<PlayerPonyRenderState> renderTargetPredicate,
             MsonModel.Factory<M> modelFactory,
-            Function<? super M, SubModel> partExtractor,
-            Function<Entity, Identifier> textureSupplier) {
-        dataCache = CacheBuilder.newBuilder().expireAfterAccess(3, TimeUnit.SECONDS).build(CacheLoader.<PonyData, PonyData>from(metadata -> {
-            return new PonyData(race, metadata.tailLength(), metadata.tailShape(), metadata.gender(),
-                    metadata.size(), metadata.glowColor(), metadata.noSkin(), metadata.priority(), metadata.gear());
-        }));
+            Function<? super M, SubModel<?>> partExtractor,
+            Function<PlayerPonyRenderState, Identifier> textureSupplier) {
+        this.race = race;
         this.gearLocation = gearLocation;
         this.model = modelKey.steveKey().createModel(modelFactory);
         this.part = partExtractor.apply(this.model);
         this.renderTargetPredicate = renderTargetPredicate;
         this.textureSupplier = textureSupplier;
+    }
+
+    private PonyData convertMetadata(PonyData metadata) {
+        return new PonyData(BodyPartGear.this.race,
+                metadata.tailLength(), metadata.tailShape(),
+                metadata.gender(), metadata.size(),
+                metadata.glowColor(), metadata.noSkin(),
+                metadata.priority(), metadata.gear());
     }
 
     @Override
@@ -106,29 +122,21 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity>> implements Gear {
     }
 
     @Override
-    public boolean canRender(PonyModel<?> model, Entity entity) {
-        return entity instanceof LivingEntity l
-            && MineLPDelegate.getInstance().getRace(entity).isEquine()
-            && renderTargetPredicate.test(l);
+    public boolean canRender(PonyModel<?> model, EntityRenderState state) {
+        return state instanceof PlayerPonyRenderState pony
+            && !pony.getRace().isHuman()
+            && pony.getRace() != race
+            && renderTargetPredicate.test(pony);
     }
 
     @Override
-    public <T extends Entity> Identifier getTexture(T entity, Context<T, ?> context) {
-        return textureSupplier.apply(entity);
+    public <S extends EntityRenderState> Identifier getTexture(S entity, Context<S, ?> context) {
+        return textureSupplier.apply((PlayerPonyRenderState)entity);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public void pose(PonyModel<?> model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float tickDelta) {
-        final PonyData data = this.model.getAttributes().metadata;
-        try {
-            ((ClientPonyModel)model).copyAttributes(this.model);
-            this.model.getAttributes().metadata = dataCache.getUnchecked(data);
-            // TODO:
-            this.model.setAngles(null);
-        } finally {
-            this.model.getAttributes().metadata = data;
-        }
+    public <S extends BipedEntityRenderState & PonyModel.AttributedHolder> void pose(PonyModel<S> model, S state, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
+        this.state = (PlayerPonyRenderState)state;
     }
 
     public static PonyData copyOf(PonyData metadata, Race newRace) {
@@ -138,27 +146,38 @@ class BodyPartGear<M extends ClientPonyModel<LivingEntity>> implements Gear {
 
     @Override
     public void render(MatrixStack stack, VertexConsumer consumer, int light, int overlay, int color, UUID interpolatorId) {
-        part.renderPart(stack, consumer, light, overlay, color, model.getAttributes());
+        var originalRace = state.getRace();
+        var originalData = state.getAttributes().metadata;
+        try {
+            state.getAttributes().metadata = this.dataCache.get(originalData);
+            state.race = state.getAttributes().metadata.race();
+            model.setAngles(state);
+            part.renderPart(stack, consumer, light, overlay, color);
+        } catch (ExecutionException ignored) {
+        } finally {
+            state.getAttributes().metadata = originalData;
+            state.race = originalRace;
+        }
     }
 
-    static final class WingsGearModel extends PegasusModel<LivingEntity> {
+    static final class WingsGearModel extends PegasusModel<PonyRenderState> {
         public WingsGearModel(ModelPart tree) {
             super(tree, false);
         }
     }
 
-    static final class BugWingsGearModel extends ChangelingModel<LivingEntity> {
+    static final class BugWingsGearModel extends ChangelingModel<PonyRenderState> {
         public BugWingsGearModel(ModelPart tree) {
             super(tree, false);
         }
     }
 
-    static final class HornGearModel extends UnicornModel<LivingEntity> {
+    static final class HornGearModel extends UnicornModel<PonyRenderState> {
         public HornGearModel(ModelPart tree) {
             super(tree, false);
         }
 
-        public UnicornHorn getHorn() {
+        public UnicornHorn<PonyRenderState> getHorn() {
             return horn;
         }
     }

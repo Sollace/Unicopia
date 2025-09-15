@@ -15,9 +15,6 @@ import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
 import com.minelittlepony.unicopia.item.group.UItemGroups;
 import com.minelittlepony.unicopia.recipe.URecipes;
-import com.terraformersmc.terraform.boat.api.TerraformBoatType;
-import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
-import com.terraformersmc.terraform.boat.api.item.TerraformBoatItemHelper;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.block.WoodType;
@@ -163,8 +160,8 @@ public interface UItems {
     Item BUTTERFLY_SPAWN_EGG = register("butterfly_spawn_egg", new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xAAEEFF, new Item.Settings()), ItemGroups.SPAWN_EGGS);
     Item BUTTERFLY = register("butterfly", new ButterflyItem(new Item.Settings().food(UFoodComponents.INSECTS)), ItemGroups.FOOD_AND_DRINK);
 
-    Item PALM_BOAT = ItemGroupRegistry.register(TerraformBoatItemHelper.registerBoatItem(Unicopia.id("palm_boat"), UWoodTypes.PALM_BOAT_TYPE, false), ItemGroups.FUNCTIONAL);
-    Item PALM_CHEST_BOAT = ItemGroupRegistry.register(TerraformBoatItemHelper.registerBoatItem(Unicopia.id("palm_chest_boat"), UWoodTypes.PALM_BOAT_TYPE, true), ItemGroups.FUNCTIONAL);
+    Item PALM_BOAT = register("palm_boat", new BoatItem(UEntities.PALM_BOAT, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item PALM_CHEST_BOAT = register("palm_chest_boat", new BoatItem(UEntities.PALM_CHEST_BOAT, new Item.Settings().maxCount(1)), ItemGroups.FUNCTIONAL);
     Item PALM_SIGN = register("palm_sign", new SignItem(UBlocks.PALM_SIGN, UBlocks.PALM_WALL_SIGN, new Item.Settings()), ItemGroups.FUNCTIONAL);
     Item PALM_HANGING_SIGN = register("palm_hanging_sign", new HangingSignItem(UBlocks.PALM_HANGING_SIGN, UBlocks.PALM_WALL_HANGING_SIGN, new Item.Settings()), ItemGroups.FUNCTIONAL);
 
@@ -337,10 +334,5 @@ public interface UItems {
         UEnchantments.bootstrap();
         URecipes.bootstrap();
         UItemGroups.bootstrap();
-
-        Registry.register(TerraformBoatTypeRegistry.INSTANCE, Unicopia.id("palm"), new TerraformBoatType.Builder()
-                .planks(UBlocks.PALM_PLANKS.asItem())
-                .item(PALM_BOAT)
-                .build());
     }
 }

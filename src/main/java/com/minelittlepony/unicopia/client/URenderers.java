@@ -38,7 +38,6 @@ import com.minelittlepony.unicopia.item.component.Appearance;
 import com.minelittlepony.unicopia.item.component.BalloonDesignComponent;
 import com.minelittlepony.unicopia.item.component.BufferflyVariantComponent;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.terraformersmc.terraform.boat.api.client.TerraformBoatClientHelper;
 
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
@@ -120,6 +119,8 @@ public interface URenderers {
         EntityRendererRegistry.register(UEntities.IGNOMINIOUS_BULB, IgnominiousBulbEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.SPECTER, SpecterEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.MIMIC, MimicEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.PALM_BOAT, ctx -> new CustomBoatEntityRenderer<>(ctx, UEntities.PALM_BOAT, false));
+        EntityRendererRegistry.register(UEntities.PALM_CHEST_BOAT, ctx -> new CustomBoatEntityRenderer<>(ctx, UEntities.PALM_BOAT, true));
 
         BlockEntityRendererFactories.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(UBlockEntities.FANCY_BED, CloudBedBlockEntityRenderer::new);
@@ -190,8 +191,6 @@ public interface URenderers {
         // for lava boats
         BlockRenderLayerMap.INSTANCE.putFluids(RenderLayer.getTranslucent(), Fluids.LAVA, Fluids.FLOWING_LAVA);
         LeavesAdditionsModel.bootstrap();
-
-        TerraformBoatClientHelper.registerModelLayers(Unicopia.id("palm"), false);
 
         SpellRendererFactory.bootstrap();
         UShaders.bootstrap();

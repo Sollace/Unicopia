@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.Ability;
@@ -28,17 +29,22 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.GlassesItem;
+import com.minelittlepony.unicopia.item.GlowableItem;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.Perspective;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -86,15 +92,15 @@ public class CasterState {
     public boolean pegasusAmulet;
     public boolean inHell;
 
-    public TrinketsDelegate.EquippedStack mainhandBangle = TrinketsDelegate.EquippedStack.EMPTY;
-    public TrinketsDelegate.EquippedStack offhandBangle = TrinketsDelegate.EquippedStack.EMPTY;
+    public final BangleState mainhandBangle = new BangleState();
+    public final BangleState offhandBangle = new BangleState();
     public TrinketsDelegate.EquippedStack eyewear = TrinketsDelegate.EquippedStack.EMPTY;
 
     public float leanAmount;
     public float yawOffset;
     public float gemYaw;
 
-    public PassengerState carriedEntity = new PassengerState();
+    public PassengerState<?, ?> carriedEntity = new PassengerState<>();
 
     @Nullable
     public Entity appearance;
@@ -127,8 +133,8 @@ public class CasterState {
         spells.clear();
         species = Race.UNSET.composite();
         amulet = TrinketsDelegate.EquippedStack.EMPTY;
-        mainhandBangle = TrinketsDelegate.EquippedStack.EMPTY;
-        offhandBangle = TrinketsDelegate.EquippedStack.EMPTY;
+        mainhandBangle.update(TrinketsDelegate.EquippedStack.EMPTY);
+        offhandBangle.update(TrinketsDelegate.EquippedStack.EMPTY);
         eyewear = TrinketsDelegate.EquippedStack.EMPTY;
         activeAbility.update(null, null);
     }
@@ -136,10 +142,10 @@ public class CasterState {
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void update(@Nullable Caster<?> caster, float tickDelta) {
         clear();
-        present = caster != null;
-        living = caster instanceof Living;
-        hasDebugInfo = caster instanceof Pony || caster instanceof CastSpellEntity;
         if (caster != null) {
+            present = true;
+            living = caster instanceof Living;
+            hasDebugInfo = caster instanceof Pony || caster instanceof CastSpellEntity;
             type = caster.asEntity().getType();
             width = caster.asEntity().getWidth();
             originVector = caster.getOriginVector();
@@ -181,8 +187,8 @@ public class CasterState {
             if (caster instanceof Living l) {
                 amulet = AmuletItem.get(l.asEntity());
                 pegasusAmulet = AmuletSelectors.PEGASUS_AMULET.test(l.asEntity());
-                mainhandBangle = FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.MAIN_GLOVE).findFirst().orElse(null);
-                offhandBangle = FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.SECONDARY_GLOVE).findFirst().orElse(null);
+                mainhandBangle.update(FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.MAIN_GLOVE).findFirst().orElse(null));
+                offhandBangle.update(FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.SECONDARY_GLOVE).findFirst().orElse(null));
                 eyewear = GlassesItem.getForEntity(l.asEntity());
                 leanAmount = ((LivingEntityDuck)l.asEntity()).getLeaningPitch();
                 yawOffset = -(((LivingEntityRenderState)this.entityState).yawDegrees + ((LivingEntityRenderState)this.entityState).bodyYaw);
@@ -229,6 +235,22 @@ public class CasterState {
         return of(MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity).getAndUpdateRenderState(entity, tickDelta));
     }
 
+    public static class BangleState {
+        public TrinketsDelegate.EquippedStack stack = TrinketsDelegate.EquippedStack.EMPTY;
+        public int color;
+        public boolean glowing;
+
+        public void update(@Nullable TrinketsDelegate.EquippedStack stack) {
+            this.stack = stack;
+            color = stack == null ? Colors.WHITE : DyedColorComponent.getColor(stack.stack(), Colors.WHITE);
+            glowing = stack != null && GlowableItem.isGlowing(stack.stack());
+        }
+
+        public boolean present() {
+            return !stack.stack().isEmpty();
+        }
+    }
+
     public static class AbilityState {
         public Identifier id;
         public Text name;
@@ -244,17 +266,38 @@ public class CasterState {
         }
     }
 
-    public static class PassengerState {
-        public Vec3d carryPosition;
-        public Living<?> passenger;
+    public static class PassengerState<T extends LivingEntity, S extends LivingEntityRenderState> {
+        public Vec3d carryPosition = Vec3d.ZERO;
+        public Vector3f viewportPosition = new Vector3f();
+        public boolean isPony;
 
-        public void update(CasterState state, Living<?> entity, Living<?> passenger) {
-            this.passenger = passenger;
+        @Nullable
+        private EntityRenderer<T, S> renderer;
+        @Nullable
+        public S state;
+
+        @SuppressWarnings("unchecked")
+        public void update(CasterState state, Living<T> entity, Living<T> passenger, float tickDelta) {
             if (passenger != null) {
+                isPony = passenger instanceof Pony;
                 carryPosition = HeldEntityFeatureRenderer.getCarryPosition(entity, passenger)
                         .rotateX(-state.leanAmount * MathHelper.PI / 4F)
                         .add(new Vec3d(0, -0.5F, 0).multiply(state.leanAmount));
+                viewportPosition = HeldEntityFeatureRenderer.getViewportPosition(entity, passenger, tickDelta);
+                this.renderer = (EntityRenderer<T, S>)MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity.asEntity());
+                this.state = renderer.createRenderState();
+                renderer.updateRenderState(entity.asEntity(), this.state, tickDelta);
+                this.state.yawDegrees = 0;
+                this.state.bodyYaw = 0;
+                this.state.limbAmplitudeMultiplier = 0;
+            } else {
+                this.renderer = null;
+                this.state = null;
             }
+        }
+
+        public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+            renderer.render(state, matrices, vertexConsumers, light);
         }
     }
 }

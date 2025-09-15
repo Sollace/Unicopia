@@ -2,8 +2,7 @@ package com.minelittlepony.unicopia.client.render;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
-import com.minelittlepony.unicopia.item.*;
-
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState.BangleState;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelData;
@@ -28,9 +27,7 @@ import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.type.DyedColorComponent;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 
 public class BraceletFeatureRenderer<S extends BipedEntityRenderState, E extends LivingEntity> implements AccessoryFeatureRenderer.Feature<S> {
@@ -52,16 +49,16 @@ public class BraceletFeatureRenderer<S extends BipedEntityRenderState, E extends
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, S entity, float limbAngle, float limbDistance) {
         CasterState caster = CasterState.of(entity);
-        if (caster.mainhandBangle != null) {
-            renderBangleThirdPerson(caster.mainhandBangle.stack(), matrices, vertexConsumers, light, entity, limbDistance, limbAngle, entity.mainArm);
+        if (caster.mainhandBangle.present()) {
+            renderBangleThirdPerson(caster.mainhandBangle, matrices, vertexConsumers, light, entity, limbDistance, limbAngle, entity.mainArm);
         }
-        if (caster.offhandBangle != null) {
-            renderBangleThirdPerson(caster.offhandBangle.stack(), matrices, vertexConsumers, light, entity, limbDistance, limbAngle, entity.mainArm.getOpposite());
+        if (caster.offhandBangle.present()) {
+            renderBangleThirdPerson(caster.offhandBangle, matrices, vertexConsumers, light, entity, limbDistance, limbAngle, entity.mainArm.getOpposite());
         }
     }
 
-    private void renderBangleThirdPerson(ItemStack item, MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, S entity, float limbDistance, float limbAngle, Arm mainArm) {
-        int j = DyedColorComponent.getColor(item, Colors.WHITE);
+    private void renderBangleThirdPerson(BangleState state, MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, S entity, float limbDistance, float limbAngle, Arm mainArm) {
+        int j = state.color;
 
         boolean alex = entity instanceof PlayerEntityRenderState s && s.skinTextures.model() == SkinTextures.Model.SLIM;
 
@@ -80,7 +77,7 @@ public class BraceletFeatureRenderer<S extends BipedEntityRenderState, E extends
 
         model.setAngles(context.getModel());
         model.setVisible(mainArm);
-        model.render(stack, consumer, GlowableItem.isGlowing(item) ? LightmapTextureManager.MAX_LIGHT_COORDINATE : lightUv, OverlayTexture.DEFAULT_UV, j);
+        model.render(stack, consumer, state.glowing ? LightmapTextureManager.MAX_LIGHT_COORDINATE : lightUv, OverlayTexture.DEFAULT_UV, j);
     }
 
     @Override
@@ -95,13 +92,11 @@ public class BraceletFeatureRenderer<S extends BipedEntityRenderState, E extends
             }
 
             VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(TEXTURE), false);
-            int j = DyedColorComponent.getColor(bangle.stack(), Colors.WHITE);
-
             boolean alex = entity instanceof PlayerEntityRenderState s && s.skinTextures.model() == SkinTextures.Model.SLIM;
             BraceletModel model = alex ? alexModel : steveModel;
             model.setAngles(context.getModel());
             model.setVisible(arm);
-            model.render(stack, consumer, GlowableItem.isGlowing(bangle.stack()) ? LightmapTextureManager.MAX_LIGHT_COORDINATE : lightUv, OverlayTexture.DEFAULT_UV, j);
+            model.render(stack, consumer, bangle.glowing ? LightmapTextureManager.MAX_LIGHT_COORDINATE : lightUv, OverlayTexture.DEFAULT_UV, bangle.color);
         }
     }
 

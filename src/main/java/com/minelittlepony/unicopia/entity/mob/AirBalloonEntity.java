@@ -63,7 +63,6 @@ import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
-import com.terraformersmc.terraform.boat.api.TerraformBoatType;
 
 import io.netty.buffer.ByteBuf;
 
@@ -895,7 +894,8 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             return REGISTRY.computeIfAbsent(Identifier.of(woodType.name()), id -> new BasketType(id, woodType));
         }
 
-        public static BasketType of(RegistryKey<TerraformBoatType> id) {
+        @Deprecated
+        public static BasketType of(RegistryKey<?> id) {
             return REGISTRY.computeIfAbsent(id.getValue(), i -> new BasketType(i, null));
         }
     }

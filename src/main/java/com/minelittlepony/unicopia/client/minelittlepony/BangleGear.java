@@ -2,32 +2,29 @@ package com.minelittlepony.unicopia.client.minelittlepony;
 
 import java.util.UUID;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.api.model.BodyPart;
 import com.minelittlepony.api.model.PonyModel;
 import com.minelittlepony.api.model.gear.Gear;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer.BraceletModel;
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
-import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
-import com.minelittlepony.unicopia.item.GlowableItem;
-
 import net.minecraft.client.model.Dilation;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
+import net.minecraft.client.render.entity.state.EntityRenderState;
+import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.SkinTextures.Model;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.type.DyedColorComponent;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Arm;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
 class BangleGear implements Gear {
-    private boolean glowing;
-    private int color;
+    @Nullable
+    private CasterState.BangleState state;
     private boolean alex;
 
     private final BraceletModel steveModel;
@@ -43,8 +40,8 @@ class BangleGear implements Gear {
     }
 
     @Override
-    public boolean canRender(PonyModel<?> model, Entity entity) {
-        return entity instanceof LivingEntity living && FriendshipBraceletItem.getWornBangles(living, slot).findFirst().isPresent();
+    public boolean canRender(PonyModel<?> model, EntityRenderState state) {
+        return (slot == TrinketsDelegate.MAIN_GLOVE ? CasterState.of(state).mainhandBangle : CasterState.of(state).offhandBangle).present();
     }
 
     @Override
@@ -53,37 +50,34 @@ class BangleGear implements Gear {
     }
 
     @Override
-    public <T extends Entity> Identifier getTexture(T entity, Context<T, ?> context) {
+    public <S extends EntityRenderState> Identifier getTexture(S entity, Context<S, ?> context) {
         return BraceletFeatureRenderer.TEXTURE;
     }
 
     @Override
-    public <M extends EntityModel<?> & PonyModel<?>> void transform(M model, MatrixStack matrices) {
+    public <S extends EntityRenderState & PonyModel.AttributedHolder> void transform(S state, PonyModel<S> model, MatrixStack matrices) {
         BodyPart part = getGearLocation();
-        model.transform(part, matrices);
+        model.transform(state, part, matrices);
     }
 
     @Override
-    public void pose(PonyModel<?> model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
-        alex = entity instanceof ClientPlayerEntity && ((ClientPlayerEntity)entity).getSkinTextures().model() == Model.SLIM;
-        color = Colors.WHITE;
-        glowing = false;
-        FriendshipBraceletItem.getWornBangles((LivingEntity)entity, slot).findFirst().ifPresent(bracelet -> {
-            color = DyedColorComponent.getColor(bracelet.stack(), Colors.WHITE);
-            glowing = GlowableItem.isGlowing(bracelet.stack());
-        });
+    public <S extends BipedEntityRenderState & PonyModel.AttributedHolder> void pose(PonyModel<S> model, S state, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
+        alex = state instanceof PlayerEntityRenderState player && player.skinTextures.model() == Model.SLIM;
+        this.state = slot == TrinketsDelegate.MAIN_GLOVE ? CasterState.of(state).mainhandBangle : CasterState.of(state).offhandBangle;
         BraceletModel m = alex ? alexModel : steveModel;
 
         if (model instanceof BipedEntityModel<?> biped) {
             m.setAngles(biped);
         }
-        Arm mainArm = ((LivingEntity)entity).getMainArm();
+        Arm mainArm = state.mainArm;
         m.setVisible(slot == TrinketsDelegate.MAIN_GLOVE ? mainArm : mainArm.getOpposite());
     }
 
     @Override
     public void render(MatrixStack stack, VertexConsumer consumer, int light, int overlay, int color, UUID interpolatorId) {
-        BraceletModel m = alex ? alexModel : steveModel;
-        m.render(stack, consumer, glowing ? 0x0F00F0 : light, overlay, this.color);
+        if (state != null) {
+            BraceletModel m = alex ? alexModel : steveModel;
+            m.render(stack, consumer, state.glowing ? 0x0F00F0 : light, overlay, state.color);
+        }
     }
 }

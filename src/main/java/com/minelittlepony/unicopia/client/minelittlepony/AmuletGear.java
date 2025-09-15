@@ -8,15 +8,13 @@ import com.minelittlepony.api.model.BodyPart;
 import com.minelittlepony.api.model.PonyModel;
 import com.minelittlepony.api.model.gear.Gear;
 import com.minelittlepony.unicopia.client.render.AmuletFeatureRenderer.AmuletModel;
-import com.minelittlepony.unicopia.item.AmuletItem;
-
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.state.BipedEntityRenderState;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
 
@@ -29,8 +27,8 @@ class AmuletGear extends AmuletModel implements Gear {
     }
 
     @Override
-    public boolean canRender(PonyModel<?> model, Entity entity) {
-        return entity instanceof LivingEntity living && !AmuletItem.get(living).stack().isEmpty();
+    public boolean canRender(PonyModel<?> model, EntityRenderState entity) {
+        return CasterState.of(entity).amulet.stack().isEmpty();
     }
 
     @Override
@@ -39,19 +37,19 @@ class AmuletGear extends AmuletModel implements Gear {
     }
 
     @Override
-    public <T extends Entity> Identifier getTexture(T entity, Context<T, ?> context) {
-        return textures.computeIfAbsent(Registries.ITEM.getId(AmuletItem.get((LivingEntity)entity).stack().getItem()), id -> id.withPath(p  -> "textures/models/armor/" + p + ".png"));
+    public <S extends EntityRenderState> Identifier getTexture(S entity, Context<S, ?> context) {
+        return textures.computeIfAbsent(Registries.ITEM.getId(CasterState.of(entity).amulet.stack().getItem()), id -> id.withPath(p  -> "textures/models/armor/" + p + ".png"));
     }
 
     @Override
-    public <M extends EntityModel<?> & PonyModel<?>> void transform(M model, MatrixStack matrices) {
+    public <S extends EntityRenderState & PonyModel.AttributedHolder> void transform(S state, PonyModel<S> model, MatrixStack matrices) {
         BodyPart part = getGearLocation();
-        model.transform(part, matrices);
+        model.transform(state, part, matrices);
         matrices.translate(0, 0.25, 0);
     }
 
     @Override
-    public void pose(PonyModel<?> model, Entity entity, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
+    public <S extends BipedEntityRenderState & PonyModel.AttributedHolder> void pose(PonyModel<S> model, S state, boolean rainboom, UUID interpolatorId, float move, float swing, float bodySwing, float ticks) {
         if (model instanceof BipedEntityModel<?> biped) {
             setAngles(biped);
         }
