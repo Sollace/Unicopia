@@ -55,7 +55,7 @@ repositories {
     maven { name 'accessories-b'; url 'https://maven.su5ed.dev/releases' }
     
     maven { name 'Iris Deps'; url "https://maven.covers1624.net/" }
-    maven { name 'Greenhouse Maven For Farmers delight'; url 'https://maven.greenhouseteam.dev/releases/' }
+    maven { name 'Greenhouse Maven For Farmers delight'; url 'https://maven.greenhouseteam.lgbt/releases/' }
     maven { name 'Porting Lib For Farmers delight'; url = 'https://mvn.devos.one/releases/' }
     maven { name 'Modrinth'; url 'https://api.modrinth.com/maven' }
     maven { name 'JitPack'; url 'https://jitpack.io'; content { includeGroup "com.github.Virtuoel" } }
@@ -87,13 +87,14 @@ dependencies {
       modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
       modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.3.0"
       modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0"
-    } else {
+    }/* else {
+      modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.3.0"
+      modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0"
       modCompileOnly "dev.emi:trinkets-dummy:${project.trinkets_version}"
-    }
+    }*/
     
     if (project.trinkets_type == 'accessories') {
-      //modCompileOnly "io.wispforest:accessories-fabric:${project.accessories_version}"
-      modCompileOnly "maven.modrinth:accessories:${project.accessories_version}"
+      modCompileOnly "io.wispforest:accessories-fabric:${project.accessories_version}"
     } else {
       modCompileOnly "io.wispforest:accessories-fabric-dummy:${project.accessories_version}"
     }

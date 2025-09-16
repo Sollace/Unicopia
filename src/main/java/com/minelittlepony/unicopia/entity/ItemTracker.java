@@ -20,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
-public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tickable, TrinketsDelegate.Inventory {
+public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tickable {
     public static final long TICKS = 1;
     public static final long SECONDS = 20 * TICKS;
     public static final long HOURS = 1000 * TICKS;

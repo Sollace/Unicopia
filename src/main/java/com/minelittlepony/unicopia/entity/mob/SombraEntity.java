@@ -492,7 +492,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
             TrinketsDelegate.EquippedStack amulet = UItems.ALICORN_AMULET.getForEntity(player);
             if (!amulet.stack().isEmpty()) {
                 amulet.stack().decrement(1);
-                amulet.sendUpdate();
+                amulet.markChanged();
             }
         }
         boolean damaged = super.damage(world, source, amount);

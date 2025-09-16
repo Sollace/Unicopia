@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.container.inventory;
 
-import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.Unicopia;
 
 import net.minecraft.util.Identifier;
@@ -23,7 +21,6 @@ public interface SpellbookSlot {
         return 0.3F;
     }
 
-    @Nullable
     default Identifier getForegroundIdentifier() {
         return null;
     }

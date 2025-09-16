@@ -32,6 +32,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 
@@ -155,8 +156,8 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
             static Key of(String s) {
                 return s.startsWith("#") ? new Tag(TagKey.of(RegistryKeys.ITEM, Identifier.tryParse(s.substring(1)))) : new Id(Identifier.tryParse(s));
             }
-            record Tag(TagKey<Item> tag) implements Key {
 
+            record Tag(TagKey<Item> tag) implements Key {
                 @SuppressWarnings("deprecation")
                 @Override
                 public boolean test(ItemConvertible item) {
@@ -167,7 +168,7 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
             record Id(Identifier id) implements Key {
                 @Override
                 public boolean test(ItemConvertible item) {
-                    return Objects.equals(id, Registries.ITEM.getId(item.asItem()));
+                    return Objects.equals(id, item.asItem().getRegistryEntry().getKey().map(RegistryKey::getValue).orElse(null));
                 }
             }
         }

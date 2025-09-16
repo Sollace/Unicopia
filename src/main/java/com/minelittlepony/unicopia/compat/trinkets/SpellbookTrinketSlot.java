@@ -2,19 +2,19 @@ package com.minelittlepony.unicopia.compat.trinkets;
 
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.container.inventory.InventorySlot;
-import dev.emi.trinkets.SurvivalTrinketSlot;
-import dev.emi.trinkets.api.SlotGroup;
-import dev.emi.trinkets.api.TrinketInventory;
+import com.mojang.datafixers.util.Pair;
+
+import io.wispforest.accessories.api.menu.AccessoriesBasedSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 class SpellbookTrinketSlot extends InventorySlot {
-    private final SurvivalTrinketSlot slot;
+    private final AccessoriesBasedSlot slot;
 
-    public SpellbookTrinketSlot(SpellbookScreenHandler handler, TrinketInventory inventory, int index, int x, int y, SlotGroup group) {
-        super(handler, inventory, index, x, y);
-        slot = new SurvivalTrinketSlot(inventory, index, x, y, group, inventory.getSlotType(), 0, true);
+    SpellbookTrinketSlot(SpellbookScreenHandler handler, AccessoriesBasedSlot accessoriesSlot) {
+        super(handler, accessoriesSlot.inventory, accessoriesSlot.id, accessoriesSlot.x, accessoriesSlot.y);
+        slot = accessoriesSlot;
     }
 
     @Override
@@ -52,6 +52,7 @@ class SpellbookTrinketSlot extends InventorySlot {
         slot.markDirty();
     }
 
+    @Deprecated
     @Override
     public int getMaxItemCount() {
         return slot.getMaxItemCount();
@@ -78,8 +79,13 @@ class SpellbookTrinketSlot extends InventorySlot {
     }
 
     @Override
+    public Pair<Identifier, Identifier> getBackgroundSprite() {
+        return slot.getBackgroundSprite();
+    }
+
+    @Override
     public Identifier getForegroundIdentifier() {
-        return slot.getBackgroundIdentifier();
+        return slot.getBackgroundSprite().getSecond();
     }
 
     @Override

@@ -238,19 +238,19 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                     pony.asEntity().addStatusEffect(new StatusEffectInstance(UEffects.BUTTER_FINGERS, 2100, 1));
                 }
 
-                pony.findAllEntitiesInRange(10, e -> e instanceof LivingEntity && !((LivingEntity)e).hasStatusEffect(UEffects.CORRUPT_INFLUENCE)).forEach(e -> {
+                pony.findAllEntitiesInRange(10, e -> e instanceof LivingEntity l && !l.hasStatusEffect(UEffects.CORRUPT_INFLUENCE)).forEach(e -> {
                     ((LivingEntity)e).addStatusEffect(new StatusEffectInstance(UEffects.CORRUPT_INFLUENCE, 100, 1));
                 });
             }
 
             // bind to the player after 3 days
             if (daysAttached >= 3 && !pony.asEntity().isCreative()) {
-                stack = living.getArmour().getEquippedStack(TrinketsDelegate.NECKLACE).stack();
-                if (stack.getItem() == this && !EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)) {
+                TrinketsDelegate.EquippedStack amulet = getForEntity(pony.asEntity());
+
+                if (!amulet.stack().isEmpty() && !EnchantmentHelper.hasAnyEnchantmentsWith(amulet.stack(), EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)) {
                     pony.playSound(USounds.ITEM_ALICORN_AMULET_HALLUCINATION, 3, 1);
-                    stack = stack.copy();
-                    stack.addEnchantment(pony.entryFor(Enchantments.BINDING_CURSE), 1);
-                    pony.getArmour().equipStack(TrinketsDelegate.NECKLACE, stack);
+                    amulet.stack().addEnchantment(pony.entryFor(Enchantments.BINDING_CURSE), 1);
+                    amulet.markChanged();
                 }
             }
 

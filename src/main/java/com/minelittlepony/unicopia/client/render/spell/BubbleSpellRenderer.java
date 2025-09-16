@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.client.render.spell;
 
-import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.BubbleSpell;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
@@ -14,11 +13,12 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.RotationAxis;
 
 public class BubbleSpellRenderer extends SpellRenderer<BubbleSpell, BubbleSpellRenderer.State> {
-    static final int BUBBLE_COLOR = Color.argbToHex(0.9F, 0.9F, 1, 0.25F);
-    static final int BUBBLE_SHINE_COLOR = Color.argbToHex(0.9F, 0.9F, 1, 0.3F);
+    static final int BUBBLE_COLOR = ColorHelper.fromFloats(0.9F, 0.9F, 1, 0.25F);
+    static final int BUBBLE_SHINE_COLOR = ColorHelper.fromFloats(0.9F, 0.9F, 1, 0.3F);
 
     @Override
     public State createRenderState() {

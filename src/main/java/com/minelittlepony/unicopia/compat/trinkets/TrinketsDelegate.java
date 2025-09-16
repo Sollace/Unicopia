@@ -3,12 +3,10 @@ package com.minelittlepony.unicopia.compat.trinkets;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.EntityConvertable;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 
 import net.fabricmc.loader.api.FabricLoader;
@@ -20,6 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 
 public interface TrinketsDelegate {
@@ -40,17 +39,17 @@ public interface TrinketsDelegate {
     }
 
     static boolean hasTrinkets() {
-        return FabricLoader.getInstance().isModLoaded("trinkets");
+        return FabricLoader.getInstance().isModLoaded("accessories");
     }
 
     default void bootstrap() {
 
     }
 
-    default boolean equipStack(LivingEntity entity, Identifier slot, ItemStack stack) {
+    default ActionResult equipStack(LivingEntity entity, ItemStack stack) {
         EquipmentSlot eq = entity.getPreferredEquipmentSlot(stack);
         if (!entity.getEquippedStack(eq).isEmpty()) {
-            return false;
+            return ActionResult.FAIL;
         }
 
         entity.equipStack(eq, stack.split(1));
@@ -58,22 +57,7 @@ public interface TrinketsDelegate {
             mob.setEquipmentDropChance(eq, 2.0f);
             mob.setPersistent();
         }
-        return true;
-    }
-
-    default void setEquippedStack(LivingEntity entity, Identifier slot, ItemStack stack) {
-        EquipmentSlot eq = slot == FACE ? EquipmentSlot.HEAD
-                : slot == NECKLACE ? EquipmentSlot.CHEST
-                : slot == MAIN_GLOVE ? EquipmentSlot.CHEST
-                : slot == SECONDARY_GLOVE ? EquipmentSlot.OFFHAND
-                : null;
-        if (eq != null) {
-            entity.equipStack(eq, stack);
-        }
-    }
-
-    default Set<Identifier> getAvailableTrinketSlots(LivingEntity entity, Set<Identifier> probedSlots) {
-        return probedSlots.stream().filter(slot -> getEquipped(entity, slot).map(EquippedStack::stack).anyMatch(ItemStack::isEmpty)).collect(Collectors.toSet());
+        return ActionResult.SUCCESS;
     }
 
     default Stream<EquippedStack> getEquipped(LivingEntity entity, Identifier slot, TagKey<Item> tag) {
@@ -111,26 +95,19 @@ public interface TrinketsDelegate {
         return false;
     }
 
-    interface Inventory extends EntityConvertable<LivingEntity> {
-
-        default Stream<EquippedStack> getEquippedStacks(Identifier slot) {
-            return TrinketsDelegate.getInstance(asEntity()).getEquipped(asEntity(), slot);
-        }
-
-        default EquippedStack getEquippedStack(Identifier slot) {
-            return getEquippedStacks(slot).findFirst().orElse(EquippedStack.EMPTY);
-        }
-
-        default void equipStack(Identifier slot, ItemStack stack) {
-            TrinketsDelegate.getInstance(asEntity()).setEquippedStack(asEntity(), slot, stack);
-        }
-    }
-
-    record EquippedStack(ItemStack stack, Runnable sendUpdate, Consumer<Item> breakStatusSender) {
-        public static final EquippedStack EMPTY = new EquippedStack(ItemStack.EMPTY, () -> {}, l -> {});
+    record EquippedStack(ItemStack stack, Runnable sendUpdate, Consumer<ItemStack> updater, Consumer<Item> breakStatusSender) {
+        public static final EquippedStack EMPTY = new EquippedStack(ItemStack.EMPTY, () -> {}, s -> {}, l -> {});
 
         EquippedStack(LivingEntity entity, EquipmentSlot slot) {
-            this(entity.getEquippedStack(slot), () -> {}, item -> entity.sendEquipmentBreakStatus(item, slot));
+            this(entity.getEquippedStack(slot), () -> {}, s -> entity.equipStack(slot, s), item -> entity.sendEquipmentBreakStatus(item, slot));
+        }
+
+        public void markChanged() {
+            sendUpdate.run();
+        }
+
+        public void swap(ItemStack newStack) {
+            updater.accept(newStack);
         }
     }
 }
