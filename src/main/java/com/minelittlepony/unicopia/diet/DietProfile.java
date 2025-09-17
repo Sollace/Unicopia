@@ -88,7 +88,14 @@ public record DietProfile(
 
         var ratios = getRatios(stack);
         if (isInedible(ratios)) {
-            return null;
+            return new FoodComponent( // this item should not be edible, but setting to null gives compatability problems with Appleskin
+            0,//nutriton
+            0,//saturation
+            false, // can always eat
+            food.eatSeconds(),
+            food.usingConvertsTo(),
+            food.effects()
+            );
         }
 
         float hunger = food.nutrition() * ratios.getFirst();

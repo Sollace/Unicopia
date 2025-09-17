@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.google.common.base.Suppliers;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.minelittlepony.unicopia.client.ModifierTooltipRenderer;
@@ -17,7 +18,6 @@ import com.minelittlepony.unicopia.entity.effect.FoodPoisoningStatusEffect;
 import com.minelittlepony.unicopia.item.DamageChecker;
 import com.minelittlepony.unicopia.item.ItemStackDuck;
 import com.minelittlepony.unicopia.item.component.TransientComponentMap;
-import com.minelittlepony.unicopia.item.component.TransientComponentMapImpl;
 
 import net.minecraft.component.ComponentHolder;
 import net.minecraft.component.ComponentType;
@@ -35,7 +35,7 @@ import net.minecraft.world.World;
 
 @Mixin(ItemStack.class)
 abstract class MixinItemStack implements ItemStackDuck {
-    private final Supplier<TransientComponentMap> transientComponents = TransientComponentMapImpl.create(() -> (ItemStack)(Object)this);
+    private final Supplier<TransientComponentMap> transientComponents = Suppliers.memoize(() -> TransientComponentMap.INITIAL.createCopy());
 
     @Override
     public TransientComponentMap getTransientComponents() {
@@ -91,16 +91,19 @@ abstract class MixinItemStack implements ItemStackDuck {
 interface MixinComponentHolder {
     @ModifyReturnValue(method = "get", at = @At("RETURN"))
     default <T> T unicopia_onGet(T value, ComponentType<? extends T> type) {
-        return TransientComponentMap.of(this).get(type, value);
+        Object o = this;
+        return o instanceof ItemStack stack ? ItemStackDuck.of(stack).getTransientComponents().get(type, stack, value) : value;
     }
 
     @ModifyReturnValue(method = "getOrDefault", at = @At("RETURN"))
     default <T> T unicopia_onGetOrDefault(T value, ComponentType<? extends T> type, T fallback) {
-        return TransientComponentMap.of(this).getOrDefault(type, value, fallback);
+        Object o = this;
+        return o instanceof ItemStack stack ? ItemStackDuck.of(stack).getTransientComponents().get(type, stack, value) : value;
     }
 
     @ModifyReturnValue(method = "contains", at = @At("RETURN"))
-    default boolean unicopia_onContains(boolean value, ComponentType<?> type) {
-        return TransientComponentMap.of(this).contains(type, value);
+    default boolean unicopia_onContains(boolean z, ComponentType<?> type) {
+        Object o = this;
+        return z || (o instanceof ItemStack stack && ItemStackDuck.of(stack).getTransientComponents().get(type, stack, null) != null);
     }
 }

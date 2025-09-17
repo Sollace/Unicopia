@@ -8,12 +8,12 @@ import com.minelittlepony.unicopia.diet.Effect;
 import com.minelittlepony.unicopia.diet.PonyDiets;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.ItemStackDuck;
-import com.minelittlepony.unicopia.item.component.TransientComponentMap.Entry;
+//import com.minelittlepony.unicopia.item.component.TransientComponentMap.Entry;
 
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
-
+/*
 public interface TransientComponentTypes {
     Map<ComponentType<?>, Entry<?>> ROOT = new HashMap<>();
 
@@ -77,3 +77,4 @@ public interface TransientComponentTypes {
         return entry;
     }
 }
+*/

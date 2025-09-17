@@ -9,7 +9,7 @@ import com.google.common.base.Suppliers;
 import net.minecraft.component.ComponentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
-
+/*
 public class TransientComponentMapImpl implements TransientComponentMap {
     public static Supplier<TransientComponentMap> create(Supplier<ItemStack> stack) {
         return Suppliers.memoize(() -> new TransientComponentMapImpl(stack));
@@ -45,3 +45,4 @@ public class TransientComponentMapImpl implements TransientComponentMap {
         return ((Entry<T>)TransientComponentTypes.ROOT.getOrDefault(type, Entry.DEFAULT)).checker().apply(stack.get(), map, parentContains);
     }
 }
+*/

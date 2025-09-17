@@ -1,63 +1,102 @@
 package com.minelittlepony.unicopia.item.component;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
+
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.diet.DietProfile;
+import com.minelittlepony.unicopia.diet.Effect;
+import com.minelittlepony.unicopia.diet.PonyDiets;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.ItemStackDuck;
+
 import net.minecraft.component.ComponentType;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Util;
 
-public interface TransientComponentMap {
-    TransientComponentMap EMPTY = new TransientComponentMap() {
-        @Override
-        public <T> @Nullable T get(ComponentType<? extends T> type, TransientComponentMap map, @Nullable T upstreamValue) {
-            return upstreamValue;
+public class TransientComponentMap {
+    private static final BiFunction<ItemStack, ?, ?> DEFAULT = (stack, t) -> t;
+    public static final TransientComponentMap INITIAL = Util.make(new TransientComponentMap(null), map -> {
+        map.set(UDataComponentTypes.DIET_PROFILE, (s, original) -> {
+            return original != null ? original : ItemStackDuck.of(s).getTransientComponents().getCarrier()
+                    .flatMap(Pony::of)
+                    .map(pony -> PonyDiets.getInstance().getDiet(pony))
+                    .orElse(DietProfile.EMPTY);
+        });
+        map.set(DataComponentTypes.FOOD, (s, originalFood) -> {
+            DietProfile diet = s.get(UDataComponentTypes.DIET_PROFILE);
+
+            if (diet == null || diet == DietProfile.EMPTY) {
+                return originalFood;
+            }
+
+            if (originalFood != null && (originalFood.nutrition() > 0 || originalFood.saturation() > 0)) {
+                return diet.getAdjustedFoodComponent(s, originalFood);
+            }
+
+            if (ItemStackDuck.of(s).getTransientComponents().getCarrier()
+                    .flatMap(Pony::of)
+                    .filter(pony -> pony.getObservedSpecies().hasIronGut())
+                    .isPresent()) {
+                return diet.findEffect(s)
+                    .flatMap(Effect::foodComponent)
+                    .or(() -> PonyDiets.getInstance().getEffects(s).foodComponent())
+                    .orElse(originalFood);
+            }
+            
+            return originalFood;
+        });
+    });
+
+    @Nullable
+    private final TransientComponentMap parent;
+    private Map<ComponentType<?>, BiFunction<ItemStack, ?, ?>> components;
+
+    private Optional<Entity> carrier = Optional.empty();
+
+    private TransientComponentMap(TransientComponentMap parent) {
+        this.parent = parent;
+        if (parent == null) {
+            components = new HashMap<>();
         }
+    }
 
-        @Override
-        public <T> boolean contains(ComponentType<? extends T> type, TransientComponentMap map, boolean parentContains) {
-            return parentContains;
+    public Optional<Entity> getCarrier() {
+        return carrier;
+    }
+
+    public void setCarrier(@Nullable Entity carrier) {
+        this.carrier = Optional.ofNullable(carrier);
+    }
+
+    public <T> void set(ComponentType<? extends T> type, BiFunction<ItemStack, T, T> getter) {
+        if (components == null) {
+            components = parent == null ? new HashMap<>() : new HashMap<>(parent.components);
         }
-    };
-
-    static TransientComponentMap of(Object o) {
-        return o instanceof ItemStack stack ? ItemStackDuck.of(stack).getTransientComponents() : EMPTY;
+        components.put(type, getter);
     }
 
-    default Optional<Entity> getCarrier() {
-        return Optional.empty();
+    @SuppressWarnings("unchecked")
+    public <T> T get(ComponentType<? extends T> type, ItemStack stack, T upstreamValue) {
+        if (components != null) {
+            return ((BiFunction<ItemStack, T, T>)components.getOrDefault(type, DEFAULT)).apply(stack, upstreamValue);
+        }
+        if (parent != null) {
+            return parent.get(type, stack, upstreamValue);
+        }
+        return upstreamValue;
     }
 
-    default void setCarrier(@Nullable Entity carrier) {
+    public TransientComponentMap createCopy() {
+        return new TransientComponentMap(this);
     }
-
-    default <T> T get(ComponentType<? extends T> type, T upstreamValue) {
-        return get(type, this, upstreamValue);
-    }
-
-    default <T> T getOrDefault(ComponentType<? extends T> type, T upstreamValue, T fallback) {
-        upstreamValue = get(type, upstreamValue);
-        return upstreamValue == null ? fallback : upstreamValue;
-    }
-
-    default <T> boolean contains(ComponentType<? extends T> type, boolean parentContains) {
-        return contains(type, this, parentContains);
-    }
-
-    <T> @Nullable T get(ComponentType<? extends T> type, TransientComponentMap map, @Nullable T upstreamValue);
-
-    <T> boolean contains(ComponentType<? extends T> type, TransientComponentMap map, boolean parentContains);
 
     public interface Holder {
         TransientComponentMap getTransientComponents();
-    }
-
-    public record Entry<T>(Func<T> getter, Func<Boolean> checker) {
-        public static final Entry<?> DEFAULT = new Entry<>((stack, comps, t) -> t, (stack, comps, t) -> t);
-
-        public interface Func<T> {
-            @Nullable T apply(ItemStack stack, TransientComponentMap components, T initial);
-        }
     }
 }
