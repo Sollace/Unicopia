@@ -40,23 +40,23 @@ public class DietProfileGenerator {
                 new StatusEffectAffliction(UEffects.FOOD_POISONING, Range.of(100), Range.of(2), 95),
                 new StatusEffectAffliction(StatusEffects.WEAKNESS, Range.of(200), Range.of(1), 0),
                 new LoseHungerAffliction(0.5F));
-        var seaFoodExclusions = new Multiplier.Builder()
-                .tag(Unicopia.id("sea_vegetable/raw")).tag(Unicopia.id("sea_vegetable/cooked"))
-                .tag(Unicopia.id("shells")).tag(Unicopia.id("special_shells"))
-                .hunger(0).saturation(0).build();
+        //Was previously given to all species but seapony (and human). I don't think it uh, ever actually worked correctly, though.
+        //var seaFoodExclusions = new Multiplier.Builder()
+        //        .tag(Unicopia.id("sea_vegetable/raw")).tag(Unicopia.id("sea_vegetable/cooked"))
+        //        .tag(Unicopia.id("shells")).tag(Unicopia.id("special_shells"))
+        //        .hunger(0).saturation(0).build();
 
         exporter.accept(Race.HUMAN, new DietProfile(1, 0, List.of(), List.of(
                 new FoodGroupEffects.Builder()
                 .tag(Unicopia.id("fish/cooked")).tag(Unicopia.id("fish/raw")).tag(Unicopia.id("fish/rotten"))
                 .tag(Unicopia.id("meat/cooked")).tag(Unicopia.id("meat/raw")).tag(Unicopia.id("meat/rotten"))
-                .tag(Unicopia.id("sea_vegetable/cooked")).tag(Unicopia.id("sea_vegetable/raw"))
                 .tag(Unicopia.id("pinecone"))
                 .build()
         ), Optional.empty()));
         // Alicorns are a mashup of unicorn, pegasus, and earth pony eating habits
         exporter.accept(Race.ALICORN, new DietProfile(0.9F, 1, List.of(
                 // Pastries are their passion
-                bakedGoodExtremePreference, pineconeMultiplier, avianMeatStandards, seaFoodExclusions,
+                bakedGoodExtremePreference, pineconeMultiplier, avianMeatStandards,
                 // They have a more of a sweet tooth than earth ponies
                 new Multiplier.Builder().tag(Unicopia.id("desserts")).hunger(2.5F).saturation(1.7F).build(),
                 new Multiplier.Builder().tag(Unicopia.id("candy")).tag(Unicopia.id("rocks")).hunger(1.5F).saturation(1.3F).build(),
@@ -77,7 +77,7 @@ public class DietProfileGenerator {
         ), Optional.empty()));
         // Unicorns have a general even preference of foods
         exporter.accept(Race.UNICORN, new DietProfile(1.1F, 1, List.of(
-                bakedGoodPreference, pineconeMultiplier, seaFoodExclusions,
+                bakedGoodPreference, pineconeMultiplier,
                 new Multiplier.Builder().tag(Unicopia.id("love")).hunger(0).saturation(0).build(),
 
                 // Improved benefits from cooking their food
@@ -96,7 +96,7 @@ public class DietProfileGenerator {
         ), List.of(), Optional.empty()));
         // Bats prefer cooked foods over raw, and meat/insects over fish
         exporter.accept(Race.BAT, new DietProfile(0.7F, 0.9F, List.of(
-                pineconeMultiplier, seaFoodExclusions,
+                pineconeMultiplier,
                 // Doesn't like baked goods but really likes meats, fish, and insects
                 bakedGoodNonPreference,
 
@@ -127,7 +127,7 @@ public class DietProfileGenerator {
         // Much like Earth Ponies, Kirins must cook their meat before they eat it
         exporter.accept(Race.KIRIN, new DietProfile(0.6F, 0.9F, List.of(
                 // Cannot eat love, or raw/rotten meats and fish
-                bakedGoodPreference, properMeatStandards, pineconeMultiplier, seaFoodExclusions,
+                bakedGoodPreference, properMeatStandards, pineconeMultiplier,
 
                 new Multiplier.Builder().tag(Unicopia.id("fish/cooked")).hunger(0.75F).saturation(0.35F).build(),
                 new Multiplier.Builder().tag(Unicopia.id("meat/cooked")).hunger(1.5F).saturation(1.6F).build(),
@@ -145,7 +145,7 @@ public class DietProfileGenerator {
         exporter.accept(Race.EARTH, new DietProfile(0.7F, 1.2F, List.of(
                 // Pastries are their passion
                 // If they must eat meat, they have to cook it and not let it spoil.
-                bakedGoodExtremePreference, pineconeMultiplier, properMeatStandards, seaFoodExclusions,
+                bakedGoodExtremePreference, pineconeMultiplier, properMeatStandards,
                 // They have a sweet tooth
                 new Multiplier.Builder().tag(Unicopia.id("candy")).tag(Unicopia.id("desserts")).tag(Unicopia.id("rocks")).hunger(2.5F).saturation(1.7F).build(),
                 new Multiplier.Builder().tag(Unicopia.id("gems")).hunger(0.5F).saturation(0.7F).build(),
@@ -160,7 +160,7 @@ public class DietProfileGenerator {
         ), Optional.empty()));
         // Pegasi prefer fish over other food sources
         exporter.accept(Race.PEGASUS, new DietProfile(0.9F, 1, List.of(
-                bakedGoodPreference, pineconeMultiplier, avianMeatStandards, seaFoodExclusions,
+                bakedGoodPreference, pineconeMultiplier, avianMeatStandards,
                 // Cannot eat love, or raw/rotten meat
                 // Can eat raw and rotten fish but still prefers if they are cooked
                 new Multiplier.Builder().tag(Unicopia.id("fish/cooked")).hunger(1.5F).saturation(1.5F).build(),
@@ -178,7 +178,7 @@ public class DietProfileGenerator {
         // Changelings like meat and fish but really prefer feasting on ponies' love directly from the tap
         exporter.accept(Race.CHANGELING, new DietProfile(0.15F, 0.1F, List.of(
                 // Doesn't like baked goods but really likes meats, fish, and insects
-                bakedGoodNonPreference, pineconeMultiplier, seaFoodExclusions,
+                bakedGoodNonPreference, pineconeMultiplier,
 
                 new Multiplier.Builder().tag(Unicopia.id("fish/cooked")).hunger(0.5F).saturation(1.2F).build(),
                 new Multiplier.Builder().tag(Unicopia.id("meat/cooked")).hunger(0.9F).saturation(1.2F).build(),
@@ -213,7 +213,7 @@ public class DietProfileGenerator {
         ), Optional.empty()));
         // Hippogriffs like fish, nuts, and seeds
         exporter.accept(Race.HIPPOGRIFF, new DietProfile(0.5F, 0.8F, List.of(
-                bakedGoodPreference, pineconeMultiplier, seaFoodExclusions,
+                bakedGoodPreference, pineconeMultiplier,
 
                 new Multiplier.Builder().tag(Unicopia.id("love"))
                     .tag(Unicopia.id("insect/cooked")).tag(Unicopia.id("insect/raw")).tag(Unicopia.id("insect/rotten"))
@@ -244,8 +244,7 @@ public class DietProfileGenerator {
                 new Multiplier.Builder().tag(Unicopia.id("fish/raw")).hunger(0.85F).saturation(0.95F).build(),
                 new Multiplier.Builder().tag(Unicopia.id("fish/rotten")).hunger(0.24F).saturation(0.25F).build(),
                 new Multiplier.Builder()
-                    .tag(Unicopia.id("sea_vegetable/raw"))
-                    .tag(Unicopia.id("sea_vegetable/cooked"))
+                    .tag(Unicopia.id("low_quality_sea_vegetables")).tag(Unicopia.id("high_quality_sea_vegetables"))
                     .tag(Unicopia.id("shells")).tag(Unicopia.id("special_shells"))
                     .hunger(1).saturation(1).build()
         ), List.of(
@@ -254,7 +253,13 @@ public class DietProfileGenerator {
                     .tag(Unicopia.id("fish/cooked")).tag(Unicopia.id("fish/raw")).tag(Unicopia.id("fish/rotten"))
                     .build(),
                 // Gains more health from pinecones
-                new FoodGroupEffects.Builder().tag(Unicopia.id("pinecone")).ailment(new HealingAffliction(3)).build()
+                new FoodGroupEffects.Builder().tag(Unicopia.id("pinecone")).ailment(new HealingAffliction(3)).build(),
+                
+                //only seaponies are supposed to get anything from sea vegtables and shells anyway, so putting this here instead of having everypony else have an exclusion
+                new FoodGroupEffects.Builder().tag(Unicopia.id("shells")).food(UFoodComponents.SHELL).build(), 
+                new FoodGroupEffects.Builder().tag(Unicopia.id("special_shells")).food(UFoodComponents.SHELLY).build(),
+                new FoodGroupEffects.Builder().tag(Unicopia.id("high_quality_sea_vegetables")).food(FoodComponents.COOKED_BEEF).build(), //beef is what these used to be based on, so using it again
+                new FoodGroupEffects.Builder().tag(Unicopia.id("low_quality_sea_vegetables")).food(FoodComponents.BEEF).build()
         ), Optional.empty()));
     }
 }
