@@ -9,6 +9,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import net.fabricmc.loader.api.FabricLoader;
+
 import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.datafixers.util.Pair;
@@ -88,14 +90,18 @@ public record DietProfile(
 
         var ratios = getRatios(stack);
         if (isInedible(ratios)) {
-            return new FoodComponent( // this item should not be edible, but setting to null gives compatability problems with Appleskin
-            0,//nutriton
-            0,//saturation
-            false, // can always eat
-            food.eatSeconds(),
-            food.usingConvertsTo(),
-            food.effects()
-            );
+            if (FabricLoader.getInstance().isModLoaded("appleskin")) {
+                return new FoodComponent( // this item should not be edible, but setting to null gives compatability problems with Appleskin
+                0,//nutriton
+                0,//saturation
+                false, // can always eat
+                food.eatSeconds(),
+                food.usingConvertsTo(),
+                food.effects());
+            }
+            else {
+                    return null;
+            } 
         }
 
         float hunger = food.nutrition() * ratios.getFirst();
