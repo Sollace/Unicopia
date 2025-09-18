@@ -6,7 +6,6 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.*;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
@@ -64,11 +63,6 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tick
 
     public ItemTracker(Living<?> living) {
         this.living = living;
-    }
-
-    @Override
-    public LivingEntity asEntity() {
-        return living.asEntity();
     }
 
     @Override
