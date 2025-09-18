@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.server.world.WaterLoggingManager;
 
 import net.minecraft.block.*;
@@ -18,16 +19,18 @@ import net.minecraft.state.StateManager.Factory;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.WorldView;
+import net.minecraft.world.tick.ScheduledTickView;
 
 @Mixin(StateManager.class)
 abstract class MixinStateManager<O, S extends State<O, S>> {
     @Shadow
     private @Final O owner;
 
-    @Inject(method = "getDefaultState", at = @At("RETURN"), cancellable = true)
-    private void onGetDefaultState(CallbackInfoReturnable<S> info) {
-        WaterLoggingManager.<O, S>getInstance().getDefaultState(owner, info);
+    @ModifyReturnValue(method = "getDefaultState", at = @At("RETURN"))
+    private S onGetDefaultState(S state) {
+        return WaterLoggingManager.<O, S>getInstance().getDefaultState(owner, state);
     }
 }
 
@@ -65,8 +68,8 @@ abstract class MixinBlockState extends State<Block, BlockState> {
         WaterLoggingManager.<Block, BlockState>getInstance().getFluidState(owner, asBlockState(), info);
     }
 
-    @Inject(method = "getStateForNeighborUpdate", at = @At("RETURN"), cancellable = true)
-    private void onGetStateForNeighborUpdate(Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos, CallbackInfoReturnable<BlockState> info) {
-        WaterLoggingManager.<Block, BlockState>getInstance().getUpdatedState(world, pos, asBlockState(), info);
+    @ModifyReturnValue(method = "getStateForNeighborUpdate", at = @At("RETURN"))
+    private BlockState onGetStateForNeighborUpdate(BlockState updatedState, WorldView world, ScheduledTickView tickView, BlockPos pos, Direction direction, BlockPos neighborPos, BlockState neighborState, Random random) {
+        return WaterLoggingManager.getInstance().getUpdatedState(world, pos, asBlockState(), updatedState);
     }
 }

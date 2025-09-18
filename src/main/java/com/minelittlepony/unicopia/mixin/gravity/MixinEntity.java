@@ -8,17 +8,33 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.entity.Equine;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 @Mixin(value = Entity.class, priority = 29000)
 abstract class MixinEntity {
+
+    @ModifyReturnValue(method = "getFinalGravity()D", at = @At("RETURN"))
+    private double modifyGravity(double initial) {
+        if (this instanceof Equine.Container eq && !eq.get().asEntity().hasNoGravity()) {
+            return eq.get().getPhysics().calcGravity(initial);
+        }
+        return initial;
+    }
+
+    @ModifyReturnValue(method = "getBlockPos", at = @At("RETURN"))
+    private BlockPos invertBlockPos(BlockPos pos) {
+        if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
+            return eq.get().getPhysics().getHeadPosition();
+        }
+        return pos;
+    }
 
     // we invert y when moving
     @ModifyVariable(method = "move", at = @At("HEAD"), argsOnly = true)
@@ -64,10 +80,7 @@ abstract class MixinEntity {
             method = "move",
             at = @At(value = "INVOKE", target = "net/minecraft/entity/Entity.fall(DZLnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;)V"))
     private double modifyFallDistance(double heightDifference) {
-        if (unicopiaIsGravityInverted()) {
-            return -heightDifference;
-        }
-        return heightDifference;
+        return unicopiaIsGravityInverted() ? -heightDifference : heightDifference;
     }
 
     // invert check for walking up a step
@@ -83,11 +96,10 @@ abstract class MixinEntity {
         return movement;
     }
 
-    @Inject(method = {"calculateBoundingBox"}, at = @At("RETURN"), cancellable = true)
-    private void adjustPoseBoxForGravity(CallbackInfoReturnable<Box> info) {
+    @ModifyReturnValue(method = "calculateBoundingBox", at = @At("RETURN"))
+    private Box adjustPoseBoxForGravity(Box box) {
         if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
             Entity self = eq.get().asEntity();
-            Box box = info.getReturnValue();
             Box oldBox = self.getBoundingBox();
             double newHeight = box.getLengthY();
             if (newHeight > oldBox.getLengthY()) {
@@ -95,10 +107,12 @@ abstract class MixinEntity {
                 Vec3d min = new Vec3d(box.minX, targetMaxY - newHeight, box.minZ);
                 Vec3d max = new Vec3d(box.maxX, targetMaxY, box.maxZ);
                 box = new Box(min, max);
-                info.setReturnValue(box);
                 self.setPos(self.getX(), box.minY, self.getZ());
+                return box;
             }
         }
+
+        return box;
     }
 
     private boolean unicopiaIsGravityInverted() {

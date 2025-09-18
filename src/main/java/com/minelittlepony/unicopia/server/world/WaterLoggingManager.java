@@ -14,7 +14,7 @@ import net.minecraft.state.State;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 
 public class WaterLoggingManager<O, S extends State<O, S>> {
     private static final WaterLoggingManager<?, ?> INSTANCE = new WaterLoggingManager<>();
@@ -36,10 +36,11 @@ public class WaterLoggingManager<O, S extends State<O, S>> {
         }
     }
 
-    public void getDefaultState(O owner, CallbackInfoReturnable<S> info) {
-        if (appliesTo(owner, info.getReturnValue())) {
-            info.setReturnValue(info.getReturnValue().with(Properties.WATERLOGGED, !(owner instanceof BedBlock)));
+    public S getDefaultState(O owner, S defaultState) {
+        if (appliesTo(owner, defaultState)) {
+            return defaultState.with(Properties.WATERLOGGED, !(owner instanceof BedBlock));
         }
+        return defaultState;
     }
 
     @SuppressWarnings("unchecked")
@@ -56,10 +57,11 @@ public class WaterLoggingManager<O, S extends State<O, S>> {
         }
     }
 
-    public void getUpdatedState(WorldAccess world, BlockPos pos, BlockState oldState, CallbackInfoReturnable<BlockState> info) {
-        if (shouldPreventRemoval(world, pos, oldState, info.getReturnValue())) {
-            info.setReturnValue(oldState);
+    public BlockState getUpdatedState(WorldView world, BlockPos pos, BlockState oldState, BlockState newState) {
+        if (shouldPreventRemoval(world, pos, oldState, newState)) {
+            return oldState;
         }
+        return newState;
     }
 
     public boolean appliesTo(O block, S state) {
@@ -75,7 +77,7 @@ public class WaterLoggingManager<O, S extends State<O, S>> {
                 || block instanceof BedBlock);
     }
 
-    public boolean shouldPreventRemoval(WorldAccess world, BlockPos pos, AbstractBlock.AbstractBlockState oldState, AbstractBlock.AbstractBlockState newState) {
+    public boolean shouldPreventRemoval(WorldView world, BlockPos pos, AbstractBlock.AbstractBlockState oldState, AbstractBlock.AbstractBlockState newState) {
         return enabled
                 && newState.isAir()
                 && oldState.contains(Properties.WATERLOGGED)

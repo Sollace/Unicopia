@@ -75,7 +75,6 @@
     "gravity.MixinWorld",
     "gravity.MixinPlayerEntity",
     "gravity.MixinPistonBlockEntity",
-    "gravity.MixinServerWorld",
     "gravity.MixinServerPlayerEntity",
     "gravity.MixinServerPlayNetworkHandler",
     "gravity.MixinWorldChunk",
@@ -113,7 +112,6 @@
     "client.sodium.MixinSodiumWorldRenderer",
     "client.minelp.MixinPonyPosture",
     "trinkets.MixinTrinketCreativeSlot",
-    "gravity.MixinClientWorld",
     "gravity.MixinSoundSource"
   ],
   "injectors": {

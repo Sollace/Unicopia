@@ -2,9 +2,7 @@ package com.minelittlepony.unicopia.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.HydrophobicSpell;
 
 import net.minecraft.block.BlockState;
@@ -14,10 +12,8 @@ import net.minecraft.world.BlockView;
 
 @Mixin(FlowableFluid.class)
 abstract class MixinFlowableFluid {
-    @Inject(method = "canFill", at = @At("HEAD"), cancellable = true)
-    private void onCanFill(BlockView world, BlockPos pos, BlockState state, Fluid fluid, CallbackInfoReturnable<Boolean> info) {
-        if (HydrophobicSpell.blocksFluidFlow(world, pos, fluid.getDefaultState())) {
-            info.setReturnValue(false);
-        }
+    @ModifyReturnValue(method = "canFill(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/fluid/Fluid;)Z", at = @At("RETURN"))
+    private static boolean onCanFill(boolean upstreamCheck, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
+        return upstreamCheck && !HydrophobicSpell.blocksFluidFlow(world, pos, fluid.getDefaultState());
     }
 }

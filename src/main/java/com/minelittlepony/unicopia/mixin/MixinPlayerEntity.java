@@ -12,6 +12,7 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.util.annotation.CaptureArg;
 import com.mojang.datafixers.util.Either;
 
 import net.minecraft.block.BlockState;
@@ -45,7 +46,7 @@ abstract class MixinPlayerEntity extends LivingEntity implements Equine.Containe
     }
 
     @ModifyVariable(method = "applyDamage(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/damage/DamageSource;F)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
-    protected float modifyDamageAmount(ServerWorld world, float amount, DamageSource source) {
+    protected float modifyDamageAmount(float amount, @CaptureArg ServerWorld world, @CaptureArg DamageSource source) {
         return get().modifyDamage(source, amount).orElse(amount);
     }
 
