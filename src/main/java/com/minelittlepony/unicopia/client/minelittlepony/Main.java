@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import com.minelittlepony.api.events.PonyModelPrepareCallback;
+import com.minelittlepony.api.events.PonyRenderStatePrepareCallback;
 import com.minelittlepony.api.model.*;
 import com.minelittlepony.api.model.gear.Gear;
 import com.minelittlepony.api.pony.PonyData;
@@ -14,12 +14,11 @@ import com.minelittlepony.client.render.MobRenderers;
 import com.minelittlepony.client.render.entity.state.PonyRenderState;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
-import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.AnimationUtil;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.state.AllayEntityRenderState;
 import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.entity.Entity;
@@ -27,7 +26,6 @@ import net.minecraft.entity.passive.AllayEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 
 public class Main extends MineLPDelegate implements ClientModInitializer {
     private static final Map<com.minelittlepony.api.pony.meta.Race, Race> PONY_RACE_MAPPING = new HashMap<>();
@@ -37,8 +35,23 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
                 .orElse(Race.UNSET);
     });
 
+    /**
+     * Registers a mapping from a mine little pony race to a unicopia race.
+     * Use this if your race A) has a different name from the minelp one, or B) you want to map it to something other
+     * than the automatic mapping permits
+     *
+     * @param minelpRace
+     * @param unicopiaRace
+     */
     public static void registerRaceMapping(com.minelittlepony.api.pony.meta.Race minelpRace, Race unicopiaRace) {
         PONY_RACE_MAPPING.put(minelpRace, unicopiaRace);
+    }
+
+    static {
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.CHANGEDLING, Race.CHANGELING);
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.ZEBRA, Race.EARTH);
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.GRYPHON, Race.PEGASUS);
+        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.BATPONY, Race.BAT);
     }
 
     private boolean hookErroring;
@@ -46,7 +59,7 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         INSTANCE = this;
-        PonyModelPrepareCallback.EVENT.register(this::onPonyModelPrepared);
+        PonyRenderStatePrepareCallback.EVENT.register(this::onPonyModelPrepared);
         Gear.register(() -> new BangleGear(TrinketsDelegate.MAIN_GLOVE));
         Gear.register(() -> new BangleGear(TrinketsDelegate.SECONDARY_GLOVE));
         Gear.register(HeldEntityGear::new);
@@ -57,41 +70,23 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
         Gear.register(AmuletGear::new);
         Gear.register(GlassesGear::new);
         Gear.register(SpellEffectGear::new);
-
-        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.CHANGEDLING, Race.CHANGELING);
-        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.ZEBRA, Race.EARTH);
-        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.GRYPHON, Race.PEGASUS);
-        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.HIPPOGRIFF, Race.HIPPOGRIFF);
-        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.BATPONY, Race.BAT);
-        registerRaceMapping(com.minelittlepony.api.pony.meta.Race.SEAPONY, Race.SEAPONY);
     }
 
-    private void onPonyModelPrepared(ModelAttributes attributes, PonyModel<?> model, ModelAttributes.Mode mode) {
+    private void onPonyModelPrepared(PonyRenderState state, PonyModel<?> model, ModelAttributes.Mode mode) {
         if (hookErroring) return;
         try {
-            Entity entity = ((EntityLookupAccessor)MinecraftClient.getInstance().world).callGetEntityLookup().get(attributes.getEntityId());
-            if (entity instanceof PlayerEntity) {
-                if (entity instanceof Owned<?> o && o.getMaster() instanceof PlayerEntity master) {
-                    entity = master;
-                }
-                Pony pony = Pony.of((PlayerEntity)entity);
+            CasterState casterState = CasterState.of(state);
+            ModelAttributes attributes = state.getAttributes();
 
-                if (pony.getMotion().isFlying()) {
-                    attributes.wingAngle = MathHelper.clamp(pony.getMotion().getWingAngle() / 3F - (float)Math.PI * 0.4F, -2, 0);
+            if (casterState.flying) {
+                attributes.wingAngle = MathHelper.clamp(casterState.wingsAngle / 3F - (float)Math.PI * 0.4F, -2, 0);
+            }
+            attributes.isGoingFast |= casterState.dashing;
+            attributes.isGoingFast &= casterState.carriedEntity.state == null;
 
-                    Vec3d motion = pony.getMotion().getClientVelocity();
-                    double zMotion = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
-                    attributes.isGoingFast |= zMotion > 0.4F;
-                    attributes.isGoingFast |= pony.getMotion().isDiving();
-                }
-
-                attributes.isGoingFast |= pony.getMotion().isRainbooming();
-                attributes.isGoingFast &= !pony.getEntityInArms().isPresent();
-
-                if (pony.getAnimation().isOf(Animation.SPREAD_WINGS)) {
-                    attributes.wingAngle = -AnimationUtil.seeSitSaw(pony.getAnimationProgress(1), 1.5F) * (float)Math.PI / 1.2F;
-                    attributes.isFlying = true;
-                }
+            if (casterState.animation.isOf(Animation.SPREAD_WINGS)) {
+                attributes.wingAngle = -AnimationUtil.seeSitSaw(casterState.animationTime, 1.5F) * (float)Math.PI / 1.2F;
+                attributes.isFlying = true;
             }
         } catch (Throwable t) {
             Unicopia.LOGGER.error("Exception occured in MineLP hook:onPonyModelPrepared", t);

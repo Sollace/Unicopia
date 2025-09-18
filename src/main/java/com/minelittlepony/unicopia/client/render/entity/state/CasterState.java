@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.client.render.HeldEntityFeatureRenderer;
+import com.minelittlepony.unicopia.client.render.PlayerPoser.AnimationInstance;
 import com.minelittlepony.unicopia.client.render.spell.SpellEffectsRenderDispatcher;
 import com.minelittlepony.unicopia.client.render.spell.SpellRenderer;
 import com.minelittlepony.unicopia.client.render.spell.SpellRenderer.SpellRenderState;
@@ -79,11 +80,8 @@ public class CasterState {
     public Race.Composite species = Race.UNSET.composite();
 
     public float wingsAngle;
-    /**
-     * Only use if necessary
-     */
-    @Deprecated @Nullable
-    public AbilityDispatcher abilities;
+    public boolean dashing;
+    public boolean flying;
 
     public final AbilityState activeAbility = new AbilityState();
     public int activeMagicColor;
@@ -101,6 +99,9 @@ public class CasterState {
     public float gemYaw;
 
     public PassengerState<?, ?> carriedEntity = new PassengerState<>();
+
+    public AnimationInstance animation = AnimationInstance.NONE;
+    public float animationTime;
 
     @Nullable
     public Entity appearance;
@@ -129,8 +130,12 @@ public class CasterState {
         masterDisplayName = null;
         appearance = null;
         wingsAngle = 0;
+        dashing = false;
+        flying = false;
         carriedEntity = null;
         spells.clear();
+        animation = AnimationInstance.NONE;
+        animationTime = 0;
         species = Race.UNSET.composite();
         amulet = TrinketsDelegate.EquippedStack.EMPTY;
         mainhandBangle.update(TrinketsDelegate.EquippedStack.EMPTY);
@@ -178,10 +183,14 @@ public class CasterState {
 
             if (caster instanceof Pony pony) {
                 species = pony.getCompositeRace();
-                abilities = pony.getAbilities();
+                Vec3d motion = pony.getMotion().getClientVelocity();
+                flying = pony.getMotion().isFlying();
+                dashing = (flying && (Math.sqrt(motion.x * motion.x + motion.z * motion.z) > 0.4 || pony.getMotion().isDiving())) || pony.getMotion().isRainbooming();
                 wingsAngle = pony.getMotion().getWingAngle();
                 activeAbility.update(pony.getAbilities().getActiveStat().orElse(null), pony);
                 ponified = MineLPDelegate.getInstance().getPlayerPonyRace(pony.asEntity()).isEquine();
+                animation = pony.getAnimation();
+                animationTime = pony.getAnimationProgress(tickDelta);
             }
 
             if (caster instanceof Living l) {
