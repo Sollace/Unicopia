@@ -1,13 +1,18 @@
 package com.minelittlepony.unicopia.item.group;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.block.FancyBedBlock.SheetPattern;
+import com.minelittlepony.unicopia.item.BedsheetsItem;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.minecraft.block.jukebox.JukeboxSong;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -16,6 +21,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.Util;
 
 public interface ItemGroupRegistry {
@@ -34,11 +40,37 @@ public interface ItemGroupRegistry {
         return item;
     }
 
-    static <T extends Item> T register(Identifier id, T item, RegistryKey<ItemGroup> group) {
+    static Item register(String name, RegistryKey<JukeboxSong> song) {
+        return register(name, s -> new Item(s
+                .jukeboxPlayable(song)
+                .maxCount(1)
+                .rarity(Rarity.RARE)
+            ), ItemGroups.TOOLS);
+    }
+
+    static Item register(Race race) {
+        return register(race.getId().withPath(p -> p + "_badge"), Item::new);
+    }
+
+    static Item register(SheetPattern pattern) {
+        return register(pattern.asString() + "_bed_sheets", s -> new BedsheetsItem(pattern, s.maxCount(1)), ItemGroups.FUNCTIONAL);
+    }
+
+    static <T extends Item> T register(String name, Function<Item.Settings, T> item, RegistryKey<ItemGroup> group) {
+        return register(Unicopia.id(name), item, group);
+    }
+
+    static <T extends Item> T register(String name, Function<Item.Settings, T> item) {
+        return register(Unicopia.id(name), item);
+    }
+
+    static <T extends Item> T register(Identifier id, Function<Item.Settings, T> item, RegistryKey<ItemGroup> group) {
         return register(register(id, item), group);
     }
 
-    static <T extends Item> T register(Identifier id, T item) {
+    static <T extends Item> T register(Identifier id, Function<Item.Settings, T> itemFunc) {
+        RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, id);
+        T item = itemFunc.apply(new Item.Settings().registryKey(key));
         if (item instanceof BlockItem bi && bi.getBlock() == null) {
             throw new NullPointerException("Registered block item did not have a block " + id);
         }

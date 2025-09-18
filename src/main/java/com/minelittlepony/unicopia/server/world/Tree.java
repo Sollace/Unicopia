@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.block.UBlocks;
@@ -11,7 +12,7 @@ import com.minelittlepony.unicopia.block.UBlocks;
 import net.fabricmc.fabric.api.biome.v1.*;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistrySetupCallback;
 import net.minecraft.block.*;
-import net.minecraft.item.*;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.util.Identifier;
 import net.minecraft.registry.*;
 import net.minecraft.registry.tag.BiomeTags;
@@ -26,7 +27,7 @@ import net.minecraft.world.gen.trunk.TrunkPlacer;
 
 public record Tree (
         Identifier id,
-        TreeFeatureConfig.Builder config,
+        Supplier<TreeFeatureConfig.Builder> config,
         RegistryKey<ConfiguredFeature<?, ?>> configuredFeatureId,
         Set<Placement> placements,
         Optional<Block> sapling,
@@ -38,7 +39,7 @@ public record Tree (
         DynamicRegistrySetupCallback.EVENT.register(registries -> {
             registries.getOptional(RegistryKeys.CONFIGURED_FEATURE).ifPresent(registry -> {
                 REGISTRY.forEach(tree -> {
-                    Registry.register(registry, tree.id(), new ConfiguredFeature<>(Feature.TREE, tree.config.build()));
+                    Registry.register(registry, tree.id(), new ConfiguredFeature<>(Feature.TREE, tree.config.get().build()));
                 });
             });
             registries.getOptional(RegistryKeys.PLACED_FEATURE).ifPresent(registry -> {
@@ -60,7 +61,7 @@ public record Tree (
                 .and(BiomeSelectors.excludeByKey(BiomeKeys.BIRCH_FOREST, BiomeKeys.OLD_GROWTH_BIRCH_FOREST, BiomeKeys.DARK_FOREST))
                 .and(BiomeSelectors.tag(BiomeTags.IS_TAIGA).negate());
 
-        public static Builder create(Identifier id, TrunkPlacer trunkPlacer, FoliagePlacer foliagePlacer) {
+        public static Builder create(Identifier id, Supplier<TrunkPlacer> trunkPlacer, Supplier<FoliagePlacer> foliagePlacer) {
             return new Builder(id, trunkPlacer, foliagePlacer);
         }
 
@@ -69,8 +70,8 @@ public record Tree (
         private Optional<Identifier> saplingId = Optional.empty();
         private BiFunction<SaplingGenerator, Block.Settings, SaplingBlock> saplingConstructor = SaplingBlock::new;
 
-        private final TrunkPlacer trunkPlacer;
-        private final FoliagePlacer foliagePlacer;
+        private final Supplier<TrunkPlacer> trunkPlacer;
+        private final Supplier<FoliagePlacer> foliagePlacer;
 
         private final Identifier id;
 
@@ -78,7 +79,7 @@ public record Tree (
         private Function<TreeFeatureConfig.Builder, TreeFeatureConfig.Builder> configParameters = Function.identity();
         private Optional<TwoLayersFeatureSize> size = Optional.empty();
 
-        private Builder(Identifier id, TrunkPlacer trunkPlacer, FoliagePlacer foliagePlacer) {
+        private Builder(Identifier id, Supplier<TrunkPlacer> trunkPlacer, Supplier<FoliagePlacer> foliagePlacer) {
             this.id = id;
             this.trunkPlacer = trunkPlacer;
             this.foliagePlacer = foliagePlacer;
@@ -131,19 +132,25 @@ public record Tree (
 
         public Tree build() {
             RegistryKey<ConfiguredFeature<?, ?>> configuredFeatureId = RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, id);
-            Optional<Block> sapling = saplingId.map(id -> UBlocks.register(id, saplingConstructor.apply(new SaplingGenerator(id.toString(), Optional.empty(), Optional.of(configuredFeatureId), Optional.empty()), Block.Settings.copy(Blocks.OAK_SAPLING).registryKey(RegistryKey.of(RegistryKeys.BLOCK, id))), ItemGroups.NATURAL));
-            Tree tree = new Tree(id, configParameters.apply(new TreeFeatureConfig.Builder(
+            Optional<Block> sapling = saplingId.map(id -> UBlocks.register(id,
+                    Block.Settings.copy(Blocks.OAK_SAPLING),
+                    s -> saplingConstructor.apply(new SaplingGenerator(id.toString(), Optional.empty(), Optional.of(configuredFeatureId), Optional.empty()), s),
+                    ItemGroups.NATURAL));
+            Tree tree = new Tree(id, () -> configParameters.apply(new TreeFeatureConfig.Builder(
                     BlockStateProvider.of(logType),
-                    trunkPlacer,
+                    trunkPlacer.get(),
                     BlockStateProvider.of(leavesType),
-                    foliagePlacer,
+                    foliagePlacer.get(),
                     size.get()
                 )), configuredFeatureId, placements.values().stream()
                     .collect(Collectors.toUnmodifiableSet()),
                     sapling,
                     sapling.map(saplingBlock -> {
                         RegistryKey<Block> flowerPotKey = RegistryKey.of(RegistryKeys.BLOCK, saplingId.get().withPrefixedPath("potted_"));
-                        Block flowerPot = Registry.register(Registries.BLOCK, saplingId.get().withPrefixedPath("potted_"), new FlowerPotBlock(saplingBlock, Blocks.createFlowerPotSettings().registryKey(flowerPotKey)));
+                        Block flowerPot = Registry.register(Registries.BLOCK,
+                                saplingId.get().withPrefixedPath("potted_"),
+                                new FlowerPotBlock(saplingBlock, Blocks.createFlowerPotSettings().registryKey(flowerPotKey)
+                        ));
                         UBlocks.TRANSLUCENT_BLOCKS.add(flowerPot);
                         return flowerPot;
                     }));

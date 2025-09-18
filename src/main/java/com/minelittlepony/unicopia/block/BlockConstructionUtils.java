@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.block;
 
+import java.util.function.Function;
+
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockSetType;
 import net.minecraft.block.BlockState;
@@ -16,8 +18,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 
 public interface BlockConstructionUtils {
-    static ButtonBlock woodenButton(BlockSetType setType) {
-        return new ButtonBlock(setType, 30, AbstractBlock.Settings.create().noCollision().strength(0.5f).pistonBehavior(PistonBehavior.DESTROY));
+    static Function<AbstractBlock.Settings, ButtonBlock> woodenButton(BlockSetType setType) {
+        return s -> new ButtonBlock(setType, 30, s.noCollision().strength(0.5f).pistonBehavior(PistonBehavior.DESTROY));
     }
 
     static boolean never(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {
@@ -28,16 +30,16 @@ public interface BlockConstructionUtils {
         return false;
     }
 
-    static PillarBlock createLogBlock(MapColor topMapColor, MapColor sideMapColor) {
-        return new PillarBlock(AbstractBlock.Settings.create().mapColor(state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor).instrument(NoteBlockInstrument.BASS).strength(2.0f).sounds(BlockSoundGroup.WOOD).burnable());
+    static Function<AbstractBlock.Settings, PillarBlock> createLogBlock(MapColor topMapColor, MapColor sideMapColor) {
+        return s -> new PillarBlock(s.mapColor(state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor).instrument(NoteBlockInstrument.BASS).strength(2.0f).sounds(BlockSoundGroup.WOOD).burnable());
     }
 
-    static PillarBlock createWoodBlock(MapColor mapColor) {
-        return new PillarBlock(AbstractBlock.Settings.create().mapColor(mapColor).instrument(NoteBlockInstrument.BASS).strength(2.0f).sounds(BlockSoundGroup.WOOD).burnable());
+    static Function<AbstractBlock.Settings, PillarBlock> createWoodBlock(MapColor mapColor) {
+        return s -> new PillarBlock(s.mapColor(mapColor).instrument(NoteBlockInstrument.BASS).strength(2.0f).sounds(BlockSoundGroup.WOOD).burnable());
     }
 
-    static LeavesBlock createLeavesBlock(BlockSoundGroup soundGroup) {
-        return new LeavesBlock(AbstractBlock.Settings.create().mapColor(MapColor.DARK_GREEN).strength(0.2f).ticksRandomly().sounds(soundGroup).nonOpaque().allowsSpawning(BlockConstructionUtils::canSpawnOnLeaves).suffocates(BlockConstructionUtils::never).blockVision(BlockConstructionUtils::never).burnable().pistonBehavior(PistonBehavior.DESTROY).solidBlock(BlockConstructionUtils::never));
+    static Function<AbstractBlock.Settings, LeavesBlock> createLeavesBlock(BlockSoundGroup soundGroup) {
+        return s -> new LeavesBlock(s.mapColor(MapColor.DARK_GREEN).strength(0.2f).ticksRandomly().sounds(soundGroup).nonOpaque().allowsSpawning(BlockConstructionUtils::canSpawnOnLeaves).suffocates(BlockConstructionUtils::never).blockVision(BlockConstructionUtils::never).burnable().pistonBehavior(PistonBehavior.DESTROY).solidBlock(BlockConstructionUtils::never));
     }
 
     static Boolean canSpawnOnLeaves(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {

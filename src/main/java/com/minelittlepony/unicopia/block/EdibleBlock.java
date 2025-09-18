@@ -139,8 +139,8 @@ public class EdibleBlock extends HayBlock {
     private final Identifier baseBlock;
     private final Identifier material;
 
-    public EdibleBlock(Identifier baseBlock, Identifier material, boolean register) {
-        super(Settings.copy(Blocks.HAY_BLOCK).overrideTranslationKey(Util.createTranslationKey("block", baseBlock)));
+    public EdibleBlock(Identifier baseBlock, Identifier material, boolean register, Settings settings) {
+        super(settings.overrideTranslationKey(Util.createTranslationKey("block", baseBlock)));
         for (BooleanProperty segment : SEGMENTS) {
             setDefaultState(getDefaultState().with(segment, true));
         }

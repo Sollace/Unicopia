@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.block;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
@@ -54,7 +55,7 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
             @Nullable Supplier<SegmentedCropBlock> nextSegmentSupplier, Block.Settings settings) {
 
         final IntProperty age = IntProperty.of("age", 0, maxAge);
-        return new SegmentedCropBlock(progressionAge, settings, seeds, prevSegmentSupplier, nextSegmentSupplier) {
+        return new SegmentedCropBlock(progressionAge, settings.mapColor(state -> state.get(age) >= maxAge && prevSegmentSupplier == null ? MapColor.YELLOW : MapColor.DARK_GREEN), seeds, prevSegmentSupplier, nextSegmentSupplier) {
             @Override
             public IntProperty getAgeProperty() {
                 return age;
@@ -88,10 +89,12 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
         return super.getAgeProperty();
     }
 
-    public SegmentedCropBlock createNext(int progressionAge) {
-        SegmentedCropBlock next = create(getMaxAge() - this.progressionAge, progressionAge, seeds, () -> this, null, Settings.copy(this));
-        nextSegmentSupplier = () -> next;
-        return next;
+    public Function<Settings, SegmentedCropBlock> createNext(int progressionAge) {
+        return s -> {
+            SegmentedCropBlock next = create(getMaxAge() - this.progressionAge, progressionAge, seeds, () -> this, null, s);
+            nextSegmentSupplier = () -> next;
+            return next;
+        };
     }
 
     @Override

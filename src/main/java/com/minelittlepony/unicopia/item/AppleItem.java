@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.item;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.IItemEntity;
-import com.minelittlepony.unicopia.item.TickableItem.GroundTickCallback;
-
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.SpawnReason;
@@ -15,13 +13,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
-public class AppleItem {
-    private static final GroundTickCallback TICK_CALLBACK = AppleItem::onGroundTick;
-
-    private AppleItem() { }
-
-    public static <T extends Item> T registerTickCallback(T item) {
-        return TickableItem.registerTickCallback(item, TICK_CALLBACK);
+public interface AppleItem {
+    static <T extends Item> T registerTickCallback(T item) {
+        return TickableItem.registerTickCallback(item, AppleItem::onGroundTick);
     }
 
     private static ActionResult onGroundTick(IItemEntity item) {

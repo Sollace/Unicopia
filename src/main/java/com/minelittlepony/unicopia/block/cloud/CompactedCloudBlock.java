@@ -36,7 +36,8 @@ import net.minecraft.world.WorldView;
 
 public class CompactedCloudBlock extends CloudBlock {
     private static final MapCodec<CompactedCloudBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            BlockState.CODEC.fieldOf("base_state").forGetter(block -> block.baseState)
+            BlockState.CODEC.fieldOf("base_state").forGetter(block -> block.baseState),
+            Block.createSettingsCodec()
     ).apply(instance, CompactedCloudBlock::new));
     static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectingBlock.FACING_PROPERTIES;
     static final Collection<BooleanProperty> PROPERTIES = FACING_PROPERTIES.values();
@@ -54,8 +55,8 @@ public class CompactedCloudBlock extends CloudBlock {
 
     private final BlockState baseState;
 
-    public CompactedCloudBlock(BlockState baseState) {
-        super(true, Settings.copy(baseState.getBlock()).lootTable(baseState.getBlock().getLootTableKey()));
+    public CompactedCloudBlock(BlockState baseState, Settings settings) {
+        super(true, settings.lootTable(baseState.getBlock().getLootTableKey()));
         this.baseState = baseState;
         PROPERTIES.forEach(property -> {
             setDefaultState(getDefaultState().with(property, true));

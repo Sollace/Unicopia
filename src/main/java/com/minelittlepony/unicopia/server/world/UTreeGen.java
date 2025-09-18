@@ -25,17 +25,15 @@ import net.minecraft.world.gen.trunk.StraightTrunkPlacer;
 import net.minecraft.world.gen.trunk.UpwardsBranchingTrunkPlacer;
 
 public interface UTreeGen {
-    Tree ZAP_APPLE_TREE = Tree.Builder.create(Unicopia.id("zap_apple_tree"), new UpwardsBranchingTrunkPlacer(
+    Tree ZAP_APPLE_TREE = Tree.Builder.create(Unicopia.id("zap_apple_tree"),
+            () -> new UpwardsBranchingTrunkPlacer(
                     5, 3, 0,
                     UniformIntProvider.create(3, 6),
                     0.3f,
                     UniformIntProvider.create(1, 3),
                     Registries.BLOCK.getOrThrow(BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH)
-            ), new JungleFoliagePlacer(
-                    ConstantIntProvider.create(3),
-                    ConstantIntProvider.create(2),
-                    3
-            )
+            ),
+            () -> new JungleFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(2), 3)
         )
             .configure(TreeFeatureConfig.Builder::forceDirt)
             .log(UBlocks.ZAP_LOG)
@@ -50,8 +48,8 @@ public interface UTreeGen {
             .build();
     Tree SOUR_APPLE_TREE = createAppleTree("sour_apple", UBlocks.SOUR_APPLE_LEAVES, 3, 0.2F).build();
     Tree GOLDEN_APPLE_TREE = Tree.Builder.create(Unicopia.id("golden_oak_tree"),
-            new StraightTrunkPlacer(6, 1, 3),
-            new BlobFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), 3)
+            () -> new StraightTrunkPlacer(6, 1, 3),
+            () -> new BlobFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), 3)
         )
             .configure(TreeFeatureConfig.Builder::forceDirt)
             .dimensions(1, 3, 5)
@@ -60,8 +58,8 @@ public interface UTreeGen {
             .sapling(Unicopia.id("golden_oak_sapling"))
             .build();
     Tree BANANA_TREE = Tree.Builder.create(Unicopia.id("banana_tree"),
-            new StraightTrunkPlacer(4, 5, 3),
-            new FernFoliagePlacer(ConstantIntProvider.create(4), ConstantIntProvider.create(0))
+            () -> new StraightTrunkPlacer(4, 5, 3),
+            () -> new FernFoliagePlacer(ConstantIntProvider.create(4), ConstantIntProvider.create(0))
         )
             .dimensions(6, 0, 8)
             .log(UBlocks.PALM_LOG)
@@ -78,8 +76,8 @@ public interface UTreeGen {
             .placement(2, 0.01F, 1, selector -> selector.hasTag(BiomeTags.IS_BEACH) || selector.hasTag(BiomeTags.IS_JUNGLE))
             .build();
     Tree MANGO_TREE = Tree.Builder.create(Unicopia.id("mango_tree"),
-            new StraightTrunkPlacer(4, 7, 3),
-            new BlobFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), 3)
+            () -> new StraightTrunkPlacer(4, 7, 3),
+            () -> new BlobFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), 3)
         )
             .dimensions(9, 0, 4)
             .log(Blocks.JUNGLE_LOG)
@@ -91,8 +89,8 @@ public interface UTreeGen {
 
     static Tree.Builder createAppleTree(String name, Block leaves, int preferredDensity, float spawnRate) {
         return Tree.Builder.create(Unicopia.id(name + "_tree"),
-                new StraightTrunkPlacer(4, 3, 2),
-                new FruitBlobFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), 3)
+                () -> new StraightTrunkPlacer(4, 3, 2),
+                () -> new FruitBlobFoliagePlacer(ConstantIntProvider.create(3), ConstantIntProvider.create(0), 3)
             )
                 .configure(TreeFeatureConfig.Builder::forceDirt)
                 .placement(0, spawnRate, 4, Tree.Builder.IS_OAK_FOREST)
