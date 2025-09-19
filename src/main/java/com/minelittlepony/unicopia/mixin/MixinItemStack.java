@@ -21,6 +21,8 @@ import com.minelittlepony.unicopia.item.component.TransientComponentMap;
 
 import net.minecraft.component.ComponentHolder;
 import net.minecraft.component.ComponentType;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -92,18 +94,34 @@ interface MixinComponentHolder {
     @ModifyReturnValue(method = "get", at = @At("RETURN"))
     default <T> T unicopia_onGet(T value, ComponentType<? extends T> type) {
         Object o = this;
+        if (o instanceof ItemStack stack && (stack.getComponents().get(DataComponentTypes.FOOD) != null)){
+            if (type == DataComponentTypes.FOOD && ((stack.getComponents().get(DataComponentTypes.FOOD).nutrition() == 0) && (stack.getComponents().get(DataComponentTypes.FOOD).saturation() == 0))){
+                return null;
+            }
+        } 
         return o instanceof ItemStack stack ? ItemStackDuck.of(stack).getTransientComponents().get(type, stack, value) : value;
     }
 
     @ModifyReturnValue(method = "getOrDefault", at = @At("RETURN"))
     default <T> T unicopia_onGetOrDefault(T value, ComponentType<? extends T> type, T fallback) {
         Object o = this;
+        if (o instanceof ItemStack stack && (stack.getComponents().get(DataComponentTypes.FOOD) != null)){
+            if (type == DataComponentTypes.FOOD && ((stack.getComponents().get(DataComponentTypes.FOOD).nutrition() == 0) && (stack.getComponents().get(DataComponentTypes.FOOD).saturation() == 0))){
+                return fallback;
+            }
+        } 
         return o instanceof ItemStack stack ? ItemStackDuck.of(stack).getTransientComponents().get(type, stack, value) : value;
     }
 
     @ModifyReturnValue(method = "contains", at = @At("RETURN"))
     default boolean unicopia_onContains(boolean z, ComponentType<?> type) {
         Object o = this;
+        
+        if (o instanceof ItemStack stack && (stack.getComponents().get(DataComponentTypes.FOOD) != null)){
+            if (type == DataComponentTypes.FOOD && ((stack.getComponents().get(DataComponentTypes.FOOD).nutrition() == 0) && (stack.getComponents().get(DataComponentTypes.FOOD).saturation() == 0))){
+                return false;
+            }
+        } 
         return z || (o instanceof ItemStack stack && ItemStackDuck.of(stack).getTransientComponents().get(type, stack, null) != null);
     }
 }
