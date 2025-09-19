@@ -34,10 +34,8 @@ public class FoodGroupsGenerator {
         exporter.accept(Unicopia.id("fruit"), new FoodGroupEffects.Builder().tag(ConventionalItemTags.FRUIT_FOODS).food(UFoodComponents.BANANA));
         exporter.accept(Unicopia.id("rocks"), new FoodGroupEffects.Builder().tag(UConventionalTags.Items.ROCKS).tag(UTags.Items.ROCK_STEWS).food(FoodComponents.MUSHROOM_STEW));
         exporter.accept(Unicopia.id("gems"), new FoodGroupEffects.Builder().tag(UConventionalTags.Items.GEMS));
-        exporter.accept(Unicopia.id("shells"), new FoodGroupEffects.Builder().tag(UTags.Items.SHELLS));
-        exporter.accept(Unicopia.id("special_shells"), new FoodGroupEffects.Builder().tag(UTags.Items.SPECIAL_SHELLS));
-        exporter.accept(Unicopia.id("low_quality_sea_vegetables"), new FoodGroupEffects.Builder().tag(UTags.Items.LOW_QUALITY_SEA_VEGETABLES));//need to make sea veggie food group, since removed old category
-        exporter.accept(Unicopia.id("high_quality_sea_vegetables"), new FoodGroupEffects.Builder().tag(UTags.Items.HIGH_QUALITY_SEA_VEGETABLES));
+        exporter.accept(Unicopia.id("shells"), new FoodGroupEffects.Builder().tag(UTags.Items.SHELLS).food(UFoodComponents.SHELL));
+        exporter.accept(Unicopia.id("special_shells"), new FoodGroupEffects.Builder().tag(UTags.Items.SPECIAL_SHELLS).food(UFoodComponents.SHELLY));
         exporter.accept(Unicopia.id("love"), new FoodGroupEffects.Builder().tag(UTags.Items.CONTAINER_WITH_LOVE).food(UFoodComponents.LOVE_MUG).ailment(new CompoundAffliction(List.<Affliction>of(
                 new StatusEffectAffliction(UEffects.FOOD_POISONING, Range.of(50), Range.of(2), 0),
                 new LoseHungerAffliction(0.5F)
@@ -57,9 +55,9 @@ public class FoodGroupsGenerator {
         provideMeatCategory("insect",
                 UConventionalTags.Items.COOKED_INSECT, UConventionalTags.Items.RAW_INSECT, UConventionalTags.Items.ROTTEN_INSECT,
                 FoodComponents.COOKED_BEEF, FoodComponents.BEEF, FoodComponents.ROTTEN_FLESH, exporter);
-        //provideVegetableCategory("sea_vegetable",
-        //        UTags.Items.HIGH_QUALITY_SEA_VEGETABLES, UTags.Items.LOW_QUALITY_SEA_VEGETABLES,
-        //        FoodComponents.COOKED_BEEF, FoodComponents.BEEF, exporter);
+        provideVegetableCategory("sea_vegetable",
+                UTags.Items.HIGH_QUALITY_SEA_VEGETABLES, UTags.Items.LOW_QUALITY_SEA_VEGETABLES,
+                FoodComponents.COOKED_BEEF, FoodComponents.BEEF, exporter);
 
         exporter.accept(Unicopia.id("foraging/blinding"), new FoodGroupEffects.Builder().tag(UTags.Items.FORAGE_BLINDING).food(4, 0.2F).ailment(CompoundAffliction.of(
                 new StatusEffectAffliction(StatusEffects.BLINDNESS, Range.of(30), Range.of(0), 10),
