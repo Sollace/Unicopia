@@ -9,8 +9,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import net.fabricmc.loader.api.FabricLoader;
-
 import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.mojang.datafixers.util.Pair;
