@@ -18,7 +18,7 @@ public interface TransientComponentTypes {
     Map<ComponentType<?>, Entry<?>> ROOT = new HashMap<>();
 
     Entry<DietProfile> PROFILE = register(UDataComponentTypes.DIET_PROFILE, (s, comps, original) -> {
-        return original != null ? original : comps.getCarrier()
+        return original != null && original != DietProfile.EMPTY ? original : comps.getCarrier()
                 .flatMap(Pony::of)
                 .map(pony -> PonyDiets.getInstance().getDiet(pony))
                 .orElse(DietProfile.EMPTY);
