@@ -58,6 +58,7 @@ public interface Channel {
             sender.sendPacket(SERVER_SKY_ANGLE.toPacket(new MsgSkyAngle(UnicopiaWorldProperties.forWorld(handler.getPlayer().getServerWorld()).getTangentalSkyAngle())));
             sender.sendPacket(CONFIGURATION_CHANGE.toPacket(new MsgConfigurationChange(InteractionManager.getInstance().getSyncedConfig())));
             sender.sendPacket(SERVER_ZAP_STAGE.toPacket(new MsgZapAppleStage(ZapAppleStageStore.get(handler.player.getServerWorld()).getStage())));
+            sender.sendPacket(SERVER_PLAYER_CAPABILITIES.toPacket(new MsgPlayerCapabilities(pony, true)));
         });
     }
 }
