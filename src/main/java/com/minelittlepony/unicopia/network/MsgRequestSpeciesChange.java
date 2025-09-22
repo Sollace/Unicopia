@@ -52,6 +52,6 @@ public record MsgRequestSpeciesChange (
             }
         }
 
-        Channel.SERVER_PLAYER_CAPABILITIES.sendToPlayer(new MsgPlayerCapabilities(player), sender);
+        player.sendUpdatePacket();
     }
 }

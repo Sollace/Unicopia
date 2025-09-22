@@ -56,7 +56,7 @@ class SpeciesCommand {
         if (race.isPermitted(player)) {
             Pony pony = Pony.of(player);
             pony.setSpecies(race);
-            pony.setDirty();
+            pony.sendUpdatePacket();
 
             if (race.isUnset()) {
                 Channel.SERVER_SELECT_TRIBE.sendToPlayer(new MsgTribeSelect(Race.allPermitted(player), "gui.unicopia.tribe_selection.welcome"), (ServerPlayerEntity)player);

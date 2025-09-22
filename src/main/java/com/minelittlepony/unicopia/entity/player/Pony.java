@@ -97,8 +97,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private Race.Composite compositeRace = Race.UNSET.composite();
     private Race respawnRace = Race.UNSET;
 
-    private boolean dirty;
-
     private float magicExhaustion = 0;
 
     private int ticksInvulnerable;
@@ -108,7 +106,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private boolean hasShades;
     private int ticksSunImmunity = INITIAL_SUN_IMMUNITY;
 
-    private AnimationInstance animation = new AnimationInstance(Animation.NONE, Animation.Recipient.ANYONE);
+    private AnimationInstance animation = AnimationInstance.NONE;
     private int animationMaxDuration;
     private int animationDuration;
 
@@ -118,9 +116,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public Pony(PlayerEntity player) {
         super(player);
         trackers.addPacketEmitter((sender, initial) -> {
-            if (initial || dirty) {
-                dirty = false;
-                sender.accept(Channel.SERVER_PLAYER_CAPABILITIES.toPacket(new MsgPlayerCapabilities(this)));
+            if (initial) {
+                sender.accept(Channel.SERVER_PLAYER_CAPABILITIES.toPacket(new MsgPlayerCapabilities(this, initial)));
             }
         });
 
@@ -135,6 +132,18 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         addTicker(this::updateCorruptionDecay);
         addTicker(new PlayerAttributes(this));
         addTicker(corruptionHandler);
+    }
+
+    public void sendUpdatePacket() {
+        if (entity instanceof ServerPlayerEntity) {
+            Channel.SERVER_PLAYER_CAPABILITIES.sendToAllPlayers(new MsgPlayerCapabilities(this, false), entity.getWorld());
+        }
+    }
+
+    public void sendUpdateToPlayer() {
+        if (entity instanceof ServerPlayerEntity pl) {
+            Channel.SERVER_PLAYER_CAPABILITIES.sendToPlayer(new MsgPlayerCapabilities(this, false), pl);
+        }
     }
 
     public static void registerAttributes(DefaultAttributeContainer.Builder builder) {
@@ -183,7 +192,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             animation.animation().getSound().ifPresent(sound -> {
                 playSound(sound, sound == USounds.ENTITY_PLAYER_WOLOLO ? 0.1F : 0.9F, 1);
             });
-            setDirty();
+            sendUpdatePacket();
         }
     }
 
@@ -328,11 +337,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return getSpecies().getAffinity();
     }
 
-    @Deprecated
-    public void setDirty() {
-        dirty = true;
-    }
-
     public AbilityDispatcher getAbilities() {
         return powers;
     }
@@ -387,6 +391,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             }
         }
         ticksSunImmunity = INITIAL_SUN_IMMUNITY;
+        sendUpdatePacket();
     }
 
     public boolean isSpawnInvalid(BlockPos pos) {
@@ -943,7 +948,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         mana.copyFrom(oldPlayer.mana, !forcedSwap);
         advancementProgress.copyFrom(oldPlayer.advancementProgress, alive);
-        setDirty();
         onSpawn();
     }
 

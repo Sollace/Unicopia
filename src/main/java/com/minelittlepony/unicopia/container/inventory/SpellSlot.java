@@ -71,7 +71,6 @@ public class SpellSlot extends Slot implements SpellbookSlot {
 
     @Override
     public void markDirty() {
-        pony.setDirty();
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.item.component.BufferflyVariantComponent;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
+import com.mojang.serialization.Codec;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.BlockState;
@@ -389,8 +390,7 @@ public class ButterflyEntity extends AmbientEntity {
 
         public static final Variant[] VALUES = values();
 
-        @SuppressWarnings("deprecation")
-        public static final EnumCodec<Variant> CODEC = StringIdentifiable.createCodec(Variant::values);
+        public static final Codec<Variant> CODEC = StringIdentifiable.createCodec(Variant::values);
         public static final PacketCodec<ByteBuf, Variant> PACKET_CODEC = PacketCodecs.indexed(i -> VALUES[i], Variant::ordinal);
 
         private final String name = name().toLowerCase(Locale.ROOT);
@@ -406,11 +406,6 @@ public class ButterflyEntity extends AmbientEntity {
 
         static Variant random(Random rand) {
             return VALUES[rand.nextInt(VALUES.length)];
-        }
-
-        @Deprecated
-        public static Variant byName(String name) {
-            return CODEC.byId(name, BUTTERFLY);
         }
 
         @Override

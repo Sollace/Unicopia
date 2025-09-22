@@ -17,29 +17,41 @@ public class MsgPlayerCapabilities implements Handled<PlayerEntity> {
     public static final PacketCodec<RegistryByteBuf, MsgPlayerCapabilities> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.INTEGER, i -> i.playerId,
             PacketCodecs.NBT_COMPOUND, i -> i.compoundTag,
+            PacketCodecs.BOOL, i -> i.initial,
             MsgPlayerCapabilities::new
     );
 
     protected final int playerId;
 
     private final NbtCompound compoundTag;
+    private final boolean initial;
 
-    MsgPlayerCapabilities(int playerId, NbtCompound compoundTag) {
+    MsgPlayerCapabilities(int playerId, NbtCompound compoundTag, boolean initial) {
         this.playerId = playerId;
         this.compoundTag = compoundTag;
+        this.initial = initial;
     }
 
-    public MsgPlayerCapabilities(Pony player) {
+    public MsgPlayerCapabilities(Pony player, boolean initial) {
         playerId = player.asEntity().getId();
         compoundTag = new NbtCompound();
-        player.toSyncronisedNbt(compoundTag, player.asWorld().getRegistryManager());
+        this.initial = initial;
+        if (initial) {
+            player.toNBT(compoundTag, player.asWorld().getRegistryManager());
+        } else {
+            player.toSyncronisedNbt(compoundTag, player.asWorld().getRegistryManager());
+        }
     }
 
     @Override
     public void handle(PlayerEntity sender) {
         Pony player = Pony.of(sender.getWorld().getEntityById(playerId)).orElse(null);
         if (player != null) {
-            player.fromSynchronizedNbt(compoundTag, sender.getWorld().getRegistryManager());
+            if (initial) {
+                player.fromNBT(compoundTag, sender.getWorld().getRegistryManager());
+            } else {
+                player.fromSynchronizedNbt(compoundTag, sender.getWorld().getRegistryManager());
+            }
         }
     }
 }

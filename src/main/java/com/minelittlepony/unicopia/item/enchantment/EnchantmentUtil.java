@@ -30,8 +30,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
 public interface EnchantmentUtil {
-    String HEART_BOUND_CONSUMED_FLAG = "unicopia:heart_bound_consumed";
-
     static boolean consumeEnchantment(RegistryEntry<Enchantment> enchantment, int levels, ItemStack stack) {
         return consumeEnchantment(enchantment, levels, stack, null, 0);
     }
@@ -134,6 +132,10 @@ public interface EnchantmentUtil {
         return RegistryUtils.entriesForTag(user.getWorld(), tag)
                 .stream()
                 .mapToInt(entry -> EnchantmentHelper.getEquipmentLevel(entry, user)).sum();
+    }
+
+    static int getGemfinderLevel(LivingEntity user) {
+        return getLevel(UEnchantments.GEM_FINDER, user);
     }
 
     @Deprecated
