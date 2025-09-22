@@ -73,11 +73,10 @@ public class UHud {
     private SpellType<?> focusedType = SpellType.empty();
 
     public void render(InGameHud hud, DrawContext context, RenderTickCounter tickCounter) {
-        final int hotbarZ = -90;
-
         if (client.player == null) {
             return;
         }
+        RenderSystem.enableDepthTest();
 
         int scaledWidth = client.getWindow().getScaledWidth();
         int scaledHeight = client.getWindow().getScaledHeight();
@@ -88,7 +87,6 @@ public class UHud {
         float tickDelta = tickCounter.getTickDelta(false);
 
         matrices.push();
-        matrices.translate(0, 0, hotbarZ - 9800);
         renderViewEffects(pony, context, scaledWidth, scaledHeight, tickDelta);
         matrices.pop();
 
@@ -123,7 +121,6 @@ public class UHud {
         if (hudPos == HudPosition.BOTTOM_CENTER) {
             hudY -= 22;
         }
-        int hudZ = hotbarZ;
 
         float exhaustion = pony.getMagicalReserves().getExhaustion().getPercentFill();
 
@@ -131,10 +128,9 @@ public class UHud {
             Random rng = client.world.random;
             hudX += rng.nextFloat() - 0.5F;
             hudY += rng.nextFloat() - 0.5F;
-            hudZ += rng.nextFloat() - 0.5F;
         }
 
-        matrices.translate(hudX, hudY, hudZ);
+        matrices.translate(hudX, hudY, 0);
 
         AbilityDispatcher abilities = pony.getAbilities();
 
@@ -207,6 +203,7 @@ public class UHud {
         }
 
         RenderSystem.disableBlend();
+        RenderSystem.disableDepthTest();
     }
 
     private void renderMessage(DrawContext context, float tickDelta) {
