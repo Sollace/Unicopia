@@ -6,7 +6,6 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.*;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
@@ -20,7 +19,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
-public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tickable, TrinketsDelegate.Inventory {
+public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tickable {
     public static final long TICKS = 1;
     public static final long SECONDS = 20 * TICKS;
     public static final long HOURS = 1000 * TICKS;
@@ -64,11 +63,6 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tick
 
     public ItemTracker(Living<?> living) {
         this.living = living;
-    }
-
-    @Override
-    public LivingEntity asEntity() {
-        return living.asEntity();
     }
 
     @Override

@@ -16,9 +16,6 @@ abstract class MixinTrinketItem {
      */
     @Overwrite
     public static boolean equipItem(PlayerEntity user, ItemStack stack) {
-        return TrinketsDelegateImpl.INSTANCE.getInventories(user)
-                .filter(inv -> TrinketsDelegateImpl.tryInsert(inv, stack, user))
-                .findFirst()
-                .isPresent();
+        return TrinketsDelegateImpl.equipItem(user, stack);
     }
 }

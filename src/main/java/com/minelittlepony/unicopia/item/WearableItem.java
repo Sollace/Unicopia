@@ -37,11 +37,7 @@ public abstract class WearableItem extends Item implements Equipment {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
-        return TrinketsDelegate.getInstance(player).getAvailableTrinketSlots(player, TrinketsDelegate.ALL).stream()
-                .filter(slotId -> TrinketsDelegate.getInstance(player).equipStack(player, slotId, stack))
-                .findAny()
-                .map(slotId -> TypedActionResult.success(stack, world.isClient()))
-                .orElseGet(() -> TypedActionResult.fail(stack));
+        return TrinketsDelegate.getInstance(player).equipStack(player, stack) ? TypedActionResult.success(stack, world.isClient()) : TypedActionResult.fail(stack);
     }
 
     @Override
@@ -66,10 +62,7 @@ public abstract class WearableItem extends Item implements Equipment {
                     EntityPredicates.EXCEPT_SPECTATOR
                 )
                 .stream()
-                .flatMap(entity -> TrinketsDelegate.getInstance(entity)
-                        .getAvailableTrinketSlots(entity, TrinketsDelegate.ALL)
-                        .stream()
-                        .filter(slotId -> TrinketsDelegate.getInstance(entity).equipStack(entity, slotId, armor)))
+                .filter(entity -> TrinketsDelegate.getInstance(entity).equipStack(entity, armor))
                 .findFirst()
                 .isPresent();
     }

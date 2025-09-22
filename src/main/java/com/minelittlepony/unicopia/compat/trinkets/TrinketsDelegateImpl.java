@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.compat.trinkets;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +24,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.event.GameEvent;
 
 public class TrinketsDelegateImpl implements TrinketsDelegate {
@@ -44,56 +42,21 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
     }
 
     @Override
-    public boolean equipStack(LivingEntity entity, Identifier slot, ItemStack stack) {
-        return getInventory(entity, slot).map(inventory -> {
-            for (int position = 0; position < inventory.size(); position++) {
-                if (inventory.getStack(position).isEmpty() && TrinketSlot.canInsert(stack, new SlotReference(inventory, position), entity)) {
-
-                    Equipment q = Equipment.fromStack(stack);
-                    RegistryEntry<SoundEvent> soundEvent = q == null ? null : q.getEquipSound();
-                    inventory.setStack(position, stack.split(1));
-                    if (soundEvent != null) {
-                       entity.emitGameEvent(GameEvent.EQUIP);
-                       entity.playSound(soundEvent.value(), 1, 1);
-                    }
-                    return true;
-                }
-            }
-            return false;
-        }).orElse(false);
+    public boolean equipStack(LivingEntity entity, ItemStack stack) {
+        return TrinketItem.equipItem(entity, stack);
     }
 
     @Override
-    public void setEquippedStack(LivingEntity entity, Identifier slot, ItemStack stack) {
-        getInventory(entity, slot).ifPresent(inventory -> {
-            Equipment q = Equipment.fromStack(stack);
-            RegistryEntry<SoundEvent> soundEvent = q == null ? null : q.getEquipSound();
-            inventory.clear();
-            inventory.setStack(0, stack);
-            if (soundEvent != null) {
-                entity.emitGameEvent(GameEvent.EQUIP);
-                entity.playSound(soundEvent.value(), 1, 1);
-            }
-        });
-    }
-
-    @Override
-    public Set<Identifier> getAvailableTrinketSlots(LivingEntity entity, Set<Identifier> probedSlots) {
-        probedSlots = new HashSet<>(probedSlots);
-        probedSlots.removeAll(getInventories(entity)
-                .filter(inventory -> InventoryUtil.getOpenSlot(inventory) == -1)
-                .map(slot -> slot.getSlotType())
-                .map(TrinketsDelegateImpl::getSlotId)
-                .collect(Collectors.toSet()));
-        return probedSlots;
-    }
-
-    @Override
-    public Stream<EquippedStack> getEquipped(LivingEntity entity, Identifier slot, @Nullable Predicate<ItemStack> predicate) {
+    public Stream<EquippedStack> getEquipped(LivingEntity entity, SlotKey slot, @Nullable Predicate<ItemStack> predicate) {
         return getInventory(entity, slot).stream().flatMap(inventory -> {
-            return InventoryUtil.stream(inventory).filter(s -> !s.isEmpty() && (predicate == null || predicate.test(s))).map(stack -> {
-                ItemStack oldStack = stack.copy();
-                return new EquippedStack(stack, inventory::markUpdate, l -> {
+            return InventoryUtil.slots(inventory)
+                    .filter(s -> !inventory.getStack(s).isEmpty() && (predicate == null || predicate.test(inventory.getStack(s))))
+                    .map(index -> {
+                ItemStack oldStack = inventory.getStack(index).copy();
+                return new EquippedStack(inventory.getStack(index), inventory::markUpdate, stack -> {
+                    inventory.setStack(index, stack);
+                    inventory.markUpdate();
+                }, l -> {
                     inventory.markUpdate();
                     Channel.SERVER_TRINKET_BROKEN.sendToSurroundingPlayers(new MsgTrinketBroken(oldStack, entity.getId()), entity);
                 });
@@ -106,38 +69,8 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
         TrinketsApi.registerTrinket(item, new UnicopiaTrinket(item));
     }
 
-    private Optional<TrinketComponent> getTrinketComponent(LivingEntity entity) {
-        try {
-            return TrinketsApi.getTrinketComponent(entity);
-        } catch (Throwable ingnored) {}
-        return Optional.empty();
-    }
-
-    public Optional<TrinketInventory> getInventory(LivingEntity entity, Identifier slot) {
-        return getTrinketComponent(entity)
-                .map(component -> component.getInventory()
-                .getOrDefault(slot.getNamespace(), Map.of())
-                .getOrDefault(slot.getPath(), null)
-        );
-    }
-
-    public Stream<TrinketInventory> getInventories(LivingEntity entity) {
-        return getTrinketComponent(entity)
-                .stream()
-                .map(component -> component.getInventory())
-                .flatMap(groups -> groups.values().stream())
-                .flatMap(group -> group.values().stream());
-    }
-
-    public Optional<SlotGroup> getGroup(LivingEntity entity, Identifier slotId) {
-        return getTrinketComponent(entity)
-                .stream()
-                .map(component -> component.getGroups().get(slotId.getNamespace()))
-                .findFirst();
-    }
-
     @Override
-    public Optional<Slot> createSlot(SpellbookScreenHandler handler, LivingEntity entity, Identifier slotId, int i, int x, int y) {
+    public Optional<Slot> createSlot(SpellbookScreenHandler handler, LivingEntity entity, SlotKey slotId, int i, int x, int y) {
         return getGroup(entity, slotId).flatMap(group -> {
             return getInventory(entity, slotId).map(inventory -> {
                 return new SpellbookTrinketSlot(handler, inventory, i, x, y, group);
@@ -150,8 +83,41 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
         return slot instanceof TrinketSlot || slot instanceof SpellbookTrinketSlot;
     }
 
-    private static Identifier getSlotId(SlotType slotType) {
-        return Identifier.of(slotType.getGroup(), slotType.getName());
+    private static Optional<TrinketComponent> getTrinketComponent(LivingEntity entity) {
+        try {
+            return TrinketsApi.getTrinketComponent(entity);
+        } catch (Throwable ingnored) {}
+        return Optional.empty();
+    }
+
+    private static Optional<TrinketInventory> getInventory(LivingEntity entity, SlotKey slot) {
+        return getTrinketComponent(entity)
+                .map(component -> component.getInventory()
+                .getOrDefault(slot.group(), Map.of())
+                .getOrDefault(slot.name(), null)
+        );
+    }
+
+    private static Stream<TrinketInventory> getInventories(LivingEntity entity) {
+        return getTrinketComponent(entity)
+                .stream()
+                .map(component -> component.getInventory())
+                .flatMap(groups -> groups.values().stream())
+                .flatMap(group -> group.values().stream());
+    }
+
+    private static Optional<SlotGroup> getGroup(LivingEntity entity, SlotKey slotId) {
+        return getTrinketComponent(entity)
+                .stream()
+                .map(component -> component.getGroups().get(slotId.group()))
+                .findFirst();
+    }
+
+    public static boolean equipItem(PlayerEntity user, ItemStack stack) {
+        return getInventories(user)
+                .filter(inv -> tryInsert(inv, stack, user))
+                .findFirst()
+                .isPresent();
     }
 
     public static int getMaxCount(ItemStack stack, SlotReference ref, int normal) {
@@ -167,7 +133,7 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
         return normal;
     }
 
-    public static boolean tryInsert(TrinketInventory inv, ItemStack stack, PlayerEntity user) {
+    private static boolean tryInsert(TrinketInventory inv, ItemStack stack, PlayerEntity user) {
         int i = InventoryUtil.getOpenSlot(inv);
         if (i == -1) {
             return false;

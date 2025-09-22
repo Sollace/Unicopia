@@ -20,6 +20,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate.EquippedStack;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.behaviour.Guest;
 import com.minelittlepony.unicopia.entity.damage.MagicalDamageSource;
@@ -381,14 +382,13 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                 this.attacker = attacker;
             }
 
-            ItemStack glasses = GlassesItem.getForEntity(entity).stack();
-            BreaksIntoItemComponent afterBroken = glasses.get(UDataComponentTypes.ITEM_AFTER_BREAKING);
+            EquippedStack glasses = GlassesItem.getForEntity(entity);
+            BreaksIntoItemComponent afterBroken = glasses.stack().get(UDataComponentTypes.ITEM_AFTER_BREAKING);
 
             if (afterBroken != null && magical.isIn(afterBroken.damageType())) {
                 if (afterBroken != null) {
                     afterBroken.getItemAfterBreaking().ifPresent(b -> {
-                        ItemStack broken = glasses.withItem(b);
-                        TrinketsDelegate.getInstance(entity).setEquippedStack(entity, TrinketsDelegate.FACE, broken);
+                        glasses.set(glasses.stack().withItem(b));
                         afterBroken.getBreakingSound().ifPresent(sound -> {
                             playSound(sound, 1, 1);
                         });

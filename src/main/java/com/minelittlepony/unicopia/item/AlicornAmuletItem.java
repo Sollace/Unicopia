@@ -7,7 +7,7 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.UBlocks;
-import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
+import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate.EquippedStack;
 import com.minelittlepony.unicopia.entity.*;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
@@ -247,12 +247,11 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
             // bind to the player after 3 days
             if (daysAttached >= 3 && !pony.asEntity().isCreative()) {
-                stack = living.getArmour().getEquippedStack(TrinketsDelegate.NECKLACE).stack();
-                if (stack.getItem() == this && !EnchantmentHelper.hasAnyEnchantmentsWith(stack, EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)) {
+                EquippedStack equipped = getForEntity(living.asEntity());
+                if (!equipped.stack().isEmpty() && !EnchantmentHelper.hasAnyEnchantmentsWith(equipped.stack(), EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)) {
                     pony.playSound(USounds.ITEM_ALICORN_AMULET_HALLUCINATION, 3, 1);
-                    stack = stack.copy();
                     stack.addEnchantment(pony.entryFor(Enchantments.BINDING_CURSE), 1);
-                    pony.getArmour().equipStack(TrinketsDelegate.NECKLACE, stack);
+                    equipped.sendUpdate().run();
                 }
             }
 

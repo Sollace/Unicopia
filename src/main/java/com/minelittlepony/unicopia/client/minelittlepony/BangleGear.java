@@ -7,6 +7,7 @@ import com.minelittlepony.api.model.PonyModel;
 import com.minelittlepony.api.model.gear.Gear;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer;
 import com.minelittlepony.unicopia.client.render.BraceletFeatureRenderer.BraceletModel;
+import com.minelittlepony.unicopia.compat.trinkets.SlotKey;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.GlowableItem;
@@ -33,9 +34,9 @@ class BangleGear implements Gear {
     private final BraceletModel steveModel;
     private final BraceletModel alexModel;
 
-    private final Identifier slot;
+    private final SlotKey slot;
 
-    public BangleGear(Identifier slot) {
+    public BangleGear(SlotKey slot) {
         this.slot = slot;
         Dilation dilation = new Dilation(0.3F);
         steveModel = new BraceletModel(BraceletModel.getData(dilation, false, -1, 4, 0).createModel());

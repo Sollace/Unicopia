@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.compat.trinkets.SlotKey;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.AmuletSelectors;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -123,7 +124,7 @@ public class FriendshipBraceletItem extends WearableItem {
         );
     }
 
-    public static Stream<TrinketsDelegate.EquippedStack> getWornBangles(LivingEntity entity, Identifier slot) {
+    public static Stream<TrinketsDelegate.EquippedStack> getWornBangles(LivingEntity entity, SlotKey slot) {
         return TrinketsDelegate.getInstance(entity).getEquipped(entity, slot, IS_BANGLE);
     }
 }
