@@ -142,6 +142,10 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .add(Items.KELP, Items.DRIED_KELP, Items.SEAGRASS, Items.SEA_PICKLE)
             .forceAddTag(UConventionalTags.Items.CORALS).forceAddTag(UConventionalTags.Items.CORAL_FANS);
 
+        getOrCreateTagBuilder(ItemTags.SWORD_ENCHANTABLE).forceAddTag(UTags.Items.POLEARMS);
+        getOrCreateTagBuilder(ItemTags.SHARP_WEAPON_ENCHANTABLE).addTag(UTags.Items.POLEARMS);
+        getOrCreateTagBuilder(ItemTags.DURABILITY_ENCHANTABLE).addTag(UTags.Items.HORSE_SHOES);
+
         exportForagingTags();
         exportCreativeTabs();
         exportFarmersDelightItems();

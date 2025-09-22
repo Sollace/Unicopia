@@ -4,19 +4,24 @@ import java.util.List;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
+
+import net.fabricmc.fabric.api.item.v1.EnchantingContext;
 import net.minecraft.block.*;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.ToolComponent;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class PolearmItem extends ToolItem {
+public class PolearmItem extends ToolItem implements ItemDuck {
     public PolearmItem(ToolMaterial material, int damage, float speed, int range, Settings settings) {
         super(material, settings.attributeModifiers(SwordItem.createAttributeModifiers(material, damage, speed).with(
                 UEntityAttributes.EXTENDED_REACH_DISTANCE, new EntityAttributeModifier(UItemModifierIds.ATTACK_RANGE_MODIFIER_ID, range, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND
@@ -53,5 +58,10 @@ public class PolearmItem extends ToolItem {
     public void postDamageEntity(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         boolean tooNear = target.distanceTo(attacker) <= 2;
         stack.damage(tooNear ? 4 : 1, attacker, EquipmentSlot.MAINHAND);
+    }
+
+    @Override
+    public boolean canBeEnchantedWith(ItemStack stack, RegistryEntry<Enchantment> enchantment, EnchantingContext context) {
+        return !enchantment.matchesId(Enchantments.SWEEPING_EDGE.getValue()) && super.canBeEnchantedWith(stack, enchantment, context);
     }
 }
