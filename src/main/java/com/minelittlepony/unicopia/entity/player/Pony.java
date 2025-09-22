@@ -461,16 +461,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                     }
                 }
             }
-
-            if (entity.getAttackCooldownProgress(0) == 0 && (entity.getAttacking() != null || entity.getWorld().random.nextInt(50) == 0)) {
-                if (charge.getPercentFill() < 1) {
-                    charge.addPercent(3);
-                }
-
-                if (!EquinePredicates.RAGING.test(entity) && charge.getPercentFill() >= 1 && entity.getWorld().random.nextInt(1000) == 0) {
-                    SpellType.RAGE.withTraits().apply(this, CastingMethod.INNATE);
-                }
-            }
         }
 
         if (getCompositeRace().includes(Race.SEAPONY)) {
@@ -495,6 +485,21 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         return super.beforeUpdate();
+    }
+
+    @Override
+    public void onAttacking(Entity target) {
+        if (getObservedSpecies() == Race.KIRIN && entity.getWorld().random.nextInt(50) == 0) {
+            var charge = getMagicalReserves().getCharge();
+
+            if (charge.getPercentFill() < 1) {
+                charge.addPercent(3);
+            }
+
+            if (!EquinePredicates.RAGING.test(entity) && charge.getPercentFill() >= 1 && entity.getWorld().random.nextInt(1000) == 0) {
+                SpellType.RAGE.withTraits().apply(this, CastingMethod.INNATE);
+            }
+        }
     }
 
     private void recalculateCompositeRace() {

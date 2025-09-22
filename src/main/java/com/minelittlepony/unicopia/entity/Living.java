@@ -403,6 +403,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return Optional.empty();
     }
 
+    public void onAttacking(Entity target) {
+
+    }
+
     public TriState canBeHurtByWater() {
         return TriState.DEFAULT;
     }
