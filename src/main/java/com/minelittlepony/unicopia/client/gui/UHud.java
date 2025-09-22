@@ -393,9 +393,21 @@ public class UHud {
         });
     }
 
+    public static Identifier getHeartTexture(InGameHud.HeartType heartsType, Identifier vanillaTexture, boolean hardcore, boolean blinking, boolean half) {
+
+        if (MinecraftClient.getInstance().player != null) {
+            if (UItems.ALICORN_AMULET.isApplicable(MinecraftClient.getInstance().player)) {
+                if (heartsType == InGameHud.HeartType.CONTAINER) {
+                //    return Unicopia.id("hud/heart/container_full");
+                }
+                //return Unicopia.id("hud/heart/withered_" + (half ? "half" : "full") + (blinking ? "_blinking" : ""));
+            }
+        }
+        return vanillaTexture;
+    }
 
     @Nullable
-    public static InGameHud.HeartType getHeartsType(PlayerEntity player) {
+    public static InGameHud.HeartType getHeartsType(PlayerEntity player, InGameHud.HeartType vanillaHeartType) {
         if (UItems.ALICORN_AMULET.isApplicable(player) || EffectUtils.isChangingRace(player)) {
             return InGameHud.HeartType.WITHERED;
         }
@@ -404,6 +416,6 @@ public class UHud {
             return InGameHud.HeartType.POISONED;
         }
 
-        return null;
+        return vanillaHeartType;
     }
 }

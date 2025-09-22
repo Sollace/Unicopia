@@ -32,6 +32,15 @@ abstract class MixinInGameHud {
     private void afterRender(DrawContext context, RenderTickCounter tickCounter, CallbackInfo info) {
         HudEffects.tryApply(getCameraPlayer(), tickCounter, false);
     }
+
+    /*@ModifyArg(
+            method = "drawHeart",
+            at = @At(value = "INVOKE", target = "net/minecraft/client/gui/DrawContext.drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"),
+            index = 0
+    )
+    private Identifier adjustHeartTexture(Identifier texture, @Local InGameHud.HeartType heartsType, @Local(ordinal = 0) boolean hardcore, @Local(ordinal = 1) boolean blinking, @Local(ordinal = 2) boolean half) {
+        return UHud.getHeartTexture(heartsType, texture, hardcore, blinking, half);
+    }*/
 }
 
 @Mixin(InGameHud.HeartType.class)
