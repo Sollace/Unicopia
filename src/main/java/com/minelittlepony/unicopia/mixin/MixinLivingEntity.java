@@ -155,7 +155,7 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
     }
 
     @Inject(method = "onAttacking(Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
-    private void onOnAttacking(Entity target) {
+    private void onOnAttacking(Entity target, CallbackInfo info) {
         get().onAttacking(target);
     }
 
