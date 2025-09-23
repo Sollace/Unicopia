@@ -531,6 +531,7 @@
   "spell_attribute.unicopia.affects.entities": "Влияет только на сущности",
   "spell_attribute.unicopia.affects.blocks": "Влияет только на блоки",
   "spell_attribute.unicopia.follows_target": "Следует за целью",
+  "spell_attribute.unicopia.inverted": "Inverted",
   "spell_attribute.unicopia.causes_levitation": "Вызывает левитацию",
   "spell_attribute.unicopia.permit_items": " Пропускает предметы",
   "spell_attribute.unicopia.permit_passive": "Пропускает пассивных мобов",
