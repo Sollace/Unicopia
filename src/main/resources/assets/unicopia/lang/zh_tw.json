@@ -531,6 +531,7 @@
   "spell_attribute.unicopia.affects.entities": "僅作用於實體",
   "spell_attribute.unicopia.affects.blocks": "僅作用於方塊",
   "spell_attribute.unicopia.follows_target": "追蹤目標",
+  "spell_attribute.unicopia.inverted": "Inverted",
   "spell_attribute.unicopia.causes_levitation": "導致懸浮",
   "spell_attribute.unicopia.permit_items": "允許物品",
   "spell_attribute.unicopia.permit_passive": "放行友好生物",
