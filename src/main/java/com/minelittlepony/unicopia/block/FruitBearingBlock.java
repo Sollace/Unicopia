@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.EarthPonyKickAbility.Buckable;
 import com.minelittlepony.unicopia.compat.seasons.FertilizableUtil;
+import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -93,38 +94,44 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
             return;
         }
 
-        if (world.getBaseLightLevel(pos, 0) > 8) {
-            int steps = FertilizableUtil.getGrowthSteps(world, pos, state, random);
-            while (steps-- > 0) {
-                if (!shouldAdvance(random)) {
-                    continue;
-                }
+        if (world.getBaseLightLevel(pos, 0) <= 8) {
+            return;
+        }
 
-                state = cycleStage(state);
-                BlockPos fruitPosition = pos.down();
-                BlockState fruitState = world.getBlockState(fruitPosition);
+        if (!PosHelper.fastAny(pos, (p, f) -> !world.getBlockState(p).isSideSolidFullSquare(world, p, f.getOpposite()), PosHelper.ALL)) {
+            return;
+        }
 
-                switch (state.get(STAGE)) {
-                    case WITHERING:
-                        wither(state, world, pos, fruitPosition, world.getBlockState(fruitPosition));
-                    case BEARING:
-                        if (!fruitState.isOf(fruit.get())) {
-                            state = withStage(state, Stage.IDLE);
-                        }
-                        break;
-                    case FRUITING: {
-                        if (!isPositionValidForFruit(state, pos)) {
-                            state = withStage(state, Stage.IDLE);
-                        } else {
-                            state = grow(state, world, pos, fruitPosition, fruitState, random);
-                        }
-                        break;
-                    }
-                    default:
-                }
-
-                world.setBlockState(pos, state, Block.NOTIFY_ALL);
+        int steps = FertilizableUtil.getGrowthSteps(world, pos, state, random);
+        BlockPos fruitPosition = pos.down();
+        while (steps-- > 0) {
+            if (!shouldAdvance(random)) {
+                return;
             }
+
+            state = cycleStage(state);
+            BlockState fruitState = world.getBlockState(fruitPosition);
+
+            switch (state.get(STAGE)) {
+                case WITHERING:
+                    wither(state, world, pos, fruitPosition, fruitState);
+                case BEARING:
+                    if (!fruitState.isOf(fruit.get())) {
+                        state = withStage(state, Stage.IDLE);
+                    }
+                    break;
+                case FRUITING: {
+                    state = isPositionValidForFruit(state, pos)
+                            ? grow(state, world, pos, fruitPosition, fruitState, random)
+                            : withStage(state, Stage.IDLE);
+                    break;
+                }
+                default:
+            }
+        }
+
+        if (!state.equals(world.getBlockState(pos))) {
+            world.setBlockState(pos, state, Block.NOTIFY_ALL, 0);
         }
     }
 
