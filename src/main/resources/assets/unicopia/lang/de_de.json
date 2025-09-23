@@ -531,6 +531,7 @@
   "spell_attribute.unicopia.affects.entities": "Nur Entitäten betroffen",
   "spell_attribute.unicopia.affects.blocks": "Nur Blöcke betroffen",
   "spell_attribute.unicopia.follows_target": "Ziel verfolgen",
+  "spell_attribute.unicopia.inverted": "Inverted",
   "spell_attribute.unicopia.causes_levitation": "Ursachen Levitation",
   "spell_attribute.unicopia.permit_items": "Genehmigungen Artikel",
   "spell_attribute.unicopia.permit_passive": "Passive Mobs erlauben",
