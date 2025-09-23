@@ -531,6 +531,7 @@
   "spell_attribute.unicopia.affects.entities": "Affecte uniquement les entités",
   "spell_attribute.unicopia.affects.blocks": "Affecte uniquement les blocs",
   "spell_attribute.unicopia.follows_target": "S'abonner à la cible",
+  "spell_attribute.unicopia.inverted": "Inverted",
   "spell_attribute.unicopia.causes_levitation": "Cause lévitation",
   "spell_attribute.unicopia.permit_items": " Permettez d'objets",
   "spell_attribute.unicopia.permit_passive": "Autorise les monstres passifs",
