@@ -98,7 +98,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
     }
 
     private Stream<LivingEntity> getTargets(Caster<?> source) {
-        return VecHelper.findInRange(null, source.asWorld(), source.getOriginVector(), RANGE.get(getTraits()) + level, TARGET_PREDICATE)
+        return VecHelper.findInRange(null, source.asWorld(), source.getOriginVector(), RANGE.get(getTraits()) + source.getLevel().getScaled(6), TARGET_PREDICATE)
                 .stream()
                 .map(e -> (LivingEntity)e);
     }
