@@ -41,7 +41,9 @@ public class HornFeatureRenderer<E extends LivingEntity> implements AccessoryFea
     }
 
     protected boolean canRender(E entity) {
-        return entity instanceof PlayerEntity player && Pony.of(player).getObservedSpecies().canCast();
+        return entity instanceof PlayerEntity player
+                && Pony.of(player).getObservedSpecies().canCast()
+                && Pony.of(player).getSkinFeatures().showHorn();
     }
 
     @Override

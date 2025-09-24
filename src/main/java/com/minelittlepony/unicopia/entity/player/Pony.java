@@ -110,8 +110,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private int animationMaxDuration;
     private int animationDuration;
 
-    private DataTracker.Entry<Race> race;
-    private DataTracker.Entry<Race> suppressedRace;
+    private final DataTracker.Entry<Race> race;
+    private final DataTracker.Entry<Race> suppressedRace;
+
+    private final DataTracker.Entry<SkinFeatures> features;
 
     public Pony(PlayerEntity player) {
         super(player);
@@ -123,6 +125,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
         race = this.tracker.startTracking(TrackableDataType.RACE, Race.UNSET);
         suppressedRace = this.tracker.startTracking(TrackableDataType.RACE, Race.UNSET);
+        this.features = this.tracker.startTracking(TrackableDataType.SKIN_FEATURES, SkinFeatures.DEFAULT);
         this.levels = new PlayerLevelStore(this, tracker, true, USounds.Vanilla.ENTITY_PLAYER_LEVELUP);
         this.corruption = new PlayerLevelStore(this, tracker, false, USounds.ENTITY_PLAYER_CORRUPTION);
         this.mana = addTicker(new ManaContainer(this, tracker));
@@ -209,6 +212,19 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public TriggerCountTracker getAdvancementProgress() {
         return advancementProgress;
+    }
+
+    public SkinFeatures getSkinFeatures() {
+        return features.get();
+    }
+
+    public void setSkinFeatures(SkinFeatures features) {
+        if (!getSkinFeatures().equals(features)) {
+            this.features.set(features);
+            if (isClient()) {
+                Channel.UPDATE_PLAYER_FEATURES.sendToServer(features);
+            }
+        }
     }
 
     public void setRespawnRace(Race race) {

@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.entity.player.SkinFeatures;
 import com.minelittlepony.unicopia.network.track.MsgTrackedValues;
 import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
@@ -18,6 +19,7 @@ public interface Channel {
     C2SPacketType<MsgMarkTraitRead> MARK_TRAIT_READ = SimpleNetworking.clientToServer(Unicopia.id("mark_trait_read"), MsgMarkTraitRead.PACKET_CODEC);
     C2SPacketType<MsgRemoveSpell> REMOVE_SPELL = SimpleNetworking.clientToServer(Unicopia.id("remove_spell"), MsgRemoveSpell.PACKET_CODEC);
     C2SPacketType<MsgPlayerFlightControlsInput> FLIGHT_CONTROLS_INPUT = SimpleNetworking.clientToServer(Unicopia.id("flight_controls"), MsgPlayerFlightControlsInput.PACKET_CODEC);
+    C2SPacketType<SkinFeatures> UPDATE_PLAYER_FEATURES = SimpleNetworking.clientToServer(Unicopia.id("skin_features"), SkinFeatures.PACKET_CODEC);
 
     S2CPacketType<MsgPlayerCapabilities> SERVER_PLAYER_CAPABILITIES = SimpleNetworking.serverToClient(Unicopia.id("player_capabilities"), MsgPlayerCapabilities.PACKET_CODEC);
     S2CPacketType<MsgBlockDestruction> SERVER_BLOCK_DESTRUCTION = SimpleNetworking.serverToClient(Unicopia.id("block_destruction"), MsgBlockDestruction.PACKET_CODEC);
@@ -59,6 +61,9 @@ public interface Channel {
             sender.sendPacket(CONFIGURATION_CHANGE.toPacket(new MsgConfigurationChange(InteractionManager.getInstance().getSyncedConfig())));
             sender.sendPacket(SERVER_ZAP_STAGE.toPacket(new MsgZapAppleStage(ZapAppleStageStore.get(handler.player.getServerWorld()).getStage())));
             sender.sendPacket(SERVER_PLAYER_CAPABILITIES.toPacket(new MsgPlayerCapabilities(pony, true)));
+        });
+        UPDATE_PLAYER_FEATURES.receiver().addPersistentListener((player, features) -> {
+            Pony.of(player).setSkinFeatures(features);
         });
     }
 }

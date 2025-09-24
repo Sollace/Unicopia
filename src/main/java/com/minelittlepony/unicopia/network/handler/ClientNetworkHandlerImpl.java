@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.network.handler;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.data.Rot;
 import com.minelittlepony.unicopia.ability.data.tree.TreeTypes;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -77,6 +78,8 @@ public class ClientNetworkHandlerImpl {
         ClientChapters.load(packet.chapters());
         TreeTypes.load(packet.treeTypes());
         PonyDiets.load(packet.diets());
+
+        Pony.of(sender).setSkinFeatures(Unicopia.getConfig().skinFeatures.get());
     }
 
     private void handlePlayerAnimation(PlayerEntity sender, MsgPlayerAnimationChange packet) {

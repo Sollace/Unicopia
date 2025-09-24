@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client.render;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.AmuletSelectors;
@@ -57,13 +59,20 @@ public class BatWingsFeatureRenderer<E extends LivingEntity> extends WingsFeatur
 
     @Override
     protected boolean canRender(E entity) {
-        return entity instanceof PlayerEntity
-                && Pony.of((PlayerEntity)entity).getObservedSpecies() == Race.BAT
-                && !AmuletSelectors.PEGASUS_AMULET.test(entity);
+        return entity instanceof PlayerEntity player
+                && Pony.of(player).getObservedSpecies() == Race.BAT
+                && Pony.of(player).getSkinFeatures().showWings()
+                && !AmuletSelectors.PEGASUS_AMULET.test(player);
     }
 
     @Override
     protected Identifier getTexture(E entity) {
         return TEXTURE;
+    }
+
+    @Override
+    @Nullable
+    protected Identifier getOverlayTexture(E entity) {
+        return null;
     }
 }

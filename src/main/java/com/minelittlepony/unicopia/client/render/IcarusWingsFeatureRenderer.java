@@ -1,10 +1,16 @@
 package com.minelittlepony.unicopia.client.render;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.AmuletSelectors;
 
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 
@@ -22,7 +28,18 @@ public class IcarusWingsFeatureRenderer<E extends LivingEntity> extends WingsFea
     }
 
     @Override
+    protected VertexConsumer getBuffer(VertexConsumerProvider vertices, Identifier texture) {
+        return ItemRenderer.getArmorGlintConsumer(vertices, RenderLayer.getEntityTranslucent(texture), true);
+    }
+
+    @Override
     protected Identifier getTexture(E entity) {
         return entity.getWorld().getDimension().ultrawarm() ? ICARUS_WINGS_CORRUPTED : ICARUS_WINGS;
+    }
+
+    @Override
+    @Nullable
+    protected Identifier getOverlayTexture(E entity) {
+        return null;
     }
 }

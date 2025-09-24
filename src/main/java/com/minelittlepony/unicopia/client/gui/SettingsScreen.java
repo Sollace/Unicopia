@@ -8,6 +8,7 @@ import com.minelittlepony.common.client.gui.element.*;
 import com.minelittlepony.common.client.gui.style.Style;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
+import com.minelittlepony.unicopia.entity.player.SkinFeatures;
 import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
 import com.minelittlepony.unicopia.util.RegistryIndexer;
 
@@ -92,6 +93,23 @@ public class SettingsScreen extends GameGui {
         content.addButton(new Slider(LEFT, row += 25, 0, races.size(), races.indexOf(config.preferredRace.get())))
                 .onChange(races.createSetter(config.preferredRace))
                 .setTextFormat(v -> Text.translatable("unicopia.options.preferred_race", races.valueOf(v.getValue()).getDisplayName()));
+
+        content.addButton(new Label(LEFT, row += 20)).getStyle().setText("unicopia.options.skin_features");
+
+        content.addButton(new Toggle(LEFT, row += 20, config.skinFeatures.get().showHorn()))
+            .onChange(horn -> {
+                var features = config.skinFeatures.get();
+                config.skinFeatures.set(new SkinFeatures(horn, features.showWings(), features.skinColor()));
+                return horn;
+            })
+            .getStyle().setText("unicopia.options.skin_features.horn");
+        content.addButton(new Toggle(LEFT, row += 20, config.skinFeatures.get().showWings()))
+            .onChange(wings -> {
+                var features = config.skinFeatures.get();
+                config.skinFeatures.set(new SkinFeatures(features.showHorn(), wings, features.skinColor()));
+                return wings;
+            })
+            .getStyle().setText("unicopia.options.skin_features.wings");
 
         IntegratedServer server = client.getServer();
         if (server != null) {
