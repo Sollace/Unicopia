@@ -1,33 +1,20 @@
 package com.minelittlepony.unicopia.diet;
 
-import java.util.List;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.component.type.FoodComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 
-final class FoodAttributes {
-    static final Codec<FoodComponent> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.INT.fieldOf("hunger").forGetter(FoodComponent::nutrition),
-            Codec.FLOAT.fieldOf("saturation").forGetter(FoodComponent::saturation),
-            Codec.BOOL.optionalFieldOf("fastFood", false).forGetter(FoodComponent::canAlwaysEat),
-            Codec.BOOL.optionalFieldOf("eatenQuickly", false).forGetter(food -> food.eatSeconds() < 1.6F),
-            ItemStack.CODEC.optionalFieldOf("usingConvertsInto").forGetter(FoodComponent::usingConvertsTo)
-    ).apply(instance, (nutrition, saturation, fastFood, eatenQuickly, convertsInto) -> {
-        return new FoodComponent(nutrition, saturation, fastFood, eatenQuickly ? 0.8F : 1.6F, convertsInto, List.of());
-    }));
-
-    @Deprecated
-    static FoodComponent read(PacketByteBuf buffer) {
-        return FoodComponent.PACKET_CODEC.decode((RegistryByteBuf)buffer);
-    }
-
-    @Deprecated
-    static void write(PacketByteBuf buffer, FoodComponent food) {
-        FoodComponent.PACKET_CODEC.encode((RegistryByteBuf)buffer, food);
-    }
+public record FoodAttributes(FoodComponent food) {
+    public static final float SNACK_SECONDS = 0.8F;
+    public static final float NORMAL_SECONDS = 1.6F;
+    public static final Codec<FoodAttributes> CODEC = RecordCodecBuilder.create(i -> i.group(
+            FoodComponent.CODEC.fieldOf("food").forGetter(FoodAttributes::food)
+    ).apply(i, FoodAttributes::new));
+    public static final PacketCodec<RegistryByteBuf, FoodAttributes> PACKET_CODEC = PacketCodec.tuple(
+            FoodComponent.PACKET_CODEC, FoodAttributes::food,
+            FoodAttributes::new
+    );
 }

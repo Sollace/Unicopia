@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.network.RegistryByteBuf;
@@ -31,8 +30,8 @@ public record FoodGroup(
     }
 
     @Override
-    public Optional<FoodComponent> foodComponent() {
-        return attributes.foodComponent();
+    public Optional<FoodAttributes> foodAttributes() {
+        return attributes.foodAttributes();
     }
 
     @Override

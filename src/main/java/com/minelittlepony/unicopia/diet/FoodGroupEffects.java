@@ -27,20 +27,20 @@ import net.minecraft.util.Util;
 
 public record FoodGroupEffects(
         List<FoodGroupKey> tags,
-        Optional<FoodComponent> foodComponent,
+        Optional<FoodAttributes> foodAttributes,
         Ailment ailment
 ) implements Effect {
     public static Codec<FoodGroupEffects> createCodec(Codec<FoodGroupKey> keyCodec) {
         return RecordCodecBuilder.create(instance -> instance.group(
                 keyCodec.listOf().fieldOf("tags").forGetter(FoodGroupEffects::tags),
-                FoodAttributes.CODEC.optionalFieldOf("food_component").forGetter(FoodGroupEffects::foodComponent),
+                FoodAttributes.CODEC.optionalFieldOf("food_attributes").forGetter(FoodGroupEffects::foodAttributes),
                 Ailment.CODEC.fieldOf("ailment").forGetter(FoodGroupEffects::ailment)
         ).apply(instance, FoodGroupEffects::new));
     }
     public static final PacketCodec<RegistryByteBuf, FoodGroupEffects> createPacketCodec(PacketCodec<ByteBuf, FoodGroupKey> keyCodec) {
         return PacketCodec.tuple(
                 keyCodec.collect(PacketCodecs.toList()), FoodGroupEffects::tags,
-                PacketCodecs.optional(FoodComponent.PACKET_CODEC), FoodGroupEffects::foodComponent,
+                PacketCodecs.optional(FoodAttributes.PACKET_CODEC), FoodGroupEffects::foodAttributes,
                 Ailment.PACKET_CODEC, FoodGroupEffects::ailment,
                 FoodGroupEffects::new
         );
@@ -58,7 +58,7 @@ public record FoodGroupEffects(
 
     public static final class Builder {
         private final List<FoodGroupKey> tags = new ArrayList<>();
-        private Optional<FoodComponent> foodComponent = Optional.empty();
+        private Optional<FoodAttributes> food = Optional.empty();
         private Ailment ailment = Ailment.EMPTY;
 
         public Builder tag(Identifier tag) {
@@ -84,12 +84,12 @@ public record FoodGroupEffects(
         }
 
         public Builder food(FoodComponent food) {
-            foodComponent = Optional.of(food);
+            this.food = Optional.of(new FoodAttributes(food));
             return this;
         }
 
         public FoodGroupEffects build() {
-            return new FoodGroupEffects(tags, foodComponent, ailment);
+            return new FoodGroupEffects(tags, food, ailment);
         }
     }
 }

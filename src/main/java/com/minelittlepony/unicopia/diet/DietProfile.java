@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.component.TransientComponentMap;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -80,12 +81,33 @@ public record DietProfile(
         return stack.getComponents().get(DataComponentTypes.FOOD) == null;
     }
 
+    public boolean isEmpty() {
+        return this == EMPTY;
+    }
+
+    public boolean hasFoodAttributes(ItemStack stack, TransientComponentMap components, boolean original) {
+        if (isEmpty()) {
+            return original;
+        }
+
+        return !isInedible(stack) && (original || getFoodAttributeForNonEdibleFood(stack, components).isPresent());
+    }
+
     @Nullable
-    public FoodComponent getAdjustedFoodComponent(ItemStack stack, FoodComponent food) {
-        if (this == EMPTY) {
+    public FoodComponent getAdjustedFoodComponent(ItemStack stack, TransientComponentMap components, @Nullable FoodComponent food) {
+        if (isEmpty()) {
             return food;
         }
 
+        if (food != null && (food.nutrition() > 0 || food.saturation() > 0)) {
+            return applyFoodQualityRatio(stack, food);
+        }
+
+        return getFoodAttributeForNonEdibleFood(stack, components).map(FoodAttributes::food).orElse(food);
+    }
+
+    @Nullable
+    private FoodComponent applyFoodQualityRatio(ItemStack stack, FoodComponent food) {
         var ratios = getRatios(stack);
         if (isInedible(ratios)) {
             return null;
@@ -108,11 +130,11 @@ public record DietProfile(
         return isInedible(getRatios(stack));
     }
 
-    public boolean isInedible(Pair<Float, Float> ratios) {
+    public static boolean isInedible(Pair<Float, Float> ratios) {
         return ratios.getFirst() <= 0.01F && ratios.getSecond() <= 0.01F;
     }
 
-    public Pair<Float, Float> getRatios(ItemStack stack) {
+    private Pair<Float, Float> getRatios(ItemStack stack) {
         Optional<Multiplier> multiplier = findMultiplier(stack);
 
         float baseMultiplier = (isForaged(stack) ? foragingMultiplier() : defaultMultiplier());
@@ -158,11 +180,28 @@ public record DietProfile(
 
         if (pony != null && pony.getObservedSpecies().hasIronGut()) {
             return findEffect(stack)
-                .flatMap(Effect::foodComponent)
-                .or(() -> PonyDiets.getInstance().getEffects(stack).foodComponent());
+                .flatMap(Effect::foodAttributes)
+                .or(() -> PonyDiets.getInstance().getEffects(stack).foodAttributes())
+                .map(FoodAttributes::food);
         }
 
         return Optional.empty();
+    }
+
+    private Optional<FoodAttributes> getFoodAttributeForNonEdibleFood(ItemStack stack, TransientComponentMap components) {
+        if (isEmpty()) {
+            return Optional.empty();
+        }
+        if (components.getCarrier()
+                .flatMap(Pony::of)
+                .filter(pony -> pony.getObservedSpecies().hasIronGut())
+                .isEmpty()) {
+            return Optional.empty();
+        }
+
+        return findEffect(stack)
+                .flatMap(Effect::foodAttributes)
+                .or(() -> PonyDiets.getInstance().getEffects(stack).foodAttributes());
     }
 
     public record Multiplier(
