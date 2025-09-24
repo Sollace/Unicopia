@@ -9,8 +9,13 @@ import java.util.function.Function;
 import com.minelittlepony.api.events.PonyModelPrepareCallback;
 import com.minelittlepony.api.model.*;
 import com.minelittlepony.api.model.gear.Gear;
+import com.minelittlepony.api.pony.DefaultPonySkinHelper;
 import com.minelittlepony.api.pony.PonyData;
+import com.minelittlepony.api.pony.PonyForm;
+import com.minelittlepony.api.pony.PonyPosture;
 import com.minelittlepony.client.render.MobRenderers;
+import com.minelittlepony.client.render.entity.AquaticPlayerPonyRenderer;
+import com.minelittlepony.client.render.entity.FormChangingPlayerPonyRenderer;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
@@ -42,6 +47,14 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         INSTANCE = this;
+
+        PonyForm.register(Unicopia.id("seapony"), PonyPosture::hasSeaponyForm, (context, slimArms) -> new AquaticPlayerPonyRenderer(context, slimArms, DefaultPonySkinHelper.SEAPONY_SKIN_TYPE_ID, entity -> {
+            return EquinePredicates.PLAYER_SEAPONY.test(entity);
+        }));
+        PonyForm.register(Unicopia.id("nirik"), PonyPosture::hasNirikForm, (context, slimArms) -> new FormChangingPlayerPonyRenderer(context, slimArms, DefaultPonySkinHelper.NIRIK_SKIN_TYPE_ID, entity -> {
+            return EquinePredicates.PLAYER_KIRIN.test(entity) && EquinePredicates.RAGING.test(entity);
+        }));
+
         PonyModelPrepareCallback.EVENT.register(this::onPonyModelPrepared);
         Gear.register(() -> new BangleGear(TrinketsDelegate.MAIN_GLOVE));
         Gear.register(() -> new BangleGear(TrinketsDelegate.SECONDARY_GLOVE));
@@ -65,11 +78,11 @@ public class Main extends MineLPDelegate implements ClientModInitializer {
     private void onPonyModelPrepared(Entity entity, PonyModel<?> model, ModelAttributes.Mode mode) {
         if (hookErroring) return;
         try {
-            if (entity instanceof PlayerEntity) {
+            if (entity instanceof PlayerEntity player) {
                 if (entity instanceof Owned<?> o && o.getMaster() instanceof PlayerEntity master) {
-                    entity = master;
+                    player = master;
                 }
-                Pony pony = Pony.of((PlayerEntity)entity);
+                Pony pony = Pony.of(player);
 
                 if (pony.getMotion().isFlying()) {
                     model.getAttributes().wingAngle = MathHelper.clamp(pony.getMotion().getWingAngle() / 3F - (float)Math.PI * 0.4F, -2, 0);

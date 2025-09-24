@@ -149,8 +149,8 @@ public class ClientInteractionManager extends InteractionManager {
     @Override
     @NotNull
     public PlayerEntity createPlayer(World world, GameProfile profile) {
-        if (world instanceof ClientWorld) {
-            return new DummyClientPlayerEntity((ClientWorld)world, profile);
+        if (world instanceof ClientWorld cw) {
+            return new DummyClientPlayerEntity(cw, profile);
         }
         return super.createPlayer(world, profile);
     }
