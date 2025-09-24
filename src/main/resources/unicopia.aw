@@ -14,6 +14,7 @@ accessible          field    net/minecraft/entity/mob/CreeperEntity             
 
 accessible          field    net/minecraft/loot/LootTable                          pools          Ljava/util/List;
 mutable             field    net/minecraft/loot/LootTable                          pools          Ljava/util/List;
+mutable             field    net/minecraft/loot/LootPool                           entries        Ljava/util/List;
 
 accessible          method   net/minecraft/entity/LightningEntity                  cleanOxidation (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;)V
 

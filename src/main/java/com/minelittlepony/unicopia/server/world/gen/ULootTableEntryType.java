@@ -21,7 +21,11 @@ public interface ULootTableEntryType {
             extentionTableIds.forEach((base, extra) -> {
                 registry.getOrEmpty(base).ifPresent(table -> {
                     registry.getOrEmpty(extra).ifPresent(extraTable -> {
-                        table.pools = Stream.concat(table.pools.stream(), extraTable.pools.stream()).toList();
+                        if (table.pools.isEmpty() || extraTable.pools.size() > 1 || (base.getPath().indexOf("gameplay") == -1 && base.getPath().indexOf("archaeology") == -1)) {
+                            table.pools = Stream.concat(table.pools.stream(), extraTable.pools.stream()).toList();
+                        } else {
+                            table.pools.getLast().entries = Stream.concat(table.pools.getLast().entries.stream(), extraTable.pools.getLast().entries.stream()).toList();
+                        }
                     });
                 });
             });
