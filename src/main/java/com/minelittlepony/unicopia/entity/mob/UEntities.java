@@ -126,6 +126,7 @@ public interface UEntities {
 
         BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.ZOMBIE), SpawnGroup.MONSTER, SPECTER, 2, 1, 2);
 
+        MimicEntity.bootstrap();
         UTradeOffers.bootstrap();
         EntityBehaviour.bootstrap();
         UEntityAttributes.bootstrap();
