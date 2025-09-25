@@ -120,9 +120,6 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
         float[] collectedHealth = new float[1];
 
         List<LivingEntity> recipients = new ArrayList<>();
-        if (owner != null) {
-            recipients.add(owner);
-        }
 
         var targets = getTargets(source).toList();
         targets.forEach(e -> {
@@ -154,14 +151,11 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
             }
         });
 
-        if (owner != null) {
-            float perTargetHealth = collectedHealth[0] / recipients.size();
-            recipients.forEach(recipient -> {
-                recipient.heal(perTargetHealth);
-                source.addParticle(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, recipient, 0.2F), source.getOriginVector(), Vec3d.ZERO);
-            });
-
-        }
+        float perTargetHealth = collectedHealth[0] / recipients.size();
+        recipients.forEach(recipient -> {
+            recipient.heal(perTargetHealth);
+            source.addParticle(new FollowingParticleEffect(UParticles.HEALTH_DRAIN, recipient, 0.2F), source.getOriginVector(), Vec3d.ZERO);
+        });
     }
 
     /**
