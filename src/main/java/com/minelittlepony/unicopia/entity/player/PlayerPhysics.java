@@ -63,11 +63,13 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private static final int MAX_TICKS_TO_WEATHER_EFFECTS = 100;
     private static final int IDLE_FLAP_INTERVAL = 20;
     private static final int GLIDING_SOUND_INTERVAL = 200;
+    private static final int LANDING_COLLISION_TIME = 3;
 
     private int ticksInAir;
     private int ticksToGlide;
     private int ticksDiving;
     private int ticksFlyingLow;
+    private int ticksColliding;
 
     private float thrustScale = 0;
     private float prevThrustScale;
@@ -311,22 +313,30 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 entity.getAbilities().flying = false;
             }
 
-            if ((entity.isOnGround() && entity.isSneaking())
+            if (entity.horizontalCollision || entity.verticalCollision || entity.isOnGround()) {
+                ticksColliding++;
+            } else {
+                ticksColliding = 0;
+            }
+
+            if ((entity.isOnGround() && entity.isSneaking() && ticksColliding > LANDING_COLLISION_TIME)
                     || (entity.isTouchingWater() && ticksInAir > 20)
-                    || entity.horizontalCollision
-                    || (entity.verticalCollision && (pony.getObservedSpecies() != Race.BAT || velocity.y < 0))) {
+                    || (entity.horizontalCollision)
+                    || (entity.verticalCollision && ticksColliding > LANDING_COLLISION_TIME && (pony.getObservedSpecies() != Race.BAT || velocity.y < 0))) {
 
                 if (entity.getAbilities().flying && entity.horizontalCollision) {
                     handleWallCollission(velocity);
                     return;
                 }
 
-                cancelFlight(false);
+                if (ticksColliding > LANDING_COLLISION_TIME) {
+                    cancelFlight(false);
+                }
             }
         }
 
         if (isGravityNegative()) {
-            if (entity.isOnGround() || (!creative && entity.horizontalCollision)) {
+            if (entity.isOnGround() || (!creative && entity.horizontalCollision && ticksColliding > LANDING_COLLISION_TIME)) {
                 cancelFlight(false);
             }
         }
@@ -669,7 +679,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         }
 
         entity.setVelocity(velocity.toImmutable());
-        cancelFlight(false);
+        if (ticksColliding > LANDING_COLLISION_TIME) {
+            cancelFlight(false);
+        }
     }
 
     private void moveFlying(MutableVector velocity) {
