@@ -621,7 +621,7 @@ public class AirBalloonEntity extends MobEntity implements MultiBoundingBoxEntit
 
     protected Box getInteriorBoundingBox() {
         Box box = MultiBox.unbox(getBoundingBox());
-        return box.withMinY(box.minY - 0.05).contract(0.15, 0, 0.15);
+        return box.withMinY(box.minY - 0.5).contract(0.15, 0, 0.15);
     }
 
     protected Box getBalloonBoundingBox() {
