@@ -280,6 +280,16 @@ public class MimicEntity extends PathAwareEntity {
             if (InventoryUtil.contentEquals(inventory, chestData)) {
                 return;
             }
+            for (int i = 0; i < inventory.size(); i++) {
+                ItemStack referenceStack = chestData.getStack(i);
+                ItemStack heldStack = inventory.getStack(i);
+                boolean sameStack = ItemStack.areItemsAndComponentsEqual(referenceStack, heldStack);
+                int dropCount = sameStack ? Math.max(0, heldStack.getCount() - referenceStack.getCount()) : heldStack.getCount();
+                if (dropCount > 0) {
+                    dropStack(heldStack.split(dropCount));
+                }
+            }
+
             observingPlayers.clear();
             playChompAnimation();
             setTarget(player);
