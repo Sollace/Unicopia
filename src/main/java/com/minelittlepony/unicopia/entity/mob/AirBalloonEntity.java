@@ -1,14 +1,11 @@
 package com.minelittlepony.unicopia.entity.mob;
 
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.FurnaceBlockEntity;
 import net.minecraft.entity.*;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.*;
 import net.minecraft.entity.data.DataTracker.Builder;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.Item;
@@ -49,13 +46,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
-import com.minelittlepony.unicopia.EquineContext;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.Living;
-import com.minelittlepony.unicopia.entity.MagicImmune;
-import com.minelittlepony.unicopia.entity.collision.MultiBoundingBoxEntity;
 import com.minelittlepony.unicopia.entity.collision.MultiBox;
 import com.minelittlepony.unicopia.item.BasketItem;
 import com.minelittlepony.unicopia.item.UItems;
@@ -68,12 +61,15 @@ import com.terraformersmc.terraform.boat.api.TerraformBoatType;
 
 import io.netty.buffer.ByteBuf;
 
-public class AirBalloonEntity extends MobEntity implements MultiBoundingBoxEntity, MagicImmune, EquineContext {
+public class AirBalloonEntity extends FlyingVehicleEntity {
     private static final TrackedData<Boolean> ASCENDING = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> BOOSTING = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> INFLATION = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<String> BASKET_TYPE = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.STRING);
     private static final TrackedData<Integer> BALLOON_DESIGN = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
+    private static final int BASKET_GRID_SIZE = 2;
+    private static final int TOP_GRID_SIZE = 4;
 
     public static final byte STATUS_BURNER_INTERACT = (byte)105;
 
@@ -111,6 +107,25 @@ public class AirBalloonEntity extends MobEntity implements MultiBoundingBoxEntit
         builder.add(INFLATION, 0);
         builder.add(BASKET_TYPE, BasketType.DEFAULT.id().toString());
         builder.add(BALLOON_DESIGN, 0);
+    }
+
+    @Override
+    protected int getSeatCount() {
+        return (BASKET_GRID_SIZE * BASKET_GRID_SIZE) + (TOP_GRID_SIZE * TOP_GRID_SIZE);
+    }
+
+    @Override
+    protected Vec3d getSeatPosition(int seatIndex) {
+        double y = 0.2;
+        double alignment = -0.5;
+        int gridSize = BASKET_GRID_SIZE;
+        if (seatIndex >= 4) {
+            seatIndex -= 4;
+            y = 11.125;
+            alignment = -1.75;
+            gridSize = TOP_GRID_SIZE;
+        }
+        return new Vec3d(alignment + seatIndex % gridSize, y, alignment + seatIndex / gridSize);
     }
 
     public BasketType getBasketType() {
@@ -187,12 +202,6 @@ public class AirBalloonEntity extends MobEntity implements MultiBoundingBoxEntit
 
     public float getZVelocity(float tickDelta) {
         return (float)MathHelper.lerp(tickDelta, prevZDelta, zDelta);
-    }
-
-    @Override
-    @Nullable
-    protected SoundEvent getHurtSound(DamageSource source) {
-        return null;
     }
 
     @Override
@@ -329,28 +338,6 @@ public class AirBalloonEntity extends MobEntity implements MultiBoundingBoxEntit
     }
 
     @Override
-    public boolean damage(DamageSource source, float amount) {
-        if (source.getAttacker() instanceof PlayerEntity player && player.getAbilities().creativeMode) {
-            dropInventory();
-            remove(RemovalReason.KILLED);
-            return true;
-        }
-        if (super.damage(source, amount)) {
-            hurtTime = 0;
-            maxHurtTime = 0;
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    protected void updatePostDeath() {
-        if (!getWorld().isClient() && !isRemoved()) {
-            remove(Entity.RemovalReason.KILLED);
-        }
-    }
-
-    @Override
     public ActionResult interactAt(PlayerEntity player, Vec3d relativePositionOffset, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
@@ -403,6 +390,16 @@ public class AirBalloonEntity extends MobEntity implements MultiBoundingBoxEntit
                     getSandbag(sandbagId).setPulling();
 
                     return ActionResult.SUCCESS;
+                }
+
+                if (stack.isEmpty()) {
+                    if (MultiBox.unbox(getBoundingBox()).expand(0.5, 1, 0.5).contains(absHitPos)) {
+                        return player.startRiding(this) ? ActionResult.SUCCESS : ActionResult.FAIL;
+                    }
+                    Box balloonBox = getBalloonBoundingBox();
+                    if (balloonBox.expand(0.5).withMinY(balloonBox.maxY - 0.25).contains(absHitPos)) {
+                        return player.startRiding(this) ? ActionResult.SUCCESS : ActionResult.FAIL;
+                    }
                 }
             }
         }
@@ -497,11 +494,6 @@ public class AirBalloonEntity extends MobEntity implements MultiBoundingBoxEntit
     }
 
     @Override
-    public boolean isCollidable() {
-        return true;
-    }
-
-    @Override
     public void pushAwayFrom(Entity entity) {
         if (entity instanceof AirBalloonEntity) {
             super.pushAwayFrom(entity);
@@ -513,16 +505,6 @@ public class AirBalloonEntity extends MobEntity implements MultiBoundingBoxEntit
         if (entity instanceof AirBalloonEntity) {
             super.pushAway(entity);
         }
-    }
-
-    @Override
-    protected Entity.MoveEffect getMoveEffect() {
-        return Entity.MoveEffect.EVENTS;
-    }
-
-    @Override
-    public Race getSpecies() {
-        return Race.UNSET;
     }
 
     @Override
@@ -580,11 +562,6 @@ public class AirBalloonEntity extends MobEntity implements MultiBoundingBoxEntit
                 }
             }
         }
-    }
-
-    @Override
-    public boolean isClimbing() {
-        return false;
     }
 
     @Override
@@ -755,10 +732,6 @@ public class AirBalloonEntity extends MobEntity implements MultiBoundingBoxEntit
         return boundingBoxes.collect(Collectors.toMap(Function.identity(), box -> {
             return getWorld().getOtherEntities(this, box.expand(0.001).stretch(getVelocity().multiply(1)), RIDER_PREDICATE).stream().distinct().toList();
         }));
-    }
-
-    @Override
-    protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
     }
 
     @Override
