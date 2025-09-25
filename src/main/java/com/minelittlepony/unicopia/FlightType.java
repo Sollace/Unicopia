@@ -39,11 +39,11 @@ public enum FlightType implements StringIdentifiable {
         return this != UNSET;
     }
 
-    public boolean canFly() {
-        return !isGrounded();
+    public boolean canFly(PlayerEntity player) {
+        return !isGrounded() || player.getAbilities().allowFlying;
     }
 
-    public boolean canFlyCreative(PlayerEntity player) {
+    public static boolean canFlyCreative(PlayerEntity player) {
         return player.isCreative() || player.isSpectator();
     }
 
