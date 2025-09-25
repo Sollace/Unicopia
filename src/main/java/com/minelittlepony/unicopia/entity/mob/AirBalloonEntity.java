@@ -23,6 +23,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -54,7 +55,6 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.MagicImmune;
-import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
 import com.minelittlepony.unicopia.entity.collision.MultiBoundingBoxEntity;
 import com.minelittlepony.unicopia.entity.collision.MultiBox;
 import com.minelittlepony.unicopia.item.BasketItem;
@@ -68,7 +68,7 @@ import com.terraformersmc.terraform.boat.api.TerraformBoatType;
 
 import io.netty.buffer.ByteBuf;
 
-public class AirBalloonEntity extends MobEntity implements EntityCollisions.ComplexCollidable, MultiBoundingBoxEntity, MagicImmune, EquineContext {
+public class AirBalloonEntity extends MobEntity implements MultiBoundingBoxEntity, MagicImmune, EquineContext {
     private static final TrackedData<Boolean> ASCENDING = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> BOOSTING = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> INFLATION = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -351,12 +351,12 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     }
 
     @Override
-    public ActionResult interactAt(PlayerEntity player, Vec3d hitPos, Hand hand) {
+    public ActionResult interactAt(PlayerEntity player, Vec3d relativePositionOffset, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
         if (hasBalloon() && hasBurner()) {
 
-            if (getBurnerBoundingBox().expand(0.7).contains(getPos().add(hitPos))) {
+            if (getBurnerBoundingBox().expand(0.7).contains(getPos().add(relativePositionOffset))) {
                 if (stack.isOf(Items.FLINT_AND_STEEL)) {
                     setAscending(!isAscending());
                     if (isAscending()) {
@@ -383,25 +383,24 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             }
 
             if (getInflation(1) >= 1) {
-                int xPush = (int)Math.signum(hitPos.x);
-                int zPush = (int)Math.signum(hitPos.z);
+                int xPush = (int)Math.signum(relativePositionOffset.x);
+                int zPush = (int)Math.signum(relativePositionOffset.z);
 
-                Vec3d absHitPos = getPos().add(hitPos);
+                Vec3d absHitPos = getPos().add(relativePositionOffset);
 
                 if (stack.isEmpty() && MultiBox.unbox(getBoundingBox()).expand(0.5, 1, 0.5).offset(2 * xPush, 3, 2 * zPush).contains(absHitPos)) {
                     if (!getWorld().isClient) {
                         manualVelocity = manualVelocity.add(1.7 * xPush, 0, 1.7 * zPush);
                     }
-                    getWorld().playSound(null, getX() + hitPos.getX(), getY() + hitPos.getY(), getZ() + hitPos.getZ(), USounds.Vanilla.ENTITY_LEASH_KNOT_PLACE, getSoundCategory(), 1, 1);
+                    getWorld().playSound(null, getX() + relativePositionOffset.getX(), getY() + relativePositionOffset.getY(), getZ() + relativePositionOffset.getZ(), USounds.Vanilla.ENTITY_LEASH_KNOT_PLACE, getSoundCategory(), 1, 1);
                     if (!player.isSneaky()) {
                         getWorld().emitGameEvent(player, GameEvent.ENTITY_INTERACT, getBlockPos());
                     }
 
-                    Vec3d interactCoordinate = new Vec3d(xPush, 0, zPush)
-                            .rotateY((180 + getHorizontalFacing().asRotation()) * MathHelper.RADIANS_PER_DEGREE)
-                    ;
+                    int sandbagId = MathHelper.clamp(-xPush, 0, 1) + MathHelper.clamp(-zPush, 0, 1) * 2;
+                    player.sendMessage(Text.literal(sandbagId + ""));
 
-                    getSandbag(MathHelper.clamp((int)interactCoordinate.getX(), 0, 1) + MathHelper.clamp((int)interactCoordinate.getZ(), 0, 1) * 2).setPulling();
+                    getSandbag(sandbagId).setPulling();
 
                     return ActionResult.SUCCESS;
                 }

@@ -146,6 +146,10 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntity> {
 
         root.yaw = MathHelper.PI;
 
+        if (isSandbags) {
+            root.yaw -= entity.getHorizontalFacing().asRotation() * MathHelper.RADIANS_PER_DEGREE;
+        }
+
         float burnerWiggleProgress = entity.getBurner().getPullProgress(tickDelta);
 
         if (isBurner || isBalloon || isSandbags) {

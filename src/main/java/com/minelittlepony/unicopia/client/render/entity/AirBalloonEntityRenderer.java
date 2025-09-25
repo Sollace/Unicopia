@@ -94,10 +94,6 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
                 float limbAngle, float limbDistance, float tickDelta, float animationProgress, float yaw, float pitch) {
             if (visibilityTest.test(entity)) {
                 Identifier texture = textureFunc.apply(entity);
-                var model = this.model;
-                if (texture.getPath().indexOf("sandbags") != -1) {
-                    model = new AirBalloonEntityModel(AirBalloonEntityModel.getSandbagsModelData().createModel());
-                }
                 render(getModel(), model, texture, matrices, vertices, lightFunc.apply(light, entity), entity, limbAngle, limbDistance, 0, yaw, pitch, tickDelta, Colors.WHITE);
             }
         }
