@@ -312,7 +312,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             }
 
             if ((entity.isOnGround() && entity.isSneaking())
-                    || entity.isTouchingWater()
+                    || (entity.isTouchingWater() && ticksInAir > 20)
                     || entity.horizontalCollision
                     || (entity.verticalCollision && (pony.getObservedSpecies() != Race.BAT || velocity.y < 0))) {
 
