@@ -70,6 +70,7 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
 
         addZapWoodset();
         addPalmWoodset();
+        addGoldenOakWoodset();
         addCloudBlocksets();
         addChitinBlocksets();
         addFruitTrees();
@@ -138,15 +139,10 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(BlockTags.LEAVES).add(leaves);
         getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(leaves);
 
-        Block[] burnableLogs = { UBlocks.GOLDEN_OAK_LOG };
-        getOrCreateTagBuilder(BlockTags.LOGS).add(burnableLogs);
-        getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN).add(burnableLogs);
-
         var saplings = Tree.REGISTRY.stream().flatMap(tree -> tree.sapling().stream()).toArray(Block[]::new);
 
         getOrCreateTagBuilder(BlockTags.SAPLINGS).add(saplings);
         getOrCreateTagBuilder(BlockTags.MAINTAINS_FARMLAND).add(saplings);
-        getOrCreateTagBuilder(BlockTags.GUARDED_BY_PIGLINS).add(UBlocks.GOLDEN_OAK_LEAVES, UBlocks.GOLDEN_OAK_LOG, UBlocks.GOLDEN_OAK_SPROUT, UBlocks.GOLDEN_APPLE);
     }
 
     private void addZapWoodset() {
@@ -200,6 +196,17 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(BlockTags.WOODEN_STAIRS).add(UBlocks.PALM_STAIRS);
         getOrCreateTagBuilder(BlockTags.TRAPDOORS).add(UBlocks.PALM_TRAPDOOR);
         getOrCreateTagBuilder(BlockTags.WOODEN_TRAPDOORS).add(UBlocks.PALM_TRAPDOOR);
+    }
+
+    private void addGoldenOakWoodset() {
+        getOrCreateTagBuilder(BlockTags.LEAVES).add(UBlocks.GOLDEN_OAK_LEAVES);
+        getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(UBlocks.GOLDEN_OAK_LEAVES);
+        getOrCreateTagBuilder(UTags.Blocks.GOLDEN_OAK_LOGS).add(UBlocks.GOLDEN_OAK_LOG, UBlocks.GOLDEN_OAK_WOOD, UBlocks.STRIPPED_GOLDEN_OAK_LOG, UBlocks.STRIPPED_GOLDEN_OAK_WOOD);
+        getOrCreateTagBuilder(BlockTags.LOGS).forceAddTag(UTags.Blocks.GOLDEN_OAK_LOGS);
+        getOrCreateTagBuilder(BlockTags.PLANKS).add(UBlocks.GOLDEN_OAK_PLANKS);
+        getOrCreateTagBuilder(BlockTags.GUARDED_BY_PIGLINS)
+            .forceAddTag(UTags.Blocks.GOLDEN_OAK_LOGS)
+            .add(UBlocks.GOLDEN_OAK_PLANKS, UBlocks.GOLDEN_OAK_LEAVES, UBlocks.GOLDEN_OAK_SPROUT, UBlocks.GOLDEN_APPLE);
     }
 
     private void addCloudBlocksets() {

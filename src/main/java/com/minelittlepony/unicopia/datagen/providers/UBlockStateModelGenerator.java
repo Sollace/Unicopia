@@ -139,7 +139,9 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
 
         // golden oak wood
         registerSimpleCubeAll(UBlocks.GOLDEN_OAK_LEAVES);
-        registerLog(UBlocks.GOLDEN_OAK_LOG).log(UBlocks.GOLDEN_OAK_LOG);
+        registerLog(UBlocks.GOLDEN_OAK_LOG).log(UBlocks.GOLDEN_OAK_LOG).wood(UBlocks.GOLDEN_OAK_WOOD);
+        registerLog(UBlocks.STRIPPED_GOLDEN_OAK_LOG).log(UBlocks.STRIPPED_GOLDEN_OAK_LOG).wood(UBlocks.STRIPPED_GOLDEN_OAK_WOOD);
+        registerCubeAllModelTexturePool(UBlocks.GOLDEN_OAK_PLANKS).family(UBlockFamilies.GOLDEN_OAK);
 
         // plants
         Tree.REGISTRY.stream().filter(tree -> tree.sapling().isPresent()).forEach(tree -> registerFlowerPotPlant(tree.sapling().get(), tree.pot().get(), TintType.NOT_TINTED));

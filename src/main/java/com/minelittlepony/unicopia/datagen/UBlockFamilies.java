@@ -11,6 +11,12 @@ public interface UBlockFamilies {
             .door(UBlocks.PALM_DOOR).trapdoor(UBlocks.PALM_TRAPDOOR)
             .group("wooden").unlockCriterionName("has_planks")
             .build();
+    BlockFamily GOLDEN_OAK = new BlockFamily.Builder(UBlocks.GOLDEN_OAK_PLANKS)
+            //.slab(UBlocks.PALM_SLAB).stairs(UBlocks.PALM_STAIRS).fence(UBlocks.PALM_FENCE).fenceGate(UBlocks.PALM_FENCE_GATE)
+            //.button(UBlocks.PALM_BUTTON).pressurePlate(UBlocks.PALM_PRESSURE_PLATE).sign(UBlocks.PALM_SIGN, UBlocks.PALM_WALL_SIGN)
+            //.door(UBlocks.PALM_DOOR).trapdoor(UBlocks.PALM_TRAPDOOR)
+            .group("wooden").unlockCriterionName("has_planks")
+            .build();
     BlockFamily ZAP = new BlockFamily.Builder(UBlocks.ZAP_PLANKS)
             .slab(UBlocks.ZAP_SLAB).stairs(UBlocks.ZAP_STAIRS).fence(UBlocks.ZAP_FENCE).fenceGate(UBlocks.ZAP_FENCE_GATE)
             .group("wooden").unlockCriterionName("has_planks")

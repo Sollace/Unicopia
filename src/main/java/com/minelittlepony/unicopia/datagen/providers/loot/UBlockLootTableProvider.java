@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.datagen.providers.loot;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.EdibleBlock;
 import com.minelittlepony.unicopia.block.EnchantedFruitBlock;
@@ -10,6 +12,7 @@ import com.minelittlepony.unicopia.block.PileBlock;
 import com.minelittlepony.unicopia.block.SegmentedCropBlock;
 import com.minelittlepony.unicopia.block.ShellsBlock;
 import com.minelittlepony.unicopia.block.SlimePustuleBlock;
+import com.minelittlepony.unicopia.block.StrippingLootable;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.datagen.providers.UModelProvider;
 import com.minelittlepony.unicopia.item.UItems;
@@ -84,7 +87,8 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
             UBlocks.CLOUD_BRICK_STAIRS, UBlocks.CLOUD_BRICKS,
             UBlocks.CLOUD_PLANK_STAIRS, UBlocks.CLOUD_PLANKS,
             UBlocks.CURING_JOKE,
-            UBlocks.GOLDEN_OAK_LOG,
+            UBlocks.GOLDEN_OAK_LOG, UBlocks.GOLDEN_OAK_PLANKS, UBlocks.GOLDEN_OAK_WOOD,
+            UBlocks.STRIPPED_GOLDEN_OAK_LOG, UBlocks.STRIPPED_GOLDEN_OAK_WOOD,
             UBlocks.HIVE,
 
             UBlocks.PALM_BUTTON, UBlocks.PALM_FENCE_GATE, UBlocks.PALM_FENCE, UBlocks.PALM_LOG, UBlocks.PALM_PLANKS,
@@ -236,6 +240,13 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
 
         farmersDelightGenerator.addDrop(Unicopia.id("rice_block"), b -> UExternalBlockLootTableProvider.edibleBlockDrops(b, Identifier.of("farmersdelight", "rice_panicle")));
         farmersDelightGenerator.addDrop(Unicopia.id("straw_block"), b -> UExternalBlockLootTableProvider.edibleBlockDrops(b, Identifier.of("farmersdelight", "straw")));
+
+        addStrippingDrops(UBlocks.GOLDEN_OAK_LOG, b -> simpleDrops(b, Items.GOLD_NUGGET, 4));
+        addStrippingDrops(UBlocks.GOLDEN_OAK_WOOD, b -> simpleDrops(b, Items.GOLD_NUGGET, 6));
+    }
+
+    private <T extends Block & StrippingLootable> void addStrippingDrops(T block, Function<T, LootTable.Builder> drops) {
+        this.lootTables.put(block.getStrippingLootTableKey(), drops.apply(block));
     }
 
     private void addTallCropDrops(SegmentedCropBlock baseCrop, ItemConvertible crop) {
@@ -254,6 +265,13 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
                     .rolls(exactly(1))
                     .with(applyStateCondition(stage, stage.getAgeProperty(), stage.getMaxAge(), ItemEntry.builder(crop))))));
         }
+    }
+
+    private LootTable.Builder simpleDrops(Block block, ItemConvertible drop, int count) {
+        return LootTable.builder()
+                .pool(applyExplosionDecay(block, LootPool.builder()
+                    .rolls(exactly(1))
+                    .with(item(drop, between(0, count)))));
     }
 
     private LootTable.Builder decomposingSlabDrops(Block slab, ItemConvertible drop, int count) {

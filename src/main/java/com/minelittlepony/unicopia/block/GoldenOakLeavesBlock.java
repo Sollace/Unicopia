@@ -11,8 +11,12 @@ import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.ParticleUtil;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.World;
 
 public class GoldenOakLeavesBlock extends FruitBearingBlock {
     private static final MapCodec<GoldenOakLeavesBlock> CODEC = RecordCodecBuilder.<GoldenOakLeavesBlock>mapCodec(instance -> instance.group(
@@ -29,6 +33,14 @@ public class GoldenOakLeavesBlock extends FruitBearingBlock {
     @Override
     public MapCodec<? extends GoldenOakLeavesBlock> getCodec() {
         return CODEC;
+    }
+
+    @Override
+    public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
+        super.randomDisplayTick(state, world, pos, random);
+        if (random.nextInt(15) == 0) {
+            ParticleUtil.spawnParticlesAround(world, pos, 1 + random.nextInt(4), ParticleTypes.ELECTRIC_SPARK);
+        }
     }
 
     @Override

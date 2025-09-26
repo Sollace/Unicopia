@@ -172,6 +172,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         copy(UTags.Blocks.ZAP_LOGS, UTags.Items.ZAP_LOGS);
         copy(UTags.Blocks.WAXED_ZAP_LOGS, UTags.Items.WAXED_ZAP_LOGS);
         copy(UTags.Blocks.PALM_LOGS, UTags.Items.PALM_LOGS);
+        copy(UTags.Blocks.GOLDEN_OAK_LOGS, UTags.Items.GOLDEN_OAK_LOGS);
         copy(UTags.Blocks.CLOUD_BEDS, UTags.Items.CLOUD_BEDS);
         copy(UTags.Blocks.CLOUD_SLABS, UTags.Items.CLOUD_SLABS);
         copy(UTags.Blocks.CLOUD_STAIRS, UTags.Items.CLOUD_STAIRS);

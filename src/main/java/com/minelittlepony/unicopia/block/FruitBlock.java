@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.block;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.ability.EarthPonyKickAbility.Buckable;
 import com.mojang.datafixers.util.Function5;
 import com.mojang.serialization.Codec;
@@ -11,6 +13,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
@@ -29,6 +32,9 @@ public class FruitBlock extends Block implements Buckable {
     protected final Direction attachmentFace;
     protected final Block stem;
     protected final VoxelShape shape;
+
+    @Nullable
+    private Item cachedItem;
 
     public static <T extends FruitBlock> MapCodec<T> createCodec(Function5<Direction, Block, VoxelShape, Boolean, Settings, T> constructor) {
         return RecordCodecBuilder.mapCodec(instance -> instance.group(
@@ -68,6 +74,15 @@ public class FruitBlock extends Block implements Buckable {
         if (flammable) {
             FlammableBlockRegistry.getDefaultInstance().add(this, 20, 50);
         }
+    }
+
+    @Override
+    public Item asItem() {
+        if (cachedItem == null) {
+            cachedItem = Registries.ITEM.get(Registries.BLOCK.getId(this));
+        }
+
+        return cachedItem;
     }
 
     @Override

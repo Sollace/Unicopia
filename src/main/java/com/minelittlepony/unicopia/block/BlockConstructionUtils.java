@@ -28,16 +28,53 @@ public interface BlockConstructionUtils {
         return false;
     }
 
+    static StrippablePillarBlock createMetallicLogBlock(MapColor topMapColor, MapColor sideMapColor) {
+        return new StrippablePillarBlock(AbstractBlock.Settings.create()
+                .mapColor(state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor)
+                .instrument(NoteBlockInstrument.BELL)
+                .strength(3.0f)
+                .sounds(BlockSoundGroup.METAL));
+    }
+
     static PillarBlock createLogBlock(MapColor topMapColor, MapColor sideMapColor) {
-        return new PillarBlock(AbstractBlock.Settings.create().mapColor(state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor).instrument(NoteBlockInstrument.BASS).strength(2.0f).sounds(BlockSoundGroup.WOOD).burnable());
+        return new PillarBlock(AbstractBlock.Settings.create()
+                .mapColor(state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMapColor : sideMapColor)
+                .instrument(NoteBlockInstrument.BASS)
+                .strength(2.0f)
+                .sounds(BlockSoundGroup.WOOD)
+                .burnable());
     }
 
     static PillarBlock createWoodBlock(MapColor mapColor) {
-        return new PillarBlock(AbstractBlock.Settings.create().mapColor(mapColor).instrument(NoteBlockInstrument.BASS).strength(2.0f).sounds(BlockSoundGroup.WOOD).burnable());
+        return new PillarBlock(AbstractBlock.Settings.create()
+                .mapColor(mapColor)
+                .instrument(NoteBlockInstrument.BASS)
+                .strength(2.0f)
+                .sounds(BlockSoundGroup.WOOD)
+                .burnable());
+    }
+
+    static StrippablePillarBlock createMetallicWoodBlock(MapColor mapColor) {
+        return new StrippablePillarBlock(AbstractBlock.Settings.create()
+                .mapColor(mapColor)
+                .instrument(NoteBlockInstrument.BELL)
+                .strength(3.0f)
+                .sounds(BlockSoundGroup.METAL));
     }
 
     static LeavesBlock createLeavesBlock(BlockSoundGroup soundGroup) {
-        return new LeavesBlock(AbstractBlock.Settings.create().mapColor(MapColor.DARK_GREEN).strength(0.2f).ticksRandomly().sounds(soundGroup).nonOpaque().allowsSpawning(BlockConstructionUtils::canSpawnOnLeaves).suffocates(BlockConstructionUtils::never).blockVision(BlockConstructionUtils::never).burnable().pistonBehavior(PistonBehavior.DESTROY).solidBlock(BlockConstructionUtils::never));
+        return new LeavesBlock(AbstractBlock.Settings.create()
+                .mapColor(MapColor.DARK_GREEN)
+                .strength(0.2f)
+                .ticksRandomly()
+                .sounds(soundGroup)
+                .nonOpaque()
+                .allowsSpawning(BlockConstructionUtils::canSpawnOnLeaves)
+                .suffocates(BlockConstructionUtils::never)
+                .blockVision(BlockConstructionUtils::never)
+                .burnable()
+                .pistonBehavior(PistonBehavior.DESTROY)
+                .solidBlock(BlockConstructionUtils::never));
     }
 
     static Boolean canSpawnOnLeaves(BlockState state, BlockView world, BlockPos pos, EntityType<?> type) {

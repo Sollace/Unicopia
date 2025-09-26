@@ -191,6 +191,13 @@ public class URecipeProvider extends FabricRecipeProvider {
         generateFamily(exporter, UBlockFamilies.WAXED_ZAP, FeatureSet.empty());
         offerBarkBlockRecipe(exporter, UBlocks.WAXED_STRIPPED_ZAP_WOOD, UBlocks.WAXED_STRIPPED_ZAP_LOG);
 
+        // golden oak wood
+        offerPlanksRecipe(exporter, UBlocks.GOLDEN_OAK_PLANKS, UTags.Items.GOLDEN_OAK_LOGS, 4);
+        offerBarkBlockRecipe(exporter, UBlocks.GOLDEN_OAK_WOOD, UBlocks.GOLDEN_OAK_LOG);
+        offerBarkBlockRecipe(exporter, UBlocks.STRIPPED_GOLDEN_OAK_WOOD, UBlocks.STRIPPED_GOLDEN_OAK_LOG);
+
+        offerSmelting(exporter, List.of(UBlocks.GOLDEN_OAK_LOG, UBlocks.GOLDEN_OAK_WOOD, UBlocks.STRIPPED_GOLDEN_OAK_LOG, UBlocks.STRIPPED_GOLDEN_OAK_WOOD), RecipeCategory.FOOD, Items.GOLD_NUGGET, 20, 200, "gold_nugget");
+
         offerWaxingRecipes(exporter);
 
         // other doors
@@ -736,6 +743,16 @@ public class URecipeProvider extends FabricRecipeProvider {
                 .input(unstripped).criterion(hasItem(unstripped), conditionsFromItem(unstripped))
                 .sound(SoundEvents.ITEM_AXE_STRIP)
                 .result(Identifier.of("farmersdelight:tree_bark"))
+                .offerTo(exporter, convertBetween(stripped, unstripped));
+        });
+        Map.of(
+                UBlocks.GOLDEN_OAK_LOG, UBlocks.STRIPPED_GOLDEN_OAK_LOG,
+                UBlocks.GOLDEN_OAK_WOOD, UBlocks.STRIPPED_GOLDEN_OAK_WOOD
+        ).forEach((unstripped, stripped) -> {
+            CuttingBoardRecipeJsonBuilder.create(stripped, "axe_strip")
+                .input(unstripped).criterion(hasItem(unstripped), conditionsFromItem(unstripped))
+                .sound(SoundEvents.ITEM_AXE_STRIP)
+                .result(Items.GOLD_NUGGET, 8)
                 .offerTo(exporter, convertBetween(stripped, unstripped));
         });
     }

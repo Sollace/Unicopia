@@ -172,11 +172,16 @@ public interface UBlocks {
             MapColor.GOLD.color,
             () -> UBlocks.GOLDEN_APPLE,
             () -> Items.GOLDEN_APPLE.getDefaultStack(),
-            Block.Settings.copy(Blocks.OAK_LEAVES)
+            Block.Settings.copy(Blocks.OAK_LEAVES).sounds(BlockSoundGroup.AMETHYST_CLUSTER)
     ), ItemGroups.NATURAL);
     Block GOLDEN_APPLE = register("golden_apple", new EnchantedFruitBlock(Direction.DOWN, GOLDEN_OAK_LEAVES, FruitBlock.DEFAULT_SHAPE, false, Settings.create().mapColor(MapColor.GOLD)));
     Block GOLDEN_OAK_SPROUT = register("golden_oak_sprout", new SproutBlock(0xE5FFCC88, () -> UItems.GOLDEN_OAK_SEEDS, () -> UTreeGen.GOLDEN_APPLE_TREE.sapling().map(Block::getDefaultState).get(), SproutBlock.settings()));
-    Block GOLDEN_OAK_LOG = register("golden_oak_log", BlockConstructionUtils.createLogBlock(MapColor.OFF_WHITE, MapColor.GOLD), ItemGroups.BUILDING_BLOCKS);
+    StrippablePillarBlock GOLDEN_OAK_LOG = register("golden_oak_log", BlockConstructionUtils.createMetallicLogBlock(MapColor.OFF_WHITE, MapColor.GOLD), ItemGroups.BUILDING_BLOCKS);
+    StrippablePillarBlock GOLDEN_OAK_WOOD = register("golden_oak_wood", BlockConstructionUtils.createMetallicWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
+    Block GOLDEN_OAK_PLANKS = register("golden_oak_planks", new Block(Settings.create().mapColor(MapColor.GOLD).strength(3, 4).sounds(BlockSoundGroup.METAL).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+
+    StrippablePillarBlock STRIPPED_GOLDEN_OAK_LOG = register("stripped_golden_oak_log", BlockConstructionUtils.createMetallicLogBlock(MapColor.OFF_WHITE, MapColor.GOLD), ItemGroups.BUILDING_BLOCKS);
+    StrippablePillarBlock STRIPPED_GOLDEN_OAK_WOOD = register("stripped_golden_oak_wood", BlockConstructionUtils.createMetallicWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
 
     SegmentedCropBlock OATS = register("oats", SegmentedCropBlock.create(11, 5, () -> UItems.OAT_SEEDS, null, null, AbstractBlock.Settings.copy(Blocks.WHEAT)));
     SegmentedCropBlock OATS_STEM = register("oats_stem", OATS.createNext(5));
@@ -300,8 +305,10 @@ public interface UBlocks {
 
         StrippableBlockRegistry.register(ZAP_LOG, STRIPPED_ZAP_LOG);
         StrippableBlockRegistry.register(PALM_LOG, STRIPPED_PALM_LOG);
+        StrippableBlockRegistry.register(GOLDEN_OAK_LOG, STRIPPED_GOLDEN_OAK_LOG);
         StrippableBlockRegistry.register(ZAP_WOOD, STRIPPED_ZAP_WOOD);
         StrippableBlockRegistry.register(PALM_WOOD, STRIPPED_PALM_WOOD);
+        StrippableBlockRegistry.register(GOLDEN_OAK_WOOD, STRIPPED_GOLDEN_OAK_WOOD);
         OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_LOG, WAXED_ZAP_LOG);
         OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_WOOD, WAXED_ZAP_WOOD);
         OxidizableBlocksRegistry.registerWaxableBlockPair(STRIPPED_ZAP_LOG, WAXED_STRIPPED_ZAP_LOG);

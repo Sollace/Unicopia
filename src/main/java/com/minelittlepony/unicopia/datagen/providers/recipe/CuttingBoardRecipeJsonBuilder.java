@@ -64,13 +64,21 @@ public class CuttingBoardRecipeJsonBuilder {
         return this;
     }
 
-    public CuttingBoardRecipeJsonBuilder result(ItemConvertible result) {
-        results.add(new Result(Registries.ITEM.getId(result.asItem()), 1));
+    public CuttingBoardRecipeJsonBuilder result(ItemConvertible result, int count) {
+        results.add(new Result(Registries.ITEM.getId(result.asItem()), count));
         return this;
     }
 
+    public CuttingBoardRecipeJsonBuilder result(ItemConvertible result) {
+        return result(result, 1);
+    }
+
     public CuttingBoardRecipeJsonBuilder result(Identifier result) {
-        results.add(new Result(result, 1));
+        return result(result, 1);
+    }
+
+    public CuttingBoardRecipeJsonBuilder result(Identifier result, int count) {
+        results.add(new Result(result, count));
         return this;
     }
 

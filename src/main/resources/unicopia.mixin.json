@@ -8,6 +8,7 @@
   "mixins": [
     "MixinAbstractDecorationEntity",
     "MixinAbstractSkeletonEntity",
+    "MixinAxeItem",
     "MixinBlazeEntity",
     "MixinBlock",
     "MixinBlockEntity",
