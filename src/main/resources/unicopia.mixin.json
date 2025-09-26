@@ -46,6 +46,7 @@
     "MixinPointOfInterestType",
     "MixinPowderSnowBlock",
     "MixinProjectileEntity",
+    "MixinProjectileUtil",
     "MixinPufferfishEntity",
     "MixinSheepEntity",
     "MixinShulkerEntity",

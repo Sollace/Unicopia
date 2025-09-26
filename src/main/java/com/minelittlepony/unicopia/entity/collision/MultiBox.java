@@ -39,7 +39,12 @@ public final class MultiBox extends Box {
 
     @Override
     public Optional<Vec3d> raycast(Vec3d min, Vec3d max) {
-        return first.raycast(min, max).or(() -> children.raycast(min, max));
+        return super.raycast(min, max).or(() -> children.raycast(min, max));
+    }
+
+    @Override
+    public boolean intersects(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+        return super.intersects(minX, minY, minZ, maxX, maxY, maxZ) || children.intersects(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     @Override
@@ -114,7 +119,7 @@ public final class MultiBox extends Box {
 
     @Override
     public String toString() {
-        return "MULTI_AABB[" + this.minX + ", " + this.minY + ", " + this.minZ + "] -> [" + this.maxX + ", " + this.maxY + ", " + this.maxZ + "]{" + children + "}";
+        return "MULTI_AABB[" + minX + ", " + minY + ", " + minZ + "] -> [" + maxX + ", " + maxY + ", " + maxZ + "]{" + children + "}";
     }
 
     static final class BoxChildren {
@@ -144,6 +149,15 @@ public final class MultiBox extends Box {
                 trace = children[i].raycast(min, max);
             }
             return trace;
+        }
+
+        public boolean intersects(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+            for (int i = 0; i < children.length; i++) {
+                if (children[i].intersects(minX, minY, minZ, maxX, maxY, maxZ)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public boolean contains(double x, double y, double z) {
