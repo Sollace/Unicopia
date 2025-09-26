@@ -196,7 +196,7 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         addDrop(UBlocks.PINEAPPLE, LootTable.builder()
             .pool(addSurvivesExplosionCondition(UBlocks.PINEAPPLE, LootPool.builder()
                 .rolls(exactly(1))
-                .with(item(UItems.PINEAPPLE, between(6, 12F))
+                .with(item(UItems.PINEAPPLE, exactly(1))
                     .apply(createBasePreservingFortuneBonusCondition())
                     .conditionally(BlockStatePropertyLootCondition.builder(UBlocks.PINEAPPLE).properties(StatePredicate.Builder.create()
                         .exactMatch(Properties.BLOCK_HALF, BlockHalf.TOP)
