@@ -52,6 +52,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -124,15 +125,15 @@ public class URecipeProvider extends FabricRecipeProvider {
 
     private void offerCloudRecipes(RecipeExporter exporter) {
         offerShapelessRecipe(exporter, UItems.CLOUD_LUMP, UTags.Items.CLOUD_JARS, "cloud", 4);
-        generateFamily(exporter, UBlockFamilies.CLOUD, FeatureSet.empty());
+        generateFamily(exporter, UBlockFamilies.CLOUD, FeatureSet.of(FeatureFlags.VANILLA));
         offer2x3Recipe(exporter, UBlocks.CLOUD_PILLAR, UBlocks.CLOUD, "pillar");
         offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CLOUD, UItems.CLOUD_LUMP);
         offerPolishedStoneRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CLOUD_PLANKS, UBlocks.CLOUD);
-        generateFamily(exporter, UBlockFamilies.CLOUD_PLANKS, FeatureSet.empty());
+        generateFamily(exporter, UBlockFamilies.CLOUD_PLANKS, FeatureSet.of(FeatureFlags.VANILLA));
         offerChestRecipe(exporter, UBlocks.CLOUD_CHEST, UBlocks.CLOUD_PLANKS);
 
         offer2x2CompactingRecipe(exporter, RecipeCategory.DECORATIONS, UBlocks.SHAPING_BENCH, UBlocks.DENSE_CLOUD);
-        generateFamily(exporter, UBlockFamilies.CLOUD_BRICKS, FeatureSet.empty());
+        generateFamily(exporter, UBlockFamilies.CLOUD_BRICKS, FeatureSet.of(FeatureFlags.VANILLA));
 
         offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CARVED_CLOUD, UBlocks.CLOUD);
         offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.ETCHED_CLOUD, UBlocks.CLOUD);
@@ -158,7 +159,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         offerCloudShapingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.ETCHED_CLOUD_STAIRS, UBlocks.ETCHED_CLOUD);
 
         offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.DENSE_CLOUD, UBlocks.CLOUD, 4);
-        generateFamily(exporter, UBlockFamilies.DENSE_CLOUD, FeatureSet.empty());
+        generateFamily(exporter, UBlockFamilies.DENSE_CLOUD, FeatureSet.of(FeatureFlags.VANILLA));
         offer2x3Recipe(exporter, UBlocks.CLOUD_DOOR, UBlocks.DENSE_CLOUD, "door");
 
         ShapelessRecipeJsonBuilder.create(RecipeCategory.REDSTONE, UBlocks.UNSTABLE_CLOUD, 8)
@@ -171,7 +172,7 @@ public class URecipeProvider extends FabricRecipeProvider {
 
     private void offerWoodBlocksRecipes(RecipeExporter exporter) {
         // palm wood
-        generateFamily(exporter, UBlockFamilies.PALM, FeatureSet.empty());
+        generateFamily(exporter, UBlockFamilies.PALM, FeatureSet.of(FeatureFlags.VANILLA));
         offerPlanksRecipe(exporter, UBlocks.PALM_PLANKS, UTags.Items.PALM_LOGS, 4);
         offerBarkBlockRecipe(exporter, UBlocks.PALM_WOOD, UBlocks.PALM_LOG);
         offerBarkBlockRecipe(exporter, UBlocks.STRIPPED_PALM_WOOD, UBlocks.STRIPPED_PALM_LOG);
@@ -180,7 +181,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         offerHangingSignRecipe(exporter, UBlocks.PALM_HANGING_SIGN, UBlocks.PALM_PLANKS);
 
         // zap wood
-        generateFamily(exporter, UBlockFamilies.ZAP, FeatureSet.empty());
+        generateFamily(exporter, UBlockFamilies.ZAP, FeatureSet.of(FeatureFlags.VANILLA));
         offerPlanksRecipe(exporter, UBlocks.ZAP_PLANKS, UTags.Items.ZAP_LOGS, 4);
         offerBarkBlockRecipe(exporter, UBlocks.ZAP_WOOD, UBlocks.ZAP_LOG);
         offerBarkBlockRecipe(exporter, UBlocks.STRIPPED_ZAP_WOOD, UBlocks.STRIPPED_ZAP_LOG);
@@ -188,7 +189,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         // waxed zap wood
         offerPlanksRecipe(exporter, UBlocks.WAXED_ZAP_PLANKS, UTags.Items.WAXED_ZAP_LOGS, 4);
         offerBarkBlockRecipe(exporter, UBlocks.WAXED_ZAP_WOOD, UBlocks.WAXED_ZAP_LOG);
-        generateFamily(exporter, UBlockFamilies.WAXED_ZAP, FeatureSet.empty());
+        generateFamily(exporter, UBlockFamilies.WAXED_ZAP, FeatureSet.of(FeatureFlags.VANILLA));
         offerBarkBlockRecipe(exporter, UBlocks.WAXED_STRIPPED_ZAP_WOOD, UBlocks.WAXED_STRIPPED_ZAP_LOG);
 
         // golden oak wood
@@ -208,7 +209,7 @@ public class URecipeProvider extends FabricRecipeProvider {
 
     private void offerChitinBlocksRecipes(RecipeExporter exporter) {
         offerReversibleCompactingRecipes(exporter, RecipeCategory.BUILDING_BLOCKS, UItems.CARAPACE, RecipeCategory.BUILDING_BLOCKS, UBlocks.CHITIN);
-        generateFamily(exporter, UBlockFamilies.CHISELED_CHITIN, FeatureSet.empty());
+        generateFamily(exporter, UBlockFamilies.CHISELED_CHITIN, FeatureSet.of(FeatureFlags.VANILLA));
         offerHiveRecipe(exporter, UBlocks.HIVE, UBlocks.CHITIN, UBlocks.MYSTERIOUS_EGG);
         offerHullRecipe(exporter, UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN, UBlocks.CHITIN);
         offerSpikesRecipe(exporter, UBlocks.CHITIN_SPIKES, UBlocks.CHITIN);
