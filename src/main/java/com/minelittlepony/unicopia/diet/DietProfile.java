@@ -144,7 +144,7 @@ public record DietProfile(
     }
 
     public void appendTooltip(ItemStack stack, @Nullable Pony pony, Consumer<Text> tooltip, TooltipType context) {
-        if (this == EMPTY) {
+        if (isEmpty()) {
             return;
         }
 

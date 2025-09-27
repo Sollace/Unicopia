@@ -114,8 +114,6 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
      * @param source
      */
     private void distributeHealth(Caster<?> source) {
-        @Nullable
-        LivingEntity owner = source.getMaster();
         DamageSource damage = source.damageOf(UDamageTypes.LIFE_DRAINING, source);
         float[] collectedHealth = new float[1];
 
