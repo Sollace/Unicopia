@@ -329,7 +329,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     return;
                 }
 
-                if (ticksColliding > LANDING_COLLISION_TIME) {
+                if (ticksColliding > LANDING_COLLISION_TIME || entity.isTouchingWater()) {
                     cancelFlight(false);
                 }
             }
