@@ -620,8 +620,9 @@ public class URecipeProvider extends FabricRecipeProvider {
         CraftingMaterialHelper
             .input(ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, output), 'o', input).criterion(CraftingMaterialHelper.hasEither(input), CraftingMaterialHelper.conditionsFromEither(input))
             .input('#', ConventionalItemTags.WOODEN_RODS)
+            .input('s', ConventionalItemTags.STRINGS)
             .pattern("  o")
-            .pattern(" # ")
+            .pattern(" #s")
             .pattern("#  ")
             .group("polearm")
             .offerTo(exporter);
