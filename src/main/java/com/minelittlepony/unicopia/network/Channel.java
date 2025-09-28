@@ -26,6 +26,7 @@ public interface Channel {
     S2CPacketType<MsgCancelPlayerAbility> CANCEL_PLAYER_ABILITY = SimpleNetworking.serverToClient(Unicopia.id("player_ability_cancel"), MsgCancelPlayerAbility.PACKET_CODEC);
     S2CPacketType<MsgCasterLookRequest> SERVER_REQUEST_PLAYER_LOOK = SimpleNetworking.serverToClient(Unicopia.id("request_player_look"), MsgCasterLookRequest.PACKET_CODEC);
     S2CPacketType<MsgUnlockTraits> UNLOCK_TRAITS = SimpleNetworking.serverToClient(Unicopia.id("unlock_traits"), MsgUnlockTraits.PACKET_CODEC);
+    S2CPacketType<MsgEntityStatus> ENTITY_STATUS = SimpleNetworking.serverToClient(Unicopia.id("entity_status"), MsgEntityStatus.PACKET_CODEC);
 
     S2CPacketType<MsgTribeSelect> SERVER_SELECT_TRIBE = SimpleNetworking.serverToClient(Unicopia.id("select_tribe"), MsgTribeSelect.PACKET_CODEC);
 

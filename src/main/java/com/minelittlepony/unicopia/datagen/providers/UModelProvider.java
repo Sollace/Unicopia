@@ -72,7 +72,7 @@ public class UModelProvider extends FabricModelProvider {
                 UItems.CARAPACE, UItems.CLAM_SHELL, UItems.COOKED_ZAP_APPLE, UItems.CHOCOLATE_OATMEAL_COOKIE,
                     UItems.CLOUD_LUMP, UItems.CRISPY_HAY_FRIES, UItems.CRYSTAL_HEART, UItems.CRYSTAL_SHARD,
                     UItems.COOKED_TROPICAL_FISH, UItems.COOKED_PUFFERFISH, UItems.COOKED_FROG_LEGS,
-                UItems.DAFFODIL_DAISY_SANDWICH, UItems.DRAGON_BREATH_SCROLL,
+                UItems.DAFFODIL_DAISY_SANDWICH, UItems.DRAGON_BREATH_SCROLL, UItems.TOTEM_OF_DYING,
                 UItems.EMPTY_JAR,
                 UItems.FRIENDSHIP_BRACELET, UItems.FRIED_AXOLOTL, UItems.FROG_LEGS,
                 UItems.GOLDEN_FEATHER, UItems.GOLDEN_OAK_SEEDS, UItems.GOLDEN_WING, UItems.GREEN_APPLE_SEEDS, UItems.GREEN_APPLE, UItems.GROGARS_BELL,

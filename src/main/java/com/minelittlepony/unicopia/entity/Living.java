@@ -31,6 +31,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.input.Heuristic;
 import com.minelittlepony.unicopia.input.Interactable;
 import com.minelittlepony.unicopia.item.GlassesItem;
+import com.minelittlepony.unicopia.item.TotemOfDying;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.component.BreaksIntoItemComponent;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
@@ -401,6 +402,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         }
 
         return Optional.empty();
+    }
+
+    public void onDeath(DamageSource damage) {
+        TotemOfDying.tryUseTotem(damage, entity);
     }
 
     public void onAttacking(Entity target) {

@@ -182,6 +182,7 @@ public interface UItems {
 
     Item GIANT_BALLOON = register("giant_balloon", new GiantBalloonItem(new Item.Settings().maxCount(1).component(UDataComponentTypes.BALLOON_DESIGN, BalloonDesignComponent.DEFAULT)), ItemGroups.TOOLS);
     Item SPECTRAL_CLOCK = register("spectral_clock", new Item(new Item.Settings()), ItemGroups.TOOLS);
+    Item TOTEM_OF_DYING = register("totem_of_dying", new Item(new Item.Settings().maxCount(1).rarity(Rarity.UNCOMMON)), ItemGroups.COMBAT);
 
     Item WHITE_BED_SHEETS = register(CloudBedBlock.SheetPattern.WHITE);
     Item LIGHT_GRAY_BED_SHEETS = register(CloudBedBlock.SheetPattern.LIGHT_GRAY);
