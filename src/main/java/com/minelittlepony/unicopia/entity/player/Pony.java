@@ -477,6 +477,12 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                     }
                 }
             }
+
+            if (entity.getLastAttackTime() == 0) {
+                if (!EquinePredicates.RAGING.test(entity) && charge.getPercentFill() >= 1 && entity.getWorld().random.nextInt(1000) == 0) {
+                    SpellType.RAGE.withTraits().apply(this, CastingMethod.INNATE);
+                }
+            }
         }
 
         if (getCompositeRace().includes(Race.SEAPONY)) {
@@ -505,15 +511,19 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public void onAttacking(Entity target) {
-        if (getObservedSpecies() == Race.KIRIN && entity.getWorld().random.nextInt(50) == 0) {
-            var charge = getMagicalReserves().getCharge();
+        if (getObservedSpecies() == Race.KIRIN) {
+            boolean killedTarget = target instanceof LivingEntity l && l.isDead();
+            if (killedTarget || entity.getWorld().random.nextInt(10) == 0) {
+                entity.sendMessage(Text.literal("Grrrr"));
+                var charge = getMagicalReserves().getCharge();
 
-            if (charge.getPercentFill() < 1) {
-                charge.addPercent(3);
-            }
+                if (charge.getPercentFill() < 1) {
+                    charge.addPercent(killedTarget ? (target instanceof LivingEntity l && l.isBaby() ? 15 : 10) : 3);
+                }
 
-            if (!EquinePredicates.RAGING.test(entity) && charge.getPercentFill() >= 1 && entity.getWorld().random.nextInt(1000) == 0) {
-                SpellType.RAGE.withTraits().apply(this, CastingMethod.INNATE);
+                if (!EquinePredicates.RAGING.test(entity) && charge.getPercentFill() >= 1 && entity.getWorld().random.nextInt(1000) == 0) {
+                    SpellType.RAGE.withTraits().apply(this, CastingMethod.INNATE);
+                }
             }
         }
     }

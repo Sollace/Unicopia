@@ -107,14 +107,22 @@ public class RageAbilitySpell extends AbstractSpell {
         }
 
         if (source instanceof Pony pony) {
-            if (pony.isClientPlayer() && pony.asEntity().getAttackCooldownProgress(0) == 0) {
+            if (pony.isClientPlayer() && (age == 0 || pony.asEntity().getAttackCooldownProgress(0) == 0)) {
                 InteractionManager.getInstance().playLoopingSound(source.asEntity(), InteractionManager.SOUND_KIRIN_RAGE, source.asWorld().random.nextLong());
             }
+
             Bar energyBar = pony.getMagicalReserves().getEnergy();
             var energy = Math.min(1.01F, 0.5F + (age / 1000F));
             float newEnergy = energyBar.get() + energy;
             energyBar.set(Math.min(1.9F + MathHelper.sin(age / 3F) * 1.7F, newEnergy));
-            pony.getMagicalReserves().getMana().add(-1);
+
+            float charge = pony.getMagicalReserves().getCharge().get();
+            float cost = 1 + age / 1000F;
+            if (charge > cost) {
+                pony.getMagicalReserves().getCharge().add(-cost);
+            } else {
+                pony.getMagicalReserves().getMana().add(-cost);
+            }
             if (pony.getMagicalReserves().getMana().get() <= 0) {
                 return false;
             }
