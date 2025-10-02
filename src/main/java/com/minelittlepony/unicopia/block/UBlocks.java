@@ -340,10 +340,7 @@ public interface UBlocks {
         FlammableBlockRegistry.getDefaultInstance().add(GREEN_APPLE_LEAVES, 30, 60);
         FlammableBlockRegistry.getDefaultInstance().add(SWEET_APPLE_LEAVES, 30, 60);
         FlammableBlockRegistry.getDefaultInstance().add(SOUR_APPLE_LEAVES, 30, 60);
-        FlammableBlockRegistry.getDefaultInstance().add(GOLDEN_OAK_LEAVES, 60, 120);
         FlammableBlockRegistry.getDefaultInstance().add(MANGO_LEAVES, 30, 60);
-
-        FlammableBlockRegistry.getDefaultInstance().add(GOLDEN_OAK_LOG, 15, 15);
 
         FlammableBlockRegistry.getDefaultInstance().add(PALM_PLANKS, 5, 20);
         FlammableBlockRegistry.getDefaultInstance().add(PALM_SLAB, 5, 20);
