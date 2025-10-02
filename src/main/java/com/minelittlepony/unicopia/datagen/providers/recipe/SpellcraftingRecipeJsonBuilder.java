@@ -24,7 +24,6 @@ import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.item.ItemConvertible;
-import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.util.Identifier;
 
@@ -85,10 +84,6 @@ public class SpellcraftingRecipeJsonBuilder {
             .rewards(AdvancementRewards.Builder.recipe(id))
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
         exporter.accept(id, new SpellCraftingRecipe(base, TraitIngredient.of(traits), ingredients, EnchantableItem.enchant(gem.asItem().getDefaultStack(), spell)), advancementBuilder.build(id.withPrefixedPath("recipes/" + category.getName() + "/")));
-    }
-
-    public SpellCraftingRecipe create(IngredientWithSpell material, TraitIngredient traits, List<IngredientWithSpell> ingredients, ItemStack result) {
-        return null;
     }
 
     public void offerTo(RecipeExporter exporter) {

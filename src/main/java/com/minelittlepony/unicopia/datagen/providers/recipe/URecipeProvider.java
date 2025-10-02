@@ -336,6 +336,13 @@ public class URecipeProvider extends FabricRecipeProvider {
         ComplexSpellcraftingRecipeJsonBuilder.create(SpellDuplicatingRecipe::new, UItems.BOTCHED_GEM).offerTo(exporter, "spell_duplicating");
         ComplexSpellcraftingRecipeJsonBuilder.create(SpellEnhancingRecipe::new, UItems.BOTCHED_GEM).offerTo(exporter, "trait_combining_botched_gem");
         ComplexSpellcraftingRecipeJsonBuilder.create(SpellEnhancingRecipe::new, UItems.GEMSTONE).offerTo(exporter, "trait_combining_gemstone");
+
+        AltarRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.SPECTRAL_CLOCK)
+            .input(Items.CLOCK).criterion("has_clock", conditionsFromItem(Items.CLOCK))
+            .offerTo(exporter);
+        AltarRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.TOTEM_OF_DYING)
+            .input(Items.TOTEM_OF_UNDYING).criterion("has_totem", conditionsFromItem(Items.TOTEM_OF_UNDYING))
+            .offerTo(exporter);
     }
 
     private void offerFoodRecipes(RecipeExporter exporter) {

@@ -40,6 +40,7 @@ public interface URecipes {
     RecipeType<SpellbookRecipe> SPELLBOOK = register("spellbook");
     RecipeType<StonecuttingRecipe> CLOUD_SHAPING = register("cloud_shaping");
     RecipeType<TransformCropsRecipe> GROWING = register("growing");
+    RecipeType<AltarRecipe> ALTAR = register("altar");
 
     RecipeSerializer<ZapAppleRecipe> ZAP_APPLE_SERIALIZER = register("crafting_zap_apple", ZapAppleRecipe.CODEC, ZapAppleRecipe.PACKET_CODEC);
     RecipeSerializer<ItemConversionShapedRecipe> CONVERSION_SERIALIZER = register("conversion", ItemConversionShapedRecipe.CODEC, ItemConversionShapedRecipe.PACKET_CODEC);
@@ -52,6 +53,7 @@ public interface URecipes {
     RecipeSerializer<SpellDuplicatingRecipe> SPELL_DUPLICATING = register("spellbook/duplicating", SpellDuplicatingRecipe.CODEC, SpellDuplicatingRecipe.PACKET_CODEC);
     RecipeSerializer<CloudShapingRecipe> CLOUD_SHAPING_SERIALIZER = register("cloud_shaping", new CuttingRecipe.Serializer<>(CloudShapingRecipe::new) {});
     RecipeSerializer<TransformCropsRecipe> TRANSFORM_CROP_SERIALIZER = register("transform_crop", TransformCropsRecipe.CODEC, TransformCropsRecipe.PACKET_CODEC);
+    RecipeSerializer<AltarRecipe> ALTAR_SERIALIZER = register("altar", AltarRecipe.CODEC, AltarRecipe.PACKET_CODEC);
 
     CustomIngredientSerializer<ExclusiveIngredient> EXCLUSIVE_INGREDIENT_SERIALIZER = registerIngredient("exclusive", ExclusiveIngredient.CODEC, ExclusiveIngredient.PACKET_CODEC);
 
