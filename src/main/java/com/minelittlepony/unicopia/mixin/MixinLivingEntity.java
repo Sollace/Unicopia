@@ -156,10 +156,10 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
         get().onDamage(source, amount).ifPresent(info::setReturnValue);
     }
 
-    @Inject(method = "tryUseTotem(Lnet/minecraft/entity/damage/DamageSource;F)Z", at = @At("RETURN"))
+    @Inject(method = "tryUseTotem(Lnet/minecraft/entity/damage/DamageSource;)Z", at = @At("RETURN"))
     private void onOnDeath(DamageSource source, CallbackInfoReturnable<Boolean> info) {
-        if (!isRemoved() && !dead && !info.getReturnValue()) {
-            get().onDeath(source);
+        if (!isRemoved() && !dead) {
+            get().onDeath(source, info.getReturnValue());
         }
     }
 

@@ -404,7 +404,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return Optional.empty();
     }
 
-    public void onDeath(DamageSource damage) {
+    public void onDeath(DamageSource damage, boolean usedTotem) {
         TotemOfDying.tryUseTotem(damage, entity);
     }
 
