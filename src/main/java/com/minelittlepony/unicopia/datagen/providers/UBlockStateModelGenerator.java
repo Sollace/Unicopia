@@ -113,6 +113,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerRotated(UBlocks.CHITIN_SPIKES, BlockModels.SPIKES);
         registerHull(UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHITIN, UBlocks.CHISELLED_CHITIN);
         registerItemModel(UBlocks.SLIME_PUSTULE.asItem());
+        registerSlimeLayers(UBlocks.SLIME);
         blockStateCollector.accept(VariantsBlockStateSupplier.create(UBlocks.SLIME_PUSTULE)
                 .coordinate(BlockStateVariantMap.create(SlimePustuleBlock.SHAPE)
                 .register(state -> BlockStateVariant.create().put(MODEL, ModelIds.getBlockSubModelId(UBlocks.SLIME_PUSTULE, "_" + state.asString())))));
@@ -470,6 +471,15 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
             Identifier identifier = uploadedModels.computeIfAbsent("_" + part.asString() + "_stage" + i, variant -> createSubModel(crop, variant, Models.CROSS, TextureMap::cross));
             return BlockStateVariant.create().put(MODEL, identifier);
         })));
+    }
+
+    public void registerSlimeLayers(Block block) {
+        Identifier fullModel = ModelIds.getBlockModelId(Blocks.SLIME_BLOCK);
+        blockStateCollector.accept(VariantsBlockStateSupplier.create(block)
+                .coordinate(BlockStateVariantMap.create(Properties.LAYERS)
+                        .register(height -> BlockStateVariant.create()
+                                .put(VariantSettings.MODEL, height < 8 ? ModelIds.getBlockSubModelId(block, "_height" + height * 2) : fullModel))));
+        registerParentedItemModel(block, ModelIds.getBlockSubModelId(block, "_height2"));
     }
 
     public void registerPie(Block pie) {

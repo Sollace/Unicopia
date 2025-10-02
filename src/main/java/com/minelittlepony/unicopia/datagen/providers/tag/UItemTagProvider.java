@@ -292,7 +292,8 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
                 UBlocks.CHISELLED_CHITIN_HULL.asItem(), UBlocks.CHITIN_SPIKES.asItem(),
                 UBlocks.SLIME_PUSTULE.asItem(),
                 UBlocks.MYSTERIOUS_EGG.asItem(), UItems.GREEN_FRIED_EGG,
-                UBlocks.HIVE.asItem()
+                UBlocks.HIVE.asItem(),
+                UBlocks.SLIME.asItem()
             )
             .forceAddTag(ConventionalItemTags.RAW_MEAT_FOODS)
             .forceAddTag(ConventionalItemTags.COOKED_MEAT_FOODS)

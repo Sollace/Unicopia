@@ -207,6 +207,19 @@ public interface UBlocks {
     Block HIVE = register("hive", new HiveBlock(Settings.create().mapColor(MapColor.PURPLE).hardness(6).ticksRandomly().sounds(BlockSoundGroup.CORAL)), ItemGroups.NATURAL);
     Block MYSTERIOUS_EGG = register("mysterious_egg", new PileBlock(Settings.copy(Blocks.SLIME_BLOCK), PileBlock.MYSTERIOUS_EGG_SHAPES), ItemGroups.NATURAL);
     Block SLIME_PUSTULE = register("slime_pustule", new SlimePustuleBlock(Settings.copy(Blocks.SLIME_BLOCK)), ItemGroups.NATURAL);
+    Block SLIME = register("slime", new SlimeLayerBlock(
+            AbstractBlock.Settings.create()
+            .mapColor(MapColor.PALE_GREEN)
+            .replaceable()
+            .nonOpaque()
+            .ticksRandomly()
+            .slipperiness(0.8F)
+            .strength(0.1F)
+            .requiresTool()
+            .sounds(BlockSoundGroup.SLIME)
+            .blockVision((state, world, pos) -> state.get(SlimeLayerBlock.LAYERS) >= 8)
+            .pistonBehavior(PistonBehavior.DESTROY)
+    ), ItemGroups.NATURAL);
 
     Block SHAPING_BENCH = register("shaping_bench", new ShapingBenchBlock(Settings.create().mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL)), ItemGroups.FUNCTIONAL);
     @SuppressWarnings("deprecation")
@@ -288,7 +301,7 @@ public interface UBlocks {
         if (block instanceof SaplingBlock || block instanceof SproutBlock || block instanceof FruitBlock || block instanceof CropBlock || block instanceof DoorBlock || block instanceof TrapdoorBlock) {
             TRANSLUCENT_BLOCKS.add(block);
         }
-        if (block instanceof CloudLike || block instanceof SlimePustuleBlock || block instanceof PileBlock) {
+        if (block instanceof CloudLike || block instanceof SlimePustuleBlock || block instanceof PileBlock || block instanceof SlimeLayerBlock) {
             SEMI_TRANSPARENT_BLOCKS.add(block);
         }
 

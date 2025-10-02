@@ -27,6 +27,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CarrotsBlock;
 import net.minecraft.block.SlabBlock;
+import net.minecraft.block.SnowBlock;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.SlabType;
@@ -37,9 +38,12 @@ import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
+import net.minecraft.loot.condition.EntityPropertiesLootCondition;
 import net.minecraft.loot.condition.LootConditionConsumingBuilder;
 import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.condition.TableBonusLootCondition;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.entry.AlternativeEntry;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.ApplyBonusLootFunction;
 import net.minecraft.loot.function.ConditionalLootFunction;
@@ -166,6 +170,19 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
                         addSurvivesExplosionCondition(UBlocks.SLIME_PUSTULE, LootPool.builder()
                     .rolls(exactly(1))
                     .with(ItemEntry.builder(UBlocks.SLIME_PUSTULE)).conditionally(createWithShearsOrSilkTouchCondition()))
+        )));
+        addDrop(UBlocks.SLIME, block -> LootTable.builder()
+                .pool(LootPool.builder().conditionally(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS))
+                        .with(AlternativeEntry.builder(
+                                AlternativeEntry.builder(SnowBlock.LAYERS.getValues(), layer -> ItemEntry.builder(Items.SLIME_BALL)
+                                    .conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, layer)))
+                                    .apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(layer.intValue())))
+                                ).conditionally(createWithoutSilkTouchCondition()),
+                                AlternativeEntry.builder(SnowBlock.LAYERS.getValues(), layer -> layer == 8
+                                    ? ItemEntry.builder(Blocks.SLIME_BLOCK)
+                                    : ItemEntry.builder(UBlocks.SLIME)
+                                        .apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(layer)))
+                                        .conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, layer)))))
         )));
         addDrop(UBlocks.MYSTERIOUS_EGG, LootTable.builder()
             .pool(addSurvivesExplosionCondition(UBlocks.MYSTERIOUS_EGG, LootPool.builder()
