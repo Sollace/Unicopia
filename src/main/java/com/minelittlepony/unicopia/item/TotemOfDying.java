@@ -26,7 +26,8 @@ public class TotemOfDying {
                 player.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH);
             }
 
-            VecHelper.findInRange(null, entity.getWorld(), entity.getPos(), 10, e -> e instanceof LivingEntity & !SpellType.SHIELD.isOn(e)).forEach(e -> {
+            Channel.ENTITY_STATUS.sendToSurroundingPlayers(new MsgEntityStatus(entity.getId(), MsgEntityStatus.USE_TOTEM_OF_DYING), entity);
+            VecHelper.findInRange(entity, entity.getWorld(), entity.getPos(), 10, e -> e instanceof LivingEntity & !SpellType.SHIELD.isOn(e)).forEach(e -> {
                 Channel.ENTITY_STATUS.sendToSurroundingPlayers(new MsgEntityStatus(e.getId(), MsgEntityStatus.USE_TOTEM_OF_DYING), e);
                 e.damage(damage, Integer.MAX_VALUE);
             });
