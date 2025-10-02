@@ -118,6 +118,8 @@ public class UModelProvider extends FabricModelProvider {
                 .put(TextureKey.LAYER0, ModelIds.getItemSubModelId(UItems.MAGIC_STAFF, "_base"))
                 .put(TextureKey.LAYER1, ModelIds.getItemSubModelId(UItems.MAGIC_STAFF, "_magic")), itemModelGenerator.writer);
 
+        ItemModels.registerParented(itemModelGenerator, UItems.GOLDEN_STICK, Items.BLAZE_ROD);
+
         // polearms
         List.of(
                 UItems.DIAMOND_POLEARM, UItems.GOLDEN_POLEARM, UItems.NETHERITE_POLEARM,

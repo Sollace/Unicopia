@@ -65,7 +65,6 @@ public class URecipeProvider extends FabricRecipeProvider {
 
     @Override
     public void generate(RecipeExporter exporter) {
-        generateVanillaRecipeExtensions(exporter);
         offerJarRecipes(exporter);
         offerWoodBlocksRecipes(exporter);
         offerChitinBlocksRecipes(exporter);
@@ -93,22 +92,6 @@ public class URecipeProvider extends FabricRecipeProvider {
 
         // farmers delight
         offerFarmersDelightCuttingRecipes(withConditions(exporter, ResourceConditions.allModsLoaded("farmersdelight")));
-    }
-
-    private void generateVanillaRecipeExtensions(RecipeExporter exporter) {
-        ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.WRITABLE_BOOK)
-            .input(Items.BOOK).criterion("has_book", conditionsFromItem(Items.BOOK))
-            .input(Items.INK_SAC)
-            .input(UTags.Items.MAGIC_FEATHERS)
-            .offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.ARROW, 4)
-            .input('#', ConventionalItemTags.WOODEN_RODS)
-            .input('X', Items.FLINT).criterion("has_flint", conditionsFromItem(Items.FLINT))
-            .input('Y', UTags.Items.MAGIC_FEATHERS).criterion("has_feather", conditionsFromTag(UTags.Items.MAGIC_FEATHERS))
-            .pattern("X")
-            .pattern("#")
-            .pattern("Y")
-            .offerTo(exporter);
     }
 
     private void offerJarRecipes(RecipeExporter exporter) {
@@ -187,17 +170,18 @@ public class URecipeProvider extends FabricRecipeProvider {
         offerBarkBlockRecipe(exporter, UBlocks.STRIPPED_ZAP_WOOD, UBlocks.STRIPPED_ZAP_LOG);
 
         // waxed zap wood
+        generateFamily(exporter, UBlockFamilies.WAXED_ZAP, FeatureSet.of(FeatureFlags.VANILLA));
         offerPlanksRecipe(exporter, UBlocks.WAXED_ZAP_PLANKS, UTags.Items.WAXED_ZAP_LOGS, 4);
         offerBarkBlockRecipe(exporter, UBlocks.WAXED_ZAP_WOOD, UBlocks.WAXED_ZAP_LOG);
-        generateFamily(exporter, UBlockFamilies.WAXED_ZAP, FeatureSet.of(FeatureFlags.VANILLA));
         offerBarkBlockRecipe(exporter, UBlocks.WAXED_STRIPPED_ZAP_WOOD, UBlocks.WAXED_STRIPPED_ZAP_LOG);
 
         // golden oak wood
+        generateFamily(exporter, UBlockFamilies.GOLDEN_OAK, FeatureSet.of(FeatureFlags.VANILLA));
         offerPlanksRecipe(exporter, UBlocks.GOLDEN_OAK_PLANKS, UTags.Items.GOLDEN_OAK_LOGS, 4);
         offerBarkBlockRecipe(exporter, UBlocks.GOLDEN_OAK_WOOD, UBlocks.GOLDEN_OAK_LOG);
         offerBarkBlockRecipe(exporter, UBlocks.STRIPPED_GOLDEN_OAK_WOOD, UBlocks.STRIPPED_GOLDEN_OAK_LOG);
 
-        offerSmelting(exporter, List.of(UBlocks.GOLDEN_OAK_LOG, UBlocks.GOLDEN_OAK_WOOD, UBlocks.STRIPPED_GOLDEN_OAK_LOG, UBlocks.STRIPPED_GOLDEN_OAK_WOOD), RecipeCategory.FOOD, Items.GOLD_NUGGET, 20, 200, "gold_nugget");
+        offerSmelting(exporter, List.of(UBlocks.GOLDEN_OAK_LOG, UBlocks.GOLDEN_OAK_WOOD, UBlocks.STRIPPED_GOLDEN_OAK_LOG, UBlocks.STRIPPED_GOLDEN_OAK_WOOD, UItems.GOLDEN_STICK), RecipeCategory.FOOD, Items.GOLD_NUGGET, 20, 200, "gold_nugget");
 
         offerWaxingRecipes(exporter);
 
@@ -209,17 +193,25 @@ public class URecipeProvider extends FabricRecipeProvider {
 
     private void offerChitinBlocksRecipes(RecipeExporter exporter) {
         offerReversibleCompactingRecipes(exporter, RecipeCategory.BUILDING_BLOCKS, UItems.CARAPACE, RecipeCategory.BUILDING_BLOCKS, UBlocks.CHITIN);
-        generateFamily(exporter, UBlockFamilies.CHISELED_CHITIN, FeatureSet.of(FeatureFlags.VANILLA));
-        offerHiveRecipe(exporter, UBlocks.HIVE, UBlocks.CHITIN, UBlocks.MYSTERIOUS_EGG);
-        offerHullRecipe(exporter, UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN, UBlocks.CHITIN);
-        offerSpikesRecipe(exporter, UBlocks.CHITIN_SPIKES, UBlocks.CHITIN);
-
-        // TODO: polished chitin
         offerPolishedStoneRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CHISELLED_CHITIN, UBlocks.CHITIN);
 
+        generateFamily(exporter, UBlockFamilies.CHISELED_CHITIN, FeatureSet.of(FeatureFlags.VANILLA));
+        generateFamily(exporter, UBlockFamilies.POLISHED_CHITIN, FeatureSet.of(FeatureFlags.VANILLA));
+        offerHiveRecipe(exporter, UBlocks.HIVE, UBlocks.CHITIN, UBlocks.MYSTERIOUS_EGG);
+        offerHullRecipe(exporter, UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN, UBlocks.CHITIN);
+        offerHullRecipe(exporter, UBlocks.POLISHED_CHITIN_HULL, UBlocks.POLISHED_CHITIN, UBlocks.CHITIN);
+        offerSpikesRecipe(exporter, UBlocks.CHITIN_SPIKES, UBlocks.CHITIN);
+
+        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.POLISHED_CHITIN, UBlocks.CHISELLED_CHITIN);
         offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN);
         offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CHISELLED_CHITIN_SLAB, UBlocks.CHISELLED_CHITIN, 2);
         offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.CHISELLED_CHITIN_STAIRS, UBlocks.CHISELLED_CHITIN);
+        offerStonecuttingRecipe(exporter, RecipeCategory.DECORATIONS, UBlocks.CHISELLED_CHITIN_WALL, UBlocks.CHISELLED_CHITIN);
+
+        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.POLISHED_CHITIN_HULL, UBlocks.POLISHED_CHITIN);
+        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.POLISHED_CHITIN_SLAB, UBlocks.POLISHED_CHITIN, 2);
+        offerStonecuttingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, UBlocks.POLISHED_CHITIN_STAIRS, UBlocks.POLISHED_CHITIN);
+        offerStonecuttingRecipe(exporter, RecipeCategory.DECORATIONS, UBlocks.POLISHED_CHITIN_WALL, UBlocks.POLISHED_CHITIN);
     }
 
     private void offerGemstoneAndMagicRecipes(RecipeExporter exporter) {

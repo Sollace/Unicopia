@@ -286,10 +286,15 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(UTags.Items.GROUP_CHANGELING)
             .add(
                 UItems.CARAPACE, UBlocks.SURFACE_CHITIN.asItem(), UBlocks.CHITIN.asItem(),
-                UBlockFamilies.CHISELED_CHITIN.getBaseBlock().asItem()
-            ).add(UBlockFamilies.CHISELED_CHITIN.getVariants().values().stream().map(ItemConvertible::asItem).toArray(Item[]::new))
+                UBlockFamilies.CHISELED_CHITIN.getBaseBlock().asItem(),
+                UBlockFamilies.POLISHED_CHITIN.getBaseBlock().asItem()
+            )
+            .add(UBlockFamilies.CHISELED_CHITIN.getVariants().values().stream().map(ItemConvertible::asItem).toArray(Item[]::new))
+            .add(UBlockFamilies.POLISHED_CHITIN.getVariants().values().stream().map(ItemConvertible::asItem).toArray(Item[]::new))
             .add(
-                UBlocks.CHISELLED_CHITIN_HULL.asItem(), UBlocks.CHITIN_SPIKES.asItem(),
+                UBlocks.CHISELLED_CHITIN_HULL.asItem(),
+                UBlocks.POLISHED_CHITIN_HULL.asItem(),
+                UBlocks.CHITIN_SPIKES.asItem(),
                 UBlocks.SLIME_PUSTULE.asItem(),
                 UBlocks.MYSTERIOUS_EGG.asItem(), UItems.GREEN_FRIED_EGG,
                 UBlocks.HIVE.asItem(),
@@ -321,6 +326,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .forceAddTag(UTags.Items.FRESH_APPLES)
             .addOptionalTag(Identifier.of("c", "pyrite_apples")) // no idea which mod add pyrite apples
         ;
+        getOrCreateTagBuilder(ConventionalItemTags.WOODEN_RODS).add(UItems.GOLDEN_STICK);
         getOrCreateTagBuilder(UConventionalTags.Items.BANANAS).add(UItems.BANANA);
         getOrCreateTagBuilder(ConventionalItemTags.RAW_FISH_FOODS).addOptionalTag(Identifier.of("c", "mollusks"));
         getOrCreateTagBuilder(ConventionalItemTags.COOKED_FISH_FOODS).add(UItems.COOKED_TROPICAL_FISH, UItems.COOKED_PUFFERFISH, UItems.FRIED_AXOLOTL);

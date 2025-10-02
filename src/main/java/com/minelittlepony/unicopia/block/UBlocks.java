@@ -179,6 +179,8 @@ public interface UBlocks {
     StrippablePillarBlock GOLDEN_OAK_LOG = register("golden_oak_log", BlockConstructionUtils.createMetallicLogBlock(MapColor.OFF_WHITE, MapColor.GOLD), ItemGroups.BUILDING_BLOCKS);
     StrippablePillarBlock GOLDEN_OAK_WOOD = register("golden_oak_wood", BlockConstructionUtils.createMetallicWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
     Block GOLDEN_OAK_PLANKS = register("golden_oak_planks", new Block(Settings.create().mapColor(MapColor.GOLD).strength(3, 4).sounds(BlockSoundGroup.METAL).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block GOLDEN_OAK_SLAB = register("golden_oak_slab", new SlabBlock(Settings.create().mapColor(GOLDEN_OAK_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.METAL).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block GOLDEN_OAK_STAIRS = register("golden_oak_stairs", new StairsBlock(GOLDEN_OAK_PLANKS.getDefaultState(), Settings.copy(GOLDEN_OAK_PLANKS)), ItemGroups.BUILDING_BLOCKS);
 
     StrippablePillarBlock STRIPPED_GOLDEN_OAK_LOG = register("stripped_golden_oak_log", BlockConstructionUtils.createMetallicLogBlock(MapColor.OFF_WHITE, MapColor.GOLD), ItemGroups.BUILDING_BLOCKS);
     StrippablePillarBlock STRIPPED_GOLDEN_OAK_WOOD = register("stripped_golden_oak_wood", BlockConstructionUtils.createMetallicWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
@@ -204,6 +206,13 @@ public interface UBlocks {
     Block CHISELLED_CHITIN_SLAB = register("chiselled_chitin_slab", new SlabBlock(Settings.copy(CHISELLED_CHITIN)), ItemGroups.BUILDING_BLOCKS);
     Block CHISELLED_CHITIN_STAIRS = register("chiselled_chitin_stairs", new StairsBlock(CHISELLED_CHITIN.getDefaultState(), Settings.copy(CHISELLED_CHITIN)), ItemGroups.BUILDING_BLOCKS);
     Block CHISELLED_CHITIN_HULL = register("chiselled_chitin_hull", new OrientedBlock(Settings.copy(CHISELLED_CHITIN)), ItemGroups.BUILDING_BLOCKS);
+    Block CHISELLED_CHITIN_WALL = register("chiselled_chitin_wall", new WallBlock(Settings.copy(CHISELLED_CHITIN)), ItemGroups.BUILDING_BLOCKS);
+    Block POLISHED_CHITIN = register("polished_chitin", new Block(Settings.copy(CHISELLED_CHITIN)), ItemGroups.BUILDING_BLOCKS);
+    Block POLISHED_CHITIN_SLAB = register("polished_chitin_slab", new SlabBlock(Settings.copy(POLISHED_CHITIN)), ItemGroups.BUILDING_BLOCKS);
+    Block POLISHED_CHITIN_STAIRS = register("polished_chitin_stairs", new StairsBlock(POLISHED_CHITIN.getDefaultState(), Settings.copy(POLISHED_CHITIN)), ItemGroups.BUILDING_BLOCKS);
+    Block POLISHED_CHITIN_HULL = register("polished_chitin_hull", new OrientedBlock(Settings.copy(POLISHED_CHITIN)), ItemGroups.BUILDING_BLOCKS);
+    Block POLISHED_CHITIN_WALL = register("polished_chitin_wall", new WallBlock(Settings.copy(POLISHED_CHITIN)), ItemGroups.BUILDING_BLOCKS);
+
     Block HIVE = register("hive", new HiveBlock(Settings.create().mapColor(MapColor.PURPLE).hardness(6).ticksRandomly().sounds(BlockSoundGroup.CORAL)), ItemGroups.NATURAL);
     Block MYSTERIOUS_EGG = register("mysterious_egg", new PileBlock(Settings.copy(Blocks.SLIME_BLOCK), PileBlock.MYSTERIOUS_EGG_SHAPES), ItemGroups.NATURAL);
     Block SLIME_PUSTULE = register("slime_pustule", new SlimePustuleBlock(Settings.copy(Blocks.SLIME_BLOCK)), ItemGroups.NATURAL);

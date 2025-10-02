@@ -238,15 +238,19 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(UTags.Blocks.CHITIN_BLOCKS).add(
                 UBlocks.CHITIN, UBlocks.SURFACE_CHITIN,
                 UBlocks.CHISELLED_CHITIN, UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN_SLAB, UBlocks.CHISELLED_CHITIN_STAIRS,
+                UBlocks.POLISHED_CHITIN, UBlocks.POLISHED_CHITIN_HULL, UBlocks.POLISHED_CHITIN_SLAB, UBlocks.POLISHED_CHITIN_STAIRS,
                 UBlocks.CHITIN_SPIKES
         );
 
 
         getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(
-                UBlocks.CHITIN_SPIKES,
-                UBlocks.CHISELLED_CHITIN, UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN_SLAB, UBlocks.CHISELLED_CHITIN_STAIRS
+                UBlocks.CHISELLED_CHITIN, UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN_SLAB, UBlocks.CHISELLED_CHITIN_STAIRS,
+                UBlocks.POLISHED_CHITIN, UBlocks.POLISHED_CHITIN_HULL, UBlocks.POLISHED_CHITIN_SLAB, UBlocks.POLISHED_CHITIN_STAIRS,
+                UBlocks.CHITIN_SPIKES
         );
         getOrCreateTagBuilder(BlockTags.SHOVEL_MINEABLE).add(UBlocks.CHITIN, UBlocks.SURFACE_CHITIN);
+
+        getOrCreateTagBuilder(BlockTags.WALLS).add(UBlocks.CHISELLED_CHITIN_WALL, UBlocks.POLISHED_CHITIN_WALL);
     }
 
     private void addSign(Block standing, Block wall, Block hanging, Block wallHanging) {

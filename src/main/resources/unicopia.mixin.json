@@ -48,6 +48,7 @@
     "MixinProjectileEntity",
     "MixinProjectileUtil",
     "MixinPufferfishEntity",
+    "MixinIngredient_StackEntry",
     "MixinSheepEntity",
     "MixinShulkerEntity",
     "MixinStateManager",
