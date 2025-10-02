@@ -285,7 +285,8 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             );
         getOrCreateTagBuilder(UTags.Items.GROUP_CHANGELING)
             .add(
-                UItems.CARAPACE, UBlocks.SURFACE_CHITIN.asItem(), UBlocks.CHITIN.asItem()
+                UItems.CARAPACE, UBlocks.SURFACE_CHITIN.asItem(), UBlocks.CHITIN.asItem(),
+                UBlockFamilies.CHISELED_CHITIN.getBaseBlock().asItem()
             ).add(UBlockFamilies.CHISELED_CHITIN.getVariants().values().stream().map(ItemConvertible::asItem).toArray(Item[]::new))
             .add(
                 UBlocks.CHISELLED_CHITIN_HULL.asItem(), UBlocks.CHITIN_SPIKES.asItem(),
