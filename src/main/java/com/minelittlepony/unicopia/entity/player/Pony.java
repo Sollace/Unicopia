@@ -514,7 +514,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         if (getObservedSpecies() == Race.KIRIN) {
             boolean killedTarget = target instanceof LivingEntity l && l.isDead();
             if (killedTarget || entity.getWorld().random.nextInt(10) == 0) {
-                entity.sendMessage(Text.literal("Grrrr"));
                 var charge = getMagicalReserves().getCharge();
 
                 if (charge.getPercentFill() < 1) {
