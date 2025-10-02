@@ -113,8 +113,8 @@ public class ZapAppleItem extends Item implements MultiItem, Appearance.Appearan
 
     @Override
     public Text getName(ItemStack stack) {
-        Appearance appearance = stack.get(UDataComponentTypes.APPEARANCE);
-        return appearance != null ? appearance.item().getName() : super.getName(stack);
+        Appearance appearance = Appearance.get(stack);
+        return appearance.item().isEmpty() ? super.getName(stack) : appearance.item().getName();
     }
 
     @Override
