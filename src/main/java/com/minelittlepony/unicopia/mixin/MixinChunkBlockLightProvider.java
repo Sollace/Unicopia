@@ -32,7 +32,7 @@ abstract class MixinChunkBlockLightProvider extends ChunkLightProvider {
     private void onPropagateLight(ChunkPos chunkPos, CallbackInfo info) {
         if (chunkProvider.getChunk(chunkPos.x, chunkPos.z) instanceof WorldChunk chunk && chunk.getWorld() instanceof ServerWorld world) {
             LightSources.get(world).forEachLightSource(chunkPos, (pos, level) -> {
-                method_51566(pos.asLong(), ChunkLightProvider.class_8531.method_51573(level, false));
+                method_51566(pos, ChunkLightProvider.class_8531.method_51573(level, false));
             });
         }
     }
