@@ -57,11 +57,11 @@ public class LightSources extends PersistentState {
         return compound;
     }
 
-    public void addLightSource(Entity entity) {
+    public <T extends Entity & DynamicLightSource> void addLightSource(T entity) {
         synchronized (lightSources) {
-            lightSourceClientIds.put(entity.getUuid(), entity.getId());
             lightSourceLocations.computeLong(entity.getUuid(), (id, lastPos) -> {
-                long pos = entity.getBlockPos().asLong();
+                lightSourceClientIds.put(id, entity.getId());
+                long pos = entity.getLightSourcePosition().asLong();
                 if (lastPos == null || lastPos != pos) {
                     if (lastPos != null) {
                         lightSources.get(lastPos.longValue()).remove(id);
@@ -82,12 +82,11 @@ public class LightSources extends PersistentState {
         } catch (Exception ignored) { }
     }
 
-    public void removeLightSource(Entity entity) {
+    public void removeLightSource(UUID id) {
         if (empty) {
             return;
         }
         synchronized (lightSources) {
-            UUID id = entity.getUuid();
             lightSourceClientIds.removeInt(id);
             if (lightSourceLocations.containsKey(id)) {
                 lightSources.computeIfPresent(lightSourceLocations.removeLong(id), (p, ids) -> {

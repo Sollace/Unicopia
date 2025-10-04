@@ -5,11 +5,16 @@ import java.lang.ref.WeakReference;
 import com.minelittlepony.unicopia.server.world.LightSources;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public interface DynamicLightSource {
     default int getLightLevel() {
         return 0;
+    }
+
+    default BlockPos getLightSourcePosition() {
+        return ((Entity)this).getBlockPos();
     }
 
     static final class LightEmitter<T extends Entity & DynamicLightSource> {
@@ -38,7 +43,7 @@ public interface DynamicLightSource {
         public void remove() {
             World world = lastWorld.get();
             if (world != null) {
-                LightSources.get(world).removeLightSource(entity);
+                LightSources.get(world).removeLightSource(entity.getUuid());
                 lastWorld.clear();
             }
         }
