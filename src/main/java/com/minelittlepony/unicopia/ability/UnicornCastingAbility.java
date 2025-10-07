@@ -162,7 +162,7 @@ public class UnicornCastingAbility extends AbstractSpellCastingAbility {
             float i = player.getAbilities().getStat(slot).getFillProgress();
 
             Random rng = player.asWorld().random;
-            player.addParticle(i > 0.5F ? ParticleTypes.LARGE_SMOKE : ParticleTypes.CLOUD, eyes, VecHelper.supply(() -> (rng.nextGaussian() - 0.5) / 10));
+            player.addParticle(i > 0.5F ? ParticleTypes.LARGE_SMOKE : ParticleTypes.CLOUD, eyes, VecHelper.supply(() -> (rng.nextGaussian() - 0.5) * 0.1));
             player.playSound(USounds.ITEM_AMULET_CHARGING, 1, i / 20);
         } else {
             player.spawnParticles(MagicParticleEffect.UNICORN, 5);

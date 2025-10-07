@@ -28,6 +28,7 @@ import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 
 public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, SpecterEntityRenderer.SpecterEntityModel> {
+    private static final Identifier TEXTURE = Unicopia.id("textures/entity/specter.png");
 
     public SpecterEntityRenderer(Context context) {
         super(context, new SpecterEntityModel(context.getPart(EntityModelLayers.PLAYER)), 0);
@@ -39,7 +40,7 @@ public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, Sp
 
     @Override
     public Identifier getTexture(SpecterEntity entity) {
-        return Unicopia.id("textures/entity/specter.png");
+        return TEXTURE;
     }
 
     @Override

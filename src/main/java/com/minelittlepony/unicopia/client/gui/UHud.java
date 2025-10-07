@@ -56,6 +56,7 @@ public class UHud {
         new Slot(this, AbilitySlot.SECONDARY, AbilitySlot.SECONDARY, 30, -10),
         new Slot(this, AbilitySlot.TERTIARY, AbilitySlot.TERTIARY, 43, 10)
     );
+    private final LevitatingItemActionWheel levitatingItemActions = new LevitatingItemActionWheel();
 
     @Nullable
     private Text message;
@@ -103,6 +104,8 @@ public class UHud {
         }
 
         xDirection = hudPos.getHorizontal().or(armAlignment.opposite()).opposite().getSignum();
+
+        levitatingItemActions.render(context, tickDelta);
 
         matrices.push();
         matrices.translate(scaledWidth / 2, scaledHeight / 2, 0);

@@ -31,6 +31,7 @@ import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.mob.UEntityAttributes;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
+import com.minelittlepony.unicopia.item.ForageableItem;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
@@ -71,6 +72,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.*;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -84,6 +88,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private final PlayerCamera camera = new PlayerCameraImpl(this);
     private final TraitDiscovery discoveries = new TraitDiscovery(this);
     private final Acrobatics acrobatics = new Acrobatics(this, tracker);
+    private final LevitatedItemsInventory levitatingItems = addTicker(new LevitatedItemsInventory(this));
     private final CorruptionHandler corruptionHandler = new CorruptionHandler(this);
 
     private TriggerCountTracker advancementProgress = new TriggerCountTracker(Map.of());
@@ -214,6 +219,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return advancementProgress;
     }
 
+    public LevitatedItemsInventory getLevitatingItems() {
+        return levitatingItems;
+    }
+
     public SkinFeatures getSkinFeatures() {
         return features.get();
     }
@@ -271,6 +280,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         ticksInSun = 0;
+
+        if (!race.canCast()) {
+            levitatingItems.dropEverything();
+        }
 
         gravity.updateFlightState();
         entity.sendAbilitiesUpdate();
@@ -803,6 +816,37 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return food;
     }
 
+    public ActionResult onUseBlock(Hand hand, BlockHitResult hit) {
+        if (entity.shouldCancelInteraction()) {
+            return ActionResult.PASS;
+        }
+
+        ItemStack stack = entity.getStackInHand(hand);
+        if (stack.isEmpty()) {
+            ActionResult result = levitatingItems.tryUseItem(hit);
+            if (result.isAccepted()) {
+                return ActionResult.SUCCESS;
+            }
+        }
+
+        return ForageableItem.use(entity, stack, entity.getWorld(), hand, hit);
+    }
+
+    public ActionResult onStartedBreakingBlock(Hand hand, BlockPos pos, Direction direction) {
+        if (hand == Hand.MAIN_HAND) {
+            levitatingItems.startMining(entity.getWorld().getBlockState(pos), pos, direction);
+        }
+        return ActionResult.PASS;
+    }
+
+    public ActionResult onStoppedBreakingBlock(BlockPos pos) {
+        return ActionResult.PASS;
+    }
+
+    public ActionResult onAttackEntity(Hand hand, Entity entity, @Nullable EntityHitResult hit) {
+        return ActionResult.PASS;
+    }
+
     public void onKill(Entity killedEntity, DamageSource damage) {
         if (killedEntity != null && killedEntity.getType() == EntityType.PHANTOM && getPhysics().isFlying()) {
             UCriteria.KILL_PHANTOM_WHILE_FLYING.trigger(entity);
@@ -884,6 +928,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         compound.putInt("levels", levels.get());
         compound.putInt("corruption", corruption.get());
         compound.put("advancementTriggerCounts", NbtSerialisable.encode(TriggerCountTracker.CODEC, advancementProgress, lookup));
+        compound.put("levitatingItems", levitatingItems.toNBT(lookup));
         super.toNBT(compound, lookup);
     }
 
@@ -892,6 +937,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         levels.set(compound.getInt("levels"));
         corruption.set(compound.getInt("corruption"));
         mana.fromNBT(compound.getCompound("mana"), lookup);
+        levitatingItems.fromNBT(compound.getCompound("levitatingItems"), lookup);
         advancementProgress = NbtSerialisable.decode(TriggerCountTracker.CODEC, compound.get("advancementTriggerCounts"), lookup).orElseGet(() -> new TriggerCountTracker(Map.of()));
         super.fromNBT(compound, lookup);
     }
@@ -965,6 +1011,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             }
         }
 
+        levitatingItems.copyFrom(oldPlayer.levitatingItems, alive);
         setSpecies(newRace);
         setSuppressedRace(oldSuppressedRace);
         getDiscoveries().copyFrom(oldPlayer.getDiscoveries(), alive);

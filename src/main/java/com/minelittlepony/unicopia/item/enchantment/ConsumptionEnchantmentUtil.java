@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.item.enchantment;
 
-import java.util.function.DoubleSupplier;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
@@ -37,11 +35,9 @@ public class ConsumptionEnchantmentUtil {
             return false;
         }
 
-        DoubleSupplier vecComponentFactory = () -> world.random.nextTriangular(0, 0.3);
-
         Block.getDroppedStacks(state, world, pos, blockEntity, entity, tool).forEach(s -> {
             world.playSound(null, pos, USounds.ENCHANTMENT_CONSUMPTION_CONSUME, SoundCategory.BLOCKS, 0.05F, (float)world.random.nextTriangular(0.6F, 0.2F));
-            ExperienceOrbEntity.spawn(world, pos.toCenterPos().add(VecHelper.supply(vecComponentFactory)), s.getCount());
+            ExperienceOrbEntity.spawn(world, pos.toCenterPos().add(VecHelper.triangular(world.random, 0, 0.3)), s.getCount());
             UCriteria.USE_CONSUMPTION.trigger(entity);
         });
         state.onStacksDropped(world, pos, tool, true);

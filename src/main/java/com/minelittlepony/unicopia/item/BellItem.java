@@ -178,7 +178,7 @@ public class BellItem extends Item {
                         new FollowingParticleEffect(UParticles.HEALTH_DRAIN, user.asEntity(), 0.4F)
                             .withChild(particleType),
                         living.getOriginVector().add(0, living.getPhysics().getGravitySignum() * living.asEntity().getHeight() / 2, 0)
-                            .add(VecHelper.supply(() -> user.asWorld().random.nextTriangular(0, 0.2))),
+                            .add(VecHelper.triangular(user.asWorld().random, 0, 0.2)),
                         Vec3d.ZERO
                 );
             }

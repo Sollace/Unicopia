@@ -5,7 +5,6 @@ import java.util.List;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
-import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -52,10 +51,6 @@ public class NocturnalSleepManager extends SleepManager {
             Pony pony = Pony.of(player);
             return (pony.getSpecies().isNocturnal() == world.isDay());
         }).toList();
-    }
-
-    public static void bootstrap() {
-        EntitySleepEvents.ALLOW_SLEEP_TIME.register((player, pos, isDay) -> Pony.of(player).canSleepNow());
     }
 
     public interface Source {

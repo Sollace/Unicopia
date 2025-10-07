@@ -294,7 +294,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
                     boolean deliverAggressively = payload.isIn(UTags.Items.IS_DELIVERED_AGGRESSIVELY);
 
-                    Vec3d randomPos = deliverAggressively ? targetPos.add(0, 2, 0) : targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
+                    Vec3d randomPos = deliverAggressively ? targetPos.add(0, 2, 0) : targetPos.add(VecHelper.triangular(entity.getRandom(), 0.1, 0.5));
 
                     if (deliverAggressively && item instanceof BlockItem blockItem) {
                         do {
@@ -306,7 +306,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
                                 for (int i = 0; i < 10; i++) {
                                     ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(
-                                            VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5))
+                                            VecHelper.triangular(entity.getRandom(), 0.1, 0.5)
                                     ), Vec3d.ZERO);
                                 }
 
@@ -323,16 +323,14 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                                 BlockSoundGroup sound = state.getSoundGroup();
                                 entity.getWorld().playSound(null, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1) * 0.5F, sound.getPitch() * 0.8F);
                             }
-                            randomPos = targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
+                            randomPos = targetPos.add(VecHelper.triangular(entity.getRandom(), 0.1, 0.5));
                         } while (!payload.isEmpty());
                     } else {
                         if (!entity.getWorld().isAir(BlockPos.ofFloored(randomPos))) {
                             stack.store().put(name, stack.payload());
                         } else {
                             for (int i = 0; i < 10; i++) {
-                                ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(
-                                        VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5))
-                                ), Vec3d.ZERO);
+                                ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(VecHelper.triangular(entity.getRandom(), 0.1, 0.5)), Vec3d.ZERO);
                             }
 
                             ItemEntity itemEntity = EntityType.ITEM.create(entity.getWorld());

@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.ability;
 
 import java.util.Optional;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
@@ -171,8 +170,7 @@ public class EarthPonyGrowAbility implements Ability<Pos> {
     }
 
     private static void spawnConversionParticles(World w, BlockPos pos, boolean success) {
-        DoubleSupplier vecComponentFactory = () -> w.random.nextTriangular(0, 0.5);
-        Supplier<Vec3d> posSupplier = () -> pos.toCenterPos().add(VecHelper.supply(vecComponentFactory));
+        Supplier<Vec3d> posSupplier = () -> pos.toCenterPos().add(VecHelper.triangular(w.random, 0, 0.5));
 
         for (int i = 0; i < 25; i++) {
             ParticleUtils.spawnParticle(w, new MagicParticleEffect(0xFFFF00), posSupplier.get(), Vec3d.ZERO);

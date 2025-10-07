@@ -121,6 +121,7 @@ public interface URenderers {
         EntityRendererRegistry.register(UEntities.IGNOMINIOUS_BULB, IgnominiousBulbEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.SPECTER, SpecterEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.MIMIC, MimicEntityRenderer::new);
+        EntityRendererRegistry.register(UEntities.LEVITATING_ITEM, LevitatingItemEntityRenderer::new);
 
         BlockEntityRendererFactories.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(UBlockEntities.FANCY_BED, CloudBedBlockEntityRenderer::new);
