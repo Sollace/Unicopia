@@ -1,0 +1,13 @@
+{
+	"type": "minecraft:smoking",
+	"category": "food",
+	"cookingtime": 215,
+	"experience": 0.1,
+	"ingredient": {
+		"item": "minecraft:bread"
+	},
+	"result": {
+		"count": 1,
+		"id": "unicopia:toast"
+	}
+}

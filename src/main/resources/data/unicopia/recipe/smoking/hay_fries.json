@@ -1,0 +1,13 @@
+{
+	"type": "minecraft:smoking",
+	"category": "food",
+	"cookingtime": 150,
+	"experience": 0.5,
+	"ingredient": {
+		"item": "unicopia:hay_fries"
+	},
+	"result": {
+		"count": 1,
+		"id": "unicopia:crispy_hay_fries"
+	}
+}

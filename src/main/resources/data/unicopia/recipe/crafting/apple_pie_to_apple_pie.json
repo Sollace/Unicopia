@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"group": "fd_apple_pie",
+	"ingredients": [{
+		"item": "unicopia:apple_pie"
+	}],
+	"result": {
+		"count": 1,
+		"id": "farmersdelight:apple_pie"
+	},
+	"fabric:load_conditions": [{
+		"condition": "fabric:all_mods_loaded",
+		"values": [
+			"farmersdelight"
+		]
+	}]
+}

@@ -1,0 +1,13 @@
+{
+	"type": "minecraft:campfire_cooking",
+	"category": "food",
+	"cookingtime": 1890,
+	"experience": 1.9,
+	"ingredient": {
+		"item": "unicopia:mysterious_egg"
+	},
+	"result": {
+		"count": 1,
+		"id": "unicopia:green_fried_egg"
+	}
+}

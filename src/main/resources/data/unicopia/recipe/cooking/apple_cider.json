@@ -1,0 +1,16 @@
+{
+	"type": "farmersdelight:cooking",
+	"experience": 1.0,
+	"ingredients": [{
+		"tag": "unicopia:fresh_apples"
+	}, {
+		"tag": "unicopia:fresh_apples"
+	}, {
+		"item": "minecraft:sugar"
+	}],
+	"recipe_book_tab": "drinks",
+	"result": {
+		"id": "farmersdelight:apple_cider",
+		"count": 1
+	}
+}

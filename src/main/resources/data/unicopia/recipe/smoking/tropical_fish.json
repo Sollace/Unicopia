@@ -1,0 +1,13 @@
+{
+	"type": "minecraft:smoking",
+	"category": "food",
+	"cookingtime": 115,
+	"experience": 0.6,
+	"ingredient": {
+		"item": "minecraft:tropical_fish"
+	},
+	"result": {
+		"count": 1,
+		"id": "unicopia:cooked_tropical_fish"
+	}
+}

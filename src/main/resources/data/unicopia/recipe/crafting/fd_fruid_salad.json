@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"category": "misc",
+	"ingredients": [{
+		"tag": "unicopia:fresh_apples"
+	}, {
+		"item": "minecraft:melon_slice"
+	}, {
+		"item": "minecraft:melon_slice"
+	}, {
+		"tag": "c:foods/berry"
+	}, {
+		"tag": "c:foods/berry"
+	}, {
+		"item": "farmersdelight:pumpkin_slice"
+	}, {
+		"item": "minecraft:bowl"
+	}],
+	"result": {
+		"count": 1,
+		"id": "farmersdelight:fruit_salad"
+	}
+}
