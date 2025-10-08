@@ -672,6 +672,7 @@
   "ability.unicopia.shoot.with_spell.active": "Стрельба \"%s\"",
   "ability.unicopia.shoot.with_spell.hand": "Стрельба \"%s\" с руки",
   "ability.unicopia.shoot.with_spell.replacing": "Заменить \"%s\" на \"%s\"",
+  "ability.unicopia.telekinesis": "Levitate",
   "ability.unicopia.cast": "Наложить заклинание",
   "ability.unicopia.cast.with_spell": "Наложить \"%s\"",
   "ability.unicopia.cast.with_spell.active": "Наложение \"%s\"",
