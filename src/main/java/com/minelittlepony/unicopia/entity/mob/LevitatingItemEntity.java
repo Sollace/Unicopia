@@ -42,6 +42,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -77,7 +78,8 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
         this(UEntities.LEVITATING_ITEM, player.getWorld());
         setMaster(player);
         setStack(stack);
-        setPosition(player.getPos().add(positionOffset));
+        setPosition(player.getPos());
+        setRelativePosition(new Vec3d(-0.5F, 0, 1.5).add(VecHelper.gaussian(getWorld().random).multiply(0.1)));
         setSlot(slot);
     }
 
@@ -91,6 +93,10 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
 
     public void setRelativePosition(Vec3d newOffset) {
         positionOffset = newOffset;
+    }
+
+    public void setHoldingPosition(Vec3d pos) {
+        holdPosition = pos;
     }
 
     public Vec3d getRelativePosition() {
@@ -277,7 +283,13 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
     private void updatePosition(PlayerEntity master) {
         if (isLogicalSideForUpdatingMovement()) {
 
-            Vec3d targetPosition = holdPosition == null ? master.getEyePos().add(master.getRotationVector(
+            if (!master.shouldCancelInteraction() && holdPosition != null && blockBreakingRecord == null && squaredDistanceTo(master) < 4) {
+                holdPosition = null;
+            }
+
+            boolean isBeingLookedAt = Pony.of(master).isLookingAt(this);
+
+            Vec3d targetPosition = isBeingLookedAt ? getPos() : holdPosition == null ? master.getEyePos().add(master.getRotationVector(
                     (float)positionOffset.x * MathHelper.DEGREES_PER_RADIAN,
                     master.getBodyYaw() + (float)positionOffset.z * MathHelper.DEGREES_PER_RADIAN
             )) : holdPosition;
@@ -294,7 +306,23 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
                 }
             }
 
-            move(MovementType.SELF, targetPosition.subtract(getPos()).multiply(0.3));
+            Vec3d movement = targetPosition.subtract(getPos()).multiply(0.3);
+
+
+            if (hasPassengers()) {
+                Entity passenger = this.getPassengerList().get(0);
+                Box box = passenger.getBoundingBox();
+                Vec3d adjustedMovement = Entity.adjustMovementForCollisions(passenger, movement, box, getWorld(), getWorld().getEntityCollisions(passenger, box.stretch(movement)));
+                if (!adjustedMovement.equals(movement)) {
+                    Vec3d downMove = movement.add(0, master.getY() - getY(), 0);
+                    adjustedMovement = Entity.adjustMovementForCollisions(passenger, downMove, box, getWorld(), getWorld().getEntityCollisions(passenger, box.stretch(downMove)));
+                }
+
+                movement = adjustedMovement;
+            }
+
+
+            move(MovementType.SELF, movement);
 
             lerpTicks = 0;
             updateTrackedPosition(getX(), getY(), getZ());

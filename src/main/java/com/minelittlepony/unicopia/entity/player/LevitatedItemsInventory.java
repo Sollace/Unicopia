@@ -13,7 +13,6 @@ import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity;
 import com.minelittlepony.unicopia.item.ForageableItem;
 import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.Tickable;
-import com.minelittlepony.unicopia.util.VecHelper;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -21,6 +20,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
@@ -54,12 +54,36 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
         this.stacks.put(entity.getSlot(), entity);
     }
 
-    public void addStack(ItemStack stack) {
+    public boolean addStack(ItemStack stack) {
         LevitatingItemEntity entity = new LevitatingItemEntity(nextSlot++, player.asEntity(), stack);
         onEntitySpawned(entity);
         player.asWorld().spawnEntity(entity);
-        entity.setRelativePosition(new Vec3d(-0.5F, 0, 1.5).add(VecHelper.gaussian(entity.getWorld().random).multiply(0.1)));
         player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1);
+        return true;
+    }
+
+    public boolean addPassenger(LivingEntity passenger) {
+        double yOffset = 0.1;
+        if (passenger.getRootVehicle() instanceof LevitatingItemEntity root) {
+            if (root.getMaster() == player.asEntity() && root.getPassengerList().size() == 1 && root.getPassengerList().get(0) == passenger) {
+                player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1);
+                return true;
+            }
+            passenger.stopRiding();
+            passenger.setPosition(root.getPos());
+            yOffset = 0;
+            if (root.getPassengerList().isEmpty()) {
+                root.kill();
+            }
+        }
+        LevitatingItemEntity entity = new LevitatingItemEntity(nextSlot++, player.asEntity(), ItemStack.EMPTY);
+        onEntitySpawned(entity);
+        entity.setPosition(passenger.getPos());
+        entity.setHoldingPosition(passenger.getPos().add(0, yOffset, 0));
+        player.asWorld().spawnEntity(entity);
+        passenger.startRiding(entity, true);
+        player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1);
+        return true;
     }
 
     public void dropEverything() {
@@ -120,14 +144,6 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
         stacks.values().removeIf(Entity::isRemoved);
 
         if (!player.isClient()) {
-            if (player.getSpecies().canCast() && player.sneakingChanged()) {
-                ItemStack stack = player.asEntity().getStackInHand(Hand.MAIN_HAND);
-                if (!stack.isEmpty()) {
-                    player.asEntity().setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
-                    addStack(stack);
-                }
-            }
-
             float cost = 0;
             for (LevitatingItemEntity a : stacks.values()) {
                 cost += 0.01F * a.getStack().getCount();

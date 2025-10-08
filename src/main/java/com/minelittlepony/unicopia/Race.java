@@ -73,7 +73,7 @@ public record Race (
             .abilities(Abilities.HUG, Abilities.STOMP, Abilities.KICK, Abilities.GROW)
     );
     public static final Race UNICORN = register("unicorn", new Builder().foraging().magic()
-            .abilities(Abilities.TELEPORT, Abilities.CAST, Abilities.GROUP_TELEPORT, Abilities.SHOOT, Abilities.DISPELL)
+            .abilities(Abilities.TELEPORT, Abilities.CAST, Abilities.GROUP_TELEPORT, Abilities.SHOOT, Abilities.DISPELL, Abilities.TELEKINESIS)
     );
     public static final Race PEGASUS = register("pegasus", new Builder().foraging().flight(FlightType.AVIAN).weatherMagic().cloudMagic()
             .abilities(Abilities.TOGGLE_FLIGHT, Abilities.RAINBOOM, Abilities.CAPTURE_CLOUD, Abilities.CARRY)
@@ -83,17 +83,17 @@ public record Race (
     );
     public static final Race ALICORN = register("alicorn", new Builder().foraging().availability(Availability.COMMANDS).flight(FlightType.AVIAN).earth().magic().weatherMagic().cloudMagic()
             .abilities(
-                    Abilities.TELEPORT, Abilities.GROUP_TELEPORT, Abilities.CAST, Abilities.SHOOT, Abilities.DISPELL,
+                    Abilities.TELEPORT, Abilities.GROUP_TELEPORT, Abilities.CAST, Abilities.SHOOT, Abilities.DISPELL, Abilities.TELEKINESIS,
                     Abilities.TOGGLE_FLIGHT, Abilities.RAINBOOM, Abilities.CAPTURE_CLOUD, Abilities.CARRY,
                     Abilities.HUG, Abilities.STOMP, Abilities.KICK, Abilities.GROW,
                     Abilities.TIME
             )
     );
     public static final Race CHANGELING = register("changeling", new Builder().foraging().affinity(Affinity.BAD).flight(FlightType.INSECTOID).canHang()
-            .abilities(Abilities.DISPELL, Abilities.TOGGLE_FLIGHT, Abilities.FEED, Abilities.DISGUISE, Abilities.CARRY)
+            .abilities(Abilities.DISPELL, Abilities.TOGGLE_FLIGHT, Abilities.FEED, Abilities.DISGUISE, Abilities.CARRY, Abilities.TELEKINESIS)
     );
     public static final Race KIRIN = register("kirin", new Builder().foraging().magic()
-            .abilities(Abilities.DISPELL, Abilities.RAGE, Abilities.NIRIK_BLAST, Abilities.KIRIN_CAST)
+            .abilities(Abilities.DISPELL, Abilities.RAGE, Abilities.NIRIK_BLAST, Abilities.KIRIN_CAST, Abilities.TELEKINESIS)
     );
     public static final Race HIPPOGRIFF = register("hippogriff", new Builder().foraging().flight(FlightType.AVIAN).cloudMagic()
             .abilities(Abilities.TOGGLE_FLIGHT, Abilities.SCREECH, Abilities.PECK, Abilities.DASH, Abilities.CARRY)

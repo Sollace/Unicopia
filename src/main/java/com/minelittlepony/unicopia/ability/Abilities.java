@@ -37,6 +37,7 @@ public interface Abilities {
     Ability<?> TIME = register(new TimeChangeAbility(), "time_control", AbilitySlot.SECONDARY);
     Ability<?> TELEPORT = register(new UnicornTeleportAbility(), "teleport", AbilitySlot.SECONDARY);
     Ability<?> GROUP_TELEPORT = register(new UnicornGroupTeleportAbility(), "teleport_group", AbilitySlot.SECONDARY);
+    Ability<?> TELEKINESIS = register(new UnicornTelekinesisAbility(), "telekinesis", AbilitySlot.TERTIARY);
     Ability<?> DISPELL = register(new UnicornDispellAbility(), "dispell", AbilitySlot.TERTIARY);
 
     // earth / alicorn

@@ -20,6 +20,7 @@ public interface Channel {
     C2SPacketType<MsgRemoveSpell> REMOVE_SPELL = SimpleNetworking.clientToServer(Unicopia.id("remove_spell"), MsgRemoveSpell.PACKET_CODEC);
     C2SPacketType<MsgPlayerFlightControlsInput> FLIGHT_CONTROLS_INPUT = SimpleNetworking.clientToServer(Unicopia.id("flight_controls"), MsgPlayerFlightControlsInput.PACKET_CODEC);
     C2SPacketType<SkinFeatures> UPDATE_PLAYER_FEATURES = SimpleNetworking.clientToServer(Unicopia.id("skin_features"), SkinFeatures.PACKET_CODEC);
+    C2SPacketType<MsgPlayerTargetEntity> CLIENT_PLAYER_LOOK_AT_ENTITY = SimpleNetworking.clientToServer(Unicopia.id("client_player_look_at_entity"), MsgPlayerTargetEntity.PACKET_CODEC);
 
     S2CPacketType<MsgPlayerCapabilities> SERVER_PLAYER_CAPABILITIES = SimpleNetworking.serverToClient(Unicopia.id("player_capabilities"), MsgPlayerCapabilities.PACKET_CODEC);
     S2CPacketType<MsgBlockDestruction> SERVER_BLOCK_DESTRUCTION = SimpleNetworking.serverToClient(Unicopia.id("block_destruction"), MsgBlockDestruction.PACKET_CODEC);
@@ -41,6 +42,7 @@ public interface Channel {
     S2CPacketType<MsgConfigurationChange> CONFIGURATION_CHANGE = SimpleNetworking.serverToClient(Unicopia.id("config"), MsgConfigurationChange.PACKET_CODEC);
     S2CPacketType<MsgZapAppleStage> SERVER_ZAP_STAGE = SimpleNetworking.serverToClient(Unicopia.id("zap_stage"), MsgZapAppleStage.PACKET_CODEC);
     S2CPacketType<MsgTrinketBroken> SERVER_TRINKET_BROKEN = SimpleNetworking.serverToClient(Unicopia.id("trinket_broken"), MsgTrinketBroken.PACKET_CODEC);
+    S2CPacketType<MsgPlayerTargetEntity> SERVER_PLAYER_LOOK_AT_ENTITY = SimpleNetworking.serverToClient(Unicopia.id("server_player_look_at_entity"), MsgPlayerTargetEntity.PACKET_CODEC);
 
     static void bootstrap() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {

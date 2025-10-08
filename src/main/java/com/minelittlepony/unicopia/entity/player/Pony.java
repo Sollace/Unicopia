@@ -120,6 +120,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     private final DataTracker.Entry<SkinFeatures> features;
 
+    @Nullable
+    private Entity lookedAtEntity;
+    private int ticksUntilLookTimeout;
+
     public Pony(PlayerEntity player) {
         super(player);
         trackers.addPacketEmitter((sender, initial) -> {
@@ -234,6 +238,26 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 Channel.UPDATE_PLAYER_FEATURES.sendToServer(features);
             }
         }
+    }
+
+    public void setLookedEntity(Entity target) {
+        if (this.lookedAtEntity != target) {
+            System.out.println("Set looked: " + target);
+            this.lookedAtEntity = target;
+            this.ticksUntilLookTimeout = 10;
+            var packet = new MsgPlayerTargetEntity(target == null ? Optional.empty() : Optional.of(target.getId()));
+            if (isClient()) {
+                Channel.CLIENT_PLAYER_LOOK_AT_ENTITY.sendToServer(packet);
+            } else if (this.lookedAtEntity == null) {
+                Channel.SERVER_PLAYER_LOOK_AT_ENTITY.sendToPlayer(packet, (ServerPlayerEntity)entity);
+            }
+        } else if (target != null) {
+            this.ticksUntilLookTimeout = 10;
+        }
+    }
+
+    public boolean isLookingAt(Entity target) {
+        return lookedAtEntity != null && lookedAtEntity == target;
     }
 
     public void setRespawnRace(Race race) {
@@ -517,6 +541,10 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                     entity.damage(entity.getDamageSources().dryOut(), 2);
                 }
             }
+        }
+
+        if (ticksUntilLookTimeout > 0 && isClient() && --ticksUntilLookTimeout <= 0) {
+            setLookedEntity(null);
         }
 
         return super.beforeUpdate();

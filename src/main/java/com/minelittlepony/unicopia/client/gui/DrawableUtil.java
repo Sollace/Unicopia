@@ -95,7 +95,7 @@ public interface DrawableUtil {
      * @param mirrorHorizontally Whether or not the arc must be mirrored across the horizontal plane. Will produce a bar that grows from the middle filling both sides.
      */
     static void drawArc(MatrixStack matrices, double innerRadius, double outerRadius, double startAngle, double arcAngle, int color) {
-        if (arcAngle < INCREMENT) {
+        if (Math.abs(arcAngle) < INCREMENT) {
             return;
         }
 
@@ -104,7 +104,9 @@ public interface DrawableUtil {
         float b = (color >> 8 & 255) / 255F;
         float k = (color & 255) / 255F;
 
-        final double maxAngle = MathHelper.clamp(startAngle + arcAngle, 0, TAU - INCREMENT);
+        arcAngle = Math.min(arcAngle, TAU - INCREMENT);
+
+        final double maxAngle = startAngle + arcAngle;
 
         Matrix4f model = matrices.peek().getPositionMatrix();
 
