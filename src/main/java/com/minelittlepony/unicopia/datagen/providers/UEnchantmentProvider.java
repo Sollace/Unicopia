@@ -41,7 +41,7 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
                 items.getOrThrow(ItemTags.MINING_ENCHANTABLE),
                 Rarity.RARE,
                 3,
-                Enchantment.constantCost(1), Enchantment.constantCost(41),
+                Enchantment.leveledCost(1, 11), Enchantment.constantCost(41),
                 4,
                 AttributeModifierSlot.HAND
         )));
@@ -50,7 +50,7 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
                 items.getOrThrow(ItemTags.HEAD_ARMOR_ENCHANTABLE),
                 Rarity.UNCOMMON,
                 3,
-                Enchantment.constantCost(1), Enchantment.constantCost(41),
+                Enchantment.leveledCost(1, 11), Enchantment.leveledCost(12, 11),
                 4,
                 AttributeModifierSlot.ARMOR
         )));
@@ -58,7 +58,7 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
                 items.getOrThrow(ItemTags.MINING_ENCHANTABLE),
                 Rarity.UNCOMMON,
                 1,
-                Enchantment.constantCost(1), Enchantment.constantCost(31),
+                Enchantment.leveledCost(12, 20), Enchantment.constantCost(31),
                 3,
                 AttributeModifierSlot.HAND
         )));
@@ -67,7 +67,7 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
                     items.getOrThrow(ItemTags.ARMOR_ENCHANTABLE),
                     Rarity.RARE,
                     4,
-                    Enchantment.constantCost(7), Enchantment.constantCost(23),
+                    Enchantment.leveledCost(7, 11), Enchantment.constantCost(23),
                     2,
                     AttributeModifierSlot.ARMOR
             )
@@ -84,7 +84,7 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
                     items.getOrThrow(ItemTags.WEAPON_ENCHANTABLE),
                     Rarity.RARE,
                     3,
-                    Enchantment.constantCost(8), Enchantment.constantCost(20),
+                    Enchantment.leveledCost(8, 8), Enchantment.constantCost(20),
                     1,
                     AttributeModifierSlot.MAINHAND
             )
@@ -100,7 +100,7 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
                     items.getOrThrow(ItemTags.FOOT_ARMOR_ENCHANTABLE),
                     Rarity.VERY_RARE,
                     3,
-                    Enchantment.constantCost(9), Enchantment.constantCost(28),
+                    Enchantment.leveledCost(9, 9), Enchantment.leveledCost(28, 8),
                     3,
                     AttributeModifierSlot.FEET
             )
@@ -117,7 +117,7 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
                 items.getOrThrow(ItemTags.VANISHING_ENCHANTABLE),
                 Rarity.VERY_RARE,
                 1,
-                Enchantment.constantCost(2), Enchantment.constantCost(10),
+                Enchantment.leveledCost(9, 9), Enchantment.constantCost(10),
                 4,
                 AttributeModifierSlot.ANY
         )).addEffect(EnchantmentEffectComponentTypes.TICK, new ParticleTrailEnchantmentEntityEffect(Optional.empty(), 0.2F, 1, 10)));
@@ -126,7 +126,7 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
                 items.getOrThrow(ItemTags.VANISHING_ENCHANTABLE),
                 Rarity.VERY_RARE,
                 1,
-                Enchantment.constantCost(2), Enchantment.constantCost(10),
+                Enchantment.leveledCost(9, 9), Enchantment.constantCost(10),
                 4,
                 AttributeModifierSlot.ANY
         )).addEffect(EnchantmentEffectComponentTypes.TICK, new AmbientSoundsEnchantmentEffect(Unicopia.id("poisoned_joke_level"), UTags.Sounds.POISON_JOKE_EVENTS)));
@@ -135,7 +135,7 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
                 items.getOrThrow(ItemTags.VANISHING_ENCHANTABLE),
                 Rarity.VERY_RARE,
                 3,
-                Enchantment.constantCost(2), Enchantment.constantCost(12),
+                Enchantment.leveledCost(9, 9), Enchantment.leveledCost(12, 3),
                 4,
                 AttributeModifierSlot.ANY
         )).addEffect(EnchantmentEffectComponentTypes.TICK, DangerSensingEnchantmentEffect.INSTANCE));
@@ -144,7 +144,7 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
                 items.getOrThrow(ItemTags.EQUIPPABLE_ENCHANTABLE),
                 Rarity.VERY_RARE,
                 6,
-                Enchantment.constantCost(2), Enchantment.constantCost(12),
+                Enchantment.leveledCost(9, 9), Enchantment.leveledCost(12, 3),
                 1,
                 AttributeModifierSlot.ANY
         )));
@@ -153,7 +153,7 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
                 items.getOrThrow(ItemTags.VANISHING_ENCHANTABLE),
                 Rarity.UNCOMMON,
                 5,
-                Enchantment.constantCost(6), Enchantment.constantCost(41),
+                Enchantment.leveledCost(6, 9), Enchantment.leveledCost(41, 7),
                 3,
                 AttributeModifierSlot.ANY
         )));
@@ -162,7 +162,7 @@ public class UEnchantmentProvider extends DataGenRegistryProvider<Enchantment> {
                 items.getOrThrow(ItemTags.MINING_ENCHANTABLE),
                 Rarity.VERY_RARE,
                 1,
-                Enchantment.constantCost(10), Enchantment.constantCost(71),
+                Enchantment.leveledCost(10, 9), Enchantment.leveledCost(71, 4),
                 5,
                 AttributeModifierSlot.MAINHAND
         )));
