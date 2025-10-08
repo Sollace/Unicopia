@@ -1,0 +1,15 @@
+{
+	"type": "farmersdelight:cutting",
+	"tool": {
+		"tag": "c:tools/knife"
+	},
+	"ingredients": [{
+		"item": "unicopia:apple_pie"
+	}],
+	"result": [{
+		"item": {
+			"count": 4,
+			"id": "unicopia:apple_pie_slice"
+		}
+	}]
+}
