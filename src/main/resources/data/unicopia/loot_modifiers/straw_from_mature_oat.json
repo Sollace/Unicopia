@@ -1,0 +1,16 @@
+{
+	"type": "farmersdelight:add_item",
+	"conditions": [{
+		"condition": "minecraft:match_tool",
+		"predicate": {
+			"items": "#farmersdelight:straw_harvesters"
+		}
+	}, {
+		"condition": "block_state_property",
+		"block": "unicopia:oats_stem",
+		"properties": {
+			"age": "6"
+		}
+	}],
+	"item": "farmersdelight:straw"
+}
