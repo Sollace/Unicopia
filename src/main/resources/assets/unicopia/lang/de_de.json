@@ -672,6 +672,7 @@
   "ability.unicopia.shoot.with_spell.active": "Schüsse %s",
   "ability.unicopia.shoot.with_spell.hand": "Schüsse %s von der Hand",
   "ability.unicopia.shoot.with_spell.replacing": "Ersetze %s durch %s",
+  "ability.unicopia.telekinesis": "Levitate",
   "ability.unicopia.cast": "Zauber wirken",
   "ability.unicopia.cast.with_spell": "Cast %s",
   "ability.unicopia.cast.with_spell.active": "Casting %s",
