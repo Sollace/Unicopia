@@ -672,6 +672,7 @@
   "ability.unicopia.shoot.with_spell.active": "正在发射 %s 魔法",
   "ability.unicopia.shoot.with_spell.hand": "手持发射 %s 魔法",
   "ability.unicopia.shoot.with_spell.replacing": "%s 魔法已暂存，将优先发射 %s 魔法",
+  "ability.unicopia.telekinesis": "Levitate",
   "ability.unicopia.cast": "原地施放魔法",
   "ability.unicopia.cast.with_spell": "原地施放 %s 魔法",
   "ability.unicopia.cast.with_spell.active": "正在原地施放 %s 魔法",
