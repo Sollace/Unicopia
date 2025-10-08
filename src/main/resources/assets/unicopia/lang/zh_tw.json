@@ -672,6 +672,7 @@
   "ability.unicopia.shoot.with_spell.active": "正在發射%s咒",
   "ability.unicopia.shoot.with_spell.hand": "正從蹄上發射%s咒",
   "ability.unicopia.shoot.with_spell.replacing": "從%s咒變更爲%s咒",
+  "ability.unicopia.telekinesis": "Levitate",
   "ability.unicopia.cast": "施咒",
   "ability.unicopia.cast.with_spell": "施放%s咒",
   "ability.unicopia.cast.with_spell.active": "正在施放%s咒",
