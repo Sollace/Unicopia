@@ -672,6 +672,7 @@
   "ability.unicopia.shoot.with_spell.active": "Tir sur %s",
   "ability.unicopia.shoot.with_spell.hand": "Tirer sur %s à la main",
   "ability.unicopia.shoot.with_spell.replacing": "Remplacer %s par %s",
+  "ability.unicopia.telekinesis": "Levitate",
   "ability.unicopia.cast": "Sorts d'incantation",
   "ability.unicopia.cast.with_spell": "Diffusion %s",
   "ability.unicopia.cast.with_spell.active": "Lancement de %s",
