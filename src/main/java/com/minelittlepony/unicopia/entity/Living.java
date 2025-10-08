@@ -27,6 +27,7 @@ import com.minelittlepony.unicopia.entity.damage.MagicalDamageSource;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.effect.CorruptInfluenceStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
+import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.input.Heuristic;
 import com.minelittlepony.unicopia.input.Interactable;
@@ -356,6 +357,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     public Optional<Boolean> onDamage(DamageSource source, float amount) {
+
+        if (entity.getRootVehicle() instanceof LevitatingItemEntity && (source.isOf(DamageTypes.IN_WALL) || source.isIn(DamageTypeTags.IS_FALL))) {
+            return Optional.of(false);
+        }
 
         if (Guest.of(source.getAttacker()).hostIs(this)
             || Guest.of(source.getSource()).hostIs(this)) {
