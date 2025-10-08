@@ -15,12 +15,12 @@ import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.Tickable;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectAVLTreeMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
@@ -40,7 +40,7 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
 
     private final Pony player;
 
-    private final Int2ObjectMap<LevitatingItemEntity> stacks = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<LevitatingItemEntity> stacks = new Int2ObjectAVLTreeMap<>();
     private final List<LevitatingItemEntity> pending = new ArrayList<>();
     private int nextSlot = 0;
 
@@ -54,6 +54,12 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
         this.stacks.put(entity.getSlot(), entity);
     }
 
+    public void onEntityDespawned(LevitatingItemEntity entity) {
+        if (this.stacks.containsKey(entity.getSlot())) {
+            this.stacks.remove(entity.getSlot());
+        }
+    }
+
     public boolean addStack(ItemStack stack) {
         LevitatingItemEntity entity = new LevitatingItemEntity(nextSlot++, player.asEntity(), stack);
         onEntitySpawned(entity);
@@ -62,7 +68,7 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
         return true;
     }
 
-    public boolean addPassenger(LivingEntity passenger) {
+    public boolean addPassenger(Entity passenger) {
         double yOffset = 0.1;
         if (passenger.getRootVehicle() instanceof LevitatingItemEntity root) {
             if (root.getMaster() == player.asEntity() && root.getPassengerList().size() == 1 && root.getPassengerList().get(0) == passenger) {
@@ -81,7 +87,14 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
         entity.setPosition(passenger.getPos());
         entity.setHoldingPosition(passenger.getPos().add(0, yOffset, 0));
         player.asWorld().spawnEntity(entity);
-        passenger.startRiding(entity, true);
+        if (passenger instanceof ItemEntity i) {
+            entity.setStack(i.getStack());
+            i.discard();
+            return addStack(i.getStack());
+        } else {
+            passenger.startRiding(entity, true);
+        }
+
         player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1);
         return true;
     }
@@ -96,7 +109,7 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
     public ActionResult tryUseItem(@Nullable BlockHitResult hit) {
         for (var i : stacks.values()) {
             ItemStack stack = i.getStack();
-            if (!player.asEntity().getItemCooldownManager().isCoolingDown(stack.getItem())) {
+            if (player.asEntity().getItemCooldownManager().isCoolingDown(stack.getItem())) {
                 continue;
             }
 
@@ -104,6 +117,7 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
                 return ActionResult.SUCCESS;
             }
 
+            System.out.println((player.isClient() ? "CLIENT" : "SERVER") + " TryUse " + stack);
             var result = stack.useOnBlock(new ItemUsageContext(player.asWorld(), player.asEntity(), Hand.MAIN_HAND, stack, hit));
             if (result.isAccepted()) {
                 if (player.asEntity() instanceof ServerPlayerEntity spe) {

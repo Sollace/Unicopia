@@ -845,7 +845,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public ActionResult onUseBlock(Hand hand, BlockHitResult hit) {
-        if (entity.shouldCancelInteraction()) {
+        if (entity.shouldCancelInteraction() || entity.isSpectator()) {
             return ActionResult.PASS;
         }
 
@@ -861,7 +861,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public ActionResult onStartedBreakingBlock(Hand hand, BlockPos pos, Direction direction) {
-        if (hand == Hand.MAIN_HAND) {
+        if (hand == Hand.MAIN_HAND && !entity.isSpectator()) {
             levitatingItems.startMining(entity.getWorld().getBlockState(pos), pos, direction);
         }
         return ActionResult.PASS;

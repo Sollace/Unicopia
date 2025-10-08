@@ -30,9 +30,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
+import net.minecraft.server.network.EntityTrackerEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
@@ -66,9 +69,12 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
     @Nullable
     private LevitatedItemsInventory.BlockBreakingRecord blockBreakingRecord;
 
-    private Vec3d lerpPos = new Vec3d(0, 0, 0);
+    private Vec3d lerpPos = Vec3d.ZERO;
     private int lerpTicks;
     private int swingTicks;
+
+    @Nullable
+    private PlayerEntity master;
 
     LevitatingItemEntity(EntityType<? extends LevitatingItemEntity> type, World world) {
         super(type, world);
@@ -122,14 +128,27 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
 
     public void setMaster(PlayerEntity player) {
         dataTracker.set(OWNER_ID, Optional.of(player.getUuid()));
+        master = player;
     }
 
     @Override
     public @Nullable PlayerEntity getMaster() {
-        if (getWorld() instanceof ServerWorld sw) {
-            return getMasterId().map(sw.getServer().getPlayerManager()::getPlayer).orElse(null);
+        Optional<UUID> masterId = getMasterId();
+
+        if (masterId.isEmpty()) {
+            master = null;
+            return null;
         }
-        return getMasterId().map(getWorld()::getPlayerByUuid).orElse(null);
+
+        if (master == null || master.getUuid() != masterId.get()) {
+            if (getWorld() instanceof ServerWorld sw) {
+                master = masterId.map(sw.getServer().getPlayerManager()::getPlayer).orElse(null);
+            } else {
+                master = masterId.map(getWorld()::getPlayerByUuid).orElse(null);
+            }
+        }
+
+        return master;
     }
 
     @Override
@@ -310,11 +329,11 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
 
 
             if (hasPassengers()) {
-                Entity passenger = this.getPassengerList().get(0);
+                Entity passenger = getPassengerList().get(0);
                 Box box = passenger.getBoundingBox();
                 Vec3d adjustedMovement = Entity.adjustMovementForCollisions(passenger, movement, box, getWorld(), getWorld().getEntityCollisions(passenger, box.stretch(movement)));
                 if (!adjustedMovement.equals(movement)) {
-                    Vec3d downMove = movement.add(0, master.getY() - getY(), 0);
+                    Vec3d downMove = movement.add(0, master.getY() - getY() - 1, 0);
                     adjustedMovement = Entity.adjustMovementForCollisions(passenger, downMove, box, getWorld(), getWorld().getEntityCollisions(passenger, box.stretch(downMove)));
                 }
 
@@ -360,6 +379,18 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
         super.onTrackedDataSet(data);
         if (STACK.equals(data)) {
             getStack().setHolder(this);
+        }
+
+        if (getWorld().isClient) {
+            if (OWNER_ID.equals(data) || SLOT.equals(data)) {
+                if (master != null) {
+                    Pony.of(master).getLevitatingItems().onEntityDespawned(this);
+                }
+                PlayerEntity master = getMaster();
+                if (master != null) {
+                    Pony.of(master).getLevitatingItems().onEntitySpawned(this);
+                }
+            }
         }
     }
 
@@ -441,11 +472,25 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
     }
 
     @Override
-    public void onSpawnPacket(EntitySpawnS2CPacket packet) {
-        super.onSpawnPacket(packet);
+    public Packet<ClientPlayPacketListener> createSpawnPacket(EntityTrackerEntry entry) {
+        PlayerEntity master = getMaster();
+        return new EntitySpawnS2CPacket(this, entry, master == null ? 0 : master.getId());
+    }
+
+    @Override
+    public void onRemoved() {
+        @Nullable
         PlayerEntity master = getMaster();
         if (master != null) {
-            Pony.of(master).getLevitatingItems().onEntitySpawned(this);
+            Pony.of(master).getLevitatingItems().onEntityDespawned(this);
+        }
+    }
+
+    @Override
+    public void onSpawnPacket(EntitySpawnS2CPacket packet) {
+        super.onSpawnPacket(packet);
+        if (getWorld().getEntityById(packet.getEntityData()) instanceof PlayerEntity m) {
+            master = m;
         }
     }
 }

@@ -8,7 +8,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.util.Trace;
-import net.minecraft.entity.LivingEntity;
+
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -48,7 +49,7 @@ public class UnicornTelekinesisAbility implements Ability<Numeric> {
 
         int maxDistance = (int)((player.asEntity().isCreative() ? 1000 : 100) + (player.getLevel().get() * 0.25F));
 
-        Trace trace = Trace.create(player.asEntity(), maxDistance, 1, hit -> EquinePredicates.VALID_LIVING_AND_NOT_MAGIC_IMMUNE.test(hit) && !player.asEntity().isConnectedThroughVehicle(hit));
+        Trace trace = Trace.create(player.asEntity(), maxDistance, 1, hit -> (EquinePredicates.VALID_LIVING_AND_NOT_MAGIC_IMMUNE.test(hit) || hit instanceof ItemEntity) && !player.asEntity().isConnectedThroughVehicle(hit));
 
         return trace.getEntityResult().map(e -> e.getEntity().getBlockPos()).map(p -> Numeric.valueOf(1)).or(() -> {
             ItemStack stack = player.asEntity().getStackInHand(Hand.MAIN_HAND);
@@ -91,9 +92,9 @@ public class UnicornTelekinesisAbility implements Ability<Numeric> {
         if (data.type() == 1) {
             int maxDistance = (int)((player.asEntity().isCreative() ? 1000 : 100) + (player.getLevel().get() * 0.25F));
 
-            Trace trace = Trace.create(player.asEntity(), maxDistance, 1, hit -> EquinePredicates.VALID_LIVING_AND_NOT_MAGIC_IMMUNE.test(hit) && !player.asEntity().isConnectedThroughVehicle(hit));
+            Trace trace = Trace.create(player.asEntity(), maxDistance, 1, hit -> (EquinePredicates.VALID_LIVING_AND_NOT_MAGIC_IMMUNE.test(hit) || hit instanceof ItemEntity) && !player.asEntity().isConnectedThroughVehicle(hit));
 
-            return trace.<LivingEntity>getEntity().filter(entity -> player.getLevitatingItems().addPassenger(entity)).isPresent();
+            return trace.getEntity().filter(entity -> player.getLevitatingItems().addPassenger(entity)).isPresent();
         }
 
         return false;
