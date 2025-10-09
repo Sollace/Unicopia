@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public interface NbtSerialisable {
@@ -50,6 +51,14 @@ public interface NbtSerialisable {
 
     static Vec3d readVector(NbtList list) {
         return new Vec3d(list.getDouble(0), list.getDouble(1), list.getDouble(2));
+    }
+
+    static Vec3d readPositionVector(NbtList list) {
+        return new Vec3d(
+                MathHelper.clamp(list.getDouble(0), -3.0000512E7, 3.0000512E7),
+                MathHelper.clamp(list.getDouble(1), -2.0E7, 2.0E7),
+                MathHelper.clamp(list.getDouble(2), -3.0000512E7, 3.0000512E7)
+        );
     }
 
     static NbtCompound subTag(String name, NbtCompound parent) {

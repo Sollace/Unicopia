@@ -245,7 +245,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             System.out.println("Set looked: " + target);
             this.lookedAtEntity = target;
             this.ticksUntilLookTimeout = 10;
-            var packet = new MsgPlayerTargetEntity(target == null ? Optional.empty() : Optional.of(target.getId()));
+            var packet = new MsgPlayerTargetEntity(target == null ? Optional.empty() : Optional.of(target.getId()), Optional.empty(), Optional.empty());
             if (isClient()) {
                 Channel.CLIENT_PLAYER_LOOK_AT_ENTITY.sendToServer(packet);
             } else if (this.lookedAtEntity == null) {
@@ -470,20 +470,13 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 Entity vehicle = entity.getVehicle();
 
                 if (vehicle instanceof Trap) {
-                    if (((Trap)vehicle).attemptDismount(entity)) {
-                        setCarrier((UUID)null);
-                        entity.stopRiding();
-                        entity.refreshPositionAfterTeleport(vehicle.getPos());
-                        Living.transmitPassengers(vehicle);
-                    } else {
-                        entity.setSneaking(false);
-                    }
-                } else {
+                    entity.setSneaking(false);
+                }
+
+                if (vehicle != null && (!(vehicle instanceof Trap trap) || trap.attemptDismount(entity))) {
                     setCarrier((UUID)null);
                     entity.stopRiding();
-                    if (vehicle != null) {
-                        entity.refreshPositionAfterTeleport(vehicle.getPos());
-                    }
+                    entity.refreshPositionAfterTeleport(vehicle.getPos());
                     Living.transmitPassengers(vehicle);
                 }
             }
@@ -844,20 +837,35 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return food;
     }
 
-    public ActionResult onUseBlock(Hand hand, BlockHitResult hit) {
+    public ActionResult interact(Hand hand, BlockHitResult hit) {
         if (entity.shouldCancelInteraction() || entity.isSpectator()) {
             return ActionResult.PASS;
         }
 
         ItemStack stack = entity.getStackInHand(hand);
         if (stack.isEmpty()) {
-            ActionResult result = levitatingItems.tryUseItem(hit);
+            ActionResult result = levitatingItems.interact(hit);
             if (result.isAccepted()) {
                 return ActionResult.SUCCESS;
             }
         }
 
         return ForageableItem.use(entity, stack, entity.getWorld(), hand, hit);
+    }
+
+    public ActionResult interact(Hand hand, Entity entity, @Nullable EntityHitResult hit) {
+        if (this.entity.shouldCancelInteraction() || this.entity.isSpectator()) {
+            return ActionResult.PASS;
+        }
+
+        if (this.entity.getStackInHand(hand).isEmpty()) {
+            ActionResult result = levitatingItems.interact(entity, hit);
+            if (result.isAccepted()) {
+                return ActionResult.SUCCESS;
+            }
+        }
+
+        return ActionResult.PASS;
     }
 
     public ActionResult onStartedBreakingBlock(Hand hand, BlockPos pos, Direction direction) {
@@ -872,6 +880,17 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public ActionResult onAttackEntity(Hand hand, Entity entity, @Nullable EntityHitResult hit) {
+        if (this.entity.isSpectator()) {
+            return ActionResult.PASS;
+        }
+
+        if (this.entity.getStackInHand(hand).isEmpty()) {
+            ActionResult result = levitatingItems.attack(entity, hit);
+            if (result.isAccepted()) {
+                return ActionResult.SUCCESS;
+            }
+        }
+
         return ActionResult.PASS;
     }
 

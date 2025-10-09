@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
@@ -86,7 +87,8 @@ public class Unicopia implements ModInitializer {
         });
         PlayerBlockBreakEvents.AFTER.register(SeaponyGraceStatusEffect::processBlockChange);
         PlayerBlockBreakEvents.CANCELED.register((world, player, pos, state, blockEntity) -> Pony.of(player).onStoppedBreakingBlock(pos));
-        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> Pony.of(player).onUseBlock(hand, hitResult));
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> Pony.of(player).interact(hand, hitResult));
+        UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> Pony.of(player).interact(hand, entity, hitResult));
         AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> Pony.of(player).onStartedBreakingBlock(hand, pos, direction));
         AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> Pony.of(player).onAttackEntity(hand, entity, hitResult));
         EntitySleepEvents.ALLOW_SLEEP_TIME.register((player, pos, isDay) -> Pony.of(player).canSleepNow());

@@ -25,6 +25,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.input.Input;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.VertexConsumer;
@@ -56,7 +57,7 @@ public class UHud {
         new Slot(this, AbilitySlot.SECONDARY, AbilitySlot.SECONDARY, 30, -10),
         new Slot(this, AbilitySlot.TERTIARY, AbilitySlot.TERTIARY, 43, 10)
     );
-    private final LevitatingItemActionWheel levitatingItemActions = new LevitatingItemActionWheel();
+    public final LevitatingItemActionWheel levitatingItemActions = new LevitatingItemActionWheel();
 
     @Nullable
     private Text message;
@@ -388,6 +389,22 @@ public class UHud {
         if (!client.isPaused() && messageTime > 0) {
             messageTime--;
         }
+        if (!client.isPaused() && client.player != null) {
+            levitatingItemActions.tick(client, Pony.of(client.player));
+        }
+    }
+
+    public boolean handleInput(Input input) {
+        if (client.isPaused() || client.player == null) {
+            return false;
+        }
+
+        if (Pony.of(client.player).getAcrobatics().isImmobile()) {
+            input.movementSideways = 0;
+            input.movementForward = 0;
+        }
+
+        return levitatingItemActions.handleInput(input) || EffectUtils.getAmplifier(client.player, UEffects.PARALYSIS) > 1;
     }
 
     void renderAbilityIcon(DrawContext context, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {

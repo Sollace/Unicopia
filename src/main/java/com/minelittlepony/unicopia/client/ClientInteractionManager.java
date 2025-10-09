@@ -16,14 +16,18 @@ import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.gui.DismissSpellScreen;
+import com.minelittlepony.unicopia.client.gui.UHud;
 import com.minelittlepony.unicopia.client.gui.spellbook.ClientChapters;
 import com.minelittlepony.unicopia.client.particle.ClientBoundParticleSpawner;
 import com.minelittlepony.unicopia.client.sound.*;
 import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity;
 import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyClientPlayerEntity;
+import com.minelittlepony.unicopia.network.Channel;
+import com.minelittlepony.unicopia.network.MsgPlayerTargetEntity;
 import com.minelittlepony.unicopia.particle.ParticleSpawner;
 import com.mojang.authlib.GameProfile;
 
@@ -170,6 +174,19 @@ public class ClientInteractionManager extends InteractionManager {
     @Override
     public float getTickRate() {
         return client.world == null ? 20 : client.world.getTickManager().getTickRate();
+    }
+
+    @Override
+    public void interactLevitatingItem(LevitatingItemEntity entity, PlayerEntity player) {
+        if (!entity.getWorld().isClient) {
+            super.interactLevitatingItem(entity, player);
+        } else {
+            if (player == client.player && entity == UHud.INSTANCE.levitatingItemActions.targetEntity
+                    && UHud.INSTANCE.levitatingItemActions.currentAction != null
+                    && UHud.INSTANCE.levitatingItemActions.currentAction != LevitatingItemEntity.Action.MOVE) {
+                Channel.CLIENT_PLAYER_LOOK_AT_ENTITY.sendToServer(new MsgPlayerTargetEntity(Optional.of(entity.getId()), Optional.of(UHud.INSTANCE.levitatingItemActions.currentAction), Optional.empty()));
+            }
+        }
     }
 
     @Override
