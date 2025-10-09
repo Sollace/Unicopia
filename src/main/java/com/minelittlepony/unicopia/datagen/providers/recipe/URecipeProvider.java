@@ -46,7 +46,11 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.recipe.AbstractCookingRecipe;
+import net.minecraft.recipe.CampfireCookingRecipe;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.SmokingRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper;
@@ -438,6 +442,8 @@ public class URecipeProvider extends FabricRecipeProvider {
         offerSmelting(exporter, List.of(Items.AXOLOTL_BUCKET), RecipeCategory.FOOD, UItems.FRIED_AXOLOTL, 2.2F, 230, "fried_axolotl");
         offerSmelting(exporter, List.of(UItems.FROG_LEGS), RecipeCategory.FOOD, UItems.COOKED_FROG_LEGS, 2.2F, 10, "frog_legs");
         offerSmelting(exporter, List.of(UBlocks.MYSTERIOUS_EGG.asItem()), RecipeCategory.FOOD, UItems.GREEN_FRIED_EGG, 3.8F, 630, "fried_egg");
+        generateCookingRecipes(exporter, "smoking", RecipeSerializer.SMOKING, SmokingRecipe::new, 100);
+        generateCookingRecipes(exporter, "campfire_cooking", RecipeSerializer.CAMPFIRE_COOKING, CampfireCookingRecipe::new, 600);
 
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.ZAP_APPLE_JAM_JAR)
             .input(UItems.COOKED_ZAP_APPLE, 6).criterion(hasItem(UItems.COOKED_ZAP_APPLE), conditionsFromItem(UItems.COOKED_ZAP_APPLE))
@@ -466,6 +472,20 @@ public class URecipeProvider extends FabricRecipeProvider {
         offerTrickRecipe(exporter, UItems.PINEAPPLE, UItems.PINEAPPLE_CROWN);
         offerTrickRecipe(exporter, UItems.HORSE_SHOE_FRIES, UItems.IRON_HORSE_SHOE);
         offerTrickRecipe(exporter, UItems.MUFFIN, UItems.ROCK);
+    }
+
+    public static <T extends AbstractCookingRecipe> void generateCookingRecipes(RecipeExporter exporter, String cooker, RecipeSerializer<T> serializer, AbstractCookingRecipe.RecipeFactory<T> recipeFactory, int cookingTime) {
+        offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime / 3, UItems.JUICE, UItems.BURNED_JUICE, 0);
+        offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.BREAD, UItems.TOAST, 0.2F);
+        offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, UItems.TOAST, UItems.BURNED_TOAST, 0.2F);
+        offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime / 2, UItems.BURNED_TOAST, Items.CHARCOAL, 1);
+        offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, UItems.HAY_FRIES, UItems.CRISPY_HAY_FRIES, 1F);
+        offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, UItems.ZAP_APPLE, UItems.COOKED_ZAP_APPLE, 0.6F);
+        offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.TROPICAL_FISH, UItems.COOKED_TROPICAL_FISH, 0.35F);
+        offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, Items.PUFFERFISH, UItems.COOKED_PUFFERFISH, 1.2F);
+        offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime + 30, Items.AXOLOTL_BUCKET, UItems.FRIED_AXOLOTL, 2.2F);
+        offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime, UItems.FROG_LEGS, UItems.COOKED_FROG_LEGS, 2.2F);
+        offerFoodCookingRecipe(exporter, cooker, serializer, recipeFactory, cookingTime + 50, UBlocks.MYSTERIOUS_EGG, UItems.GREEN_FRIED_EGG, 3.8F);
     }
 
     public static void offerTrickRecipe(RecipeExporter exporter, ItemConvertible output, ItemConvertible input) {
