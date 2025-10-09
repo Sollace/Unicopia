@@ -54,7 +54,7 @@ public interface UConventionalTags {
         TagKey<Item> DESSERTS = item("foods/dessert");
 
         TagKey<Item> CROPS_PEANUTS = item("crops/peanuts");
-        TagKey<Item> TOOL_KNIVES = item("tools/knives");
+        TagKey<Item> TOOL_KNIVES = item("tools/knife");
 
         private static TagKey<Item> item(String name) {
             return TagKey.of(RegistryKeys.ITEM, Identifier.of("c", name));
