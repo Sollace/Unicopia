@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.spongepowered.include.com.google.common.base.Preconditions;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -38,7 +39,7 @@ public class CuttingBoardRecipeJsonBuilder {
     private final Map<String, AdvancementCriterion<?>> criterions = new LinkedHashMap<>();
 
     private final ItemConvertible output;
-    private final String action;
+    private Either<Ingredient, Tool> tool;
 
     private final List<Result> results = new ArrayList<>();
     private final List<Ingredient> ingredients = new ArrayList<>();
@@ -46,13 +47,25 @@ public class CuttingBoardRecipeJsonBuilder {
     private Identifier sound = Identifier.ofVanilla("item.axe.strip");
 
     public static CuttingBoardRecipeJsonBuilder create(ItemConvertible output, String action) {
-        return new CuttingBoardRecipeJsonBuilder(output, action);
+        return new CuttingBoardRecipeJsonBuilder(output).tool(action);
     }
 
-    protected CuttingBoardRecipeJsonBuilder(ItemConvertible output, String action) {
+    public static CuttingBoardRecipeJsonBuilder create(ItemConvertible output, Ingredient tool) {
+        return new CuttingBoardRecipeJsonBuilder(output).tool(tool);
+    }
+
+    protected CuttingBoardRecipeJsonBuilder(ItemConvertible output) {
         this.output = output;
-        this.action = action;
-        result(output);
+    }
+
+    public CuttingBoardRecipeJsonBuilder tool(Ingredient tool) {
+        this.tool = Either.left(tool);
+        return this;
+    }
+
+    public CuttingBoardRecipeJsonBuilder tool(String action) {
+        this.tool = Either.right(new Tool(Identifier.of("farmersdelight:tool_action"), action));
+        return this;
     }
 
     public CuttingBoardRecipeJsonBuilder sound(SoundEvent sound) {
@@ -96,12 +109,7 @@ public class CuttingBoardRecipeJsonBuilder {
             .rewards(AdvancementRewards.Builder.recipe(id))
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
         exporter.accept(id,
-            new CuttingBoardRecipe(
-                    ingredients,
-                    new Tool(Identifier.of("farmersdelight:tool_action"), action),
-                    sound,
-                    results
-            ),
+            new CuttingBoardRecipe(ingredients, tool, sound, results),
             advancementBuilder.build(id.withPrefixedPath("recipes/"))
         );
     }
@@ -133,14 +141,15 @@ public class CuttingBoardRecipeJsonBuilder {
 
     public record CuttingBoardRecipe(
             List<Ingredient> ingredients,
-            Tool tool,
+            Either<Ingredient, Tool> tool,
             Identifier sound,
             List<Result> result
         ) implements Recipe<CraftingRecipeInput> {
         static final Identifier ID = Identifier.of("farmersdelight", "cutting");
+        static final Codec<Either<Ingredient, Tool>> TOOL_CODEC = Codec.xor(Ingredient.DISALLOW_EMPTY_CODEC, Tool.CODEC);
         static final MapCodec<CuttingBoardRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                 Ingredient.DISALLOW_EMPTY_CODEC.listOf().fieldOf("ingredients").forGetter(CuttingBoardRecipe::ingredients),
-                Tool.CODEC.fieldOf("tool").forGetter(CuttingBoardRecipe::tool),
+                TOOL_CODEC.fieldOf("tool").forGetter(CuttingBoardRecipe::tool),
                 Identifier.CODEC.fieldOf("sound").forGetter(CuttingBoardRecipe::sound),
                 Result.CODEC.listOf().fieldOf("result").forGetter(CuttingBoardRecipe::result)
         ).apply(i, CuttingBoardRecipe::new));

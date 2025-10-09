@@ -8,6 +8,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
+
+import com.minelittlepony.unicopia.UConventionalTags;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellDuplicatingRecipe;
@@ -16,6 +19,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.datagen.FarmersDelightContent;
 import com.minelittlepony.unicopia.datagen.ItemFamilies;
 import com.minelittlepony.unicopia.datagen.UBlockFamilies;
 import com.minelittlepony.unicopia.datagen.providers.recipe.BedSheetPatternRecipeBuilder.PatternTemplate;
@@ -736,6 +740,7 @@ public class URecipeProvider extends FabricRecipeProvider {
             var unwaxed = UBlockFamilies.ZAP.getVariant(variant);
             CuttingBoardRecipeJsonBuilder.create(unwaxed, "axe_strip")
                 .input(waxed).criterion(hasItem(waxed), conditionsFromItem(waxed))
+                .result(unwaxed)
                 .result(Items.HONEYCOMB)
                 .sound(SoundEvents.ITEM_AXE_WAX_OFF)
                 .offerTo(exporter, getItemPath(unwaxed) + "_from_waxed");
@@ -746,12 +751,14 @@ public class URecipeProvider extends FabricRecipeProvider {
                 CuttingBoardRecipeJsonBuilder.create(family.getBaseBlock(), "axe_strip")
                     .input(block).criterion(hasItem(block), conditionsFromItem(block))
                     .sound(SoundEvents.ITEM_AXE_STRIP)
+                    .result(family.getBaseBlock())
                     .offerTo(exporter, getItemPath(block));
             });
         });
         CuttingBoardRecipeJsonBuilder.create(UBlocks.PALM_PLANKS, "axe_dig")
             .input(UBlocks.PALM_HANGING_SIGN).criterion(hasItem(UBlocks.PALM_HANGING_SIGN), conditionsFromItem(UBlocks.PALM_HANGING_SIGN))
             .sound(SoundEvents.ITEM_AXE_STRIP)
+            .result(UBlocks.PALM_PLANKS)
             .offerTo(exporter);
 
         Map.of(
@@ -763,6 +770,7 @@ public class URecipeProvider extends FabricRecipeProvider {
             CuttingBoardRecipeJsonBuilder.create(stripped, "axe_strip")
                 .input(unstripped).criterion(hasItem(unstripped), conditionsFromItem(unstripped))
                 .sound(SoundEvents.ITEM_AXE_STRIP)
+                .result(stripped)
                 .result(Identifier.of("farmersdelight:tree_bark"))
                 .offerTo(exporter, convertBetween(stripped, unstripped));
         });
@@ -773,9 +781,29 @@ public class URecipeProvider extends FabricRecipeProvider {
             CuttingBoardRecipeJsonBuilder.create(stripped, "axe_strip")
                 .input(unstripped).criterion(hasItem(unstripped), conditionsFromItem(unstripped))
                 .sound(SoundEvents.ITEM_AXE_STRIP)
+                .result(stripped)
                 .result(Items.GOLD_NUGGET, 8)
                 .offerTo(exporter, convertBetween(stripped, unstripped));
         });
+
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.APPLE_PIE)
+            .input(FarmersDelightContent.APPLE_PIE).criterion(hasItem(FarmersDelightContent.APPLE_PIE), conditionsFromItem(FarmersDelightContent.APPLE_PIE))
+            .offerTo(exporter, "apple_pie_to_apple_pie");
+        ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, FarmersDelightContent.APPLE_PIE)
+            .input(UItems.APPLE_PIE).criterion(hasItem(UItems.APPLE_PIE), conditionsFromItem(UItems.APPLE_PIE))
+            .offerTo(exporter, "apple_pie_from_apple_pie");
+
+        CuttingBoardRecipeJsonBuilder.create(UItems.HAY_FRIES, "axe_dig")
+                .input(Blocks.HAY_BLOCK).criterion(hasItem(Blocks.HAY_BLOCK), conditionsFromItem(Blocks.HAY_BLOCK))
+                .sound(SoundEvents.ITEM_AXE_SCRAPE)
+                .result(UItems.HAY_FRIES, 9)
+                .offerTo(exporter);
+
+        CuttingBoardRecipeJsonBuilder.create(UItems.APPLE_PIE_SLICE, Ingredient.fromTag(UConventionalTags.Items.TOOL_KNIVES))
+            .input(UBlocks.APPLE_PIE).criterion(hasItem(UBlocks.APPLE_PIE), conditionsFromItem(UBlocks.APPLE_PIE))
+            .sound(USounds.BLOCK_PIE_SLICE)
+            .result(UItems.APPLE_PIE_SLICE, 4)
+            .offerTo(exporter);
     }
 
     public static void offerCompactingRecipe(RecipeExporter exporter, RecipeCategory category, ItemConvertible output, ItemConvertible input, int resultCount) {
