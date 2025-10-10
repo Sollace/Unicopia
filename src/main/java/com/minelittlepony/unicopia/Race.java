@@ -238,7 +238,20 @@ public record Race (
         return REGISTRY.stream().filter(r -> r.isPermitted(player)).collect(Collectors.toSet());
     }
 
-    public record Composite (Race physical, @Nullable Race pseudo, @Nullable Race potential) {
+    public record Composite (
+            /**
+             * The current reported race affected by illusions and transformation potions
+             */
+            Race physical,
+            /**
+             * Pseudo race granting additional abilities through an item or trinket
+             */
+            @Nullable Race pseudo,
+            /**
+             * The inactive (suppressed) race during an active transformation
+             */
+            @Nullable Race potential
+        ) {
         public Race collapsed() {
             return pseudo == null ? physical : pseudo;
         }

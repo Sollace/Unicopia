@@ -117,6 +117,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     private final DataTracker.Entry<Race> race;
     private final DataTracker.Entry<Race> suppressedRace;
+    @Nullable
+    private Race effectiveRace;
 
     private final DataTracker.Entry<SkinFeatures> features;
 
@@ -266,22 +268,26 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     /**
      * Gets this player's inherent species.
+     *
+     * This does not include illussions or items that change your species, but does include status effects
      */
     @Override
     public Race getSpecies() {
+        if (effectiveRace == null) {
+            effectiveRace = MetamorphosisStatusEffect.getEffectiveRace(entity, getPersistentSpecies());
+        }
+        return effectiveRace;
+    }
+
+    public Race getPersistentSpecies() {
         return race.get();
     }
 
     /**
-     * Gets the species this player appears to be.
-     * This includes illusions and shape-shifting but excludes items that grant abilities without changing their race.
-     */
-    public Race getObservedSpecies() {
-        return getCompositeRace().physical();
-    }
-
-    /**
      * Gets the composite race that represents what this player is capable of.
+     *
+     *
+     *
      * Physical is the race they appear to have, whilst pseudo is the race who's abilities they have been granted by magical means.
      */
     @Override
@@ -297,12 +303,13 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void setSpecies(Race race) {
         race = race.validate(entity);
-        Race current = getSpecies();
+        Race current = getPersistentSpecies();
         this.race.set(race);
         if (race != current) {
             clearSuppressedRace();
         }
 
+        effectiveRace = null;
         ticksInSun = 0;
 
         if (!race.canCast()) {
@@ -562,7 +569,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     private void recalculateCompositeRace() {
-        Race intrinsicRace = getSpecies();
+        effectiveRace = null;
+        Race intrinsicRace = getPersistentSpecies();
         Race suppressedRace = getSuppressedRace();
         compositeRace = MetamorphosisStatusEffect.getEffectiveRace(entity, getSpellSlot()
                 .get(SpellPredicate.IS_MIMIC)
@@ -660,7 +668,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public void tick() {
         super.tick();
 
-        Race currentRace = getSpecies();
+        Race currentRace = getPersistentSpecies();
         if (!currentRace.isUnset()) {
             Race newRace = currentRace.validate(entity);
 
@@ -673,7 +681,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public boolean canBeSeenBy(Entity entity) {
         if (entity instanceof HostileEntity hostile
-                && getSpecies() == Race.BAT
+                && getObservedSpecies() == Race.BAT
                 && hostile.getTarget() != this.entity
                 && hostile.getAttacker() != this.entity
                 && entity.distanceTo(this.entity) > entity.getWidth()) {
@@ -992,7 +1000,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void toSyncronisedNbt(NbtCompound compound, WrapperLookup lookup) {
         super.toSyncronisedNbt(compound, lookup);
-        compound.putString("playerSpecies", Race.REGISTRY.getId(getSpecies()).toString());
+        compound.putString("playerSpecies", Race.REGISTRY.getId(getPersistentSpecies()).toString());
         compound.putString("suppressedSpecies", Race.REGISTRY.getId(getSuppressedRace()).toString());
         compound.putFloat("magicExhaustion", magicExhaustion);
         compound.putInt("ticksInSun", ticksInSun);
@@ -1029,7 +1037,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 && entity instanceof ServerPlayerEntity
                 && entity.getWorld().getGameRules().getBoolean(UGameRules.SWAP_TRIBE_ON_DEATH)
                 && oldPlayer.respawnRace.isUnset())
-                || oldPlayer.getSpecies().isUnset();
+                || oldPlayer.getPersistentSpecies().isUnset();
 
         Race oldSuppressedRace = oldPlayer.getSuppressedRace();
         Race newRace = oldPlayer.respawnRace != Race.UNSET && !alive ? oldPlayer.respawnRace : oldPlayer.getSpecies();
