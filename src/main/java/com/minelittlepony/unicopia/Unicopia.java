@@ -44,6 +44,7 @@ import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 
 public class Unicopia implements ModInitializer {
     public static final String DEFAULT_NAMESPACE = "unicopia";
+    public static final String VANILLA_EXTENSIONS_NAMESPACE = DEFAULT_NAMESPACE + "mc";
     public static final Logger LOGGER = LogManager.getLogger();
 
     private static Config CONFIG;

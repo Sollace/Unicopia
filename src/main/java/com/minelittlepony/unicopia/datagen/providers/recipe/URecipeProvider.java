@@ -574,7 +574,7 @@ public class URecipeProvider extends FabricRecipeProvider {
 
         offerGrowing(exporter, UBlocks.CURING_JOKE, Blocks.LAPIS_BLOCK, Blocks.CORNFLOWER);
         offerGrowing(exporter, UBlocks.GOLD_ROOT, Blocks.RAW_GOLD_BLOCK, Blocks.CARROTS);
-        offerGrowing(exporter, UTreeGen.GOLDEN_APPLE_TREE.sapling().get(), Blocks.RAW_GOLD_BLOCK, Blocks.OAK_SAPLING);
+        offerGrowing(exporter, UTreeGen.GOLDEN_OAK_TREE.sapling().get(), Blocks.RAW_GOLD_BLOCK, Blocks.OAK_SAPLING);
         offerGrowing(exporter, UBlocks.PLUNDER_VINE_BUD, Blocks.NETHERRACK, Blocks.WITHER_ROSE);
         offerGrowing(exporter, UTreeGen.ZAP_APPLE_TREE.sapling().get(), UBlocks.CHITIN, Blocks.DARK_OAK_SAPLING);
     }

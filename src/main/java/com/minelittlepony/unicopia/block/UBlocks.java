@@ -175,7 +175,7 @@ public interface UBlocks {
             Block.Settings.copy(Blocks.OAK_LEAVES).sounds(BlockSoundGroup.AMETHYST_CLUSTER)
     ), ItemGroups.NATURAL);
     Block GOLDEN_APPLE = register("golden_apple", new EnchantedFruitBlock(Direction.DOWN, GOLDEN_OAK_LEAVES, FruitBlock.DEFAULT_SHAPE, false, Settings.create().mapColor(MapColor.GOLD)));
-    Block GOLDEN_OAK_SPROUT = register("golden_oak_sprout", new SproutBlock(0xE5FFCC88, () -> UItems.GOLDEN_OAK_SEEDS, () -> UTreeGen.GOLDEN_APPLE_TREE.sapling().map(Block::getDefaultState).get(), SproutBlock.settings()));
+    Block GOLDEN_OAK_SPROUT = register("golden_oak_sprout", new SproutBlock(0xE5FFCC88, () -> UItems.GOLDEN_OAK_SEEDS, () -> UTreeGen.GOLDEN_OAK_TREE.sapling().map(Block::getDefaultState).get(), SproutBlock.settings()));
     StrippablePillarBlock GOLDEN_OAK_LOG = register("golden_oak_log", BlockConstructionUtils.createMetallicLogBlock(MapColor.OFF_WHITE, MapColor.GOLD), ItemGroups.BUILDING_BLOCKS);
     StrippablePillarBlock GOLDEN_OAK_WOOD = register("golden_oak_wood", BlockConstructionUtils.createMetallicWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
     Block GOLDEN_OAK_PLANKS = register("golden_oak_planks", new Block(Settings.create().mapColor(MapColor.GOLD).strength(3, 4).sounds(BlockSoundGroup.METAL).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);

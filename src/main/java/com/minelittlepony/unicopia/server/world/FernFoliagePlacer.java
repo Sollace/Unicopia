@@ -1,13 +1,10 @@
 package com.minelittlepony.unicopia.server.world;
 
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
@@ -18,7 +15,6 @@ import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class FernFoliagePlacer extends FoliagePlacer {
     public static final MapCodec<FernFoliagePlacer> CODEC = RecordCodecBuilder.mapCodec(instance -> fillFoliagePlacerFields(instance).apply(instance, FernFoliagePlacer::new));
-    public static final FoliagePlacerType<FernFoliagePlacer> TYPE = Registry.register(Registries.FOLIAGE_PLACER_TYPE, Unicopia.id("fern_foliage_placer"), new FoliagePlacerType<>(CODEC));
 
     public FernFoliagePlacer(IntProvider radius, IntProvider offset) {
         super(radius, offset);
@@ -26,7 +22,7 @@ public class FernFoliagePlacer extends FoliagePlacer {
 
     @Override
     protected FoliagePlacerType<?> getType() {
-        return TYPE;
+        return UWorldGen.FERN_FOLIAGE_PLACER_TYPE;
     }
 
     @Override

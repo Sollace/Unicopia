@@ -1,14 +1,15 @@
 package com.minelittlepony.unicopia.entity.damage;
 
-import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.util.registry.DynamicRegistry;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.minelittlepony.unicopia.Unicopia;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 
 public interface UDamageTypes {
-    DynamicRegistry<DamageType> REGISTRY = new DynamicRegistry<>(RegistryKeys.DAMAGE_TYPE, (lookup, key) -> new DamageType(key.getValue().getNamespace() + "." + key.getValue().getPath(), 0));
+    List<RegistryKey<DamageType>> REGISTRY = new ArrayList<>();
 
     RegistryKey<DamageType> EXHAUSTION = register("magical_exhaustion");
     RegistryKey<DamageType> ALICORN_AMULET = register("alicorn_amulet");
@@ -30,7 +31,9 @@ public interface UDamageTypes {
     RegistryKey<DamageType> SPIKES = register("spikes");
 
     private static RegistryKey<DamageType> register(String name) {
-        return REGISTRY.register(Unicopia.id(name));
+        RegistryKey<DamageType> key = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Unicopia.id(name));
+        REGISTRY.add(key);
+        return key;
     }
 
     static void bootstrap() {}

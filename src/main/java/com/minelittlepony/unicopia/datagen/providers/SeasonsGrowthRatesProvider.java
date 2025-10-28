@@ -57,7 +57,7 @@ public class SeasonsGrowthRatesProvider implements DataProvider {
         Crop goldenOak = new Crop(1.5F, 1.4F, 0.6F, 0);
         exporter.accept(UBlocks.GOLDEN_OAK_LEAVES, goldenOak);
         exporter.accept(UBlocks.GOLDEN_OAK_SPROUT, goldenOak);
-        exporter.accept(UTreeGen.GOLDEN_APPLE_TREE.sapling().get(), goldenOak);
+        exporter.accept(UTreeGen.GOLDEN_OAK_TREE.sapling().get(), goldenOak);
 
         Crop palm = new Crop(1.1F, 0.9F, 0.2F, 0);
         exporter.accept(UBlocks.PALM_LEAVES, palm);

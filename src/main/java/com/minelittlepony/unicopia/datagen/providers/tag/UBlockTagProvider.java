@@ -117,7 +117,7 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(SereneSeasonsTags.Blocks.WINTER_CROPS).add(UBlocks.ROCKS);
         getOrCreateTagBuilder(SereneSeasonsTags.Blocks.SPRING_CROPS).add(
                 UBlocks.SWEET_APPLE_LEAVES, UBlocks.SWEET_APPLE_SPROUT, UTreeGen.SWEET_APPLE_TREE.sapling().get(),
-                UBlocks.GOLDEN_OAK_LEAVES, UBlocks.GOLDEN_OAK_SPROUT, UTreeGen.GOLDEN_APPLE_TREE.sapling().get(),
+                UBlocks.GOLDEN_OAK_LEAVES, UBlocks.GOLDEN_OAK_SPROUT, UTreeGen.GOLDEN_OAK_TREE.sapling().get(),
                 UBlocks.PALM_LEAVES, UBlocks.BANANAS, UTreeGen.BANANA_TREE.sapling().get(),
                 UBlocks.PINEAPPLE,
                 UBlocks.ROCKS
