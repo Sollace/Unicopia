@@ -19,6 +19,8 @@ public final class RenderLayers extends RenderLayer {
     private RenderLayers() {
         super(null, null, null, 0, false, false, null, null);
     }
+    public static final int DEFAULT_MAGIC_COLOR = Color.argbToHex(0.6F, 0.8F, 0.9F, 1);
+
     private static final List<RenderLayer> BLOCK_DESTRUCTION_STAGE_LAYERS = ModelLoader.BLOCK_DESTRUCTION_STAGE_TEXTURES.stream().map(texture -> {
         RenderPhase.Texture texture2 = new RenderPhase.Texture(texture, false, false);
         return (RenderLayer)RenderLayer.of("alpha_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256,
@@ -60,7 +62,7 @@ public final class RenderLayers extends RenderLayer {
                 .texturing(solid(color))
             .build(false));
     });
-    private static final RenderLayer MAGIC_COLORED = getMagicColored(Color.argbToHex(0.6F, 0.8F, 0.9F, 1));
+    private static final RenderLayer MAGIC_COLORED = getMagicColored(DEFAULT_MAGIC_COLOR);
 
     private static final BiFunction<Identifier, Integer, RenderLayer> MAGIC_TINT_FUNC = Util.memoize((texture, color) -> {
         return of("magic_tint_" + color,
