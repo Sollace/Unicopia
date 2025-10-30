@@ -8,6 +8,7 @@
   "mixins": [
     "MixinAbstractDecorationEntity",
     "MixinAbstractSkeletonEntity",
+    "MixinAxeItem",
     "MixinBlazeEntity",
     "MixinBlock",
     "MixinBlockEntity",
@@ -46,7 +47,10 @@
     "MixinPointOfInterestType",
     "MixinPowderSnowBlock",
     "MixinProjectileEntity",
+    "MixinProjectileUtil",
     "MixinPufferfishEntity",
+    "MixinIngredient",
+    "MixinSheepEntity",
     "MixinShulkerEntity",
     "MixinStateManager",
     "MixinStateManagerBuilder",
@@ -110,7 +114,6 @@
     "client.MixinSkyRendering",
     "client.MixinWorldRenderer",
     "client.sodium.MixinSodiumWorldRenderer",
-    "client.minelp.MixinPonyPosture",
     "trinkets.MixinTrinketCreativeSlot",
     "gravity.MixinSoundSource"
   ],

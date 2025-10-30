@@ -53,7 +53,7 @@ public interface ItemGroupRegistry {
     }
 
     static Item register(SheetPattern pattern) {
-        return register(pattern.asString() + "_bed_sheets", s -> new BedsheetsItem(pattern, s.maxCount(1)), ItemGroups.FUNCTIONAL);
+        return register(pattern.asString() + "_bed_sheets", s -> new BedsheetsItem(pattern, s.maxCount(8)), ItemGroups.FUNCTIONAL);
     }
 
     static <T extends Item> T register(String name, Function<Item.Settings, T> item, RegistryKey<ItemGroup> group) {

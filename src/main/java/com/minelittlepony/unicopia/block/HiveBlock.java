@@ -176,13 +176,13 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
 
     @Override
     protected VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return EquineContext.of(context).getSpecies() == Race.CHANGELING ? VoxelShapes.empty() : super.getCollisionShape(state, world, pos, context);
+        return EquineContext.of(context).getCompositeRace().includes(Race.CHANGELING) ? VoxelShapes.empty() : super.getCollisionShape(state, world, pos, context);
     }
 
     @Override
     protected float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
         float delta = super.calcBlockBreakingDelta(state, player, world, pos);
-        delta *= Pony.of(player).getSpecies() == Race.CHANGELING ? 2 : 1;
+        delta *= Pony.of(player).getCompositeRace().includes(Race.CHANGELING) ? 2 : 1;
         return delta;
     }
 

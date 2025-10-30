@@ -4,8 +4,7 @@ import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.client.gui.HudEffects;
 import com.minelittlepony.unicopia.client.gui.UHud;
 import net.minecraft.client.gui.DrawContext;
@@ -22,6 +21,10 @@ abstract class MixinInGameHud {
     @Inject(method = "render", at = @At("HEAD"))
     private void onRender(DrawContext context, RenderTickCounter tickCounter, CallbackInfo info) {
         HudEffects.tryApply(getCameraPlayer(), tickCounter, true);
+    }
+
+    @Inject(method = "renderHotbar", at = @At("HEAD"))
+    private void onRenderHorbat(DrawContext context, RenderTickCounter tickCounter, CallbackInfo info) {
         UHud.INSTANCE.render((InGameHud)(Object)this, context, tickCounter);
     }
 
@@ -29,18 +32,23 @@ abstract class MixinInGameHud {
     private void afterRender(DrawContext context, RenderTickCounter tickCounter, CallbackInfo info) {
         HudEffects.tryApply(getCameraPlayer(), tickCounter, false);
     }
+
+    /*@ModifyArg(
+            method = "drawHeart",
+            at = @At(value = "INVOKE", target = "net/minecraft/client/gui/DrawContext.drawGuiTexture(Lnet/minecraft/util/Identifier;IIII)V"),
+            index = 0
+    )
+    private Identifier adjustHeartTexture(Identifier texture, @Local InGameHud.HeartType heartsType, @Local(ordinal = 0) boolean hardcore, @Local(ordinal = 1) boolean blinking, @Local(ordinal = 2) boolean half) {
+        return UHud.getHeartTexture(heartsType, texture, hardcore, blinking, half);
+    }*/
 }
 
 @Mixin(InGameHud.HeartType.class)
 abstract class MixinInGameHud$HeartType {
-    @Inject(
+    @ModifyReturnValue(
         method = "fromPlayerState(Lnet/minecraft/entity/player/PlayerEntity;)Lnet/minecraft/client/gui/hud/InGameHud$HeartType;",
-        at = @At("RETURN"),
-        cancellable = true)
-    private static void onFromPlayerState(PlayerEntity player, CallbackInfoReturnable<InGameHud.HeartType> cbi) {
-        InGameHud.HeartType heartsType = UHud.getHeartsType(player);
-        if (heartsType != null) {
-            cbi.setReturnValue(heartsType);
-        }
+        at = @At("RETURN"))
+    private static InGameHud.HeartType onFromPlayerState(InGameHud.HeartType heartsType, PlayerEntity player) {
+        return UHud.getHeartsType(player, heartsType);
     }
 }

@@ -65,11 +65,12 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(BlockTags.DRAGON_IMMUNE).add(UBlocks.FROSTED_OBSIDIAN, UBlocks.GOLDEN_OAK_LOG, UBlocks.GOLDEN_OAK_LEAVES);
         getOrCreateTagBuilder(BlockTags.FIRE).add(UBlocks.SPECTRAL_FIRE);
         getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(UBlocks.HAY_BLOCK).addOptional(Unicopia.id("rice_block")).addOptional(Unicopia.id("straw_block"));
-        getOrCreateTagBuilder(BlockTags.SHOVEL_MINEABLE).add(UBlocks.WORM_BLOCK);
+        getOrCreateTagBuilder(BlockTags.SHOVEL_MINEABLE).add(UBlocks.WORM_BLOCK, UBlocks.SLIME);
         getOrCreateTagBuilder(BlockTags.REPLACEABLE_BY_TREES).add(UBlocks.GREEN_APPLE, UBlocks.SOUR_APPLE, UBlocks.GOLDEN_APPLE, UBlocks.SWEET_APPLE, UBlocks.ZAP_APPLE, UBlocks.ZAP_BULB);
 
         addZapWoodset();
         addPalmWoodset();
+        addGoldenOakWoodset();
         addCloudBlocksets();
         addChitinBlocksets();
         addFruitTrees();
@@ -116,7 +117,7 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(SereneSeasonsTags.Blocks.WINTER_CROPS).add(UBlocks.ROCKS);
         getOrCreateTagBuilder(SereneSeasonsTags.Blocks.SPRING_CROPS).add(
                 UBlocks.SWEET_APPLE_LEAVES, UBlocks.SWEET_APPLE_SPROUT, UTreeGen.SWEET_APPLE_TREE.sapling().get(),
-                UBlocks.GOLDEN_OAK_LEAVES, UBlocks.GOLDEN_OAK_SPROUT, UTreeGen.GOLDEN_APPLE_TREE.sapling().get(),
+                UBlocks.GOLDEN_OAK_LEAVES, UBlocks.GOLDEN_OAK_SPROUT, UTreeGen.GOLDEN_OAK_TREE.sapling().get(),
                 UBlocks.PALM_LEAVES, UBlocks.BANANAS, UTreeGen.BANANA_TREE.sapling().get(),
                 UBlocks.PINEAPPLE,
                 UBlocks.ROCKS
@@ -138,15 +139,10 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(BlockTags.LEAVES).add(leaves);
         getOrCreateTagBuilder(BlockTags.HOE_MINEABLE).add(leaves);
 
-        Block[] burnableLogs = { UBlocks.GOLDEN_OAK_LOG };
-        getOrCreateTagBuilder(BlockTags.LOGS).add(burnableLogs);
-        getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN).add(burnableLogs);
-
         var saplings = Tree.REGISTRY.stream().flatMap(tree -> tree.sapling().stream()).toArray(Block[]::new);
 
         getOrCreateTagBuilder(BlockTags.SAPLINGS).add(saplings);
         getOrCreateTagBuilder(BlockTags.MAINTAINS_FARMLAND).add(saplings);
-        getOrCreateTagBuilder(BlockTags.GUARDED_BY_PIGLINS).add(UBlocks.GOLDEN_OAK_LEAVES, UBlocks.GOLDEN_OAK_LOG, UBlocks.GOLDEN_OAK_SPROUT, UBlocks.GOLDEN_APPLE);
     }
 
     private void addZapWoodset() {
@@ -202,6 +198,17 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(BlockTags.WOODEN_TRAPDOORS).add(UBlocks.PALM_TRAPDOOR);
     }
 
+    private void addGoldenOakWoodset() {
+        getOrCreateTagBuilder(BlockTags.LEAVES).add(UBlocks.GOLDEN_OAK_LEAVES);
+        getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(UBlocks.GOLDEN_OAK_LEAVES);
+        getOrCreateTagBuilder(UTags.Blocks.GOLDEN_OAK_LOGS).add(UBlocks.GOLDEN_OAK_LOG, UBlocks.GOLDEN_OAK_WOOD, UBlocks.STRIPPED_GOLDEN_OAK_LOG, UBlocks.STRIPPED_GOLDEN_OAK_WOOD);
+        getOrCreateTagBuilder(BlockTags.LOGS).forceAddTag(UTags.Blocks.GOLDEN_OAK_LOGS);
+        getOrCreateTagBuilder(BlockTags.PLANKS).add(UBlocks.GOLDEN_OAK_PLANKS);
+        getOrCreateTagBuilder(BlockTags.GUARDED_BY_PIGLINS)
+            .forceAddTag(UTags.Blocks.GOLDEN_OAK_LOGS)
+            .add(UBlocks.GOLDEN_OAK_PLANKS, UBlocks.GOLDEN_OAK_LEAVES, UBlocks.GOLDEN_OAK_SPROUT, UBlocks.GOLDEN_APPLE);
+    }
+
     private void addCloudBlocksets() {
         getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(
                 UBlocks.CLOUD_BRICKS, UBlocks.CLOUD_BRICK_SLAB, UBlocks.CLOUD_BRICK_STAIRS, UBlocks.COMPACTED_CLOUD_BRICKS, UBlocks.CARVED_CLOUD
@@ -231,15 +238,19 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
         getOrCreateTagBuilder(UTags.Blocks.CHITIN_BLOCKS).add(
                 UBlocks.CHITIN, UBlocks.SURFACE_CHITIN,
                 UBlocks.CHISELLED_CHITIN, UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN_SLAB, UBlocks.CHISELLED_CHITIN_STAIRS,
+                UBlocks.POLISHED_CHITIN, UBlocks.POLISHED_CHITIN_HULL, UBlocks.POLISHED_CHITIN_SLAB, UBlocks.POLISHED_CHITIN_STAIRS,
                 UBlocks.CHITIN_SPIKES
         );
 
 
         getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(
-                UBlocks.CHITIN_SPIKES,
-                UBlocks.CHISELLED_CHITIN, UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN_SLAB, UBlocks.CHISELLED_CHITIN_STAIRS
+                UBlocks.CHISELLED_CHITIN, UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN_SLAB, UBlocks.CHISELLED_CHITIN_STAIRS,
+                UBlocks.POLISHED_CHITIN, UBlocks.POLISHED_CHITIN_HULL, UBlocks.POLISHED_CHITIN_SLAB, UBlocks.POLISHED_CHITIN_STAIRS,
+                UBlocks.CHITIN_SPIKES
         );
         getOrCreateTagBuilder(BlockTags.SHOVEL_MINEABLE).add(UBlocks.CHITIN, UBlocks.SURFACE_CHITIN);
+
+        getOrCreateTagBuilder(BlockTags.WALLS).add(UBlocks.CHISELLED_CHITIN_WALL, UBlocks.POLISHED_CHITIN_WALL);
     }
 
     private void addSign(Block standing, Block wall, Block hanging, Block wallHanging) {

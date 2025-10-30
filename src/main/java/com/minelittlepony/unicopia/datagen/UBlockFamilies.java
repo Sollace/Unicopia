@@ -11,6 +11,12 @@ public interface UBlockFamilies {
             .door(UBlocks.PALM_DOOR).trapdoor(UBlocks.PALM_TRAPDOOR)
             .group("wooden").unlockCriterionName("has_planks")
             .build();
+    BlockFamily GOLDEN_OAK = new BlockFamily.Builder(UBlocks.GOLDEN_OAK_PLANKS)
+            .slab(UBlocks.GOLDEN_OAK_SLAB).stairs(UBlocks.GOLDEN_OAK_STAIRS)//.fence(UBlocks.PALM_FENCE).fenceGate(UBlocks.PALM_FENCE_GATE)
+            //.button(UBlocks.PALM_BUTTON).pressurePlate(UBlocks.PALM_PRESSURE_PLATE).sign(UBlocks.PALM_SIGN, UBlocks.PALM_WALL_SIGN)
+            //.door(UBlocks.PALM_DOOR).trapdoor(UBlocks.PALM_TRAPDOOR)
+            .group("wooden").unlockCriterionName("has_planks")
+            .build();
     BlockFamily ZAP = new BlockFamily.Builder(UBlocks.ZAP_PLANKS)
             .slab(UBlocks.ZAP_SLAB).stairs(UBlocks.ZAP_STAIRS).fence(UBlocks.ZAP_FENCE).fenceGate(UBlocks.ZAP_FENCE_GATE)
             .group("wooden").unlockCriterionName("has_planks")
@@ -21,7 +27,14 @@ public interface UBlockFamilies {
             .build();
     BlockFamily CHISELED_CHITIN = new BlockFamily.Builder(UBlocks.CHISELLED_CHITIN)
             .slab(UBlocks.CHISELLED_CHITIN_SLAB).stairs(UBlocks.CHISELLED_CHITIN_STAIRS)
+            .wall(UBlocks.CHISELLED_CHITIN_WALL)
+            .polished(UBlocks.POLISHED_CHITIN)
             .group("chitin").unlockCriterionName("has_chiselled_chitin")
+            .build();
+    BlockFamily POLISHED_CHITIN = new BlockFamily.Builder(UBlocks.POLISHED_CHITIN)
+            .slab(UBlocks.POLISHED_CHITIN_SLAB).stairs(UBlocks.POLISHED_CHITIN_STAIRS)
+            .wall(UBlocks.POLISHED_CHITIN_WALL)
+            .group("chitin").unlockCriterionName("has_polished_chitin")
             .build();
     BlockFamily CLOUD = new BlockFamily.Builder(UBlocks.CLOUD)
             .slab(UBlocks.CLOUD_SLAB).stairs(UBlocks.CLOUD_STAIRS)

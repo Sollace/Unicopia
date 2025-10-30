@@ -121,6 +121,7 @@ public interface URenderers {
         EntityRendererRegistry.register(UEntities.MIMIC, MimicEntityRenderer::new);
         EntityRendererRegistry.register(UEntities.PALM_BOAT, ctx -> new CustomBoatEntityRenderer<>(ctx, UEntities.PALM_BOAT, false));
         EntityRendererRegistry.register(UEntities.PALM_CHEST_BOAT, ctx -> new CustomBoatEntityRenderer<>(ctx, UEntities.PALM_BOAT, true));
+        EntityRendererRegistry.register(UEntities.LEVITATING_ITEM, LevitatingItemEntityRenderer::new);
 
         BlockEntityRendererFactories.register(UBlockEntities.WEATHER_VANE, WeatherVaneBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(UBlockEntities.FANCY_BED, CloudBedBlockEntityRenderer::new);

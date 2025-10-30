@@ -48,6 +48,9 @@
     "minelp": "*",
     "modmenu": "*"
   },
+  "breaks": {
+    "probejs": "<=7.7.2"
+  },
   "custom": {
     "fabwork": {
       "requiredOn": "*"

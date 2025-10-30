@@ -50,6 +50,10 @@ public class RainboomAbilitySpell extends AbstractSpell {
             return false;
         }
 
+        if (source instanceof Pony pony && !pony.getPhysics().isFlying()) {
+            return false;
+        }
+
         if (source.isClient()) {
             if (boundParticle == null) {
                 boundParticle = InteractionManager.getInstance().createBoundParticle(getUuid());

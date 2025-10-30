@@ -38,6 +38,11 @@ public interface UEntities {
             .disableSummon()
             .trackingTickInterval(2)
             .dimensions(0.25F, 0.25F));
+    EntityType<LevitatingItemEntity> LEVITATING_ITEM = register("levitating_item", EntityType.Builder.<LevitatingItemEntity>create(LevitatingItemEntity::new, SpawnGroup.MISC)
+            .maxTrackingRange(100)
+            .disableSummon()
+            .trackingTickInterval(2)
+            .dimensions(0.25F, 0.25F));
     EntityType<PhysicsBodyProjectileEntity> MUFFIN = register("muffin", EntityType.Builder.<PhysicsBodyProjectileEntity>create((type, world) -> new PhysicsBodyProjectileEntity(type, world, UItems.MUFFIN.getDefaultStack()), SpawnGroup.MISC)
             .maxTrackingRange(100)
             .disableSummon()
@@ -150,6 +155,7 @@ public interface UEntities {
 
         BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.ZOMBIE), SpawnGroup.MONSTER, SPECTER, 2, 1, 2);
 
+        MimicEntity.bootstrap();
         UTradeOffers.bootstrap();
         EntityBehaviour.bootstrap();
         UEntityAttributes.bootstrap();

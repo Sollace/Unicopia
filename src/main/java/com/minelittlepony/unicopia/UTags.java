@@ -17,6 +17,7 @@ public interface UTags {
         TagKey<Item> ZAP_LOGS = item("zap_logs");
         TagKey<Item> WAXED_ZAP_LOGS = item("waxed_zap_logs");
         TagKey<Item> PALM_LOGS = item("palm_logs");
+        TagKey<Item> GOLDEN_OAK_LOGS = item("golden_oak_logs");
         TagKey<Item> CLOUD_BEDS = item("cloud_beds");
         TagKey<Item> CLOUD_SLABS = item("cloud_slabs");
         TagKey<Item> CLOUD_STAIRS = item("cloud_stairs");
@@ -89,6 +90,7 @@ public interface UTags {
         TagKey<Block> ZAP_LOGS = block("zap_logs");
         TagKey<Block> WAXED_ZAP_LOGS = block("waxed_zap_logs");
         TagKey<Block> PALM_LOGS = block("palm_logs");
+        TagKey<Block> GOLDEN_OAK_LOGS = block("golden_oak_logs");
         TagKey<Block> CLOUD_BEDS = block("cloud_beds");
         TagKey<Block> CLOUD_SLABS = block("cloud_slabs");
         TagKey<Block> CLOUD_STAIRS = block("cloud_stairs");

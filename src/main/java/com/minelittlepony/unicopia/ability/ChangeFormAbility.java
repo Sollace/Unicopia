@@ -88,7 +88,7 @@ public class ChangeFormAbility implements Ability<Hit> {
         targets.forEach(target -> {
             Race supressed = target.getSuppressedRace();
             if (target == player || supressed.isUnset() == isTransforming) {
-                Race actualRace = isTransforming ? target.getSpecies() : Race.UNSET;
+                Race actualRace = isTransforming ? target.getPersistentSpecies() : Race.UNSET;
                 target.setSpecies(supressed.or(player.getCompositeRace().potential()));
                 target.setSuppressedRace(actualRace);
                 UCriteria.SEAPONY_TRANSITION.trigger(target.asEntity());

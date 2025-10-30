@@ -9,7 +9,6 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.component.DataComponentTypes;
@@ -36,39 +35,33 @@ import net.minecraft.world.WorldEvents;
 
 public class ForageableItem extends Item {
     private static final List<ForageableItem> REGISTRY = new ArrayList<>();
-    static {
-        UseBlockCallback.EVENT.register((PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) -> {
-            if (player.shouldCancelInteraction()) {
-                return ActionResult.PASS;
-            }
 
-            ItemStack stack = player.getStackInHand(hand);
-            if (!stack.isIn(ItemTags.HOES)) {
-                return ActionResult.PASS;
-            }
+    public static ActionResult use(PlayerEntity player, ItemStack stack, World world, Hand hand, BlockHitResult hit) {
+        BlockPos pos = hit.getBlockPos();
+        BlockState state = world.getBlockState(pos);
 
-            BlockPos pos = hitResult.getBlockPos();
-            BlockState state = world.getBlockState(pos);
+        if (!stack.isIn(ItemTags.HOES)) {
+            return ActionResult.PASS;
+        }
 
-            ActionResult result = ActionResult.PASS;
+        ActionResult result = ActionResult.PASS;
 
-            if (state.isIn(BlockTags.LEAVES)) {
-                player.swingHand(hand);
-                world.playSound(player, pos, state.getSoundGroup().getHitSound(), SoundCategory.BLOCKS);
-                InteractionManager.getInstance().addBlockBreakingParticles(pos, hitResult.getSide());
+        if (state.isIn(BlockTags.LEAVES)) {
+            player.swingHand(hand);
+            world.playSound(player, pos, state.getSoundGroup().getHitSound(), SoundCategory.BLOCKS);
+            InteractionManager.getInstance().addBlockBreakingParticles(pos, hit.getSide());
 
-                float foragingChance = getForagingChance(stack);
+            float foragingChance = getForagingChance(stack);
 
-                for (ForageableItem item : REGISTRY) {
-                    if ((result = item.onTryForage(world, pos, state, stack, player, foragingChance)).isAccepted()) {
-                        stack.damage(1, player, LivingEntity.getSlotForHand(hand));
-                        return result;
-                    }
+            for (ForageableItem item : REGISTRY) {
+                if ((result = item.onTryForage(world, pos, state, stack, player, foragingChance)).isAccepted()) {
+                    stack.damage(1, player, LivingEntity.getSlotForHand(hand));
+                    return result;
                 }
             }
+        }
 
-            return result.isAccepted() ? ActionResult.SUCCESS : ActionResult.PASS;
-        });
+        return result.isAccepted() ? ActionResult.SUCCESS : ActionResult.PASS;
     }
 
     private final Supplier<Block> targetBlock;

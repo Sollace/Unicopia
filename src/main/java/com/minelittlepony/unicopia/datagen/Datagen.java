@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import com.minelittlepony.unicopia.datagen.providers.DietsProvider;
 import com.minelittlepony.unicopia.datagen.providers.SeasonsGrowthRatesProvider;
 import com.minelittlepony.unicopia.datagen.providers.UAdvancementsProvider;
+import com.minelittlepony.unicopia.datagen.providers.UDynamicRegistriesProvider;
 import com.minelittlepony.unicopia.datagen.providers.UEnchantmentProvider;
 import com.minelittlepony.unicopia.datagen.providers.UJukeboxSongProvider;
 import com.minelittlepony.unicopia.datagen.providers.UModelProvider;
@@ -24,10 +25,9 @@ import com.minelittlepony.unicopia.datagen.providers.tag.UEntityTypeTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UItemTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UStatusEffectTagProvider;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
-import com.minelittlepony.unicopia.server.world.UWorldGen;
-
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.registry.RegistryBuilder;
 import net.minecraft.registry.RegistryKeys;
 
@@ -53,6 +53,7 @@ public class Datagen implements DataGeneratorEntrypoint {
 
         pack.addProvider(UJukeboxSongProvider::new);
         pack.addProvider(UModelProvider::new);
+        pack.addProvider(UDynamicRegistriesProvider::new);
         pack.addProvider(URecipeProvider::new);
         pack.addProvider(UBlockLootTableProvider::new);
         pack.addProvider(UEntityLootTableProvider::new);
@@ -66,8 +67,13 @@ public class Datagen implements DataGeneratorEntrypoint {
 
     @Override
     public void buildRegistry(RegistryBuilder builder) {
-        builder.addRegistry(RegistryKeys.BIOME, UWorldGen.REGISTRY);
-        builder.addRegistry(RegistryKeys.DAMAGE_TYPE, UDamageTypes.REGISTRY);
+        builder.addRegistry(RegistryKeys.DAMAGE_TYPE, registerable -> {
+            UDamageTypes.REGISTRY.forEach(key -> registerable.register(key, new DamageType(key.getValue().getNamespace() + "." + key.getValue().getPath(), 0)));
+        });
+        builder.addRegistry(RegistryKeys.CONFIGURED_CARVER, registerable -> UWorldGenFeatures.bootstrapConfiguredCarvers(registerable));
+        builder.addRegistry(RegistryKeys.CONFIGURED_FEATURE, registerable -> UWorldGenFeatures.bootstrapConfiguredFeatures(registerable));
+        builder.addRegistry(RegistryKeys.PLACED_FEATURE, UWorldGenFeatures::bootstrapPlacedFeatures);
+        builder.addRegistry(RegistryKeys.BIOME, UWorldGenFeatures::bootstrapBiomes);
         builder.addRegistry(RegistryKeys.PAINTING_VARIANT, paintingVariants);
         builder.addRegistry(RegistryKeys.ENCHANTMENT, enchantments);
     }

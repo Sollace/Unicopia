@@ -27,6 +27,7 @@ import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.entity.player.SkinFeatures;
 import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.GlassesItem;
@@ -78,6 +79,7 @@ public class CasterState {
     public List<SpellRenderState> spells = new ArrayList<>();
 
     public Race.Composite species = Race.UNSET.composite();
+    public SkinFeatures skinFeatures = SkinFeatures.DEFAULT;
 
     public float wingsAngle;
     public boolean dashing;
@@ -137,6 +139,7 @@ public class CasterState {
         animation = AnimationInstance.NONE;
         animationTime = 0;
         species = Race.UNSET.composite();
+        skinFeatures = SkinFeatures.DEFAULT;
         amulet = TrinketsDelegate.EquippedStack.EMPTY;
         mainhandBangle.update(TrinketsDelegate.EquippedStack.EMPTY);
         offhandBangle.update(TrinketsDelegate.EquippedStack.EMPTY);
@@ -183,6 +186,7 @@ public class CasterState {
 
             if (caster instanceof Pony pony) {
                 species = pony.getCompositeRace();
+                skinFeatures = pony.getSkinFeatures();
                 Vec3d motion = pony.getMotion().getClientVelocity();
                 flying = pony.getMotion().isFlying();
                 dashing = (flying && (Math.sqrt(motion.x * motion.x + motion.z * motion.z) > 0.4 || pony.getMotion().isDiving())) || pony.getMotion().isRainbooming();

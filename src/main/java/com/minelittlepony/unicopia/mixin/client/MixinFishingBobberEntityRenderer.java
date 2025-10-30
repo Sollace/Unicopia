@@ -4,10 +4,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.minelittlepony.unicopia.item.BaitedFishingRodItem;
+import com.minelittlepony.unicopia.item.UItems;
+
 import net.minecraft.client.render.entity.FishingBobberEntityRenderer;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
@@ -17,12 +17,6 @@ abstract class MixinFishingBobberEntityRenderer {
             @At(value = "INVOKE", target = "net/minecraft/entity/player/PlayerEntity.getMainHandStack()Lnet/minecraft/item/ItemStack;")
     }, expect = 2)
     private ItemStack replaceFishingRodItem(ItemStack initialStack, PlayerEntity player, float f, float tickDelta) {
-        if (player.fishHook instanceof BaitedFishingRodItem.BaitedFishingBobber bobber) {
-            Item rodType = bobber.getRodType();
-            if (rodType != null) {
-                return initialStack.isOf(rodType) ? Items.FISHING_ROD.getDefaultStack() : initialStack;
-            }
-        }
-        return initialStack;
+        return initialStack.isOf(UItems.BAITED_FISHING_ROD) ? Items.FISHING_ROD.getDefaultStack() : initialStack;
     }
 }

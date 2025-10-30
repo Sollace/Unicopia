@@ -11,8 +11,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
  */
 public interface Levelled {
     Codec<LevelStore> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.INT.fieldOf("max").forGetter(LevelStore::getMax),
-            Codec.INT.fieldOf("value").forGetter(LevelStore::get)
+            Codec.INT.fieldOf("value").forGetter(LevelStore::get),
+            Codec.INT.fieldOf("max").forGetter(LevelStore::getMax)
     ).apply(instance, Levelled::of));
 
     LevelStore ZERO = of(0, 1);

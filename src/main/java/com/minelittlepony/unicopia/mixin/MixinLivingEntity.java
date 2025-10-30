@@ -35,6 +35,8 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
     protected ItemStack activeItemStack;
     @Shadow
     protected int itemUseTimeLeft;
+    @Shadow
+    protected boolean dead;
 
     @Shadow
     private Optional<BlockPos> climbingPos;
@@ -153,6 +155,18 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
     @Inject(method = "damage(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/damage/DamageSource;F)Z", at = @At("HEAD"), cancellable = true)
     private void onDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> info) {
         get().onDamage(world, source, amount).ifPresent(info::setReturnValue);
+    }
+
+    @Inject(method = "tryUseDeathProtector(Lnet/minecraft/entity/damage/DamageSource;)Z", at = @At("RETURN"))
+    private void onOnDeath(DamageSource source, CallbackInfoReturnable<Boolean> info) {
+        if (!isRemoved() && !dead) {
+            get().onDeath(source, info.getReturnValue());
+        }
+    }
+
+    @Inject(method = "onAttacking(Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"), cancellable = true)
+    private void onOnAttacking(Entity target, CallbackInfo info) {
+        get().onAttacking(target);
     }
 
     @ModifyVariable(method = "handleFallDamage(FFLnet/minecraft/entity/damage/DamageSource;)Z", at = @At("HEAD"), ordinal = 0, argsOnly = true)

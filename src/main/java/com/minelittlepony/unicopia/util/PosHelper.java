@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators.AbstractSpliterator;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -65,11 +66,15 @@ public interface PosHelper {
     }
 
     static boolean fastAny(BlockPos origin, Predicate<BlockPos> consumer, Direction... directions) {
+        return fastAny(origin, (p, f) -> consumer.test(p), directions);
+    }
+
+    static boolean fastAny(BlockPos origin, BiPredicate<BlockPos, Direction> consumer, Direction... directions) {
         final BlockPos immutable = origin instanceof BlockPos.Mutable m ? m.toImmutable() : origin;
         final BlockPos.Mutable mutable = origin instanceof BlockPos.Mutable m ? m : origin.mutableCopy();
         try {
             for (Direction facing : directions) {
-                if (consumer.test(mutable.set(immutable).move(facing))) {
+                if (consumer.test(mutable.set(immutable).move(facing), facing)) {
                     return true;
                 }
             }

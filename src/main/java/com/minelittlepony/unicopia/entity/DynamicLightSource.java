@@ -1,61 +1,50 @@
 package com.minelittlepony.unicopia.entity;
 
-import org.jetbrains.annotations.Nullable;
+import java.lang.ref.WeakReference;
 
 import com.minelittlepony.unicopia.server.world.LightSources;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public interface DynamicLightSource {
     default int getLightLevel() {
         return 0;
     }
 
-    static final class LightEmitter<T extends Entity & DynamicLightSource> {
-        @Nullable
-        private BlockPos lastPos;
+    default BlockPos getLightSourcePosition() {
+        return ((Entity)this).getBlockPos();
+    }
 
+    static final class LightEmitter<T extends Entity & DynamicLightSource> {
         private final T entity;
+        private WeakReference<World> lastWorld = new WeakReference<>(null);
 
         public LightEmitter(T entity) {
             this.entity = entity;
         }
 
-        @SuppressWarnings("deprecation")
         public void tick() {
-            if (entity.isRemoved()) {
+            if (entity.isRemoved() || entity.getLightLevel() <= 0) {
                 remove();
                 return;
             }
 
-            int light = entity.getLightLevel();
-
-            if (light <= 0) {
-                return;
+            World world = entity.getWorld();
+            if (!lastWorld.refersTo(world)) {
+                remove();
+                lastWorld = new WeakReference<>(world);
             }
 
-            BlockPos currentPos = entity.getBlockPos();
-
-            if (!currentPos.equals(lastPos) && entity.getWorld().isChunkLoaded(currentPos)) {
-                LightSources.get(entity.getWorld()).addLightSource(entity);
-
-                try {
-                    if (lastPos != null) {
-                        entity.getWorld().getLightingProvider().checkBlock(lastPos);
-                        entity.getWorld().getLightingProvider().checkBlock(currentPos);
-                    }
-                    lastPos = currentPos;
-                } catch (Exception ignored) { }
-            }
+            LightSources.get(world).addLightSource(entity);
         }
 
         public void remove() {
-            LightSources.get(entity.getWorld()).removeLightSource(entity);
-            if (lastPos != null) {
-                try {
-                    entity.getWorld().getLightingProvider().checkBlock(lastPos);
-                } catch (Exception ignored) {}
+            World world = lastWorld.get();
+            if (world != null) {
+                LightSources.get(world).removeLightSource(entity.getUuid());
+                lastWorld.clear();
             }
         }
     }

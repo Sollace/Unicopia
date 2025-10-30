@@ -1,18 +1,9 @@
 package com.minelittlepony.unicopia.compat.trinkets;
 
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
-import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
-import com.minelittlepony.unicopia.network.Channel;
-import com.minelittlepony.unicopia.network.MsgTrinketBroken;
-
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
 import io.wispforest.accessories.api.AccessoryRegistry;
@@ -23,8 +14,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
 
 public class TrinketsDelegateImpl implements TrinketsDelegate {
     public static final TrinketsDelegateImpl INSTANCE = new TrinketsDelegateImpl();
@@ -42,26 +31,8 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
     }
 
     @Override
-    public ActionResult equipStack(LivingEntity entity, ItemStack stack) {
-        return getTrinketComponent(entity).map(component -> component.attemptToEquipAccessory(stack, false)).isPresent() ? ActionResult.SUCCESS : ActionResult.FAIL;
-    }
-
-    @Override
-    public Stream<EquippedStack> getEquipped(LivingEntity entity, Identifier slot, @Nullable Predicate<ItemStack> predicate) {
-        return getContainer(entity, slot).stream().flatMap(container -> {
-            return IntStream.range(0, container.getSize()).mapToObj(container::createReference)
-                    .filter(i -> !i.getStack().isEmpty() && (predicate == null || predicate.test(i.getStack()))).map(i -> {
-                ItemStack oldStack = i.getStack().copy();
-                return new EquippedStack(i.getStack(), container::markChanged, newStack -> {
-                    if (i.setStack(newStack)) {
-                        container.markChanged();
-                    }
-                }, l -> {
-                    container.markChanged();
-                    Channel.SERVER_TRINKET_BROKEN.sendToSurroundingPlayers(new MsgTrinketBroken(oldStack, entity.getId()), entity);
-                });
-            });
-        });
+    public boolean equipStack(LivingEntity entity, ItemStack stack) {
+        return getTrinketComponent(entity).map(component -> component.attemptToEquipAccessory(stack, false)).isPresent();
     }
 
     @Override
@@ -76,12 +47,12 @@ public class TrinketsDelegateImpl implements TrinketsDelegate {
         return Optional.empty();
     }
 
-    private Optional<AccessoriesContainer> getContainer(LivingEntity entity, Identifier slot) {
+    private Optional<AccessoriesContainer> getContainer(LivingEntity entity, SlotKey slot) {
         return getTrinketComponent(entity).map(component -> component.getContainers().get(slot.toString()));
     }
 
     @Override
-    public Optional<Slot> createSlot(SpellbookScreenHandler handler, LivingEntity entity, Identifier slotId, int i, int x, int y) {
+    public Optional<Slot> createSlot(SpellbookScreenHandler handler, LivingEntity entity, SlotKey slotId, int i, int x, int y) {
         return getContainer(entity, slotId).map(container -> new SpellbookTrinketSlot(handler, AccessoriesBasedSlot.of(container.capability().entity(), container.slotType(), i, x, y)));
     }
 

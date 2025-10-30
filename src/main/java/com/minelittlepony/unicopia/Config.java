@@ -8,6 +8,7 @@ import com.minelittlepony.common.util.GamePaths;
 import com.minelittlepony.common.util.registry.RegistryTypeAdapter;
 import com.minelittlepony.common.util.settings.*;
 import com.minelittlepony.unicopia.client.gui.HudPosition;
+import com.minelittlepony.unicopia.entity.player.SkinFeatures;
 
 public class Config extends com.minelittlepony.common.util.settings.Config {
     public final Setting<Set<String>> speciesWhiteList = value("server", "speciesWhiteList", (Set<String>)new HashSet<String>())
@@ -40,6 +41,9 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
 
     public final Setting<Boolean> toggleAbilityKeys = value("client", "toggleAbilityKeys", false)
             .addComment("If true the ability keybinds will function as toggle keys rather than hold keys");
+
+    public final Setting<SkinFeatures> skinFeatures = value("client", "skinFeatures", Setting.Type.of(() -> SkinFeatures.DEFAULT, SkinFeatures.CODEC))
+            .addComment("Turn on or off certain visual additions to the player's human model.");
 
     public final Setting<Integer> hudPage = value("client", "hudActivePage", 0)
             .addComment("The page of abilities currently visible in the HUD. You can change this in-game using the PG_UP and PG_DWN keys (configurable)");

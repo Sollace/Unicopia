@@ -9,6 +9,8 @@ import com.minelittlepony.unicopia.server.world.gen.ULootTableEntryType;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
+import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
+import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -28,6 +30,7 @@ public interface URecipes {
     RecipeType<SpellbookRecipe> SPELLBOOK = register("spellbook");
     RecipeType<CloudShapingRecipe> CLOUD_SHAPING = register("cloud_shaping");
     RecipeType<TransformCropsRecipe> GROWING = register("growing");
+    RecipeType<AltarRecipe> ALTAR = register("altar");
 
     RecipeSerializer<ZapAppleRecipe> ZAP_APPLE_SERIALIZER = register("crafting_zap_apple", ZapAppleRecipe.CODEC, ZapAppleRecipe.PACKET_CODEC);
     RecipeSerializer<ItemConversionShapedRecipe> CONVERSION_SERIALIZER = register("conversion", ItemConversionShapedRecipe.CODEC, ItemConversionShapedRecipe.PACKET_CODEC);
@@ -40,6 +43,9 @@ public interface URecipes {
     RecipeSerializer<SpellDuplicatingRecipe> SPELL_DUPLICATING = register("spellbook/duplicating", SpellDuplicatingRecipe.CODEC, SpellDuplicatingRecipe.PACKET_CODEC);
     RecipeSerializer<CloudShapingRecipe> CLOUD_SHAPING_SERIALIZER = register("cloud_shaping", new StonecuttingRecipe.Serializer<>(CloudShapingRecipe::new) {});
     RecipeSerializer<TransformCropsRecipe> TRANSFORM_CROP_SERIALIZER = register("transform_crop", TransformCropsRecipe.CODEC, TransformCropsRecipe.PACKET_CODEC);
+    RecipeSerializer<AltarRecipe> ALTAR_SERIALIZER = register("altar", AltarRecipe.CODEC, AltarRecipe.PACKET_CODEC);
+
+    CustomIngredientSerializer<ExclusiveIngredient> EXCLUSIVE_INGREDIENT_SERIALIZER = registerIngredient("exclusive", ExclusiveIngredient.CODEC, ExclusiveIngredient.PACKET_CODEC);
 
     static <T extends Recipe<?>> RecipeType<T> register(String name) {
         Identifier id = Unicopia.id(name);
@@ -67,6 +73,29 @@ public interface URecipes {
 
     static <S extends RecipeSerializer<T>, T extends Recipe<?>> S register(String name, S serializer) {
         return Registry.register(Registries.RECIPE_SERIALIZER, Unicopia.id(name), serializer);
+    }
+
+    static <T extends CustomIngredient> CustomIngredientSerializer<T> registerIngredient(String name, MapCodec<T> codec, PacketCodec<RegistryByteBuf, T> packetCodec) {
+        var serializer = new CustomIngredientSerializer<T>() {
+            private final Identifier id = Unicopia.id(name);
+
+            @Override
+            public Identifier getIdentifier() {
+                return id;
+            }
+
+            @Override
+            public MapCodec<T> getCodec() {
+                return codec;
+            }
+
+            @Override
+            public PacketCodec<RegistryByteBuf, T> getPacketCodec() {
+                return packetCodec;
+            }
+        };
+        CustomIngredientSerializer.register(serializer);
+        return serializer;
     }
 
     static void bootstrap() {

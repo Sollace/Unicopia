@@ -109,10 +109,13 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerTopsoil(UBlocks.SURFACE_CHITIN, UBlocks.CHITIN);
         registerHollow(UBlocks.CHITIN);
         registerCubeAllModelTexturePool(UBlocks.CHISELLED_CHITIN).family(UBlockFamilies.CHISELED_CHITIN);
+        registerCubeAllModelTexturePool(UBlocks.POLISHED_CHITIN).family(UBlockFamilies.POLISHED_CHITIN);
         registerHiveBlock(UBlocks.HIVE);
         registerRotated(UBlocks.CHITIN_SPIKES, BlockModels.SPIKES);
         registerHull(UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHITIN, UBlocks.CHISELLED_CHITIN);
+        registerHull(UBlocks.POLISHED_CHITIN_HULL, UBlocks.CHITIN, UBlocks.POLISHED_CHITIN);
         registerItemModel(UBlocks.SLIME_PUSTULE.asItem());
+        registerSlimeLayers(UBlocks.SLIME);
         blockStateCollector.accept(VariantsBlockStateSupplier.create(UBlocks.SLIME_PUSTULE)
                 .coordinate(BlockStateVariantMap.create(SlimePustuleBlock.SHAPE)
                 .register(state -> BlockStateVariant.create().put(MODEL, ModelIds.getBlockSubModelId(UBlocks.SLIME_PUSTULE, "_" + state.asString())))));
@@ -139,7 +142,9 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
 
         // golden oak wood
         registerSimpleCubeAll(UBlocks.GOLDEN_OAK_LEAVES);
-        registerLog(UBlocks.GOLDEN_OAK_LOG).log(UBlocks.GOLDEN_OAK_LOG);
+        registerLog(UBlocks.GOLDEN_OAK_LOG).log(UBlocks.GOLDEN_OAK_LOG).wood(UBlocks.GOLDEN_OAK_WOOD);
+        registerLog(UBlocks.STRIPPED_GOLDEN_OAK_LOG).log(UBlocks.STRIPPED_GOLDEN_OAK_LOG).wood(UBlocks.STRIPPED_GOLDEN_OAK_WOOD);
+        registerCubeAllModelTexturePool(UBlocks.GOLDEN_OAK_PLANKS).family(UBlockFamilies.GOLDEN_OAK);
 
         // plants
         Tree.REGISTRY.stream().filter(tree -> tree.sapling().isPresent()).forEach(tree -> registerFlowerPotPlant(tree.sapling().get(), tree.pot().get(), TintType.NOT_TINTED));
@@ -468,6 +473,15 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
             Identifier identifier = uploadedModels.computeIfAbsent("_" + part.asString() + "_stage" + i, variant -> createSubModel(crop, variant, Models.CROSS, TextureMap::cross));
             return BlockStateVariant.create().put(MODEL, identifier);
         })));
+    }
+
+    public void registerSlimeLayers(Block block) {
+        Identifier fullModel = ModelIds.getBlockModelId(Blocks.SLIME_BLOCK);
+        blockStateCollector.accept(VariantsBlockStateSupplier.create(block)
+                .coordinate(BlockStateVariantMap.create(Properties.LAYERS)
+                        .register(height -> BlockStateVariant.create()
+                                .put(VariantSettings.MODEL, height < 8 ? ModelIds.getBlockSubModelId(block, "_height" + height * 2) : fullModel))));
+        registerParentedItemModel(block, ModelIds.getBlockSubModelId(block, "_height2"));
     }
 
     public void registerPie(Block pie) {

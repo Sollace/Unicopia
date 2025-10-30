@@ -179,8 +179,15 @@ public interface UBlocks {
             s
     ), ItemGroups.NATURAL);
     Block GOLDEN_APPLE = register("golden_apple", s -> new EnchantedFruitBlock(Direction.DOWN, GOLDEN_OAK_LEAVES, FruitBlock.DEFAULT_SHAPE, false, s.mapColor(MapColor.GOLD)));
-    Block GOLDEN_OAK_SPROUT = register("golden_oak_sprout", SproutBlock.settings(), s -> new SproutBlock(0xE5FFCC88, () -> UItems.GOLDEN_OAK_SEEDS, () -> UTreeGen.GOLDEN_APPLE_TREE.sapling().map(Block::getDefaultState).get(), s));
-    Block GOLDEN_OAK_LOG = register("golden_oak_log", BlockConstructionUtils.createLogBlock(MapColor.OFF_WHITE, MapColor.GOLD), ItemGroups.BUILDING_BLOCKS);
+    Block GOLDEN_OAK_SPROUT = register("golden_oak_sprout", SproutBlock.settings(), s -> new SproutBlock(0xE5FFCC88, () -> UItems.GOLDEN_OAK_SEEDS, () -> UTreeGen.GOLDEN_OAK_TREE.sapling().map(Block::getDefaultState).get(), s));
+    StrippablePillarBlock GOLDEN_OAK_LOG = register("golden_oak_log", BlockConstructionUtils.createMetallicLogBlock(MapColor.OFF_WHITE, MapColor.GOLD), ItemGroups.BUILDING_BLOCKS);
+    StrippablePillarBlock GOLDEN_OAK_WOOD = register("golden_oak_wood", BlockConstructionUtils.createMetallicWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
+    Block GOLDEN_OAK_PLANKS = register("golden_oak_planks", s -> new Block(s.mapColor(MapColor.GOLD).strength(3, 4).sounds(BlockSoundGroup.METAL).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block GOLDEN_OAK_SLAB = register("golden_oak_slab", s -> new SlabBlock(s.mapColor(GOLDEN_OAK_PLANKS.getDefaultMapColor()).strength(2, 3).sounds(BlockSoundGroup.METAL).pistonBehavior(PistonBehavior.NORMAL)), ItemGroups.BUILDING_BLOCKS);
+    Block GOLDEN_OAK_STAIRS = register("golden_oak_stairs", Settings.copy(GOLDEN_OAK_PLANKS), s -> new StairsBlock(GOLDEN_OAK_PLANKS.getDefaultState(), s), ItemGroups.BUILDING_BLOCKS);
+
+    StrippablePillarBlock STRIPPED_GOLDEN_OAK_LOG = register("stripped_golden_oak_log", BlockConstructionUtils.createMetallicLogBlock(MapColor.OFF_WHITE, MapColor.GOLD), ItemGroups.BUILDING_BLOCKS);
+    StrippablePillarBlock STRIPPED_GOLDEN_OAK_WOOD = register("stripped_golden_oak_wood", BlockConstructionUtils.createMetallicWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);
 
     SegmentedCropBlock OATS = register("oats", Settings.copy(Blocks.WHEAT), s -> SegmentedCropBlock.create(11, 5, () -> UItems.OAT_SEEDS, null, null, s));
     SegmentedCropBlock OATS_STEM = register("oats_stem", Settings.copy(Blocks.WHEAT), OATS.createNext(5));
@@ -203,9 +210,27 @@ public interface UBlocks {
     Block CHISELLED_CHITIN_SLAB = register("chiselled_chitin_slab", Settings.copy(CHISELLED_CHITIN), SlabBlock::new, ItemGroups.BUILDING_BLOCKS);
     Block CHISELLED_CHITIN_STAIRS = register("chiselled_chitin_stairs", Settings.copy(CHISELLED_CHITIN), s -> new StairsBlock(CHISELLED_CHITIN.getDefaultState(), s), ItemGroups.BUILDING_BLOCKS);
     Block CHISELLED_CHITIN_HULL = register("chiselled_chitin_hull", Settings.copy(CHISELLED_CHITIN), OrientedBlock::new, ItemGroups.BUILDING_BLOCKS);
+    Block CHISELLED_CHITIN_WALL = register("chiselled_chitin_wall", Settings.copy(CHISELLED_CHITIN), WallBlock::new, ItemGroups.BUILDING_BLOCKS);
+    Block POLISHED_CHITIN = register("polished_chitin", Settings.copy(CHISELLED_CHITIN), Block::new, ItemGroups.BUILDING_BLOCKS);
+    Block POLISHED_CHITIN_SLAB = register("polished_chitin_slab", Settings.copy(POLISHED_CHITIN), SlabBlock::new, ItemGroups.BUILDING_BLOCKS);
+    Block POLISHED_CHITIN_STAIRS = register("polished_chitin_stairs", Settings.copy(POLISHED_CHITIN), s -> new StairsBlock(POLISHED_CHITIN.getDefaultState(), s), ItemGroups.BUILDING_BLOCKS);
+    Block POLISHED_CHITIN_HULL = register("polished_chitin_hull", Settings.copy(POLISHED_CHITIN), OrientedBlock::new, ItemGroups.BUILDING_BLOCKS);
+    Block POLISHED_CHITIN_WALL = register("polished_chitin_wall", Settings.copy(POLISHED_CHITIN), WallBlock::new, ItemGroups.BUILDING_BLOCKS);
     Block HIVE = register("hive", s -> new HiveBlock(s.mapColor(MapColor.PURPLE).hardness(6).ticksRandomly().sounds(BlockSoundGroup.CORAL)), ItemGroups.NATURAL);
     Block MYSTERIOUS_EGG = register("mysterious_egg", Settings.copy(Blocks.SLIME_BLOCK), s -> new PileBlock(s, PileBlock.MYSTERIOUS_EGG_SHAPES), ItemGroups.NATURAL);
     Block SLIME_PUSTULE = register("slime_pustule", Settings.copy(Blocks.SLIME_BLOCK), SlimePustuleBlock::new, ItemGroups.NATURAL);
+    Block SLIME = register("slime", s -> new SlimeLayerBlock(s
+            .mapColor(MapColor.PALE_GREEN)
+            .replaceable()
+            .nonOpaque()
+            .ticksRandomly()
+            .slipperiness(0.8F)
+            .strength(0.1F)
+            .requiresTool()
+            .sounds(BlockSoundGroup.SLIME)
+            .blockVision((state, world, pos) -> state.get(SlimeLayerBlock.LAYERS) >= 8)
+            .pistonBehavior(PistonBehavior.DESTROY)
+    ), ItemGroups.NATURAL);
 
     Block SHAPING_BENCH = register("shaping_bench", s -> new ShapingBenchBlock(s.mapColor(MapColor.OFF_WHITE).hardness(0.3F).resistance(0).sounds(BlockSoundGroup.WOOL)), ItemGroups.FUNCTIONAL);
     @SuppressWarnings("deprecation")
@@ -292,7 +317,7 @@ public interface UBlocks {
         if (block instanceof SaplingBlock || block instanceof SproutBlock || block instanceof FruitBlock || block instanceof CropBlock || block instanceof DoorBlock || block instanceof TrapdoorBlock) {
             TRANSLUCENT_BLOCKS.add(block);
         }
-        if (block instanceof CloudLike || block instanceof SlimePustuleBlock || block instanceof PileBlock) {
+        if (block instanceof CloudLike || block instanceof SlimePustuleBlock || block instanceof PileBlock || block instanceof SlimeLayerBlock) {
             SEMI_TRANSPARENT_BLOCKS.add(block);
         }
 
@@ -312,8 +337,10 @@ public interface UBlocks {
 
         StrippableBlockRegistry.register(ZAP_LOG, STRIPPED_ZAP_LOG);
         StrippableBlockRegistry.register(PALM_LOG, STRIPPED_PALM_LOG);
+        StrippableBlockRegistry.register(GOLDEN_OAK_LOG, STRIPPED_GOLDEN_OAK_LOG);
         StrippableBlockRegistry.register(ZAP_WOOD, STRIPPED_ZAP_WOOD);
         StrippableBlockRegistry.register(PALM_WOOD, STRIPPED_PALM_WOOD);
+        StrippableBlockRegistry.register(GOLDEN_OAK_WOOD, STRIPPED_GOLDEN_OAK_WOOD);
         OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_LOG, WAXED_ZAP_LOG);
         OxidizableBlocksRegistry.registerWaxableBlockPair(ZAP_WOOD, WAXED_ZAP_WOOD);
         OxidizableBlocksRegistry.registerWaxableBlockPair(STRIPPED_ZAP_LOG, WAXED_STRIPPED_ZAP_LOG);
@@ -332,10 +359,7 @@ public interface UBlocks {
         FlammableBlockRegistry.getDefaultInstance().add(GREEN_APPLE_LEAVES, 30, 60);
         FlammableBlockRegistry.getDefaultInstance().add(SWEET_APPLE_LEAVES, 30, 60);
         FlammableBlockRegistry.getDefaultInstance().add(SOUR_APPLE_LEAVES, 30, 60);
-        FlammableBlockRegistry.getDefaultInstance().add(GOLDEN_OAK_LEAVES, 60, 120);
         FlammableBlockRegistry.getDefaultInstance().add(MANGO_LEAVES, 30, 60);
-
-        FlammableBlockRegistry.getDefaultInstance().add(GOLDEN_OAK_LOG, 15, 15);
 
         FlammableBlockRegistry.getDefaultInstance().add(PALM_PLANKS, 5, 20);
         FlammableBlockRegistry.getDefaultInstance().add(PALM_SLAB, 5, 20);

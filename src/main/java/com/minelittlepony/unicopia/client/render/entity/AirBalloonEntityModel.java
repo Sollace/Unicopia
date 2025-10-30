@@ -135,6 +135,10 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntityRenderer.
         super.setAngles(state);
         root.yaw = MathHelper.PI;
 
+        if (isSandbags) {
+            root.yaw -= state.yaw * MathHelper.RADIANS_PER_DEGREE;
+        }
+
         if (isBurner || isBalloon || isSandbags) {
             root.roll = state.basketRoll;
             root.pitch = state.basketPitch;

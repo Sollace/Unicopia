@@ -38,7 +38,9 @@ public class HornFeatureRenderer<E extends BipedEntityRenderState> implements Ac
     }
 
     protected boolean canRender(E entity) {
-        return entity instanceof PlayerEntityRenderState && CasterState.of(entity).species.physical().canCast();
+        return entity instanceof PlayerEntityRenderState
+                && CasterState.of(entity).species.physical().canCast()
+                && CasterState.of(entity).skinFeatures.showHorn();
     }
 
     @Override

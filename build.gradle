@@ -55,7 +55,7 @@ repositories {
     maven { name 'accessories-b'; url 'https://maven.su5ed.dev/releases' }
     
     maven { name 'Iris Deps'; url "https://maven.covers1624.net/" }
-    maven { name 'Greenhouse Maven For Farmers delight'; url 'https://maven.greenhouseteam.lgbt/releases/' }
+    maven { name 'Greenhouse Maven For Farmers delight'; url 'https://maven.greenhouse.lgbt/releases/' }
     maven { name 'Porting Lib For Farmers delight'; url = 'https://mvn.devos.one/releases/' }
     maven { name 'Modrinth'; url 'https://api.modrinth.com/maven' }
     maven { name 'JitPack'; url 'https://jitpack.io'; content { includeGroup "com.github.Virtuoel" } }

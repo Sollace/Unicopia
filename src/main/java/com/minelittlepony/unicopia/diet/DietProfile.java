@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.ItemStackDuck;
+import com.minelittlepony.unicopia.item.component.TransientComponentMap;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -82,17 +82,21 @@ public record DietProfile(
         return stack.getComponents().get(DataComponentTypes.FOOD) == null;
     }
 
-    public boolean hasFoodAttributes(ItemStack stack, boolean original) {
-        if (this == DietProfile.EMPTY) {
+    public boolean isEmpty() {
+        return this == EMPTY;
+    }
+
+    public boolean hasFoodAttributes(ItemStack stack, TransientComponentMap components, boolean original) {
+        if (isEmpty()) {
             return original;
         }
 
-        return !isInedible(stack) && (original || getFoodAttributeForNonEdibleFood(stack).isPresent());
+        return !isInedible(stack) && (original || getFoodAttributeForNonEdibleFood(stack, components).isPresent());
     }
 
     @Nullable
-    public FoodComponent getAdjustedFoodComponent(ItemStack stack, @Nullable FoodComponent food) {
-        if (this == EMPTY) {
+    public FoodComponent getAdjustedFoodComponent(ItemStack stack, TransientComponentMap components, @Nullable FoodComponent food) {
+        if (isEmpty()) {
             return food;
         }
 
@@ -100,12 +104,12 @@ public record DietProfile(
             return applyFoodQualityRatio(stack, food);
         }
 
-        return getFoodAttributeForNonEdibleFood(stack).map(FoodAttributes::food).orElse(food);
+        return getFoodAttributeForNonEdibleFood(stack, components).map(FoodAttributes::food).orElse(food);
     }
 
     @Nullable
-    public ConsumableComponent getAdjustedConsumableComponent(ItemStack stack, @Nullable ConsumableComponent consumable) {
-        return getFoodAttributeForNonEdibleFood(stack)
+    public ConsumableComponent getAdjustedConsumableComponent(ItemStack stack, TransientComponentMap components, @Nullable ConsumableComponent consumable) {
+        return getFoodAttributeForNonEdibleFood(stack, components)
                 .map(attributes -> attributes.getConsumableComponent(consumable))
                 .orElse(consumable);
     }
@@ -131,11 +135,11 @@ public record DietProfile(
         return isInedible(getRatios(stack));
     }
 
-    public boolean isInedible(Pair<Float, Float> ratios) {
+    public static boolean isInedible(Pair<Float, Float> ratios) {
         return ratios.getFirst() <= 0.01F && ratios.getSecond() <= 0.01F;
     }
 
-    public Pair<Float, Float> getRatios(ItemStack stack) {
+    private Pair<Float, Float> getRatios(ItemStack stack) {
         Optional<Multiplier> multiplier = findMultiplier(stack);
 
         float baseMultiplier = (isForaged(stack) ? foragingMultiplier() : defaultMultiplier());
@@ -145,7 +149,7 @@ public record DietProfile(
     }
 
     public void appendTooltip(ItemStack stack, @Nullable Pony pony, Consumer<Text> tooltip, TooltipType context) {
-        if (this == EMPTY) {
+        if (isEmpty()) {
             return;
         }
 
@@ -189,19 +193,20 @@ public record DietProfile(
         return Optional.empty();
     }
 
-    private Optional<FoodAttributes> getFoodAttributeForNonEdibleFood(ItemStack stack) {
-        if (this == EMPTY) {
+    private Optional<FoodAttributes> getFoodAttributeForNonEdibleFood(ItemStack stack, TransientComponentMap components) {
+        if (isEmpty()) {
             return Optional.empty();
         }
-        if (ItemStackDuck.of(stack).getTransientComponents().getCarrier()
+        if (components.getCarrier()
                 .flatMap(Pony::of)
                 .filter(pony -> pony.getObservedSpecies().hasIronGut())
-                .isPresent()) {
-            return findEffect(stack)
+                .isEmpty()) {
+            return Optional.empty();
+        }
+
+        return findEffect(stack)
                 .flatMap(Effect::foodAttributes)
                 .or(() -> PonyDiets.getInstance().getEffects(stack).foodAttributes());
-        }
-        return Optional.empty();
     }
 
     public record Multiplier(

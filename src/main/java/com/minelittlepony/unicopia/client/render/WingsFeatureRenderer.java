@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client.render;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
@@ -20,7 +22,6 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
@@ -30,6 +31,7 @@ public class WingsFeatureRenderer<S extends BipedEntityRenderState> implements A
     protected static final int FEATHER_COUNT = 8;
 
     private static final Identifier PEGASUS_WINGS = Unicopia.id("textures/models/wings/pegasus.png");
+    private static final Identifier PEGASUS_WINGS_OVERLAY = Unicopia.id("textures/models/wings/pegasus_overlay.png");
 
     private final WingsModel model;
 
@@ -43,23 +45,35 @@ public class WingsFeatureRenderer<S extends BipedEntityRenderState> implements A
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, S entity, float limbDistance, float limbAngle) {
         if (canRender(entity)) {
-            Identifier texture = getTexture(entity);
-            VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getEntityTranslucent(texture), false);
-
             model.setAngles(CasterState.of(entity), context.getModel());
-            model.render(matrices, consumer, lightUv, OverlayTexture.DEFAULT_UV, Colors.WHITE);
+            model.render(matrices, getBuffer(renderContext, getTexture(entity)), lightUv, OverlayTexture.DEFAULT_UV, Colors.WHITE);
+
+            Identifier overlayTexture = getOverlayTexture(entity);
+            if (overlayTexture != null) {
+                model.render(matrices, getBuffer(renderContext, overlayTexture), lightUv, OverlayTexture.DEFAULT_UV, Colors.WHITE);
+            }
         }
     }
 
-    protected boolean canRender(S entity) {
-        return entity instanceof PlayerEntityRenderState
-                && CasterState.of(entity).species.physical().flightType() == FlightType.AVIAN
-                && CasterState.of(entity).species.physical() != Race.BAT
-                && !CasterState.of(entity).pegasusAmulet;
+    protected VertexConsumer getBuffer(VertexConsumerProvider vertices, Identifier texture) {
+        return vertices.getBuffer(RenderLayer.getEntityTranslucent(texture));
     }
 
-    protected Identifier getTexture(S entity) {
+    protected boolean canRender(S state) {
+        return state instanceof PlayerEntityRenderState
+                && CasterState.of(state).species.physical().flightType() == FlightType.AVIAN
+                && CasterState.of(state).species.physical() != Race.BAT
+                && CasterState.of(state).skinFeatures.showWings()
+                && !CasterState.of(state).pegasusAmulet;
+    }
+
+    protected Identifier getTexture(S state) {
         return PEGASUS_WINGS;
+    }
+
+    @Nullable
+    protected Identifier getOverlayTexture(S state) {
+        return PEGASUS_WINGS_OVERLAY;
     }
 
     private TexturedModelData createModel(Dilation dilation) {

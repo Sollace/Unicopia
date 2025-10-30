@@ -22,7 +22,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.screen.ScreenHandler;
 
 @Mixin(LootableContainerBlockEntity.class)
-abstract class MixinLootableContainerBlockEntity extends LockableContainerBlockEntity implements MimicEntity.MimicGeneratable {
+abstract class MixinLootableContainerBlockEntity extends LockableContainerBlockEntity implements LootableInventory, MimicEntity.MimicGeneratable {
     @Nullable
     private RegistryKey<LootTable> mimicLootTable;
     private boolean allowMimics = true;
@@ -65,14 +65,10 @@ abstract class MixinLootableContainerBlockEntity extends LockableContainerBlockE
         markDirty();
     }
 
-    @Inject(
-            method = "createMenu",
-            at = @At(
-                value = "INVOKE",
-                target = "net/minecraft/block/entity/LootableContainerBlockEntity.generateLoot(Lnet/minecraft/entity/player/PlayerEntity;)V",
-                shift = Shift.AFTER
-    ), cancellable = true)
-    private void onCreateMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player, CallbackInfoReturnable<ScreenHandler> info) {
+    @Nullable
+    @Override
+    public MimicEntity triggerMimic(@Nullable PlayerEntity player) {
+        generateLoot(player);
         if (player != null && allowMimics) {
             if (isMimic == TriState.DEFAULT) {
                 isMimic = TriState.of(MimicEntity.shouldConvert(player.getWorld(), getPos(), player, mimicLootTable));
@@ -81,10 +77,30 @@ abstract class MixinLootableContainerBlockEntity extends LockableContainerBlockE
             if (isMimic.get()) {
                 var mimic = MimicEntity.spawnFromChest(player.getWorld(), getPos());
                 if (mimic != null) {
-                    info.setReturnValue(mimic.createScreenHandler(syncId, playerInventory, player));
+                    mimicLootTable = null;
                 }
+
+                return mimic;
             }
+
             mimicLootTable = null;
+        }
+
+        return null;
+    }
+
+    @Inject(
+            method = "createMenu",
+            at = @At(
+                value = "INVOKE",
+                target = "net/minecraft/block/entity/LootableContainerBlockEntity.generateLoot(Lnet/minecraft/entity/player/PlayerEntity;)V",
+                shift = Shift.AFTER
+    ), cancellable = true)
+    private void onCreateMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player, CallbackInfoReturnable<ScreenHandler> info) {
+        @Nullable
+        var mimic = triggerMimic(player);
+        if (mimic != null) {
+            info.setReturnValue(mimic.createScreenHandler(syncId, playerInventory, player));
         }
     }
 }

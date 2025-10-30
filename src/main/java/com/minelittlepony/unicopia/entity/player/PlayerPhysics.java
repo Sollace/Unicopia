@@ -64,11 +64,13 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     private static final int MAX_TICKS_TO_WEATHER_EFFECTS = 100;
     private static final int IDLE_FLAP_INTERVAL = 20;
     private static final int GLIDING_SOUND_INTERVAL = 200;
+    private static final int LANDING_COLLISION_TIME = 3;
 
     private int ticksInAir;
     private int ticksToGlide;
     private int ticksDiving;
     private int ticksFlyingLow;
+    private int ticksColliding;
 
     private float thrustScale = 0;
     private float prevThrustScale;
@@ -283,9 +285,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         lastFlightType = type;
 
-        entity.getAbilities().allowFlying = lastFlightType.canFlyCreative(entity);
-
-        boolean creative = entity.isCreative() || entity.isSpectator();
+        boolean creative = FlightType.canFlyCreative(entity);
         boolean startedFlyingCreative = !creative && isFlyingEither != entity.getAbilities().flying;
 
         if (!creative) {
@@ -294,7 +294,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             }
 
             if (!pony.isClient()) {
-                if (type.canFly()
+                if (type.canFly(entity)
                         && isFlying()
                         && EffectUtils.hasBothBrokenWing(entity)
                         && ticksInAir > 90) {
@@ -309,27 +309,35 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 isCancelled = false;
             }
 
-            entity.getAbilities().flying |= (lastFlightType.canFly() || entity.getAbilities().allowFlying) && isFlyingEither;
-            if (!lastFlightType.canFly() && typeChanged) {
+            entity.getAbilities().flying |= lastFlightType.canFly(entity) && isFlyingEither;
+            if (!lastFlightType.canFly(entity) && typeChanged) {
                 entity.getAbilities().flying = false;
             }
 
-            if ((entity.isOnGround() && entity.isSneaking())
-                    || entity.isTouchingWater()
-                    || entity.horizontalCollision
-                    || (entity.verticalCollision && (pony.getObservedSpecies() != Race.BAT || velocity.y < 0))) {
+            if (entity.horizontalCollision || entity.verticalCollision || entity.isOnGround()) {
+                ticksColliding++;
+            } else {
+                ticksColliding = 0;
+            }
+
+            if ((entity.isOnGround() && entity.isSneaking() && ticksColliding > LANDING_COLLISION_TIME)
+                    || (entity.isTouchingWater() && ticksInAir > 20)
+                    || (entity.horizontalCollision)
+                    || (entity.verticalCollision && ticksColliding > LANDING_COLLISION_TIME && (pony.getObservedSpecies() != Race.BAT || velocity.y < 0))) {
 
                 if (entity.getAbilities().flying && entity.horizontalCollision) {
                     handleWallCollission(velocity);
                     return;
                 }
 
-                cancelFlight(false);
+                if (ticksColliding > LANDING_COLLISION_TIME || entity.isTouchingWater()) {
+                    cancelFlight(false);
+                }
             }
         }
 
         if (isGravityNegative()) {
-            if (entity.isOnGround() || (!creative && entity.horizontalCollision)) {
+            if (entity.isOnGround() || (!creative && entity.horizontalCollision && ticksColliding > LANDING_COLLISION_TIME)) {
                 cancelFlight(false);
             }
         }
@@ -341,7 +349,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             entity.calculateDimensions();
         }
 
-        if (lastFlightType.canFly()) {
+        if (lastFlightType.canFly(entity)) {
             if (isFlying()) {
                 ticksInAir++;
                 tickFlight(lastFlightType, velocity);
@@ -535,7 +543,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 stack.stack().damage(minDamage + entity.getWorld().random.nextInt(50), (ServerWorld)entity.getWorld(), (ServerPlayerEntity)entity, stack.breakStatusSender());
             }
 
-            if (!lastFlightType.canFly()) {
+            if (!lastFlightType.canFly(entity)) {
                 playSound(USounds.ITEM_ICARUS_WINGS_EXHAUSTED, 1, 2);
                 cancelFlight(false);
             }
@@ -678,7 +686,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         }
 
         entity.setVelocity(velocity.toImmutable());
-        cancelFlight(false);
+        if (ticksColliding > LANDING_COLLISION_TIME) {
+            cancelFlight(false);
+        }
     }
 
     private void moveFlying(MutableVector velocity) {
@@ -814,8 +824,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
      */
     public void updateFlightState() {
         FlightType type = recalculateFlightType();
-        entity.getAbilities().allowFlying = type.canFlyCreative(entity);
-        entity.getAbilities().flying &= type.canFly() || entity.getAbilities().allowFlying;
+        entity.getAbilities().flying &= type.canFly(entity);
         isFlyingSurvival = entity.getAbilities().flying;
         lastFlightType = type;
     }

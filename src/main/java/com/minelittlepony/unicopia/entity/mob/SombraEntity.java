@@ -624,7 +624,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
         if (getWorld().isClient() || !isAlive()) {
             return false;
         }
-        return teleportTo(getPos().add(VecHelper.supply(() -> random.nextTriangular(0, maxDistance))));
+        return teleportTo(getPos().add(VecHelper.triangular(random, 0, maxDistance)));
     }
 
     @Override

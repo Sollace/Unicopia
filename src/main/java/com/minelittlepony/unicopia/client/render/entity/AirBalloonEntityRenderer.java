@@ -72,6 +72,7 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
     public void updateRenderState(AirBalloonEntity entity, State state, float tickDelta) {
         super.updateRenderState(entity, state, tickDelta);
         state.yVelocity = MathHelper.clamp((float)Math.abs(entity.getVelocity().getY()) * 3F, 0.25F, 1F);
+        state.yaw = entity.getHorizontalFacing().asRotation();
         state.design = entity.getDesign();
         state.basket = entity.getBasketType();
         state.inflation = entity.getInflation(tickDelta);
@@ -123,6 +124,8 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
         public Box boundingBox;
         public Vec3d pos;
 
+        public float yaw;
+
         public float[] sandbagPullAmounts = new float[4];
     }
 
@@ -169,15 +172,8 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
         @Override
         public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, State state, float limbDistance, float limbAngle) {
             if (visibilityTest.test(state)) {
-                matrices.push();
-                if (model.isBalloon) {
-                    matrices.translate(0, 1 * (1 - state.inflation), 0);
-                    matrices.scale(1, MathHelper.lerp(state.inflation, -0.05F, 1), 1);
-                }
                 render(model, textureFunc.apply(state), matrices, vertices, lightFunc.apply(light, state), state, Colors.WHITE);
-                matrices.pop();
             }
         }
     }
-
 }

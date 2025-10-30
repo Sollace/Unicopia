@@ -26,6 +26,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.input.Input;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.VertexConsumer;
@@ -59,6 +60,7 @@ public class UHud {
         new Slot(this, AbilitySlot.SECONDARY, AbilitySlot.SECONDARY, 30, -10),
         new Slot(this, AbilitySlot.TERTIARY, AbilitySlot.TERTIARY, 43, 10)
     );
+    public final LevitatingItemActionWheel levitatingItemActions = new LevitatingItemActionWheel();
 
     @Nullable
     private Text message;
@@ -76,14 +78,13 @@ public class UHud {
     private SpellType<?> focusedType = SpellType.empty();
 
     public void render(InGameHud hud, DrawContext context, RenderTickCounter tickCounter) {
-        final int hotbarZ = -90;
-
         if (client.player == null) {
             return;
         }
+        RenderSystem.enableDepthTest();
 
-        int scaledWidth = client.getWindow().getScaledWidth();
-        int scaledHeight = client.getWindow().getScaledHeight();
+        int scaledWidth = context.getScaledWindowWidth();
+        int scaledHeight = context.getScaledWindowHeight();
         MatrixStack matrices = context.getMatrices();
 
         Pony pony = Pony.of(client.player);
@@ -91,7 +92,6 @@ public class UHud {
         float tickDelta = tickCounter.getTickDelta(false);
 
         matrices.push();
-        matrices.translate(0, 0, hotbarZ - 9800);
         renderViewEffects(pony, context, tickDelta);
         matrices.pop();
 
@@ -108,6 +108,8 @@ public class UHud {
         }
 
         xDirection = hudPos.getHorizontal().or(armAlignment.opposite()).opposite().getSignum();
+
+        levitatingItemActions.render(context, tickDelta);
 
         matrices.push();
         matrices.translate(scaledWidth / 2, scaledHeight / 2, 0);
@@ -126,7 +128,6 @@ public class UHud {
         if (hudPos == HudPosition.BOTTOM_CENTER) {
             hudY -= 22;
         }
-        int hudZ = hotbarZ;
 
         float exhaustion = pony.getMagicalReserves().getExhaustion().getPercentFill();
 
@@ -134,10 +135,9 @@ public class UHud {
             Random rng = client.world.random;
             hudX += rng.nextFloat() - 0.5F;
             hudY += rng.nextFloat() - 0.5F;
-            hudZ += rng.nextFloat() - 0.5F;
         }
 
-        matrices.translate(hudX, hudY, hudZ);
+        matrices.translate(hudX, hudY, 0);
 
         AbilityDispatcher abilities = pony.getAbilities();
 
@@ -210,6 +210,7 @@ public class UHud {
         }
 
         RenderSystem.disableBlend();
+        RenderSystem.disableDepthTest();
     }
 
     private void renderMessage(DrawContext context, float tickDelta) {
@@ -402,6 +403,22 @@ public class UHud {
         if (!client.isPaused() && messageTime > 0) {
             messageTime--;
         }
+        if (!client.isPaused() && client.player != null) {
+            levitatingItemActions.tick(client, Pony.of(client.player));
+        }
+    }
+
+    public boolean handleInput(Input input) {
+        if (client.isPaused() || client.player == null) {
+            return false;
+        }
+
+        if (Pony.of(client.player).getAcrobatics().isImmobile()) {
+            input.movementSideways = 0;
+            input.movementForward = 0;
+        }
+
+        return levitatingItemActions.handleInput(input) || EffectUtils.getAmplifier(client.player, UEffects.PARALYSIS) > 1;
     }
 
     void renderAbilityIcon(DrawContext context, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {
@@ -410,8 +427,21 @@ public class UHud {
         });
     }
 
+    public static Identifier getHeartTexture(InGameHud.HeartType heartsType, Identifier vanillaTexture, boolean hardcore, boolean blinking, boolean half) {
+
+        if (MinecraftClient.getInstance().player != null) {
+            if (UItems.ALICORN_AMULET.isApplicable(MinecraftClient.getInstance().player)) {
+                if (heartsType == InGameHud.HeartType.CONTAINER) {
+                //    return Unicopia.id("hud/heart/container_full");
+                }
+                //return Unicopia.id("hud/heart/withered_" + (half ? "half" : "full") + (blinking ? "_blinking" : ""));
+            }
+        }
+        return vanillaTexture;
+    }
+
     @Nullable
-    public static InGameHud.HeartType getHeartsType(PlayerEntity player) {
+    public static InGameHud.HeartType getHeartsType(PlayerEntity player, InGameHud.HeartType vanillaHeartType) {
         if (UItems.ALICORN_AMULET.isApplicable(player) || EffectUtils.isChangingRace(player)) {
             return InGameHud.HeartType.WITHERED;
         }
@@ -420,6 +450,6 @@ public class UHud {
             return InGameHud.HeartType.POISONED;
         }
 
-        return null;
+        return vanillaHeartType;
     }
 }

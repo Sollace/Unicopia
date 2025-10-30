@@ -26,6 +26,10 @@ public class MutableVector {
         this.z *= z;
     }
 
+    public void multiply(double d) {
+        multiply(d, d, d);
+    }
+
     public void add(Vec3d vector) {
         add(vector.x, vector.y, vector.z);
     }

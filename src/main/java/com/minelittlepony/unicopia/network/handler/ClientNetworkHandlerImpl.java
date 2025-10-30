@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.network.handler;
 
 import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.data.Rot;
 import com.minelittlepony.unicopia.ability.data.tree.TreeTypes;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -12,7 +13,10 @@ import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.minelittlepony.unicopia.client.gui.TribeSelectionScreen;
 import com.minelittlepony.unicopia.client.gui.spellbook.ClientChapters;
 import com.minelittlepony.unicopia.diet.PonyDiets;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.TotemOfDying;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.network.*;
 import com.minelittlepony.unicopia.network.MsgCasterLookRequest.Reply;
 import net.minecraft.client.MinecraftClient;
@@ -39,6 +43,7 @@ public class ClientNetworkHandlerImpl {
         Channel.SERVER_REQUEST_PLAYER_LOOK.receiver().addPersistentListener(this::handleCasterLookRequest);
         Channel.SERVER_TRINKET_BROKEN.receiver().addPersistentListener(this::handleTrinketBroken);
         Channel.CONFIGURATION_CHANGE.receiver().addPersistentListener(this::handleConfigurationChange);
+        Channel.ENTITY_STATUS.receiver().addPersistentListener(this::handleEntityStatus);
     }
 
     private void handleTribeScreen(PlayerEntity sender, MsgTribeSelect packet) {
@@ -50,6 +55,19 @@ public class ClientNetworkHandlerImpl {
 
         packet.destructions().forEach((i, d) -> {
             destr.setBlockDestruction(i, d);
+        });
+    }
+
+    private void handleEntityStatus(PlayerEntity sender, MsgEntityStatus status) {
+        Living.getOrEmpty(sender.getWorld().getEntityById(status.entityId())).ifPresent(living -> {
+            if (status.status() == MsgEntityStatus.USE_TOTEM_OF_DYING) {
+                client.particleManager.addEmitter(living.asEntity(), ParticleTypes.TOTEM_OF_UNDYING, 30);
+                living.asWorld().playSound(living.asEntity().getX(), living.asEntity().getY(), living.asEntity().getZ(), SoundEvents.ITEM_TOTEM_USE, living.asEntity().getSoundCategory(), 1, 1, false);
+                if (living.asEntity() == client.player) {
+                    ItemStack totem = TotemOfDying.getTotem(client.player, false);
+                    client.gameRenderer.showFloatingItem(totem.isEmpty() ? UItems.TOTEM_OF_DYING.getDefaultStack() : totem);
+                }
+            }
         });
     }
 
@@ -78,6 +96,7 @@ public class ClientNetworkHandlerImpl {
         TreeTypes.load(packet.treeTypes());
         PonyDiets.load(packet.diets());
         InteractionManager.getInstance().setCloudShapingRecipes(packet.cloudCuttingRecipes());
+        Pony.of(sender).setSkinFeatures(Unicopia.getConfig().skinFeatures.get());
     }
 
     private void handlePlayerAnimation(PlayerEntity sender, MsgPlayerAnimationChange packet) {

@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.container.spellbook.SpellbookChapters;
+import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity;
+import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity.Action;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.entity.player.dummy.DummyPlayerEntity;
 import com.minelittlepony.unicopia.particle.ParticleSpawner;
@@ -121,6 +123,12 @@ public class InteractionManager {
 
     public void addBlockBreakingParticles(BlockPos pos, Direction direction) {
 
+    }
+
+    public void interactLevitatingItem(LevitatingItemEntity entity, PlayerEntity player) {
+        if (player != entity.getMaster()) {
+            entity.handleAction(Action.GRAB, player, Optional.empty());
+        }
     }
 
     public void setEquineContext(EquineContext context) {

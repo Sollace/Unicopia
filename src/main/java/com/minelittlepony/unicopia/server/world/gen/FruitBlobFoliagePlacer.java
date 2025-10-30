@@ -6,7 +6,10 @@ import java.util.Map;
 import org.joml.Vector2i;
 
 import com.minelittlepony.unicopia.block.FruitBearingBlock;
+import com.minelittlepony.unicopia.server.world.UWorldGen;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
@@ -15,11 +18,18 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
+import net.minecraft.world.gen.foliage.FoliagePlacerType;
 
 public class FruitBlobFoliagePlacer extends BlobFoliagePlacer {
+    public static final MapCodec<FruitBlobFoliagePlacer> CODEC = RecordCodecBuilder.mapCodec(instance -> createCodec(instance).apply(instance, FruitBlobFoliagePlacer::new));
 
     public FruitBlobFoliagePlacer(IntProvider radius, IntProvider offset, int height) {
         super(radius, offset, height);
+    }
+
+    @Override
+    protected FoliagePlacerType<?> getType() {
+        return UWorldGen.FRUIT_BLOB_FOLIAGE_PLACER_TYPE;
     }
 
     @Override

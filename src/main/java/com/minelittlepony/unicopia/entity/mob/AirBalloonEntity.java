@@ -1,14 +1,11 @@
 package com.minelittlepony.unicopia.entity.mob;
 
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.WoodType;
 import net.minecraft.entity.*;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.*;
 import net.minecraft.entity.data.DataTracker.Builder;
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -23,6 +20,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -47,14 +45,9 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
-import com.minelittlepony.unicopia.EquineContext;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.entity.Living;
-import com.minelittlepony.unicopia.entity.MagicImmune;
-import com.minelittlepony.unicopia.entity.collision.EntityCollisions;
-import com.minelittlepony.unicopia.entity.collision.MultiBoundingBoxEntity;
 import com.minelittlepony.unicopia.entity.collision.MultiBox;
 import com.minelittlepony.unicopia.item.BasketItem;
 import com.minelittlepony.unicopia.item.UItems;
@@ -66,12 +59,15 @@ import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
 
 import io.netty.buffer.ByteBuf;
 
-public class AirBalloonEntity extends MobEntity implements EntityCollisions.ComplexCollidable, MultiBoundingBoxEntity, MagicImmune, EquineContext {
+public class AirBalloonEntity extends FlyingVehicleEntity {
     private static final TrackedData<Boolean> ASCENDING = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Integer> BOOSTING = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> INFLATION = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<String> BASKET_TYPE = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.STRING);
     private static final TrackedData<Integer> BALLOON_DESIGN = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
+    private static final int BASKET_GRID_SIZE = 2;
+    private static final int TOP_GRID_SIZE = 4;
 
     public static final byte STATUS_BURNER_INTERACT = (byte)105;
 
@@ -109,6 +105,25 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         builder.add(INFLATION, 0);
         builder.add(BASKET_TYPE, BasketType.DEFAULT.id().toString());
         builder.add(BALLOON_DESIGN, 0);
+    }
+
+    @Override
+    protected int getSeatCount() {
+        return (BASKET_GRID_SIZE * BASKET_GRID_SIZE) + (TOP_GRID_SIZE * TOP_GRID_SIZE);
+    }
+
+    @Override
+    protected Vec3d getSeatPosition(int seatIndex) {
+        double y = 0.2;
+        double alignment = -0.5;
+        int gridSize = BASKET_GRID_SIZE;
+        if (seatIndex >= 4) {
+            seatIndex -= 4;
+            y = 11.125;
+            alignment = -1.75;
+            gridSize = TOP_GRID_SIZE;
+        }
+        return new Vec3d(alignment + seatIndex % gridSize, y, alignment + seatIndex / gridSize);
     }
 
     public BasketType getBasketType() {
@@ -185,12 +200,6 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
 
     public float getZVelocity(float tickDelta) {
         return (float)MathHelper.lerp(tickDelta, prevZDelta, zDelta);
-    }
-
-    @Override
-    @Nullable
-    protected SoundEvent getHurtSound(DamageSource source) {
-        return null;
     }
 
     @Override
@@ -329,34 +338,12 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     }
 
     @Override
-    public boolean damage(ServerWorld world, DamageSource source, float amount) {
-        if (source.getAttacker() instanceof PlayerEntity player && player.getAbilities().creativeMode) {
-            dropInventory(world);
-            remove(RemovalReason.KILLED);
-            return true;
-        }
-        if (super.damage(world, source, amount)) {
-            hurtTime = 0;
-            maxHurtTime = 0;
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    protected void updatePostDeath() {
-        if (!getWorld().isClient() && !isRemoved()) {
-            remove(Entity.RemovalReason.KILLED);
-        }
-    }
-
-    @Override
-    public ActionResult interactAt(PlayerEntity player, Vec3d hitPos, Hand hand) {
+    public ActionResult interactAt(PlayerEntity player, Vec3d relativePositionOffset, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
 
         if (hasBalloon() && hasBurner()) {
 
-            if (getBurnerBoundingBox().expand(0.7).contains(getPos().add(hitPos))) {
+            if (getBurnerBoundingBox().expand(0.7).contains(getPos().add(relativePositionOffset))) {
                 if (stack.isOf(Items.FLINT_AND_STEEL)) {
                     setAscending(!isAscending());
                     if (isAscending()) {
@@ -383,27 +370,36 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
             }
 
             if (getInflation(1) >= 1) {
-                int xPush = (int)Math.signum(hitPos.x);
-                int zPush = (int)Math.signum(hitPos.z);
+                int xPush = (int)Math.signum(relativePositionOffset.x);
+                int zPush = (int)Math.signum(relativePositionOffset.z);
 
-                Vec3d absHitPos = getPos().add(hitPos);
+                Vec3d absHitPos = getPos().add(relativePositionOffset);
 
                 if (stack.isEmpty() && MultiBox.unbox(getBoundingBox()).expand(0.5, 1, 0.5).offset(2 * xPush, 3, 2 * zPush).contains(absHitPos)) {
                     if (!getWorld().isClient) {
                         manualVelocity = manualVelocity.add(1.7 * xPush, 0, 1.7 * zPush);
                     }
-                    getWorld().playSound(null, getX() + hitPos.getX(), getY() + hitPos.getY(), getZ() + hitPos.getZ(), USounds.Vanilla.ENTITY_LEASH_KNOT_PLACE, getSoundCategory(), 1, 1);
+                    getWorld().playSound(null, getX() + relativePositionOffset.getX(), getY() + relativePositionOffset.getY(), getZ() + relativePositionOffset.getZ(), USounds.Vanilla.ENTITY_LEASH_KNOT_PLACE, getSoundCategory(), 1, 1);
                     if (!player.isSneaky()) {
                         getWorld().emitGameEvent(player, GameEvent.ENTITY_INTERACT, getBlockPos());
                     }
 
-                    Vec3d interactCoordinate = new Vec3d(xPush, 0, zPush)
-                            .rotateY((180 + getHorizontalFacing().asRotation()) * MathHelper.RADIANS_PER_DEGREE)
-                    ;
+                    int sandbagId = MathHelper.clamp(-xPush, 0, 1) + MathHelper.clamp(-zPush, 0, 1) * 2;
+                    player.sendMessage(Text.literal(sandbagId + ""), false);
 
-                    getSandbag(MathHelper.clamp((int)interactCoordinate.getX(), 0, 1) + MathHelper.clamp((int)interactCoordinate.getZ(), 0, 1) * 2).setPulling();
+                    getSandbag(sandbagId).setPulling();
 
                     return ActionResult.SUCCESS;
+                }
+
+                if (stack.isEmpty()) {
+                    if (MultiBox.unbox(getBoundingBox()).expand(0.5, 1, 0.5).contains(absHitPos)) {
+                        return player.startRiding(this) ? ActionResult.SUCCESS : ActionResult.FAIL;
+                    }
+                    Box balloonBox = getBalloonBoundingBox();
+                    if (balloonBox.expand(0.5).withMinY(balloonBox.maxY - 0.25).contains(absHitPos)) {
+                        return player.startRiding(this) ? ActionResult.SUCCESS : ActionResult.FAIL;
+                    }
                 }
             }
         }
@@ -500,11 +496,6 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     }
 
     @Override
-    public boolean isCollidable() {
-        return true;
-    }
-
-    @Override
     public void pushAwayFrom(Entity entity) {
         if (entity instanceof AirBalloonEntity) {
             super.pushAwayFrom(entity);
@@ -516,16 +507,6 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         if (entity instanceof AirBalloonEntity) {
             super.pushAway(entity);
         }
-    }
-
-    @Override
-    protected Entity.MoveEffect getMoveEffect() {
-        return Entity.MoveEffect.EVENTS;
-    }
-
-    @Override
-    public Race getSpecies() {
-        return Race.UNSET;
     }
 
     @Override
@@ -586,11 +567,6 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
     }
 
     @Override
-    public boolean isClimbing() {
-        return false;
-    }
-
-    @Override
     protected Box calculateBoundingBox() {
         List<Box> boxes = getBoundingBoxes();
         Box box = super.calculateBoundingBox();
@@ -616,7 +592,7 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
 
     public Box getInteriorBoundingBox() {
         Box box = MultiBox.unbox(getBoundingBox());
-        return box.withMinY(box.minY - 0.05).contract(0.15, 0, 0.15);
+        return box.withMinY(box.minY - 0.5).contract(0.15, 0, 0.15);
     }
 
     public Box getBalloonBoundingBox() {
@@ -750,10 +726,6 @@ public class AirBalloonEntity extends MobEntity implements EntityCollisions.Comp
         return boundingBoxes.collect(Collectors.toMap(Function.identity(), box -> {
             return getWorld().getOtherEntities(this, box.expand(0.001).stretch(getVelocity().multiply(1)), RIDER_PREDICATE).stream().distinct().toList();
         }));
-    }
-
-    @Override
-    protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
     }
 
     @Override

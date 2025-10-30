@@ -39,6 +39,7 @@ public record SpellAttributeType(Identifier id, Text name) {
     public static final SpellAttributeType WAVE_SIZE = register("wave_size");
     public static final SpellAttributeType FOLLOW_RANGE = register("follow_range");
     public static final SpellAttributeType LIGHT_TARGET = register("light_target");
+    public static final SpellAttributeType INVERTED = register("inverted");
     public static final SpellAttributeType STICK_TO_TARGET = register("stick_to_target");
     public static final SpellAttributeType SOAPINESS = register("soapiness");
     public static final SpellAttributeType CAST_ON = register("cast_on");

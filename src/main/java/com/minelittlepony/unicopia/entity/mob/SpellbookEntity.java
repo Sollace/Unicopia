@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.ability.magic.spell.crafting.AltarRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.AltarRecipeMatch;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.container.SpellbookState;
@@ -15,6 +16,7 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;
+import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.server.world.Altar;
 import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
@@ -238,7 +240,7 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
                     return false;
                 }
 
-                tickAltarCrafting(altar);
+                tickAltarCrafting((ServerWorld)getWorld(), altar);
 
                 Vec3d origin = altar.origin().toCenterPos();
                 altar.pillars().forEach(pillar -> tickAltarPillar(origin, pillar));
@@ -253,9 +255,14 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
         beamsActive = ticks;
     }
 
-    private void tickAltarCrafting(Altar altar) {
+    private void tickAltarCrafting(ServerWorld world, Altar altar) {
         if (activeRecipe == null || activeRecipe.isRemoved()) {
-            activeRecipe = AltarRecipeMatch.of(getWorld().getEntitiesByClass(ItemEntity.class, Box.of(altar.origin().toCenterPos(), 2, 2, 2), EntityPredicates.VALID_ENTITY));
+            AltarRecipe.Input entities = new AltarRecipe.Input(getWorld().getEntitiesByClass(ItemEntity.class, Box.of(altar.origin().toCenterPos(), 2, 2, 2), EntityPredicates.VALID_ENTITY));
+
+            activeRecipe = world.getRecipeManager()
+                    .getFirstMatch(URecipes.ALTAR, entities, getWorld())
+                    .map(recipe -> recipe.value().toMatch(entities, getWorld().getRegistryManager()))
+                    .orElse(null);
 
             if (activeRecipe != null) {
                 setBeamTicks(5);
@@ -277,7 +284,7 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
             return;
         }
 
-        activeRecipe.craft();
+        activeRecipe.craft(getWorld());
         activeRecipe = null;
         getWorld().createExplosion(this, altar.origin().getX(), altar.origin().getY(), altar.origin().getZ(), 0, ExplosionSourceType.NONE);
     }

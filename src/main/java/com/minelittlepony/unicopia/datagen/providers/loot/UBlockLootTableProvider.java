@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.datagen.providers.loot;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.EdibleBlock;
 import com.minelittlepony.unicopia.block.EnchantedFruitBlock;
@@ -10,6 +12,7 @@ import com.minelittlepony.unicopia.block.PileBlock;
 import com.minelittlepony.unicopia.block.SegmentedCropBlock;
 import com.minelittlepony.unicopia.block.ShellsBlock;
 import com.minelittlepony.unicopia.block.SlimePustuleBlock;
+import com.minelittlepony.unicopia.block.StrippingLootable;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.datagen.providers.UModelProvider;
 import com.minelittlepony.unicopia.item.UItems;
@@ -24,6 +27,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CarrotsBlock;
 import net.minecraft.block.SlabBlock;
+import net.minecraft.block.SnowBlock;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.SlabType;
@@ -34,9 +38,12 @@ import net.minecraft.item.Items;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
+import net.minecraft.loot.condition.EntityPropertiesLootCondition;
 import net.minecraft.loot.condition.LootConditionConsumingBuilder;
 import net.minecraft.loot.condition.RandomChanceLootCondition;
 import net.minecraft.loot.condition.TableBonusLootCondition;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.entry.AlternativeEntry;
 import net.minecraft.loot.entry.ItemEntry;
 import net.minecraft.loot.function.ApplyBonusLootFunction;
 import net.minecraft.loot.function.ConditionalLootFunction;
@@ -83,11 +90,13 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         // simple drops
         List.of(
             UBlocks.CARVED_CLOUD, UBlocks.UNSTABLE_CLOUD,
-            UBlocks.CHISELLED_CHITIN_STAIRS, UBlocks.CHISELLED_CHITIN,
+            UBlocks.CHISELLED_CHITIN_STAIRS, UBlocks.CHISELLED_CHITIN, UBlocks.CHISELLED_CHITIN_WALL,
+            UBlocks.POLISHED_CHITIN_STAIRS, UBlocks.POLISHED_CHITIN, UBlocks.POLISHED_CHITIN_WALL,
             UBlocks.CLOUD_BRICK_STAIRS, UBlocks.CLOUD_BRICKS,
             UBlocks.CLOUD_PLANK_STAIRS, UBlocks.CLOUD_PLANKS,
             UBlocks.CURING_JOKE,
-            UBlocks.GOLDEN_OAK_LOG,
+            UBlocks.GOLDEN_OAK_LOG, UBlocks.GOLDEN_OAK_PLANKS, UBlocks.GOLDEN_OAK_WOOD,
+            UBlocks.STRIPPED_GOLDEN_OAK_LOG, UBlocks.STRIPPED_GOLDEN_OAK_WOOD,
             UBlocks.HIVE,
 
             UBlocks.PALM_BUTTON, UBlocks.PALM_FENCE_GATE, UBlocks.PALM_FENCE, UBlocks.PALM_LOG, UBlocks.PALM_PLANKS,
@@ -109,8 +118,9 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
 
         // slabs
         List.of(
-                UBlocks.CHISELLED_CHITIN_SLAB, UBlocks.CLOUD_BRICK_SLAB,
-                UBlocks.CLOUD_PLANK_SLAB, UBlocks.PALM_SLAB, UBlocks.ZAP_SLAB, UBlocks.WAXED_ZAP_SLAB
+                UBlocks.CHISELLED_CHITIN_SLAB, UBlocks.POLISHED_CHITIN_SLAB,
+                UBlocks.CLOUD_BRICK_SLAB, UBlocks.CLOUD_PLANK_SLAB,
+                UBlocks.PALM_SLAB, UBlocks.ZAP_SLAB, UBlocks.WAXED_ZAP_SLAB, UBlocks.GOLDEN_OAK_SLAB
         ).forEach(slab -> addDrop(slab, this::slabDrops));
         addDrop(UBlocks.CLOUD_SLAB, slab -> decomposingSlabDrops(slab, UItems.CLOUD_LUMP, 2));
         addDrop(UBlocks.SOGGY_CLOUD_SLAB, slab -> decomposingSlabDrops(slab, UItems.CLOUD_LUMP, 2));
@@ -128,7 +138,8 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
             .with(applyStateCondition(UBlocks.GOLDEN_APPLE, EnchantedFruitBlock.ENCHANTED, false, applyExplosionDecay(UBlocks.GOLDEN_APPLE, ItemEntry.builder(Items.GOLDEN_APPLE))).apply(createBasePreservingFortuneBonusCondition()))
             .with(applyStateCondition(UBlocks.GOLDEN_APPLE, EnchantedFruitBlock.ENCHANTED, true, applyExplosionDecay(UBlocks.GOLDEN_APPLE, ItemEntry.builder(Items.ENCHANTED_GOLDEN_APPLE))).apply(createBasePreservingFortuneBonusCondition()))
         ));
-        List.of(UBlocks.GREEN_APPLE_LEAVES, UBlocks.SOUR_APPLE_LEAVES, UBlocks.SWEET_APPLE_LEAVES, UBlocks.GOLDEN_OAK_LEAVES).forEach(block -> addDrop(block, this::fruitLeavesDrops));
+        List.of(UBlocks.GREEN_APPLE_LEAVES, UBlocks.SOUR_APPLE_LEAVES, UBlocks.SWEET_APPLE_LEAVES, UBlocks.GOLDEN_OAK_LEAVES).forEach(block -> addDrop(block, b -> fruitLeavesDrops(b, Items.STICK)));
+        addDrop(UBlocks.GOLDEN_OAK_LEAVES, b -> fruitLeavesDrops(b, UItems.GOLDEN_STICK));
         addDrop(UBlocks.MANGO_LEAVES, block -> leavesDrops(block, UTreeGen.MANGO_TREE.sapling().get(), 0.025F, 0.027777778F, 0.03125F, 0.041666668F, 0.1F)); // same chance as jungle
         addDrop(UBlocks.ZAP_LEAVES, block -> leavesDrops(block, UTreeGen.ZAP_APPLE_TREE.sapling().get(), SAPLING_DROP_CHANCE));
         addDrop(UBlocks.FLOWERING_ZAP_LEAVES, block -> leavesDrops(block, UTreeGen.ZAP_APPLE_TREE.sapling().get(), SAPLING_DROP_CHANCE));
@@ -159,12 +170,26 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         addDrop(UBlocks.CHITIN, drops(UBlocks.CHITIN, UItems.CARAPACE, exactly(9)));
         addDrop(UBlocks.SURFACE_CHITIN, drops(UBlocks.SURFACE_CHITIN, UItems.CARAPACE, exactly(9)));
         addDrop(UBlocks.CHISELLED_CHITIN_HULL, hullDrops(UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHITIN, UBlocks.CHISELLED_CHITIN));
+        addDrop(UBlocks.POLISHED_CHITIN_HULL, hullDrops(UBlocks.POLISHED_CHITIN_HULL, UBlocks.CHITIN, UBlocks.POLISHED_CHITIN));
 
         addDrop(UBlocks.SLIME_PUSTULE, LootTable.builder()
                 .pool(applyStateCondition(UBlocks.SLIME_PUSTULE, SlimePustuleBlock.SHAPE, SlimePustuleBlock.Shape.POD,
                         addSurvivesExplosionCondition(UBlocks.SLIME_PUSTULE, LootPool.builder()
                     .rolls(exactly(1))
                     .with(ItemEntry.builder(UBlocks.SLIME_PUSTULE)).conditionally(createWithSilkTouchOrShearsCondition()))
+        )));
+        addDrop(UBlocks.SLIME, block -> LootTable.builder()
+                .pool(LootPool.builder().conditionally(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS))
+                        .with(AlternativeEntry.builder(
+                                AlternativeEntry.builder(SnowBlock.LAYERS.getValues(), layer -> ItemEntry.builder(Items.SLIME_BALL)
+                                    .conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, layer)))
+                                    .apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(layer.intValue())))
+                                ).conditionally(createWithoutSilkTouchCondition()),
+                                AlternativeEntry.builder(SnowBlock.LAYERS.getValues(), layer -> layer == 8
+                                    ? ItemEntry.builder(Blocks.SLIME_BLOCK)
+                                    : ItemEntry.builder(UBlocks.SLIME)
+                                        .apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(layer)))
+                                        .conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(SnowBlock.LAYERS, layer)))))
         )));
         addDrop(UBlocks.MYSTERIOUS_EGG, LootTable.builder()
             .pool(addSurvivesExplosionCondition(UBlocks.MYSTERIOUS_EGG, LootPool.builder()
@@ -199,7 +224,7 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         addDrop(UBlocks.PINEAPPLE, LootTable.builder()
             .pool(addSurvivesExplosionCondition(UBlocks.PINEAPPLE, LootPool.builder()
                 .rolls(exactly(1))
-                .with(item(UItems.PINEAPPLE, between(6, 12F))
+                .with(item(UItems.PINEAPPLE, exactly(1))
                     .apply(createBasePreservingFortuneBonusCondition())
                     .conditionally(BlockStatePropertyLootCondition.builder(UBlocks.PINEAPPLE).properties(StatePredicate.Builder.create()
                         .exactMatch(Properties.BLOCK_HALF, BlockHalf.TOP)
@@ -239,6 +264,15 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
 
         farmersDelightGenerator.addDrop(Unicopia.id("rice_block"), b -> UExternalBlockLootTableProvider.edibleBlockDrops(b, Identifier.of("farmersdelight", "rice_panicle")));
         farmersDelightGenerator.addDrop(Unicopia.id("straw_block"), b -> UExternalBlockLootTableProvider.edibleBlockDrops(b, Identifier.of("farmersdelight", "straw")));
+
+        addStrippingDrops(UBlocks.GOLDEN_OAK_LOG, b -> simpleDrops(b, Items.GOLD_NUGGET, 4));
+        addStrippingDrops(UBlocks.GOLDEN_OAK_WOOD, b -> simpleDrops(b, Items.GOLD_NUGGET, 6));
+    }
+
+    private <T extends Block & StrippingLootable> void addStrippingDrops(T block, Function<T, LootTable.Builder> drops) {
+        block.getStrippingLootTableKey().ifPresent(key -> {
+            this.lootTables.put(key, drops.apply(block));
+        });
     }
 
     private void addTallCropDrops(SegmentedCropBlock baseCrop, ItemConvertible crop) {
@@ -259,6 +293,13 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         }
     }
 
+    private LootTable.Builder simpleDrops(Block block, ItemConvertible drop, int count) {
+        return LootTable.builder()
+                .pool(applyExplosionDecay(block, LootPool.builder()
+                    .rolls(exactly(1))
+                    .with(item(drop, between(0, count)))));
+    }
+
     private LootTable.Builder decomposingSlabDrops(Block slab, ItemConvertible drop, int count) {
         return LootTable.builder()
             .pool(applyExplosionDecay(slab, LootPool.builder()
@@ -267,7 +308,7 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
                         .apply(applyStateCondition(slab, SlabBlock.TYPE, SlabType.DOUBLE, SetCountLootFunction.builder(exactly(count * 2)))))));
     }
 
-    private LootTable.Builder fruitLeavesDrops(Block leaves) {
+    private LootTable.Builder fruitLeavesDrops(Block leaves, ItemConvertible stick) {
         return LootTable.builder()
             .pool(LootPool.builder()
                 .rolls(exactly(1))
@@ -275,7 +316,7 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
             .pool(applyExplosionDecay(leaves, LootPool.builder()
                 .rolls(exactly(1))
                 .conditionally(createWithoutShearsOrSilkTouchCondition())
-                .with(item(Items.STICK, between(1, 2)).conditionally(TableBonusLootCondition.builder(entryOf(Enchantments.FORTUNE), LEAVES_STICK_DROP_CHANCE)))));
+                .with(item(stick, between(1, 2)).conditionally(TableBonusLootCondition.builder(entryOf(Enchantments.FORTUNE), LEAVES_STICK_DROP_CHANCE)))));
     }
 
     private LootTable.Builder hullDrops(Block hull, ItemConvertible inner, ItemConvertible outer) {

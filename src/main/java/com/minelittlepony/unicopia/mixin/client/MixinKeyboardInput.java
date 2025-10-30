@@ -5,8 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import com.minelittlepony.unicopia.entity.effect.EffectUtils;
-import com.minelittlepony.unicopia.entity.effect.UEffects;
+import com.minelittlepony.unicopia.client.gui.UHud;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.client.MinecraftClient;
@@ -34,7 +33,7 @@ abstract class MixinKeyboardInput extends Input {
                 movementSideways = -movementSideways;
             }
 
-            if (EffectUtils.getAmplifier(MinecraftClient.getInstance().player, UEffects.PARALYSIS) > 1) {
+            if (UHud.INSTANCE.handleInput(this)) {
                 movementSideways = 0;
                 movementForward = 0;
                 if (playerInput.jump()) {
@@ -48,11 +47,6 @@ abstract class MixinKeyboardInput extends Input {
                         playerInput.sprint()
                     );
                 }
-            }
-
-            if (player.getAcrobatics().isImmobile()) {
-                movementSideways = 0;
-                movementForward = 0;
             }
         }
     }

@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client.render;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
@@ -55,14 +57,21 @@ public class BatWingsFeatureRenderer<S extends BipedEntityRenderState, E extends
     }
 
     @Override
-    protected boolean canRender(S entity) {
-        return entity instanceof PlayerEntityRenderState
-                && CasterState.of(entity).species.physical() == Race.BAT
-                && !CasterState.of(entity).pegasusAmulet;
+    protected boolean canRender(S state) {
+        return state instanceof PlayerEntityRenderState
+                && CasterState.of(state).species.physical() == Race.BAT
+                && CasterState.of(state).skinFeatures.showWings()
+                && !CasterState.of(state).pegasusAmulet;
     }
 
     @Override
-    protected Identifier getTexture(S entity) {
+    protected Identifier getTexture(S state) {
         return TEXTURE;
+    }
+
+    @Override
+    @Nullable
+    protected Identifier getOverlayTexture(S state) {
+        return null;
     }
 }

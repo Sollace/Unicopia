@@ -1,12 +1,16 @@
 package com.minelittlepony.unicopia;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.EntitySleepEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.minelittlepony.unicopia.ability.Abilities;
@@ -26,13 +30,13 @@ import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import com.minelittlepony.unicopia.entity.effect.SeaponyGraceStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UPotions;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
+import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 import com.minelittlepony.unicopia.server.world.Ether;
-import com.minelittlepony.unicopia.server.world.NocturnalSleepManager;
 import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.unicopia.server.world.UWorldGen;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
@@ -40,6 +44,7 @@ import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 
 public class Unicopia implements ModInitializer {
     public static final String DEFAULT_NAMESPACE = "unicopia";
+    public static final String VANILLA_EXTENSIONS_NAMESPACE = DEFAULT_NAMESPACE + "mc";
     public static final Logger LOGGER = LogManager.getLogger();
 
     private static Config CONFIG;
@@ -82,7 +87,12 @@ public class Unicopia implements ModInitializer {
             }
         });
         PlayerBlockBreakEvents.AFTER.register(SeaponyGraceStatusEffect::processBlockChange);
-        NocturnalSleepManager.bootstrap();
+        PlayerBlockBreakEvents.CANCELED.register((world, player, pos, state, blockEntity) -> Pony.of(player).onStoppedBreakingBlock(pos));
+        UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> Pony.of(player).interact(hand, hitResult));
+        UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> Pony.of(player).interact(hand, entity, hitResult));
+        AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> Pony.of(player).onStartedBreakingBlock(hand, pos, direction));
+        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> Pony.of(player).onAttackEntity(hand, entity, hitResult));
+        EntitySleepEvents.ALLOW_SLEEP_TIME.register((player, pos, isDay) -> Pony.of(player).canSleepNow(isDay));
 
         registerServerDataReloaders(ResourceManagerHelper.get(ResourceType.SERVER_DATA));
 

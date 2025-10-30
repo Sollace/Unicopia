@@ -26,10 +26,12 @@ import com.minelittlepony.unicopia.entity.damage.MagicalDamageSource;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
 import com.minelittlepony.unicopia.entity.effect.CorruptInfluenceStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
+import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.input.Heuristic;
 import com.minelittlepony.unicopia.input.Interactable;
 import com.minelittlepony.unicopia.item.GlassesItem;
+import com.minelittlepony.unicopia.item.TotemOfDying;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.component.BreaksIntoItemComponent;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
@@ -292,7 +294,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
                     boolean deliverAggressively = payload.isIn(UTags.Items.IS_DELIVERED_AGGRESSIVELY);
 
-                    Vec3d randomPos = deliverAggressively ? targetPos.add(0, 2, 0) : targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
+                    Vec3d randomPos = deliverAggressively ? targetPos.add(0, 2, 0) : targetPos.add(VecHelper.triangular(entity.getRandom(), 0.1, 0.5));
 
                     if (deliverAggressively && item instanceof BlockItem blockItem) {
                         do {
@@ -304,7 +306,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
                                 for (int i = 0; i < 10; i++) {
                                     ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(
-                                            VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5))
+                                            VecHelper.triangular(entity.getRandom(), 0.1, 0.5)
                                     ), Vec3d.ZERO);
                                 }
 
@@ -321,16 +323,14 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                                 BlockSoundGroup sound = state.getSoundGroup();
                                 entity.getWorld().playSound(null, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1) * 0.5F, sound.getPitch() * 0.8F);
                             }
-                            randomPos = targetPos.add(VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5)));
+                            randomPos = targetPos.add(VecHelper.triangular(entity.getRandom(), 0.1, 0.5));
                         } while (!payload.isEmpty());
                     } else {
                         if (!entity.getWorld().isAir(BlockPos.ofFloored(randomPos))) {
                             stack.store().put(name, stack.payload());
                         } else {
                             for (int i = 0; i < 10; i++) {
-                                ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(
-                                        VecHelper.supply(() -> entity.getRandom().nextTriangular(0.1, 0.5))
-                                ), Vec3d.ZERO);
+                                ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(VecHelper.triangular(entity.getRandom(), 0.1, 0.5)), Vec3d.ZERO);
                             }
 
                             ItemEntity itemEntity = EntityType.ITEM.create(entity.getWorld(), SpawnReason.EVENT);
@@ -356,6 +356,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     public Optional<Boolean> onDamage(ServerWorld world, DamageSource source, float amount) {
+
+        if (entity.getRootVehicle() instanceof LevitatingItemEntity && (source.isOf(DamageTypes.IN_WALL) || source.isIn(DamageTypeTags.IS_FALL))) {
+            return Optional.of(false);
+        }
 
         if (Guest.of(source.getAttacker()).hostIs(this)
             || Guest.of(source.getSource()).hostIs(this)) {
@@ -400,6 +404,14 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         }
 
         return Optional.empty();
+    }
+
+    public void onDeath(DamageSource damage, boolean usedTotem) {
+        TotemOfDying.tryUseTotem(damage, entity);
+    }
+
+    public void onAttacking(Entity target) {
+
     }
 
     public TriState canBeHurtByWater() {

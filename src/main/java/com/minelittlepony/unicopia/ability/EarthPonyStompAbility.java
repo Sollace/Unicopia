@@ -246,7 +246,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
         if (state.isIn(UTags.Blocks.KICKS_UP_DUST)) {
             if (w.random.nextInt(4) == 0 && w.isAir(pos.up()) && w.getFluidState(pos.up()).isEmpty()) {
-                ParticleUtils.spawnParticle(w, new BlockStateParticleEffect(UParticles.DUST_CLOUD, state), pos.up().toCenterPos(), VecHelper.supply(() -> w.random.nextTriangular(0, 0.1F)));
+                ParticleUtils.spawnParticle(w, new BlockStateParticleEffect(UParticles.DUST_CLOUD, state), pos.up().toCenterPos(), VecHelper.triangular(w.random, 0, 0.1F));
             }
         }
     }

@@ -126,6 +126,19 @@ public class UnicopiaClient implements ClientModInitializer {
         HandledScreens.register(UScreenHandlers.SPELL_BOOK, SpellbookScreen::new);
         HandledScreens.register(UScreenHandlers.SHAPING_BENCH, ShapingBenchScreen::new);
 
+        Unicopia.getConfig().skinFeatures.onChanged(features -> {
+            Pony pony = Pony.of(MinecraftClient.getInstance().player);
+            if (pony != null) {
+                pony.setSkinFeatures(features);
+            }
+        });
+        Unicopia.getConfig().onChangedExternally(config -> {
+            Pony pony = Pony.of(MinecraftClient.getInstance().player);
+            if (pony != null) {
+                pony.setSkinFeatures(Unicopia.getConfig().skinFeatures.get());
+            }
+        });
+
         ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
         ClientTickEvents.END_WORLD_TICK.register(this::onWorldTick);
         ScreenInitCallback.EVENT.register(this::onScreenInit);

@@ -38,7 +38,7 @@ public abstract class WearableItem extends Item {
 
     @Override
     public ActionResult use(World world, PlayerEntity player, Hand hand) {
-        return TrinketsDelegate.getInstance(player).equipStack(player, player.getStackInHand(hand));
+        return TrinketsDelegate.getInstance(player).equipStack(player, player.getStackInHand(hand)) ? ActionResult.SUCCESS : ActionResult.FAIL;
     }
 
     public EquipmentSlot getSlotType(ItemStack stack) {
@@ -52,7 +52,7 @@ public abstract class WearableItem extends Item {
                     EntityPredicates.EXCEPT_SPECTATOR
                 )
                 .stream()
-                .filter(entity -> TrinketsDelegate.getInstance(entity).equipStack(entity, armor).isAccepted())
+                .filter(entity -> TrinketsDelegate.getInstance(entity).equipStack(entity, armor))
                 .findFirst()
                 .isPresent();
     }

@@ -76,6 +76,19 @@ public class StructureInteractionTlaRecipe implements TlaRecipe {
                 ),
                 TlaStack.of(UItems.SPECTRAL_CLOCK),
                 Unicopia.id("textures/gui/race/alicorn.png")
+        ), new StructureInteractionTlaRecipe(
+                category,
+                Unicopia.id("altar/totem_of_dying"),
+                Schematic.ALTAR,
+                List.of(
+                    TlaStack.of(Items.TOTEM_OF_UNDYING).asIngredient(),
+                    TlaStack.of(UItems.SPELLBOOK).asIngredient(),
+                    TlaStack.of(Blocks.SOUL_SAND).asIngredient(),
+                    TlaStack.of(Blocks.LODESTONE).asIngredient(),
+                    TlaStack.of(Blocks.OBSIDIAN, 8 * 4 + 8).asIngredient()
+                ),
+                TlaStack.of(UItems.TOTEM_OF_DYING),
+                Unicopia.id("textures/gui/race/alicorn.png")
         )));
     }
 

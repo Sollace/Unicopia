@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.network;
 
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.entity.player.SkinFeatures;
 import com.minelittlepony.unicopia.network.track.MsgTrackedValues;
 import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
 import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
@@ -18,12 +19,15 @@ public interface Channel {
     C2SPacketType<MsgMarkTraitRead> MARK_TRAIT_READ = SimpleNetworking.clientToServer(Unicopia.id("mark_trait_read"), MsgMarkTraitRead.PACKET_CODEC);
     C2SPacketType<MsgRemoveSpell> REMOVE_SPELL = SimpleNetworking.clientToServer(Unicopia.id("remove_spell"), MsgRemoveSpell.PACKET_CODEC);
     C2SPacketType<MsgPlayerFlightControlsInput> FLIGHT_CONTROLS_INPUT = SimpleNetworking.clientToServer(Unicopia.id("flight_controls"), MsgPlayerFlightControlsInput.PACKET_CODEC);
+    C2SPacketType<SkinFeatures> UPDATE_PLAYER_FEATURES = SimpleNetworking.clientToServer(Unicopia.id("skin_features"), SkinFeatures.PACKET_CODEC);
+    C2SPacketType<MsgPlayerTargetEntity> CLIENT_PLAYER_LOOK_AT_ENTITY = SimpleNetworking.clientToServer(Unicopia.id("client_player_look_at_entity"), MsgPlayerTargetEntity.PACKET_CODEC);
 
     S2CPacketType<MsgPlayerCapabilities> SERVER_PLAYER_CAPABILITIES = SimpleNetworking.serverToClient(Unicopia.id("player_capabilities"), MsgPlayerCapabilities.PACKET_CODEC);
     S2CPacketType<MsgBlockDestruction> SERVER_BLOCK_DESTRUCTION = SimpleNetworking.serverToClient(Unicopia.id("block_destruction"), MsgBlockDestruction.PACKET_CODEC);
     S2CPacketType<MsgCancelPlayerAbility> CANCEL_PLAYER_ABILITY = SimpleNetworking.serverToClient(Unicopia.id("player_ability_cancel"), MsgCancelPlayerAbility.PACKET_CODEC);
     S2CPacketType<MsgCasterLookRequest> SERVER_REQUEST_PLAYER_LOOK = SimpleNetworking.serverToClient(Unicopia.id("request_player_look"), MsgCasterLookRequest.PACKET_CODEC);
     S2CPacketType<MsgUnlockTraits> UNLOCK_TRAITS = SimpleNetworking.serverToClient(Unicopia.id("unlock_traits"), MsgUnlockTraits.PACKET_CODEC);
+    S2CPacketType<MsgEntityStatus> ENTITY_STATUS = SimpleNetworking.serverToClient(Unicopia.id("entity_status"), MsgEntityStatus.PACKET_CODEC);
 
     S2CPacketType<MsgTribeSelect> SERVER_SELECT_TRIBE = SimpleNetworking.serverToClient(Unicopia.id("select_tribe"), MsgTribeSelect.PACKET_CODEC);
 
@@ -38,6 +42,7 @@ public interface Channel {
     S2CPacketType<MsgConfigurationChange> CONFIGURATION_CHANGE = SimpleNetworking.serverToClient(Unicopia.id("config"), MsgConfigurationChange.PACKET_CODEC);
     S2CPacketType<MsgZapAppleStage> SERVER_ZAP_STAGE = SimpleNetworking.serverToClient(Unicopia.id("zap_stage"), MsgZapAppleStage.PACKET_CODEC);
     S2CPacketType<MsgTrinketBroken> SERVER_TRINKET_BROKEN = SimpleNetworking.serverToClient(Unicopia.id("trinket_broken"), MsgTrinketBroken.PACKET_CODEC);
+    S2CPacketType<MsgPlayerTargetEntity> SERVER_PLAYER_LOOK_AT_ENTITY = SimpleNetworking.serverToClient(Unicopia.id("server_player_look_at_entity"), MsgPlayerTargetEntity.PACKET_CODEC);
 
     static void bootstrap() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
@@ -58,6 +63,10 @@ public interface Channel {
             sender.sendPacket(SERVER_SKY_ANGLE.toPacket(new MsgSkyAngle(UnicopiaWorldProperties.forWorld(handler.getPlayer().getServerWorld()).getTangentalSkyAngle())));
             sender.sendPacket(CONFIGURATION_CHANGE.toPacket(new MsgConfigurationChange(InteractionManager.getInstance().getSyncedConfig())));
             sender.sendPacket(SERVER_ZAP_STAGE.toPacket(new MsgZapAppleStage(ZapAppleStageStore.get(handler.player.getServerWorld()).getStage())));
+            sender.sendPacket(SERVER_PLAYER_CAPABILITIES.toPacket(new MsgPlayerCapabilities(pony, true)));
+        });
+        UPDATE_PLAYER_FEATURES.receiver().addPersistentListener((player, features) -> {
+            Pony.of(player).setSkinFeatures(features);
         });
     }
 }

@@ -9,7 +9,9 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
 import com.minelittlepony.unicopia.util.InventoryUtil;
+import com.minelittlepony.unicopia.util.ItemStackSet;
 
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
@@ -65,12 +67,26 @@ public class MimicEntity extends PathAwareEntity {
     private int openTicks;
     private final Set<PlayerEntity> observingPlayers = new HashSet<>();
 
+    static void bootstrap() {
+        PlayerBlockBreakEvents.BEFORE.register((World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) -> {
+            if (blockEntity instanceof MimicEntity.MimicGeneratable generatable) {
+                var mimic = generatable.triggerMimic(player);
+                if (mimic != null) {
+                    player.attack(mimic);
+                    return false;
+                }
+            }
+
+            return true;
+        });
+    }
+
     public static boolean shouldConvert(World world, BlockPos pos, PlayerEntity player, RegistryKey<LootTable> lootTable) {
         if (!shouldGenerateMimic(lootTable)
                 || !world.getBlockState(pos).isIn(UTags.Blocks.MIMIC_CHESTS)
                 || !(world.getBlockEntity(pos) instanceof ChestBlockEntity be)
                 || be.getCachedState().getOrEmpty(ChestBlock.CHEST_TYPE).orElse(ChestType.SINGLE) != ChestType.SINGLE) {
-            return false;
+            return true;
         }
 
         // TODO: Local difficulty?
@@ -281,6 +297,11 @@ public class MimicEntity extends PathAwareEntity {
             if (InventoryUtil.contentEquals(inventory, chestData)) {
                 return;
             }
+
+            if (getEntityWorld() instanceof ServerWorld sw) {
+                new ItemStackSet(inventory).subtract(new ItemStackSet(chestData)).forEach(stack -> dropStack(sw, stack));
+            }
+
             observingPlayers.clear();
             playChompAnimation();
             setTarget(player);
@@ -405,5 +426,8 @@ public class MimicEntity extends PathAwareEntity {
         void writeMimicAttributes(NbtCompound nbt);
 
         void configureMimic(@Nullable PlayerEntity player);
+
+        @Nullable
+        MimicEntity triggerMimic(@Nullable PlayerEntity player);
     }
 }

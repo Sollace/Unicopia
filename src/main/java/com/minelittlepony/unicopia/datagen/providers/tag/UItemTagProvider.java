@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.UConventionalTags;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.datagen.Datagen;
+import com.minelittlepony.unicopia.datagen.FarmersDelightContent;
 import com.minelittlepony.unicopia.datagen.ItemFamilies;
 import com.minelittlepony.unicopia.datagen.UBlockFamilies;
 import com.minelittlepony.unicopia.item.BedsheetsItem;
@@ -142,6 +143,10 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .add(Items.KELP, Items.DRIED_KELP, Items.SEAGRASS, Items.SEA_PICKLE)
             .forceAddTag(UConventionalTags.Items.CORALS).forceAddTag(UConventionalTags.Items.CORAL_FANS);
 
+        getOrCreateTagBuilder(ItemTags.SWORD_ENCHANTABLE).forceAddTag(UTags.Items.POLEARMS);
+        getOrCreateTagBuilder(ItemTags.SHARP_WEAPON_ENCHANTABLE).addTag(UTags.Items.POLEARMS);
+        getOrCreateTagBuilder(ItemTags.DURABILITY_ENCHANTABLE).addTag(UTags.Items.HORSE_SHOES);
+
         exportForagingTags();
         exportCreativeTabs();
         exportFarmersDelightItems();
@@ -168,6 +173,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         copy(UTags.Blocks.ZAP_LOGS, UTags.Items.ZAP_LOGS);
         copy(UTags.Blocks.WAXED_ZAP_LOGS, UTags.Items.WAXED_ZAP_LOGS);
         copy(UTags.Blocks.PALM_LOGS, UTags.Items.PALM_LOGS);
+        copy(UTags.Blocks.GOLDEN_OAK_LOGS, UTags.Items.GOLDEN_OAK_LOGS);
         copy(UTags.Blocks.CLOUD_BEDS, UTags.Items.CLOUD_BEDS);
         copy(UTags.Blocks.CLOUD_SLABS, UTags.Items.CLOUD_SLABS);
         copy(UTags.Blocks.CLOUD_STAIRS, UTags.Items.CLOUD_STAIRS);
@@ -280,13 +286,20 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             );
         getOrCreateTagBuilder(UTags.Items.GROUP_CHANGELING)
             .add(
-                UItems.CARAPACE, UBlocks.SURFACE_CHITIN.asItem(), UBlocks.CHITIN.asItem()
-            ).add(UBlockFamilies.CHISELED_CHITIN.getVariants().values().stream().map(ItemConvertible::asItem).toArray(Item[]::new))
+                UItems.CARAPACE, UBlocks.SURFACE_CHITIN.asItem(), UBlocks.CHITIN.asItem(),
+                UBlockFamilies.CHISELED_CHITIN.getBaseBlock().asItem(),
+                UBlockFamilies.POLISHED_CHITIN.getBaseBlock().asItem()
+            )
+            .add(UBlockFamilies.CHISELED_CHITIN.getVariants().values().stream().map(ItemConvertible::asItem).toArray(Item[]::new))
+            .add(UBlockFamilies.POLISHED_CHITIN.getVariants().values().stream().map(ItemConvertible::asItem).toArray(Item[]::new))
             .add(
-                UBlocks.CHISELLED_CHITIN_HULL.asItem(), UBlocks.CHITIN_SPIKES.asItem(),
+                UBlocks.CHISELLED_CHITIN_HULL.asItem(),
+                UBlocks.POLISHED_CHITIN_HULL.asItem(),
+                UBlocks.CHITIN_SPIKES.asItem(),
                 UBlocks.SLIME_PUSTULE.asItem(),
                 UBlocks.MYSTERIOUS_EGG.asItem(), UItems.GREEN_FRIED_EGG,
-                UBlocks.HIVE.asItem()
+                UBlocks.HIVE.asItem(),
+                UBlocks.SLIME.asItem()
             )
             .forceAddTag(ConventionalItemTags.RAW_MEAT_FOODS)
             .forceAddTag(ConventionalItemTags.COOKED_MEAT_FOODS)
@@ -314,6 +327,7 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .forceAddTag(UTags.Items.FRESH_APPLES)
             .addOptionalTag(Identifier.of("c", "pyrite_apples")) // no idea which mod add pyrite apples
         ;
+        getOrCreateTagBuilder(ConventionalItemTags.WOODEN_RODS).add(UItems.GOLDEN_STICK);
         getOrCreateTagBuilder(UConventionalTags.Items.BANANAS).add(UItems.BANANA);
         getOrCreateTagBuilder(ConventionalItemTags.RAW_FISH_FOODS).addOptionalTag(Identifier.of("c", "mollusks"));
         getOrCreateTagBuilder(ConventionalItemTags.COOKED_FISH_FOODS).add(UItems.COOKED_TROPICAL_FISH, UItems.COOKED_PUFFERFISH, UItems.FRIED_AXOLOTL);
@@ -382,80 +396,82 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
             .forceAddTag(UConventionalTags.Items.COOKIES);
     }
 
+
+
     private void exportFarmersDelightItems() {
         getOrCreateTagBuilder(UTags.Items.COOLS_OFF_KIRINS)
-            .addOptional(Identifier.of("farmersdelight", "melon_popsicle"))
-            .addOptional(Identifier.of("farmersdelight", "melon_juice"));
-        getOrCreateTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("farmersdelight", "cabbage_roll_ingredients"))).add(UItems.OATS, UItems.ROCK, UItems.WHEAT_WORMS);
-        getOrCreateTagBuilder(TagKey.of(RegistryKeys.ITEM, Identifier.of("farmersdelight", "comfort_foods"))).add(UItems.OATMEAL, UItems.ROCK_STEW, UItems.MUFFIN);
+            .addOptional(FarmersDelightContent.id("melon_popsicle"))
+            .addOptional(FarmersDelightContent.id("melon_juice"));
+        getOrCreateTagBuilder(FarmersDelightContent.CABBAGE_ROLE_INGREDIENTS).add(UItems.OATS, UItems.ROCK, UItems.WHEAT_WORMS);
+        getOrCreateTagBuilder(FarmersDelightContent.COMFORT_FOODS).add(UItems.OATMEAL, UItems.ROCK_STEW, UItems.MUFFIN);
         getOrCreateTagBuilder(ConventionalItemTags.RAW_FISH_FOODS)
-            .addOptional(Identifier.of("farmersdelight", "cod_roll"))
-            .addOptional(Identifier.of("farmersdelight", "salmon_roll"))
-            .addOptional(Identifier.of("farmersdelight", "cod_slice"))
-            .addOptional(Identifier.of("farmersdelight", "salmon_slice"));
+            .addOptional(FarmersDelightContent.id("cod_roll"))
+            .addOptional(FarmersDelightContent.id("salmon_roll"))
+            .addOptional(FarmersDelightContent.id("cod_slice"))
+            .addOptional(FarmersDelightContent.id("salmon_slice"));
         getOrCreateTagBuilder(ConventionalItemTags.COOKED_FISH_FOODS)
-            .addOptional(Identifier.of("farmersdelight", "fish_stew"))
-            .addOptional(Identifier.of("farmersdelight", "baked_cod_stew"))
-            .addOptional(Identifier.of("farmersdelight", "grilled_salmon"));
+            .addOptional(FarmersDelightContent.id("fish_stew"))
+            .addOptional(FarmersDelightContent.id("baked_cod_stew"))
+            .addOptional(FarmersDelightContent.id("grilled_salmon"));
         getOrCreateTagBuilder(ConventionalItemTags.RAW_MEAT_FOODS)
-            .addOptional(Identifier.of("farmersdelight", "ham"));
+            .addOptional(FarmersDelightContent.id("ham"));
         getOrCreateTagBuilder(ConventionalItemTags.COOKED_MEAT_FOODS)
-            .addOptional(Identifier.of("farmersdelight", "chicken_soup"))
-            .addOptional(Identifier.of("farmersdelight", "bacon_and_eggs"))
-            .addOptional(Identifier.of("farmersdelight", "pasta_with_meatballs"))
-            .addOptional(Identifier.of("farmersdelight", "beef_stew"))
-            .addOptional(Identifier.of("farmersdelight", "bone_broth"))
-            .addOptional(Identifier.of("farmersdelight", "mutton_wrap"))
-            .addOptional(Identifier.of("farmersdelight", "bacon_sandwich"))
-            .addOptional(Identifier.of("farmersdelight", "hamburger"))
-            .addOptional(Identifier.of("farmersdelight", "chicken_sandwich"))
-            .addOptional(Identifier.of("farmersdelight", "barbecue_stick"))
-            .addOptional(Identifier.of("farmersdelight", "smoked_ham"))
-            .addOptional(Identifier.of("farmersdelight", "honey_glazed_ham"))
-            .addOptional(Identifier.of("farmersdelight", "honey_glazed_ham_block"))
-            .addOptional(Identifier.of("farmersdelight", "roast_chicken"))
-            .addOptional(Identifier.of("farmersdelight", "roast_chicken_block"))
-            .addOptional(Identifier.of("farmersdelight", "steak_and_potatoes"))
-            .addOptional(Identifier.of("farmersdelight", "roasted_mutton_chops"))
-            .addOptional(Identifier.of("farmersdelight", "pasta_with_mutton_chop"));
+            .addOptional(FarmersDelightContent.id("chicken_soup"))
+            .addOptional(FarmersDelightContent.id("bacon_and_eggs"))
+            .addOptional(FarmersDelightContent.id("pasta_with_meatballs"))
+            .addOptional(FarmersDelightContent.id("beef_stew"))
+            .addOptional(FarmersDelightContent.id("bone_broth"))
+            .addOptional(FarmersDelightContent.id("mutton_wrap"))
+            .addOptional(FarmersDelightContent.id("bacon_sandwich"))
+            .addOptional(FarmersDelightContent.id("hamburger"))
+            .addOptional(FarmersDelightContent.id("chicken_sandwich"))
+            .addOptional(FarmersDelightContent.id("barbecue_stick"))
+            .addOptional(FarmersDelightContent.id("smoked_ham"))
+            .addOptional(FarmersDelightContent.id("honey_glazed_ham"))
+            .addOptional(FarmersDelightContent.id("honey_glazed_ham_block"))
+            .addOptional(FarmersDelightContent.id("roast_chicken"))
+            .addOptional(FarmersDelightContent.id("roast_chicken_block"))
+            .addOptional(FarmersDelightContent.id("steak_and_potatoes"))
+            .addOptional(FarmersDelightContent.id("roasted_mutton_chops"))
+            .addOptional(FarmersDelightContent.id("pasta_with_mutton_chop"));
         getOrCreateTagBuilder(ConventionalItemTags.FRUIT_FOODS)
-            .addOptional(Identifier.of("farmersdelight", "pumpkin_slice"))
-            .addOptional(Identifier.of("farmersdelight", "tomato"))
-            .addOptional(Identifier.of("farmersdelight", "melon_juice"))
-            .addOptional(Identifier.of("farmersdelight", "fruit_salad"));
+            .addOptional(FarmersDelightContent.id("pumpkin_slice"))
+            .addOptional(FarmersDelightContent.id("tomato"))
+            .addOptional(FarmersDelightContent.id("melon_juice"))
+            .addOptional(FarmersDelightContent.id("fruit_salad"));
         getOrCreateTagBuilder(UConventionalTags.Items.DESSERTS)
-            .addOptional(Identifier.of("farmersdelight", "sweet_berry_cheesecake"))
-            .addOptional(Identifier.of("farmersdelight", "sweet_berry_cheesecake_slice"))
-            .addOptional(Identifier.of("farmersdelight", "chocolate_pie_slice"))
-            .addOptional(Identifier.of("farmersdelight", "cake_slice"))
-            .addOptional(Identifier.of("farmersdelight", "apple_pie_slice"))
-            .addOptional(Identifier.of("farmersdelight", "glow_berry_custard"));
+            .addOptional(FarmersDelightContent.id("sweet_berry_cheesecake"))
+            .addOptional(FarmersDelightContent.id("sweet_berry_cheesecake_slice"))
+            .addOptional(FarmersDelightContent.id("chocolate_pie_slice"))
+            .addOptional(FarmersDelightContent.id("cake_slice"))
+            .addOptional(FarmersDelightContent.id("apple_pie_slice"))
+            .addOptional(FarmersDelightContent.id("glow_berry_custard"));
         getOrCreateTagBuilder(UConventionalTags.Items.COOKIES)
-            .addOptional(Identifier.of("farmersdelight", "sweet_berry_cookie"))
-            .addOptional(Identifier.of("farmersdelight", "honey_cookie"));
+            .addOptional(FarmersDelightContent.id("sweet_berry_cookie"))
+            .addOptional(FarmersDelightContent.id("honey_cookie"));
         getOrCreateTagBuilder(UTags.Items.BAKED_GOODS)
-            .addOptional(Identifier.of("farmersdelight", "wheat_dough"))
-            .addOptional(Identifier.of("farmersdelight", "raw_pasta"))
-            .addOptional(Identifier.of("farmersdelight", "pie_crust"))
-            .addOptional(Identifier.of("farmersdelight", "egg_sandwich"));
+            .addOptional(FarmersDelightContent.id("wheat_dough"))
+            .addOptional(FarmersDelightContent.id("raw_pasta"))
+            .addOptional(FarmersDelightContent.id("pie_crust"))
+            .addOptional(FarmersDelightContent.id("egg_sandwich"));
         getOrCreateTagBuilder(UTags.Items.HIGH_QUALITY_SEA_VEGETABLES)
-            .addOptional(Identifier.of("farmersdelight", "kelp_roll"));
+            .addOptional(FarmersDelightContent.id("kelp_roll"));
         getOrCreateTagBuilder(UTags.Items.LOW_QUALITY_SEA_VEGETABLES)
-            .addOptional(Identifier.of("farmersdelight", "kelp_roll_slice"));
+            .addOptional(FarmersDelightContent.id("kelp_roll_slice"));
         getOrCreateTagBuilder(UTags.Items.FORAGE_FILLING)
-            .addOptional(Identifier.of("farmersdelight", "horse_feed"))
-            .addOptional(Identifier.of("farmersdelight", "rice_bale"))
-            .addOptional(Identifier.of("farmersdelight", "straw_bale"));
+            .addOptional(FarmersDelightContent.id("horse_feed"))
+            .addOptional(FarmersDelightContent.id("rice_bale"))
+            .addOptional(FarmersDelightContent.id("straw_bale"));
         getOrCreateTagBuilder(UTags.Items.FORAGE_SAFE)
-            .addOptional(Identifier.of("farmersdelight", "sandy_shrub"))
-            .addOptional(Identifier.of("farmersdelight", "wild_cabbages"))
-            .addOptional(Identifier.of("farmersdelight", "wild_onions"))
-            .addOptional(Identifier.of("farmersdelight", "wild_carrots"))
-            .addOptional(Identifier.of("farmersdelight", "wild_beetroots"))
-            .addOptional(Identifier.of("farmersdelight", "wild_rice"));
+            .addOptional(FarmersDelightContent.id("sandy_shrub"))
+            .addOptional(FarmersDelightContent.id("wild_cabbages"))
+            .addOptional(FarmersDelightContent.id("wild_onions"))
+            .addOptional(FarmersDelightContent.id("wild_carrots"))
+            .addOptional(FarmersDelightContent.id("wild_beetroots"))
+            .addOptional(FarmersDelightContent.id("wild_rice"));
         getOrCreateTagBuilder(UTags.Items.FORAGE_RISKY)
-            .addOptional(Identifier.of("farmersdelight", "wild_tomatoes"))
-            .addOptional(Identifier.of("farmersdelight", "wild_potatoes"))
+            .addOptional(FarmersDelightContent.id("wild_tomatoes"))
+            .addOptional(FarmersDelightContent.id("wild_potatoes"))
             .addOptionalTag(Identifier.of("c", "meads"));
     }
 }

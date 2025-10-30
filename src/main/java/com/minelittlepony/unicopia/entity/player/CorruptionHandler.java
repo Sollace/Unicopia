@@ -55,14 +55,14 @@ public class CorruptionHandler implements Tickable {
         if (corruptionPercentage > 0.5F && random.nextFloat() < corruptionPercentage - 0.25F) {
             pony.findAllEntitiesInRange(10, e -> e instanceof LivingEntity && !((LivingEntity)e).hasStatusEffect(UEffects.CORRUPT_INFLUENCE)).forEach(e -> {
                 ((LivingEntity)e).addStatusEffect(new StatusEffectInstance(UEffects.CORRUPT_INFLUENCE, 100, 1));
-                recover(10);
+                recover(0.10F);
             });
         }
 
         if (corruptionPercentage > 0.25F && random.nextInt(200) == 0) {
             if (!pony.asEntity().hasStatusEffect(UEffects.BUTTER_FINGERS)) {
                 pony.asEntity().addStatusEffect(new StatusEffectInstance(UEffects.BUTTER_FINGERS, 2100, 1));
-                recover(25);
+                recover(0.25F);
             }
         }
 

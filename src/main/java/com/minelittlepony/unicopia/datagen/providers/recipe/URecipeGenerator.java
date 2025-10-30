@@ -8,6 +8,8 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.UConventionalTags;
+import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellDuplicatingRecipe;
@@ -16,6 +18,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.datagen.FarmersDelightContent;
 import com.minelittlepony.unicopia.datagen.ItemFamilies;
 import com.minelittlepony.unicopia.datagen.UBlockFamilies;
 import com.minelittlepony.unicopia.datagen.providers.recipe.BedSheetPatternRecipeBuilder.PatternTemplate;
@@ -43,7 +46,11 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.recipe.AbstractCookingRecipe;
+import net.minecraft.recipe.CampfireCookingRecipe;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.SmokingRecipe;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryEntryLookup;
@@ -51,6 +58,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -70,7 +78,6 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
 
     @Override
     public void generate() {
-        generateVanillaRecipeExtensions();
         offerJarRecipes();
         offerWoodBlocksRecipes();
         offerChitinBlocksRecipes();
@@ -100,22 +107,6 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
         offerFarmersDelightCuttingRecipes();
     }
 
-    private void generateVanillaRecipeExtensions() {
-        ShapelessRecipeJsonBuilder.create(items, RecipeCategory.MISC, Items.WRITABLE_BOOK)
-            .input(Items.BOOK).criterion("has_book", conditionsFromItem(Items.BOOK))
-            .input(Items.INK_SAC)
-            .input(UTags.Items.MAGIC_FEATHERS)
-            .offerTo(exporter);
-        ShapedRecipeJsonBuilder.create(items, RecipeCategory.COMBAT, Items.ARROW, 4)
-            .input('#', ConventionalItemTags.WOODEN_RODS)
-            .input('X', Items.FLINT).criterion("has_flint", conditionsFromItem(Items.FLINT))
-            .input('Y', UTags.Items.MAGIC_FEATHERS).criterion("has_feather", conditionsFromTag(UTags.Items.MAGIC_FEATHERS))
-            .pattern("X")
-            .pattern("#")
-            .pattern("Y")
-            .offerTo(exporter);
-    }
-
     private void offerJarRecipes() {
         ComplexRecipeJsonBuilder.create(JarExtractRecipe::new).offerTo(exporter, "empty_jar_from_filled_jar");
         ComplexRecipeJsonBuilder.create(JarInsertRecipe::new).offerTo(exporter, "filled_jar");
@@ -130,15 +121,15 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
 
     private void offerCloudRecipes() {
         offerShapelessRecipe(UItems.CLOUD_LUMP, UTags.Items.CLOUD_JARS, "cloud", 4);
-        generateFamily(UBlockFamilies.CLOUD, FeatureSet.empty());
+        generateFamily(UBlockFamilies.CLOUD, FeatureSet.of(FeatureFlags.VANILLA));
         offer2x3Recipe(UBlocks.CLOUD_PILLAR, UBlocks.CLOUD, "pillar");
         offer2x2CompactingRecipe(RecipeCategory.BUILDING_BLOCKS, UBlocks.CLOUD, UItems.CLOUD_LUMP);
         offerPolishedStoneRecipe(RecipeCategory.BUILDING_BLOCKS, UBlocks.CLOUD_PLANKS, UBlocks.CLOUD);
-        generateFamily(UBlockFamilies.CLOUD_PLANKS, FeatureSet.empty());
+        generateFamily(UBlockFamilies.CLOUD_PLANKS, FeatureSet.of(FeatureFlags.VANILLA));
         offerChestRecipe(UBlocks.CLOUD_CHEST, UBlocks.CLOUD_PLANKS);
 
         offer2x2CompactingRecipe(RecipeCategory.DECORATIONS, UBlocks.SHAPING_BENCH, UBlocks.DENSE_CLOUD);
-        generateFamily(UBlockFamilies.CLOUD_BRICKS, FeatureSet.empty());
+        generateFamily(UBlockFamilies.CLOUD_BRICKS, FeatureSet.of(FeatureFlags.VANILLA));
 
         offerCloudShapingRecipe(RecipeCategory.BUILDING_BLOCKS, UBlocks.CARVED_CLOUD, UBlocks.CLOUD);
         offerCloudShapingRecipe(RecipeCategory.BUILDING_BLOCKS, UBlocks.ETCHED_CLOUD, UBlocks.CLOUD);
@@ -164,7 +155,7 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
         offerCloudShapingRecipe(RecipeCategory.BUILDING_BLOCKS, UBlocks.ETCHED_CLOUD_STAIRS, UBlocks.ETCHED_CLOUD);
 
         offerCompactingRecipe(RecipeCategory.BUILDING_BLOCKS, UBlocks.DENSE_CLOUD, UBlocks.CLOUD, 4);
-        generateFamily(UBlockFamilies.DENSE_CLOUD, FeatureSet.empty());
+        generateFamily(UBlockFamilies.DENSE_CLOUD, FeatureSet.of(FeatureFlags.VANILLA));
         offer2x3Recipe(UBlocks.CLOUD_DOOR, UBlocks.DENSE_CLOUD, "door");
 
         ShapelessRecipeJsonBuilder.create(items, RecipeCategory.REDSTONE, UBlocks.UNSTABLE_CLOUD, 8)
@@ -177,7 +168,7 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
 
     private void offerWoodBlocksRecipes() {
         // palm wood
-        generateFamily(UBlockFamilies.PALM, FeatureSet.empty());
+        generateFamily(UBlockFamilies.PALM, FeatureSet.of(FeatureFlags.VANILLA));
         offerPlanksRecipe(UBlocks.PALM_PLANKS, UTags.Items.PALM_LOGS, 4);
         offerBarkBlockRecipe(UBlocks.PALM_WOOD, UBlocks.PALM_LOG);
         offerBarkBlockRecipe(UBlocks.STRIPPED_PALM_WOOD, UBlocks.STRIPPED_PALM_LOG);
@@ -186,7 +177,7 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
         offerHangingSignRecipe(UBlocks.PALM_HANGING_SIGN, UBlocks.PALM_PLANKS);
 
         // zap wood
-        generateFamily(UBlockFamilies.ZAP, FeatureSet.empty());
+        generateFamily(UBlockFamilies.ZAP, FeatureSet.of(FeatureFlags.VANILLA));
         offerPlanksRecipe(UBlocks.ZAP_PLANKS, UTags.Items.ZAP_LOGS, 4);
         offerBarkBlockRecipe(UBlocks.ZAP_WOOD, UBlocks.ZAP_LOG);
         offerBarkBlockRecipe(UBlocks.STRIPPED_ZAP_WOOD, UBlocks.STRIPPED_ZAP_LOG);
@@ -194,8 +185,16 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
         // waxed zap wood
         offerPlanksRecipe(UBlocks.WAXED_ZAP_PLANKS, UTags.Items.WAXED_ZAP_LOGS, 4);
         offerBarkBlockRecipe(UBlocks.WAXED_ZAP_WOOD, UBlocks.WAXED_ZAP_LOG);
-        generateFamily(UBlockFamilies.WAXED_ZAP, FeatureSet.empty());
+        generateFamily(UBlockFamilies.WAXED_ZAP, FeatureSet.of(FeatureFlags.VANILLA));
         offerBarkBlockRecipe(UBlocks.WAXED_STRIPPED_ZAP_WOOD, UBlocks.WAXED_STRIPPED_ZAP_LOG);
+
+        // golden oak wood
+        generateFamily(UBlockFamilies.GOLDEN_OAK, FeatureSet.of(FeatureFlags.VANILLA));
+        offerPlanksRecipe(UBlocks.GOLDEN_OAK_PLANKS, UTags.Items.GOLDEN_OAK_LOGS, 4);
+        offerBarkBlockRecipe(UBlocks.GOLDEN_OAK_WOOD, UBlocks.GOLDEN_OAK_LOG);
+        offerBarkBlockRecipe(UBlocks.STRIPPED_GOLDEN_OAK_WOOD, UBlocks.STRIPPED_GOLDEN_OAK_LOG);
+
+        offerSmelting(List.of(UBlocks.GOLDEN_OAK_LOG, UBlocks.GOLDEN_OAK_WOOD, UBlocks.STRIPPED_GOLDEN_OAK_LOG, UBlocks.STRIPPED_GOLDEN_OAK_WOOD, UItems.GOLDEN_STICK), RecipeCategory.FOOD, Items.GOLD_NUGGET, 20, 200, "gold_nugget");
 
         offerWaxingRecipes();
 
@@ -207,17 +206,25 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
 
     private void offerChitinBlocksRecipes() {
         offerReversibleCompactingRecipes(RecipeCategory.BUILDING_BLOCKS, UItems.CARAPACE, RecipeCategory.BUILDING_BLOCKS, UBlocks.CHITIN);
-        generateFamily(UBlockFamilies.CHISELED_CHITIN, FeatureSet.empty());
-        offerHiveRecipe(UBlocks.HIVE, UBlocks.CHITIN, UBlocks.MYSTERIOUS_EGG);
-        offerHullRecipe(UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN, UBlocks.CHITIN);
-        offerSpikesRecipe(UBlocks.CHITIN_SPIKES, UBlocks.CHITIN);
-
-        // TODO: polished chitin
         offerPolishedStoneRecipe(RecipeCategory.BUILDING_BLOCKS, UBlocks.CHISELLED_CHITIN, UBlocks.CHITIN);
 
+        generateFamily(UBlockFamilies.CHISELED_CHITIN, FeatureSet.of(FeatureFlags.VANILLA));
+        generateFamily(UBlockFamilies.POLISHED_CHITIN, FeatureSet.of(FeatureFlags.VANILLA));
+        offerHiveRecipe(UBlocks.HIVE, UBlocks.CHITIN, UBlocks.MYSTERIOUS_EGG);
+        offerHullRecipe(UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN, UBlocks.CHITIN);
+        offerHullRecipe(UBlocks.POLISHED_CHITIN_HULL, UBlocks.POLISHED_CHITIN, UBlocks.CHITIN);
+        offerSpikesRecipe(UBlocks.CHITIN_SPIKES, UBlocks.CHITIN);
+
+        offerStonecuttingRecipe(RecipeCategory.BUILDING_BLOCKS, UBlocks.POLISHED_CHITIN, UBlocks.CHISELLED_CHITIN);
         offerStonecuttingRecipe(RecipeCategory.BUILDING_BLOCKS, UBlocks.CHISELLED_CHITIN_HULL, UBlocks.CHISELLED_CHITIN);
         offerStonecuttingRecipe(RecipeCategory.BUILDING_BLOCKS, UBlocks.CHISELLED_CHITIN_SLAB, UBlocks.CHISELLED_CHITIN, 2);
         offerStonecuttingRecipe(RecipeCategory.BUILDING_BLOCKS, UBlocks.CHISELLED_CHITIN_STAIRS, UBlocks.CHISELLED_CHITIN);
+        offerStonecuttingRecipe(RecipeCategory.DECORATIONS, UBlocks.CHISELLED_CHITIN_WALL, UBlocks.CHISELLED_CHITIN);
+
+        offerStonecuttingRecipe(RecipeCategory.BUILDING_BLOCKS, UBlocks.POLISHED_CHITIN_HULL, UBlocks.POLISHED_CHITIN);
+        offerStonecuttingRecipe(RecipeCategory.BUILDING_BLOCKS, UBlocks.POLISHED_CHITIN_SLAB, UBlocks.POLISHED_CHITIN, 2);
+        offerStonecuttingRecipe(RecipeCategory.BUILDING_BLOCKS, UBlocks.POLISHED_CHITIN_STAIRS, UBlocks.POLISHED_CHITIN);
+        offerStonecuttingRecipe(RecipeCategory.DECORATIONS, UBlocks.POLISHED_CHITIN_WALL, UBlocks.POLISHED_CHITIN);
     }
 
     private void offerGemstoneAndMagicRecipes() {
@@ -334,6 +341,13 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
         ComplexSpellcraftingRecipeJsonBuilder.create(SpellDuplicatingRecipe::new, UItems.BOTCHED_GEM).offerTo(exporter, "spell_duplicating");
         ComplexSpellcraftingRecipeJsonBuilder.create(SpellEnhancingRecipe::new, UItems.BOTCHED_GEM).offerTo(exporter, "trait_combining_botched_gem");
         ComplexSpellcraftingRecipeJsonBuilder.create(SpellEnhancingRecipe::new, UItems.GEMSTONE).offerTo(exporter, "trait_combining_gemstone");
+
+        AltarRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.SPECTRAL_CLOCK)
+            .input(Items.CLOCK).criterion("has_clock", conditionsFromItem(Items.CLOCK))
+            .offerTo(exporter);
+        AltarRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.TOTEM_OF_DYING)
+            .input(Items.TOTEM_OF_UNDYING).criterion("has_totem", conditionsFromItem(Items.TOTEM_OF_UNDYING))
+            .offerTo(exporter);
     }
 
     private void offerFoodRecipes() {
@@ -437,6 +451,8 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
         offerSmelting(List.of(Items.AXOLOTL_BUCKET), RecipeCategory.FOOD, UItems.FRIED_AXOLOTL, 2.2F, 230, "fried_axolotl");
         offerSmelting(List.of(UItems.FROG_LEGS), RecipeCategory.FOOD, UItems.COOKED_FROG_LEGS, 2.2F, 10, "frog_legs");
         offerSmelting(List.of(UBlocks.MYSTERIOUS_EGG.asItem()), RecipeCategory.FOOD, UItems.GREEN_FRIED_EGG, 3.8F, 630, "fried_egg");
+        generateCookingRecipes("smoking", RecipeSerializer.SMOKING, SmokingRecipe::new, 100);
+        generateCookingRecipes("campfire_cooking", RecipeSerializer.CAMPFIRE_COOKING, CampfireCookingRecipe::new, 600);
 
         ShapelessRecipeJsonBuilder.create(items, RecipeCategory.FOOD, UItems.ZAP_APPLE_JAM_JAR)
             .input(UItems.COOKED_ZAP_APPLE, 6).criterion(hasItem(UItems.COOKED_ZAP_APPLE), conditionsFromItem(UItems.COOKED_ZAP_APPLE))
@@ -465,6 +481,21 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
         offerTrickRecipe(UItems.PINEAPPLE, UItems.PINEAPPLE_CROWN);
         offerTrickRecipe(UItems.HORSE_SHOE_FRIES, UItems.IRON_HORSE_SHOE);
         offerTrickRecipe(UItems.MUFFIN, UItems.ROCK);
+    }
+
+    @Override
+    public <T extends AbstractCookingRecipe> void generateCookingRecipes(String cooker, RecipeSerializer<T> serializer, AbstractCookingRecipe.RecipeFactory<T> recipeFactory, int cookingTime) {
+        offerFoodCookingRecipe(cooker, serializer, recipeFactory, cookingTime / 3, UItems.JUICE, UItems.BURNED_JUICE, 0);
+        offerFoodCookingRecipe(cooker, serializer, recipeFactory, cookingTime, Items.BREAD, UItems.TOAST, 0.2F);
+        offerFoodCookingRecipe(cooker, serializer, recipeFactory, cookingTime, UItems.TOAST, UItems.BURNED_TOAST, 0.2F);
+        offerFoodCookingRecipe(cooker, serializer, recipeFactory, cookingTime / 2, UItems.BURNED_TOAST, Items.CHARCOAL, 1);
+        offerFoodCookingRecipe(cooker, serializer, recipeFactory, cookingTime, UItems.HAY_FRIES, UItems.CRISPY_HAY_FRIES, 1F);
+        offerFoodCookingRecipe(cooker, serializer, recipeFactory, cookingTime, UItems.ZAP_APPLE, UItems.COOKED_ZAP_APPLE, 0.6F);
+        offerFoodCookingRecipe(cooker, serializer, recipeFactory, cookingTime, Items.TROPICAL_FISH, UItems.COOKED_TROPICAL_FISH, 0.35F);
+        offerFoodCookingRecipe(cooker, serializer, recipeFactory, cookingTime, Items.PUFFERFISH, UItems.COOKED_PUFFERFISH, 1.2F);
+        offerFoodCookingRecipe(cooker, serializer, recipeFactory, cookingTime + 30, Items.AXOLOTL_BUCKET, UItems.FRIED_AXOLOTL, 2.2F);
+        offerFoodCookingRecipe(cooker, serializer, recipeFactory, cookingTime, UItems.FROG_LEGS, UItems.COOKED_FROG_LEGS, 2.2F);
+        offerFoodCookingRecipe(cooker, serializer, recipeFactory, cookingTime + 50, UBlocks.MYSTERIOUS_EGG, UItems.GREEN_FRIED_EGG, 3.8F);
     }
 
     public void offerTrickRecipe(ItemConvertible output, ItemConvertible input) {
@@ -549,7 +580,7 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
 
         offerGrowing(UBlocks.CURING_JOKE, Blocks.LAPIS_BLOCK, Blocks.CORNFLOWER);
         offerGrowing(UBlocks.GOLD_ROOT, Blocks.RAW_GOLD_BLOCK, Blocks.CARROTS);
-        offerGrowing(UTreeGen.GOLDEN_APPLE_TREE.sapling().get(), Blocks.RAW_GOLD_BLOCK, Blocks.OAK_SAPLING);
+        offerGrowing(UTreeGen.GOLDEN_OAK_TREE.sapling().get(), Blocks.RAW_GOLD_BLOCK, Blocks.OAK_SAPLING);
         offerGrowing(UBlocks.PLUNDER_VINE_BUD, Blocks.NETHERRACK, Blocks.WITHER_ROSE);
         offerGrowing(UTreeGen.ZAP_APPLE_TREE.sapling().get(), UBlocks.CHITIN, Blocks.DARK_OAK_SAPLING);
     }
@@ -616,8 +647,9 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
     public void offerPolearmRecipe(ItemConvertible output, Either<ItemConvertible, TagKey<Item>> input) {
         input(ShapedRecipeJsonBuilder.create(items, RecipeCategory.TOOLS, output), 'o', input).criterion(hasEither(input), conditionsFromEither(input))
             .input('#', ConventionalItemTags.WOODEN_RODS)
+            .input('s', ConventionalItemTags.STRINGS)
             .pattern("  o")
-            .pattern(" # ")
+            .pattern(" #s")
             .pattern("#  ")
             .group("polearm")
             .offerTo(exporter);
@@ -711,6 +743,7 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
             var unwaxed = UBlockFamilies.ZAP.getVariant(variant);
             CuttingBoardRecipeJsonBuilder.create(unwaxed, "axe_strip")
                 .input(waxed).criterion(hasItem(waxed), conditionsFromItem(waxed))
+                .result(unwaxed)
                 .result(Items.HONEYCOMB)
                 .sound(SoundEvents.ITEM_AXE_WAX_OFF)
                 .offerTo(farmersDelightExporter, getItemPath(unwaxed) + "_from_waxed");
@@ -720,6 +753,7 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
                 if (variant == Variant.WALL_SIGN) return;
                 CuttingBoardRecipeJsonBuilder.create(family.getBaseBlock(), "axe_strip")
                     .input(block).criterion(hasItem(block), conditionsFromItem(block))
+                    .result(family.getBaseBlock())
                     .sound(SoundEvents.ITEM_AXE_STRIP)
                     .offerTo(farmersDelightExporter, getItemPath(block));
             });
@@ -727,6 +761,7 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
         CuttingBoardRecipeJsonBuilder.create(UBlocks.PALM_PLANKS, "axe_dig")
             .input(UBlocks.PALM_HANGING_SIGN).criterion(hasItem(UBlocks.PALM_HANGING_SIGN), conditionsFromItem(UBlocks.PALM_HANGING_SIGN))
             .sound(SoundEvents.ITEM_AXE_STRIP)
+            .result(UBlocks.PALM_PLANKS)
             .offerTo(farmersDelightExporter);
 
         Map.of(
@@ -738,9 +773,40 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
             CuttingBoardRecipeJsonBuilder.create(stripped, "axe_strip")
                 .input(unstripped).criterion(hasItem(unstripped), conditionsFromItem(unstripped))
                 .sound(SoundEvents.ITEM_AXE_STRIP)
+                .result(stripped)
                 .result(Identifier.of("farmersdelight:tree_bark"))
                 .offerTo(farmersDelightExporter, convertBetween(stripped, unstripped));
         });
+        Map.of(
+                UBlocks.GOLDEN_OAK_LOG, UBlocks.STRIPPED_GOLDEN_OAK_LOG,
+                UBlocks.GOLDEN_OAK_WOOD, UBlocks.STRIPPED_GOLDEN_OAK_WOOD
+        ).forEach((unstripped, stripped) -> {
+            CuttingBoardRecipeJsonBuilder.create(stripped, "axe_strip")
+                .input(unstripped).criterion(hasItem(unstripped), conditionsFromItem(unstripped))
+                .sound(SoundEvents.ITEM_AXE_STRIP)
+                .result(stripped)
+                .result(Items.GOLD_NUGGET, 8)
+                .offerTo(exporter, convertBetween(stripped, unstripped));
+        });
+
+        ShapelessRecipeJsonBuilder.create(items, RecipeCategory.MISC, UItems.APPLE_PIE)
+            .input(FarmersDelightContent.APPLE_PIE).criterion(hasItem(FarmersDelightContent.APPLE_PIE), conditionsFromItem(FarmersDelightContent.APPLE_PIE))
+            .offerTo(exporter, "apple_pie_to_apple_pie");
+        ShapelessRecipeJsonBuilder.create(items, RecipeCategory.MISC, FarmersDelightContent.APPLE_PIE)
+            .input(UItems.APPLE_PIE).criterion(hasItem(UItems.APPLE_PIE), conditionsFromItem(UItems.APPLE_PIE))
+            .offerTo(exporter, "apple_pie_from_apple_pie");
+
+        CuttingBoardRecipeJsonBuilder.create(UItems.HAY_FRIES, "axe_dig")
+                .input(Blocks.HAY_BLOCK).criterion(hasItem(Blocks.HAY_BLOCK), conditionsFromItem(Blocks.HAY_BLOCK))
+                .sound(SoundEvents.ITEM_AXE_SCRAPE)
+                .result(UItems.HAY_FRIES, 9)
+                .offerTo(exporter);
+
+        CuttingBoardRecipeJsonBuilder.create(UItems.APPLE_PIE_SLICE, Ingredient.fromTag(items.getOrThrow(UConventionalTags.Items.TOOL_KNIVES)))
+            .input(UBlocks.APPLE_PIE).criterion(hasItem(UBlocks.APPLE_PIE), conditionsFromItem(UBlocks.APPLE_PIE))
+            .sound(USounds.BLOCK_PIE_SLICE)
+            .result(UItems.APPLE_PIE_SLICE, 4)
+            .offerTo(exporter);
     }
 
     public void offerCompactingRecipe(RecipeCategory category, ItemConvertible output, ItemConvertible input, int resultCount) {

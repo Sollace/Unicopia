@@ -14,6 +14,7 @@ import net.minecraft.data.client.ModelIds;
 import net.minecraft.data.client.TextureKey;
 import net.minecraft.data.client.TextureMap;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 
@@ -31,7 +32,7 @@ interface ItemModels {
     Model TRIDENT_IN_HAND = item(Identifier.ofVanilla("trident_in_hand"), TextureKey.LAYER0);
 
     static Model item(String parent, TextureKey ... requiredTextureKeys) {
-        return new Model(Optional.of(Unicopia.id("item/" + parent)), Optional.empty(), requiredTextureKeys);
+        return item(Unicopia.id(parent), requiredTextureKeys);
     }
 
     static Model item(Identifier parent, TextureKey ... requiredTextureKeys) {
@@ -46,6 +47,10 @@ interface ItemModels {
         for (Item item : items) {
             itemModelGenerator.register(item, model);
         }
+    }
+
+    static void registerParented(ItemModelGenerator itemModelGenerator, Item item, ItemConvertible parent) {
+        ItemModels.item(Registries.ITEM.getId(parent.asItem())).upload(ModelIds.getItemModelId(item), new TextureMap(), itemModelGenerator.writer);
     }
 
     static void registerPolearm(ItemModelGenerator itemModelGenerator, Item item) {

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.spongepowered.include.com.google.common.base.Preconditions;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -18,6 +19,7 @@ import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.Ingredient;
@@ -41,7 +43,7 @@ public class CuttingBoardRecipeJsonBuilder {
     private final Map<String, AdvancementCriterion<?>> criterions = new LinkedHashMap<>();
 
     private final ItemConvertible output;
-    private final String action;
+    private Either<Ingredient, Tool> tool;
 
     private final List<Result> results = new ArrayList<>();
     private final List<Ingredient> ingredients = new ArrayList<>();
@@ -49,13 +51,25 @@ public class CuttingBoardRecipeJsonBuilder {
     private Identifier sound = Identifier.ofVanilla("item.axe.strip");
 
     public static CuttingBoardRecipeJsonBuilder create(ItemConvertible output, String action) {
-        return new CuttingBoardRecipeJsonBuilder(output, action);
+        return new CuttingBoardRecipeJsonBuilder(output).tool(action);
     }
 
-    protected CuttingBoardRecipeJsonBuilder(ItemConvertible output, String action) {
+    public static CuttingBoardRecipeJsonBuilder create(ItemConvertible output, Ingredient tool) {
+        return new CuttingBoardRecipeJsonBuilder(output).tool(tool);
+    }
+
+    protected CuttingBoardRecipeJsonBuilder(ItemConvertible output) {
         this.output = output;
-        this.action = action;
-        result(output);
+    }
+
+    public CuttingBoardRecipeJsonBuilder tool(Ingredient tool) {
+        this.tool = Either.left(tool);
+        return this;
+    }
+
+    public CuttingBoardRecipeJsonBuilder tool(String action) {
+        this.tool = Either.right(new Tool(Identifier.of("farmersdelight:tool_action"), action));
+        return this;
     }
 
     public CuttingBoardRecipeJsonBuilder sound(SoundEvent sound) {
@@ -68,13 +82,21 @@ public class CuttingBoardRecipeJsonBuilder {
         return this;
     }
 
-    public CuttingBoardRecipeJsonBuilder result(ItemConvertible result) {
-        results.add(new Result(Registries.ITEM.getId(result.asItem()), 1));
+    public CuttingBoardRecipeJsonBuilder result(ItemConvertible result, int count) {
+        results.add(new Result(Registries.ITEM.getId(result.asItem()), count));
         return this;
     }
 
+    public CuttingBoardRecipeJsonBuilder result(ItemConvertible result) {
+        return result(result, 1);
+    }
+
     public CuttingBoardRecipeJsonBuilder result(Identifier result) {
-        results.add(new Result(result, 1));
+        return result(result, 1);
+    }
+
+    public CuttingBoardRecipeJsonBuilder result(Identifier result, int count) {
+        results.add(new Result(result, count));
         return this;
     }
 
@@ -91,12 +113,7 @@ public class CuttingBoardRecipeJsonBuilder {
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
         criterions.forEach(advancementBuilder::criterion);
         exporter.accept(key,
-            new CuttingBoardRecipe(
-                    ingredients,
-                    new Tool(Identifier.of("farmersdelight:tool_action"), action),
-                    sound,
-                    results
-            ),
+            new CuttingBoardRecipe(ingredients, tool, sound, results),
             advancementBuilder.build(key.getValue().withPrefixedPath("recipes/"))
         );
     }
@@ -128,14 +145,15 @@ public class CuttingBoardRecipeJsonBuilder {
 
     public record CuttingBoardRecipe(
             List<Ingredient> ingredients,
-            Tool tool,
+            Either<Ingredient, Tool> tool,
             Identifier sound,
             List<Result> result
         ) implements Recipe<CraftingRecipeInput> {
         static final Identifier ID = Identifier.of("farmersdelight", "cutting");
+        static final Codec<Either<Ingredient, Tool>> TOOL_CODEC = Codec.xor(Ingredient.CODEC, Tool.CODEC);
         static final MapCodec<CuttingBoardRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                 Ingredient.CODEC.listOf().fieldOf("ingredients").forGetter(CuttingBoardRecipe::ingredients),
-                Tool.CODEC.fieldOf("tool").forGetter(CuttingBoardRecipe::tool),
+                TOOL_CODEC.fieldOf("tool").forGetter(CuttingBoardRecipe::tool),
                 Identifier.CODEC.fieldOf("sound").forGetter(CuttingBoardRecipe::sound),
                 Result.CODEC.listOf().fieldOf("result").forGetter(CuttingBoardRecipe::result)
         ).apply(i, CuttingBoardRecipe::new));

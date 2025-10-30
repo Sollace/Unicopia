@@ -92,7 +92,7 @@ public class StateMapLoader extends JsonDataLoader<JsonReversableBlockStateConve
             this.inverse = inverse.orElseGet(() -> new StateMapLoader.Indirect<>(id, Optional.of(this)) {
                 @Override
                 public Optional<BlockStateConverter> get() {
-                    return Optional.ofNullable(INSTANCE.converters.get(id)).map(map -> map.getInverse());
+                    return Optional.ofNullable(INSTANCE.converters.get(id)).map(ReversableBlockStateConverter::getInverse);
                 }
             });
         }

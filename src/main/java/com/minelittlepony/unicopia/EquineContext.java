@@ -13,6 +13,14 @@ public interface EquineContext {
 
     Race getSpecies();
 
+    /**
+     * Gets the species this player appears to be.
+     * This includes illusions and shape-shifting, and status effects but excludes items that grant abilities without changing their race.
+     */
+    default Race getObservedSpecies() {
+        return getCompositeRace().physical();
+    }
+
     default Race.Composite getCompositeRace() {
         return getSpecies().composite();
     }

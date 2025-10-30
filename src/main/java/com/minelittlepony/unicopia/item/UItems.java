@@ -175,6 +175,7 @@ public interface UItems {
 
     Item GIANT_BALLOON = register("giant_balloon", s -> new GiantBalloonItem(s.maxCount(1).component(UDataComponentTypes.BALLOON_DESIGN, BalloonDesignComponent.DEFAULT)), ItemGroups.TOOLS);
     Item SPECTRAL_CLOCK = register("spectral_clock", Item::new, ItemGroups.TOOLS);
+    Item TOTEM_OF_DYING = register("totem_of_dying", s -> new Item(s.maxCount(1).rarity(Rarity.UNCOMMON)), ItemGroups.COMBAT);
 
     Item WHITE_BED_SHEETS = register(CloudBedBlock.SheetPattern.WHITE);
     Item LIGHT_GRAY_BED_SHEETS = register(CloudBedBlock.SheetPattern.LIGHT_GRAY);
@@ -194,8 +195,8 @@ public interface UItems {
     Item PINK_BED_SHEETS = register(CloudBedBlock.SheetPattern.PINK);
 
     Item APPLE_BED_SHEETS = register(CloudBedBlock.SheetPattern.APPLE);
-    Item BARRED_BED_SHEETS = register("barred_bed_sheets", s -> new BedsheetsItem(CloudBedBlock.SheetPattern.BARS, s.maxCount(1)), ItemGroups.FUNCTIONAL);
-    Item CHECKERED_BED_SHEETS = register("checkered_bed_sheets", s -> new BedsheetsItem(CloudBedBlock.SheetPattern.CHECKER, s.maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item BARRED_BED_SHEETS = register("barred_bed_sheets", s -> new BedsheetsItem(CloudBedBlock.SheetPattern.BARS, s.maxCount(8)), ItemGroups.FUNCTIONAL);
+    Item CHECKERED_BED_SHEETS = register("checkered_bed_sheets", s -> new BedsheetsItem(CloudBedBlock.SheetPattern.CHECKER, s.maxCount(8)), ItemGroups.FUNCTIONAL);
     Item KELP_BED_SHEETS = register(CloudBedBlock.SheetPattern.KELP);
     Item RAINBOW_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW);
     Item RAINBOW_BPW_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW_BPW);
@@ -248,6 +249,8 @@ public interface UItems {
 
     Item FROG_LEGS = register("frog_legs", s -> new Item(s.food(FoodComponents.CHICKEN)), ItemGroups.FOOD_AND_DRINK);
     Item COOKED_FROG_LEGS = register("cooked_frog_legs", s -> new Item(s.food(FoodComponents.COOKED_CHICKEN)), ItemGroups.FOOD_AND_DRINK);
+
+    Item GOLDEN_STICK = register("golden_stick", s -> new Item(s.recipeRemainder(Items.GOLD_NUGGET)), ItemGroups.NATURAL);
 
     Item CARAPACE = register("carapace", Item::new, ItemGroups.INGREDIENTS);
     Item CLOTH_BED = register("cloth_bed", s -> new FancyBedItem(UBlocks.CLOTH_BED, s.maxCount(1)), ItemGroups.FUNCTIONAL);
