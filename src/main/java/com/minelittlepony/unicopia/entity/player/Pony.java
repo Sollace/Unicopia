@@ -244,7 +244,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public void setLookedEntity(Entity target) {
         if (this.lookedAtEntity != target) {
-            System.out.println("Set looked: " + target);
             this.lookedAtEntity = target;
             this.ticksUntilLookTimeout = 10;
             var packet = new MsgPlayerTargetEntity(target == null ? Optional.empty() : Optional.of(target.getId()), Optional.empty(), Optional.empty());

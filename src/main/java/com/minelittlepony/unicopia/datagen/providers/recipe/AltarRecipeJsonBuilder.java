@@ -64,6 +64,7 @@ public class AltarRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
             .criterion("has_the_recipe", RecipeUnlockedCriterion.create(key))
             .rewards(AdvancementRewards.Builder.recipe(key))
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
+        criterions.forEach(advancementBuilder::criterion);
         exporter.accept(key, new AltarRecipe(
                 group == null ? "" : group,
                 ingredients,
