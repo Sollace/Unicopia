@@ -108,6 +108,7 @@ public class CuttingBoardRecipeJsonBuilder {
             .criterion("has_the_recipe", RecipeUnlockedCriterion.create(id))
             .rewards(AdvancementRewards.Builder.recipe(id))
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
+        criterions.forEach(advancementBuilder::criterion);
         exporter.accept(id,
             new CuttingBoardRecipe(ingredients, tool, sound, results),
             advancementBuilder.build(id.withPrefixedPath("recipes/"))

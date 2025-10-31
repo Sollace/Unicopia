@@ -83,6 +83,7 @@ public class SpellcraftingRecipeJsonBuilder {
             .criterion("has_the_recipe", RecipeUnlockedCriterion.create(id))
             .rewards(AdvancementRewards.Builder.recipe(id))
             .criteriaMerger(AdvancementRequirements.CriterionMerger.OR);
+        criterions.forEach(advancementBuilder::criterion);
         exporter.accept(id, new SpellCraftingRecipe(base, TraitIngredient.of(traits), ingredients, EnchantableItem.enchant(gem.asItem().getDefaultStack(), spell)), advancementBuilder.build(id.withPrefixedPath("recipes/" + category.getName() + "/")));
     }
 
