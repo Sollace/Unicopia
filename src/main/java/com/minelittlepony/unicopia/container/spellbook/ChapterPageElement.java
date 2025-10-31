@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.block.state.StateUtil;
 import com.minelittlepony.unicopia.util.serialization.ServerBoundByteBuf;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -34,6 +35,20 @@ public interface ChapterPageElement {
     byte TEXT_BLOCK = 3;
     byte INGREDIENTS = 4;
     byte STRUCTURE = 5;
+
+    Codec<Bounds> BOUNDS_CODEC = RecordCodecBuilder.create(i -> i.group(
+            Codec.INT.optionalFieldOf("x", 0).forGetter(o -> o.left),
+            Codec.INT.optionalFieldOf("y", 0).forGetter(o -> o.top),
+            Codec.INT.optionalFieldOf("width", 0).forGetter(o -> o.width),
+            Codec.INT.optionalFieldOf("height", 0).forGetter(o -> o.height)
+    ).apply(i, Bounds::new));
+    PacketCodec<PacketByteBuf, Bounds> BOUNDS_PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.INTEGER, o -> o.left,
+            PacketCodecs.INTEGER, o -> o.top,
+            PacketCodecs.INTEGER, o -> o.width,
+            PacketCodecs.INTEGER, o -> o.height,
+            Bounds::new
+    );
 
     Codec<ChapterPageElement> CODEC = Codecs.JSON_ELEMENT.xmap(json -> {
         if (!json.isJsonPrimitive()) {
@@ -63,6 +78,7 @@ public interface ChapterPageElement {
         );
     }
 
+    @Deprecated
     private static void boundsToBuffer(Bounds bounds, PacketByteBuf buffer) {
         buffer.writeInt(bounds.top);
         buffer.writeInt(bounds.left);
@@ -112,7 +128,7 @@ public interface ChapterPageElement {
     record Stack (IngredientWithSpell ingredient, Bounds bounds) implements ChapterPageElement {
         @Deprecated
         public Stack(JsonObject json) {
-            this(IngredientWithSpell.CODEC.decode(JsonOps.INSTANCE, json.get("item")).result().get().getFirst(), boundsFromJson(json));
+            this(IngredientWithSpell.FLEXIBLE_CODEC.decode(JsonOps.INSTANCE, json.get("item")).result().get().getFirst(), boundsFromJson(json));
         }
         @Override
         public void toBuffer(ServerBoundByteBuf buffer) {

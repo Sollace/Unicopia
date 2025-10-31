@@ -27,10 +27,9 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
+import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 
 @Mixin(LivingEntityRenderer.class)
 abstract class MixinLivingEntityRenderer<T extends LivingEntity, S extends LivingEntityRenderState, M extends EntityModel<? super S>> extends EntityRenderer<T, S>
@@ -65,22 +64,17 @@ abstract class MixinLivingEntityRenderer<T extends LivingEntity, S extends Livin
     @Inject(method = "render",
             at = @At(
                 value = "INVOKE",
-                target = "Lnet/minecraft/client/render/entity/model/EntityModel;setAngles(Lnet/minecraft/entity/Entity;FFFFF)V",
+                target = "net/minecraft/client/render/entity/model/EntityModel.setAngles(Lnet/minecraft/client/render/entity/state/EntityRenderState;)V",
                 shift = Shift.AFTER))
     private void onRender(
-            T entity,
-            float yaw, float tickDelta,
-            MatrixStack matrices,
-            VertexConsumerProvider vertices,
-            int light,
+            S state, MatrixStack matrices, VertexConsumerProvider vertices, int light,
             CallbackInfo into) {
         getAccessories();
-        if (entity instanceof PlayerEntity player) {
+        if (state instanceof PlayerEntityRenderState player) {
             PlayerPoser.INSTANCE.applyPosing(matrices, player, (BipedEntityModel<?>)getModel(), PlayerPoser.Context.THIRD_PERSON);
         }
-        if (entity instanceof MobEntity mob) {
-            AnimalPoser.INSTANCE.applyPosing(matrices, mob, getModel());
-        }
+
+        AnimalPoser.INSTANCE.applyPosing(matrices, state, getModel());
     }
 
     @Inject(method = "updateRenderState",

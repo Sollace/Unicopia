@@ -196,7 +196,9 @@ public class WorldRenderDelegate {
         matrices.translate(x, y + owner.getHeight() / 2, z);
 
         if (pony instanceof Pony p) {
-            float sidewaysRoll = p.getCamera().calculateRoll();
+            boolean firstPerson = MinecraftClient.getInstance().options.getPerspective().isFirstPerson();
+            float fovEffectScale = MinecraftClient.getInstance().options.getFovEffectScale().getValue().floatValue();
+            float sidewaysRoll = p.getCamera().calculateRoll(firstPerson, fovEffectScale);
 
             if (p.getAcrobatics().isFloppy()) {
                 matrices.translate(0, -0.5, 0);

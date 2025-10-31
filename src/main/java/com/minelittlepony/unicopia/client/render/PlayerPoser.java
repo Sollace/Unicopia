@@ -6,22 +6,20 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.minelittlepony.unicopia.command.CommandArgumentEnum;
-import com.minelittlepony.unicopia.entity.player.Pony;
-import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.util.AnimationUtil;
 import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
 import com.mojang.serialization.Codec;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.command.argument.EnumArgumentType;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.sound.SoundEvent;
@@ -37,40 +35,40 @@ public class PlayerPoser {
     private static final float HEAD_NOD_DURATION = 15F;
     private static final float HEAD_NOD_GAP = HEAD_NOD_DURATION / 3F;
 
-    public void applyPosing(MatrixStack matrices, PlayerEntity player, BipedEntityModel<?> model, Context context) {
-        Pony pony = Pony.of(player);
-        float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
-        float progress = pony.getAnimationProgress(MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false));
-        AnimationInstance animation = pony.getAnimation();
-        Race ponyRace = MineLPDelegate.getInstance().getPlayerPonyRace(player);
-        Arm mainArm = player.getMainArm();
+    public void applyPosing(MatrixStack matrices, PlayerEntityRenderState state, BipedEntityModel<?> model, Context context) {
+        CasterState pony = CasterState.of(state);
+        float progress = pony.animationTime;
+        AnimationInstance animation = pony.animation;
+        Race ponyRace = MineLPDelegate.getInstance().getRace(state);
+        Arm mainArm = state.mainArm;
 
         boolean liftLeftArm = mainArm == Arm.LEFT || !ponyRace.isEquine();
         boolean liftRightArm = mainArm == Arm.RIGHT || !ponyRace.isEquine();
 
-        ItemStack glasses = GlassesItem.getForEntity(player).stack();
+        ItemStack glasses = pony.eyewear.stack();
         ModelPart head = model.getHead();
 
-        if (context == Context.THIRD_PERSON && !player.isSneaking()) {
+        if (context == Context.THIRD_PERSON && !state.isInSneakingPose) {
             Hand leftHand = mainArm == Arm.LEFT ? Hand.MAIN_HAND : Hand.OFF_HAND;
             Hand rightHand = mainArm == Arm.LEFT ? Hand.OFF_HAND : Hand.MAIN_HAND;
+
 
             float pitchChange = -0.5F;
             float yawChange = 0.8F;
 
-            if (player.getStackInHand(rightHand).isIn(UTags.Items.POLEARMS) && (!ponyRace.isEquine() || model.rightArm.pitch != 0)) {
+            if (state.rightHandStack.isIn(UTags.Items.POLEARMS) && (!ponyRace.isEquine() || model.rightArm.pitch != 0)) {
                 model.rightArm.pitch += pitchChange;
                 model.rightArm.yaw += yawChange;
-                if (player.handSwingTicks > 0 && rightHand == Hand.MAIN_HAND) {
+                if (state.handSwingProgress > 0 && rightHand == Hand.MAIN_HAND) {
                     model.rightArm.yaw -= 0.5F;
                     model.rightArm.pitch += 1.5F;
                 }
             }
 
-            if (player.getStackInHand(leftHand).isIn(UTags.Items.POLEARMS) && (!ponyRace.isEquine() || model.leftArm.pitch != 0)) {
+            if (state.leftHandStack.isIn(UTags.Items.POLEARMS) && (!ponyRace.isEquine() || model.leftArm.pitch != 0)) {
                 model.leftArm.pitch += pitchChange;
                 model.leftArm.yaw -= yawChange;
-                if (player.handSwingTicks > 0 && leftHand == Hand.MAIN_HAND) {
+                if (state.handSwingProgress > 0 && leftHand == Hand.MAIN_HAND) {
                     model.leftArm.yaw -= 0.5F;
                     model.leftArm.pitch += 1.5F;
                 }
@@ -79,7 +77,7 @@ public class PlayerPoser {
 
         Text name = glasses.get(DataComponentTypes.CUSTOM_NAME);
         if (name != null && "Cool Shades".equals(name.getString())) {
-            final float bop = AnimationUtil.beat(player.age, HEAD_NOD_DURATION, HEAD_NOD_GAP) * 3F;
+            final float bop = AnimationUtil.beat(state.age, HEAD_NOD_DURATION, HEAD_NOD_GAP) * 3F;
             head.pitch += bop / 10F;
 
             float beat30 = bop / 30F;
@@ -109,8 +107,8 @@ public class PlayerPoser {
                     break;
                 }
                 case WOLOLO: {
-                    float roll = MathHelper.sin(player.age / 10F);
-                    float yaw = MathHelper.cos(player.age / 10F);
+                    float roll = MathHelper.sin(state.age / 10F);
+                    float yaw = MathHelper.cos(state.age / 10F);
 
                     if (liftLeftArm) {
                         rotateArm(model.leftArm, 1, yaw, -roll);
@@ -139,7 +137,7 @@ public class PlayerPoser {
                     break;
                 }
                 case HANG: {
-                    float saw = MathHelper.sin(player.limbAnimator.getPos());
+                    float saw = MathHelper.sin(state.limbFrequency);
 
                     float pitch = 0.8F * saw;
 
@@ -165,7 +163,7 @@ public class PlayerPoser {
                         float y = ponyRace.isEquine() ? -3 : -1;
                         float z = ponyRace.isEquine() ? -8 : -6;
 
-                        float cameraPitch = player.getPitch(tickDelta) * MathHelper.RADIANS_PER_DEGREE;
+                        float cameraPitch = state.pitch * MathHelper.RADIANS_PER_DEGREE;
 
                         rotateArm(model.leftArm, 0, 0, -0.4F + pitch);
                         rotateArm(model.rightArm, 0, 0, 0.4F + pitch);
@@ -250,7 +248,7 @@ public class PlayerPoser {
                         float y = ponyRace.isEquine() ? -3 : 0;
                         float z = ponyRace.isEquine() ? -8 : -2;
 
-                        float cameraPitch = player.getPitch(tickDelta) * MathHelper.RADIANS_PER_DEGREE;
+                        float cameraPitch = state.pitch * MathHelper.RADIANS_PER_DEGREE;
                         pitch = MathHelper.sin((progress * 2) * MathHelper.PI) * 0.6F;
 
                         rotateArm(model.leftArm, 0, 0, pitch);
@@ -278,7 +276,7 @@ public class PlayerPoser {
                         model.head.pitch += progress * 0.5F;
                     }
 
-                    float wave = 2.5F + progress * MathHelper.sin(player.age / 3F);
+                    float wave = 2.5F + progress * MathHelper.sin(state.age / 3F);
 
                     if (animation.isOf(Animation.WAVE_TWO) || mainArm == Arm.LEFT) {
                         model.leftArm.roll = -wave;
@@ -311,7 +309,7 @@ public class PlayerPoser {
                     model.leftArm.roll -= roll / 5F;
                     model.rightArm.roll += roll / 5F;
 
-                    if (player.getMainArm() == Arm.LEFT) {
+                    if (state.mainArm == Arm.LEFT) {
                         model.rightLeg.pitch = -roll * 1.5F;
                         model.rightLeg.roll = roll / 10F;
                     } else {
@@ -345,7 +343,7 @@ public class PlayerPoser {
                         break;
                     }
 
-                    progress = AnimationUtil.seesaw(progress) * MathHelper.sin(player.age) / 7F;
+                    progress = AnimationUtil.seesaw(progress) * MathHelper.sin(state.age) / 7F;
 
                     model.getHead().getChild("mare").pivotY = progress;
                     model.getHead().getChild("stallion").pivotY = progress;
@@ -355,8 +353,8 @@ public class PlayerPoser {
             }
         }
 
-        if (pony.getEntityInArms().isPresent()) {
-            if (ponyRace.isEquine() && pony.getPhysics().isFlying()) {
+        if (pony.carriedEntity.state != null) {
+            if (ponyRace.isEquine() && pony.flying) {
                 model.leftLeg.pitch = 1;
                 model.rightLeg.pitch = 1;
                 model.leftLeg.yaw = 0.3F;

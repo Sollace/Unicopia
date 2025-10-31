@@ -8,45 +8,50 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.chunk.Chunk;
 
-public interface WeatherAccess {
+public interface WeatherAccess extends WorldView {
+    int CLOUD_GENERATION_HEIGHT = 230;
+    int CLOUDS_BUFFER_RANGE = 5;
+    int FANCY_CLOUDS_BUFFER_RANGE = 10;
+    int CHUNK_SECTION_HEIGHT = ChunkSectionPos.field_33097;
+
     void setWeatherOverride(Float rain, Float thunder);
 
     default boolean isInRangeOfStorm(BlockPos pos) {
-        return WeatherConditions.get((World)this).isInRangeOfStorm(pos);
+        return WeatherConditions.get(this).isInRangeOfStorm(pos);
     }
 
     @Environment(EnvType.CLIENT)
     default boolean isBelowClientCloudLayer(BlockPos pos) {
 
-        int range = MinecraftClient.isFancyGraphicsOrBetter() ? 10 : 5;
+        int range = MinecraftClient.isFancyGraphicsOrBetter() ? FANCY_CLOUDS_BUFFER_RANGE : CLOUDS_BUFFER_RANGE;
 
-        if (pos.getY() < 230 - range) {
+        if (pos.getY() < CLOUD_GENERATION_HEIGHT - range) {
             return true;
         }
 
-        Chunk chunk = ((World)this).getChunk(pos);
+        Chunk chunk = getChunk(pos);
         int topSection = chunk.getHighestNonEmptySection();
 
-        if (topSection > -1) {
+        if (topSection > Chunk.MISSING_SECTION) {
             int sectionBottomY = ChunkSectionPos.getBlockCoord(topSection);
-            if (sectionBottomY >= pos.getY() - 16) {
+            if (sectionBottomY >= pos.getY() - CHUNK_SECTION_HEIGHT) {
                 BlockPos.Mutable mutable = pos.mutableCopy();
                 BlockPos.Mutable probeMutable = pos.mutableCopy();
-                int maxDistance = 16;
+                int maxDistance = CHUNK_SECTION_HEIGHT;
 
-                while (((World)this).isInBuildLimit(mutable)) {
+                while (!isOutOfHeightLimit(mutable)) {
                     if (--maxDistance <= 0) break;
-                    if (!((World)this).isAir(probeMutable.setY(mutable.getY() + range))) {
+                    if (!isAir(probeMutable.setY(mutable.getY() + range))) {
 
                         mutable.set(pos);
-                        maxDistance = 16;
+                        maxDistance = CHUNK_SECTION_HEIGHT;
 
-                        while (((World)this).isInBuildLimit(mutable)) {
+                        while (!isOutOfHeightLimit(mutable)) {
                             if (--maxDistance <= 0) break;
-                            if (((World)this).getBlockState(probeMutable.setY(mutable.getY())).getBlock() instanceof CloudLike) {
+                            if (getBlockState(probeMutable.setY(mutable.getY())).getBlock() instanceof CloudLike) {
                                 return false;
                             }
                             mutable.move(Direction.DOWN);
@@ -62,22 +67,22 @@ public interface WeatherAccess {
     }
 
     default boolean isBelowCloudLayer(BlockPos pos) {
-        if (pos.getY() < 230) {
+        if (pos.getY() < CLOUD_GENERATION_HEIGHT) {
             return true;
         }
 
-        Chunk chunk = ((World)this).getChunk(pos);
+        Chunk chunk = getChunk(pos);
         int topSection = chunk.getHighestNonEmptySection();
 
-        if (topSection > -1) {
+        if (topSection > Chunk.MISSING_SECTION) {
             int sectionBottomY = ChunkSectionPos.getBlockCoord(topSection);
-            if (sectionBottomY >= pos.getY() - 16) {
+            if (sectionBottomY >= pos.getY() - CHUNK_SECTION_HEIGHT) {
                 BlockPos.Mutable mutable = pos.mutableCopy();
-                int maxDistance = 32;
+                int maxDistance = CHUNK_SECTION_HEIGHT * 2;
 
-                while (((World)this).isInBuildLimit(mutable)) {
+                while (!isOutOfHeightLimit(mutable)) {
                     if (--maxDistance <= 0) break;
-                    if (!((World)this).isAir(mutable)) {
+                    if (!isAir(mutable)) {
                         return true;
                     }
                     mutable.move(Direction.UP);

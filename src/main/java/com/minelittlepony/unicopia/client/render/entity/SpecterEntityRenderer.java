@@ -16,13 +16,18 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory.Context;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
+import net.minecraft.client.render.entity.feature.FeatureRenderer;
+import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
@@ -31,7 +36,8 @@ public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, Sp
     private static final Identifier TEXTURE = Unicopia.id("textures/entity/specter.png");
 
     public SpecterEntityRenderer(Context context) {
-        super(context, new SpecterEntityModel(SpecterEntityModel.createModelData().createModel()), 0);
+        super(context, new SpecterEntityModel(context.getPart(EntityModelLayers.PLAYER)), 0);
+        addFeature(new HeadFeature(this));
         addFeature(new ArmorFeatureRenderer<>(this,
                 new BipedEntityModel<>(context.getPart(EntityModelLayers.PLAYER_INNER_ARMOR)),
                 new BipedEntityModel<>(context.getPart(EntityModelLayers.PLAYER_OUTER_ARMOR)),
@@ -69,8 +75,32 @@ public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, Sp
         public int alpha;
     }
 
+    static class HeadFeature extends FeatureRenderer<State, SpecterEntityModel> {
+        private final SpecterEyesModel model = new SpecterEyesModel(SpecterEyesModel.createModelData().createModel());
+
+        public HeadFeature(FeatureRendererContext<State, SpecterEntityModel> context) {
+            super(context);
+        }
+
+        @Override
+        public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, State state, float limbAngle, float limbDistance) {
+            if (!state.invisible) {
+                model.setAngles(state);
+                FeatureRenderer.renderModel(model, TEXTURE, matrices, vertices, light, state, Colors.WHITE);
+            }
+        }
+
+    }
+
     static class SpecterEntityModel extends BipedEntityModel<State> {
         public SpecterEntityModel(ModelPart root) {
+            super(root, RenderLayers::getEyes);
+            root.hidden = true;
+        }
+    }
+
+    static class SpecterEyesModel extends EntityModel<State> {
+        public SpecterEyesModel(ModelPart root) {
             super(root, RenderLayers::getEyes);
         }
 

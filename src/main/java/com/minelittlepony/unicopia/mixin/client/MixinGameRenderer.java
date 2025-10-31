@@ -27,11 +27,6 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
     @Shadow
     private @Final Pool pool;
 
-    @ModifyReturnValue(method = "getFov", at = @At("RETURN"))
-    private double modifyFov(double initial) {
-        return UnicopiaClient.getCamera().calculateFieldOfView(initial);
-    }
-
     @Inject(method = "renderWorld", at = @At("HEAD"))
     private void beforeRenderWorld(RenderTickCounter counter, CallbackInfo info) {
         BatEyesApplicator.INSTANCE.enable();
@@ -39,10 +34,7 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
 
     @Inject(method = "tiltViewWhenHurt", at = @At("HEAD"))
     private void tiltViewWhenHurt(MatrixStack matrices, float tickDelta, CallbackInfo info) {
-        float roll = UnicopiaClient.getCamera().calculateFirstPersonRoll();
-        if (roll != 0) {
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(roll));
-        }
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(UnicopiaClient.getCamera().calculateRoll(client.options.getPerspective().isFirstPerson(), client.options.getFov().getValue().floatValue())));
     }
 
     @Inject(method = "renderWorld", at = @At("RETURN"))

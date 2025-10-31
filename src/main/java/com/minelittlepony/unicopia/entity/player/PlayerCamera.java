@@ -3,11 +3,7 @@ package com.minelittlepony.unicopia.entity.player;
 public interface PlayerCamera {
     PlayerCamera DEFAULT = new PlayerCamera() {};
 
-    default float calculateRoll() {
-        return 0;
-    }
-
-    default float calculateFirstPersonRoll() {
+    default float calculateRoll(boolean firstPerson, float fovEffectScale) {
         return 0;
     }
 
@@ -23,7 +19,7 @@ public interface PlayerCamera {
         return distance;
     }
 
-    default double calculateFieldOfView(double fov) {
+    default float calculateFieldOfView(float fov, boolean firstPerson, float fovEffectScale) {
         return fov;
     }
 }

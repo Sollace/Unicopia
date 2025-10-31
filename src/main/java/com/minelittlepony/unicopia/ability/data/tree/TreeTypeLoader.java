@@ -60,8 +60,8 @@ public class TreeTypeLoader extends JsonDataLoader<TreeTypeLoader.TreeTypeDef> i
                 CodecUtils.setOf(Identifier.CODEC).fieldOf("logs").forGetter(TreeTypeDef::logs),
                 CodecUtils.setOf(Identifier.CODEC).fieldOf("leaves").forGetter(TreeTypeDef::leaves),
                 CodecUtils.setOf(Drop.CODEC).fieldOf("drops").forGetter(TreeTypeDef::drops),
-                Codec.BOOL.fieldOf("wideTrunk").forGetter(TreeTypeDef::wideTrunk),
-                Codec.INT.fieldOf("rarity").forGetter(TreeTypeDef::rarity),
+                Codec.BOOL.optionalFieldOf("wideTrunk", false).forGetter(TreeTypeDef::wideTrunk),
+                Codec.INT.optionalFieldOf("rarity", 0).forGetter(TreeTypeDef::rarity),
                 Codec.FLOAT.fieldOf("leavesRatio").forGetter(TreeTypeDef::leavesRatio)
         ).apply(instance, TreeTypeDef::new));
         public static final PacketCodec<RegistryByteBuf, TreeTypeDef> PACKET_CODEC = PacketCodec.tuple(

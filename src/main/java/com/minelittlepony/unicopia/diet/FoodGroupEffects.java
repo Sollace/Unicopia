@@ -83,11 +83,11 @@ public record FoodGroupEffects(
         }
 
         public Builder food(FoodComponent.Builder food) {
-            return food(food.build(), null);
+            return food(food, null);
         }
 
-        public Builder food(FoodComponent.Builder food, ConsumableComponent.Builder consumable) {
-            return food(food.build(), consumable.build());
+        public Builder food(FoodComponent.Builder food, @Nullable ConsumableComponent.Builder consumable) {
+            return food(food.build(), consumable == null ? null : consumable.build());
         }
 
         public Builder food(FoodComponent food) {

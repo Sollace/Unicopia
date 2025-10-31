@@ -1,35 +1,23 @@
 package com.minelittlepony.unicopia.client.render;
 
-import com.minelittlepony.unicopia.entity.Creature;
-import com.minelittlepony.unicopia.entity.Equine;
-import net.minecraft.client.MinecraftClient;
+import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
-import net.minecraft.client.render.entity.model.QuadrupedEntityModel;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.entity.EntityType;
 
 public class AnimalPoser {
     public static final AnimalPoser INSTANCE = new AnimalPoser();
 
-    public void applyPosing(MatrixStack matrices, MobEntity entity, EntityModel<?> model) {
+    public void applyPosing(MatrixStack matrices, EntityRenderState entity, EntityModel<?> model) {
+        CasterState state = CasterState.of(entity);
 
-        if (entity instanceof PigEntity && model instanceof QuadrupedEntityModel<?> quad) {
-            Equine.of((LivingEntity)entity)
-                .filter(eq -> eq instanceof Creature)
-                .map(Creature.class::cast)
-                .ifPresent(creature -> {
-                    float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
-                    float headAngle = creature.getHeadAngle(tickDelta);
-                    float neckAngle = 12;
-
-                    quad.getPart(EntityModelPartNames.HEAD).ifPresent(part -> {
-                        part.pivotY = neckAngle;
-                        part.pitch = headAngle;
-                    });
-                });
+        if (state.type == EntityType.PIG) {
+            model.getPart(EntityModelPartNames.HEAD).ifPresent(part -> {
+                part.pivotY = 12;
+                part.pitch = state.eatingHeadAngle;
+            });
         }
     }
 }

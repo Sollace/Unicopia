@@ -2,15 +2,14 @@ package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.google.common.base.Suppliers;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.EnchantableItem;
-import com.minelittlepony.unicopia.util.serialization.CodecUtils;
-import com.mojang.datafixers.util.Pair;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
@@ -23,24 +22,20 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 
 public class IngredientWithSpell implements CustomIngredient {
-    private static final IngredientWithSpell EMPTY = new IngredientWithSpell(Optional.empty(), Optional.empty());
-
-    public static final Codec<IngredientWithSpell> CODEC = CodecUtils.extend(Ingredient.CODEC, SpellType.REGISTRY.getCodec().fieldOf("spell")).xmap(
-        pair -> new IngredientWithSpell(pair.getFirst(), pair.getSecond()),
-        ingredient -> new Pair<>(ingredient.stack, ingredient.spell)
+    public static final Codec<IngredientWithSpell> CODEC = RecordCodecBuilder.create(i -> i.group(
+            Ingredient.CODEC.optionalFieldOf("item").forGetter(o -> o.stack),
+            SpellType.REGISTRY.getCodec().optionalFieldOf("spell").forGetter(o -> o.spell)
+    ).apply(i, IngredientWithSpell::new));
+    public static final Codec<IngredientWithSpell> FLEXIBLE_CODEC = Codec.xor(Ingredient.CODEC, CODEC).xmap(
+            either -> Either.unwrap(either.mapLeft(i -> new IngredientWithSpell(Optional.of(i), Optional.empty()))),
+            ingredient -> ingredient.stack.isEmpty() || ingredient.spell.isPresent() ? Either.right(ingredient) : Either.left(ingredient.stack.get())
     );
     public static final PacketCodec<RegistryByteBuf, IngredientWithSpell> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.optional(Ingredient.PACKET_CODEC), i -> i.stack,
             PacketCodecs.optional(Identifier.PACKET_CODEC.xmap(SpellType::getKey, SpellType::getId)), i -> i.spell,
             IngredientWithSpell::new
-    );
-
-    public static final Codec<DefaultedList<IngredientWithSpell>> LIST_CODEC = CODEC.listOf().xmap(
-            list -> DefaultedList.<IngredientWithSpell>copyOf(EMPTY, list.toArray(IngredientWithSpell[]::new)),
-            Function.identity()
     );
 
     private final Optional<Ingredient> stack;

@@ -50,7 +50,6 @@
     "MixinProjectileUtil",
     "MixinPufferfishEntity",
     "MixinIngredient",
-    "MixinSheepEntity",
     "MixinShulkerEntity",
     "MixinStateManager",
     "MixinStateManagerBuilder",
@@ -89,6 +88,7 @@
     "forgified.MixinPacketAndPayloadAcceptor"
   ],
   "client": [
+    "client.MixinAbstractClientPlayerEntity",
     "client.MixinArmorFeatureRenderer",
     "client.MixinBackgroundRenderer",
     "client.MixinCamera",
@@ -114,7 +114,6 @@
     "client.MixinSkyRendering",
     "client.MixinWorldRenderer",
     "client.sodium.MixinSodiumWorldRenderer",
-    "trinkets.MixinTrinketCreativeSlot",
     "gravity.MixinSoundSource"
   ],
   "injectors": {

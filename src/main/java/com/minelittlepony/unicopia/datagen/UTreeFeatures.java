@@ -18,7 +18,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.registry.Registerable;
-import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -48,7 +47,7 @@ public class UTreeFeatures {
                     UniformIntProvider.create(3, 6),
                     0.3f,
                     UniformIntProvider.create(1, 3),
-                    Registries.BLOCK.getOrThrow(BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH)
+                    registerable.getRegistryLookup(RegistryKeys.BLOCK).getOrThrow(BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH)
             ), new JungleFoliagePlacer(
                     ConstantIntProvider.create(3),
                     ConstantIntProvider.create(2),

@@ -52,7 +52,7 @@ public class HeldEntityFeatureRenderer<S extends BipedEntityRenderState, E exten
         CasterState.PassengerState<?, ?> carriedEntity = state.carriedEntity;
         if (carriedEntity.state != null) {
             matrices.push();
-            matrices.translate(carriedEntity.viewportPosition.x, carriedEntity.viewportPosition.y, carriedEntity.viewportPosition.z);
+            matrices.translate(carriedEntity.viewportPosition.x(), carriedEntity.viewportPosition.y(), carriedEntity.viewportPosition.z());
             matrices.translate(0, -1.3F, carriedEntity.isPony ? -1.9F : -1.3F);
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(carriedEntity.isPony ? 33 : 13));
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(carriedEntity.isPony ? 180 : 90));

@@ -5,7 +5,6 @@ import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractDisguiseSpell;
 import com.minelittlepony.unicopia.client.render.spell.DarkVortexSpellRenderer;
 
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.math.Vec3d;
 
 public class PlayerCameraImpl extends MotionCompositor implements PlayerCamera {
@@ -17,13 +16,11 @@ public class PlayerCameraImpl extends MotionCompositor implements PlayerCamera {
     }
 
     @Override
-    public float calculateRoll() {
+    public float calculateRoll(boolean firstPerson, float fovEffectScale) {
+        if (firstPerson) {
+            return player.getInterpolator().interpolate("roll_fp", (float)applyModifiers(-getMotionRoll() * fovEffectScale * 0.25F), 25);
+        }
         return player.getInterpolator().interpolate("roll", (float)applyModifiers(-getMotionRoll()), 15);
-    }
-
-    @Override
-    public float calculateFirstPersonRoll() {
-        return player.getInterpolator().interpolate("roll_fp", (float)applyModifiers(-getMotionRoll() * getFovScale() * 0.25F), 25);
     }
 
     private double getMotionRoll() {
@@ -63,15 +60,14 @@ public class PlayerCameraImpl extends MotionCompositor implements PlayerCamera {
     }
 
     @Override
-    public double calculateFieldOfView(double fov) {
-        fov += (player.getMagicalReserves().getExertion().get() / 5F) * getFovScale();
-        fov += getEnergyAddition() * getFovScale();
+    public float calculateFieldOfView(float fov, boolean firstPerson, float fovEffectScale) {
+        if (player.asEntity().isUsingItem() && firstPerson && player.asEntity().isUsingSpyglass()) {
+            return fov;
+        }
+        fov += (player.getMagicalReserves().getExertion().get() / 5F) * fovEffectScale;
+        fov += getEnergyAddition() * fovEffectScale;
         fov += DarkVortexSpellRenderer.getCameraDistortion() * 2.5F;
         return fov;
-    }
-
-    private float getFovScale() {
-        return MinecraftClient.getInstance().options.getFovEffectScale().getValue().floatValue();
     }
 
     protected float getEnergyAddition() {

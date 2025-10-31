@@ -24,6 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState implements Tickable {
 
@@ -37,19 +38,19 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
     @Nullable
     private final BiConsumer<Long2ObjectMap<T>, List<ServerPlayerEntity>> updateSender;
 
-    public static <T extends PersistentState> T getPersistableStorage(World world, Identifier id, BiFunction<World, NbtCompound, T> loadFunc, Function<World, T> factory) {
+    public static <T extends PersistentState> T getPersistableStorage(WorldView world, Identifier id, BiFunction<World, NbtCompound, T> loadFunc, Function<World, T> factory) {
         if (world instanceof ServerWorld serverWorld) {
             return serverWorld.getPersistentStateManager().getOrCreate(
                     new Type<>(
-                            () -> factory.apply(world),
-                            (compound, lookup) -> loadFunc.apply(world, compound),
+                            () -> factory.apply(serverWorld),
+                            (compound, lookup) -> loadFunc.apply(serverWorld, compound),
                             DataFixTypes.LEVEL
                     ),
                     id.getNamespace() + "_" + id.getPath().replace('/', '_')
             );
         }
 
-        return ClientInstance.of(world, id, factory).instance();
+        return ClientInstance.of((World)world, id, factory).instance();
     }
 
     public static <T extends State> WorldOverlay<T> getOverlay(World world, Identifier id, Supplier<T> factory, @Nullable BiConsumer<Long2ObjectMap<T>, List<ServerPlayerEntity>> updateSender) {

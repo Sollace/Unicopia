@@ -95,6 +95,7 @@ dependencies {
     
     if (project.trinkets_type == 'accessories') {
       modCompileOnly "io.wispforest:accessories-fabric:${project.accessories_version}"
+      modCompileOnly "io.wispforest:owo-lib:${project.owo_version}"
     } else {
       modCompileOnly "io.wispforest:accessories-fabric-dummy:${project.accessories_version}"
     }

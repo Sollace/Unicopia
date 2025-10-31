@@ -74,9 +74,11 @@ public class UnicopiaClient implements ClientModInitializer {
             return pos;
         }
         Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
+        boolean firstPerson = MinecraftClient.getInstance().options.getPerspective().isFirstPerson();
+        float fovEffectScale = MinecraftClient.getInstance().options.getFovEffectScale().getValue().floatValue();
 
         Vector3f rotated = pos.subtract(camera.getPos()).toVector3f();
-        rotated = rotated.rotateAxis(cam.calculateRoll() * MathHelper.RADIANS_PER_DEGREE, 0, 1, 0);
+        rotated = rotated.rotateAxis(cam.calculateRoll(firstPerson, fovEffectScale) * MathHelper.RADIANS_PER_DEGREE, 0, 1, 0);
 
         return new Vec3d(rotated).add(camera.getPos());
     }

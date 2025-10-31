@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.mixin.client;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.minelittlepony.unicopia.client.render.PlayerPoser;
@@ -27,19 +26,17 @@ abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<AbstractCl
 
     @SuppressWarnings("unchecked")
     @Inject(method = "renderArm", at = @At("RETURN"))
-    private void onRenderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture, ModelPart arm, ModelPart sleeve, CallbackInfo info) {
+    private void onRenderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture, ModelPart arm, boolean sleeveVisible, CallbackInfo info) {
         Arm a = this.getModel().leftArm == arm ? Arm.LEFT : Arm.RIGHT;
-        PlayerEntityRenderState state = getAndUpdateRenderState(MinecraftClient.getInstance().player, 0);
-
+        PlayerEntityRenderState state = getAndUpdateRenderState(MinecraftClient.getInstance().player, MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false));
         ((FeatureRoot<PlayerEntityRenderState, ?>)this).getAccessories().renderArm(matrices, vertexConsumers, light, state, arm, a);
     }
 
     @Inject(method = "renderArm",
             at = @At(
                 value = "INVOKE",
-                target = "Lnet/minecraft/client/render/entity/model/PlayerEntityModel;setAngles(Lnet/minecraft/entity/LivingEntity;FFFFF)V",
-                shift = Shift.AFTER))
-    private void onPoseArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, AbstractClientPlayerEntity player, ModelPart arm, ModelPart sleeve, CallbackInfo info) {
-        PlayerPoser.INSTANCE.applyPosing(matrices, player, getModel(), arm == getModel().leftArm ? PlayerPoser.Context.FIRST_PERSON_LEFT : PlayerPoser.Context.FIRST_PERSON_RIGHT);
+                target = "net/minecraft/client/model/ModelPart.render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;II)V"))
+    private void onPoseArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture, ModelPart arm, boolean sleeveVisible, CallbackInfo info) {
+        PlayerPoser.INSTANCE.applyPosing(matrices, getAndUpdateRenderState(MinecraftClient.getInstance().player, MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false)), getModel(), arm == getModel().leftArm ? PlayerPoser.Context.FIRST_PERSON_LEFT : PlayerPoser.Context.FIRST_PERSON_RIGHT);
     }
 }

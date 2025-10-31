@@ -22,6 +22,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class WeatherConditions extends PersistentState implements Tickable {
     public static final double FIRE_UPDRAFT = 0.13;
@@ -52,7 +53,7 @@ public class WeatherConditions extends PersistentState implements Tickable {
 
     private static final Identifier ID = Unicopia.id("weather_conditions");
 
-    public static WeatherConditions get(World world) {
+    public static WeatherConditions get(WorldView world) {
         return WorldOverlay.getPersistableStorage(world, ID, WeatherConditions::new, WeatherConditions::new);
     }
 

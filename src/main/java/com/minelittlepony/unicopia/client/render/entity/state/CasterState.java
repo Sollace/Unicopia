@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import org.joml.Vector3fc;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.Ability;
@@ -21,6 +22,7 @@ import com.minelittlepony.unicopia.client.render.spell.SpellRenderer;
 import com.minelittlepony.unicopia.client.render.spell.SpellRenderer.SpellRenderState;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.AmuletSelectors;
+import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
@@ -59,6 +61,7 @@ public class CasterState {
     public boolean living;
 
     public boolean ponified;
+    public float eatingHeadAngle;
 
     public List<Text> debugLines;
     public float width;
@@ -129,6 +132,7 @@ public class CasterState {
         yawOffset = 0;
         gemYaw = 0;
         type = null;
+        eatingHeadAngle = 0;
         masterDisplayName = null;
         appearance = null;
         wingsAngle = 0;
@@ -157,6 +161,10 @@ public class CasterState {
             type = caster.asEntity().getType();
             width = caster.asEntity().getWidth();
             originVector = caster.getOriginVector();
+
+            if (type == EntityType.PIG && caster instanceof Creature creature) {
+                eatingHeadAngle = creature.getHeadAngle(tickDelta);
+            }
 
             MinecraftClient client = MinecraftClient.getInstance();
 
@@ -281,7 +289,7 @@ public class CasterState {
 
     public static class PassengerState<T extends LivingEntity, S extends LivingEntityRenderState> {
         public Vec3d carryPosition = Vec3d.ZERO;
-        public Vector3f viewportPosition = new Vector3f();
+        public Vector3fc viewportPosition = new Vector3f();
         public boolean isPony;
 
         @Nullable
