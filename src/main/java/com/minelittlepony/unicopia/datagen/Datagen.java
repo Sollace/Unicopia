@@ -18,6 +18,7 @@ import com.minelittlepony.unicopia.datagen.providers.loot.UChestLootTableProvide
 import com.minelittlepony.unicopia.datagen.providers.loot.UEntityAdditionsLootTableProvider;
 import com.minelittlepony.unicopia.datagen.providers.loot.UEntityLootTableProvider;
 import com.minelittlepony.unicopia.datagen.providers.recipe.URecipeProvider;
+import com.minelittlepony.unicopia.datagen.providers.tag.UBiomeTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UBlockTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UDamageTypeProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UDimensionTypeTagProvider;
@@ -47,6 +48,7 @@ public class Datagen implements DataGeneratorEntrypoint {
         pack.addProvider(UEntityTypeTagProvider::new);
         pack.addProvider(UStatusEffectTagProvider::new);
         pack.addProvider(UDimensionTypeTagProvider::new);
+        pack.addProvider(UBiomeTagProvider::new);
 
         paintingVariants.addToPack(pack);
         enchantments.addToPack(pack);
