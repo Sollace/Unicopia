@@ -283,7 +283,7 @@ public class UHud {
                 if (partySound == null || partySound.isDone()) {
                     client.getSoundManager().play(
                             partySound = new LoopingSoundInstance<>(client.player, player -> {
-                                return UItems.SUNGLASSES.isApplicable(player) || true;
+                                return UItems.SUNGLASSES.isApplicable(player);
                             }, USounds.Vanilla.MUSIC_DISC_PIGSTEP.value(), 1, 1, client.world.random)
                     );
                 } else if (partySound != null) {
@@ -415,6 +415,7 @@ public class UHud {
 
     public static Identifier getHeartTexture(InGameHud.HeartType heartsType, Identifier vanillaTexture, boolean hardcore, boolean blinking, boolean half) {
 
+        // TODO: Add heart textures for the amulet
         if (MinecraftClient.getInstance().player != null) {
             if (UItems.ALICORN_AMULET.isApplicable(MinecraftClient.getInstance().player)) {
                 if (heartsType == InGameHud.HeartType.CONTAINER) {
