@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.command.CommandArgumentEnum;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 
 import io.netty.buffer.ByteBuf;
@@ -67,7 +68,8 @@ public enum Trait implements CommandArgumentEnum<Trait> {
     private static final Map<Identifier, Trait> IDS = Arrays.stream(values()).collect(Collectors.toMap(Trait::getId, Function.identity()));
     @SuppressWarnings("deprecation")
     private static final EnumCodec<Trait> NAME_CODEC = StringIdentifiable.createCodec(Trait::values, n -> n.toLowerCase(Locale.ROOT));
-    public static final Codec<Trait> CODEC = Identifier.CODEC.xmap(id -> IDS.get(id), Trait::getId);
+    private static final Codec<Trait> ID_CODEC = Identifier.CODEC.xmap(id -> IDS.get(id), Trait::getId);
+    public static final Codec<Trait> CODEC = Codec.xor(NAME_CODEC, ID_CODEC).xmap(Either::unwrap, Either::right);
     public static final Codec<Set<Trait>> SET_CODEC = CODEC.listOf().xmap(
             l -> l.stream().distinct().collect(Collectors.toSet()),
             s -> s.stream().toList()
@@ -157,7 +159,7 @@ public enum Trait implements CommandArgumentEnum<Trait> {
     public static Stream<Trait> fromNbt(NbtList nbt) {
         return nbt.stream()
                 .map(NbtElement::asString)
-                .map(Trait::fromId)
+                .map(Trait::of)
                 .flatMap(Optional::stream);
     }
 
@@ -166,16 +168,11 @@ public enum Trait implements CommandArgumentEnum<Trait> {
         return Optional.ofNullable(IDS.get(id));
     }
 
-    @Deprecated
-    public static Optional<Trait> fromId(String name) {
-        return Optional.ofNullable(Identifier.tryParse(name)).flatMap(Trait::fromId);
-    }
-
-    @Deprecated
-    public static Optional<Trait> fromName(String name) {
+    public static Optional<Trait> of(String name) {
+        @SuppressWarnings("deprecation")
         Trait trait = NAME_CODEC.byId(name);
         if (trait == null) {
-            Unicopia.LOGGER.error("Unknown trait: " + name);
+            return Optional.ofNullable(Identifier.tryParse(name)).flatMap(Trait::fromId);
         }
         return Optional.ofNullable(trait);
     }

@@ -5,21 +5,22 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.Resources;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.Resource;
@@ -31,6 +32,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 
@@ -57,7 +59,7 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
                     try (InputStreamReader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
                         JsonObject data = JsonHelper.deserialize(Resources.GSON, reader, JsonObject.class);
 
-                        TraitStream set = TraitStream.of(path, resource.getPackId(), data);
+                        TraitStream set = TraitStream.CODEC.decode(JsonOps.INSTANCE, data).getOrThrow(error -> new JsonParseException(error)).getFirst();
 
                         if (set.replace()) {
                             prepared.removeAll(path);
@@ -106,35 +108,23 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
 
     interface TraitStream {
         TypeToken<Map<String, String>> TYPE = new TypeToken<>() {};
+        Codec<TraitStream> CODEC = Codec.xor(TraitMap.CODEC, TraitSet.CODEC).xmap(
+            Either::unwrap,
+            stream -> stream instanceof TraitMap l ? Either.left(l) : Either.right((TraitSet)stream)
+        );
 
         boolean replace();
 
         Stream<Map.Entry<Key, SpellTraits>> entries();
 
-        static TraitStream of(Identifier id, String pack, JsonObject json) {
-
-            if (json.has("items") && json.get("items").isJsonObject()) {
-                return new TraitMap(JsonHelper.getBoolean(json, "replace", false),
-                        Resources.GSON.getAdapter(TYPE).fromJsonTree(json.get("items")).entrySet().stream().collect(Collectors.toMap(
-                                a -> Key.of(a.getKey()),
-                                a -> SpellTraits.fromString(a.getValue()).orElse(SpellTraits.EMPTY)
-                        ))
-                );
-            }
-
-            return new TraitSet(
-                    JsonHelper.getBoolean(json, "replace", false),
-                    SpellTraits.fromString(JsonHelper.getString(json, "traits")).orElse(SpellTraits.EMPTY),
-                    StreamSupport.stream(JsonHelper.getArray(json, "items").spliterator(), false)
-                        .map(JsonElement::getAsString)
-                        .map(Key::of)
-                        .collect(Collectors.toSet())
-            );
-        }
-
         record TraitMap (
                 boolean replace,
                 Map<Key, SpellTraits> items) implements TraitStream {
+            static final Codec<TraitMap> CODEC = RecordCodecBuilder.create(i -> i.group(
+                    Codec.BOOL.optionalFieldOf("replace", false).forGetter(TraitMap::replace),
+                    Codec.unboundedMap(Key.CODEC, SpellTraits.createStringCodec(" ")).fieldOf("items").forGetter(TraitMap::items)
+            ).apply(i, TraitMap::new));
+
             @Override
             public Stream<Entry<Key, SpellTraits>> entries() {
                 return items.entrySet().stream();
@@ -145,6 +135,12 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
                 boolean replace,
                 SpellTraits traits,
                 Set<Key> items) implements TraitStream {
+            static final Codec<TraitSet> CODEC = RecordCodecBuilder.create(i -> i.group(
+                    Codec.BOOL.optionalFieldOf("replace", false).forGetter(TraitSet::replace),
+                    SpellTraits.createStringCodec(" ").fieldOf("traits").forGetter(TraitSet::traits),
+                    CodecUtils.setOf(Key.CODEC).fieldOf("items").forGetter(TraitSet::items)
+            ).apply(i, TraitSet::new));
+
             @Override
             public Stream<Entry<Key, SpellTraits>> entries() {
                 return items().stream().map(item -> Map.entry(item, traits()));
@@ -152,10 +148,13 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
         }
 
         interface Key extends Predicate<ItemConvertible> {
-            static Key of(String s) {
-                return s.startsWith("#") ? new Tag(TagKey.of(RegistryKeys.ITEM, Identifier.tryParse(s.substring(1)))) : new Id(Identifier.tryParse(s));
-            }
+            Codec<Key> CODEC = Codec.xor(Tag.CODEC, Id.CODEC).xmap(
+                    Either::unwrap,
+                    key -> key instanceof Tag l ? Either.left(l) : Either.right((Id)key)
+            );
+
             record Tag(TagKey<Item> tag) implements Key {
+                static final Codec<Tag> CODEC = TagKey.codec(RegistryKeys.ITEM).xmap(Tag::new, Tag::tag);
 
                 @SuppressWarnings("deprecation")
                 @Override
@@ -164,10 +163,13 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
                 }
             }
 
-            record Id(Identifier id) implements Key {
+            record Id(RegistryKey<Item> key) implements Key {
+                static final Codec<Id> CODEC = RegistryKey.createCodec(RegistryKeys.ITEM).xmap(Id::new, Id::key);
+
+                @SuppressWarnings("deprecation")
                 @Override
                 public boolean test(ItemConvertible item) {
-                    return Objects.equals(id, Registries.ITEM.getId(item.asItem()));
+                    return item.asItem().getRegistryEntry().matchesKey(key);
                 }
             }
         }
