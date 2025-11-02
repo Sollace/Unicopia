@@ -17,7 +17,7 @@ abstract class MixinLivingEntity extends Entity implements Equine.Container<Livi
     private MixinLivingEntity() { super(null, null); }
 
     @ModifyConstant(method = "travel(Lnet/minecraft/util/math/Vec3d;)V", constant = {
-            @Constant(doubleValue = 0.08D),
+//            @Constant(doubleValue = 0.08D),
             @Constant(doubleValue = 0.01D)
     })
     private double modifyGravity(double initial) {
