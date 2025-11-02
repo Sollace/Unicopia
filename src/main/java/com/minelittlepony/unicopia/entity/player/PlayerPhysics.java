@@ -86,6 +86,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
     public boolean isFlyingEither = false;
     public boolean isFlyingSurvival = false;
+    public boolean unicopiaFlying = false;
 
     private boolean soundPlaying;
 
@@ -204,6 +205,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
     private FlightType recalculateFlightType() {
         DimensionType dimension = entity.getWorld().getDimension();
+        if (entity.getAbilities().allowFlying) return FlightType.NONE;
+
 
         if ((RegistryUtils.isIn(entity.getWorld(), dimension, RegistryKeys.DIMENSION_TYPE, UTags.DimensionTypes.HAS_NO_ATMOSPHERE)
                 || InteractionManager.getInstance().getSyncedConfig().dimensionsWithoutAtmosphere().contains(RegistryUtils.getId(entity.getWorld(), dimension, RegistryKeys.DIMENSION_TYPE).toString()))
@@ -275,6 +278,18 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         FlightType type = recalculateFlightType();
 
         boolean typeChanged = type != lastFlightType;
+
+        // If in creative flight, don't process any of our flight logic
+        if (entity.getAbilities().allowFlying) {
+            if (typeChanged) {
+                boolean wasFlying = isFlyingEither;
+                cancelFlight(false);
+
+                entity.calculateDimensions();
+                entity.getAbilities().flying = wasFlying;
+            }
+            return;
+        }
 
         if (typeChanged && (lastFlightType.isArtifical() || type.isArtifical())) {
             pony.spawnParticles(ParticleTypes.CLOUD, 10);
