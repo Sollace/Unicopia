@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.block.state;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -12,7 +10,9 @@ import com.google.common.collect.Maps;
 import com.google.gson.*;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.Resources;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.JsonOps;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.block.BlockState;
@@ -32,7 +32,7 @@ public class StateMapLoader extends JsonDataLoader implements IdentifiableResour
     private static final int FILE_SUFFIX_LENGTH = ".json".length();
     private static final String DATA_TYPE = "state_maps";
 
-    private Map<Identifier, ReversableBlockStateConverter> converters = new HashMap<>();
+    private final Map<Identifier, ReversableBlockStateConverter> converters = new HashMap<>();
 
     public StateMapLoader() {
         super(Resources.GSON, "state_maps");
@@ -84,24 +84,30 @@ public class StateMapLoader extends JsonDataLoader implements IdentifiableResour
 
     @Override
     protected void apply(Map<Identifier, JsonElement> data, ResourceManager manager, Profiler profiler) {
-        converters = data.entrySet().stream().collect(Collectors.toMap(
-                Map.Entry::getKey,
-                entry -> new JsonReversableBlockStateConverter(entry.getValue())
-        ));
+        converters.clear();
+        data.forEach((id, json) -> {
+            ReversableBlockStateConverterImpl.CODEC.decode(JsonOps.INSTANCE, json).result().map(Pair::getFirst).ifPresent(map -> {
+                converters.put(id, map);
+            });
+        });
     }
 
-    static class Indirect<T extends BlockStateConverter> implements ReversableBlockStateConverter {
+    public static class Indirect implements ReversableBlockStateConverter {
         private final Identifier id;
-        private final BlockStateConverter inverse;
+        private final ReversableBlockStateConverter inverse;
 
-        public Indirect(Identifier id, Optional<BlockStateConverter> inverse) {
+        public Indirect(Identifier id, Optional<ReversableBlockStateConverter> inverse) {
             this.id = id;
-            this.inverse = inverse.orElseGet(() -> new StateMapLoader.Indirect<>(id, Optional.of(this)) {
+            this.inverse = inverse.orElseGet(() -> new StateMapLoader.Indirect(id, Optional.of(this)) {
                 @Override
-                public Optional<BlockStateConverter> get() {
+                public Optional<ReversableBlockStateConverter> get() {
                     return Optional.ofNullable(INSTANCE.converters.get(id)).map(ReversableBlockStateConverter::getInverse);
                 }
             });
+        }
+
+        public Identifier getId() {
+            return id;
         }
 
         @Override
@@ -114,13 +120,12 @@ public class StateMapLoader extends JsonDataLoader implements IdentifiableResour
             return get().map(map -> map.getConverted(world, state)).orElse(state);
         }
 
-        @SuppressWarnings("unchecked")
-        public Optional<T> get() {
-            return Optional.ofNullable((T)INSTANCE.converters.get(id));
+        public Optional<ReversableBlockStateConverter> get() {
+            return Optional.ofNullable(INSTANCE.converters.get(id));
         }
 
         @Override
-        public BlockStateConverter getInverse() {
+        public ReversableBlockStateConverter getInverse() {
             return inverse;
         }
     }

@@ -12,7 +12,9 @@ import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
@@ -88,6 +90,10 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
                 TreeTypeDef::new
         );
 
+        public static Builder builder() {
+            return new Builder();
+        }
+
         public TreeType toTreeType(Identifier id) {
             return new TreeTypeImpl(
                     id,
@@ -134,5 +140,55 @@ public class TreeTypeLoader extends JsonDataLoader implements IdentifiableResour
                 }
             }
         }
+
+        public static class Builder {
+            private final Set<Identifier> logs = new HashSet<>();
+            private final Set<Identifier> leaves = new HashSet<>();
+            private final Set<Drop> drops = new HashSet<>();
+
+            private boolean wideTrunk = false;
+            private int rarity;
+            private float leavesRatio = 0.5F;
+
+            public Builder drop(int weight, TagKey<Item> tag) {
+                drops.add(new Drop(weight, Optional.of(tag.id()), Optional.empty()));
+                return this;
+            }
+
+            public Builder drop(int weight, ItemConvertible item) {
+                drops.add(new Drop(weight, Optional.empty(), Optional.of(Registries.ITEM.getId(item.asItem()))));
+                return this;
+            }
+
+            public Builder logs(Block...blocks) {
+                Arrays.stream(blocks).map(Registries.BLOCK::getId).forEach(logs::add);
+                return this;
+            }
+
+            public Builder leaves(Block...blocks) {
+                Arrays.stream(blocks).map(Registries.BLOCK::getId).forEach(leaves::add);
+                return this;
+            }
+
+            public Builder wideTrunk() {
+                wideTrunk = true;
+                return this;
+            }
+
+            public Builder rarity(int rarity) {
+                this.rarity = rarity;
+                return this;
+            }
+
+            public Builder leavesRatio(float leavesRatio) {
+                this.leavesRatio = leavesRatio;
+                return this;
+            }
+
+            public TreeTypeDef build() {
+                return new TreeTypeDef(logs, leaves, drops, wideTrunk, rarity, leavesRatio);
+            }
+        }
+
     }
 }

@@ -20,6 +20,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.TraitLoader;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.state.StateMapLoader;
+import com.minelittlepony.unicopia.block.state.StatePredicate;
 import com.minelittlepony.unicopia.command.Commands;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.container.UScreenHandlers;
@@ -111,6 +112,7 @@ public class Unicopia implements ModInitializer {
         UWorldGen.bootstrap();
         UGameRules.bootstrap();
         UDamageTypes.bootstrap();
+        StatePredicate.bootstrap();
     }
 
     private void registerServerDataReloaders(ResourceManagerHelper registry) {

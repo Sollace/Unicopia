@@ -134,7 +134,7 @@ public class IceSpell extends AbstractSpell {
     private static void addSnowLayer(World world, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
 
-        if (state.isAir() || StatePredicate.isPlant(state)) {
+        if (state.isAir() || StatePredicate.Plants.INSTANCE.test(state)) {
             world.setBlockState(pos, Blocks.SNOW.getDefaultState(), 3);
         }
     }
