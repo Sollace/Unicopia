@@ -164,7 +164,7 @@ public interface ChapterPageElement {
         static ChapterPageElement loadIngredient(JsonObject json) {
             int count = JsonHelper.getInt(json, "count", 1);
             if (json.has("item")) return new Multi(count, new Id((byte)1, Identifier.tryParse(json.get("item").getAsString())));
-            if (json.has("trait")) return new Multi(count, new Id((byte)2, Trait.byName(json.get("trait").getAsString()).orElseThrow().getId()));
+            if (json.has("trait")) return new Multi(count, new Id((byte)2, Trait.of(json.get("trait").getAsString()).orElseThrow().getId()));
             if (json.has("spell")) return new Multi(count, new Id((byte)4, Identifier.tryParse(json.get("spell").getAsString())));
             return new Multi(count, new TextBlock(json.get("text")));
         }

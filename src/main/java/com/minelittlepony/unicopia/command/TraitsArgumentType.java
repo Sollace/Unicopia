@@ -40,7 +40,7 @@ class TraitsArgumentType implements ArgumentType<SpellTraits> {
 
         SpellTraits.Builder builder = new SpellTraits.Builder();
         while (reader.canRead() && reader.peek() != ' ') {
-            Trait trait = Trait.byName(readTraitName(reader)).orElseThrow(() -> UNRECOGNISED_TRAIT_EXCEPTION.createWithContext(reader));
+            Trait trait = Trait.of(readTraitName(reader)).orElseThrow(() -> UNRECOGNISED_TRAIT_EXCEPTION.createWithContext(reader));
             reader.expect(':');
             float value = reader.readFloat();
             builder.with(trait, value);
