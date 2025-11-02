@@ -38,7 +38,7 @@ public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.
     @Override
     public Text getName(ItemStack stack) {
         Appearance appearance = stack.get(UDataComponentTypes.APPEARANCE);
-        return appearance != null ? Text.translatable(getTranslationKey(stack), appearance.item().getName()) : UItems.EMPTY_JAR.getName(UItems.EMPTY_JAR.getDefaultStack());
+        return appearance != null ? Text.translatable(getTranslationKey(stack), appearance.item().getName()) : UItems.EMPTY_JAR.getDefaultStack().getName();
     }
 
     @Override
@@ -95,9 +95,5 @@ public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.
             projectile.dropStack(stack);
         }
         projectile.getWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, projectile.getBlockPos(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
-    }
-
-    public ItemStack withContents(ItemStack contents) {
-        return Appearance.set(getDefaultStack(), contents);
     }
 }

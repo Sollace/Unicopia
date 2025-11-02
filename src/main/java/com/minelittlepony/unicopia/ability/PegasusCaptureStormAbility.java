@@ -57,7 +57,7 @@ public class PegasusCaptureStormAbility implements Ability<Hit> {
         ItemStack stack = player.asEntity().getStackInHand(Hand.MAIN_HAND);
         boolean thundering = w.isThundering();
 
-        if (stack.getItem() != UItems.EMPTY_JAR) {
+        if (!stack.isOf(UItems.EMPTY_JAR)) {
             tell(player, "ability.unicopia.empty_hooves");
         } else if (!w.isSkyVisible(player.getOrigin())) {
             tell(player, "ability.unicopia.indoors");

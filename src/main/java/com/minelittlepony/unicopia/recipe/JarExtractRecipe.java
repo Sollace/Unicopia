@@ -37,15 +37,7 @@ public class JarExtractRecipe extends SpecialCraftingRecipe {
                 continue;
             }
 
-            if (!stack.isOf(UItems.FILLED_JAR)) {
-                return ItemStack.EMPTY;
-            }
-
-            if (!jar.isEmpty()) {
-                return ItemStack.EMPTY;
-            }
-
-            if (!Appearance.hasAppearance(stack)) {
+            if (!stack.isOf(UItems.FILLED_JAR) || !jar.isEmpty() || !Appearance.hasAppearance(stack)) {
                 return ItemStack.EMPTY;
             }
 

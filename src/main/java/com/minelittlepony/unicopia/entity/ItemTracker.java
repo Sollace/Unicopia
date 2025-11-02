@@ -39,7 +39,7 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tick
 
     private final Map<Trackable, Long> items = new HashMap<>();
 
-    public static Predicate<LivingEntity> wearing(Trackable charm, Predicate<Long> range) {
+    public static Predicate<LivingEntity> wearing(ItemConvertible charm, Predicate<Long> range) {
         return e -> Living.getOrEmpty(e)
                     .map(Living::getArmour)
                     .map(a -> a.getTicks(charm))
@@ -106,6 +106,14 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tick
 
     public long getTicks(Trackable charm) {
         return items.getOrDefault(charm.asItem(), 0L);
+    }
+
+    public long getTicks(ItemConvertible charm) {
+        return charm.asItem() instanceof Trackable t ? items.getOrDefault(t, 0L) : 0;
+    }
+
+    public boolean contains(ItemConvertible charm) {
+        return charm.asItem() instanceof Trackable t && getTicks(t) > 0;
     }
 
     public boolean contains(Trackable charm) {

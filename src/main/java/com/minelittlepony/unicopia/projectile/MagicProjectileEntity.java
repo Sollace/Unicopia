@@ -152,7 +152,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
            return ParticleTypes.ITEM_SNOWBALL;
        }
 
-       if (stack.getItem() == UItems.FILLED_JAR) {
+       if (stack.isOf(UItems.FILLED_JAR)) {
            stack = UItems.EMPTY_JAR.getDefaultStack();
        }
 
