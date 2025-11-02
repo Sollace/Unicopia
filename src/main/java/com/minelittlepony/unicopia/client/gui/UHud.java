@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.entity.effect.SunBlindnessStatusEffect;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -295,7 +296,7 @@ public class UHud {
             }
         }
 
-        if (UItems.ALICORN_AMULET.isApplicable(client.player)) {
+        if (AmuletItem.isApplicable(client.player, UItems.ALICORN_AMULET)) {
             float radius = (float)pony.getArmour().getTicks(UItems.ALICORN_AMULET) / (5 * ItemTracker.DAYS);
             renderVignette(context, 0x000000, radius, radius, scaledWidth, scaledHeight);
         }
@@ -411,7 +412,7 @@ public class UHud {
 
         // TODO: Add heart textures for the amulet
         if (MinecraftClient.getInstance().player != null) {
-            if (UItems.ALICORN_AMULET.isApplicable(MinecraftClient.getInstance().player)) {
+            if (AmuletItem.isApplicable(MinecraftClient.getInstance().player, UItems.ALICORN_AMULET)) {
                 if (heartsType == InGameHud.HeartType.CONTAINER) {
                 //    return Unicopia.id("hud/heart/container_full");
                 }
@@ -423,7 +424,7 @@ public class UHud {
 
     @Nullable
     public static InGameHud.HeartType getHeartsType(PlayerEntity player, InGameHud.HeartType vanillaHeartType) {
-        if (UItems.ALICORN_AMULET.isApplicable(player) || EffectUtils.isChangingRace(player)) {
+        if (AmuletItem.isApplicable(player, UItems.ALICORN_AMULET) || EffectUtils.isChangingRace(player)) {
             return InGameHud.HeartType.WITHERED;
         }
 

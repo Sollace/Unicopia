@@ -28,10 +28,6 @@ public class GlassesItem extends WearableItem {
         return EquipmentSlot.HEAD;
     }
 
-    public boolean isApplicable(LivingEntity entity) {
-        return getForEntity(entity).stack().isOf(this);
-    }
-
     public static boolean isCoolAndHasShades(LivingEntity entity) {
         ItemStack glasses = getForEntity(entity).stack();
         Text customName = glasses.get(DataComponentTypes.CUSTOM_NAME);

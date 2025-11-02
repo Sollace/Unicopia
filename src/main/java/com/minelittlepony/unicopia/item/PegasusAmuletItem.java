@@ -17,7 +17,7 @@ public class PegasusAmuletItem extends AmuletItem {
 
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        if (entity.getWorld().getTime() % 6 == 0 && entity instanceof LivingEntity living && isApplicable(living)) {
+        if (entity.getWorld().getTime() % 6 == 0 && entity instanceof LivingEntity living && isApplicable(living, this)) {
             ParticleUtils.spawnParticles(entity.getWorld().getDimension().ultrawarm() ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.COMPOSTER, entity, 1);
         }
     }

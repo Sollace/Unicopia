@@ -189,7 +189,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
         }
 
         // if we're in the main hand, try to equip ourselves
-        if (entity instanceof PlayerEntity player && selected && !isApplicable(player) && world.random.nextInt(320) == 0) {
+        if (entity instanceof PlayerEntity player && selected && !isApplicable(player, this) && world.random.nextInt(320) == 0) {
             use(world, player, Hand.MAIN_HAND);
             return;
         }
@@ -247,7 +247,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
             // bind to the player after 3 days
             if (daysAttached >= 3 && !pony.asEntity().isCreative()) {
-                EquippedStack equipped = getForEntity(living.asEntity());
+                EquippedStack equipped = getForEntity(living.asEntity(), this);
                 if (!equipped.stack().isEmpty() && !EnchantmentHelper.hasAnyEnchantmentsWith(equipped.stack(), EnchantmentEffectComponentTypes.PREVENT_ARMOR_CHANGE)) {
                     pony.playSound(USounds.ITEM_ALICORN_AMULET_HALLUCINATION, 3, 1);
                     stack.addEnchantment(pony.entryFor(Enchantments.BINDING_CURSE), 1);

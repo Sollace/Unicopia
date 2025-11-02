@@ -16,6 +16,7 @@ import com.minelittlepony.unicopia.entity.AmuletSelectors;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.ai.ArenaAttackGoal;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleSource;
@@ -488,7 +489,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
                     player.sendMessage(Text.translatable("entity.unicopia.sombra.taunt"));
                 }
             }
-            TrinketsDelegate.EquippedStack amulet = UItems.ALICORN_AMULET.getForEntity(player);
+            TrinketsDelegate.EquippedStack amulet = AmuletItem.getForEntity(player, UItems.ALICORN_AMULET);
             if (!amulet.stack().isEmpty()) {
                 amulet.stack().decrement(1);
                 amulet.sendUpdate().run();

@@ -44,7 +44,7 @@ public interface UItems {
     Item SWEET_APPLE = register("sweet_apple", AppleItem.registerTickCallback(new Item(new Item.Settings().food(FoodComponents.APPLE))), ItemGroups.FOOD_AND_DRINK);
     Item SOUR_APPLE = register("sour_apple", AppleItem.registerTickCallback(new Item(new Item.Settings().food(FoodComponents.APPLE))), ItemGroups.FOOD_AND_DRINK);
 
-    ZapAppleItem ZAP_APPLE = register("zap_apple", AppleItem.registerTickCallback(new ZapAppleItem(new Item.Settings().food(UFoodComponents.ZAP_APPLE))), ItemGroups.FOOD_AND_DRINK);
+    Item ZAP_APPLE = register("zap_apple", AppleItem.registerTickCallback(new ZapAppleItem(new Item.Settings().food(UFoodComponents.ZAP_APPLE))), ItemGroups.FOOD_AND_DRINK);
     Item ZAP_BULB = register("zap_bulb", new Item(new Item.Settings().food(UFoodComponents.ZAP_BULB)), ItemGroups.FOOD_AND_DRINK);
 
     Item ROTTEN_APPLE = register("rotten_apple", new RottenAppleItem(new Item.Settings().food(FoodComponents.APPLE)), ItemGroups.FOOD_AND_DRINK);
@@ -55,11 +55,11 @@ public interface UItems {
     Item MUSIC_DISC_POPULAR = register("music_disc_popular", UJukeboxSongs.POPULAR);
     Item MUSIC_DISC_FUNK = register("music_disc_funk", UJukeboxSongs.FUNK);
 
-    FriendshipBraceletItem FRIENDSHIP_BRACELET = register("friendship_bracelet", new FriendshipBraceletItem(new Item.Settings().rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
+    Item FRIENDSHIP_BRACELET = register("friendship_bracelet", new FriendshipBraceletItem(new Item.Settings().rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
 
     Item PLUNDER_VINE = register("plunder_vine", new BlockItem(UBlocks.PLUNDER_VINE_BUD, new Item.Settings()));
     Item EMPTY_JAR = register("empty_jar", new EmptyJarItem(UBlocks.JAR, new Item.Settings().fireproof()), ItemGroups.FUNCTIONAL);
-    FilledJarItem FILLED_JAR = register("filled_jar", new FilledJarItem(new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR)));
+    Item FILLED_JAR = register("filled_jar", new FilledJarItem(new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR)));
     Item RAIN_CLOUD_JAR  = register("rain_cloud_jar", new WeatherJarItem(UBlocks.CLOUD_JAR, new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.RAIN), ItemGroups.FUNCTIONAL);
     Item STORM_CLOUD_JAR  = register("storm_cloud_jar", new WeatherJarItem(UBlocks.STORM_JAR, new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.THUNDER), ItemGroups.FUNCTIONAL);
     Item LIGHTNING_JAR  = register("lightning_jar", new WeatherJarItem(UBlocks.LIGHTNING_JAR, new Item.Settings().maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.LIGHTNING), ItemGroups.FUNCTIONAL);
@@ -72,7 +72,7 @@ public interface UItems {
     Item CRYSTAL_HEART = register("crystal_heart", new CrystalHeartItem(new Item.Settings().maxCount(1)), ItemGroups.TOOLS);
     Item CRYSTAL_SHARD = register("crystal_shard", new Item(new Item.Settings()), ItemGroups.NATURAL);
 
-    GemstoneItem GEMSTONE = register("gemstone", new GemstoneItem(new Item.Settings()), ItemGroups.NATURAL);
+    Item GEMSTONE = register("gemstone", new GemstoneItem(new Item.Settings()), ItemGroups.NATURAL);
     Item BOTCHED_GEM = register("botched_gem", new Item(new Item.Settings()), ItemGroups.NATURAL);
 
     Item PEGASUS_FEATHER = register("pegasus_feather", new Item(new Item.Settings()), ItemGroups.NATURAL);
@@ -212,25 +212,25 @@ public interface UItems {
     Item RAINBOW_PBG_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW_PBG);
     Item RAINBOW_PWR_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW_PWR);
 
-    AmuletItem PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new Item.Settings()
+    Item PEGASUS_AMULET = register("pegasus_amulet", new PegasusAmuletItem(new Item.Settings()
             .maxCount(1)
             .maxDamage(890)
             .rarity(Rarity.UNCOMMON), 900), ItemGroups.TOOLS);
-    AlicornAmuletItem ALICORN_AMULET = register("alicorn_amulet", new AlicornAmuletItem(new Item.Settings()
+    Item ALICORN_AMULET = register("alicorn_amulet", new AlicornAmuletItem(new Item.Settings()
             .maxCount(1)
             .maxDamage(1000)
             .rarity(Rarity.RARE)), ItemGroups.TOOLS);
     Item BROKEN_ALICORN_AMULET = register("broken_alicorn_amulet", new Item(new Item.Settings()), ItemGroups.TOOLS);
-    AmuletItem UNICORN_AMULET = register("unicorn_amulet", new AmuletItem(new Item.Settings()
+    Item UNICORN_AMULET = register("unicorn_amulet", new AmuletItem(new Item.Settings()
             .maxCount(1)
             .maxDamage(890)
             .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
-    AmuletItem PEARL_NECKLACE = register("pearl_necklace", new AmuletItem(new Item.Settings()
+    Item PEARL_NECKLACE = register("pearl_necklace", new AmuletItem(new Item.Settings()
             .maxCount(1)
             .maxDamage(16)
             .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
 
-    GlassesItem SUNGLASSES = register("sunglasses", new GlassesItem(new Item.Settings()
+    Item SUNGLASSES = register("sunglasses", new GlassesItem(new Item.Settings()
             .maxCount(1)
             .component(UDataComponentTypes.ITEM_AFTER_BREAKING, new BreaksIntoItemComponent(
                     UTags.DamageTypes.BREAKS_SUNGLASSES,
@@ -238,7 +238,7 @@ public interface UItems {
                     USounds.ITEM_SUNGLASSES_SHATTER.getKey().get())
             )
             ), ItemGroups.COMBAT);
-    GlassesItem BROKEN_SUNGLASSES = register("broken_sunglasses", new GlassesItem(new Item.Settings().maxCount(1)), ItemGroups.COMBAT);
+    Item BROKEN_SUNGLASSES = register("broken_sunglasses", new GlassesItem(new Item.Settings().maxCount(1)), ItemGroups.COMBAT);
 
     Item CLAM_SHELL = register("clam_shell", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
     Item SCALLOP_SHELL = register("scallop_shell", new Item(new Item.Settings()), ItemGroups.INGREDIENTS);
