@@ -29,7 +29,7 @@ public interface ReversableStateChange {
 
     Identifier getType();
 
-    @NotNull BlockState getConverted(World world, @NotNull BlockState state);
+    Optional<@NotNull BlockState> getConverted(World world, @NotNull BlockState state);
 
     default Optional<StatePredicate> getInverse() {
         return getInverse(this);
@@ -57,9 +57,9 @@ public interface ReversableStateChange {
         }
 
         @Override
-        public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
+        public Optional<@NotNull BlockState> getConverted(World world, @NotNull BlockState state) {
             if (world.random.nextFloat() > chance) {
-                return state;
+                return Optional.empty();
             }
             return change.getConverted(world, state);
         }
@@ -80,11 +80,11 @@ public interface ReversableStateChange {
         }
 
         @Override
-        public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
+        public Optional<@NotNull BlockState> getConverted(World world, @NotNull BlockState state) {
             return Registries.BLOCK.getRandomEntry(tag.tag(), world.random)
                     .map(RegistryEntry::value)
                     .map(Block::getDefaultState)
-                    .orElse(state);
+                    .map(newState -> StateUtil.copyState(state, newState));
         }
     }
 
@@ -103,10 +103,9 @@ public interface ReversableStateChange {
         }
 
         @Override
-        public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
+        public Optional<@NotNull BlockState> getConverted(World world, @NotNull BlockState state) {
             return Registries.BLOCK.getOptionalValue(this.state.id()).map(Block::getDefaultState)
-                    .map(newState -> this.state.applyTo(world, newState))
-                    .orElse(state);
+                    .map(newState -> this.state.applyTo(world, StateUtil.copyState(state, newState)));
         }
     }
 
@@ -123,10 +122,9 @@ public interface ReversableStateChange {
         }
 
         @Override
-        public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
-            return StatePredicate.getProperty(state, property).flatMap(property -> {
-                return property.parse(value).map(v -> state.with(property, v));
-            }).orElse(state);
+        public Optional<@NotNull BlockState> getConverted(World world, @NotNull BlockState state) {
+            return StatePredicate.getProperty(state, property)
+                    .flatMap(property -> property.parse(value).map(v -> state.with(property, v)));
         }
     }
 
@@ -140,8 +138,8 @@ public interface ReversableStateChange {
         }
 
         @Override
-        public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
-            return StatePredicate.getProperty(state, property).map(property -> state.cycle(property)).orElse(state);
+        public Optional<@NotNull BlockState> getConverted(World world, @NotNull BlockState state) {
+            return StatePredicate.getProperty(state, property).map(property -> state.cycle(property));
         }
     }
 }

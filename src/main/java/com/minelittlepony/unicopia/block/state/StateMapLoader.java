@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.block.state;
 
 import java.io.*;
 import java.util.*;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import com.google.common.collect.Maps;
@@ -13,12 +11,10 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
-import net.minecraft.block.BlockState;
 import net.minecraft.resource.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.world.World;
 
 public class StateMapLoader extends JsonDataLoader<ReversableBlockStateConverterImpl> implements IdentifiableResourceReloadListener {
     private static final Identifier ID = Unicopia.id("data/state_maps");
@@ -30,7 +26,7 @@ public class StateMapLoader extends JsonDataLoader<ReversableBlockStateConverter
     private static final int FILE_SUFFIX_LENGTH = ".json".length();
     private static final String DATA_TYPE = "state_maps";
 
-    private Map<Identifier, ? extends ReversableBlockStateConverter> converters = Map.of();
+    Map<Identifier, ? extends ReversableBlockStateConverter> converters = Map.of();
 
     public StateMapLoader() {
         super(ReversableBlockStateConverterImpl.CODEC, "state_maps");
@@ -82,43 +78,5 @@ public class StateMapLoader extends JsonDataLoader<ReversableBlockStateConverter
     @Override
     protected void apply(Map<Identifier, ReversableBlockStateConverterImpl> data, ResourceManager manager, Profiler profiler) {
         converters = data;
-    }
-
-    public static class Indirect implements ReversableBlockStateConverter {
-        private final Identifier id;
-        private final ReversableBlockStateConverter inverse;
-
-        public Indirect(Identifier id, Optional<ReversableBlockStateConverter> inverse) {
-            this.id = id;
-            this.inverse = inverse.orElseGet(() -> new StateMapLoader.Indirect(id, Optional.of(this)) {
-                @Override
-                public Optional<ReversableBlockStateConverter> get() {
-                    return Optional.ofNullable(INSTANCE.converters.get(id)).map(ReversableBlockStateConverter::getInverse);
-                }
-            });
-        }
-
-        public Identifier getId() {
-            return id;
-        }
-
-        @Override
-        public boolean canConvert(@Nullable BlockState state) {
-            return get().filter(map -> map.canConvert(state)).isPresent();
-        }
-
-        @Override
-        public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
-            return get().map(map -> map.getConverted(world, state)).orElse(state);
-        }
-
-        public Optional<ReversableBlockStateConverter> get() {
-            return Optional.ofNullable(INSTANCE.converters.get(id));
-        }
-
-        @Override
-        public ReversableBlockStateConverter getInverse() {
-            return inverse;
-        }
     }
 }
