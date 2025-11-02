@@ -64,7 +64,7 @@ public class SunBlindnessStatusEffect extends SimpleStatusEffect {
             return true;
         }
 
-        if (entity.isSubmergedInWater() || TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE, i -> i.isIn(UTags.Items.SHADES)).findAny().isPresent()) {
+        if (entity.isSubmergedInWater() || TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE, i -> i.isIn(UTags.Items.PROTECTS_BAT_PONY_EYES)).findAny().isPresent()) {
             return false;
         }
 

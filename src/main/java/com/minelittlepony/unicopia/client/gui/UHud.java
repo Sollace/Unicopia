@@ -30,7 +30,6 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -244,9 +243,8 @@ public class UHud {
         boolean hasEffect = client.player.hasStatusEffect(UEffects.SUN_BLINDNESS);
 
         ItemStack glasses = GlassesItem.getForEntity(client.player).stack();
-        boolean hasSunglasses = glasses.isOf(UItems.SUNGLASSES);
 
-        if (hasEffect || (!hasSunglasses && pony.getObservedSpecies() == Race.BAT && SunBlindnessStatusEffect.hasSunExposure(client.player))) {
+        if (hasEffect || (!glasses.isIn(UTags.Items.PROTECTS_BAT_PONY_EYES) && pony.getObservedSpecies() == Race.BAT && SunBlindnessStatusEffect.hasSunExposure(client.player))) {
             float i = hasEffect ? (client.player.getStatusEffect(UEffects.SUN_BLINDNESS).getDuration() - tickDelta) / SunBlindnessStatusEffect.MAX_DURATION : 0;
 
             float pulse = (1 + (float)Math.sin(client.player.age / 108F)) * 0.25F;
@@ -271,10 +269,8 @@ public class UHud {
             }
         }
 
-        if (hasSunglasses) {
-
-            Text customName = glasses.get(DataComponentTypes.CUSTOM_NAME);
-            if (customName != null && "Cool Shades".equals(customName.getString())) {
+        if (glasses.isIn(UTags.Items.TINTED_SHADES)) {
+            if (GlassesItem.isCoolAndHasShades(client.player)) {
                 final int delay = 7;
                 final int current = client.player.age / delay;
                 final int tint = DyeColor.byId(current % DyeColor.values().length).getSignColor();
@@ -282,9 +278,7 @@ public class UHud {
 
                 if (partySound == null || partySound.isDone()) {
                     client.getSoundManager().play(
-                            partySound = new LoopingSoundInstance<>(client.player, player -> {
-                                return UItems.SUNGLASSES.isApplicable(player);
-                            }, USounds.Vanilla.MUSIC_DISC_PIGSTEP.value(), 1, 1, client.world.random)
+                            partySound = new LoopingSoundInstance<>(client.player, GlassesItem::isCoolAndHasShades, USounds.Vanilla.MUSIC_DISC_PIGSTEP.value(), 1, 1, client.world.random)
                     );
                 } else if (partySound != null) {
                     partySound.setMuted(false);
