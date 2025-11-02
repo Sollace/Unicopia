@@ -426,7 +426,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     private boolean tryCaptureLightning(ServerWorld world) {
-        return getInventoryStacks().filter(stack -> !stack.isEmpty() && stack.getItem() == UItems.EMPTY_JAR).findFirst().map(stack -> {
+        return getInventoryStacks().filter(stack -> stack.isOf(UItems.EMPTY_JAR)).findFirst().map(stack -> {
             invinsibilityTicks = 20;
             stack.split(1);
             giveBackItem(world, UItems.LIGHTNING_JAR.getDefaultStack());

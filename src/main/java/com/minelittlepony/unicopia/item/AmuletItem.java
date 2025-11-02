@@ -12,6 +12,7 @@ import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.equipment.ArmorMaterials;
 import net.minecraft.item.tooltip.TooltipType;
@@ -61,20 +62,21 @@ public class AmuletItem extends WearableItem {
         return stack.hasEnchantments() || Charges.of(stack).maximum() == 0 || Charges.of(stack).energy() > 0;
     }
 
-    public boolean isApplicable(ItemStack stack) {
-        return stack.getItem() == this && (Charges.of(stack).maximum() == 0 || Charges.of(stack).energy() > 0);
+    public static boolean isApplicable(LivingEntity entity, ItemConvertible amulet) {
+        return !getForEntity(entity, amulet).stack().isEmpty();
     }
 
-    public final boolean isApplicable(LivingEntity entity) {
-        return !getForEntity(entity).stack().isEmpty();
+    public static boolean isApplicable(ItemStack stack, ItemConvertible amulet) {
+        return stack.isOf(amulet.asItem()) && (Charges.of(stack).maximum() == 0 || Charges.of(stack).energy() > 0);
     }
 
-    public TrinketsDelegate.EquippedStack getForEntity(LivingEntity entity) {
-        return TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.NECKLACE, this::isApplicable)
+    public static TrinketsDelegate.EquippedStack getForEntity(LivingEntity entity, ItemConvertible amulet) {
+        return TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.NECKLACE, stack -> isApplicable(stack, amulet))
                 .findFirst()
                 .orElse(TrinketsDelegate.EquippedStack.EMPTY);
     }
 
+    // TODO: AmuletArmorComponent
     public static TrinketsDelegate.EquippedStack get(LivingEntity entity) {
         return TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.NECKLACE, stack -> stack.getItem() instanceof AmuletItem)
                 .findFirst()

@@ -2,7 +2,7 @@ package com.minelittlepony.unicopia.entity.ai;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.UConventionalTags;
 import com.minelittlepony.unicopia.projectile.PhysicsBodyProjectileEntity;
 
 import net.minecraft.component.DataComponentTypes;
@@ -50,7 +50,7 @@ public class EatMuffinGoal extends BreakHeartGoal {
     protected boolean canTarget(Entity e) {
         return !e.isRemoved()
                 && e instanceof PhysicsBodyProjectileEntity p
-                && p.getStack().getItem() == UItems.MUFFIN
+                && p.getStack().isIn(UConventionalTags.Items.MUFFINS)
                 && p.getStack().get(DataComponentTypes.FOOD) != null
                 && mob.getVisibilityCache().canSee(e);
     }

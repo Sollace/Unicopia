@@ -626,7 +626,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         }
 
         if (getObservedSpecies() == Race.BAT && !entity.hasPortalCooldown()) {
-            boolean hasShades = TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE).anyMatch(s -> s.stack().isIn(UTags.Items.SHADES));
+            boolean hasShades = TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.FACE).anyMatch(s -> s.stack().isIn(UTags.Items.PROTECTS_BAT_PONY_EYES));
             if (!this.hasShades && hasShades && getObservedSpecies() == Race.BAT) {
                 UCriteria.WEAR_SHADES.trigger(entity);
             }

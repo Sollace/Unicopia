@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.cloud.CloudBedItem;
 import com.minelittlepony.unicopia.item.component.BalloonDesignComponent;
 import com.minelittlepony.unicopia.item.component.BreaksIntoItemComponent;
+import com.minelittlepony.unicopia.item.component.ConversionComponent;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.group.UItemGroups;
@@ -36,7 +37,7 @@ public interface UItems {
     Item SWEET_APPLE = register("sweet_apple", s -> AppleItem.registerTickCallback(new Item(s.food(FoodComponents.APPLE))), ItemGroups.FOOD_AND_DRINK);
     Item SOUR_APPLE = register("sour_apple", s -> AppleItem.registerTickCallback(new Item(s.food(FoodComponents.APPLE))), ItemGroups.FOOD_AND_DRINK);
 
-    ZapAppleItem ZAP_APPLE = register("zap_apple", s -> AppleItem.registerTickCallback(new ZapAppleItem(s.food(UFoodComponents.ZAP_APPLE, UConsumableComponents.SNACK))), ItemGroups.FOOD_AND_DRINK);
+    Item ZAP_APPLE = register("zap_apple", s -> AppleItem.registerTickCallback(new ZapAppleItem(s.food(UFoodComponents.ZAP_APPLE, UConsumableComponents.SNACK))), ItemGroups.FOOD_AND_DRINK);
     Item ZAP_BULB = register("zap_bulb", s -> new Item(s.food(UFoodComponents.ZAP_BULB, UConsumableComponents.ZAP_BULB)), ItemGroups.FOOD_AND_DRINK);
 
     Item ROTTEN_APPLE = register("rotten_apple", s -> new Item(s.food(FoodComponents.APPLE)), ItemGroups.FOOD_AND_DRINK);
@@ -47,11 +48,11 @@ public interface UItems {
     Item MUSIC_DISC_POPULAR = register("music_disc_popular", UJukeboxSongs.POPULAR);
     Item MUSIC_DISC_FUNK = register("music_disc_funk", UJukeboxSongs.FUNK);
 
-    FriendshipBraceletItem FRIENDSHIP_BRACELET = register("friendship_bracelet", s -> new FriendshipBraceletItem(s.rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
+    Item FRIENDSHIP_BRACELET = register("friendship_bracelet", s -> new FriendshipBraceletItem(s.rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
 
     Item PLUNDER_VINE = register("plunder_vine", s -> new BlockItem(UBlocks.PLUNDER_VINE_BUD, s));
     Item EMPTY_JAR = register("empty_jar", s -> new EmptyJarItem(UBlocks.JAR, s.fireproof()), ItemGroups.FUNCTIONAL);
-    FilledJarItem FILLED_JAR = register("filled_jar", s -> new FilledJarItem(s.maxCount(16).fireproof().recipeRemainder(EMPTY_JAR)));
+    Item FILLED_JAR = register("filled_jar", s -> new FilledJarItem(s.maxCount(16).fireproof().recipeRemainder(EMPTY_JAR)));
     Item RAIN_CLOUD_JAR  = register("rain_cloud_jar", s -> new WeatherJarItem(UBlocks.CLOUD_JAR, s.maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.RAIN), ItemGroups.FUNCTIONAL);
     Item STORM_CLOUD_JAR  = register("storm_cloud_jar", s -> new WeatherJarItem(UBlocks.STORM_JAR, s.maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.THUNDER), ItemGroups.FUNCTIONAL);
     Item LIGHTNING_JAR  = register("lightning_jar", s -> new WeatherJarItem(UBlocks.LIGHTNING_JAR, s.maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.LIGHTNING), ItemGroups.FUNCTIONAL);
@@ -64,7 +65,7 @@ public interface UItems {
     Item CRYSTAL_HEART = register("crystal_heart", s -> new CrystalHeartItem(s.maxCount(1)), ItemGroups.TOOLS);
     Item CRYSTAL_SHARD = register("crystal_shard", Item::new, ItemGroups.NATURAL);
 
-    GemstoneItem GEMSTONE = register("gemstone", GemstoneItem::new, ItemGroups.NATURAL);
+    Item GEMSTONE = register("gemstone", GemstoneItem::new, ItemGroups.NATURAL);
     Item BOTCHED_GEM = register("botched_gem", Item::new, ItemGroups.NATURAL);
 
     Item PEGASUS_FEATHER = register("pegasus_feather", Item::new, ItemGroups.NATURAL);
@@ -72,7 +73,7 @@ public interface UItems {
 
     Item OAT_SEEDS = register("oat_seeds", s -> new BlockItem(UBlocks.OATS, s.translationKey(UBlocks.OATS.getTranslationKey())), ItemGroups.NATURAL);
     Item OATS = register("oats", s -> new Item(s.food(UFoodComponents.OATS)), ItemGroups.FOOD_AND_DRINK);
-    Item IMPORTED_OATS = register("imported_oats", s -> new Item(s.food(UFoodComponents.IMPORTED_OATS)), ItemGroups.FOOD_AND_DRINK);
+    Item IMPORTED_OATS = register("imported_oats", s -> new Item(s.food(UFoodComponents.IMPORTED_OATS).component(UDataComponentTypes.ITEM_AFTER_DRAGON_BREATH, new ConversionComponent(RegistryKey.of(RegistryKeys.ITEM, Unicopia.id("imported_oats"))))), ItemGroups.FOOD_AND_DRINK);
     Item OATMEAL = register("oatmeal", s -> new Item(s.recipeRemainder(Items.BOWL).maxCount(1).food(UFoodComponents.OATMEAL, UConsumableComponents.OATMEAL).useRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
 
     Item OATMEAL_COOKIE = register("oatmeal_cookie", s -> new Item(s.food(UFoodComponents.OATMEAL_COOKIE)), ItemGroups.FOOD_AND_DRINK);
@@ -204,25 +205,25 @@ public interface UItems {
     Item RAINBOW_PBG_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW_PBG);
     Item RAINBOW_PWR_BED_SHEETS = register(CloudBedBlock.SheetPattern.RAINBOW_PWR);
 
-    AmuletItem PEGASUS_AMULET = register("pegasus_amulet", s -> new PegasusAmuletItem(s
+    Item PEGASUS_AMULET = register("pegasus_amulet", s -> new PegasusAmuletItem(s
             .maxCount(1)
             .maxDamage(890)
             .rarity(Rarity.UNCOMMON), 900), ItemGroups.TOOLS);
-    AlicornAmuletItem ALICORN_AMULET = register("alicorn_amulet", s -> new AlicornAmuletItem(s
+    Item ALICORN_AMULET = register("alicorn_amulet", s -> new AlicornAmuletItem(s
             .maxCount(1)
             .maxDamage(1000)
             .rarity(Rarity.RARE)), ItemGroups.TOOLS);
     Item BROKEN_ALICORN_AMULET = register("broken_alicorn_amulet", Item::new, ItemGroups.TOOLS);
-    AmuletItem UNICORN_AMULET = register("unicorn_amulet", s -> new AmuletItem(s
+    Item UNICORN_AMULET = register("unicorn_amulet", s -> new AmuletItem(s
             .maxCount(1)
             .maxDamage(890)
             .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
-    AmuletItem PEARL_NECKLACE = register("pearl_necklace", s -> new AmuletItem(s
+    Item PEARL_NECKLACE = register("pearl_necklace", s -> new AmuletItem(s
             .maxCount(1)
             .maxDamage(16)
             .rarity(Rarity.UNCOMMON), 0), ItemGroups.TOOLS);
 
-    GlassesItem SUNGLASSES = register("sunglasses", s -> new GlassesItem(s
+    Item SUNGLASSES = register("sunglasses", s -> new GlassesItem(s
             .maxCount(1)
             .component(UDataComponentTypes.ITEM_AFTER_BREAKING, new BreaksIntoItemComponent(
                     UTags.DamageTypes.BREAKS_SUNGLASSES,
@@ -230,7 +231,7 @@ public interface UItems {
                     USounds.ITEM_SUNGLASSES_SHATTER.getKey().get())
             )
             ), ItemGroups.COMBAT);
-    GlassesItem BROKEN_SUNGLASSES = register("broken_sunglasses", s -> new GlassesItem(s.maxCount(1)), ItemGroups.COMBAT);
+    Item BROKEN_SUNGLASSES = register("broken_sunglasses", s -> new GlassesItem(s.maxCount(1)), ItemGroups.COMBAT);
 
     Item CLAM_SHELL = register("clam_shell", Item::new, ItemGroups.INGREDIENTS);
     Item SCALLOP_SHELL = register("scallop_shell", Item::new, ItemGroups.INGREDIENTS);

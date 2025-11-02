@@ -16,6 +16,7 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.EntitySwap;
 import com.minelittlepony.unicopia.entity.behaviour.Inventory;
 import com.minelittlepony.unicopia.item.AlicornAmuletItem;
+import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
@@ -189,7 +190,7 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
     protected boolean isValidTarget(LivingEntity entity) {
         return Caster.of(entity).isPresent()
                 //&& !UItems.ALICORN_AMULET.isApplicable(entity)
-                && !UItems.PEARL_NECKLACE.isApplicable(entity);
+                && !AmuletItem.isApplicable(entity, UItems.PEARL_NECKLACE);
     }
 
     @Override

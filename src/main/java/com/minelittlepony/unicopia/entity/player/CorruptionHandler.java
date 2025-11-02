@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.entity.ItemTracker;
 import com.minelittlepony.unicopia.entity.effect.UEffects;
+import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.Tickable;
 
@@ -22,7 +23,7 @@ public class CorruptionHandler implements Tickable {
     }
 
     public boolean hasCorruptingMagic() {
-        return pony.getSpellSlot().get(SpellPredicate.IS_CORRUPTING).isPresent() || UItems.ALICORN_AMULET.isApplicable(pony.asEntity());
+        return pony.getSpellSlot().get(SpellPredicate.IS_CORRUPTING).isPresent() || AmuletItem.isApplicable(pony.asEntity(), UItems.ALICORN_AMULET);
     }
 
     @Override
@@ -34,7 +35,7 @@ public class CorruptionHandler implements Tickable {
         PlayerEntity entity = pony.asEntity();
         Random random = pony.asEntity().getRandom();
 
-        if (!UItems.ALICORN_AMULET.isApplicable(entity)) {
+        if (!AmuletItem.isApplicable(entity, UItems.ALICORN_AMULET)) {
             if (entity.age % (10 * ItemTracker.SECONDS) == 0) {
                 if (random.nextInt(100) == 0) {
                     pony.getCorruption().add(-1);

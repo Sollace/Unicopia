@@ -97,7 +97,10 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(UTags.Items.FALLS_SLOWLY).add(Items.FEATHER, UItems.CLOUD_LUMP).forceAddTag(UTags.Items.MAGIC_FEATHERS);
         getOrCreateTagBuilder(UTags.Items.IS_DELIVERED_AGGRESSIVELY).forceAddTag(ItemTags.ANVIL);
         getOrCreateTagBuilder(UTags.Items.SPOOKED_MOB_DROPS).add(Items.BRICK);
-        getOrCreateTagBuilder(UTags.Items.SHADES).add(
+        getOrCreateTagBuilder(UTags.Items.TINTED_SHADES).add(
+                UItems.SUNGLASSES
+        );
+        getOrCreateTagBuilder(UTags.Items.PROTECTS_BAT_PONY_EYES).add(
                 Items.CARVED_PUMPKIN, Items.SKELETON_SKULL, Items.WITHER_SKELETON_SKULL, Items.PLAYER_HEAD,
                 Items.ZOMBIE_HEAD, Items.CREEPER_HEAD, Items.DRAGON_HEAD, Items.PIGLIN_HEAD,
                 UItems.SUNGLASSES

@@ -29,8 +29,8 @@ public class BreakHeartGoal extends Goal {
 
     protected boolean canTarget(Entity e) {
         return !e.isRemoved()
-                && e instanceof FloatingArtefactEntity
-                && ((FloatingArtefactEntity)e).getStack().getItem() == UItems.CRYSTAL_HEART
+                && e instanceof FloatingArtefactEntity artefact
+                && artefact.getStack().isOf(UItems.CRYSTAL_HEART)
                 && mob.getVisibilityCache().canSee(e);
     }
 

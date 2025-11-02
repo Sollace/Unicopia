@@ -78,17 +78,17 @@ public interface ItemGroupRegistry {
         return Registry.register(Registries.ITEM, id, item);
     }
 
-    static RegistryKey<ItemGroup> createDynamic(String name, Supplier<ItemStack> icon, Supplier<Stream<Item>> items) {
+    static RegistryKey<ItemGroup> createDynamic(String name, ItemConvertible icon, Supplier<Stream<Item>> items) {
         RegistryKey<ItemGroup> key = RegistryKey.of(RegistryKeys.ITEM_GROUP, Unicopia.id(name));
         Registry.register(Registries.ITEM_GROUP, key.getValue(), FabricItemGroup.builder().entries((context, entries) -> {
             items.get().forEach(item -> {
                 entries.addAll(ItemGroupRegistry.getVariations(item));
             });
-        }).icon(icon).displayName(Text.translatable(Util.createTranslationKey("itemGroup", key.getValue()))).build());
+        }).icon(() -> icon.asItem().getDefaultStack()).displayName(Text.translatable(Util.createTranslationKey("itemGroup", key.getValue()))).build());
         return key;
     }
 
-    static RegistryKey<ItemGroup> createGroupFromTag(String name, TagKey<Item> tag, Supplier<ItemStack> icon) {
+    static RegistryKey<ItemGroup> createGroupFromTag(String name, TagKey<Item> tag, ItemConvertible icon) {
         return createDynamic(name, icon, () -> {
             return Registries.ITEM.getOptional(tag)
                     .stream()

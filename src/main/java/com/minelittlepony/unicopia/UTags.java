@@ -32,7 +32,8 @@ public interface UTags {
 
         TagKey<Item> MAGIC_FEATHERS = item("magic_feathers");
 
-        TagKey<Item> SHADES = item("shades");
+        TagKey<Item> TINTED_SHADES = item("tinted_shades");
+        TagKey<Item> PROTECTS_BAT_PONY_EYES = item("protects_batpony_eyes");
         TagKey<Item> SPOOKED_MOB_DROPS = item("spooked_mob_drops");
         TagKey<Item> HAS_NO_TRAITS = item("has_no_traits");
         TagKey<Item> IS_DELIVERED_AGGRESSIVELY = item("is_delivered_aggressively");

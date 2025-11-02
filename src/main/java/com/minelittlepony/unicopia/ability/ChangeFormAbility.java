@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.ability.data.Hit;
 import com.minelittlepony.unicopia.advancement.UCriteria;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.UItems;
 
@@ -79,7 +80,7 @@ public class ChangeFormAbility implements Ability<Hit> {
 
         List<Pony> targets = getTargets(player).toList();
         player.subtractEnergyCost(5 * targets.size());
-        TrinketsDelegate.EquippedStack amulet = UItems.PEARL_NECKLACE.getForEntity(player.asEntity());
+        TrinketsDelegate.EquippedStack amulet = AmuletItem.getForEntity(player.asEntity(), UItems.PEARL_NECKLACE);
         if (!amulet.stack().isEmpty()) {
             amulet.stack().damage(1, (ServerWorld)player.asWorld(), (ServerPlayerEntity)player.asEntity(), amulet.breakStatusSender());
         }

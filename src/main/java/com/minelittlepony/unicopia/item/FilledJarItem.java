@@ -96,8 +96,4 @@ public class FilledJarItem extends ProjectileItem implements ProjectileDelegate.
         }
         projectile.getWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, projectile.getBlockPos(), Block.getRawIdFromState(Blocks.GLASS.getDefaultState()));
     }
-
-    public ItemStack withContents(ItemStack contents) {
-        return Appearance.set(getDefaultStack(), contents);
-    }
 }

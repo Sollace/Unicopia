@@ -9,7 +9,7 @@ import com.minelittlepony.unicopia.item.UItems;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistryBuilder;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.Potions;
@@ -35,11 +35,11 @@ public interface UPotions {
         return Registry.registerReference(Registries.POTION, id, potion);
     }
 
-    static void addRecipe(RegistryEntry<Potion> result, RegistryEntry<Potion> basePotion, Item...items) {
+    static void addRecipe(RegistryEntry<Potion> result, RegistryEntry<Potion> basePotion, ItemConvertible...items) {
         FabricBrewingRecipeRegistryBuilder.BUILD.register(registry -> {
             //Preconditions.checkArgument(BrewingRecipeRegistry.isBrewable(basePotion), "Base potion is not craftable. " + basePotion.getIdAsString() + " required for crafting " + result.getIdAsString());
-            for (Item item : items) {
-                registry.registerPotionRecipe(basePotion, item, result);
+            for (ItemConvertible item : items) {
+                registry.registerPotionRecipe(basePotion, item.asItem(), result);
             }
         });
 
@@ -61,7 +61,7 @@ public interface UPotions {
             );
         }
 
-        public MorphingPotion registerBaseRecipes(RegistryEntry<Potion> basePotion, Item...items) {
+        public MorphingPotion registerBaseRecipes(RegistryEntry<Potion> basePotion, ItemConvertible...items) {
             addRecipe(shortEffect, basePotion, items);
             addRecipe(longEffect, shortEffect, Items.REDSTONE);
             addRecipe(permanentEffect, longEffect, UItems.CURING_JOKE);

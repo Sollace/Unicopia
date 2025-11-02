@@ -26,6 +26,7 @@ public interface UDataComponentTypes {
     ComponentType<Appearance> APPEARANCE = register("appearance", builder -> builder.codec(Appearance.CODEC).packetCodec(Appearance.PACKET_CODEC));
     ComponentType<DietProfile> DIET_PROFILE = register("diet_profile", builder -> builder.codec(DietProfile.CODEC).packetCodec(DietProfile.PACKET_CODEC));
     ComponentType<BreaksIntoItemComponent> ITEM_AFTER_BREAKING = register("item_after_breaking", builder -> builder.codec(BreaksIntoItemComponent.CODEC).packetCodec(BreaksIntoItemComponent.PACKET_CODEC));
+    ComponentType<ConversionComponent> ITEM_AFTER_DRAGON_BREATH = register("item_after_dragon_breath", builder -> builder.codec(ConversionComponent.CODEC).packetCodec(ConversionComponent.PACKET_CODEC));
 
     private static <T> ComponentType<T> register(String name, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
         return Registry.register(Registries.DATA_COMPONENT_TYPE, Unicopia.id(name), builderOperator.apply(ComponentType.builder()).build());

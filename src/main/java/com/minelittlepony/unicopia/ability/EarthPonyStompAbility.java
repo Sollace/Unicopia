@@ -234,8 +234,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
             if (w instanceof ServerWorld) {
                 if (state.isIn(BlockTags.BASE_STONE_OVERWORLD) && w.getRandom().nextInt(4) == 0) {
-                    ItemStack stack = UItems.PEBBLES.getDefaultStack();
-                    stack.setCount(1 + w.getRandom().nextInt(2));
+                    ItemStack stack = new ItemStack(UItems.PEBBLES, 1 + w.getRandom().nextInt(2));
                     Block.dropStack(w, pos, stack);
                     state.onStacksDropped((ServerWorld)w, pos, stack, true);
                 }

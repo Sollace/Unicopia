@@ -8,11 +8,13 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.component.Appearance;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.tag.ItemTags;
@@ -62,23 +64,23 @@ public interface UTradeOffers {
         });
     }
 
-    private static TradeOffers.Factory buyForEmeralds(Item item, int count, int returnCount, int maxUses, int experience, float priceChange) {
+    private static TradeOffers.Factory buyForEmeralds(ItemConvertible item, int count, int returnCount, int maxUses, int experience, float priceChange) {
         return buy(item, count, Items.EMERALD, returnCount, maxUses, experience, priceChange);
     }
 
-    private static TradeOffers.Factory buy(Item item, int count, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {
+    private static TradeOffers.Factory buy(ItemConvertible item, int count, ItemConvertible returnItem, int returnCount, int maxUses, int experience, float priceChange) {
         return (e, rng) -> new TradeOffer(new TradedItem(item, count), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
     }
 
-    private static TradeOffers.Factory buyTiered(Item item, int count, Item intermediate, int intermediatCount, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {
+    private static TradeOffers.Factory buyTiered(ItemConvertible item, int count, ItemConvertible intermediate, int intermediatCount, ItemConvertible returnItem, int returnCount, int maxUses, int experience, float priceChange) {
         return (e, rng) -> new TradeOffer(new TradedItem(item, count), Optional.of(new TradedItem(intermediate, intermediatCount)), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
     }
 
-    private static TradeOffers.Factory buy(TagKey<Item> item, int count, Item returnItem, int returnCount, int maxUses, int experience, float priceChange) {
+    private static TradeOffers.Factory buy(TagKey<Item> item, int count, ItemConvertible returnItem, int returnCount, int maxUses, int experience, float priceChange) {
         return (e, rng) -> new TradeOffer(new TradedItem(random(e, item, rng), count), new ItemStack(returnItem, returnCount), maxUses, experience, priceChange);
     }
 
-    private static TradeOffers.Factory buy(Item item, int count, TagKey<Item> returnItem, int returnCount, int maxUses, int experience, float priceChange) {
+    private static TradeOffers.Factory buy(ItemConvertible item, int count, TagKey<Item> returnItem, int returnCount, int maxUses, int experience, float priceChange) {
         return (e, rng) -> new TradeOffer(new TradedItem(item, count), new ItemStack(random(e, returnItem, rng), returnCount), maxUses, experience, priceChange);
     }
 
@@ -101,7 +103,7 @@ public interface UTradeOffers {
             return new TradeOffer(
                     offer.getFirstBuyItem(),
                     offer.getSecondBuyItem(),
-                    UItems.FILLED_JAR.withContents(offer.getSellItem()),
+                    Appearance.set(UItems.FILLED_JAR.getDefaultStack(), offer.getSellItem()),
                     offer.getUses(), offer.getMaxUses(), offer.getMerchantExperience(), offer.getPriceMultiplier(), offer.getDemandBonus()
             );
         }

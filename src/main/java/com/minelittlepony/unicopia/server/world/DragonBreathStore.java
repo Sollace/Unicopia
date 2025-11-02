@@ -5,7 +5,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.item.component.ConversionComponent;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
@@ -91,17 +92,22 @@ public class DragonBreathStore extends PersistentState {
     }
 
     public void put(String recipient, ItemStack payload) {
+        ConversionComponent conversion = payload.get(UDataComponentTypes.ITEM_AFTER_DRAGON_BREATH);
 
-        if (payload.getItem() == UItems.OATS) {
-            put(recipient, payload.withItem(UItems.IMPORTED_OATS));
-            return;
+        if (conversion != null) {
+            var item = conversion.getItem();
+            if (item.isPresent()) {
+                payload = payload.withItem(item.get());
+            }
         }
+
+        var finalPayload = payload;
 
         synchronized (locker) {
             doPurge();
             if (peekEntries(recipient).stream().noneMatch(i -> {
-               if (ItemStack.areItemsAndComponentsEqual(i.payload(), payload)) {
-                   int combinedCount = i.payload().getCount() + payload.getCount();
+               if (ItemStack.areItemsAndComponentsEqual(i.payload(), finalPayload)) {
+                   int combinedCount = i.payload().getCount() + finalPayload.getCount();
                    if (combinedCount <= i.payload().getMaxCount()) {
                        i.payload().setCount(combinedCount);
                        return true;

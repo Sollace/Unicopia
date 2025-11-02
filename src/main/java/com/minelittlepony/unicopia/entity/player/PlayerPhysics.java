@@ -212,7 +212,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             return FlightType.NONE;
         }
 
-        if (UItems.PEGASUS_AMULET.isApplicable(entity)) {
+        if (AmuletItem.isApplicable(entity, UItems.PEGASUS_AMULET)) {
             return FlightType.ARTIFICIAL;
         }
 
