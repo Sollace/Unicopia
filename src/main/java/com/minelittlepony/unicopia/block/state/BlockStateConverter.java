@@ -15,8 +15,8 @@ import net.minecraft.world.World;
 
 public interface BlockStateConverter {
 
-    static StateMapLoader.Indirect of(Identifier id) {
-        return new StateMapLoader.Indirect(id, Optional.empty());
+    static Named of(Identifier id) {
+        return new Named(id);
     }
 
     /**
@@ -37,7 +37,7 @@ public interface BlockStateConverter {
      * @return    The converted state if there is one, otherwise the original state is returned
      */
     @NotNull
-    BlockState getConverted(World world, @NotNull BlockState state);
+    Optional<BlockState> getConverted(World world, @NotNull BlockState state);
 
     /**
      * Attempts to convert a block state at a position.
@@ -46,33 +46,78 @@ public interface BlockStateConverter {
      */
     default boolean convert(World world, BlockPos pos) {
         BlockState state = world.getBlockState(pos);
+        return canConvert(state) && getConverted(world, state).filter(newState -> {
+            if (state.equals(newState)) {
+                return false;
+            }
 
-        if (!canConvert(state)) {
+            if (!newState.contains(Properties.DOUBLE_BLOCK_HALF)) {
+                world.setBlockState(pos, newState, Block.FORCE_STATE | Block.NOTIFY_LISTENERS);
+                return true;
+            }
+
+            // for two-tall blocks (like doors) we have to update it's sibling
+            boolean lower = newState.get(Properties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.LOWER;
+            BlockPos other = lower ? pos.up() : pos.down();
+
+            if (world.getBlockState(other).isOf(state.getBlock())) {
+                world.setBlockState(other, newState.with(Properties.DOUBLE_BLOCK_HALF, lower ? DoubleBlockHalf.UPPER : DoubleBlockHalf.LOWER), Block.FORCE_STATE | Block.NOTIFY_LISTENERS);
+                world.setBlockState(pos, newState, Block.FORCE_STATE | Block.NOTIFY_LISTENERS);
+
+                return true;
+            }
+
             return false;
-        }
-
-        BlockState newState = getConverted(world, state);
-
-        if (state.equals(newState)) {
-            return false;
-        }
-
-        if (!newState.contains(Properties.DOUBLE_BLOCK_HALF)) {
-            world.setBlockState(pos, newState, Block.FORCE_STATE | Block.NOTIFY_LISTENERS);
-            return true;
-        }
-
-        // for two-tall blocks (like doors) we have to update it's sibling
-        boolean lower = newState.get(Properties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.LOWER;
-        BlockPos other = lower ? pos.up() : pos.down();
-
-        if (world.getBlockState(other).isOf(state.getBlock())) {
-            world.setBlockState(other, newState.with(Properties.DOUBLE_BLOCK_HALF, lower ? DoubleBlockHalf.UPPER : DoubleBlockHalf.LOWER), Block.FORCE_STATE | Block.NOTIFY_LISTENERS);
-            world.setBlockState(pos, newState, Block.FORCE_STATE | Block.NOTIFY_LISTENERS);
-
-            return true;
-        }
-
-        return false;
+        }).isPresent();
     }
+
+    public static sealed class Named implements ReversableBlockStateConverter permits Named.Inverted {
+        private final Identifier id;
+        private final ReversableBlockStateConverter inverse;
+
+        public Named(Identifier id) {
+            this.id = id;
+            this.inverse = new Inverted(this);
+        }
+
+        protected Named(Named inverse) {
+            this.id = inverse.getId();
+            this.inverse = inverse;
+        }
+
+        public Identifier getId() {
+            return id;
+        }
+
+        @Override
+        public boolean canConvert(@Nullable BlockState state) {
+            return get().filter(map -> map.canConvert(state)).isPresent();
+        }
+
+        @Override
+        public Optional<@NotNull BlockState> getConverted(World world, @NotNull BlockState state) {
+            return get().flatMap(map -> map.getConverted(world, state));
+        }
+
+        public Optional<ReversableBlockStateConverter> get() {
+            return Optional.ofNullable(StateMapLoader.INSTANCE.converters.get(id));
+        }
+
+        @Override
+        public ReversableBlockStateConverter getInverse() {
+            return inverse;
+        }
+
+        private final class Inverted extends Named {
+            private Inverted(Named inverse) {
+                super(inverse);
+            }
+
+            @Override
+            public Optional<ReversableBlockStateConverter> get() {
+                return super.get().map(ReversableBlockStateConverter::getInverse);
+            }
+        }
+    }
+
 }

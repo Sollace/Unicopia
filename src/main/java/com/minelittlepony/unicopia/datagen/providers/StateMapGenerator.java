@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 import com.minelittlepony.unicopia.block.UBlocks;
+import com.minelittlepony.unicopia.block.state.BlockStateConverter;
 import com.minelittlepony.unicopia.block.state.ReversableBlockStateConverter;
 import com.minelittlepony.unicopia.block.state.ReversableStateChange;
-import com.minelittlepony.unicopia.block.state.StateMapLoader;
 import com.minelittlepony.unicopia.block.state.StateMaps;
 import com.minelittlepony.unicopia.block.state.StatePredicate;
 import com.minelittlepony.unicopia.block.state.StatePredicate.PropertyOp.Comparison;
@@ -25,7 +25,7 @@ import net.minecraft.state.property.Property;
 
 public class StateMapGenerator {
 
-    public void generate(BiConsumer<StateMapLoader.Indirect, ReversableBlockStateConverter.Builder> exporter) {
+    public void generate(BiConsumer<BlockStateConverter.Named, ReversableBlockStateConverter.Builder> exporter) {
         exporter.accept(StateMaps.SNOW_PILED, ReversableBlockStateConverter.builder().apply(this::appendSnowLayering));
         exporter.accept(StateMaps.ICE_AFFECTED, ReversableBlockStateConverter.builder()
                 .apply(this::appendSnowLayering)

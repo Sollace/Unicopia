@@ -34,12 +34,11 @@ class ReversableBlockStateConverterImpl implements ReversableBlockStateConverter
     }
 
     @Override
-    public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
+    public Optional<@NotNull BlockState> getConverted(World world, @NotNull BlockState state) {
         return entries.stream()
                 .filter(entry -> entry.canConvert(state))
                 .findFirst()
-                .map(entry -> entry.getConverted(world, state))
-                .orElse(state);
+                .flatMap(entry -> entry.getConverted(world, state));
     }
 
     @Override
@@ -66,7 +65,7 @@ class ReversableBlockStateConverterImpl implements ReversableBlockStateConverter
             return state != null && match.test(state);
         }
 
-        public @NotNull BlockState getConverted(World world, @NotNull BlockState state) {
+        public Optional<@NotNull BlockState> getConverted(World world, @NotNull BlockState state) {
             return stateChange.getConverted(world, state);
         }
 
