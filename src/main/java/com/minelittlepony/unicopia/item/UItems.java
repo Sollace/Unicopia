@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.item.cloud.CloudBedItem;
 import com.minelittlepony.unicopia.item.component.BalloonDesignComponent;
 import com.minelittlepony.unicopia.item.component.BreaksIntoItemComponent;
+import com.minelittlepony.unicopia.item.component.ConversionComponent;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
@@ -78,7 +79,7 @@ public interface UItems {
     Item GRYPHON_FEATHER = register("gryphon_feather", new Item(new Item.Settings()), ItemGroups.NATURAL);
 
     Item OAT_SEEDS = register("oat_seeds", new AliasedBlockItem(UBlocks.OATS, new Item.Settings()), ItemGroups.NATURAL);
-    Item OATS = register("oats", new Item(new Item.Settings().food(UFoodComponents.OATS)), ItemGroups.FOOD_AND_DRINK);
+    Item OATS = register("oats", new Item(new Item.Settings().food(UFoodComponents.OATS).component(UDataComponentTypes.ITEM_AFTER_DRAGON_BREATH, new ConversionComponent(UItemKeys.IMPORTED_OATS.key()))), ItemGroups.FOOD_AND_DRINK);
     Item IMPORTED_OATS = register("imported_oats", new Item(new Item.Settings().food(UFoodComponents.IMPORTED_OATS)), ItemGroups.FOOD_AND_DRINK);
     Item OATMEAL = register("oatmeal", new OatmealItem(new Item.Settings().recipeRemainder(Items.BOWL).maxCount(1).food(UFoodComponents.OATMEAL)), ItemGroups.FOOD_AND_DRINK);
 
