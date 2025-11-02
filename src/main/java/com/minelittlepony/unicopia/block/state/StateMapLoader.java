@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import com.google.common.collect.Maps;
 import com.google.gson.*;
 import com.minelittlepony.unicopia.Unicopia;
+
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
@@ -19,7 +20,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.World;
 
-public class StateMapLoader extends JsonDataLoader<JsonReversableBlockStateConverter> implements IdentifiableResourceReloadListener {
+public class StateMapLoader extends JsonDataLoader<ReversableBlockStateConverterImpl> implements IdentifiableResourceReloadListener {
     private static final Identifier ID = Unicopia.id("data/state_maps");
 
     public static final StateMapLoader INSTANCE = new StateMapLoader();
@@ -29,10 +30,10 @@ public class StateMapLoader extends JsonDataLoader<JsonReversableBlockStateConve
     private static final int FILE_SUFFIX_LENGTH = ".json".length();
     private static final String DATA_TYPE = "state_maps";
 
-    private Map<Identifier, JsonReversableBlockStateConverter> converters = new HashMap<>();
+    private Map<Identifier, ? extends ReversableBlockStateConverter> converters = Map.of();
 
     public StateMapLoader() {
-        super(JsonReversableBlockStateConverter.CODEC, "state_maps");
+        super(ReversableBlockStateConverterImpl.CODEC, "state_maps");
     }
 
     @Override
@@ -41,10 +42,10 @@ public class StateMapLoader extends JsonDataLoader<JsonReversableBlockStateConve
     }
 
     @Override
-    protected Map<Identifier, JsonReversableBlockStateConverter> prepare(ResourceManager resourceManager, Profiler profiler) {
+    protected Map<Identifier, ReversableBlockStateConverterImpl> prepare(ResourceManager resourceManager, Profiler profiler) {
         int i = DATA_TYPE.length() + 1;
 
-        Map<Identifier, JsonReversableBlockStateConverter> map = Maps.newHashMap();
+        Map<Identifier, ReversableBlockStateConverterImpl> map = Maps.newHashMap();
 
         resourceManager.findAllResources(DATA_TYPE, id -> id.getPath().endsWith(FILE_SUFFIX)).entrySet().stream().forEach(entry -> {
             Identifier resId = entry.getKey();
@@ -71,7 +72,7 @@ public class StateMapLoader extends JsonDataLoader<JsonReversableBlockStateConve
                 }
             }
 
-            JsonReversableBlockStateConverter.CODEC.decode(JsonOps.INSTANCE, entries).result().ifPresent(pair -> {
+            ReversableBlockStateConverterImpl.CODEC.decode(JsonOps.INSTANCE, entries).result().ifPresent(pair -> {
                 map.put(id, pair.getFirst());
             });
         });
@@ -79,22 +80,26 @@ public class StateMapLoader extends JsonDataLoader<JsonReversableBlockStateConve
     }
 
     @Override
-    protected void apply(Map<Identifier, JsonReversableBlockStateConverter> data, ResourceManager manager, Profiler profiler) {
+    protected void apply(Map<Identifier, ReversableBlockStateConverterImpl> data, ResourceManager manager, Profiler profiler) {
         converters = data;
     }
 
-    static class Indirect<T extends BlockStateConverter> implements ReversableBlockStateConverter {
+    public static class Indirect implements ReversableBlockStateConverter {
         private final Identifier id;
-        private final BlockStateConverter inverse;
+        private final ReversableBlockStateConverter inverse;
 
-        public Indirect(Identifier id, Optional<BlockStateConverter> inverse) {
+        public Indirect(Identifier id, Optional<ReversableBlockStateConverter> inverse) {
             this.id = id;
-            this.inverse = inverse.orElseGet(() -> new StateMapLoader.Indirect<>(id, Optional.of(this)) {
+            this.inverse = inverse.orElseGet(() -> new StateMapLoader.Indirect(id, Optional.of(this)) {
                 @Override
-                public Optional<BlockStateConverter> get() {
+                public Optional<ReversableBlockStateConverter> get() {
                     return Optional.ofNullable(INSTANCE.converters.get(id)).map(ReversableBlockStateConverter::getInverse);
                 }
             });
+        }
+
+        public Identifier getId() {
+            return id;
         }
 
         @Override
@@ -107,13 +112,12 @@ public class StateMapLoader extends JsonDataLoader<JsonReversableBlockStateConve
             return get().map(map -> map.getConverted(world, state)).orElse(state);
         }
 
-        @SuppressWarnings("unchecked")
-        public Optional<T> get() {
-            return Optional.ofNullable((T)INSTANCE.converters.get(id));
+        public Optional<ReversableBlockStateConverter> get() {
+            return Optional.ofNullable(INSTANCE.converters.get(id));
         }
 
         @Override
-        public BlockStateConverter getInverse() {
+        public ReversableBlockStateConverter getInverse() {
             return inverse;
         }
     }

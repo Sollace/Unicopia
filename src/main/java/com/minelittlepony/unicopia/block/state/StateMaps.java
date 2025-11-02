@@ -3,14 +3,14 @@ package com.minelittlepony.unicopia.block.state;
 import com.minelittlepony.unicopia.Unicopia;
 
 public interface StateMaps {
-    BlockStateConverter SNOW_PILED = of("snow_piled");
-    BlockStateConverter ICE_AFFECTED = of("ice");
-    BlockStateConverter SILVERFISH_AFFECTED = of("infestation");
-    BlockStateConverter FIRE_AFFECTED = of("fire");
-    BlockStateConverter BURNABLE = of("burnable");
-    ReversableBlockStateConverter HELLFIRE_AFFECTED = of("hellfire");
+    StateMapLoader.Indirect SNOW_PILED = of("snow_piled");
+    StateMapLoader.Indirect ICE_AFFECTED = of("ice");
+    StateMapLoader.Indirect SILVERFISH_AFFECTED = of("infestation");
+    StateMapLoader.Indirect FIRE_AFFECTED = of("fire");
+    StateMapLoader.Indirect BURNABLE = of("burnable");
+    StateMapLoader.Indirect HELLFIRE_AFFECTED = of("hellfire");
 
-    private static ReversableBlockStateConverter of(String name) {
+    private static StateMapLoader.Indirect of(String name) {
         return BlockStateConverter.of(Unicopia.id(name));
     }
 }

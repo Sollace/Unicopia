@@ -5,6 +5,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.minelittlepony.unicopia.datagen.providers.DietsProvider;
 import com.minelittlepony.unicopia.datagen.providers.SeasonsGrowthRatesProvider;
+import com.minelittlepony.unicopia.datagen.providers.StateMapProvider;
+import com.minelittlepony.unicopia.datagen.providers.TreeTypeProvider;
 import com.minelittlepony.unicopia.datagen.providers.UAdvancementsProvider;
 import com.minelittlepony.unicopia.datagen.providers.UDynamicRegistriesProvider;
 import com.minelittlepony.unicopia.datagen.providers.UEnchantmentProvider;
@@ -18,6 +20,7 @@ import com.minelittlepony.unicopia.datagen.providers.loot.UChestLootTableProvide
 import com.minelittlepony.unicopia.datagen.providers.loot.UEntityAdditionsLootTableProvider;
 import com.minelittlepony.unicopia.datagen.providers.loot.UEntityLootTableProvider;
 import com.minelittlepony.unicopia.datagen.providers.recipe.URecipeProvider;
+import com.minelittlepony.unicopia.datagen.providers.tag.UBiomeTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UBlockTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UDamageTypeProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UDimensionTypeTagProvider;
@@ -47,6 +50,7 @@ public class Datagen implements DataGeneratorEntrypoint {
         pack.addProvider(UEntityTypeTagProvider::new);
         pack.addProvider(UStatusEffectTagProvider::new);
         pack.addProvider(UDimensionTypeTagProvider::new);
+        pack.addProvider(UBiomeTagProvider::new);
 
         paintingVariants.addToPack(pack);
         enchantments.addToPack(pack);
@@ -62,6 +66,8 @@ public class Datagen implements DataGeneratorEntrypoint {
         pack.addProvider(UBlockAdditionsLootTableProvider::new);
         pack.addProvider(UChestAdditionsLootTableProvider::new);
         pack.addProvider(SeasonsGrowthRatesProvider::new);
+        pack.addProvider(TreeTypeProvider::new);
+        pack.addProvider(StateMapProvider::new);
         pack.addProvider(UAdvancementsProvider::new);
     }
 

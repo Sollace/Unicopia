@@ -15,8 +15,8 @@ import net.minecraft.world.World;
 
 public interface BlockStateConverter {
 
-    static ReversableBlockStateConverter of(Identifier id) {
-        return new StateMapLoader.Indirect<ReversableBlockStateConverter>(id, Optional.empty());
+    static StateMapLoader.Indirect of(Identifier id) {
+        return new StateMapLoader.Indirect(id, Optional.empty());
     }
 
     /**
