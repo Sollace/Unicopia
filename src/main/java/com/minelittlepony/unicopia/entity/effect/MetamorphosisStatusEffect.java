@@ -44,8 +44,8 @@ public class MetamorphosisStatusEffect extends StatusEffect {
     }
 
     public static Race getEffectiveRace(LivingEntity entity, Race fallback) {
-        return entity.getStatusEffects().stream().filter(effect -> effect.getEffectType() instanceof MetamorphosisStatusEffect).map(effect -> {
-            return ((MetamorphosisStatusEffect)effect.getEffectType()).getRace();
+        return entity.getStatusEffects().stream().filter(effect -> effect.getEffectType().value() instanceof MetamorphosisStatusEffect).map(effect -> {
+            return ((MetamorphosisStatusEffect)effect.getEffectType().value()).getRace();
         }).findFirst().orElse(fallback);
     }
 
