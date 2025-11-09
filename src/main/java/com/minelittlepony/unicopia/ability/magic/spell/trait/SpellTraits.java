@@ -52,9 +52,9 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
             map -> DataResult.success(fromEntries(map.entrySet().stream())),
             traits -> DataResult.success(traits.traits)
     );
-    public static final PacketCodec<ByteBuf, SpellTraits> PACKET_CODEC = PacketCodecs.map(i -> new HashMap<>(i), Trait.PACKET_CODEC, PacketCodecs.FLOAT).xmap(
+    public static final PacketCodec<ByteBuf, SpellTraits> PACKET_CODEC = PacketCodecs.map(i -> new EnumMap<>(Trait.class), Trait.PACKET_CODEC, PacketCodecs.FLOAT).xmap(
             entries -> fromEntries(entries.entrySet().stream()),
-            traits -> new HashMap<>(traits.traits)
+            traits -> traits.traits
     );
 
     public static void load(Map<Identifier, SpellTraits> newRegistry) {
@@ -81,17 +81,20 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     private final EnumMap<Trait, Float> traits;
+    private final float corruption;
 
-    SpellTraits(Map<Trait, Float> traits) {
+    private SpellTraits(Map<Trait, Float> traits) {
         this.traits = traits.isEmpty() ? new EnumMap<>(Trait.class) : new EnumMap<>(traits);
+        this.corruption = (float)stream().filter(e -> e.getValue() != 0).mapToDouble(e -> e.getKey().getGroup().getCorruption()).sum();
     }
 
-    SpellTraits(SpellTraits from) {
-        this(from.traits);
+    private SpellTraits(SpellTraits from) {
+        this.traits = new EnumMap<>(from.traits);
+        this.corruption = from.corruption;
     }
 
     public float getCorruption() {
-        return (float)stream().filter(e -> e.getValue() != 0).mapToDouble(e -> e.getKey().getGroup().getCorruption()).sum();
+        return corruption;
     }
 
     public SpellTraits multiply(float factor) {
@@ -174,6 +177,16 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return nbt;
     }
 
+    public ItemStack applyTo(ItemStack stack) {
+        stack = stack.copy();
+        if (isEmpty()) {
+            stack.remove(UDataComponentTypes.SPELL_TRAITS);
+            return stack;
+        }
+        stack.set(UDataComponentTypes.SPELL_TRAITS, this);
+        return stack;
+    }
+
     @Override
     public String toString() {
         return "SpellTraits[" + traits.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(",")) + "]";
@@ -244,16 +257,6 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return Optional.ofNullable(stack.get(UDataComponentTypes.SPELL_TRAITS));
     }
 
-    public ItemStack applyTo(ItemStack stack) {
-        stack = stack.copy();
-        if (isEmpty()) {
-            stack.remove(UDataComponentTypes.SPELL_TRAITS);
-            return stack;
-        }
-        stack.set(UDataComponentTypes.SPELL_TRAITS, this);
-        return stack;
-    }
-
     public static Optional<SpellTraits> fromNbt(NbtCompound traits) {
         return CODEC.decode(NbtOps.INSTANCE, traits).result().map(Pair::getFirst);
     }
@@ -265,8 +268,10 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         }, spellTraits -> spellTraits.stream().map(entry -> entry.getKey().asString() + ":" + entry.getValue()).collect(Collectors.joining(delimiter)));
     }
 
-    public static SpellTraits fromEntries(Stream<Map.Entry<Trait, Float>> entries) {
-        var result = collect(entries);
+    private static SpellTraits fromEntries(Stream<Map.Entry<Trait, Float>> entries) {
+        var result = entries.filter(Objects::nonNull)
+                .filter(e -> e.getValue() != 0)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a + b, () -> new EnumMap<>(Trait.class)));
 
         if (result.isEmpty()) {
             return EMPTY;
@@ -274,7 +279,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return new SpellTraits(result);
     }
 
-    static void combine(Map<Trait, Float> to, Map<Trait, Float> from) {
+    private static void combine(Map<Trait, Float> to, Map<Trait, Float> from) {
         if (from.isEmpty()) {
             return;
         }
@@ -283,12 +288,6 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
                 to.compute(trait, (k, v) -> v == null ? value : (v + value));
             }
         });
-    }
-
-    static Map<Trait, Float> collect(Stream<Map.Entry<Trait, Float>> entries) {
-        return entries.filter(Objects::nonNull)
-                .filter(e -> e.getValue() != 0)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> a + b, () -> new EnumMap<>(Trait.class)));
     }
 
     public static final class Builder {
