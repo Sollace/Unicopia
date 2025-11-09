@@ -17,6 +17,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 public class EntityPhysics<T extends Entity> implements Physics, Copyable<EntityPhysics<T>>, Tickable {
@@ -48,6 +49,16 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
 
             onGravitychanged();
         }
+    }
+
+    @Override
+    public Box getBoxAtPosition(Vec3d pos, boolean inverted) {
+        Box box = entity.getDimensions(entity.getPose()).getBoxAt(pos);
+        if (inverted) {
+            double yOffset = (pos.getY() + 1) + box.maxY;
+            box = box.offset(0, yOffset, 0);
+        }
+        return box;
     }
 
     protected void onGravitychanged() {

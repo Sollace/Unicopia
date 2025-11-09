@@ -161,9 +161,8 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     }
 
     public void startHanging(BlockPos pos) {
-        boolean inverted = pony.getPhysics().isGravityNegative();
         hangingPos.set(Optional.of(pos));
-        entity.setPosition(pos.getX() + 0.5, pos.getY() - (inverted ? 0 : 1), pos.getZ() + 0.5);
+        entity.requestTeleport(pos.getX() + 0.5, pos.getY() + pony.getPhysics().getGravitySignum(), pos.getZ() + 0.5);
         entity.setVelocity(Vec3d.ZERO);
         entity.setSneaking(false);
         entity.stopFallFlying();
@@ -171,30 +170,22 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     }
 
     public boolean canHangAt(BlockPos pos) {
-        int gravity = pony.getPhysics().getGravitySignum() * (isHanging() && pony.getObservedSpecies() == Race.BAT ? -1 : 1);
+        int gravity = pony.getPhysics().getGravitySignum() * (isHanging() && pony.getCompositeRace().includes(Race.BAT) ? -1 : 1);
         BlockState state = pony.asWorld().getBlockState(pos);
 
-        if (!pony.asWorld().isAir(pos) || !pony.asWorld().isAir(pos.down(gravity))) {
+        if (!pony.asWorld().isBlockSpaceEmpty(pony.asEntity(), pony.getPhysics().getBoxAtPosition(pos.toBottomCenterPos(), gravity > 0))) {
             return false;
         }
 
         pos = pos.up(gravity);
         state = pony.asWorld().getBlockState(pos);
-
         return state.isSolidSurface(pony.asWorld(), pos, entity, gravity > 0 ? Direction.UP : Direction.DOWN);
     }
 
     private boolean canKeepHanging() {
-        Race race = pony.getObservedSpecies();
-        if (!race.canHang()) {
-            return false;
-        }
-        if (ticksHanging++ <= 2) {
-            return true;
-        }
-        return getHangingPosition().filter(hangingPos -> {
-            return (race != Race.BAT || hangingPos.equals(pony.asEntity().getBlockPos().up(pony.getPhysics().isGravityNegative() ? 1 : 0))) && canHangAt(hangingPos);
-        }).isPresent();
+        return pony.getCompositeRace().any(Race::canHang) && (ticksHanging++ <= 20 || getHangingPosition().filter(hangingPos -> {
+            return pony.getCompositeRace().includes(Race.BAT) || hangingPos.isWithinDistance(pony.asEntity().getBlockPos(), 1.5) && canHangAt(hangingPos);
+        }).isPresent());
     }
 
     @Override
