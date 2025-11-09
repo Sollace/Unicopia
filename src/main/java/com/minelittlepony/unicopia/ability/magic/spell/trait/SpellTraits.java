@@ -83,7 +83,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     private final EnumMap<Trait, Float> traits;
 
     SpellTraits(Map<Trait, Float> traits) {
-        this.traits = new EnumMap<>(traits);
+        this.traits = traits.isEmpty() ? new EnumMap<>(Trait.class) : new EnumMap<>(traits);
     }
 
     SpellTraits(SpellTraits from) {
