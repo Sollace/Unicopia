@@ -11,7 +11,6 @@ import com.minelittlepony.unicopia.util.Resources;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
-
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.*;
 import net.minecraft.util.Identifier;
