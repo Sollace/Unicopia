@@ -1,7 +1,10 @@
 package com.minelittlepony.unicopia.mixin.gravity;
 
 import org.jetbrains.annotations.Nullable;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,36 +17,52 @@ import com.minelittlepony.unicopia.entity.Equine;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 @Mixin(value = Entity.class, priority = 29000)
 abstract class MixinEntity {
+    @Shadow
+    private BlockPos blockPos;
+
+    @Inject(method = "getFinalGravity", at = @At("RETURN"), cancellable = true)
+    private void modifyGravity(CallbackInfoReturnable<Double> info) {
+        if (this instanceof Equine.Container eq) {
+            info.setReturnValue(Math.abs(eq.get().getPhysics().calcGravity(info.getReturnValue())));
+        }
+    }
+
+    @Inject(method = "setPos", at = @At(
+            value = "FIELD",
+            target = "net/minecraft/entity/Entity.blockPos:Lnet/minecraft/util/math/BlockPos;",
+            opcode = Opcodes.PUTFIELD,
+            shift = Shift.AFTER,
+            ordinal = 0))
+    private void onUpdateBlockPos(double x, double y, double z, CallbackInfo info) {
+        if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
+            blockPos = eq.get().getPhysics().getHeadPosition();
+        }
+    }
 
     // we invert y when moving
     @ModifyVariable(method = "move", at = @At("HEAD"), argsOnly = true)
     private Vec3d modifyMovement(Vec3d movement) {
-        if (unicopiaIsGravityInverted()) {
-            return movement.multiply(1, -1, 1);
-        }
-        return movement;
+        return unicopiaIsGravityInverted() ? movement.multiply(1, -1, 1) : movement;
     }
 
     // fix on ground check
     @Inject(method = "move", at = @At(value = "FIELD", target = "net/minecraft/entity/Entity.groundCollision:Z", shift = Shift.AFTER, ordinal = 0))
     private void onUpdateOnGroundFlag(MovementType movementType, Vec3d movement, CallbackInfo info) {
-        if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
-            eq.get().asEntity().groundCollision = eq.get().asEntity().verticalCollision && movement.y > 0.0;
+        if (unicopiaIsGravityInverted()) {
+            ((Entity)(Object)this).groundCollision = ((Entity)(Object)this).verticalCollision && movement.y > 0.0;
         }
     }
 
     // invert offsets so it can properly find the block we're walking on
     @ModifyVariable(method = "getPosWithYOffset", at = @At("HEAD"), argsOnly = true)
     private float onGetPosWithYOffset(float offset) {
-        if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
-            return -(eq.get().asEntity().getHeight() + offset);
-        }
-        return offset;
+        return unicopiaIsGravityInverted() ? -(((Entity)(Object)this).getHeight() + offset) : offset;
     }
 
     // fix sprinting particles
@@ -52,11 +71,7 @@ abstract class MixinEntity {
                 target = "net/minecraft/world/World.addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)V"),
             index = 2)
     private double modifyParticleY(double y) {
-        if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
-            Entity self = eq.get().asEntity();
-            return self.getHeight() - y + (self.getY() * 2);
-        }
-        return y;
+        return unicopiaIsGravityInverted() ? ((Entity)(Object)this).getHeight() - y + (((Entity)(Object)this).getY() * 2) : y;
     }
 
     // fix fall damage
@@ -64,10 +79,7 @@ abstract class MixinEntity {
             method = "move",
             at = @At(value = "INVOKE", target = "net/minecraft/entity/Entity.fall(DZLnet/minecraft/block/BlockState;Lnet/minecraft/util/math/BlockPos;)V"))
     private double modifyFallDistance(double heightDifference) {
-        if (unicopiaIsGravityInverted()) {
-            return -heightDifference;
-        }
-        return heightDifference;
+        return unicopiaIsGravityInverted() ? -heightDifference : heightDifference;
     }
 
     // invert check for walking up a step
@@ -75,7 +87,6 @@ abstract class MixinEntity {
             method = "adjustMovementForCollisions(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Lnet/minecraft/world/World;Ljava/util/List;)Lnet/minecraft/util/math/Vec3d;",
             at = @At("HEAD"),
             argsOnly = true)
-
     private static Vec3d modifyMovementForStepheight(Vec3d movement, @Nullable Entity entity) {
         if (entity instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative() && movement.getY() == entity.getStepHeight()) {
             return movement.multiply(1, -1, 1);
@@ -83,10 +94,10 @@ abstract class MixinEntity {
         return movement;
     }
 
-    @Inject(method = {"calculateBoundingBox"}, at = @At("RETURN"), cancellable = true)
+    @Inject(method = "calculateBoundingBox", at = @At("RETURN"), cancellable = true)
     private void adjustPoseBoxForGravity(CallbackInfoReturnable<Box> info) {
-        if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
-            Entity self = eq.get().asEntity();
+        if (unicopiaIsGravityInverted()) {
+            Entity self = (Entity)(Object)this;
             Box box = info.getReturnValue();
             Box oldBox = self.getBoundingBox();
             double newHeight = box.getLengthY();
@@ -101,6 +112,7 @@ abstract class MixinEntity {
         }
     }
 
+    @Unique
     private boolean unicopiaIsGravityInverted() {
         return this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative();
     }
