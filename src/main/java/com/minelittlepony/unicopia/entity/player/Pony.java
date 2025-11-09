@@ -41,6 +41,8 @@ import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import com.minelittlepony.unicopia.network.*;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
+import com.minelittlepony.unicopia.particle.MagicParticleEffect;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.server.world.UGameRules;
 import com.minelittlepony.common.util.animation.LinearInterpolator;
 import com.google.common.collect.Streams;
@@ -119,6 +121,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     private final DataTracker.Entry<Race> suppressedRace;
     @Nullable
     private Race effectiveRace;
+    private Optional<Race> prevMorphedRace = Optional.empty();
 
     private final DataTracker.Entry<SkinFeatures> features;
 
@@ -273,7 +276,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public Race getSpecies() {
         if (effectiveRace == null) {
-            effectiveRace = MetamorphosisStatusEffect.getEffectiveRace(entity, getPersistentSpecies());
+            effectiveRace = MetamorphosisStatusEffect.getEffectiveRace(entity).orElse(getPersistentSpecies());
         }
         return effectiveRace;
     }
@@ -568,10 +571,11 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     private void recalculateCompositeRace() {
-        effectiveRace = null;
         Race intrinsicRace = getPersistentSpecies();
         Race suppressedRace = getSuppressedRace();
-        compositeRace = MetamorphosisStatusEffect.getEffectiveRace(entity, getSpellSlot()
+        Optional<Race> morphedRace = MetamorphosisStatusEffect.getEffectiveRace(entity);
+        effectiveRace = morphedRace.orElse(intrinsicRace);
+        compositeRace = morphedRace.orElseGet(() -> getSpellSlot()
                 .get(SpellPredicate.IS_MIMIC)
                 .map(AbstractDisguiseSpell::getDisguise)
                 .map(EntityAppearance::getAppearance)
@@ -584,6 +588,11 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             AmuletSelectors.PEARL_NECKLACE.test(entity) ? suppressedRace.or(Race.SEAPONY) : null
         );
         UCriteria.PLAYER_CHANGE_RACE.trigger(entity);
+        if (prevMorphedRace.isPresent() && morphedRace.isEmpty()) {
+            ParticleUtils.spawnParticles(new MagicParticleEffect(0x886F0F), entity, 50);
+            entity.getWorld().playSound(null, entity.getX(), entity.getY(), entity.getZ(), USounds.ENTITY_PLAYER_CHANGELING_TRANSFORM, entity.getSoundCategory(), 1, 1);
+        }
+        prevMorphedRace = morphedRace;
     }
 
     @Override
