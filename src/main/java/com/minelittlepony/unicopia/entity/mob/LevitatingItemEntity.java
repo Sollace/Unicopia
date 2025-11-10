@@ -31,6 +31,8 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
@@ -171,6 +173,19 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
         return dataTracker.get(MINING_FACE);
     }
 
+    @Override
+    public EntityDimensions getDimensions(EntityPose pose) {
+        var myDimensions = super.getDimensions(pose);
+        if (this.hasPassengers()) {
+            var dimensions = getPassengerList().getFirst().getDimensions(pose);
+            return new EntityDimensions(
+                    Math.max(dimensions.width() + 0.1F, myDimensions.width()),
+                    Math.max(dimensions.height() * 0.7F, myDimensions.height()),
+                    myDimensions.eyeHeight(), myDimensions.attachments(), false);
+        }
+        return myDimensions;
+    }
+
     public Action getDefaultAction() {
         return Action.GRAB;
     }
@@ -184,7 +199,9 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
     }
 
     protected void recomputeValidActions(Consumer<Action> collector) {
-        collector.accept(Action.GRAB);
+        if (!hasPassengers()) {
+            collector.accept(Action.GRAB);
+        }
         collector.accept(Action.MOVE);
         collector.accept(Action.DROP);
         collector.accept(isHoldingPosition() ? Action.FOLLOW : Action.TETHER);
@@ -362,6 +379,8 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
             }
         }
 
+        calculateDimensions();
+
         if (getStack().isEmpty() && getPassengerList().isEmpty()) {
             discard();
         }
@@ -428,12 +447,12 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
                 setHoldingPosition(null);
             }
 
-            boolean isBeingLookedAt = Pony.of(master).isLookingAt(this);
+            boolean isBeingLookedAt = Pony.of(master).isLookingAt(this) || isConnectedThroughVehicle(master);
 
-            Vec3d targetPosition = isBeingLookedAt ? getPos() : holdPosition == null ? master.getEyePos().add(master.getRotationVector(
+            Vec3d targetPosition = isBeingLookedAt ? getPos().add(0, MathHelper.sin(age / 15F) * 0.02F, 0) : (holdPosition == null ? master.getEyePos().add(master.getRotationVector(
                     (float)polarPositionOffset.x * MathHelper.DEGREES_PER_RADIAN,
                     master.getBodyYaw() + (float)polarPositionOffset.z * MathHelper.DEGREES_PER_RADIAN
-            )).add(manualPositionOffset) : holdPosition;
+            )).add(manualPositionOffset) : holdPosition).add(0, MathHelper.sin(age / 15F) * 0.2F + 0.2F, 0);
 
             BlockPos miningPos = getMiningPos().orElse(null);
 
@@ -613,7 +632,7 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
 
     @Override
     public boolean shouldSave() {
-        return false;
+        return hasPassengers() && super.shouldSave();
     }
 
     @Override
