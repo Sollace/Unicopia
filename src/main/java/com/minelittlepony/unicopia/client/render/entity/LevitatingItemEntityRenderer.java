@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
-import com.minelittlepony.common.util.render.RenderLayerUtil;
-import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity;
 
 import net.minecraft.client.MinecraftClient;
@@ -57,13 +55,13 @@ public class LevitatingItemEntityRenderer extends EntityRenderer<LevitatingItemE
 
             itemRenderer.renderItem(entity.getMaster(), entity.getStack(), ModelTransformationMode.GROUND, false, matrices, vertices, entity.getWorld(), light, OverlayTexture.DEFAULT_UV, 0);
 
-            matrices.scale(1.2F, 1.2F, 1.2F);
+            /*matrices.scale(1.2F, 1.2F, 1.2F);
 
             itemRenderer.renderItem(entity.getMaster(), entity.getStack(), ModelTransformationMode.GROUND, false, matrices, layer -> {
                 return vertices.getBuffer(RenderLayerUtil.getTexture(layer)
                         .map(texture -> RenderLayers.getMagicColored(texture, RenderLayers.DEFAULT_MAGIC_COLOR))
                         .orElse(RenderLayers.getMagicColored()));
-            }, entity.getWorld(), light, OverlayTexture.DEFAULT_UV, 0);
+            }, entity.getWorld(), light, OverlayTexture.DEFAULT_UV, 0);*/
 
             matrices.pop();
 
