@@ -22,12 +22,12 @@ public class UnicornTelekinesisAbility implements Ability<Numeric> {
 
     @Override
     public int getWarmupTime(Pony player) {
-        return 1;
+        return 10;
     }
 
     @Override
     public int getCooldownTime(Pony player) {
-        return 1;
+        return 10;
     }
 
     @Override
@@ -65,17 +65,17 @@ public class UnicornTelekinesisAbility implements Ability<Numeric> {
 
     @Override
     public boolean onQuickAction(Pony player, ActivationType type, Optional<Numeric> data) {
-        return type == ActivationType.TAP && data.filter(d -> apply(player, d)).isPresent();
+        return (type == ActivationType.TAP || type == ActivationType.DOUBLE_TAP) && (player.isClient() || data.filter(d -> apply(player, d)).isPresent());
     }
 
     @Override
     public boolean acceptsQuickAction(Pony player, ActivationType type) {
-        return type == ActivationType.NONE || type == ActivationType.TAP;
+        return type == ActivationType.NONE || type == ActivationType.TAP || type == ActivationType.DOUBLE_TAP;
     }
 
     @Override
     public Optional<Numeric> prepareQuickAction(Pony player, ActivationType type) {
-        return type == ActivationType.TAP ? prepare(player) : Optional.empty();
+        return type == ActivationType.DOUBLE_TAP ? Numeric.of(2) : type == ActivationType.TAP ? prepare(player) : Optional.empty();
     }
 
     @Override
@@ -95,6 +95,11 @@ public class UnicornTelekinesisAbility implements Ability<Numeric> {
             Trace trace = Trace.create(player.asEntity(), maxDistance, 1, hit -> (EquinePredicates.VALID_LIVING_AND_NOT_MAGIC_IMMUNE.test(hit) || hit instanceof ItemEntity) && !player.asEntity().isConnectedThroughVehicle(hit));
 
             return trace.getEntity().filter(entity -> player.getLevitatingItems().addPassenger(entity)).isPresent();
+        }
+        if (data.type() == 2) {
+            player.getLevitatingItems().dropEverything();
+            player.sendUpdatePacket();
+            return true;
         }
 
         return false;
