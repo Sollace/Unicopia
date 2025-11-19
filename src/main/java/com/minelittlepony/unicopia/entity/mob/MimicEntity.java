@@ -84,7 +84,7 @@ public class MimicEntity extends PathAwareEntity {
                 || !world.getBlockState(pos).isIn(UTags.Blocks.MIMIC_CHESTS)
                 || !(world.getBlockEntity(pos) instanceof ChestBlockEntity be)
                 || be.getCachedState().getOrEmpty(ChestBlock.CHEST_TYPE).orElse(ChestType.SINGLE) != ChestType.SINGLE) {
-            return true;
+            return false;
         }
 
         // TODO: Local difficulty?
