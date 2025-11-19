@@ -25,6 +25,7 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -297,6 +298,20 @@ public class SpellbookScreenHandler extends ScreenHandler {
         sourceSlot.onTakeItem(player, transferredStack);
 
         return stack;
+    }
+
+    @Override
+    public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
+        if (slotIndex >= 0 && slotIndex < slots.size() && getSlot(slotIndex) instanceof SpellSlot slot) {
+            ItemStack cursorStack = getCursorStack();
+            if (actionType != SlotActionType.PICKUP || !slot.canInsert(cursorStack)) {
+                return;
+            }
+
+            slot.swapSpells(cursorStack);
+        } else {
+            super.onSlotClick(slotIndex, button, actionType, player);
+        }
     }
 
     @Override

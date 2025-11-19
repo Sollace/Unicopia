@@ -3,7 +3,6 @@ package com.minelittlepony.unicopia.container.inventory;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.EnchantableItem;
@@ -11,6 +10,7 @@ import com.minelittlepony.unicopia.item.UItems;
 
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -44,24 +44,25 @@ public class SpellSlot extends Slot implements SpellbookSlot {
 
     @Override
     public boolean canInsert(ItemStack stack) {
-        return stack.isOf(UItems.GEMSTONE);
+        return stack.isOf(UItems.GEMSTONE) && stack.getCount() == 1;
     }
 
     @Override
     public ItemStack getStack() {
         var spell = getSpell();
-        return spell.isEmpty() ? UItems.GEMSTONE.getDefaultStack() : spell.getDefaultStack();
+        return spell.isEmpty() ? Items.AIR.getDefaultStack() : spell.getDefaultStack();
     }
 
     @Override
     public void setStackNoCallbacks(ItemStack stack) {
-        if (stack.isEmpty()) {
-            pony.getCharms().equipSpell(hand, SpellType.EMPTY_KEY.withTraits());
-        } else {
-            var result = EnchantableItem.consumeSpell(stack, pony.asEntity(), null, true);
 
-            pony.getCharms().equipSpell(hand, result.getValue());
-        }
+    }
+
+    public void swapSpells(ItemStack stack) {
+        var result = EnchantableItem.consumeSpell(stack, pony.asEntity(), null, true);
+        var spell = getSpell();
+        spell.traits().applyTo(EnchantableItem.enchant(stack, spell.type()));
+        pony.getCharms().equipSpell(hand, result.getValue());
     }
 
     @Override
