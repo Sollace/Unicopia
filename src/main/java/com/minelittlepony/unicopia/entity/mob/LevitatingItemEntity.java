@@ -410,7 +410,7 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
         BlockState state = getWorld().getBlockState(blockBreakingRecord.pos);
         lookAt(EntityAnchor.EYES, blockBreakingRecord.pos.toCenterPos());
 
-        if (!state.equals(blockBreakingRecord.state) || !master.canModifyAt(sw, blockBreakingRecord.pos) || squaredDistanceTo(blockBreakingRecord.pos.toCenterPos()) > 100) {
+        if (state.isAir() || !state.equals(blockBreakingRecord.state) || !master.canModifyAt(sw, blockBreakingRecord.pos) || squaredDistanceTo(blockBreakingRecord.pos.toCenterPos()) > 100) {
             stopMining(blockBreakingRecord.pos);
         } else {
             FakePlayer fakePlayer = FakePlayer.get(sw, new GameProfile(getMasterId().orElse(null), "[Levitated Item Entity " + getUuid().toString() + "]"));

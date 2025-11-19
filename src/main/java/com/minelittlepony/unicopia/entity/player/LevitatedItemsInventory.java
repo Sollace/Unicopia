@@ -290,7 +290,7 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
         }
 
         public boolean tryDiscard() {
-            if (breakingProgress >= 1F || player.asWorld().getBlockState(pos) != state || claimants.isEmpty()) {
+            if (breakingProgress >= 1F || player.asWorld().getBlockState(pos) != state || state.isAir() || claimants.isEmpty()) {
                 new HashSet<>(claimants).forEach(claimant -> claimant.stopMining(pos));
                 claimants.clear();
                 return true;
