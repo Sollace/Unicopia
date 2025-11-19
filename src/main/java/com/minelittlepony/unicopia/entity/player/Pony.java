@@ -314,10 +314,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         effectiveRace = null;
         ticksInSun = 0;
 
-        if (!race.canCast()) {
-            levitatingItems.dropEverything();
-        }
-
         gravity.updateFlightState();
         entity.sendAbilitiesUpdate();
         recalculateCompositeRace();

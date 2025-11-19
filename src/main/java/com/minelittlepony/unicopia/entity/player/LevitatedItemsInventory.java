@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity;
 import com.minelittlepony.unicopia.item.ForageableItem;
 import com.minelittlepony.unicopia.util.Copyable;
@@ -211,6 +212,10 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
     @Override
     public void tick() {
         if (!player.isClient()) {
+            if (!Abilities.TELEKINESIS.canUse(player.getCompositeRace())) {
+                dropEverything();
+            }
+
             List<LevitatingItemEntity> copy = new ArrayList<>(pending);
             pending.clear();
             copy.forEach(player.asWorld()::spawnEntity);
