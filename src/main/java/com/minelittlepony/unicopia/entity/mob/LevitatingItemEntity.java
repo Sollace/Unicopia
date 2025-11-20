@@ -214,7 +214,9 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
     public void handleAction(Action action, PlayerEntity player, Optional<Vec3d> direction) {
         switch (action) {
             case GRAB:
-                player.giveItemStack(getStack());
+                if (!getWorld().isClient) {
+                    player.giveItemStack(getStack());
+                }
                 remove(RemovalReason.DISCARDED);
                 playSound(SoundEvents.ENTITY_ITEM_PICKUP, 2, 1);
                 break;
