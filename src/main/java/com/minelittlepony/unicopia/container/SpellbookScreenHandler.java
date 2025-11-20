@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.container.inventory.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
+import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.recipe.URecipes;
 import com.mojang.datafixers.util.Pair;
 
@@ -304,11 +305,9 @@ public class SpellbookScreenHandler extends ScreenHandler {
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
         if (slotIndex >= 0 && slotIndex < slots.size() && getSlot(slotIndex) instanceof SpellSlot slot) {
             ItemStack cursorStack = getCursorStack();
-            if (actionType != SlotActionType.PICKUP || !slot.canInsert(cursorStack)) {
-                return;
+            if (actionType == SlotActionType.PICKUP && cursorStack.isOf(UItems.GEMSTONE) && cursorStack.getCount() == 1) {
+                slot.swapSpells(cursorStack);
             }
-
-            slot.swapSpells(cursorStack);
         } else {
             super.onSlotClick(slotIndex, button, actionType, player);
         }

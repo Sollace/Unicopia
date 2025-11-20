@@ -6,8 +6,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellTyp
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.EnchantableItem;
-import com.minelittlepony.unicopia.item.UItems;
-
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -44,7 +42,7 @@ public class SpellSlot extends Slot implements SpellbookSlot {
 
     @Override
     public boolean canInsert(ItemStack stack) {
-        return stack.isOf(UItems.GEMSTONE) && stack.getCount() == 1;
+        return false;
     }
 
     @Override
