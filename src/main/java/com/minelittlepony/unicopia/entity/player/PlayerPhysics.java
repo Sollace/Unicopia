@@ -707,7 +707,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             applyTurbulance(velocity);
         } else {
             float targetUpdraft;
-            if (entity.getWorld().isChunkLoaded(entity.getBlockPos())) {
+            if (pony.isPosLoaded(entity.getBlockPos())) {
                 targetUpdraft = WeatherConditions.THERMAL_FIELD.getValue(entity.getWorld(), new BlockPos.Mutable().set(entity.getBlockPos())) / 3F;
                 targetUpdraft *= 1 + motion;
                 if (isGravityNegative()) {

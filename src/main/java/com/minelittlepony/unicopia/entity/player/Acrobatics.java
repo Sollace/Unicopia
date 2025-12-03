@@ -184,7 +184,7 @@ public class Acrobatics implements Tickable, NbtSerialisable {
 
     private boolean canKeepHanging() {
         return pony.getCompositeRace().any(Race::canHang) && (ticksHanging++ <= 20 || getHangingPosition().filter(hangingPos -> {
-            return pony.getCompositeRace().includes(Race.BAT) || hangingPos.isWithinDistance(pony.asEntity().getBlockPos(), 1.5) && canHangAt(hangingPos);
+            return pony.getCompositeRace().includes(Race.BAT) || hangingPos.isWithinDistance(pony.asEntity().getBlockPos(), 1.5) && (!pony.isPosLoaded(hangingPos) || canHangAt(hangingPos));
         }).isPresent());
     }
 
