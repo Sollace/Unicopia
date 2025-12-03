@@ -27,7 +27,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 
-public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, SpecterEntityRenderer.SpecterEntityModel> {
+public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, SpecterEntityRenderer.SpecterEntityModel> implements HitboxController<SpecterEntity> {
     private static final Identifier TEXTURE = Unicopia.id("textures/entity/specter.png");
 
     public SpecterEntityRenderer(Context context) {
@@ -41,6 +41,12 @@ public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, Sp
     @Override
     public Identifier getTexture(SpecterEntity entity) {
         return TEXTURE;
+    }
+
+    @Override
+    public boolean shouldRenderHitbox(SpecterEntity entity) {
+        entity.lastHitboxRenderTime = System.currentTimeMillis();
+        return false;
     }
 
     @Override
@@ -71,6 +77,20 @@ public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, Sp
             super.animateModel(entity, f, g, h);
             double distance = entity.squaredDistanceTo(MinecraftClient.getInstance().gameRenderer.getCamera().getPos());
             alpha = distance <= 400 ? 0 : ColorHelper.channelFromFloat((float)Math.clamp(((distance - 400D) / 600D), 0, 1));
+            if (!entity.isAngryAt(MinecraftClient.getInstance().player)) {
+                long now = System.currentTimeMillis();
+                if (entity.lastHitboxRenderTime > now - 3000) {
+                    alpha = 0;
+                }
+                if (entity.lastInViewportTime > now - 100) {
+                    if (entity.hideInViewportTime < now) {
+                        alpha = 0;
+                    }
+                } else {
+                    entity.hideInViewportTime = now + 300 + entity.getId();
+                }
+                entity.lastInViewportTime = now;
+            }
         }
 
         @Override

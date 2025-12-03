@@ -1,17 +1,22 @@
 package com.minelittlepony.unicopia.mixin.client;
 
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.minelittlepony.unicopia.client.render.WorldRenderDelegate;
+import com.minelittlepony.unicopia.client.render.entity.HitboxController;
 import com.minelittlepony.unicopia.client.render.spell.SpellEffectsRenderDispatcher;
 import com.minelittlepony.unicopia.entity.Equine;
 
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 
@@ -25,6 +30,15 @@ abstract class MixinEntityRenderDispatcher implements SpellEffectsRenderDispatch
         if (WorldRenderDelegate.INSTANCE.beforeEntityRender(entity, x, y, z, yaw, tickDelta, matrices, vertexConsumers, light)) {
             info.cancel();
         }
+    }
+
+    @ModifyExpressionValue(method = RENDER, at = @At(
+            value = "FIELD",
+            target = "net/minecraft/client/render/entity/EntityRenderDispatcher.renderHitboxes:Z",
+            opcode = Opcodes.GETFIELD
+    ))
+    private <E extends Entity> boolean beforeRenderHitboxes(boolean renderHitboxes, E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, @Local EntityRenderer<? super E> entityRenderer) {
+        return renderHitboxes && HitboxController.of(entityRenderer).shouldRenderHitbox(entity);
     }
 
     @Inject(method = RENDER, at = @At("RETURN"))

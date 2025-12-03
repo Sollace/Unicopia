@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.entity.mob.MimicEntity;
 import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
 
 import net.minecraft.block.ChestBlock;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -14,8 +15,11 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.*;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
@@ -24,8 +28,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.shape.VoxelShape;
 
-public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEntityRenderer.MimicModel> {
+public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEntityRenderer.MimicModel> implements HitboxController<MimicEntity> {
     private static final Identifier TEXTURE = Identifier.ofVanilla("textures/entity/chest/normal.png");
 
     public MimicEntityRenderer(EntityRendererFactory.Context context) {
@@ -34,9 +39,21 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
     }
 
     @Override
+    public boolean shouldRenderHitbox(MimicEntity entity) {
+        return entity.getPeekAmount() > 0.3F;
+    }
+
+    @Override
     public void render(MimicEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
         matrices.push();
-        matrices.translate(0, 0.3F * entity.getPeekAmount(), 0);
+
+        float peek = entity.getPeekAmount();
+        if (peek < 0.3F) {
+            peek = 0;
+            entity.prevBodyYaw = entity.bodyYaw = entity.getHorizontalFacing().asRotation();
+        }
+
+        matrices.translate(0, 0.3F * peek, 0);
 
         float legAngle = entity.limbAnimator.getPos(tickDelta);
         float legSpeed = entity.limbAnimator.getSpeed(tickDelta);
@@ -77,12 +94,58 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
                 matrices.translate(-0.5, -1.5, -0.5);
                 tileData.setWorld(entity.getWorld());
                 ((MixinBlockEntity)tileData).setPos(entity.getBlockPos());
-                MinecraftClient.getInstance().getBlockEntityRenderDispatcher().render(tileData, tickDelta, matrices, vertexConsumers);
+
+                MinecraftClient client = MinecraftClient.getInstance();
+
+                BlockRenderManager renderer = client.getBlockRenderManager();
+                VertexConsumer buffer = vertexConsumers.getBuffer(RenderLayers.getBlockLayer(tileData.getCachedState()));
+
+                renderer.renderBlock(tileData.getCachedState(), tileData.getPos(), entity.getBlockRenderView(), matrices, buffer, false, entity.getRandom());
+
+                client.getBlockEntityRenderDispatcher().render(tileData, tickDelta, matrices, vertexConsumers);
+
+                if (client.targetedEntity == entity) {
+                    VertexConsumer linesBuffer = vertexConsumers.getBuffer(RenderLayer.getLines());
+                    VoxelShape shape = tileData.getCachedState().getOutlineShape(entity.getBlockRenderView(), tileData.getPos(), ShapeContext.of(client.gameRenderer.getCamera().getFocusedEntity()));
+                    drawCuboidShapeOutline(matrices, linesBuffer, shape, 0, 0, 0, 0, 0, 0, 0.4F);
+                }
+
                 matrices.pop();
             }
         }
-
     }
+
+    private static void drawCuboidShapeOutline(
+            MatrixStack matrices,
+            VertexConsumer vertexConsumer,
+            VoxelShape shape,
+            double offsetX,
+            double offsetY,
+            double offsetZ,
+            float red,
+            float green,
+            float blue,
+            float alpha
+        ) {
+            MatrixStack.Entry entry = matrices.peek();
+            shape.forEachEdge(
+                (minX, minY, minZ, maxX, maxY, maxZ) -> {
+                    float k = (float)(maxX - minX);
+                    float l = (float)(maxY - minY);
+                    float m = (float)(maxZ - minZ);
+                    float n = MathHelper.sqrt(k * k + l * l + m * m);
+                    k /= n;
+                    l /= n;
+                    m /= n;
+                    vertexConsumer.vertex(entry, (float)(minX + offsetX), (float)(minY + offsetY), (float)(minZ + offsetZ))
+                        .color(red, green, blue, alpha)
+                        .normal(entry, k, l, m);
+                    vertexConsumer.vertex(entry, (float)(maxX + offsetX), (float)(maxY + offsetY), (float)(maxZ + offsetZ))
+                        .color(red, green, blue, alpha)
+                        .normal(entry, k, l, m);
+                }
+            );
+        }
 
     static class MimicModel extends EntityModel<MimicEntity> {
         private ModelPart part;

@@ -6,6 +6,7 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.client.render.VirtualBlockRenderView;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
 import com.minelittlepony.unicopia.util.InventoryUtil;
@@ -49,6 +50,7 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.World;
 
 public class MimicEntity extends PathAwareEntity {
@@ -62,6 +64,29 @@ public class MimicEntity extends PathAwareEntity {
 
     private int openTicks;
     private final Set<PlayerEntity> observingPlayers = new HashSet<>();
+
+    private final VirtualBlockRenderView renderView = new VirtualBlockRenderView() {
+        @Override
+        public BlockRenderView proxy() {
+            return getWorld();
+        }
+
+        @Override
+        public BlockEntity getBlockEntity(BlockPos pos) {
+            if (pos.equals(getBlockPos())) {
+                return chestData;
+            }
+            return VirtualBlockRenderView.super.getBlockEntity(pos);
+        }
+
+        @Override
+        public BlockState getBlockState(BlockPos pos) {
+            if (pos.equals(getBlockPos()) && chestData != null && chestData.getCachedState() != null) {
+                return chestData.getCachedState();
+            }
+            return VirtualBlockRenderView.super.getBlockState(pos);
+        }
+    };
 
     static void bootstrap() {
         PlayerBlockBreakEvents.BEFORE.register((World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) -> {
@@ -169,6 +194,10 @@ public class MimicEntity extends PathAwareEntity {
         if (!getWorld().isClient) {
             dataTracker.set(CHEST_DATA, writeChestData(chestData));
         }
+    }
+
+    public BlockRenderView getBlockRenderView() {
+        return renderView;
     }
 
     @Nullable
