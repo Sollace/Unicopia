@@ -706,10 +706,16 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (entity.getWorld().hasRain(entity.getBlockPos())) {
             applyTurbulance(velocity);
         } else {
-            float targetUpdraft = WeatherConditions.THERMAL_FIELD.getValue(entity.getWorld(), new BlockPos.Mutable().set(entity.getBlockPos())) / 3F;
-            targetUpdraft *= 1 + motion;
-            if (isGravityNegative()) {
-                targetUpdraft *= -1;
+            float targetUpdraft;
+            if (entity.getWorld().isChunkLoaded(entity.getBlockPos())) {
+                targetUpdraft = WeatherConditions.THERMAL_FIELD.getValue(entity.getWorld(), new BlockPos.Mutable().set(entity.getBlockPos())) / 3F;
+                targetUpdraft *= 1 + motion;
+                if (isGravityNegative()) {
+                    targetUpdraft *= -1;
+                }
+
+            } else {
+                targetUpdraft = this.updraft.getValue();
             }
             this.updraft.update(targetUpdraft, targetUpdraft > this.updraft.getTarget() ? 30_000 : 3000);
             double updraft = this.updraft.getValue();
@@ -784,10 +790,6 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         Vec3d gust = WeatherConditions.getGustStrength(entity.getWorld(), entity.getBlockPos())
                 .multiply(globalEffectStrength / 100D)
                 .multiply(1 / (1 + Math.floor(pony.getLevel().get() / 10F)));
-
-
-
-
 
         if (effectStrength * gust.getX() >= 1) {
             SoundEmitter.playSoundAt(entity, USounds.AMBIENT_WIND_GUST, SoundCategory.AMBIENT, 3, 1);
