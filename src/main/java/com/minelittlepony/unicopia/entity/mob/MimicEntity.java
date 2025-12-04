@@ -187,12 +187,14 @@ public class MimicEntity extends PathAwareEntity {
         }
     }
 
-    public void setChest(ChestBlockEntity chestData) {
+    public void setChest(@Nullable ChestBlockEntity chestData) {
         this.chestData = chestData;
-        ((MimicGeneratable)chestData).setAllowMimics(false);
-        chestData.setWorld(getWorld());
+        if (chestData != null) {
+            ((MimicGeneratable)chestData).setAllowMimics(false);
+            chestData.setWorld(getWorld());
+        }
         if (!getWorld().isClient) {
-            dataTracker.set(CHEST_DATA, writeChestData(chestData));
+            dataTracker.set(CHEST_DATA, chestData == null ? new NbtCompound() : writeChestData(chestData));
         }
     }
 
@@ -339,7 +341,7 @@ public class MimicEntity extends PathAwareEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        chestData = nbt.contains("chest", NbtElement.COMPOUND_TYPE) ? readChestData(nbt.getCompound("chest")) : null;
+        setChest(nbt.contains("chest", NbtElement.COMPOUND_TYPE) ? readChestData(nbt.getCompound("chest")) : null);
     }
 
     @Nullable
