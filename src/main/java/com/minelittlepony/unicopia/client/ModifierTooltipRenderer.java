@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.diet.PonyDiets;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.GlowableItem;
+import com.minelittlepony.unicopia.item.component.MimicComponent;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 
 import net.minecraft.component.ComponentType;
@@ -37,6 +38,7 @@ public class ModifierTooltipRenderer {
         appendTooltip(stack, UDataComponentTypes.ISSUER, context, textConsumer, type);
         appendTooltip(stack, UDataComponentTypes.BUTTERFLY_VARIANT, context, textConsumer, type);
         appendTooltip(stack, UDataComponentTypes.BALLOON_DESIGN, context, textConsumer, type);
+        MimicComponent.appendTooltip(stack, context, textConsumer, type);
         EnchantableItem.getSpellEffect(stack).appendTooltip(context, textConsumer, type);
         if (GlowableItem.isGlowing(stack)) {
             textConsumer.accept(Text.translatable("item.unicopia.friendship_bracelet.glowing").formatted(Formatting.ITALIC, Formatting.GRAY));
@@ -47,8 +49,12 @@ public class ModifierTooltipRenderer {
         }
     }
 
-    private <T extends TooltipAppender> void appendTooltip(ItemStack stack, ComponentType<T> componentType, Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type) {
-        T tooltipAppender = stack.get(componentType);
+    private void appendTooltip(ItemStack stack, ComponentType<? extends TooltipAppender> componentType, Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type) {
+        appendTooltip(stack, componentType, context, textConsumer, type, null);
+    }
+
+    private void appendTooltip(ItemStack stack, ComponentType<? extends TooltipAppender> componentType, Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type, TooltipAppender fallback) {
+        TooltipAppender tooltipAppender = stack.getOrDefault(componentType, fallback);
         if (tooltipAppender != null) {
             tooltipAppender.appendTooltip(context, textConsumer, type);
         }

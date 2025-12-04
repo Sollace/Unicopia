@@ -165,6 +165,7 @@ public class WeatherConditions extends PersistentState implements Tickable {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public static Vec3d getAirflow(BlockPos pos, World world) {
         if (!world.isChunkLoaded(pos)) {
             return Vec3d.ZERO;

@@ -391,6 +391,8 @@
   "block.unicopia.oats_stem": "Oats",
   "block.unicopia.oats_crown": "Oats",
 
+  "component.unicopia.mimic.is_mimic": "Mimic",
+
   "entity.unicopia.butterfly": "Butterfly",
   "entity.unicopia.loot_bug": "Loot bug",
   "entity.unicopia.twittermite": "Twittermite",
