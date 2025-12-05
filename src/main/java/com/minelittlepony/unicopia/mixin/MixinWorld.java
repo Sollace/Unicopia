@@ -68,7 +68,7 @@ abstract class MixinWorld implements WorldAccess, BlockDestructionManager.Source
     }
 
     @ModifyReturnValue(method = "hasRain", at = @At("RETURN"))
-    private boolean onHasRain(boolean hasRain, BlockPos pos, CallbackInfoReturnable<Boolean> info) {
+    private boolean onHasRain(boolean hasRain, BlockPos pos) {
         return (hasRain && isBelowCloudLayer(pos)) || isInRangeOfStorm(pos);
     }
 }
