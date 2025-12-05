@@ -43,11 +43,11 @@ public class WaterLoggingManager<O, S extends State<O, S>> {
     }
 
     @SuppressWarnings("unchecked")
-    public void getPlacementState(ItemPlacementContext context, CallbackInfoReturnable<BlockState> info) {
-        BlockState state = info.getReturnValue();
+    public BlockState getPlacementState(BlockState state, ItemPlacementContext context) {
         if (state != null && appliesTo((O)state.getBlock(), (S)state)) {
-            info.setReturnValue(state.with(Properties.WATERLOGGED, context.getWorld().getFluidState(context.getBlockPos()).isIn(FluidTags.WATER)));
+            return state.with(Properties.WATERLOGGED, context.getWorld().getFluidState(context.getBlockPos()).isIn(FluidTags.WATER));
         }
+        return state;
     }
 
     public void getFluidState(O owner, S state, CallbackInfoReturnable<FluidState> info) {

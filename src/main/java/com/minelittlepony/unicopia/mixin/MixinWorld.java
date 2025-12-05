@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.entity.duck.RotatedView;
 import com.minelittlepony.unicopia.server.world.BlockDestructionManager;
 import com.minelittlepony.unicopia.server.world.WeatherAccess;
@@ -66,9 +67,9 @@ abstract class MixinWorld implements WorldAccess, BlockDestructionManager.Source
         }
     }
 
-    @Inject(method = "hasRain", at = @At("RETURN"), cancellable = true)
-    private void onHasRain(BlockPos pos, CallbackInfoReturnable<Boolean> info) {
-        info.setReturnValue((info.getReturnValue() && isBelowCloudLayer(pos)) || isInRangeOfStorm(pos));
+    @ModifyReturnValue(method = "hasRain", at = @At("RETURN"))
+    private boolean onHasRain(boolean hasRain, BlockPos pos, CallbackInfoReturnable<Boolean> info) {
+        return (hasRain && isBelowCloudLayer(pos)) || isInRangeOfStorm(pos);
     }
 }
 

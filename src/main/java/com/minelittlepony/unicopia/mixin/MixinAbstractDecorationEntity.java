@@ -11,7 +11,7 @@ import net.minecraft.entity.decoration.ItemFrameEntity;
 
 @Mixin(BlockAttachedEntity.class)
 abstract class MixinAbstractDecorationEntity {
-    @Inject(method = "tick()V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "tick()V", at = @At("HEAD"))
     private void beforeTick(CallbackInfo info) {
         final Object _this = this;
         if (_this instanceof ItemFrameEntity self) {

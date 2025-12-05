@@ -3,8 +3,6 @@ package com.minelittlepony.unicopia.mixin;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.entity.mob.MimicEntity;
@@ -25,9 +23,9 @@ import net.minecraft.world.World;
 abstract class MixinBlockItem extends Item {
     MixinBlockItem() {super(null); }
 
-    @Inject(method = "getPlacementState", at = @At("RETURN"), cancellable = true)
-    private void onGetPlacementState(ItemPlacementContext context, CallbackInfoReturnable<BlockState> info) {
-        WaterLoggingManager.getInstance().getPlacementState(context, info);
+    @ModifyReturnValue(method = "getPlacementState", at = @At("RETURN"))
+    private BlockState onGetPlacementState(BlockState state, ItemPlacementContext context) {
+        return WaterLoggingManager.getInstance().getPlacementState(state, context);
     }
 
     @ModifyReturnValue(method = "writeNbtToBlockEntity", at = @At("RETURN"))
