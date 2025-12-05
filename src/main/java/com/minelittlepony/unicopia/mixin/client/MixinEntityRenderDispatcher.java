@@ -2,13 +2,13 @@ package com.minelittlepony.unicopia.mixin.client;
 
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import com.llamalad7.mixinextras.sugar.Local;
 import com.minelittlepony.unicopia.client.render.WorldRenderDelegate;
 import com.minelittlepony.unicopia.client.render.entity.HitboxController;
 import com.minelittlepony.unicopia.client.render.spell.SpellEffectsRenderDispatcher;
@@ -37,14 +37,18 @@ abstract class MixinEntityRenderDispatcher implements SpellEffectsRenderDispatch
             target = "net/minecraft/client/render/entity/EntityRenderDispatcher.renderHitboxes:Z",
             opcode = Opcodes.GETFIELD
     ))
-    private <E extends Entity> boolean beforeRenderHitboxes(boolean renderHitboxes, E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, @Local EntityRenderer<? super E> entityRenderer) {
-        return renderHitboxes && HitboxController.of(entityRenderer).shouldRenderHitbox(entity);
+    private <E extends Entity> boolean beforeRenderHitboxes(boolean renderHitboxes,
+            E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+        return renderHitboxes && HitboxController.of(getRenderer(entity)).shouldRenderHitbox(entity);
     }
 
     @Inject(method = RENDER, at = @At("RETURN"))
     private <E extends Entity> void afterRender(E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
         Equine.of(entity).ifPresent(eq -> WorldRenderDelegate.INSTANCE.afterEntityRender(eq, matrices, vertexConsumers, light));
     }
+
+    @Shadow
+    public abstract <T extends Entity> EntityRenderer<? super T> getRenderer(T entity);
 
     @Accessor("renderShadows")
     @Override
