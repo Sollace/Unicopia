@@ -267,10 +267,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             lastPos = Optional.empty();
         }
 
-        lastVel = lastPos.map(entity.getPos()::subtract).orElse(Vec3d.ZERO);
+        lastVel = lastPos.map(entity.getPos()::subtract).orElse(entity.getVelocity());
         lastPos = Optional.of(entity.getPos());
 
-        final MutableVector velocity = new MutableVector(entity.getVelocity());
+        final MutableVector velocity = new MutableVector(pony.isClient() || Unicopia.getConfig().disableExperimentalServerVelocityFix.get() ? entity.getVelocity() : lastVel);
 
         FlightType type = recalculateFlightType();
 
@@ -450,7 +450,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             velocity.multiply(1 + horDiveScale, 1 + verDiveScale, 1 + horDiveScale);
         }
 
-        if (pony.asEntity().age % 2 == 0) {
+        if (pony.asEntity().age % 2 == 0 && !pony.isClient()) {
             if (ticksDiving > 0) {
                 pony.getMagicalReserves().getCharge().addPercent(1F);
             }
@@ -476,7 +476,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             entity.damage(entity.getDamageSources().generic(), 0.5F);
         }
 
-        if (type.isAvian() && !entity.getWorld().isClient) {
+        if (type.isAvian() && !pony.isClient()) {
             if (pony.getObservedSpecies() != Race.BAT && entity.getWorld().random.nextInt(9000) == 0) {
                 entity.dropItem(pony.getObservedSpecies() == Race.HIPPOGRIFF ? UItems.GRYPHON_FEATHER : UItems.PEGASUS_FEATHER);
                 playSound(USounds.ENTITY_PLAYER_PEGASUS_MOLT, 0.3F, 1);
@@ -486,7 +486,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         moveFlying(velocity);
 
-        if (entity.getWorld().isClient && ticksInAir % IDLE_FLAP_INTERVAL == 0 && entity.getVelocity().length() < 0.29) {
+        if (ticksInAir % IDLE_FLAP_INTERVAL == 0 && entity.getVelocity().length() < 0.29) {
             flapping = true;
             ticksToGlide = MAX_TICKS_TO_GLIDE;
         }
@@ -498,7 +498,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 }
             }
         } else if (type == FlightType.INSECTOID && !SpellPredicate.IS_DISGUISE.isOn(pony)) {
-            if (entity.getWorld().isClient && !soundPlaying) {
+            if (pony.isClient() && !soundPlaying) {
                 soundPlaying = true;
                 InteractionManager.getInstance().playLoopingSound(entity, InteractionManager.SOUND_CHANGELING_BUZZ, entity.getId());
             }
