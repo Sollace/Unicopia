@@ -1,3 +1,6 @@
 [submodule "BlockusAddon"]
     path = BlockusAddon
     url = https://github.com/Sollace/Unicopia-Blockus-Addon
+[submodule "Romanizer"]
+    path = Romanizer
+    url = https://github.com/Sollace/Romanizer
