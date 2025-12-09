@@ -35,7 +35,7 @@ class Slot {
     private final int labelX;
     private final int labelY;
 
-    private final int size;
+    protected final int size;
     private final int iconSize;
 
     private int backgroundU;
@@ -136,12 +136,16 @@ class Slot {
     }
 
     protected void renderContents(DrawContext context, AbilityDispatcher abilities, boolean bSwap, float tickDelta) {
+        renderForegroundLayer(context, 0, 0);
+    }
+
+    protected void renderForegroundLayer(DrawContext context, int uOffset, int vOffset) {
         // contents
         boolean flip = MinecraftClient.getInstance().player.getMainArm() == Arm.LEFT;
         if (flip) {
-            context.drawTexture(UHud.HUD_TEXTURE, 0, 0, size, size, foregroundU + size, foregroundV, -size, size, 128, 128);
+            context.drawTexture(UHud.HUD_TEXTURE, 0, 0, size, size, foregroundU + uOffset + size, foregroundV + vOffset, -size, size, 128, 128);
         } else {
-            context.drawTexture(UHud.HUD_TEXTURE, 0, 0, foregroundU, foregroundV, size, size, 128, 128);
+            context.drawTexture(UHud.HUD_TEXTURE, 0, 0, foregroundU + uOffset, foregroundV + vOffset, size, size, 128, 128);
         }
     }
 

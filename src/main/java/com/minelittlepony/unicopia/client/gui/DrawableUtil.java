@@ -91,8 +91,6 @@ public interface DrawableUtil {
 
     /**
      * Renders a colored arc.
-     *
-     * @param mirrorHorizontally Whether or not the arc must be mirrored across the horizontal plane. Will produce a bar that grows from the middle filling both sides.
      */
     static void drawArc(MatrixStack matrices, double innerRadius, double outerRadius, double startAngle, double arcAngle, int color) {
         if (Math.abs(arcAngle) < INCREMENT) {
