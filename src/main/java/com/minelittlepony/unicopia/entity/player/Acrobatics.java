@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.entity.player;
 
 import java.util.Optional;
 
+import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
@@ -18,6 +19,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.SideShapeType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundCategory;
@@ -184,7 +186,8 @@ public class Acrobatics implements Tickable, NbtSerialisable {
 
     private boolean canKeepHanging() {
         return pony.getCompositeRace().any(Race::canHang) && (ticksHanging++ <= 20 || getHangingPosition().filter(hangingPos -> {
-            return pony.getCompositeRace().includes(Race.BAT) || hangingPos.isWithinDistance(pony.asEntity().getBlockPos(), 1.5) && (!pony.isPosLoaded(hangingPos) || canHangAt(hangingPos));
+            Debug.drawBoxSelection(pony, ParticleTypes.PORTAL, hangingPos);
+            return pony.getCompositeRace().includes(Race.CHANGELING) || hangingPos.isWithinDistance(pony.asEntity().getBlockPos(), 1.001) && (!pony.isPosLoaded(hangingPos) || canHangAt(hangingPos));
         }).isPresent());
     }
 
