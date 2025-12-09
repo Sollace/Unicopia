@@ -4,3 +4,6 @@
 [submodule "Romanizer"]
     path = Romanizer
     url = https://github.com/Sollace/Romanizer
+[submodule "Unicopia.wiki"]
+    path = Unicopia.wiki
+    url = https://github.com/Sollace/Unicopia.wiki.git
