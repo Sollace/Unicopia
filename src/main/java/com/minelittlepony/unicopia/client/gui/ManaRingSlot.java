@@ -84,7 +84,9 @@ class ManaRingSlot extends Slot {
 
         matrices.pop();
         super.renderContents(context, abilities, bSwap, tickDelta);
-        renderForegroundLayer(context, size, 0);
+        if (canUseSuper) {
+            renderForegroundLayer(context, size, 0);
+        }
     }
 
     private double renderRing(MatrixStack matrices, double outerRadius, double innerRadius, double offsetAngle, double maxAngle, Bar bar, int color, float tickDelta) {
