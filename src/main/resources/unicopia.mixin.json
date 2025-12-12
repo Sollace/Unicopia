@@ -70,6 +70,8 @@
     "server.MixinServerPlayNetworkHandler",
     "server.MixinServerWorld",
     "server.MixinSleepManager",
+    "server.MixinStructurePool",
+    "server.MixinStructureProcessorList",
     "gravity.MixinBrain",
     "gravity.MixinEntity",
     "gravity.MixinLivingEntity",

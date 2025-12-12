@@ -82,5 +82,7 @@ public class Datagen implements DataGeneratorEntrypoint {
         builder.addRegistry(RegistryKeys.BIOME, UWorldGenFeatures::bootstrapBiomes);
         builder.addRegistry(RegistryKeys.PAINTING_VARIANT, paintingVariants);
         builder.addRegistry(RegistryKeys.ENCHANTMENT, enchantments);
+        builder.addRegistry(RegistryKeys.TEMPLATE_POOL, CustomStructurePools::bootstrapPools);
+        builder.addRegistry(RegistryKeys.PROCESSOR_LIST, CustomStructurePools::bootstrapProcessors);
     }
 }
