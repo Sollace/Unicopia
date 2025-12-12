@@ -69,7 +69,7 @@ public class Acrobatics implements Tickable, NbtSerialisable {
                 entity.setVelocity(vel.x, 0, vel.z);
             }
 
-            distanceClimbed += Math.abs(pony.getMotion().getClientVelocity().y);
+            distanceClimbed += Math.abs(pony.getMotion().getTrackedVelocity().y);
 
             BlockPos hangingPos = pony.getPhysics().getHeadPosition();
             boolean canhangHere = canHangAt(hangingPos);
@@ -183,10 +183,10 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     private boolean canKeepHanging() {
         return pony.getCompositeRace().any(Race::canHang) && (ticksHanging++ <= 20 || getHangingPosition().filter(hangingPos -> {
 
-            int y = (int)pony.asEntity().getBoundingBox().maxY;
-
+            int y = (int)(pony.asEntity().getBoundingBox().maxY - 0.5);
+            var pos = pony.asEntity().getBlockPos().withY(y);
             Debug.drawBoxSelection(pony, ParticleTypes.PORTAL, hangingPos);
-            return pony.getCompositeRace().includes(Race.CHANGELING) || hangingPos.isWithinDistance(pony.asEntity().getBlockPos().withY(y), 1.1) && (!pony.isPosLoaded(hangingPos) || canHangAt(hangingPos));
+            return pony.getCompositeRace().includes(Race.CHANGELING) || hangingPos.isWithinDistance(pos, 1.5) && (!pony.isPosLoaded(hangingPos) || canHangAt(hangingPos));
         }).isPresent());
     }
 

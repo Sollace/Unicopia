@@ -333,7 +333,7 @@ public class UHud {
         }
 
         if (pony.getPhysics().isFlyingSurvival) {
-            float effectStrength = (float)MathHelper.clamp(pony.getPhysics().getClientVelocity().length() / 15F, 0, 1);
+            float effectStrength = (float)MathHelper.clamp(pony.getPhysics().getTrackedVelocity().length() / 15F, 0, 1);
 
             VertexConsumer vertexConsumer = context.getVertexConsumers().getBuffer(RenderLayer.getGui());
 
