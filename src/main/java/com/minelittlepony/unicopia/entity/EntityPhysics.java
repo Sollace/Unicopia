@@ -7,15 +7,12 @@ import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.Tickable;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.FenceGateBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -89,17 +86,9 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
     public BlockPos getHeadPosition() {
         BlockPos pos = BlockPos.ofFloored(
                 entity.getX(),
-                entity.getY() + entity.getEyeHeight(EntityPose.STANDING),
+                (int)(entity.getY() + 0.5) + entity.getEyeHeight(EntityPose.STANDING),
                 entity.getZ()
         );
-
-        if (entity.getWorld().getBlockState(pos).isAir()) {
-            BlockPos below = pos.down();
-            BlockState block = entity.getWorld().getBlockState(below);
-            if (block.isIn(BlockTags.FENCES) || block.isIn(BlockTags.WALLS) || block.getBlock() instanceof FenceGateBlock) {
-               // return below;
-            }
-        }
 
         return pos;
     }
