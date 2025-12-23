@@ -232,9 +232,9 @@ public class URecipeProvider extends FabricRecipeProvider {
             .offerTo(exporter);
 
         // magic staff
-        ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.MAGIC_STAFF)
-            .input('*', UItems.GEMSTONE).criterion("has_gemstone", conditionsFromItem(UItems.GEMSTONE))
-            .input('#', ConventionalItemTags.WOODEN_RODS).criterion("has_stick", conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
+        SpellShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.MAGIC_STAFF)
+            .input('*', UItems.GEMSTONE).criterion(hasItem(UItems.GEMSTONE), conditionsFromItem(UItems.GEMSTONE))
+            .input('#', ConventionalItemTags.WOODEN_RODS).criterion(hasItem(Items.STICK), conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
             .pattern("  *")
             .pattern(" # ")
             .pattern("#  ")
@@ -275,11 +275,10 @@ public class URecipeProvider extends FabricRecipeProvider {
 
         // meadowbrook's staff
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.MEADOWBROOKS_STAFF)
-            .input('*', UItems.GEMSTONE).criterion(hasItem(UItems.GEMSTONE), conditionsFromItem(UItems.GEMSTONE))
-            .input('/', ConventionalItemTags.WOODEN_RODS).criterion(hasItem(Items.STICK), conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
-            .pattern("  *")
-            .pattern(" / ")
-            .pattern("/  ")
+            .input('#', ConventionalItemTags.WOODEN_RODS).criterion(hasItem(Items.STICK), conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
+            .pattern("  #")
+            .pattern(" # ")
+            .pattern("#  ")
             .offerTo(exporter);
         offerShapelessRecipe(exporter, Items.STICK, UItems.MEADOWBROOKS_STAFF, "stick", 2);
     }
