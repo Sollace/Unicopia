@@ -22,7 +22,7 @@ public class DispellEvilSpell extends AbstractSpell implements ProjectileDelegat
             .with(Trait.POWER, 1)
             .build();
 
-    private static final SpellAttribute<Double> RANGE = SpellAttribute.create(SpellAttributeType.RANGE, AttributeFormat.TIME, AttributeFormat.PERCENTAGE, Trait.POWER, power -> (1 + power) * 10D);
+    private static final SpellAttribute<Double> RANGE = SpellAttribute.create(SpellAttributeType.RANGE, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.POWER, power -> (1 + power) * 10D);
 
     static final TooltipFactory TOOLTIP = RANGE;
 
@@ -50,7 +50,7 @@ public class DispellEvilSpell extends AbstractSpell implements ProjectileDelegat
 
             source.addParticle(LightningBoltParticleEffect.DEFAULT, entity.getPos(), Vec3d.ZERO);
         });
-        source.subtractEnergyCost(1000);
+        source.subtractEnergyCost(100);
 
         return false;
     }
