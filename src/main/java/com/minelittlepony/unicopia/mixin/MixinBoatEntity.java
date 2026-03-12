@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.minelittlepony.unicopia.entity.duck.LavaAffine;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 
@@ -26,7 +27,7 @@ abstract class MixinBoatEntity extends VehicleEntity implements Leashable, LavaA
 
     MixinBoatEntity() { super(null, null); }
 
-    @Redirect(
+    @ModifyExpressionValue(
             method = {
                     "getWaterHeightBelow",
                     "checkBoatInWater",
@@ -41,8 +42,8 @@ abstract class MixinBoatEntity extends VehicleEntity implements Leashable, LavaA
             ),
             require = 0 // Forge
     )
-    private TagKey<Fluid> redirectFluidTag() {
-        return isLavaAffine() ? FluidTags.LAVA : FluidTags.WATER;
+    private TagKey<Fluid> redirectFluidTag(TagKey<Fluid> tag) {
+        return isLavaAffine() ? FluidTags.LAVA : tag;
     }
 
     @Inject(method = "writeCustomDataToNbt", at = @At("HEAD"))

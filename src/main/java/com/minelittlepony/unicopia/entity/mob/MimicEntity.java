@@ -6,11 +6,10 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.client.render.VirtualBlockRenderView;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
 import com.minelittlepony.unicopia.util.InventoryUtil;
-import com.minelittlepony.unicopia.util.ItemStackSet;
-
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -30,7 +29,7 @@ import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -53,6 +52,7 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.World;
 
 public class MimicEntity extends PathAwareEntity {
@@ -66,6 +66,29 @@ public class MimicEntity extends PathAwareEntity {
 
     private int openTicks;
     private final Set<PlayerEntity> observingPlayers = new HashSet<>();
+
+    private final VirtualBlockRenderView renderView = new VirtualBlockRenderView() {
+        @Override
+        public BlockRenderView proxy() {
+            return getWorld();
+        }
+
+        @Override
+        public BlockEntity getBlockEntity(BlockPos pos) {
+            if (pos.equals(getBlockPos())) {
+                return chestData;
+            }
+            return VirtualBlockRenderView.super.getBlockEntity(pos);
+        }
+
+        @Override
+        public BlockState getBlockState(BlockPos pos) {
+            if (pos.equals(getBlockPos()) && chestData != null && chestData.getCachedState() != null) {
+                return chestData.getCachedState();
+            }
+            return VirtualBlockRenderView.super.getBlockState(pos);
+        }
+    };
 
     static void bootstrap() {
         PlayerBlockBreakEvents.BEFORE.register((World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) -> {
@@ -86,7 +109,7 @@ public class MimicEntity extends PathAwareEntity {
                 || !world.getBlockState(pos).isIn(UTags.Blocks.MIMIC_CHESTS)
                 || !(world.getBlockEntity(pos) instanceof ChestBlockEntity be)
                 || be.getCachedState().getOrEmpty(ChestBlock.CHEST_TYPE).orElse(ChestType.SINGLE) != ChestType.SINGLE) {
-            return true;
+            return false;
         }
 
         // TODO: Local difficulty?
@@ -102,7 +125,8 @@ public class MimicEntity extends PathAwareEntity {
             return null;
         }
         world.removeBlockEntity(pos);
-        world.setBlockState(pos, Blocks.AIR.getDefaultState());
+        world.addBlockEntity(be.getType().get(world, pos));
+        world.removeBlock(pos, true);
         MimicEntity mimic = UEntities.MIMIC.create(world, SpawnReason.NATURAL);
         BlockState state = be.getCachedState();
         Direction facing = state.getOrEmpty(ChestBlock.FACING).orElse(null);
@@ -164,13 +188,19 @@ public class MimicEntity extends PathAwareEntity {
         }
     }
 
-    public void setChest(ChestBlockEntity chestData) {
+    public void setChest(@Nullable ChestBlockEntity chestData) {
         this.chestData = chestData;
-        ((MimicGeneratable)chestData).setAllowMimics(false);
-        chestData.setWorld(getWorld());
-        if (!getWorld().isClient) {
-            dataTracker.set(CHEST_DATA, writeChestData(chestData));
+        if (chestData != null) {
+            ((MimicGeneratable)chestData).setAllowMimics(false);
+            chestData.setWorld(getWorld());
         }
+        if (!getWorld().isClient) {
+            dataTracker.set(CHEST_DATA, chestData == null ? new NbtCompound() : writeChestData(chestData));
+        }
+    }
+
+    public BlockRenderView getBlockRenderView() {
+        return renderView;
     }
 
     @Nullable
@@ -278,38 +308,7 @@ public class MimicEntity extends PathAwareEntity {
     }
 
     public ScreenHandler createScreenHandler(int syncId, PlayerInventory inv, PlayerEntity player) {
-        chestData.generateLoot(player);
-        setChest(chestData);
-        var inventory = InventoryUtil.copyInto(chestData, new SimpleInventory(chestData.size()) {
-            @Override
-            public void onOpen(PlayerEntity player) {
-                observingPlayers.add(player);
-                //setMouthOpen(true);
-            }
-
-            @Override
-            public void onClose(PlayerEntity player) {
-                observingPlayers.remove(player);
-                setMouthOpen(!observingPlayers.isEmpty());
-            }
-        });
-        inventory.addListener(sender -> {
-            if (InventoryUtil.contentEquals(inventory, chestData)) {
-                return;
-            }
-
-            if (getEntityWorld() instanceof ServerWorld sw) {
-                new ItemStackSet(inventory).subtract(new ItemStackSet(chestData)).forEach(stack -> dropStack(sw, stack));
-            }
-
-            observingPlayers.clear();
-            playChompAnimation();
-            setTarget(player);
-            if (player instanceof ServerPlayerEntity spe) {
-                spe.closeHandledScreen();
-            }
-        });
-        return GenericContainerScreenHandler.createGeneric9x3(syncId, inv, inventory);
+        return GenericContainerScreenHandler.createGeneric9x3(syncId, inv, new MimicInventory(chestData, player));
     }
 
     @Override
@@ -343,11 +342,7 @@ public class MimicEntity extends PathAwareEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("chest", NbtElement.COMPOUND_TYPE)) {
-            chestData = readChestData(nbt.getCompound("chest"));
-        } else {
-            chestData = null;
-        }
+        setChest(nbt.contains("chest", NbtElement.COMPOUND_TYPE) ? readChestData(nbt.getCompound("chest")) : null);
     }
 
     @Nullable
@@ -407,12 +402,7 @@ public class MimicEntity extends PathAwareEntity {
         @Override
         public void tick() {
             super.tick();
-            ++ticks;
-            if (ticks >= 5 && getCooldown() < getMaxCooldown() / 2) {
-                setAttacking(true);
-            } else {
-                setAttacking(false);
-            }
+            setAttacking(++ticks >= 5 && getCooldown() < getMaxCooldown() / 2);
         }
     }
 
@@ -429,5 +419,92 @@ public class MimicEntity extends PathAwareEntity {
 
         @Nullable
         MimicEntity triggerMimic(@Nullable PlayerEntity player);
+    }
+
+    private final class MimicInventory implements Inventory {
+        private final ChestBlockEntity chestData;
+        private final PlayerEntity player;
+
+        public MimicInventory(ChestBlockEntity chestData, PlayerEntity player) {
+            this.chestData = chestData;
+            this.player = player;
+        }
+
+        @Override
+        public void onOpen(PlayerEntity player) {
+            observingPlayers.add(player);
+            setMouthOpen(true);
+        }
+
+        @Override
+        public void onClose(PlayerEntity player) {
+            observingPlayers.remove(player);
+            setMouthOpen(!observingPlayers.isEmpty());
+        }
+
+        @Override
+        public void clear() {
+            chestData.clear();
+        }
+
+        @Override
+        public int size() {
+            return chestData.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return chestData.isEmpty();
+        }
+
+        @Override
+        public ItemStack getStack(int slot) {
+            return chestData.getStack(slot);
+        }
+
+        @Override
+        public ItemStack removeStack(int slot, int amount) {
+            ItemStack stack = chestData.removeStack(slot, amount);
+            if (!stack.isEmpty()) {
+                markDirty();
+            }
+            return stack;
+        }
+
+        @Override
+        public ItemStack removeStack(int slot) {
+            ItemStack stack = chestData.removeStack(slot);
+            if (!stack.isEmpty()) {
+                markDirty();
+            }
+            return stack;
+        }
+
+        @Override
+        public void setStack(int slot, ItemStack stack) {
+            ItemStack oldStack = getStack(slot);
+            if (!ItemStack.areEqual(stack, oldStack)) {
+                chestData.setStack(slot, ItemStack.EMPTY);
+                if (chestData.getWorld() instanceof ServerWorld sw) {
+                    dropStack(sw, stack);
+                }
+                markDirty();
+            }
+        }
+
+        @Override
+        public void markDirty() {
+            observingPlayers.clear();
+            playChompAnimation();
+            setTarget(player);
+            if (player instanceof ServerPlayerEntity spe) {
+                spe.closeHandledScreen();
+            }
+        }
+
+        @Override
+        public boolean canPlayerUse(PlayerEntity player) {
+            return true;//chestData.canPlayerUse(player);
+        }
     }
 }

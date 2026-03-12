@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.client.render.entity;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.common.util.render.RenderLayerUtil;
-import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity;
 
 import net.minecraft.client.MinecraftClient;
@@ -66,13 +64,13 @@ public class LevitatingItemEntityRenderer extends EntityRenderer<LevitatingItemE
 
             itemRenderer.renderItem(state.stack, ModelTransformationMode.GROUND, false, matrices, vertices, light, OverlayTexture.DEFAULT_UV, state.stackModel);
 
-            matrices.scale(1.2F, 1.2F, 1.2F);
+            /*matrices.scale(1.2F, 1.2F, 1.2F);
 
             itemRenderer.renderItem(state.stack, ModelTransformationMode.GROUND, false, matrices, layer -> {
                 return vertices.getBuffer(RenderLayerUtil.getTexture(layer)
                         .map(texture -> RenderLayers.getMagicColored(texture, RenderLayers.DEFAULT_MAGIC_COLOR))
                         .orElse(RenderLayers.getMagicColored()));
-            }, light, OverlayTexture.DEFAULT_UV, state.stackModel);
+            }, light, OverlayTexture.DEFAULT_UV, state.stackModel);*/
 
             matrices.pop();
 

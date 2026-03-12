@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.MathHelper;
 
 class ManaRingSlot extends Slot {
 
@@ -56,7 +57,7 @@ class ManaRingSlot extends Slot {
             DrawableUtil.drawNotchedArc(matrices, 7, 10, (hours + minutes) * 0.2 + DrawableUtil.PI, seconds * 0.2, 0.1, 0.1, 0x00008899);
 
             if (canUseSuper) {
-                renderRing(matrices, 17, 13, Math.min(arcBegin, DrawableUtil.PI), Math.max(DrawableUtil.PI, DrawableUtil.TAU - arcBegin), mana.getCharge(), 0x88FF9999, tickDelta);
+                renderRing(matrices, 17, 13, DrawableUtil.PI, DrawableUtil.PI, mana.getCharge(), 0x88FF9999, tickDelta);
             }
 
             double cost = abilities.getStats().stream()
@@ -83,11 +84,14 @@ class ManaRingSlot extends Slot {
 
         matrices.pop();
         super.renderContents(context, abilities, bSwap, tickDelta);
+        if (canUseSuper) {
+            renderForegroundLayer(context, size, 0);
+        }
     }
 
     private double renderRing(MatrixStack matrices, double outerRadius, double innerRadius, double offsetAngle, double maxAngle, Bar bar, int color, float tickDelta) {
-        double fill = bar.getPercentFill(tickDelta) * maxAngle;
-        double shadow = bar.getShadowFill(tickDelta) * maxAngle;
+        double fill = MathHelper.clamp(bar.getPercentFill(tickDelta), 0, 1) * maxAngle;
+        double shadow = MathHelper.clamp(bar.getShadowFill(tickDelta), 0, 1) * maxAngle;
 
         DrawableUtil.drawArc(matrices, innerRadius, outerRadius, offsetAngle, fill, color);
 

@@ -71,6 +71,8 @@
     "server.MixinServerPlayNetworkHandler",
     "server.MixinServerWorld",
     "server.MixinSleepManager",
+    "server.MixinStructurePool",
+    "server.MixinStructureProcessorList",
     "gravity.MixinBrain",
     "gravity.MixinEntity",
     "gravity.MixinLivingEntity",
@@ -90,6 +92,7 @@
   "client": [
     "client.MixinAbstractClientPlayerEntity",
     "client.MixinArmorFeatureRenderer",
+    "client.MixinAnimalModel",
     "client.MixinBackgroundRenderer",
     "client.MixinCamera",
     "client.MixinClientWorld",

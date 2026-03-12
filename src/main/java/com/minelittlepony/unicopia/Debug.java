@@ -9,10 +9,14 @@ import com.google.common.collect.Sets;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
+import com.minelittlepony.unicopia.particle.ParticleSource;
 
 import net.minecraft.block.WoodType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionTypes;
 
@@ -40,6 +44,18 @@ public interface Debug {
             }
         } catch (Throwable t) {
             throw new IllegalStateException("Tests failed", t);
+        }
+    }
+
+    static void drawBoxSelection(ParticleSource<?> pony, ParticleEffect particle, BlockPos pos) {
+        if (CHECK_GAME_VALUES) {
+            float amount = pony.asWorld().random.nextFloat();
+
+            pony.addParticle(particle, new Vec3d(pos.getX() + amount, pos.getY(), pos.getZ()), Vec3d.ZERO);
+            pony.addParticle(particle, new Vec3d(pos.getX(), pos.getY(), pos.getZ() + amount), Vec3d.ZERO);
+
+            pony.addParticle(particle, new Vec3d(pos.getX() + 1, pos.getY(), pos.getZ() + amount), Vec3d.ZERO);
+            pony.addParticle(particle, new Vec3d(pos.getX() + amount, pos.getY(), pos.getZ() + 1), Vec3d.ZERO);
         }
     }
 

@@ -76,7 +76,10 @@ public interface Abilities {
     Ability<?> SONAR_PULSE = register(new SeaponySonarPulseAbility(), "sonar_pulse", AbilitySlot.SECONDARY);
 
     static <T extends Ability<?>> T register(T power, String name, AbilitySlot slot) {
-        Identifier id = Unicopia.id(name);
+        return register(power, Unicopia.id(name), slot);
+    }
+
+    static <T extends Ability<?>> T register(T power, Identifier id, AbilitySlot slot) {
         BY_SLOT.computeIfAbsent(slot, s -> new LinkedHashSet<>()).add(power);
         return Registry.register(REGISTRY, id, power);
     }

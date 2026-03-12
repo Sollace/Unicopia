@@ -21,5 +21,5 @@ public interface Motion {
 
     PlayerDimensions getDimensions();
 
-    Vec3d getClientVelocity();
+    Vec3d getTrackedVelocity();
 }

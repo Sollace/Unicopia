@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.ability;
 
 import java.util.Optional;
 
+import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.data.Pos;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -22,6 +23,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
@@ -225,6 +227,15 @@ public class UnicornTeleportAbility implements Ability<Pos> {
     public void warmUp(Pony player, AbilitySlot slot) {
         player.getMagicalReserves().getExertion().addPercent(30);
         player.spawnParticles(MagicParticleEffect.UNICORN, 5);
+
+        if (Debug.CHECK_GAME_VALUES) {
+            var pos = prepare(player);
+            if (pos.isPresent()) {
+                for (int i = 0; i < 90; i++) {
+                    Debug.drawBoxSelection(player, player.isClient() ? ParticleTypes.CHERRY_LEAVES : ParticleTypes.PORTAL, pos.get().pos());
+                }
+            }
+        }
     }
 
     @Override

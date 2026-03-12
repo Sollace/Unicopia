@@ -211,7 +211,8 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
 
     private void addCloudBlocksets() {
         getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE).add(
-                UBlocks.CLOUD_BRICKS, UBlocks.CLOUD_BRICK_SLAB, UBlocks.CLOUD_BRICK_STAIRS, UBlocks.COMPACTED_CLOUD_BRICKS, UBlocks.CARVED_CLOUD
+                UBlocks.CLOUD_BRICKS, UBlocks.CLOUD_BRICK_SLAB, UBlocks.CLOUD_BRICK_STAIRS, UBlocks.COMPACTED_CLOUD_BRICKS, UBlocks.CARVED_CLOUD,
+                UBlocks.ETCHED_CLOUD, UBlocks.ETCHED_CLOUD_SLAB, UBlocks.ETCHED_CLOUD_STAIRS, UBlocks.COMPACTED_ETCHED_CLOUD
         );
         getOrCreateTagBuilder(BlockTags.AXE_MINEABLE).add(
                 UBlocks.CLOUD_PLANKS, UBlocks.CLOUD_PLANK_SLAB, UBlocks.CLOUD_PLANK_STAIRS, UBlocks.COMPACTED_CLOUD_PLANKS

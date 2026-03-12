@@ -32,7 +32,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 
-public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, SpecterEntityRenderer.State, SpecterEntityRenderer.SpecterEntityModel> {
+public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, SpecterEntityRenderer.State, SpecterEntityRenderer.SpecterEntityModel> implements HitboxController<SpecterEntity> {
     private static final Identifier TEXTURE = Unicopia.id("textures/entity/specter.png");
 
     public SpecterEntityRenderer(Context context) {
@@ -56,6 +56,19 @@ public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, Sp
         state.inverseCameraAngle = camera.getRotation();
         state.cameraDistance = entity.squaredDistanceTo(camera.getPos());
         state.alpha = state.cameraDistance <= 400 ? 0 : ColorHelper.channelFromFloat((float)Math.clamp(((state.cameraDistance - 400D) / 600D), 0, 1));
+
+        long now = System.currentTimeMillis();
+        if (entity.lastHitboxRenderTime > now - 3000) {
+            state.alpha = 0;
+        }
+        if (entity.lastInViewportTime > now - 100) {
+            if (entity.hideInViewportTime < now) {
+                state.alpha = 0;
+            }
+        } else {
+            entity.hideInViewportTime = now + 300 + entity.getId();
+        }
+        entity.lastInViewportTime = now;
     }
 
     @Override
@@ -64,8 +77,14 @@ public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, Sp
     }
 
     @Override
+    public boolean shouldRenderHitbox(SpecterEntity entity) {
+        entity.lastHitboxRenderTime = System.currentTimeMillis();
+        return false;
+    }
+
+    @Override
     protected void setupTransforms(State state, MatrixStack matrices, float animationProgress, float bodyYaw) {
-        super.setupTransforms(state, matrices, animationProgress, bodyYaw);
+        super.setupTransforms(state, matrices, animationProgress, 0);
         matrices.multiply(state.inverseCameraAngle);
     }
 
@@ -84,9 +103,9 @@ public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, Sp
 
         @Override
         public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, State state, float limbAngle, float limbDistance) {
-            if (!state.invisible) {
+            if (!state.invisible && state.alpha > 0) {
                 model.setAngles(state);
-                FeatureRenderer.renderModel(model, TEXTURE, matrices, vertices, light, state, Colors.WHITE);
+                FeatureRenderer.renderModel(model, TEXTURE, matrices, vertices, light, state, ColorHelper.withAlpha(state.alpha, Colors.WHITE));
             }
         }
 
@@ -115,7 +134,7 @@ public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, Sp
         public void setAngles(State state) {
             super.setAngles(state);
             float scale = 1 + state.alpha / 80F;
-            getRootPart().visible = state.alpha <= 0;
+            getRootPart().visible = state.alpha > 0;
             getRootPart().xScale = scale;
             getRootPart().yScale = scale;
             getRootPart().zScale = scale;

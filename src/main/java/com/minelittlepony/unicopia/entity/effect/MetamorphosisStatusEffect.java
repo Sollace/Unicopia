@@ -2,10 +2,15 @@ package com.minelittlepony.unicopia.entity.effect;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.particle.MagicParticleEffect;
+import com.minelittlepony.unicopia.particle.ParticleUtils;
+
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
@@ -43,20 +48,32 @@ public class MetamorphosisStatusEffect extends StatusEffect {
         return reference;
     }
 
-    public static Race getEffectiveRace(LivingEntity entity, Race fallback) {
-        return entity.getStatusEffects().stream().filter(effect -> effect.getEffectType() instanceof MetamorphosisStatusEffect).map(effect -> {
-            return ((MetamorphosisStatusEffect)effect.getEffectType()).getRace();
-        }).findFirst().orElse(fallback);
+    public static Optional<Race> getEffectiveRace(LivingEntity entity) {
+        return entity.getStatusEffects().stream().filter(effect -> effect.getEffectType().value() instanceof MetamorphosisStatusEffect).map(effect -> {
+            return ((MetamorphosisStatusEffect)effect.getEffectType().value()).getRace();
+        }).findFirst();
     }
 
     private final Race race;
 
     private MetamorphosisStatusEffect(int color, Race race) {
         super(StatusEffectCategory.NEUTRAL, color);
+        applySound(USounds.ENTITY_PLAYER_CHANGELING_TRANSFORM);
         this.race = race;
     }
 
     public Race getRace() {
         return race;
+    }
+
+    @Override
+    public void onApplied(LivingEntity entity, int amplifier) {
+        super.onApplied(entity, amplifier);
+
+        entity.getStatusEffects().stream()
+            .filter(effect -> effect.getEffectType().value() instanceof MetamorphosisStatusEffect && effect.getEffectType().value() != this)
+            .toList().forEach(effect -> entity.removeStatusEffect(effect.getEffectType()));
+
+        ParticleUtils.spawnParticles(new MagicParticleEffect(getColor()), entity, 50);
     }
 }

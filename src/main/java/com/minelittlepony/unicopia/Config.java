@@ -26,6 +26,10 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
     public final Setting<Boolean> enableCheats = value("server", "enableCheats", false)
             .addComment("Allows use of the /tribe, /unicopia disguise, and /unicopia gravity commands");
 
+    public final Setting<Boolean> disableExperimentalServerVelocityFix = value("server", "disableExperimentalServerVelocityFix", false)
+            .addComment("Players normally do not have any velocity calculated on the server. By default we try to compensate for that when calculating flight.")
+            .addComment("Set this to true if you are having problems with player movement. It will revert physics handling for pegasi back to their old system, but pegasi will find it harder to do certain actions.");
+
     public final Setting<Boolean> enableCloudGen = value("server", "enableCloudGen", true)
             .addComment("Sets whether clouds generate");
 

@@ -18,6 +18,11 @@ public interface MeteorlogicalUtil {
     float MIDNIGHT = 1.5F;
     float MOONSET = 2;
 
+    /**
+     * @see net.minecraft.world.dimension.DimensionType#MOON_SIZES
+     */
+    int FULL_MOON = 0;
+
     static boolean isBetween(float skyAngle, float start, float end) {
         return skyAngle >= start && skyAngle <= end;
     }

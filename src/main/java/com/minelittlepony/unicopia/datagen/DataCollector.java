@@ -8,6 +8,8 @@ import java.util.function.Supplier;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonElement;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
 
 import net.minecraft.data.DataOutput.PathResolver;
 import net.minecraft.data.DataProvider;
@@ -36,6 +38,11 @@ public class DataCollector {
         values.clear();
         return (Identifier id, Supplier<JsonElement> value) ->
             Preconditions.checkState(values.put(id, value) == null, "Duplicate model definition for " + id);
+    }
+
+    public <T> BiConsumer<Identifier, T> prime(Codec<T> codec) {
+        var consumer = prime();
+        return (id, value) -> consumer.accept(id, () -> codec.encodeStart(JsonOps.INSTANCE, value).getOrThrow());
     }
 
     public CompletableFuture<?> upload(DataWriter cache) {

@@ -19,7 +19,6 @@ import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
@@ -35,8 +34,11 @@ public class WeatherConditions extends PersistentState implements Tickable {
     public static final float MAX_TERRAIN_HEIGHT = 50;
     public static final float MAX_WIND_HEIGHT = 70;
 
-    public static final Plane HEIGHT_MAP_FIELD = (world, pos) -> world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, pos.getX(), pos.getZ());
+    @SuppressWarnings("deprecation")
     public static final Plane THERMAL_FIELD = (world, pos) -> {
+        if (!world.isChunkLoaded(pos)) {
+            return 0;
+        }
         double factor = 1 - getScaledDistanceFromTerrain(pos, world, MAX_UPDRAFT_HEIGHT);
         return (float)(factor * getMaterialSurfaceTemperature(pos, world));
     };
@@ -164,14 +166,19 @@ public class WeatherConditions extends PersistentState implements Tickable {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public static Vec3d getAirflow(BlockPos pos, World world) {
+        if (!world.isChunkLoaded(pos)) {
+            return Vec3d.ZERO;
+        }
+
         BlockPos.Mutable probedPosition = new BlockPos.Mutable();
 
-        final float terrainFactor = getScaledDistanceFromTerrain(probedPosition.set(pos), world, MAX_TERRAIN_HEIGHT);
+        final float terrainFactor = 1 - getScaledDistanceFromTerrain(probedPosition.set(pos), world, MAX_TERRAIN_HEIGHT);
         final float windFactor = getScaledDistanceFromTerrain(probedPosition.set(pos), world, MAX_WIND_HEIGHT);
 
-        Vec3d terrainGradient = LOCAL_ALTITUDE_FIELD.computeAverage(world, pos, probedPosition).multiply(1 - terrainFactor);
-        Vec3d thermalGradient = THERMAL_FIELD.computeAverage(world, pos, probedPosition).multiply(1 - terrainFactor);
+        Vec3d terrainGradient = LOCAL_ALTITUDE_FIELD.computeAverage(world, pos, probedPosition).multiply(terrainFactor);
+        Vec3d thermalGradient = THERMAL_FIELD.computeAverage(world, pos, probedPosition).multiply(terrainFactor);
         Vec3d wind = get(world).getWindDirection().multiply(windFactor);
 
         return terrainGradient
@@ -257,10 +264,6 @@ public class WeatherConditions extends PersistentState implements Tickable {
     public interface Plane {
         float getValue(World world, BlockPos.Mutable pos);
 
-        default Vec3d computedAverage(World world, BlockPos pos) {
-            return computeAverage(world, pos, new BlockPos.Mutable());
-        }
-
         default Vec3d computeAverage(World world, BlockPos pos, BlockPos.Mutable probedPosition) {
 
             float e = getValue(world, probedPosition.set(pos));
@@ -273,29 +276,30 @@ public class WeatherConditions extends PersistentState implements Tickable {
 
             // DEF
             Vec3d def = new Vec3d(-average(
-                    getValue(world, probedPosition.set(pos.getX() - projectionDistance, pos.getY(), pos.getZ())) - e,
-                    e - getValue(world, probedPosition.set(pos.getX() + projectionDistance, pos.getY(), pos.getZ()))
+                    getValue(world, probedPosition.set(pos).move(Direction.WEST, projectionDistance)) - e,
+                    e - getValue(world, probedPosition.set(pos).move(Direction.EAST, projectionDistance))
             ), 0, 0).normalize();
             // BEH
             Vec3d beh = new Vec3d(0, 0, -average(
-                    getValue(world, probedPosition.set(pos.getX(), pos.getY(), pos.getZ() - projectionDistance)) - e,
-                    e - getValue(world, probedPosition.set(pos.getX(), pos.getY(), pos.getZ() + projectionDistance))
+                    getValue(world, probedPosition.set(pos).move(Direction.NORTH, projectionDistance)) - e,
+                    e - getValue(world, probedPosition.set(pos).move(Direction.SOUTH, projectionDistance))
+            )).normalize();
+            // AEI
+            Vec3d aei = diag(average(
+                    getValue(world, probedPosition.set(pos).move(Direction.WEST, projectionDistance).move(Direction.NORTH, projectionDistance)) - e,
+                    e - getValue(world, probedPosition.set(pos).move(Direction.EAST, projectionDistance).move(Direction.SOUTH, projectionDistance))
+            )).normalize();
+            // GEC
+            Vec3d gec = diag(average(
+                    getValue(world, probedPosition.set(pos).move(Direction.EAST, projectionDistance).move(Direction.NORTH, projectionDistance)) - e,
+                    e - getValue(world, probedPosition.set(pos).move(Direction.EAST, projectionDistance).move(Direction.WEST, projectionDistance))
             )).normalize();
 
-            // AEI
-            double diagMag = average(
-                    getValue(world, probedPosition.set(pos.getX() - projectionDistance, pos.getY(), pos.getZ() - projectionDistance)) - e,
-                    e - getValue(world, probedPosition.set(pos.getX() + projectionDistance, pos.getY(), pos.getZ() + projectionDistance))
-            );
-            Vec3d aei = new Vec3d(0.5 * diagMag, 0, 0.5 * diagMag).normalize();
-            // GEC
-            diagMag = average(
-                    getValue(world, probedPosition.set(pos.getX() - projectionDistance, pos.getY(), pos.getZ() + projectionDistance)) - e,
-                    e - getValue(world, probedPosition.set(pos.getX() + projectionDistance, pos.getY(), pos.getZ() - projectionDistance))
-            );
-            Vec3d gec = new Vec3d(0.5 * diagMag, 0, 0.5 * diagMag).normalize();
-
             return beh.add(def).add(aei).add(gec).normalize();
+        }
+
+        private static Vec3d diag(double mag) {
+            return new Vec3d(0.5 * mag, 0, 0.5 * mag);
         }
 
         private static float average(float a, float b) {

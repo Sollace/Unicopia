@@ -48,6 +48,10 @@ public class SpecterEntity extends HostileEntity {
     private double nextStepDistance;
     private boolean wasLeft;
 
+    public long lastHitboxRenderTime = -1;
+    public long lastInViewportTime = -1;
+    public long hideInViewportTime = -1;
+
     public SpecterEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
     }

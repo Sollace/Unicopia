@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.entity.player;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.block.cloud.CloudLike;
 import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
 
 import net.fabricmc.fabric.api.util.TriState;
@@ -17,12 +18,12 @@ import net.minecraft.world.chunk.WorldChunk;
 
 public class SpawnLocator {
     // Modified from SpawnLocating.findOverworldSpawn
-    private static BlockPos findOverworldSpawn(ServerWorld world, int x, int z, boolean avoidAir) {
+    private static BlockPos findOverworldSpawn(ServerWorld world, int x, int z, boolean avoidAir, boolean allowClouds) {
         boolean hasCeiling = world.getDimension().hasCeiling();
         WorldChunk chunk = world.getChunk(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z));
         int startHeight = hasCeiling
                 ? world.getChunkManager().getChunkGenerator().getSpawnHeight(world)
-                : chunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, x & 0xF, z & 0xF);
+                : chunk.sampleHeightmap(allowClouds ? Heightmap.Type.MOTION_BLOCKING : Heightmap.Type.WORLD_SURFACE, x & 0xF, z & 0xF);
         if (startHeight < world.getBottomY()) {
             return null;
         }
@@ -43,7 +44,7 @@ public class SpawnLocator {
                 return null;
             }
 
-            if (Block.isFaceFullSquare(state.getCollisionShape(world, mutable), Direction.UP)) {
+            if (Block.isFaceFullSquare(state.getCollisionShape(world, mutable), Direction.UP) && (allowClouds || state.getBlock() instanceof CloudLike)) {
                 return mutable.up().toImmutable();
             }
         }
@@ -52,8 +53,8 @@ public class SpawnLocator {
 
     private static BlockPos findAdjustedOverworldSpawn(ServerWorld world, PlayerEntity entity, Box box, BlockPos basePos,
             int x, int z,
-            int spawnRadius, boolean avoidAir, boolean avoidSun) {
-        BlockPos spawnPos = SpawnLocator.findOverworldSpawn(world, x, z, avoidAir);
+            int spawnRadius, boolean avoidAir, boolean avoidSun, boolean allowClouds) {
+        BlockPos spawnPos = SpawnLocator.findOverworldSpawn(world, x, z, avoidAir, allowClouds);
 
         if (spawnPos == null) {
             return null;
@@ -77,11 +78,12 @@ public class SpawnLocator {
     public static BlockPos findAdjustedOverworldSpawn(ServerWorld world, PlayerEntity entity, Box box, BlockPos basePos, int x, int z, Operation<BlockPos> operation) {
         boolean avoidSun = Pony.of(entity).getCompositeRace().includes(Race.BAT);
         boolean avoidAir = Pony.of(entity).getCompositeRace().includes(Race.SEAPONY);
-        if (!(avoidSun || avoidAir)) {
+        boolean allowClouds = Pony.of(entity).collidesWithClouds();
+        if (!(avoidSun || avoidAir) && allowClouds) {
             return operation.call(world, x, z);
         }
         int spawnRadius = Math.max(16, world.getServer().getSpawnRadius(world));
-        return findAdjustedOverworldSpawn(world, entity, box, basePos, x, z, spawnRadius, avoidAir, avoidSun);
+        return findAdjustedOverworldSpawn(world, entity, box, basePos, x, z, spawnRadius, avoidAir, avoidSun, allowClouds);
     }
 
     private static TriState checkAtmosphere(FluidState state, boolean avoidAir) {

@@ -279,7 +279,7 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
         ComplexRecipeJsonBuilder.create(GlowingRecipe::new).offerTo(exporter, "friendship_bracelet_glowing");
 
         // meadowbrook's staff
-        ShapedRecipeJsonBuilder.create(items, RecipeCategory.TOOLS, UItems.MEADOWBROOKS_STAFF)
+        SpellShapedRecipeJsonBuilder.create(items, RecipeCategory.TOOLS, UItems.MAGIC_STAFF)
             .input('*', UItems.GEMSTONE).criterion(hasItem(UItems.GEMSTONE), conditionsFromItem(UItems.GEMSTONE))
             .input('/', ConventionalItemTags.WOODEN_RODS).criterion(hasItem(Items.STICK), conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
             .pattern("  *")

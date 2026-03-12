@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
+import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity;
 import com.minelittlepony.unicopia.item.ForageableItem;
 import com.minelittlepony.unicopia.util.Copyable;
@@ -75,28 +76,29 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
     public boolean addPassenger(Entity passenger) {
         double yOffset = 0.1;
         if (passenger.getRootVehicle() instanceof LevitatingItemEntity root) {
-            if (root.getMaster() == player.asEntity() && root.getPassengerList().size() == 1 && root.getPassengerList().get(0) == passenger) {
-                player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1);
-                return true;
-            }
+            boolean isOnlyPassenger = root.getPassengerList().size() == 1 && root.getPassengerList().get(0) == passenger;
             passenger.stopRiding();
             passenger.setPosition(root.getPos());
             yOffset = 0;
             if (root.getPassengerList().isEmpty()) {
                 discardOrKill(root);
             }
+            if (root.getMaster() == player.asEntity() && isOnlyPassenger) {
+                player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1);
+                return true;
+            }
         }
         LevitatingItemEntity entity = new LevitatingItemEntity(nextSlot++, player.asEntity(), ItemStack.EMPTY);
-        onEntitySpawned(entity);
         entity.setPosition(passenger.getPos());
         entity.setHoldingPosition(passenger.getPos().add(0, yOffset, 0));
-        player.asWorld().spawnEntity(entity);
         if (passenger instanceof ItemEntity i) {
             entity.setStack(i.getStack());
             i.discard();
             return addStack(i.getStack());
         } else {
+            onEntitySpawned(entity);
             passenger.startRiding(entity, true);
+            player.asWorld().spawnEntity(entity);
         }
 
         player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1);
@@ -105,6 +107,9 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
 
     public void dropEverything() {
         List<LevitatingItemEntity> copy = new ArrayList<>(stacks.values());
+        if (!copy.isEmpty()) {
+            player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1);
+        }
         stacks.clear();
         nextSlot = 0;
         copy.forEach(this::discardOrKill);
@@ -216,6 +221,10 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
     @Override
     public void tick() {
         if (!player.isClient()) {
+            if (!Abilities.TELEKINESIS.canUse(player.getCompositeRace())) {
+                dropEverything();
+            }
+
             List<LevitatingItemEntity> copy = new ArrayList<>(pending);
             pending.clear();
             copy.forEach(player.asWorld()::spawnEntity);
@@ -295,7 +304,7 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
         }
 
         public boolean tryDiscard() {
-            if (breakingProgress >= 1F || player.asWorld().getBlockState(pos) != state || claimants.isEmpty()) {
+            if (breakingProgress >= 1F || player.asWorld().getBlockState(pos) != state || state.isAir() || claimants.isEmpty()) {
                 new HashSet<>(claimants).forEach(claimant -> claimant.stopMining(pos));
                 claimants.clear();
                 return true;

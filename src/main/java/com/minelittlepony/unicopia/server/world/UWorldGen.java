@@ -4,6 +4,7 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.server.world.gen.CaveCarvingStructureProcessor;
 import com.minelittlepony.unicopia.server.world.gen.CloudCarver;
 import com.minelittlepony.unicopia.server.world.gen.FruitBlobFoliagePlacer;
+import com.minelittlepony.unicopia.server.world.gen.StructureExtensions;
 import com.minelittlepony.unicopia.server.world.gen.OverworldBiomeSelectionCallback;
 import com.minelittlepony.unicopia.server.world.gen.SurfaceGrowthStructureProcessor;
 import com.minelittlepony.unicopia.server.world.gen.UBiomes;
@@ -52,5 +53,6 @@ public interface UWorldGen {
                 context.addOverride(context.referenceFrame().temperature().splitAbove(0.9F), UBiomes.SWEET_APPLE_ORCHARD);
             }
         });
+        StructureExtensions.bootstrap();
     }
 }

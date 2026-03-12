@@ -195,7 +195,7 @@ public class CasterState {
             if (caster instanceof Pony pony) {
                 species = pony.getCompositeRace();
                 skinFeatures = pony.getSkinFeatures();
-                Vec3d motion = pony.getMotion().getClientVelocity();
+                Vec3d motion = pony.getMotion().getTrackedVelocity();
                 flying = pony.getMotion().isFlying();
                 dashing = (flying && (Math.sqrt(motion.x * motion.x + motion.z * motion.z) > 0.4 || pony.getMotion().isDiving())) || pony.getMotion().isRainbooming();
                 wingsAngle = pony.getMotion().getWingAngle();

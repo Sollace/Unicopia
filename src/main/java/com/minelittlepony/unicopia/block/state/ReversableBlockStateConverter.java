@@ -5,15 +5,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import com.google.gson.JsonElement;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.Codec;
 
 public interface ReversableBlockStateConverter extends BlockStateConverter {
     ReversableBlockStateConverter getInverse();
 
     static Builder builder() {
         return new Builder();
+    }
+
+    static Codec<ReversableBlockStateConverter> codec() {
+        return ReversableBlockStateConverterImpl.CODEC;
     }
 
     final class Builder {
@@ -37,10 +39,6 @@ public interface ReversableBlockStateConverter extends BlockStateConverter {
 
         public ReversableBlockStateConverter build() {
             return new ReversableBlockStateConverterImpl(entries, null);
-        }
-
-        public DataResult<JsonElement> encode() {
-            return ReversableBlockStateConverterImpl.CODEC.encodeStart(JsonOps.INSTANCE, new ReversableBlockStateConverterImpl(entries, null));
         }
     }
 }

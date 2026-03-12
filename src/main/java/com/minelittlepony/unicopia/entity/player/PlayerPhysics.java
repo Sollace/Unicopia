@@ -95,7 +95,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     @Nullable
     private DimensionType lastDimension;
     private Optional<Vec3d> lastPos = Optional.empty();
-    private Vec3d lastVel = Vec3d.ZERO;
+    private final RollingDelta lastVel = new RollingDelta(30);
+    private Vec3d lastAccelleration = Vec3d.ZERO;
 
     private final PlayerDimensions dimensions;
 
@@ -116,8 +117,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     @Override
-    public Vec3d getClientVelocity() {
-        return lastVel;
+    public Vec3d getTrackedVelocity() {
+        return lastVel.read();
     }
 
     public final float getPersistantGravityModifier() {
@@ -186,7 +187,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 }
             }
         } else {
-            spreadAmount += MathHelper.clamp(-lastVel.y, -0.3F, 2);
+            spreadAmount += MathHelper.clamp(-getTrackedVelocity().y, -0.3F, 2);
             spreadAmount += Math.sin(entity.age / 9F) / 9F;
 
             if (entity.isSneaking()) {
@@ -242,7 +243,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     public double getHorizontalMotion() {
-        return getClientVelocity().horizontalLengthSquared();
+        return lastVel.horLengthSquared();
     }
 
     @Override
@@ -268,10 +269,16 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             lastPos = Optional.empty();
         }
 
-        lastVel = lastPos.map(entity.getPos()::subtract).orElse(Vec3d.ZERO);
+        Vec3d prevVel = getTrackedVelocity();
+        lastVel.update(lastPos.map(entity.getPos()::subtract).orElse(entity.getVelocity()));
+        lastAccelleration = prevVel.subtract(getTrackedVelocity());
         lastPos = Optional.of(entity.getPos());
 
-        final MutableVector velocity = new MutableVector(entity.getVelocity());
+        if (!pony.isClient() && lastAccelleration.lengthSquared() > 1) {
+            Unicopia.LOGGER.info("Accelleration for {} Changed rapidly! Got {} > 1", pony.asEntity().getName().getString(), lastAccelleration.lengthSquared());
+        }
+
+        final MutableVector velocity = new MutableVector(pony.isClient() || Unicopia.getConfig().disableExperimentalServerVelocityFix.get() ? entity.getVelocity() : getTrackedVelocity());
 
         FlightType type = recalculateFlightType();
 
@@ -401,7 +408,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             velocity.z /= heavyness;
         }
 
-        entity.setVelocity(velocity.toImmutable());
+        Vec3d immutable = velocity.toImmutable();
+        if (!immutable.equals(lastVel.read())) {
+            entity.setVelocity(immutable);
+        }
 
         if (isFlying() && !entity.isGliding() && !pony.getAcrobatics().isHanging() && pony.isClient()) {
             if (!MineLPDelegate.getInstance().getPlayerPonyRace(entity).isEquine() && getHorizontalMotion() > 0.03) {
@@ -451,7 +461,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             velocity.multiply(1 + horDiveScale, 1 + verDiveScale, 1 + horDiveScale);
         }
 
-        if (pony.asEntity().age % 2 == 0) {
+        if (pony.asEntity().age % 2 == 0 && !pony.isClient()) {
             if (ticksDiving > 0) {
                 pony.getMagicalReserves().getCharge().addPercent(1F);
             }
@@ -479,7 +489,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             }
         }
 
-        if (type.isAvian() && !entity.getWorld().isClient) {
+        if (type.isAvian() && !pony.isClient()) {
             if (pony.getObservedSpecies() != Race.BAT && entity.getWorld().random.nextInt(9000) == 0) {
                 if (!entity.getWorld().isClient) {
                     entity.dropItem((pony.getObservedSpecies() == Race.HIPPOGRIFF ? UItems.GRYPHON_FEATHER : UItems.PEGASUS_FEATHER).getDefaultStack(), false);
@@ -491,7 +501,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
         moveFlying(velocity);
 
-        if (entity.getWorld().isClient && ticksInAir % IDLE_FLAP_INTERVAL == 0 && entity.getVelocity().length() < 0.29) {
+        if (ticksInAir % IDLE_FLAP_INTERVAL == 0 && entity.getVelocity().length() < 0.29) {
             flapping = true;
             ticksToGlide = MAX_TICKS_TO_GLIDE;
         }
@@ -503,7 +513,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 }
             }
         } else if (type == FlightType.INSECTOID && !SpellPredicate.IS_DISGUISE.isOn(pony)) {
-            if (entity.getWorld().isClient && !soundPlaying) {
+            if (pony.isClient() && !soundPlaying) {
                 soundPlaying = true;
                 InteractionManager.getInstance().playLoopingSound(entity, InteractionManager.SOUND_CHANGELING_BUZZ, entity.getId());
             }
@@ -665,8 +675,10 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             double motion = Math.sqrt(getHorizontalMotion());
 
             float distance = (float)(motion * 20 - 3);
+            //entity.sendMessage(Text.literal("Wall touch: " + motion + " / " + distance));
 
             if (distance > 0) {
+                //entity.sendMessage(Text.literal("Wall hit: " + motion + " / " + distance));
                 wallHitCooldown = MAX_WALL_HIT_CALLDOWN;
 
                 float bouncyness = EnchantmentUtil.getBouncyness(entity);
@@ -679,8 +691,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                     LivingEntity.FallSounds fallSounds = entity.getFallSounds();
                     playSound(distance > 4 ? fallSounds.big() : fallSounds.small(), 1, entity.getSoundPitch());
                 }
+
                 if (!entity.getWorld().isClient) {
-                    entity.damage((ServerWorld)entity.getWorld(), entity.getDamageSources().flyIntoWall(), distance);
+                    entity.damage((ServerWorld)entity.getWorld(), entity.getDamageSources().flyIntoWall(), (float)Math.ceil(distance));
                 }
             }
         }
@@ -715,10 +728,16 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 applyTurbulance((ServerWorld)entity.getWorld(), velocity);
             }
         } else {
-            float targetUpdraft = WeatherConditions.THERMAL_FIELD.getValue(entity.getWorld(), new BlockPos.Mutable().set(entity.getBlockPos())) / 3F;
-            targetUpdraft *= 1 + motion;
-            if (isGravityNegative()) {
-                targetUpdraft *= -1;
+            float targetUpdraft;
+            if (pony.isPosLoaded(entity.getBlockPos())) {
+                targetUpdraft = WeatherConditions.THERMAL_FIELD.getValue(entity.getWorld(), new BlockPos.Mutable().set(entity.getBlockPos())) / 3F;
+                targetUpdraft *= 1 + motion;
+                if (isGravityNegative()) {
+                    targetUpdraft *= -1;
+                }
+
+            } else {
+                targetUpdraft = this.updraft.getValue();
             }
             this.updraft.update(targetUpdraft, targetUpdraft > this.updraft.getTarget() ? 30_000 : 3000);
             double updraft = this.updraft.getValue();

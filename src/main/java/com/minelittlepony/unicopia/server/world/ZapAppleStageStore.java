@@ -78,7 +78,7 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
                 && MeteorlogicalUtil.isBetween(prevSkyAngle, MeteorlogicalUtil.SUNSET, MeteorlogicalUtil.MIDNIGHT)
             )) {
                 stageChanged = true;
-                if (lastStage != Stage.HIBERNATING || world.getMoonPhase() == 0) {
+                if (lastStage != Stage.HIBERNATING || world.getMoonPhase() == MeteorlogicalUtil.FULL_MOON) {
                     lastStage = lastStage.getNext();
                     playedMoonEffect = false;
                     markDirty();

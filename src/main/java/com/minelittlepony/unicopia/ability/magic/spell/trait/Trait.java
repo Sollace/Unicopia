@@ -171,7 +171,7 @@ public enum Trait implements CommandArgumentEnum<Trait> {
         @SuppressWarnings("deprecation")
         Trait trait = NAME_CODEC.byId(name);
         if (trait == null) {
-            return Optional.ofNullable(Identifier.tryParse(name)).flatMap(Trait::fromId);
+            return Optional.ofNullable(Identifier.tryParse(name)).map(IDS::get);
         }
         return Optional.ofNullable(trait);
     }

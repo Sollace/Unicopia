@@ -14,9 +14,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.world.World;
 
 class ReversableBlockStateConverterImpl implements ReversableBlockStateConverter {
-    public static final Codec<ReversableBlockStateConverterImpl> CODEC = Entry.CODEC.listOf().xmap(
+    public static final Codec<ReversableBlockStateConverter> CODEC = Entry.CODEC.listOf().xmap(
             entries -> new ReversableBlockStateConverterImpl(entries, null),
-            converter -> converter.entries
+            converter -> ((ReversableBlockStateConverterImpl)converter).entries
     );
 
     private final List<Entry> entries;

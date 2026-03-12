@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.entity.player;
 
 import java.util.Optional;
 
+import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
@@ -18,6 +19,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.SideShapeType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundCategory;
@@ -58,12 +60,8 @@ public class Acrobatics implements Tickable, NbtSerialisable {
 
     @Override
     public void tick() {
-        BlockPos climbingPos = entity.getClimbingPos().orElse(null);
-
-        BlockPos hangingPos = pony.getPhysics().getHeadPosition();
-
         if (!pony.getPhysics().isFlying() && !entity.getAbilities().flying
-                && climbingPos != null
+                && entity.getClimbingPos().isPresent()
                 && pony.getObservedSpecies() == Race.CHANGELING
                 && !entity.getBlockStateAtPos().isIn(BlockTags.CLIMBABLE)) {
             Vec3d vel = entity.getVelocity();
@@ -71,9 +69,9 @@ public class Acrobatics implements Tickable, NbtSerialisable {
                 entity.setVelocity(vel.x, 0, vel.z);
             }
 
-            distanceClimbed += Math.abs(pony.getMotion().getClientVelocity().y);
+            distanceClimbed += Math.abs(pony.getMotion().getTrackedVelocity().y);
 
-
+            BlockPos hangingPos = pony.getPhysics().getHeadPosition();
             boolean canhangHere = canHangAt(hangingPos);
 
             if (distanceClimbed > 1.5) {
@@ -161,9 +159,8 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     }
 
     public void startHanging(BlockPos pos) {
-        boolean inverted = pony.getPhysics().isGravityNegative();
         hangingPos.set(Optional.of(pos));
-        entity.setPosition(pos.getX() + 0.5, pos.getY() - (inverted ? 0 : 1), pos.getZ() + 0.5);
+        entity.requestTeleport(pos.getX() + 0.5, pos.getY() + pony.getPhysics().getGravitySignum(), pos.getZ() + 0.5);
         entity.setVelocity(Vec3d.ZERO);
         entity.setSneaking(false);
         entity.stopGliding();
@@ -171,30 +168,26 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     }
 
     public boolean canHangAt(BlockPos pos) {
-        int gravity = pony.getPhysics().getGravitySignum() * (isHanging() && pony.getObservedSpecies() == Race.BAT ? -1 : 1);
+        int gravity = pony.getPhysics().getGravitySignum() * (isHanging() && pony.getCompositeRace().includes(Race.BAT) ? -1 : 1);
         BlockState state = pony.asWorld().getBlockState(pos);
 
-        if (!pony.asWorld().isAir(pos) || !pony.asWorld().isAir(pos.down(gravity))) {
+        if (!pony.asWorld().isBlockSpaceEmpty(pony.asEntity(), pony.getPhysics().getBoxAtPosition(pos.toBottomCenterPos(), gravity > 0))) {
             return false;
         }
 
         pos = pos.up(gravity);
         state = pony.asWorld().getBlockState(pos);
-
         return state.isSolidSurface(pony.asWorld(), pos, entity, gravity > 0 ? Direction.UP : Direction.DOWN);
     }
 
     private boolean canKeepHanging() {
-        Race race = pony.getObservedSpecies();
-        if (!race.canHang()) {
-            return false;
-        }
-        if (ticksHanging++ <= 2) {
-            return true;
-        }
-        return getHangingPosition().filter(hangingPos -> {
-            return (race != Race.BAT || hangingPos.equals(pony.asEntity().getBlockPos().up(pony.getPhysics().isGravityNegative() ? 1 : 0))) && canHangAt(hangingPos);
-        }).isPresent();
+        return pony.getCompositeRace().any(Race::canHang) && (ticksHanging++ <= 20 || getHangingPosition().filter(hangingPos -> {
+
+            int y = (int)(pony.asEntity().getBoundingBox().maxY - 0.5);
+            var pos = pony.asEntity().getBlockPos().withY(y);
+            Debug.drawBoxSelection(pony, ParticleTypes.PORTAL, hangingPos);
+            return pony.getCompositeRace().includes(Race.CHANGELING) || hangingPos.isWithinDistance(pos, 1.5) && (!pony.isPosLoaded(hangingPos) || canHangAt(hangingPos));
+        }).isPresent());
     }
 
     @Override

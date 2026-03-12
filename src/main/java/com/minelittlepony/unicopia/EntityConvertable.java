@@ -32,4 +32,9 @@ public interface EntityConvertable<E extends Entity> extends WorldConvertable {
     default World asWorld() {
         return asEntity().getWorld();
     }
+
+    @SuppressWarnings("deprecation")
+    default boolean isPosLoaded(BlockPos pos) {
+        return asWorld().isChunkLoaded(pos);
+    }
 }

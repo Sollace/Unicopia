@@ -19,6 +19,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 
 public interface PosHelper {
@@ -30,6 +31,10 @@ public interface PosHelper {
     }
 
     static BlockPos findNearestSurface(World world, BlockPos pos) {
+        BlockPos topPos = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos);
+        if (topPos.getY() < pos.getY()) {
+            return topPos;
+        }
         BlockPos.Mutable mutable = pos.mutableCopy();
 
         while (mutable.getY() > world.getBottomY() && world.isAir(mutable)) {
@@ -44,6 +49,10 @@ public interface PosHelper {
     }
 
     static BlockPos findSolidGroundAt(World world, BlockPos pos, int signum) {
+        BlockPos topPos = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos);
+        if (topPos.getY() < pos.getY()) {
+            return topPos;
+        }
         BlockPos.Mutable mutable = pos.mutableCopy();
         while (world.isInBuildLimit(mutable) && (world.isAir(mutable) || !world.getBlockState(mutable).canPlaceAt(world, mutable))) {
             mutable.move(Direction.DOWN, signum);
