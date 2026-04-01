@@ -101,6 +101,9 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
     @Nullable
     private PlayerEntity master;
 
+    private boolean ownderBodyYawSet;
+    private float ownerBodyYaw;
+
     @Nullable
     private List<Action> validActions;
 
@@ -451,9 +454,14 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
 
             boolean isBeingLookedAt = Pony.of(master).isLookingAt(this) || isConnectedThroughVehicle(master);
 
-            Vec3d targetPosition = isBeingLookedAt ? getPos().add(0, MathHelper.sin(age / 15F) * 0.02F, 0) : (holdPosition == null ? master.getEyePos().add(master.getRotationVector(
+            if (!ownderBodyYawSet || master.getVelocity().horizontalLength() > 0.5F) {
+                ownerBodyYaw = master.getBodyYaw();
+                ownderBodyYawSet = true;
+            }
+
+            Vec3d targetPosition = isBeingLookedAt ? getPos().add(0, MathHelper.sin(age / 15F) * 0.02F, 0) : (holdPosition == null ? master.getEyePos().add(getRotationVector(
                     (float)polarPositionOffset.x * MathHelper.DEGREES_PER_RADIAN,
-                    master.getBodyYaw() + (float)polarPositionOffset.z * MathHelper.DEGREES_PER_RADIAN
+                    ownerBodyYaw + (float)polarPositionOffset.z * MathHelper.DEGREES_PER_RADIAN
             )).add(manualPositionOffset) : holdPosition).add(0, MathHelper.sin(age / 15F) * 0.2F + 0.2F, 0);
 
             BlockPos miningPos = getMiningPos().orElse(null);
