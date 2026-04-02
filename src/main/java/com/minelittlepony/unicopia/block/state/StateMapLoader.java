@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
 
-public class StateMapLoader extends JsonDataLoader<ReversableBlockStateConverterImpl> implements IdentifiableResourceReloadListener {
+public class StateMapLoader extends JsonDataLoader<ReversableBlockStateConverter> implements IdentifiableResourceReloadListener {
     private static final Identifier ID = Unicopia.id("data/state_maps");
 
     public static final StateMapLoader INSTANCE = new StateMapLoader();
@@ -38,10 +38,10 @@ public class StateMapLoader extends JsonDataLoader<ReversableBlockStateConverter
     }
 
     @Override
-    protected Map<Identifier, ReversableBlockStateConverterImpl> prepare(ResourceManager resourceManager, Profiler profiler) {
+    protected Map<Identifier, ReversableBlockStateConverter> prepare(ResourceManager resourceManager, Profiler profiler) {
         int i = DATA_TYPE.length() + 1;
 
-        Map<Identifier, ReversableBlockStateConverterImpl> map = Maps.newHashMap();
+        Map<Identifier, ReversableBlockStateConverter> map = Maps.newHashMap();
 
         resourceManager.findAllResources(DATA_TYPE, id -> id.getPath().endsWith(FILE_SUFFIX)).entrySet().stream().forEach(entry -> {
             Identifier resId = entry.getKey();
@@ -76,7 +76,7 @@ public class StateMapLoader extends JsonDataLoader<ReversableBlockStateConverter
     }
 
     @Override
-    protected void apply(Map<Identifier, ReversableBlockStateConverterImpl> data, ResourceManager manager, Profiler profiler) {
+    protected void apply(Map<Identifier, ReversableBlockStateConverter> data, ResourceManager manager, Profiler profiler) {
         converters = data;
     }
 }

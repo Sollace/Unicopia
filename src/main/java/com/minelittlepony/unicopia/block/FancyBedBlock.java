@@ -236,7 +236,6 @@ public class FancyBedBlock extends BedBlock {
             return name;
         }
 
-        @SuppressWarnings("deprecation")
         public static SheetPattern byId(String id) {
             return CODEC.byId(id, NONE);
         }

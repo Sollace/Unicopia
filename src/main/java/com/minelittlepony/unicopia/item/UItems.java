@@ -74,12 +74,12 @@ public interface UItems {
     Item OAT_SEEDS = register("oat_seeds", s -> new BlockItem(UBlocks.OATS, s.translationKey(UBlocks.OATS.getTranslationKey())), ItemGroups.NATURAL);
     Item OATS = register("oats", s -> new Item(s.food(UFoodComponents.OATS)), ItemGroups.FOOD_AND_DRINK);
     Item IMPORTED_OATS = register("imported_oats", s -> new Item(s.food(UFoodComponents.IMPORTED_OATS).component(UDataComponentTypes.ITEM_AFTER_DRAGON_BREATH, new ConversionComponent(RegistryKey.of(RegistryKeys.ITEM, Unicopia.id("imported_oats"))))), ItemGroups.FOOD_AND_DRINK);
-    Item OATMEAL = register("oatmeal", s -> new Item(s.recipeRemainder(Items.BOWL).maxCount(1).food(UFoodComponents.OATMEAL, UConsumableComponents.OATMEAL).useRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
+    Item OATMEAL = register("oatmeal", s -> new Item(s.recipeRemainder(Items.BOWL).useRemainder(Items.BOWL).maxCount(1).food(UFoodComponents.OATMEAL, UConsumableComponents.OATMEAL)), ItemGroups.FOOD_AND_DRINK);
 
     Item OATMEAL_COOKIE = register("oatmeal_cookie", s -> new Item(s.food(UFoodComponents.OATMEAL_COOKIE)), ItemGroups.FOOD_AND_DRINK);
     Item CHOCOLATE_OATMEAL_COOKIE = register("chocolate_oatmeal_cookie", s -> new Item(s.food(UFoodComponents.CHOCOLATE_OATMEAL_COOKIE)), ItemGroups.FOOD_AND_DRINK);
     Item PINECONE_COOKIE = register("pinecone_cookie", s -> new Item(s.food(FoodComponents.COOKIE)), ItemGroups.FOOD_AND_DRINK);
-    Item BOWL_OF_NUTS = register("bowl_of_nuts", s -> new Item(s.food(UFoodComponents.NUT_BOWL).recipeRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
+    Item BOWL_OF_NUTS = register("bowl_of_nuts", s -> new Item(s.food(UFoodComponents.NUT_BOWL).recipeRemainder(Items.BOWL).useRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
     Item SCONE = register("scone", s -> new MuffinItem(s.maxCount(32).food(UFoodComponents.SCONE), 0), ItemGroups.FOOD_AND_DRINK);
 
     Item DAFFODIL_DAISY_SANDWICH = register("daffodil_daisy_sandwich", s -> new Item(s.food(UFoodComponents.DAFODIL_DAISY_SANDWICH)), ItemGroups.FOOD_AND_DRINK);
@@ -110,7 +110,7 @@ public interface UItems {
     Item TOM = register("tom", s -> new Item(s.attributeModifiers(AttributeModifiersComponent.builder()
             .add(EntityAttributes.KNOCKBACK_RESISTANCE, new EntityAttributeModifier(UItemModifierIds.KNOCKBACK_MODIFIER_ID, 0.9, EntityAttributeModifier.Operation.ADD_VALUE), AttributeModifierSlot.MAINHAND)
             .build())), ItemGroups.NATURAL);
-    Item ROCK_STEW = register("rock_stew", s -> new Item(s.food(FoodComponents.MUSHROOM_STEW).maxCount(1).recipeRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
+    Item ROCK_STEW = register("rock_stew", s -> new Item(s.food(FoodComponents.MUSHROOM_STEW).maxCount(1).recipeRemainder(Items.BOWL).useRemainder(Items.BOWL)), ItemGroups.FOOD_AND_DRINK);
     Item ROCK_CANDY = register("rock_candy", s -> new Item(s.food(UFoodComponents.CANDY).maxCount(16)), ItemGroups.FOOD_AND_DRINK);
     Item SALT_CUBE = register("salt_cube", s -> new Item(s.food(UFoodComponents.SALT_CUBE)), ItemGroups.FOOD_AND_DRINK);
 
@@ -120,17 +120,17 @@ public interface UItems {
     Item GOLDEN_OAK_SEEDS = register("golden_oak_seeds", s -> new BlockItem(UBlocks.GOLDEN_OAK_SPROUT, s), ItemGroups.NATURAL);
 
     Item MUG = register("mug", Item::new, ItemGroups.TOOLS);
-    Item CIDER = register("cider", s -> new ConsumableItem(s.food(UFoodComponents.CIDER).maxCount(16).recipeRemainder(MUG), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
-    Item JUICE = register("juice", s -> new ConsumableItem(s.recipeRemainder(Items.GLASS_BOTTLE).maxCount(16).food(UFoodComponents.JUICE), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
-    Item BURNED_JUICE = register("burned_juice", s -> new ConsumableItem(s.recipeRemainder(Items.GLASS_BOTTLE).maxCount(16).food(UFoodComponents.BURNED_JUICE), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
+    Item CIDER = register("cider", s -> new ConsumableItem(s.food(UFoodComponents.CIDER).maxCount(16).recipeRemainder(MUG).useRemainder(MUG), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
+    Item JUICE = register("juice", s -> new ConsumableItem(s.recipeRemainder(Items.GLASS_BOTTLE).useRemainder(Items.GLASS_BOTTLE).maxCount(16).food(UFoodComponents.JUICE), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
+    Item BURNED_JUICE = register("burned_juice", s -> new ConsumableItem(s.recipeRemainder(Items.GLASS_BOTTLE).useRemainder(Items.GLASS_BOTTLE).maxCount(16).food(UFoodComponents.BURNED_JUICE), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE = register("apple_pie", s -> new BlockItem(UBlocks.APPLE_PIE, s.maxCount(1)), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE_HOOF = register("apple_pie_hoof", s -> new BlockItem(UBlocks.APPLE_PIE, s.maxCount(1)), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE_SLICE = register("apple_pie_slice", s -> new Item(s.maxCount(16).food(UFoodComponents.PIE)), ItemGroups.FOOD_AND_DRINK);
     Item CANDIED_APPLE = register("candied_apple", s -> new StagedFoodItem(s.food(UFoodComponents.CANDY).maxDamage(3), () -> Items.STICK), ItemGroups.FOOD_AND_DRINK);
 
-    Item LOVE_BOTTLE = register("love_bottle", s -> new ConsumableItem(s.food(UFoodComponents.LOVE_BOTTLE, ConsumableComponents.DRINK).maxCount(1).recipeRemainder(Items.GLASS_BOTTLE), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
-    Item LOVE_BUCKET = register("love_bucket", s -> new ConsumableItem(s.food(UFoodComponents.LOVE_BUCKET, ConsumableComponents.DRINK).recipeRemainder(Items.BUCKET), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
-    Item LOVE_MUG = register("love_mug", s -> new ConsumableItem(s.food(UFoodComponents.LOVE_MUG, ConsumableComponents.DRINK).recipeRemainder(MUG), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
+    Item LOVE_BOTTLE = register("love_bottle", s -> new ConsumableItem(s.food(UFoodComponents.LOVE_BOTTLE, ConsumableComponents.DRINK).maxCount(1).recipeRemainder(Items.GLASS_BOTTLE).useRemainder(Items.GLASS_BOTTLE), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
+    Item LOVE_BUCKET = register("love_bucket", s -> new ConsumableItem(s.food(UFoodComponents.LOVE_BUCKET, ConsumableComponents.DRINK).recipeRemainder(Items.BUCKET).useRemainder(Items.BUCKET), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
+    Item LOVE_MUG = register("love_mug", s -> new ConsumableItem(s.food(UFoodComponents.LOVE_MUG, ConsumableComponents.DRINK).recipeRemainder(MUG).useRemainder(MUG), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
 
     Item GOLDEN_FEATHER = register("golden_feather", s -> new Item(s.rarity(Rarity.UNCOMMON)), ItemGroups.NATURAL);
     Item GOLDEN_WING = register("golden_wing", s -> new Item(s.rarity(Rarity.UNCOMMON)), ItemGroups.NATURAL);

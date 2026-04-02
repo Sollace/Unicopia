@@ -4,7 +4,7 @@ import java.util.Optional;
 
 public interface Untyped {
     @SuppressWarnings("unchecked")
-    static <K, T extends K> T cast(K t) {
+    static <K, T> T cast(K t) {
         return (T)t;
     }
 

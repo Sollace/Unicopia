@@ -58,7 +58,7 @@ public interface UFoodComponents {
     FoodComponent SHELL = builder(3, 1.5F).build();
     FoodComponent SHELLY = builder(6, 0.7F).build();
     FoodComponent ROCK = builder(3, 0.5F).build();
-    FoodComponent ROCK_STEW = builder(6, 0.6F).usingConvertsTo(Items.BOWL).build();
+    FoodComponent ROCK_STEW = builder(6, 0.6F).build();
 
     static FoodComponent.Builder builder(int hunger, float saturation) {
         return new FoodComponent.Builder()
