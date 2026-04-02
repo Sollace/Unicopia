@@ -32,7 +32,8 @@ public class FoodGroupsGenerator {
         exporter.accept(Unicopia.id("candy"), new FoodGroupEffects.Builder().tag(ConventionalItemTags.CANDY_FOODS).food(UFoodComponents.CANDY));
         exporter.accept(Unicopia.id("desserts"), new FoodGroupEffects.Builder().tag(UConventionalTags.Items.DESSERTS).food(FoodComponents.COOKIE));
         exporter.accept(Unicopia.id("fruit"), new FoodGroupEffects.Builder().tag(ConventionalItemTags.FRUIT_FOODS).food(UFoodComponents.BANANA));
-        exporter.accept(Unicopia.id("rocks"), new FoodGroupEffects.Builder().tag(UConventionalTags.Items.ROCKS).tag(UTags.Items.ROCK_STEWS).food(FoodComponents.MUSHROOM_STEW));
+        exporter.accept(Unicopia.id("rocks"), new FoodGroupEffects.Builder().tag(UConventionalTags.Items.ROCKS).food(UFoodComponents.ROCK));
+        exporter.accept(Unicopia.id("rock_stews"), new FoodGroupEffects.Builder().tag(UTags.Items.ROCK_STEWS).food(UFoodComponents.ROCK_STEW));
         exporter.accept(Unicopia.id("gems"), new FoodGroupEffects.Builder().tag(UConventionalTags.Items.GEMS));
         exporter.accept(Unicopia.id("shells"), new FoodGroupEffects.Builder().tag(UTags.Items.SHELLS).food(UFoodComponents.SHELL));
         exporter.accept(Unicopia.id("special_shells"), new FoodGroupEffects.Builder().tag(UTags.Items.SPECIAL_SHELLS).food(UFoodComponents.SHELLY));
