@@ -346,7 +346,7 @@ public class UHud {
     }
 
     private void renderVelocityOverlay(VertexConsumerProvider provider, Pony pony, DrawContext context, float tickDelta) {
-        float effectStrength = (float)MathHelper.clamp(pony.getPhysics().getClientVelocity().length() / 15F, 0, 1);
+        float effectStrength = (float)MathHelper.clamp(pony.getPhysics().getTrackedVelocity().length() / 15F, 0, 1);
         VertexConsumer vertexConsumer = provider.getBuffer(RenderLayer.getGui());
 
         int scaledWidth = context.getScaledWindowWidth();

@@ -28,7 +28,7 @@ public class AreaProtectionSpell extends AbstractAreaEffectSpell {
             .with(Trait.STRENGTH, 30)
             .build();
 
-    private static final SpellAttribute<CastOn> CAST_ON = SpellAttribute.createEnumerated(SpellAttributeType.CAST_ON, Trait.FOCUS, focus -> focus > 0 ? CastOn.SELF : CastOn.LOCATION);
+    private static final SpellAttribute<CastOn> CAST_ON = SpellAttribute.createEnumerated(SpellAttributeType.CAST_ON, Trait.GENEROSITY, generosity -> generosity > 0 ? CastOn.LOCATION : CastOn.SELF);
 
     static final TooltipFactory TOOLTIP = TooltipFactory.of(CAST_ON, RANGE);
 
