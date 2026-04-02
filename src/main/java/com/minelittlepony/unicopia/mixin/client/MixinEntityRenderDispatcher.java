@@ -22,27 +22,26 @@ import net.minecraft.entity.Entity;
 
 @Mixin(EntityRenderDispatcher.class)
 abstract class MixinEntityRenderDispatcher implements SpellEffectsRenderDispatcher.RenderDispatcherAccessor {
+    private static final String OUTER_RENDER = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V";
+    private static final String INNER_RENDER = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/client/render/entity/EntityRenderer;)V";
 
-    private static final String RENDER = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V";
-
-    @Inject(method = RENDER, at = @At("HEAD"), cancellable = true)
+    @Inject(method = OUTER_RENDER, at = @At("HEAD"), cancellable = true)
     private <E extends Entity> void beforeRender(E entity, double x, double y, double z, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
         if (WorldRenderDelegate.INSTANCE.beforeEntityRender(entity, x, y, z, tickDelta, matrices, vertexConsumers, light)) {
             info.cancel();
         }
     }
 
-    @ModifyExpressionValue(method = RENDER, at = @At(
+    @ModifyExpressionValue(method = INNER_RENDER, at = @At(
             value = "FIELD",
             target = "net/minecraft/client/render/entity/EntityRenderDispatcher.renderHitboxes:Z",
             opcode = Opcodes.GETFIELD
     ))
-    private <E extends Entity> boolean beforeRenderHitboxes(boolean renderHitboxes,
-            E entity, double x, double y, double z, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+    private <E extends Entity> boolean beforeRenderHitboxes(boolean renderHitboxes, E entity) {
         return renderHitboxes && HitboxController.of(getRenderer(entity)).shouldRenderHitbox(entity);
     }
 
-    @Inject(method = RENDER, at = @At("RETURN"))
+    @Inject(method = OUTER_RENDER, at = @At("RETURN"))
     private <E extends Entity> void afterRender(E entity, double x, double y, double z, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
         Equine.of(entity).ifPresent(eq -> WorldRenderDelegate.INSTANCE.afterEntityRender(eq, matrices, vertexConsumers, light));
     }

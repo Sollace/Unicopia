@@ -91,8 +91,6 @@
   ],
   "client": [
     "client.MixinAbstractClientPlayerEntity",
-    "client.MixinArmorFeatureRenderer",
-    "client.MixinAnimalModel",
     "client.MixinBackgroundRenderer",
     "client.MixinCamera",
     "client.MixinClientWorld",
