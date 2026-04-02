@@ -53,16 +53,16 @@ public class UnstableCloudBlock extends CloudBlock {
         super.randomDisplayTick(state, world, pos, random);
         int charge = state.get(CHARGE);
         if (charge > 0) {
-            world.addParticle(new LightningBoltParticleEffect(true, 10, 1, 0.6F + (charge / (float)MAX_CHARGE) * 0.4F, Optional.empty()), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0, 0);
+            world.addParticleClient(new LightningBoltParticleEffect(true, 10, 1, 0.6F + (charge / (float)MAX_CHARGE) * 0.4F, Optional.empty()), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0, 0);
         }
     }
 
     @Override
-    public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+    public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, double fallDistance) {
         super.onLandedUpon(world, state, pos, entity, fallDistance);
 
         for (int i = 0; i < 9; i++) {
-            world.addParticle(ParticleTypes.CLOUD, pos.getX() + world.random.nextFloat(), pos.getY() + world.random.nextFloat(), pos.getZ() + world.random.nextFloat(), 0, 0, 0);
+            world.addParticleClient(ParticleTypes.CLOUD, pos.getX() + world.random.nextFloat(), pos.getY() + world.random.nextFloat(), pos.getZ() + world.random.nextFloat(), 0, 0, 0);
         }
         world.playSound(null, pos, SoundEvents.BLOCK_WOOL_HIT, SoundCategory.BLOCKS, 1, 1);
 

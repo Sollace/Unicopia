@@ -14,7 +14,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ActionResult;
@@ -26,13 +25,13 @@ import net.minecraft.world.WorldView;
 public class SoggyCloudStairsBlock extends CloudStairsBlock implements Soakable {
     private static final MapCodec<SoggyCloudStairsBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             BlockState.CODEC.fieldOf("base_state").forGetter(block -> block.baseBlockState),
-            CodecUtils.supplierOf(Registries.BLOCK.getCodec()).optionalFieldOf("soggy_block", null).forGetter(b -> b.dryBlock),
+            CodecUtils.supplierOf(BlockState.CODEC).optionalFieldOf("soggy_block", null).forGetter(b -> b.dryBlock),
             StairsBlock.createSettingsCodec()
     ).apply(instance, SoggyCloudStairsBlock::new));
 
-    private final Supplier<Block> dryBlock;
+    private final Supplier<BlockState> dryBlock;
 
-    public SoggyCloudStairsBlock(BlockState baseState, Supplier<Block> dryBlock, Settings settings) {
+    public SoggyCloudStairsBlock(BlockState baseState, Supplier<BlockState> dryBlock, Settings settings) {
         super(baseState, settings);
         setDefaultState(getDefaultState().with(MOISTURE, 7));
         this.dryBlock = dryBlock;
@@ -50,8 +49,8 @@ public class SoggyCloudStairsBlock extends CloudStairsBlock implements Soakable 
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
-        return dryBlock.get().getPickStack(world, pos, state);
+    protected ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
+        return getStateWithMoisture(state, 0).getPickStack(world, pos, includeData);
     }
 
     @Override
@@ -63,7 +62,7 @@ public class SoggyCloudStairsBlock extends CloudStairsBlock implements Soakable 
     @Override
     public BlockState getStateWithMoisture(BlockState state, int moisture) {
         if (moisture <= 0) {
-            return StateUtil.copyState(state, dryBlock.get().getDefaultState());
+            return StateUtil.copyState(state, dryBlock.get());
         }
         return StateUtil.copyState(state, getDefaultState()).with(MOISTURE, moisture);
     }

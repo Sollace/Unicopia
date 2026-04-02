@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import com.google.common.base.Suppliers;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -59,8 +59,7 @@ public class IngredientWithSpell implements CustomIngredient {
         this.spell = spell;
         stacks = Suppliers.memoize(() -> {
             return stack.stream()
-                    .map(Ingredient::getMatchingItems)
-                    .flatMap(List::stream)
+                    .flatMap(Ingredient::getMatchingItems)
                     .map(item -> item.value().getDefaultStack())
                     .map(s -> spell.map(p -> EnchantableItem.enchant(s, p)).orElse(s))
                     .toArray(ItemStack[]::new);
@@ -84,9 +83,10 @@ public class IngredientWithSpell implements CustomIngredient {
         return stackMatch && spellMatch;
     }
 
+    @Deprecated
     @Override
-    public List<RegistryEntry<Item>> getMatchingItems() {
-        return stack.map(i -> i.getMatchingItems()).orElseGet(List::of);
+    public Stream<RegistryEntry<Item>> getMatchingItems() {
+        return stack.stream().flatMap(i -> i.getMatchingItems());
     }
 
     public ItemStack[] getMatchingStacks() {

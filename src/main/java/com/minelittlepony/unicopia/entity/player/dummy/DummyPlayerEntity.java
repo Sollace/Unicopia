@@ -15,6 +15,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 
 public class DummyPlayerEntity extends PlayerEntity implements Owned<PlayerEntity>, Owned.Mutable<PlayerEntity> {
@@ -23,6 +24,11 @@ public class DummyPlayerEntity extends PlayerEntity implements Owned<PlayerEntit
 
     public DummyPlayerEntity(World world, GameProfile profile) {
         super(world, BlockPos.ORIGIN, 0, profile);
+    }
+
+    @Override
+    public GameMode getGameMode() {
+        return GameMode.DEFAULT;
     }
 
     @Override

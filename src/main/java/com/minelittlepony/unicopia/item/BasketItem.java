@@ -49,7 +49,7 @@ public class BasketItem extends Item implements Dispensable {
     public ActionResult dispenseStack(BlockPointer source, ItemStack stack) {
         Direction facing = source.state().get(DispenserBlock.FACING);
         BlockPos pos = source.pos().offset(facing);
-        float yaw = facing.getOpposite().asRotation();
+        float yaw = facing.getOpposite().getPositiveHorizontalDegrees();
         return placeEntity(stack, source.world(), pos.getX(), pos.getY(), pos.getZ(), yaw, null);
     }
 
@@ -69,7 +69,7 @@ public class BasketItem extends Item implements Dispensable {
         }
 
         if (hit.getType() == HitResult.Type.BLOCK) {
-            return placeEntity(stack, world, hit.getPos().x, hit.getPos().y, hit.getPos().z, user.getHorizontalFacing().asRotation(), user);
+            return placeEntity(stack, world, hit.getPos().x, hit.getPos().y, hit.getPos().z, user.getHorizontalFacing().getPositiveHorizontalDegrees(), user);
         }
 
         return ActionResult.PASS;

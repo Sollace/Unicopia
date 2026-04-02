@@ -105,10 +105,10 @@ public final class RenderLayers extends RenderLayer {
     }
 
     private static Texturing solid(int color) {
-        final float r = Color.r(color);
-        final float g = Color.g(color);
-        final float b = Color.b(color);
-        final float a = Color.a(color);
+        final float r = ColorHelper.getRedFloat(color);
+        final float g = ColorHelper.getGreenFloat(color);
+        final float b = ColorHelper.getBlueFloat(color);
+        final float a = ColorHelper.getAlphaFloat(color);
         return new Texturing("solid", () -> {
             RenderSystem.setShaderColor(r, g, b, a);
         }, () -> {
@@ -125,10 +125,10 @@ public final class RenderLayers extends RenderLayer {
 
         public Colored(Identifier texture, int color) {
             super(texture, TriState.FALSE, false);
-            this.red = Color.r(color);
-            this.green = Color.g(color);
-            this.blue = Color.b(color);
-            this.alpha = Color.a(color);
+            this.red = ColorHelper.getRedFloat(color);
+            this.green = ColorHelper.getGreenFloat(color);
+            this.blue = ColorHelper.getBlueFloat(color);
+            this.alpha = ColorHelper.getAlphaFloat(color);
         }
 
         @Override

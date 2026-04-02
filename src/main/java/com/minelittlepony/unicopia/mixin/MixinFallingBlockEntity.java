@@ -59,8 +59,8 @@ abstract class MixinFallingBlockEntity extends Entity implements Hoverable {
 
     @Inject(method = "readCustomDataFromNbt(Lnet/minecraft/nbt/NbtCompound;)V", at = @At("HEAD"))
     private void onReadNbt(NbtCompound tag, CallbackInfo info) {
-        maxTicksHovering = tag.getInt("unicopia_maxTicksHovering");
-        ticksHovering = tag.getInt("unicopia_ticksHovering");
+        maxTicksHovering = tag.getInt("unicopia_maxTicksHovering", 0);
+        ticksHovering = tag.getInt("unicopia_ticksHovering", 0);
         if (isHovering()) {
             setNoGravity(true);
         }

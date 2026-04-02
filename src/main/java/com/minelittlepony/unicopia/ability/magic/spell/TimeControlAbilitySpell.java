@@ -86,8 +86,8 @@ public class TimeControlAbilitySpell extends AbstractSpell {
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        initilized = compound.getBoolean("initilized");
-        timeOffset = compound.getLong("timeOffset");
-        angleOffset = compound.getFloat("angleOffset");
+        initilized = compound.getBoolean("initilized", false);
+        timeOffset = compound.getLong("timeOffset", 0);
+        angleOffset = compound.getFloat("angleOffset", 0);
     }
 }

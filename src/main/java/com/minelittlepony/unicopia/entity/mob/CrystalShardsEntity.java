@@ -23,7 +23,6 @@ import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
@@ -229,7 +228,7 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
         super.writeCustomDataToNbt(nbt);
         nbt.putFloat("yaw", getYaw());
         nbt.putInt("growth", getGrowth());
-        nbt.putString("face", getAttachmentFace().getName());
+        nbt.putNullable("face", Direction.CODEC, getAttachmentFace());
         nbt.putBoolean("decaying", isDecaying());
         nbt.putBoolean("corrupt", isCorrupt());
     }
@@ -237,13 +236,11 @@ public class CrystalShardsEntity extends StationaryObjectEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("yaw", NbtElement.FLOAT_TYPE)) {
-            setYaw(nbt.getFloat("yaw"));
-        }
-        setGrowth(nbt.getInt("growth"));
-        setAttachmentFace(Direction.byName(nbt.getString("face")));
-        setDecaying(nbt.getBoolean("decaying"));
-        setCorrupt(nbt.getBoolean("corrupt"));
+        nbt.getFloat("yaw").ifPresent(this::setYaw);
+        setGrowth(nbt.getInt("growth", 0));
+        setAttachmentFace(nbt.get("face", Direction.CODEC).orElse(null));
+        setDecaying(nbt.getBoolean("decaying", false));
+        setCorrupt(nbt.getBoolean("corrupt", false));
         prevAge = getGrowth();
     }
 }

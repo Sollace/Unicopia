@@ -99,7 +99,7 @@ public class RainboomAbilitySpell extends AbstractSpell {
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        age = compound.getInt("age");
+        age = compound.getInt("age", 0);
         boundParticle = null;
     }
 }

@@ -69,8 +69,8 @@ public class CompactedCloudBlock extends CloudBlock {
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
-        return baseState.getBlock().getPickStack(world, pos, baseState);
+    protected ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
+        return baseState.getPickStack(world, pos, includeData);
     }
 
     @Override

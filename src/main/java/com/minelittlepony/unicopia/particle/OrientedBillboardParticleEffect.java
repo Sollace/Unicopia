@@ -27,7 +27,7 @@ public record OrientedBillboardParticleEffect (
 
     public static final PacketCodec<RegistryByteBuf, OrientedBillboardParticleEffect> createPacketCodec(ParticleType<OrientedBillboardParticleEffect> type) {
         return PacketCodec.tuple(
-                PacketCodecs.BOOL, OrientedBillboardParticleEffect::fixed,
+                PacketCodecs.BOOLEAN, OrientedBillboardParticleEffect::fixed,
                 PacketCodecs.FLOAT, OrientedBillboardParticleEffect::yaw,
                 PacketCodecs.FLOAT, OrientedBillboardParticleEffect::pitch,
                 (fixed, yaw, pitch) -> new OrientedBillboardParticleEffect(type, fixed, yaw, pitch)

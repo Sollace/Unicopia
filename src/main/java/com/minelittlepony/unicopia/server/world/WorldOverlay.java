@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.util.Tickable;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
+import com.mojang.serialization.Codec;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -23,6 +24,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.PersistentState;
+import net.minecraft.world.PersistentStateType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
@@ -38,30 +40,40 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
     @Nullable
     private final BiConsumer<Long2ObjectMap<T>, List<ServerPlayerEntity>> updateSender;
 
-    public static <T extends PersistentState> T getPersistableStorage(WorldView world, Identifier id, BiFunction<World, NbtCompound, T> loadFunc, Function<World, T> factory) {
-        if (world instanceof ServerWorld serverWorld) {
-            return serverWorld.getPersistentStateManager().getOrCreate(
-                    new Type<>(
-                            () -> factory.apply(serverWorld),
-                            (compound, lookup) -> loadFunc.apply(serverWorld, compound),
-                            DataFixTypes.LEVEL
-                    ),
-                    id.getNamespace() + "_" + id.getPath().replace('/', '_')
-            );
-        }
+    public static <T extends PersistentState> Accessor<T> createAccessor(Identifier id, Function<PersistentState.Context, Codec<T>> codec, Function<World, T> factory) {
+        var type = new PersistentStateType<>(
+                id.getNamespace() + "_" + id.getPath().replace('/', '_'),
+                context -> factory.apply(context.getWorldOrThrow()),
+                codec,
+                DataFixTypes.LEVEL
+        );
 
-        return ClientInstance.of((World)world, id, factory).instance();
+        return world -> {
+            if (world instanceof ServerWorld serverWorld) {
+                return serverWorld.getPersistentStateManager().getOrCreate(type);
+            }
+
+            return ClientInstance.of((World)world, id, factory).instance();
+        };
     }
 
-    public static <T extends State> WorldOverlay<T> getOverlay(World world, Identifier id, Supplier<T> factory, @Nullable BiConsumer<Long2ObjectMap<T>, List<ServerPlayerEntity>> updateSender) {
-        return getOverlay(world, id, w -> new WorldOverlay<>(w, factory, updateSender));
+    interface Accessor<T extends PersistentState> {
+        T get(WorldView world);
     }
 
-    public static <T extends State> WorldOverlay<T> getOverlay(World world, Identifier id, Function<World, WorldOverlay<T>> overlayFactory) {
-        return getPersistableStorage(world, id, (w, tag) -> {
-            WorldOverlay<T> overlay = overlayFactory.apply(w);
-            overlay.readNbt(tag, w.getRegistryManager());
-            return overlay;
+    public static  <T extends State> Accessor<WorldOverlay<T>> createAccessor(Identifier id, Supplier<T> factory, @Nullable BiConsumer<Long2ObjectMap<T>, List<ServerPlayerEntity>> updateSender) {
+        return createAccessor(id, w -> new WorldOverlay<>(w, factory, updateSender));
+    }
+
+    public static  <T extends State> Accessor<WorldOverlay<T>> createAccessor(Identifier id, Function<World, WorldOverlay<T>> overlayFactory) {
+        return createAccessor(id, context -> {
+            return NbtCompound.CODEC.xmap(tag -> {
+                WorldOverlay<T> overlay = overlayFactory.apply(context.getWorldOrThrow());
+                overlay.readNbt(tag, context.getWorldOrThrow().getRegistryManager());
+                return overlay;
+            }, overlay -> {
+                return overlay.writeNbt(new NbtCompound(), context.getWorldOrThrow().getRegistryManager());
+            });
         }, overlayFactory);
     }
 
@@ -71,7 +83,6 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
         this.updateSender = updateSender;
     }
 
-    @Override
     public NbtCompound writeNbt(NbtCompound compound, WrapperLookup lookup) {
         NbtCompound destructions = new NbtCompound();
         this.chunks.forEach((id, chunk) -> {
@@ -82,9 +93,9 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
     }
 
     public void readNbt(NbtCompound compound, WrapperLookup lookup) {
-        NbtCompound d = compound.getCompound("chunks");
+        NbtCompound d = compound.getCompoundOrEmpty("chunks");
         d.getKeys().forEach(id -> {
-            chunks.computeIfAbsent(Long.valueOf(id), Chunk::new).fromNBT(d.getCompound(id), lookup);
+            chunks.computeIfAbsent(Long.valueOf(id), Chunk::new).fromNBT(d.getCompoundOrEmpty(id), lookup);
         });
     }
 
@@ -181,10 +192,10 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
 
         @Override
         public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-            NbtCompound d = compound.getCompound("states");
+            NbtCompound d = compound.getCompoundOrEmpty("states");
             chunks.clear();
             d.getKeys().forEach(id -> {
-                states.computeIfAbsent(Long.valueOf(id), i -> factory.get()).fromNBT(d.getCompound(id), lookup);
+                states.computeIfAbsent(Long.valueOf(id), i -> factory.get()).fromNBT(d.getCompoundOrEmpty(id), lookup);
             });
         }
     }

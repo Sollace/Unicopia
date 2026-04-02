@@ -33,6 +33,7 @@ public interface NbtSerialisable {
         return compound;
     }
 
+    @Deprecated
     static NbtList writeVector(Vec3d vector) {
         NbtList list = new NbtList();
         list.add(NbtDouble.of(vector.getX()));
@@ -49,15 +50,16 @@ public interface NbtSerialisable {
         return codec.encodeStart(lookup.getOps(NbtOps.INSTANCE), value).result().get();
     }
 
+    @Deprecated
     static Vec3d readVector(NbtList list) {
-        return new Vec3d(list.getDouble(0), list.getDouble(1), list.getDouble(2));
+        return new Vec3d(list.getDouble(0, 0), list.getDouble(1, 0), list.getDouble(2, 0));
     }
 
     static Vec3d readPositionVector(NbtList list) {
         return new Vec3d(
-                MathHelper.clamp(list.getDouble(0), -3.0000512E7, 3.0000512E7),
-                MathHelper.clamp(list.getDouble(1), -2.0E7, 2.0E7),
-                MathHelper.clamp(list.getDouble(2), -3.0000512E7, 3.0000512E7)
+                MathHelper.clamp(list.getDouble(0, 0), -3.0000512E7, 3.0000512E7),
+                MathHelper.clamp(list.getDouble(1, 0), -2.0E7, 2.0E7),
+                MathHelper.clamp(list.getDouble(2, 0), -3.0000512E7, 3.0000512E7)
         );
     }
 

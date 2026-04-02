@@ -74,8 +74,8 @@ public class WeatherVaneBlock extends BlockWithEntity {
 
         @Override
         public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
-            angle = nbt.getFloat("angle");
-            airflow = new Vec3d(nbt.getDouble("windX"), 0, nbt.getDouble("windZ"));
+            angle = nbt.getFloat("angle", 0);
+            airflow = new Vec3d(nbt.getDouble("windX", 0), 0, nbt.getDouble("windZ", 0));
         }
 
         @Override
@@ -133,7 +133,7 @@ public class WeatherVaneBlock extends BlockWithEntity {
             if (world.random.nextInt(3) == 0) {
                 float radius = 10;
                 for (int i = 0; i < 5; i++) {
-                    world.addImportantParticle(new TargetBoundParticleEffect(UParticles.WIND, null),
+                    world.addImportantParticleClient(new TargetBoundParticleEffect(UParticles.WIND, null),
                             world.getRandom().nextTriangular(pos.getX(), radius),
                             world.getRandom().nextTriangular(pos.getY(), radius),
                             world.getRandom().nextTriangular(pos.getZ(), radius),

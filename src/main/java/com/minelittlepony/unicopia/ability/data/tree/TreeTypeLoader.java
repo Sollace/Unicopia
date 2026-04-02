@@ -17,6 +17,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.resource.JsonDataLoader;
+import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
@@ -32,7 +33,7 @@ public class TreeTypeLoader extends JsonDataLoader<TreeTypeLoader.TreeTypeDef> i
     private Map<Identifier, TreeTypeDef> entries = new HashMap<>();
 
     TreeTypeLoader() {
-        super(TreeTypeDef.CODEC, "tree_types");
+        super(TreeTypeDef.CODEC, ResourceFinder.json("tree_types"));
     }
 
     public Map<Identifier, TreeTypeDef> getEntries() {
@@ -71,7 +72,7 @@ public class TreeTypeLoader extends JsonDataLoader<TreeTypeLoader.TreeTypeDef> i
                 Identifier.PACKET_CODEC.collect(PacketCodecs.toCollection(HashSet::new)), TreeTypeDef::logs,
                 Identifier.PACKET_CODEC.collect(PacketCodecs.toCollection(HashSet::new)), TreeTypeDef::leaves,
                 Drop.PACKET_CODEC.collect(PacketCodecs.toCollection(HashSet::new)), TreeTypeDef::drops,
-                PacketCodecs.BOOL, TreeTypeDef::wideTrunk,
+                PacketCodecs.BOOLEAN, TreeTypeDef::wideTrunk,
                 PacketCodecs.INTEGER, TreeTypeDef::rarity,
                 PacketCodecs.FLOAT, TreeTypeDef::leavesRatio,
                 TreeTypeDef::new

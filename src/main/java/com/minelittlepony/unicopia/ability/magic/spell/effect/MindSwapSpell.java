@@ -26,6 +26,7 @@ import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.hit.EntityHitResult;
@@ -206,10 +207,10 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        counterpart.fromNBT(compound.getCompound("counterpart"), lookup);
-        initialized = compound.getBoolean("initialized");
-        myStoredInventory = NbtSerialisable.decode(Inventory.CODEC, compound.getCompound("myStoredInventory"), lookup);
-        theirStoredInventory = NbtSerialisable.decode(Inventory.CODEC, compound.getCompound("theirStoredInventory"), lookup);
+        counterpart.fromNBT(compound.getCompoundOrEmpty("counterpart"), lookup);
+        initialized = compound.getBoolean("initialized", false);
+        myStoredInventory = compound.get("myStoredInventory", Inventory.CODEC, lookup.getOps(NbtOps.INSTANCE));
+        theirStoredInventory = compound.get("theirStoredInventory", Inventory.CODEC, lookup.getOps(NbtOps.INSTANCE));
     }
 
     private static void swapPlayerData(ServerPlayerEntity a, ServerPlayerEntity b) {
@@ -273,7 +274,7 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
 
         NbtCompound compound = player.writeNbt(new NbtCompound());
         compound.remove("Dimension");
-        compound.getCompound("unicopia_caster").remove("spells");
+        compound.getCompoundOrEmpty("unicopia_caster").remove("spells");
         clone.readNbt(compound);
         return clone;
     }

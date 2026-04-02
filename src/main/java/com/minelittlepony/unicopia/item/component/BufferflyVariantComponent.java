@@ -7,6 +7,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.component.ComponentsAccess;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.tooltip.TooltipAppender;
@@ -24,7 +25,7 @@ public record BufferflyVariantComponent (ButterflyEntity.Variant variant, boolea
     ).apply(instance, BufferflyVariantComponent::new));
     public static final PacketCodec<ByteBuf, BufferflyVariantComponent> PACKET_CODEC = PacketCodec.tuple(
             ButterflyEntity.Variant.PACKET_CODEC, BufferflyVariantComponent::variant,
-            PacketCodecs.BOOL, BufferflyVariantComponent::showInTooltip,
+            PacketCodecs.BOOLEAN, BufferflyVariantComponent::showInTooltip,
             BufferflyVariantComponent::new
     );
 
@@ -38,9 +39,9 @@ public record BufferflyVariantComponent (ButterflyEntity.Variant variant, boolea
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(TooltipContext context, Consumer<Text> textConsumer, TooltipType type, ComponentsAccess components) {
         if (showInTooltip()) {
-            tooltip.accept(Text.literal(variant().name()).formatted(Formatting.LIGHT_PURPLE));
+            textConsumer.accept(Text.literal(variant().name()).formatted(Formatting.LIGHT_PURPLE));
         }
     }
 }

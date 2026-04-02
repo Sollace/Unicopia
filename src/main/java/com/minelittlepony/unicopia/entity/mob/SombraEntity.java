@@ -67,8 +67,6 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -225,7 +223,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
         };
         nav.setCanPathThroughDoors(true);
         nav.setCanSwim(true);
-        nav.setCanEnterOpenDoors(true);
+        nav.setCanPathThroughDoors(true);
         nav.canJumpToNext(PathNodeType.UNPASSABLE_RAIL);
         return nav;
     }
@@ -431,7 +429,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
 
     protected void generateBodyParticles() {
         for (int i = 0; i < 3; i++) {
-            getWorld().addParticle(ParticleTypes.LARGE_SMOKE,
+            getWorld().addParticleClient(ParticleTypes.LARGE_SMOKE,
                     random.nextTriangular(getX(), 3),
                     random.nextTriangular(getY(), 3),
                     random.nextTriangular(getZ(), 3),
@@ -477,7 +475,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     }
 
     @Override
-    public boolean handleFallDamage(float distance, float damageMultiplier, DamageSource cause) {
+    public boolean handleFallDamage(double distance, float damageMultiplier, DamageSource cause) {
         return false;
     }
 
@@ -551,7 +549,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     @Override
     protected void updatePostDeath() {
         if (++deathTime >= 180 && deathTime <= 200) {
-            getWorld().addParticle(ParticleTypes.EXPLOSION_EMITTER,
+            getWorld().addParticleClient(ParticleTypes.EXPLOSION_EMITTER,
                     random.nextTriangular(getX(), 4F),
                     random.nextTriangular(getY() + 2, 2F),
                     random.nextTriangular(getZ(), 4F), 0, 0, 0);
@@ -675,9 +673,7 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        getHomePos().map(NbtHelper::fromBlockPos).ifPresent(pos -> {
-            nbt.put("homePos", pos);
-        });
+        nbt.putNullable("homePos", BlockPos.CODEC, getHomePos().orElse(null));
         nbt.put("cloud", stormCloud.toNBT(getRegistryManager()));
         nbt.putFloat("size", getScaleFactor());
     }
@@ -685,14 +681,12 @@ public class SombraEntity extends HostileEntity implements ArenaCombatant, Parti
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if (nbt.contains("homePos", NbtElement.COMPOUND_TYPE)) {
-            setHomePos(NbtHelper.toBlockPos(nbt, "homePos"));
-        }
+        nbt.get("homePos", BlockPos.CODEC).ifPresent(this::setHomePos);
         if (hasCustomName()) {
             bossBar.setName(getDisplayName());
         }
-        setScaleFactor(nbt.getFloat("size"));
-        stormCloud.fromNBT(nbt.getCompound("cloud"), getRegistryManager());
+        setScaleFactor(nbt.getFloat("size", 1));
+        stormCloud.fromNBT(nbt.getCompoundOrEmpty("cloud"), getRegistryManager());
     }
 
     private static class SombraBossBar extends ServerBossBar {

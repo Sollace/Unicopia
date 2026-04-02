@@ -11,7 +11,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.ParticleTypes;
@@ -155,7 +154,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
     }
 
     public boolean hasBurner() {
-        return getHandItems() != null && !getStackInHand(Hand.MAIN_HAND).isEmpty();
+        return hasStackEquipped(EquipmentSlot.MAINHAND);
     }
 
     public float getInflation(float tickDelta) {
@@ -270,7 +269,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
             if (hasBurner() && isAscending()) {
                 Vec3d burnerPos = getPos().add(0, 3, 0);
                 for (int i = 0; i < (boosting ? 6 : 1); i++) {
-                    getWorld().addParticle(activeFuel <= 0
+                    getWorld().addParticleClient(activeFuel <= 0
                                 ? ParticleTypes.SMOKE
                                 : getStackInHand(Hand.MAIN_HAND).isOf(Items.SOUL_LANTERN)
                                     ? ParticleTypes.SOUL_FIRE_FLAME
@@ -333,8 +332,8 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
         prevXDelta = xDelta;
         prevZDelta = zDelta;
-        xDelta = getX() - prevX;
-        zDelta = getZ() - prevZ;
+        xDelta = getX() - lastX;
+        zDelta = getZ() - lastZ;
     }
 
     @Override
@@ -567,9 +566,9 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
     }
 
     @Override
-    protected Box calculateBoundingBox() {
+    protected Box calculateDefaultBoundingBox(Vec3d pos) {
         List<Box> boxes = getBoundingBoxes();
-        Box box = super.calculateBoundingBox();
+        Box box = super.calculateDefaultBoundingBox(pos);
 
         if (hasBalloon() && getInflation(1) > 0.999F) {
             double horScale = -0.5;
@@ -587,7 +586,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
             boxes.add(getBurnerBoundingBox());
         }
 
-        return MultiBox.of(box, boxes);
+        return MultiBox.of(box, boxes.stream().map(b -> b.offset(pos)).toList());
     }
 
     public Box getInteriorBoundingBox() {
@@ -667,7 +666,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
             boxes.add(balloonBox.withMinZ(balloonBox.maxZ - 2).withMaxY(balloonBox.minY + 0.2));
         }
 
-        float yaw = (180 - getHorizontalFacing().asRotation()) * MathHelper.RADIANS_PER_DEGREE;
+        float yaw = (180 - getHorizontalFacing().getPositiveHorizontalDegrees()) * MathHelper.RADIANS_PER_DEGREE;
         if (yaw != 0) {
             Vec3d center = getPos();
             for (int i = 0; i < boxes.size(); i++) {
@@ -731,16 +730,16 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
-        setBasketType(BasketType.of(compound.getString("basket")));
-        setDesign(BalloonDesign.getType(compound.getString("design")));
-        setAscending(compound.getBoolean("burnerActive"));
-        setBoostTicks(compound.getInt("boostTicks"));
-        prevInflation = compound.getInt("inflationAmount");
+        setBasketType(BasketType.of(compound.getString("basket", "")));
+        setDesign(BalloonDesign.getType(compound.getString("design", "")));
+        setAscending(compound.getBoolean("burnerActive", false));
+        setBoostTicks(compound.getInt("boostTicks", 0));
+        prevInflation = compound.getInt("inflationAmount", 0);
         setInflation(prevInflation);
-        activeFuel = MathHelper.clamp(compound.getInt("fuel"), 0, maxFuel);
-        fuelItems = compound.contains("fuelItems", NbtElement.LIST_TYPE) ? compound
-                .getList("fuelItems", NbtElement.COMPOUND_TYPE).stream()
-                .map(item -> ItemStack.fromNbtOrEmpty(getRegistryManager(), (NbtCompound)item))
+        activeFuel = MathHelper.clamp(compound.getInt("fuel", 0), 0, maxFuel);
+        fuelItems = compound.contains("fuelItems") ? compound
+                .getListOrEmpty("fuelItems").stream()
+                .flatMap(item -> ItemStack.fromNbt(getRegistryManager(), item).stream())
                 .limit(64)
                 .collect(Collectors.toList()) : new ArrayList<>();
     }
@@ -809,7 +808,6 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         }
     }
 
-    @SuppressWarnings("deprecation")
     public enum BalloonDesign implements StringIdentifiable {
         NONE,
         LUNA,
@@ -841,6 +839,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
             return VALUES[Math.abs(type) % VALUES.length];
         }
 
+        @Deprecated
         public static BalloonDesign getType(String name) {
             return CODEC.byId(name, LUNA);
         }
@@ -854,6 +853,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
             return this.woodType == woodType;
         }
 
+        @Deprecated
         public static BasketType of(@Nullable String name) {
             Identifier id = name == null || name.isEmpty() ? null : Identifier.tryParse(name);
             if (id == null) {

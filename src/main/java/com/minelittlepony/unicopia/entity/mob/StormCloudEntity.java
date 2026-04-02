@@ -31,7 +31,6 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.context.LootWorldContext;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryKeys;
@@ -126,6 +125,10 @@ public class StormCloudEntity extends Entity implements MagicImmune {
         dataTracker.set(TARGET_SIZE, size);
     }
 
+    public float getTargetSize() {
+        return dataTracker.get(TARGET_SIZE);
+    }
+
     public int getSizeInBlocks() {
         return (int)(getWidth() * (getSize(1) / 15F));
     }
@@ -135,7 +138,7 @@ public class StormCloudEntity extends Entity implements MagicImmune {
         setFireTicks(1);
 
         prevSize = currentSize;
-        float targetSize = dataTracker.get(TARGET_SIZE);
+        float targetSize = getTargetSize();
         if (currentSize != targetSize) {
             float sizeDifference = (dataTracker.get(TARGET_SIZE) - currentSize);
             currentSize = Math.abs(sizeDifference) < 0.01F ? targetSize : currentSize + (sizeDifference * 0.02F);
@@ -189,7 +192,7 @@ public class StormCloudEntity extends Entity implements MagicImmune {
                     float x = (float)getParticleX(sizeInBlocks);
                     float z = (float)getParticleZ(sizeInBlocks);
 
-                    getWorld().addParticle(UParticles.RAIN_DROPS, x, getY(), z, 0, -0.2F, 0);
+                    getWorld().addParticleClient(UParticles.RAIN_DROPS, x, getY(), z, 0, -0.2F, 0);
                 }
             }
         } else {
@@ -365,7 +368,7 @@ public class StormCloudEntity extends Entity implements MagicImmune {
                     double d = random.nextGaussian() * 0.02;
                     double e = random.nextGaussian() * 0.02;
                     double f = random.nextGaussian() * 0.02;
-                    getWorld().addParticle(ParticleTypes.POOF, getParticleX(1), getRandomBodyY(), getParticleZ(1), d, e, f);
+                    getWorld().addParticleClient(ParticleTypes.POOF, getParticleX(1), getRandomBodyY(), getParticleZ(1), d, e, f);
                 }
                 break;
             default:
@@ -397,7 +400,7 @@ public class StormCloudEntity extends Entity implements MagicImmune {
     public void writeCustomDataToNbt(NbtCompound nbt) {
         nbt.putInt("stormTicks", getStormTicks());
         nbt.putInt("clearTicks", getClearTicks());
-        nbt.putFloat("size", getSize(1));
+        nbt.putFloat("size", getTargetSize());
         nbt.putBoolean("cursed", cursed);
         nbt.putInt("phase", phase);
         nbt.putInt("nextPhase", nextPhase);
@@ -405,14 +408,12 @@ public class StormCloudEntity extends Entity implements MagicImmune {
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
-        setStormTicks(nbt.getInt("stormTicks"));
-        setClearTicks(nbt.getInt("clearTicks"));
-        if (nbt.contains("size", NbtElement.FLOAT_TYPE)) {
-            setSize(currentSize = nbt.getFloat("size"));
-        }
-        cursed = nbt.getBoolean("cursed");
-        phase = nbt.getInt("phase");
-        nextPhase = nbt.getInt("nextPhase");
+        setStormTicks(nbt.getInt("stormTicks", 0));
+        setClearTicks(nbt.getInt("clearTicks", 0));
+        setSize(nbt.getFloat("size", getTargetSize()));
+        cursed = nbt.getBoolean("cursed", false);
+        phase = nbt.getInt("phase", 0);
+        nextPhase = nbt.getInt("nextPhase", 1);
     }
 
     @Override

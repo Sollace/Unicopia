@@ -26,7 +26,7 @@ import net.minecraft.world.event.GameEvent;
 public interface ElectrifiedBlock {
 
     default void spawnElectricalParticles(World world, BlockPos pos, Random random) {
-        world.addParticle(new LightningBoltParticleEffect(true, 10, 1, 0.6F, Optional.empty()),
+        world.addParticleClient(new LightningBoltParticleEffect(true, 10, 1, 0.6F, Optional.empty()),
                 pos.getX() + 0.5,
                 pos.getY() + 0.5,
                 pos.getZ() + 0.5,

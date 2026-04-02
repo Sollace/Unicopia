@@ -33,9 +33,9 @@ public class FancyBedItem extends BedItem implements Supplier<BlockEntity> {
     public static FancyBedBlock.SheetPattern getPattern(ItemStack stack) {
         @Nullable
         NbtComponent blockEntityNbt = stack.getOrDefault(DataComponentTypes.BLOCK_ENTITY_DATA, NbtComponent.DEFAULT);
-        if (blockEntityNbt == null || !blockEntityNbt.contains("pattern")) {
+        if (blockEntityNbt == null) {
             return FancyBedBlock.SheetPattern.NONE;
         }
-        return FancyBedBlock.SheetPattern.byId(blockEntityNbt.getNbt().getString("pattern"));
+        return blockEntityNbt.getNbt().get("pattern", FancyBedBlock.SheetPattern.CODEC).orElse(FancyBedBlock.SheetPattern.NONE);
     }
 }

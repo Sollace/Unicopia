@@ -30,7 +30,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 import net.minecraft.world.event.GameEvent;
 
-public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Buckable, Fertilizable {
+public class FruitBearingBlock extends TintedParticleLeavesBlock implements TintedBlock, Buckable, Fertilizable {
     public static final MapCodec<FruitBearingBlock> CODEC = RecordCodecBuilder.<FruitBearingBlock>mapCodec(instance -> instance.group(
             Codec.INT.fieldOf("overlay").forGetter(b -> b.overlay),
             CodecUtils.supplierOf(Registries.BLOCK.getCodec()).fieldOf("fruit").forGetter(b -> b.fruit),
@@ -49,7 +49,7 @@ public class FruitBearingBlock extends LeavesBlock implements TintedBlock, Bucka
     protected final int overlay;
 
     public FruitBearingBlock(int overlay, Supplier<Block> fruit, Supplier<ItemStack> rottenFruitSupplier, Settings settings) {
-        super(settings
+        super(0.01F, settings
                 .ticksRandomly()
                 .nonOpaque()
                 .allowsSpawning(BlockConstructionUtils::canSpawnOnLeaves)

@@ -31,7 +31,7 @@ public class ItemConversionShapedRecipe extends ShapedRecipe {
             RawShapedRecipe.PACKET_CODEC, recipe -> recipe.raw,
             ItemStack.PACKET_CODEC, recipe -> recipe.base,
             ItemStack.PACKET_CODEC, recipe -> recipe.result,
-            PacketCodecs.BOOL, ItemConversionShapedRecipe::showNotification,
+            PacketCodecs.BOOLEAN, ItemConversionShapedRecipe::showNotification,
             ItemConversionShapedRecipe::new
     );
 

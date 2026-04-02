@@ -1,8 +1,8 @@
 package com.minelittlepony.unicopia.entity.player;
 
 import java.util.Objects;
+import java.util.stream.Stream;
 
-import com.google.common.collect.Streams;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -12,7 +12,6 @@ import com.minelittlepony.unicopia.util.TypedActionResult;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
@@ -47,7 +46,7 @@ public class PlayerCharmTracker implements NbtSerialisable, Copyable<PlayerCharm
     }
 
     public TypedActionResult<CustomisedSpellType<?>> getSpellInHand(Hand hand, boolean consume) {
-        return Streams.stream(pony.asEntity().getHandItems())
+        return Stream.of(pony.asEntity().getMainHandStack(), pony.asEntity().getOffHandStack())
                 .filter(EnchantableItem::isEnchanted)
                 .map(stack -> EnchantableItem.consumeSpell(stack, pony.asEntity(), null, consume))
                 .findFirst()
@@ -82,10 +81,10 @@ public class PlayerCharmTracker implements NbtSerialisable, Copyable<PlayerCharm
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-        if (compound.contains("handSpells", NbtElement.LIST_TYPE)) {
-            NbtList list = compound.getList("handSpells", NbtElement.COMPOUND_TYPE);
+        if (compound.contains("handSpells")) {
+            NbtList list = compound.getListOrEmpty("handSpells");
             for (int i = 0; i < handSpells.length && i < list.size(); i++) {
-                handSpells[i] = CustomisedSpellType.fromNBT(list.getCompound(i));
+                handSpells[i] = CustomisedSpellType.fromNBT(list.getCompoundOrEmpty(i));
             }
         }
     }

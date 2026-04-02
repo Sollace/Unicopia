@@ -223,7 +223,7 @@ public class SiphoningSpell extends AbstractAreaEffectSpell {
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        ticksUpset = compound.getInt("upset");
+        ticksUpset = compound.getInt("upset", 0);
         upset.set(ticksUpset > 0);
     }
 }

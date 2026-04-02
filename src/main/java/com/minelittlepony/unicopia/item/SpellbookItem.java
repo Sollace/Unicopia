@@ -36,7 +36,7 @@ public class SpellbookItem extends Item implements Dispensable {
         Direction facing = pointer.state().get(DispenserBlock.FACING);
         Position pos = DispenserBlock.getOutputLocation(pointer);
 
-        float yaw = facing.getOpposite().asRotation();
+        float yaw = facing.getOpposite().getPositiveHorizontalDegrees();
         if (placeBook(stack, pointer.world(), pos, yaw, null)) {
             stack.decrement(1);
 

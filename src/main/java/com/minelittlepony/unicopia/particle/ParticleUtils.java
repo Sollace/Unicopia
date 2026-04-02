@@ -41,7 +41,7 @@ public interface ParticleUtils {
 
             sw.spawnParticles(effect, x, y, z, 1, vX, vY, vZ, vel.length());
         } else {
-            world.addParticle(effect, x, y, z, vX, vY, vZ);
+            world.addParticleClient(effect, x, y, z, vX, vY, vZ);
         }
     }
 }

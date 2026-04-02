@@ -19,10 +19,9 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 public class EntityPhysics<T extends Entity> implements Physics, Copyable<EntityPhysics<T>>, Tickable {
-
     protected final T entity;
 
-    private float lastGravity = 1;
+    private float lastGravity = DEFAULT_GRAVITY_FACTOR;
 
     private final DataTracker tracker;
     protected final DataTracker.Entry<Float> gravity;
@@ -30,14 +29,18 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
     public EntityPhysics(T entity) {
         this.entity = entity;
         this.tracker = Trackable.of(entity).getDataTrackers().getPrimaryTracker();
-        gravity = tracker.startTracking(TrackableDataType.FLOAT, 1F);
+        gravity = tracker.startTracking(TrackableDataType.FLOAT, DEFAULT_GRAVITY_FACTOR);
     }
 
     @Override
     public void tick() {
         if (entity.getWorld() instanceof ServerWorld sw && isGravityNegative()) {
             if (entity.getY() > entity.getWorld().getHeight() + 64) {
-                entity.damage(sw, entity.getDamageSources().outOfWorld(), 4.0F);
+                if (entity instanceof LivingEntity) {
+                    entity.damage(sw, entity.getDamageSources().outOfWorld(), 4F);
+                } else {
+                    entity.discard();
+                }
             }
         }
 
@@ -115,7 +118,7 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
             }
 
             if (((LivingEntity)entity).isSleeping()) {
-                return 1;
+                return DEFAULT_GRAVITY_FACTOR;
             }
 
             return getBaseGravityModifier() * (float)((LivingEntity)entity).getAttributeValue(UEntityAttributes.ENTITY_GRAVITY_MODIFIER);
@@ -138,7 +141,7 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-        setBaseGravityModifier(compound.getFloat("gravity"));
+        setBaseGravityModifier(compound.getFloat("gravity", DEFAULT_GRAVITY_FACTOR));
     }
 
 }

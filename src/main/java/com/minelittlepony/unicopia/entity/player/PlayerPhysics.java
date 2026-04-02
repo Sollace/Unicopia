@@ -918,12 +918,12 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        isFlyingSurvival = compound.getBoolean("isFlying");
-        isCancelled = compound.getBoolean("isCancelled");
-        isFlyingEither = compound.getBoolean("isFlyingEither");
-        ticksInAir = compound.getInt("ticksInAir");
-        descentRate = compound.getFloat("descentRate");
-        updraft.update(compound.getFloat("updraft"), 0);
+        isFlyingSurvival = compound.getBoolean("isFlying", false);
+        isCancelled = compound.getBoolean("isCancelled", false);
+        isFlyingEither = compound.getBoolean("isFlyingEither", false);
+        ticksInAir = compound.getInt("ticksInAir", 0);
+        descentRate = compound.getFloat("descentRate", 0);
+        updraft.update(compound.getFloat("updraft", 0), 0);
 
         entity.calculateDimensions();
     }

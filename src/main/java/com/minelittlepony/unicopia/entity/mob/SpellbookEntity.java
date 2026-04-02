@@ -37,6 +37,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.screen.*;
@@ -194,7 +195,7 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
 
                     if (random.nextInt(320) == 0) {
                         for (int offY = 0; offY <= 1; ++offY) {
-                            getWorld().addParticle(ParticleTypes.ENCHANT,
+                            getWorld().addParticleClient(ParticleTypes.ENCHANT,
                                     getX(), getY(), getZ(),
                                     offX/2F + random.nextFloat(),
                                     offY/2F - random.nextFloat() + 0.5f,
@@ -332,7 +333,7 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
 
         BlockSoundGroup sound = BlockSoundGroup.WOOD;
 
-        getWorld().playSound(getX(), getY(), getZ(), sound.getBreakSound(), SoundCategory.BLOCKS, sound.getVolume(), sound.getPitch(), true);
+        getWorld().playSoundClient(getX(), getY(), getZ(), sound.getBreakSound(), SoundCategory.BLOCKS, sound.getVolume(), sound.getPitch(), true);
 
         if (world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
             dropStack(world, getPickBlockStack(), 1);
@@ -393,12 +394,12 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
     @Override
     public void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
-        prevDaytime = compound.getBoolean("prevDaytime");
-        activeTicks = compound.getInt("activeTicks");
-        setAltered(compound.getBoolean("altered"));
-        setForcedState(compound.contains("locked") ? TriState.of(compound.getBoolean("locked")) : TriState.DEFAULT);
-        setSpellbookState(NbtSerialisable.decode(SpellbookState.CODEC, compound.getCompound("spellbookState"), getRegistryManager()).orElse(new SpellbookState()));
-        altar = NbtSerialisable.decode(Altar.CODEC, compound.get("altar"), getRegistryManager());
+        prevDaytime = compound.getBoolean("prevDaytime", false);
+        activeTicks = compound.getInt("activeTicks", 0);
+        setAltered(compound.getBoolean("altered", false));
+        setForcedState(compound.getBoolean("locked").map(TriState::of).orElse(TriState.DEFAULT));
+        setSpellbookState(compound.get("spellbookState", SpellbookState.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE)).orElse(new SpellbookState()));
+        altar = compound.get("altar", Altar.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE));
     }
 
     @Override

@@ -144,7 +144,7 @@ public class DisplacementSpell extends AbstractSpell implements HomingSpell, Pro
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        ticks = compound.getInt("ticks");
-        target.fromNBT(compound.getCompound("target"), lookup);
+        ticks = compound.getInt("ticks", 0);
+        target.fromNBT(compound.getCompoundOrEmpty("target"), lookup);
     }
 }

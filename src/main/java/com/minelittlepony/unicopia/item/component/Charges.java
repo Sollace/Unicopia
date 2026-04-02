@@ -6,7 +6,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.item.Item.TooltipContext;
+import net.minecraft.component.ComponentsAccess;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.item.tooltip.TooltipType;
@@ -27,7 +28,7 @@ public record Charges(int energy, int maximum, int baseline, boolean showInToolt
             PacketCodecs.INTEGER, Charges::energy,
             PacketCodecs.INTEGER, Charges::maximum,
             PacketCodecs.INTEGER, Charges::baseline,
-            PacketCodecs.BOOL, Charges::showInTooltip,
+            PacketCodecs.BOOLEAN, Charges::showInTooltip,
             Charges::new
     );
 
@@ -87,9 +88,9 @@ public record Charges(int energy, int maximum, int baseline, boolean showInToolt
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type, ComponentsAccess components) {
         if (showInTooltip() && maximum() > 0) {
-            tooltip.accept(Text.translatable("item.unicopia.amulet.energy", (int)Math.floor(energy()), maximum()));
+            textConsumer.accept(Text.translatable("item.unicopia.amulet.energy", (int)Math.floor(energy()), maximum()));
         }
     }
 

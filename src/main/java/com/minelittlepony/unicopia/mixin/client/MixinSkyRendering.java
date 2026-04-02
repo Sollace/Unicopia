@@ -19,7 +19,7 @@ abstract class MixinSkyRendering {
     @Inject(method = "renderCelestialBodies", at = @At("HEAD"))
     private void beforeRenderCelestialBodies(MatrixStack matrices, Tessellator tesselator, float rot, int phase, float alpha, float starBrightness, Fog fog, CallbackInfo info) {
         matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(UnicopiaClient.getInstance().getSkyAngleDelta(MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false))));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(UnicopiaClient.getInstance().getSkyAngleDelta(MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(false))));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(UnicopiaClient.getInstance().tangentalSkyAngle.getValue()));
     }
 

@@ -22,7 +22,6 @@ import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -61,13 +60,13 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (!moved && !state.isOf(newState.getBlock())) {
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        if (!moved && !state.isOf(world.getBlockState(pos).getBlock())) {
             world.getBlockEntity(pos, UBlockEntities.ITEM_JAR).ifPresent(data -> {
                 data.getContents().onDestroyed();
             });
         }
-        super.onStateReplaced(state, world, pos, newState, moved);
+        super.onStateReplaced(state, world, pos, moved);
     }
 
     @Override
@@ -159,14 +158,14 @@ public class ItemJarBlock extends JarBlock implements BlockEntityProvider, Inven
 
         @Override
         public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
-            if (nbt.contains("items", NbtElement.COMPOUND_TYPE)) {
-                contents = new ItemsJarContents(this, nbt.getCompound("items"), lookup);
-            } else if (nbt.contains("entity", NbtElement.COMPOUND_TYPE)) {
-                contents = new EntityJarContents(this, nbt.getCompound("entity"));
-            } else if (nbt.contains("fluid", NbtElement.COMPOUND_TYPE)) {
-                contents = new FluidOnlyJarContents(this, nbt.getCompound("fluid"), lookup);
-            } else if (nbt.contains("fakeFluid", NbtElement.COMPOUND_TYPE)) {
-                contents = new FakeFluidJarContents(this, nbt.getCompound("fakeFluid"));
+            if (nbt.contains("items")) {
+                contents = new ItemsJarContents(this, nbt.getCompoundOrEmpty("items"), lookup);
+            } else if (nbt.contains("entity")) {
+                contents = new EntityJarContents(this, nbt.getCompoundOrEmpty("entity"));
+            } else if (nbt.contains("fluid")) {
+                contents = new FluidOnlyJarContents(this, nbt.getCompoundOrEmpty("fluid"), lookup);
+            } else if (nbt.contains("fakeFluid")) {
+                contents = new FakeFluidJarContents(this, nbt.getCompoundOrEmpty("fakeFluid"));
             }
         }
 

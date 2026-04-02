@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.item;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import com.google.common.base.Predicates;
 import com.minelittlepony.unicopia.InteractionManager;
@@ -28,6 +29,7 @@ import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.*;
@@ -54,7 +56,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.World;
 import net.minecraft.world.World.ExplosionSourceType;
 
 public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackable, ItemImpl.ClingyItem, TickableItem, DamageChecker {
@@ -76,12 +77,12 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
     @Environment(EnvType.CLIENT)
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
         ItemStackDuck.of(stack).getTransientComponents().getCarrier().flatMap(Pony::of).ifPresent(pony -> {
             if (pony.getArmourStacks().anyMatch(i -> i == stack)) {
                 long ticks = pony.getArmour().getTicks(this);
                 if (ticks > 0) {
-                    tooltip.add(Text.literal(ItemTracker.formatTicks(ticks, context.getUpdateTickRate()).formatted(Formatting.GRAY)));
+                    textConsumer.accept(Text.literal(ItemTracker.formatTicks(ticks, context.getUpdateTickRate()).formatted(Formatting.GRAY)));
                 }
             }
         });
@@ -180,14 +181,14 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+    public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, EquipmentSlot slot) {
 
         if (world.isClient) {
             return;
         }
 
         // if we're in the main hand, try to equip ourselves
-        if (entity instanceof PlayerEntity player && selected && !isApplicable(player, this) && world.random.nextInt(320) == 0) {
+        if (entity instanceof PlayerEntity player && slot == EquipmentSlot.MAINHAND && !isApplicable(player, this) && world.random.nextInt(320) == 0) {
             use(world, player, Hand.MAIN_HAND);
             return;
         }
@@ -200,14 +201,14 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
 
         if (entity instanceof PlayerEntity) {
             if (entity.isOnFire() && world.getBlockState(entity.getBlockPos().up()).isOf(UBlocks.SPECTRAL_FIRE)) {
-                if (UnicopiaWorldProperties.forWorld((ServerWorld)world).isActiveAltar(entity)) {
+                if (UnicopiaWorldProperties.forWorld(world).isActiveAltar(entity)) {
                     if (living.asEntity().getHealth() < 2) {
                         entity.setFireTicks(0);
                         world.removeBlock(entity.getBlockPos().up(), false);
                         stack.decrement(1);
                         world.createExplosion(null, entity.getX(), entity.getY(), entity.getZ(), 0, ExplosionSourceType.NONE);
                         world.playSound(null, entity.getBlockPos(), USounds.ENTITY_SOMBRA_LAUGH, SoundCategory.AMBIENT, 10, 1);
-                        world.getEntitiesByClass(SpellbookEntity.class, entity.getBoundingBox().expand(6), Predicates.alwaysTrue()).forEach(e -> e.kill((ServerWorld)world));
+                        world.getEntitiesByClass(SpellbookEntity.class, entity.getBoundingBox().expand(6), Predicates.alwaysTrue()).forEach(e -> e.kill(world));
 
                         SombraEntity.startEncounter(world, entity.getBlockPos());
                     }
@@ -286,7 +287,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
                 if (attachedTicks % 100 == 0) {
                     player.getHungerManager().addExhaustion(90F);
                     float healthDrop = MathHelper.clamp(player.getMaxHealth() - player.getHealth(), 2, 5);
-                    player.damage((ServerWorld)world, pony.damageOf(UDamageTypes.ALICORN_AMULET), healthDrop);
+                    player.damage(world, pony.damageOf(UDamageTypes.ALICORN_AMULET), healthDrop);
                 }
 
                 return;
@@ -317,7 +318,7 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
         if (rng.nextInt(1500) == 0) {
             entity.getWorld().playSound(null, entity.getBlockPos(), USounds.ITEM_ALICORN_AMULET_AMBIENT, SoundCategory.HOSTILE, 0.5F, 1);
             for (int i = 0; i < 5; i++) {
-                entity.getWorld().addParticle(rng.nextBoolean() ? ParticleTypes.LARGE_SMOKE : ParticleTypes.FLAME,
+                entity.getWorld().addParticleClient(rng.nextBoolean() ? ParticleTypes.LARGE_SMOKE : ParticleTypes.FLAME,
                         rng.nextTriangular(entity.getX(), 0.5),
                         rng.nextTriangular(entity.getY(), 0.5),
                         rng.nextTriangular(entity.getZ(), 0.5),
@@ -329,7 +330,8 @@ public class AlicornAmuletItem extends AmuletItem implements ItemTracker.Trackab
         if ((entity.age / 1000) % 10 == 0 && entity.age % 50 == 0) {
             for (Entity target : VecHelper.findInRange(entity, entity.getWorld(), entity.getPos(), 10, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR)) {
                 if (target instanceof LivingEntity l) {
-                    for (ItemStack equipment : l.getEquippedItems()) {
+                    for (EquipmentSlot slot : EquipmentSlot.VALUES) {
+                        ItemStack equipment = l.getEquippedStack(slot);
                         if (equipment.isOf(UItems.GROGARS_BELL)) {
                             if (Charges.discharge(equipment, 3)) {
                                 ParticleUtils.spawnParticle(entity.getWorld(),

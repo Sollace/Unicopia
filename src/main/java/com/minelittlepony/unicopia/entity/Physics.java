@@ -7,6 +7,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 public interface Physics extends NbtSerialisable {
+    float DEFAULT_GRAVITY_FACTOR = 1;
 
     double calcGravity(double worldConstant);
 

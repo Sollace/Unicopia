@@ -35,7 +35,6 @@ import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
@@ -282,11 +281,9 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        if (compound.contains("master", NbtElement.COMPOUND_TYPE)) {
-            getMasterReference().fromNBT(compound.getCompound("master"), lookup);
-        }
+        compound.getCompound("master").ifPresent(c -> getMasterReference().fromNBT(c, lookup));
         physics.fromNBT(compound, lookup);
-        setDiscorded(compound.getBoolean("discorded"));
+        setDiscorded(compound.getBoolean("discorded", false));
     }
 
     private class ActiveEnemyGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {

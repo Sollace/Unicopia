@@ -23,7 +23,6 @@ import com.minelittlepony.unicopia.util.VecHelper;
 
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
@@ -128,10 +127,8 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
         super.fromNBT(compound, lookup);
         timer.fromNBT(compound, lookup);
         lights.clear();
-        if (compound.contains("lights", NbtElement.LIST_TYPE)) {
-            compound.getList("lights", NbtElement.COMPOUND_TYPE).forEach(nbt -> {
-                lights.add(new EntityReference<>((NbtCompound)nbt, lookup));
-            });
-        }
+        compound.getList("lights").ifPresent(l -> l.forEach(nbt -> {
+            lights.add(new EntityReference<>((NbtCompound)nbt, lookup));
+        }));
     }
 }

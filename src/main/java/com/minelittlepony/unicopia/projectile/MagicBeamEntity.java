@@ -180,7 +180,7 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
     @Override
     public void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
-        getDataTracker().set(HYDROPHOBIC, compound.getBoolean("hydrophobic"));
+        getDataTracker().set(HYDROPHOBIC, compound.getBoolean("hydrophobic", false));
         physics.fromNBT(compound, getRegistryManager());
         spells.getSlots().fromNBT(compound, getRegistryManager());
         var level = NbtSerialisable.decode(Levelled.CODEC, compound.get("level"), getRegistryManager()).orElse(Levelled.ZERO);

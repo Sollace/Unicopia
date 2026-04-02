@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
 
@@ -23,7 +24,7 @@ public record FluidOnlyJarContents (
 ) implements FluidJarContents {
 
     public FluidOnlyJarContents(TileData tile, NbtCompound compound, WrapperLookup lookup) {
-        this(tile, compound.getLong("amount"), NbtSerialisable.decode(FluidVariant.CODEC, compound.getCompound("fluid"), lookup).orElse(FluidVariant.blank()));
+        this(tile, compound.getLong("amount", 0), compound.get("fluid", FluidVariant.CODEC, lookup.getOps(NbtOps.INSTANCE)).orElse(FluidVariant.blank()));
     }
 
     @Override

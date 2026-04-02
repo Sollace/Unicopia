@@ -34,7 +34,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
@@ -234,13 +233,11 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        spawnCountdown = compound.getInt("spawnCountdown");
+        spawnCountdown = compound.getInt("spawnCountdown", 0);
         summonedEntities.clear();
-        if (compound.contains("summonedEntities")) {
-            compound.getList("summonedEntities", NbtElement.COMPOUND_TYPE).forEach(tag -> {
-                summonedEntities.add(new EntityReference<>((NbtCompound)tag, lookup));
-            });
-        }
+        compound.getList("summonedEntities").ifPresent(l -> l.forEach(tag -> {
+            summonedEntities.add(new EntityReference<>((NbtCompound)tag, lookup));
+        }));
     }
 
     @Override

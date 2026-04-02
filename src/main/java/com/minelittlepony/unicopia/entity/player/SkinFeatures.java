@@ -16,8 +16,8 @@ public record SkinFeatures(boolean showHorn, boolean showWings, Optional<Integer
             Codec.INT.optionalFieldOf("skin_color").forGetter(SkinFeatures::skinColor)
     ).apply(i, SkinFeatures::new));
     public static final PacketCodec<RegistryByteBuf, SkinFeatures> PACKET_CODEC = PacketCodec.tuple(
-            PacketCodecs.BOOL, SkinFeatures::showHorn,
-            PacketCodecs.BOOL, SkinFeatures::showWings,
+            PacketCodecs.BOOLEAN, SkinFeatures::showHorn,
+            PacketCodecs.BOOLEAN, SkinFeatures::showWings,
             PacketCodecs.optional(PacketCodecs.INTEGER), SkinFeatures::skinColor,
             SkinFeatures::new
     );

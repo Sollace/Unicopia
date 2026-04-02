@@ -29,7 +29,7 @@ public class SpellShapedCraftingRecipe extends ShapedRecipe {
             CraftingRecipeCategory.PACKET_CODEC, SpellShapedCraftingRecipe::getCategory,
             RawShapedRecipe.PACKET_CODEC, recipe -> recipe.raw,
             ItemStack.PACKET_CODEC, recipe -> recipe.result,
-            PacketCodecs.BOOL, SpellShapedCraftingRecipe::showNotification,
+            PacketCodecs.BOOLEAN, SpellShapedCraftingRecipe::showNotification,
             SpellShapedCraftingRecipe::new
     );
 

@@ -32,7 +32,7 @@ public record TrackableDataType<T>(int id, PacketCodec<RegistryByteBuf, TypedVal
 
     public static final TrackableDataType<Integer> INT = of(Identifier.of("integer"), PacketCodecs.INTEGER);
     public static final TrackableDataType<Float> FLOAT = of(Identifier.of("float"), PacketCodecs.FLOAT);
-    public static final TrackableDataType<Boolean> BOOLEAN = of(Identifier.of("boolean"), PacketCodecs.BOOL);
+    public static final TrackableDataType<Boolean> BOOLEAN = of(Identifier.of("boolean"), PacketCodecs.BOOLEAN);
     public static final TrackableDataType<Optional<UUID>> UUID = of(Identifier.of("uuid"), PacketCodecs.optional(Uuids.PACKET_CODEC));
     public static final TrackableDataType<NbtCompound> NBT = of(Identifier.of("nbt"), PacketCodecs.NBT_COMPOUND);
     public static final TrackableDataType<NbtCompound> COMPRESSED_NBT = of(Identifier.of("compressed_nbt"), PacketCodecs.NBT_COMPOUND);

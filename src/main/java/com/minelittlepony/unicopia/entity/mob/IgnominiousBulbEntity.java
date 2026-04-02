@@ -30,8 +30,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -230,7 +228,7 @@ public class IgnominiousBulbEntity extends MobEntity {
 
         if (getWorld().isClient) {
             if (happyTicks > 0 && --happyTicks % 4 == 0) {
-                getWorld().addParticle(ParticleTypes.HAPPY_VILLAGER, getParticleX(1), getRandomBodyY() + 0.5, getParticleZ(1), 0, 0, 0);
+                getWorld().addParticleClient(ParticleTypes.HAPPY_VILLAGER, getParticleX(1), getRandomBodyY() + 0.5, getParticleZ(1), 0, 0, 0);
             }
         } else {
             if (prevAge < 0) {
@@ -339,7 +337,7 @@ public class IgnominiousBulbEntity extends MobEntity {
         NbtList tentacles = new NbtList();
         getTentacles().forEach((pos, tentacle) -> {
             var compound = new NbtCompound();
-            compound.put("pos", NbtHelper.fromBlockPos(pos));
+            compound.put("pos", BlockPos.CODEC, pos);
             compound.put("target", tentacle.toNBT(getRegistryManager()));
             tentacles.add(compound);
         });
@@ -349,17 +347,17 @@ public class IgnominiousBulbEntity extends MobEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        setAngry(nbt.getBoolean("angry"));
-        setAge(nbt.getInt("age"));
+        setAngry(nbt.getBoolean("angry", false));
+        setAge(nbt.getInt("age", 0));
         if (!getWorld().isClient) {
-            if (nbt.contains("tentacles", NbtElement.LIST_TYPE)) {
+            if (nbt.contains("tentacles")) {
                 var tentacles = new HashMap<BlockPos, EntityReference<TentacleEntity>>();
-                nbt.getList("tentacles", NbtElement.COMPOUND_TYPE).forEach(tag -> {
+                nbt.getList("tentacles").ifPresent(l -> l.forEach(tag -> {
                     var compound = (NbtCompound)tag;
-                    NbtHelper.toBlockPos(compound, "pos").ifPresent(pos -> {
-                        tentacles.put(pos, new EntityReference<>(compound.getCompound("target"), getRegistryManager()));
+                    compound.get("pos", BlockPos.CODEC).ifPresent(pos -> {
+                        tentacles.put(pos, new EntityReference<>(compound.getCompoundOrEmpty("target"), getRegistryManager()));
                     });
-                });
+                }));
                 this.tentacles = tentacles;
             }
         }

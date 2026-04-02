@@ -14,6 +14,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -76,7 +77,7 @@ public class CloudBlock extends Block implements CloudLike {
     }
 
     @Override
-    public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+    public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, double fallDistance) {
         entity.handleFallDamage(fallDistance, 0, world.getDamageSources().fall());
         generateSurfaceParticles(world, state, pos, ShapeContext.absent(), 9);
 
@@ -87,28 +88,28 @@ public class CloudBlock extends Block implements CloudLike {
 
     @Override
     public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
-        if (world.random.nextInt(15) == 0) {
+        if (world.getRandom().nextInt(15) == 0) {
             generateSurfaceParticles(world, state, pos, ShapeContext.absent(), 1);
         }
     }
 
     protected void generateSurfaceParticles(World world, BlockState state, BlockPos pos, ShapeContext context, int count) {
         VoxelShape shape = state.getCullingShape();
-        Random rng = world.random;
+        Random rng = world.getRandom();
         Box box = shape.getBoundingBox();
 
         for (int i = 0; i < count; i++) {
-            world.addParticle(ParticleTypes.CLOUD,
+            world.addParticleClient(ParticleTypes.CLOUD,
                     pos.getX() + MathHelper.lerp(rng.nextFloat(), box.minX, box.maxX),
                     pos.getY() + box.maxY,
                     pos.getZ() + MathHelper.lerp(rng.nextFloat(), box.minZ, box.maxZ), 0, 0, 0);
 
-            world.addParticle(ParticleTypes.CLOUD,
+            world.addParticleClient(ParticleTypes.CLOUD,
                     pos.getX() + (rng.nextBoolean() ? box.minX : box.maxX),
                     pos.getY() + MathHelper.lerp(rng.nextFloat(), box.minY, box.maxY),
                     pos.getZ() + MathHelper.lerp(rng.nextFloat(), box.minZ, box.maxZ), 0, 0, 0);
 
-            world.addParticle(ParticleTypes.CLOUD,
+            world.addParticleClient(ParticleTypes.CLOUD,
                     pos.getX() + MathHelper.lerp(rng.nextFloat(), box.minX, box.maxX),
                     pos.getY() + MathHelper.lerp(rng.nextFloat(), box.minY, box.maxY),
                     pos.getZ() + (rng.nextBoolean() ? box.minZ : box.maxZ), 0, 0, 0);
@@ -116,7 +117,7 @@ public class CloudBlock extends Block implements CloudLike {
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler) {
 
         if (entity instanceof PlayerEntity player && (player.getAbilities().flying || Pony.of(player).getPhysics().isFlying())) {
             return;

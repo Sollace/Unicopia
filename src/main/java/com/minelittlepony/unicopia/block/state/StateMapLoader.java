@@ -29,7 +29,7 @@ public class StateMapLoader extends JsonDataLoader<ReversableBlockStateConverter
     Map<Identifier, ? extends ReversableBlockStateConverter> converters = Map.of();
 
     public StateMapLoader() {
-        super(ReversableBlockStateConverterImpl.CODEC, "state_maps");
+        super(ReversableBlockStateConverterImpl.CODEC, ResourceFinder.json("state_maps"));
     }
 
     @Override

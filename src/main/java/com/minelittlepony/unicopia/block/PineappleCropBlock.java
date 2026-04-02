@@ -39,7 +39,7 @@ public class PineappleCropBlock extends CropBlock {
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         if (state.get(HALF) == BlockHalf.TOP) {
             return UItems.PINEAPPLE.getDefaultStack();
         }

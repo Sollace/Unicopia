@@ -8,7 +8,7 @@ import net.minecraft.entity.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.world.World;
+import net.minecraft.server.world.ServerWorld;
 
 public class PegasusAmuletItem extends AmuletItem {
     public PegasusAmuletItem(Item.Settings settings, int maxEnergy) {
@@ -16,7 +16,7 @@ public class PegasusAmuletItem extends AmuletItem {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+    public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, EquipmentSlot slot) {
         if (entity.getWorld().getTime() % 6 == 0 && entity instanceof LivingEntity living && isApplicable(living, this)) {
             ParticleUtils.spawnParticles(entity.getWorld().getDimension().ultrawarm() ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.COMPOSTER, entity, 1);
         }

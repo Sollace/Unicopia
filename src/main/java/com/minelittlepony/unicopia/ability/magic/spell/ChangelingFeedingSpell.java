@@ -154,9 +154,9 @@ public class ChangelingFeedingSpell extends AbstractSpell {
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        healthToDrain = compound.getFloat("healthToDrain");
-        foodToDrain = compound.getInt("foodToDrain");
-        damageThisTick = compound.getFloat("damageThisTick");
+        healthToDrain = compound.getFloat("healthToDrain", 0);
+        foodToDrain = compound.getInt("foodToDrain", 0);
+        damageThisTick = compound.getFloat("damageThisTick", 0);
         targets = NbtSerialisable.decode(EntityReference.<LivingEntity>listCodec(), compound.get("targets"), lookup).orElse(List.of());
     }
 }

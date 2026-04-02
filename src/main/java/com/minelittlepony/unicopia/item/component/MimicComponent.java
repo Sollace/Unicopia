@@ -1,8 +1,6 @@
 package com.minelittlepony.unicopia.item.component;
 
 import java.util.function.Consumer;
-import java.util.function.Predicate;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.serialization.Codec;
@@ -22,8 +20,8 @@ import net.minecraft.util.Util;
 
 public record MimicComponent(boolean mimic) {
     public static final Codec<MimicComponent> CODEC = Codec.BOOL.xmap(MimicComponent::new, MimicComponent::mimic);
-    public static final PacketCodec<ByteBuf, MimicComponent> PACKET_CODEC = PacketCodecs.BOOL.xmap(MimicComponent::new, MimicComponent::mimic);
-    private static final Predicate<ItemStack> BLOCK_ENTITY_DATA_PREDICATED = NbtComponent.createPredicate(DataComponentTypes.BLOCK_ENTITY_DATA, Util.make(new NbtCompound(), nbt -> nbt.putBoolean("mimic", true)));
+    public static final PacketCodec<ByteBuf, MimicComponent> PACKET_CODEC = PacketCodecs.BOOLEAN.xmap(MimicComponent::new, MimicComponent::mimic);
+    private static final NbtCompound TEMPLATE_NBT = Util.make(new NbtCompound(), nbt -> nbt.putBoolean("mimic", true));
 
     public static void appendTooltip(ItemStack stack, TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
         if (isMimic(stack)) {
@@ -33,6 +31,10 @@ public record MimicComponent(boolean mimic) {
 
     static boolean isMimic(ItemStack stack) {
         @Nullable MimicComponent mimic = stack.get(UDataComponentTypes.MIMIC);
-        return mimic != null ? mimic.mimic() : BLOCK_ENTITY_DATA_PREDICATED.test(stack);
+        if (mimic != null) {
+            return mimic.mimic();
+        }
+        @Nullable NbtComponent nbt = stack.get(DataComponentTypes.BLOCK_ENTITY_DATA);
+        return nbt != null && nbt.matches(TEMPLATE_NBT);
     }
 }

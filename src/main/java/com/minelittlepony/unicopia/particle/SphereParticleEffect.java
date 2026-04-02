@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.particle;
 
 import org.joml.Vector3f;
 
-import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
 import com.mojang.serialization.Codec;
@@ -15,6 +14,7 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Vec3d;
 
 public record SphereParticleEffect (
@@ -53,7 +53,7 @@ public record SphereParticleEffect (
     }
 
     public SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, int tint, float alpha, float rad, Vec3d offset) {
-        this(type, new Vector3f(Color.r(tint) * 255, Color.g(tint) * 255, Color.b(tint) * 255), alpha, rad, offset);
+        this(type, new Vector3f(ColorHelper.getRed(tint), ColorHelper.getGreen(tint), ColorHelper.getBlue(tint)), alpha, rad, offset);
     }
 
     public SphereParticleEffect withOffset(Vec3d offset) {

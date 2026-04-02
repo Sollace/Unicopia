@@ -92,10 +92,10 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
         super.randomDisplayTick(state, world, pos, random);
 
         if (random.nextInt(250) == 0) {
-            world.playSoundAtBlockCenter(pos, USounds.BLOCK_CHITIN_AMBIENCE, SoundCategory.BLOCKS, 0.13F, 0.2F, true);
+            world.playSoundAtBlockCenterClient(pos, USounds.BLOCK_CHITIN_AMBIENCE, SoundCategory.BLOCKS, 0.13F, 0.2F, true);
 
             for (int i = 0; i < 9; i++) {
-                world.addParticle(random.nextInt(2) == 0 ? ParticleTypes.SPORE_BLOSSOM_AIR : ParticleTypes.CRIMSON_SPORE,
+                world.addParticleClient(random.nextInt(2) == 0 ? ParticleTypes.SPORE_BLOSSOM_AIR : ParticleTypes.CRIMSON_SPORE,
                         pos.getX() + random.nextDouble(),
                         pos.getY() + 1.1, pos.getZ() + random.nextDouble(),
                         random.nextDouble() - 0.5, 0, random.nextDouble() - 0.5
@@ -216,8 +216,8 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
 
         @Override
         public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
-            opening = nbt.getBoolean("opening");
-            closing = nbt.getBoolean("closing");
+            opening = nbt.getBoolean("opening", false);
+            closing = nbt.getBoolean("closing", false);
             storedBlocks.clear();
             NbtSerialisable.decode(Entry.MAP_CODEC, nbt.get("storedBlocks"), lookup).ifPresent(storedBlocks::putAll);
         }

@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.recipe;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -30,9 +30,10 @@ public record ExclusiveIngredient(Ingredient include, Ingredient exclude) implem
         return include.test(stack) && !exclude.test(stack);
     }
 
+    @Deprecated
     @Override
-    public List<RegistryEntry<Item>> getMatchingItems() {
-        return include.getMatchingItems().stream().filter(i -> test(i.value().getDefaultStack())).toList();
+    public Stream<RegistryEntry<Item>> getMatchingItems() {
+        return include.getMatchingItems().filter(i -> test(i.value().getDefaultStack()));
     }
 
     @Override

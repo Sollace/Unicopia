@@ -152,8 +152,8 @@ public interface UItems {
     Item DIAMOND_POLEARM = register("diamond_polearm", s -> new PolearmItem(ToolMaterial.DIAMOND, 3, -3F, 5, s), ItemGroups.COMBAT);
     Item NETHERITE_POLEARM = register("netherite_polearm", s -> new PolearmItem(ToolMaterial.NETHERITE, 3, -3F, 6, s.fireproof()), ItemGroups.COMBAT);
 
-    Item LOOT_BUG_SPAWN_EGG = register("loot_bug_spawn_egg", s -> new SpawnEggItem(UEntities.LOOT_BUG, 0x3C9D14, 0xE66F16, s), ItemGroups.SPAWN_EGGS);
-    Item BUTTERFLY_SPAWN_EGG = register("butterfly_spawn_egg", s -> new SpawnEggItem(UEntities.BUTTERFLY, 0x222200, 0xAAEEFF, s), ItemGroups.SPAWN_EGGS);
+    Item LOOT_BUG_SPAWN_EGG = register("loot_bug_spawn_egg", s -> new SpawnEggItem(UEntities.LOOT_BUG/*TODO:, 0x3C9D14, 0xE66F16*/, s), ItemGroups.SPAWN_EGGS);
+    Item BUTTERFLY_SPAWN_EGG = register("butterfly_spawn_egg", s -> new SpawnEggItem(UEntities.BUTTERFLY/*TODO:, 0x222200, 0xAAEEFF*/, s), ItemGroups.SPAWN_EGGS);
     Item BUTTERFLY = register("butterfly", s -> new ButterflyItem(s.food(UFoodComponents.INSECTS)), ItemGroups.FOOD_AND_DRINK);
 
     Item PALM_BOAT = register("palm_boat", s -> new BoatItem(UEntities.PALM_BOAT, s.maxCount(1)), ItemGroups.FUNCTIONAL);

@@ -9,15 +9,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.minelittlepony.unicopia.block.StrippingLootable;
 
 import net.minecraft.item.AxeItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.item.MiningToolItem;
 import net.minecraft.util.ActionResult;
 
 @Mixin(AxeItem.class)
-abstract class MixinAxeItem extends MiningToolItem {
-    MixinAxeItem() {
-        super(null, null, 0, 0, null);
-    }
+abstract class MixinAxeItem extends Item {
+    MixinAxeItem() { super(null); }
 
     @Inject(method = "useOnBlock", at = @At(
             value = "INVOKE",

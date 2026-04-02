@@ -27,7 +27,6 @@ import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -165,7 +164,7 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
           ParticleEffect effect = getParticleParameters();
 
           for(int i = 0; i < 8; i++) {
-             getWorld().addParticle(effect, getX(), getY(), getZ(), 0, 0, 0);
+             getWorld().addParticleClient(effect, getX(), getY(), getZ(), 0, 0, 0);
           }
        } else {
            super.handleStatus(id);
@@ -175,11 +174,9 @@ public class MagicProjectileEntity extends ThrownItemEntity implements WeaklyOwn
     @Override
     public void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
-        homingTarget.fromNBT(compound.getCompound("homingTarget"), getRegistryManager());
-        getMasterReference().fromNBT(compound.getCompound("owner"), getRegistryManager());
-        if (compound.contains("maxAge", NbtElement.INT_TYPE)) {
-            maxAge = compound.getInt("maxAge");
-        }
+        homingTarget.fromNBT(compound.getCompoundOrEmpty("homingTarget"), getRegistryManager());
+        getMasterReference().fromNBT(compound.getCompoundOrEmpty("owner"), getRegistryManager());
+        maxAge = compound.getInt("maxAge").orElse(maxAge);
     }
 
     @Override

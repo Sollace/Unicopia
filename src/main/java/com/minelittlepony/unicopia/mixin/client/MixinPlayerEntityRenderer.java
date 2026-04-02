@@ -28,7 +28,7 @@ abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<AbstractCl
     @Inject(method = "renderArm", at = @At("RETURN"))
     private void onRenderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture, ModelPart arm, boolean sleeveVisible, CallbackInfo info) {
         Arm a = this.getModel().leftArm == arm ? Arm.LEFT : Arm.RIGHT;
-        PlayerEntityRenderState state = getAndUpdateRenderState(MinecraftClient.getInstance().player, MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false));
+        PlayerEntityRenderState state = getAndUpdateRenderState(MinecraftClient.getInstance().player, MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(false));
         ((FeatureRoot<PlayerEntityRenderState, ?>)this).getAccessories().renderArm(matrices, vertexConsumers, light, state, arm, a);
     }
 
@@ -37,6 +37,6 @@ abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<AbstractCl
                 value = "INVOKE",
                 target = "net/minecraft/client/model/ModelPart.render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;II)V"))
     private void onPoseArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Identifier skinTexture, ModelPart arm, boolean sleeveVisible, CallbackInfo info) {
-        PlayerPoser.INSTANCE.applyPosing(matrices, getAndUpdateRenderState(MinecraftClient.getInstance().player, MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false)), getModel(), arm == getModel().leftArm ? PlayerPoser.Context.FIRST_PERSON_LEFT : PlayerPoser.Context.FIRST_PERSON_RIGHT);
+        PlayerPoser.INSTANCE.applyPosing(matrices, getAndUpdateRenderState(MinecraftClient.getInstance().player, MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(false)), getModel(), arm == getModel().leftArm ? PlayerPoser.Context.FIRST_PERSON_LEFT : PlayerPoser.Context.FIRST_PERSON_RIGHT);
     }
 }

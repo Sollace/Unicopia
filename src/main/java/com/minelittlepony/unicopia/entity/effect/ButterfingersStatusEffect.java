@@ -44,7 +44,7 @@ public class ButterfingersStatusEffect extends StatusEffect {
             if (player.dropSelectedItem(proximity < 1)) {
                 player.getWorld().playSound(null, player.getBlockPos(), USounds.ENTITY_GENERIC_BUTTER_FINGERS, player.getSoundCategory());
                 PlayerInventory inventory = player.getInventory();
-                player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 0, inventory.selectedSlot, inventory.getStack(inventory.selectedSlot)));
+                player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, 0, inventory.getSelectedSlot(), inventory.getSelectedStack()));
             }
         } else {
             ItemStack stack = target.getMainHandStack();

@@ -65,7 +65,7 @@ class SingleSpellSlot implements SpellSlots, NbtSerialisable {
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-        entry.spell.fromNBT(compound.getCompound("effect"), lookup);
+        entry.spell.fromNBT(compound.getCompoundOrEmpty("effect"), lookup);
     }
 
     @Override

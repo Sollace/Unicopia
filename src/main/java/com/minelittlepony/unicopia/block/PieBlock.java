@@ -139,7 +139,7 @@ public class PieBlock extends Block implements Waterloggable {
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         return (state.get(STOMPED) ? stompedItem : normalItem).asItem().getDefaultStack();
     }
 
@@ -147,7 +147,7 @@ public class PieBlock extends Block implements Waterloggable {
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (state.get(STOMPED)) {
             Vec3d center = Vec3d.ofCenter(pos);
-            world.addParticle(ParticleTypes.SNEEZE,
+            world.addParticleClient(ParticleTypes.SNEEZE,
                     random.nextTriangular(center.getX(), 0.9),
                     random.nextTriangular(center.getY(), 0.9),
                     random.nextTriangular(center.getZ(), 0.9),
@@ -158,7 +158,7 @@ public class PieBlock extends Block implements Waterloggable {
         } else {
             if (world.random.nextInt(10) == 0) {
                 Vec3d center = Vec3d.ofCenter(pos);
-                world.addParticle(ParticleTypes.SNEEZE,
+                world.addParticleClient(ParticleTypes.SNEEZE,
                         random.nextTriangular(center.getX(), 0.2),
                         random.nextTriangular(center.getY(), 0.2),
                         random.nextTriangular(center.getZ(), 0.2),

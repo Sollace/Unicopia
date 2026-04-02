@@ -31,7 +31,7 @@ public class BaitedFishingRodItem extends FishingRodItem {
                 ItemStack stack = user.getStackInHand(hand);
                 int lure = (int)((EnchantmentHelper.getFishingTimeReduction((ServerWorld)world, stack, user) + 1) * 20F);
                 int luck = (EnchantmentHelper.getFishingLuckBonus((ServerWorld)world, stack, user) + 1) * 2;
-                FishingBobberEntity bobber = new FishingBobberEntity(user, world, luck, lure, stack);
+                FishingBobberEntity bobber = new FishingBobberEntity(user, world, luck, lure);
                 ((BaitedFishingBobber)bobber).setRodType(this);
                 world.spawnEntity(bobber);
             }

@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.component.ComponentsAccess;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item.TooltipContext;
@@ -37,8 +38,8 @@ public record Issuer(String name, UUID id) implements TooltipAppender {
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
-        tooltip.accept(Text.translatable("item.unicopia.friendship_bracelet.issuer", name()));
+    public void appendTooltip(TooltipContext context, Consumer<Text> textConsumer, TooltipType type, ComponentsAccess components) {
+        textConsumer.accept(Text.translatable("item.unicopia.friendship_bracelet.issuer", name()));
     }
 
     public boolean isSignedBy(PlayerEntity player) {

@@ -1,13 +1,15 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.List;
+import java.util.function.Consumer;
+
 import com.minelittlepony.unicopia.USounds;
 import net.minecraft.block.Blocks;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.item.consume.UseAction;
 import net.minecraft.item.tooltip.TooltipType;
@@ -20,9 +22,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
-public class StaffItem extends SwordItem {
+public class StaffItem extends Item {
     public StaffItem(Settings settings) {
-        super(ToolMaterial.WOOD, 2, 3, settings);
+        super(settings.sword(ToolMaterial.WOOD, 2, -3));
     }
 
     @Override
@@ -32,7 +34,7 @@ public class StaffItem extends SwordItem {
         EntityDimensions dims = target.getDimensions(target.getPose());
 
         for (int i = 0; i < 130; i++) {
-            w.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.OAK_LOG.getDefaultState()),
+            w.addParticleClient(new BlockStateParticleEffect(ParticleTypes.BLOCK, Blocks.OAK_LOG.getDefaultState()),
                     target.getX() + (target.getWorld().random.nextFloat() - 0.5F) * (dims.width() + 1),
                     (target.getY() + dims.height() / 2) + (target.getWorld().random.nextFloat() - 0.5F) * dims.height(),
                     target.getZ() + (target.getWorld().random.nextFloat() - 0.5F) * (dims.width() + 1),
@@ -44,15 +46,16 @@ public class StaffItem extends SwordItem {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.translatable(getTranslationKey() + ".lore").formatted(Formatting.GRAY));
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+        textConsumer.accept(Text.translatable(getTranslationKey() + ".lore").formatted(Formatting.GRAY));
     }
 
     @Override
-    public boolean postHit(ItemStack stack, LivingEntity entity, LivingEntity attacker) {
+    public void postHit(ItemStack stack, LivingEntity entity, LivingEntity attacker) {
         super.postHit(stack, entity, attacker);
 
-        return castContainedEffect(stack, entity, attacker);
+        // TODO: Maybe swing?
+        castContainedEffect(stack, entity, attacker);
     }
 
     protected boolean castContainedEffect(ItemStack stack, LivingEntity target, LivingEntity attacker) {

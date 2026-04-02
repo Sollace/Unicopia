@@ -53,7 +53,7 @@ abstract class MixinBoatEntity extends VehicleEntity implements Leashable, LavaA
 
     @Inject(method = "readCustomDataFromNbt", at = @At("HEAD"))
     private void onReadCustomDataFromNbt(NbtCompound nbt, CallbackInfo info) {
-        setLavaAffine(nbt.getBoolean("IsLavaAffine"));
+        setLavaAffine(nbt.getBoolean("IsLavaAffine", false));
     }
 
     @Inject(method = "initDataTracker", at = @At("HEAD"))

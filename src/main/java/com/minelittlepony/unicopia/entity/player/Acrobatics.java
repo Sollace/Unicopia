@@ -102,8 +102,8 @@ public class Acrobatics implements Tickable, NbtSerialisable {
                     }
                 } else if (attachDirection != null) {
                     if (isFaceClimbable(entity.getWorld(), entity.getBlockPos(), attachDirection)) {
-                        entity.setBodyYaw(attachDirection.asRotation());
-                        entity.prevBodyYaw = attachDirection.asRotation();
+                        entity.setBodyYaw(attachDirection.getPositiveHorizontalDegrees());
+                        entity.lastBodyYaw = attachDirection.getPositiveHorizontalDegrees();
                     } else {
                         entity.setVelocity(vel);
                         entity.isClimbing();
@@ -200,7 +200,7 @@ public class Acrobatics implements Tickable, NbtSerialisable {
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-        ticksHanging = compound.getInt("ticksHanging");
+        ticksHanging = compound.getInt("ticksHanging", 0);
         hangingPos.set(NbtSerialisable.decode(BlockPos.CODEC, compound.get("hangingPosition"), lookup));
     }
 }

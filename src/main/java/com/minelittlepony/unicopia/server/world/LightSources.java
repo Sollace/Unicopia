@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.DynamicLightSource;
+import com.mojang.serialization.Codec;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -17,17 +18,17 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class LightSources extends PersistentState {
     private static final Identifier ID = Unicopia.id("light_sources");
+    private static final WorldOverlay.Accessor<LightSources> KEY = WorldOverlay.createAccessor(ID, context -> Codec.unit(() -> new LightSources(context.getWorldOrThrow())), LightSources::new);
 
     private final Object2LongMap<UUID> lightSourceLocations = new Object2LongOpenHashMap<>();
     private final Long2ObjectMap<ObjectSet<UUID>> lightSources = new Long2ObjectOpenHashMap<>();
@@ -39,22 +40,13 @@ public class LightSources extends PersistentState {
 
     private final Function<UUID, Entity> entitySupplier;
 
-    public static LightSources get(World world) {
-        return WorldOverlay.getPersistableStorage(world, ID, LightSources::new, LightSources::new);
-    }
-
-    LightSources(World world, NbtCompound compound) {
-        this(world);
+    public static LightSources get(WorldView world) {
+        return KEY.get(world);
     }
 
     LightSources(World world) {
         this.world = world;
         entitySupplier = world instanceof ServerWorld s ? s::getEntity : id -> world.getEntityById(lightSourceClientIds.getInt(id));
-    }
-
-    @Override
-    public NbtCompound writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        return compound;
     }
 
     public <T extends Entity & DynamicLightSource> void addLightSource(T entity) {

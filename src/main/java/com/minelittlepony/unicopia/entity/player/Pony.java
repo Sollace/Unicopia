@@ -943,7 +943,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     protected Stream<ItemStack> getInventoryStacks() {
         return Streams.concat(
                 super.getInventoryStacks(),
-                entity.getInventory().main.stream()
+                entity.getInventory().getMainStacks().stream()
         );
     }
 
@@ -988,7 +988,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-        levitatingItems.fromNBT(compound.getCompound("levitatingItems"), lookup);
+        levitatingItems.fromNBT(compound.getCompoundOrEmpty("levitatingItems"), lookup);
         advancementProgress = NbtSerialisable.decode(TriggerCountTracker.CODEC, compound.get("advancementTriggerCounts"), lookup).orElseGet(() -> new TriggerCountTracker(Map.of()));
         super.fromNBT(compound, lookup);
     }
@@ -1016,21 +1016,21 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void fromSynchronizedNbt(NbtCompound compound, WrapperLookup lookup) {
         super.fromSynchronizedNbt(compound, lookup);
-        levels.set(compound.getInt("levels"));
-        corruption.set(compound.getInt("corruption"));
-        mana.fromNBT(compound.getCompound("mana"), lookup);
-        setSpecies(Race.fromName(compound.getString("playerSpecies"), Race.HUMAN));
-        setSuppressedRace(Race.fromName(compound.getString("suppressedSpecies"), Race.UNSET));
-        powers.fromNBT(compound.getCompound("powers"), lookup);
-        gravity.fromNBT(compound.getCompound("gravity"), lookup);
-        charms.fromNBT(compound.getCompound("charms"), lookup);
-        discoveries.fromNBT(compound.getCompound("discoveries"), lookup);
-        acrobatics.fromNBT(compound.getCompound("acrobatics"), lookup);
-        magicExhaustion = compound.getFloat("magicExhaustion");
-        ticksInvulnerable = compound.getInt("ticksInvulnerable");
-        ticksInSun = compound.getInt("ticksInSun");
-        hasShades = compound.getBoolean("hasShades");
-        ticksMetamorphising = compound.getInt("ticksMetamorphising");
+        levels.set(compound.getInt("levels", 0));
+        corruption.set(compound.getInt("corruption", 0));
+        mana.fromNBT(compound.getCompoundOrEmpty("mana"), lookup);
+        setSpecies(compound.get("playerSpecies", Race.CODEC).orElse(Race.HUMAN));
+        setSuppressedRace(compound.get("suppressedSpecies", Race.CODEC).orElse(Race.UNSET));
+        powers.fromNBT(compound.getCompoundOrEmpty("powers"), lookup);
+        gravity.fromNBT(compound.getCompoundOrEmpty("gravity"), lookup);
+        charms.fromNBT(compound.getCompoundOrEmpty("charms"), lookup);
+        discoveries.fromNBT(compound.getCompoundOrEmpty("discoveries"), lookup);
+        acrobatics.fromNBT(compound.getCompoundOrEmpty("acrobatics"), lookup);
+        magicExhaustion = compound.getFloat("magicExhaustion", 0);
+        ticksInvulnerable = compound.getInt("ticksInvulnerable", 0);
+        ticksInSun = compound.getInt("ticksInSun", 0);
+        hasShades = compound.getBoolean("hasShades", false);
+        ticksMetamorphising = compound.getInt("ticksMetamorphising", 0);
     }
 
     @Override

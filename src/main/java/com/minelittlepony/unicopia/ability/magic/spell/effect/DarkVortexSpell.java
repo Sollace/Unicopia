@@ -314,6 +314,6 @@ public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        accumulatedMass.set(compound.getFloat("accumulatedMass"));
+        accumulatedMass.set(compound.getFloat("accumulatedMass", 0));
     }
 }

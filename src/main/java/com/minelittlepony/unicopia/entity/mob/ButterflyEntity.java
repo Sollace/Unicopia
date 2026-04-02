@@ -319,7 +319,7 @@ public class ButterflyEntity extends AmbientEntity {
     }
 
     @Override
-    public boolean handleFallDamage(float distance, float damageMultiplier, DamageSource cause) {
+    public boolean handleFallDamage(double distance, float damageMultiplier, DamageSource cause) {
         return false;
     }
 
@@ -358,15 +358,15 @@ public class ButterflyEntity extends AmbientEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        ticksResting = nbt.getInt("ticksResting");
-        breedingCooldown = nbt.getInt("breedingCooldown");
+        ticksResting = nbt.getInt("ticksResting", 0);
+        breedingCooldown = nbt.getInt("breedingCooldown", 0);
         hoveringPosition = NbtSerialisable.decode(BlockPos.CODEC, nbt.get("hoveringPosition"), getRegistryManager());
         flowerPosition = NbtSerialisable.decode(BlockPos.CODEC, nbt.get("flowerPosition"), getRegistryManager());
-        NbtCompound visited = nbt.getCompound("visited");
+        NbtCompound visited = nbt.getCompoundOrEmpty("visited");
         this.visited.clear();
         visited.getKeys().forEach(key -> {
             try {
-                this.visited.put(BlockPos.fromLong(Long.valueOf(key)), visited.getLong(key));
+                this.visited.put(BlockPos.fromLong(Long.valueOf(key)), visited.getLong(key, 0));
             } catch (NumberFormatException ignore) {}
         });
     }

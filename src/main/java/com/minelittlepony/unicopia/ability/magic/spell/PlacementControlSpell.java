@@ -12,18 +12,22 @@ import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.server.world.Ether;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
+import com.mojang.serialization.Codec;
 
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.Uuids;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class PlacementControlSpell extends AbstractSpell implements OrientedSpell {
+    private static final Codec<RegistryKey<World>> DIMENSION_CODEC = RegistryKey.createCodec(RegistryKeys.WORLD);
+    private static final Codec<Optional<RegistryKey<World>>> OPTIONAL_DIMENSION_CODEC = Codecs.optional(DIMENSION_CODEC);
+
     private final DataTracker.Entry<Optional<UUID>> placedEntityId = dataTracker.startTracking(TrackableDataType.UUID, Optional.empty());
     private final DataTracker.Entry<Optional<RegistryKey<World>>> dimension = dataTracker.startTracking(TrackableDataType.ofRegistryKey(), Optional.empty());
     private final DataTracker.Entry<Optional<Vec3d>> position = dataTracker.startTracking(TrackableDataType.OPTIONAL_VECTOR, Optional.empty());
@@ -124,20 +128,20 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         super.toNBT(compound, lookup);
         compound.put("spell", Spell.writeNbt(delegate, lookup));
-        position.get().ifPresent(pos -> compound.put("position", NbtSerialisable.writeVector(pos)));
-        orientation.get().ifPresent(o -> compound.put("orientation", NbtSerialisable.writeVector(o)));
-        dimension.get().ifPresent(d -> compound.putString("dimension", d.getValue().toString()));
-        placedEntityId.get().ifPresent(i -> compound.putUuid("placedEntityId", i));
+        compound.put("position", CodecUtils.OPTIONAL_VECTOR, position.get());
+        compound.put("orientation", CodecUtils.OPTIONAL_VECTOR, orientation.get());
+        compound.put("dimension", OPTIONAL_DIMENSION_CODEC, dimension.get());
+        compound.put("placedEntityId", CodecUtils.OPTIONAL_UUID, placedEntityId.get());
     }
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        delegate = Spell.readNbt(compound.getCompound("spell"), lookup);
-        placedEntityId.set(compound.containsUuid("placedEntityId") ? Optional.of(compound.getUuid("placedEntityId")) : Optional.empty());
-        position.set(compound.contains("position") ? Optional.of(NbtSerialisable.readVector(compound.getList("position", NbtElement.DOUBLE_TYPE))) : Optional.empty());
-        orientation.set(compound.contains("orientation") ? Optional.of(NbtSerialisable.readVector(compound.getList("orientation", NbtElement.DOUBLE_TYPE))) : Optional.empty());
-        dimension.set(compound.contains("dimension", NbtElement.STRING_TYPE) ? Optional.ofNullable(Identifier.tryParse(compound.getString("dimension"))).map(id -> RegistryKey.of(RegistryKeys.WORLD, id)) : Optional.empty());
+        delegate = Spell.readNbt(compound.getCompoundOrEmpty("spell"), lookup);
+        placedEntityId.set(compound.get("placedEntityId", Uuids.CODEC));
+        position.set(compound.get("position", CodecUtils.VECTOR));
+        orientation.set(compound.get("orientation", CodecUtils.VECTOR));
+        dimension.set(compound.get("dimension", DIMENSION_CODEC));
     }
 
     public interface PlacementDelegate {

@@ -17,7 +17,7 @@ public class MsgPlayerCapabilities implements Handled<PlayerEntity> {
     public static final PacketCodec<RegistryByteBuf, MsgPlayerCapabilities> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.INTEGER, i -> i.playerId,
             PacketCodecs.NBT_COMPOUND, i -> i.compoundTag,
-            PacketCodecs.BOOL, i -> i.initial,
+            PacketCodecs.BOOLEAN, i -> i.initial,
             MsgPlayerCapabilities::new
     );
 

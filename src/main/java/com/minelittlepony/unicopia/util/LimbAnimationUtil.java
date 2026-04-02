@@ -5,19 +5,18 @@ import net.minecraft.entity.LimbAnimator;
 public interface LimbAnimationUtil {
 
     static void resetToZero(LimbAnimator animator) {
-        animator.setSpeed(0);
-        animator.updateLimbs(-animator.getPos(), 1, 1);
-        animator.setSpeed(0);
+        animator.reset();
     }
 
     static void copy(LimbAnimator from, LimbAnimator to) {
-        float prevSpeed = from.getSpeed(0);
+        float lastSpeed = from.getAmplitude(0);
         float speed = from.getSpeed();
-        float pos = from.getPos();
+        float animationProgress = from.getAnimationProgress(); // animationProgress * timeScale
 
         resetToZero(to);
-        to.setSpeed(prevSpeed);
-        to.updateLimbs(pos, 1, 1);
-        to.setSpeed(speed);
+        to.setSpeed(lastSpeed);                  // lastSpeed into speed
+                                                 // speed -> lastSpeed
+        to.updateLimbs(animationProgress, 1, 1); // animationProgress into animationProgress, timeScale -> 1
+        to.setSpeed(speed);                      // speed into speed
     }
 }

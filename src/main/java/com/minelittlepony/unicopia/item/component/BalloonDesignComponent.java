@@ -8,6 +8,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.item.ItemStack;
+import net.minecraft.component.ComponentsAccess;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.item.tooltip.TooltipType;
@@ -24,7 +25,7 @@ public record BalloonDesignComponent(AirBalloonEntity.BalloonDesign design, bool
     ).apply(instance, BalloonDesignComponent::new));
     public static final PacketCodec<ByteBuf, BalloonDesignComponent> PACKET_CODEC = PacketCodec.tuple(
             AirBalloonEntity.BalloonDesign.PACKET_CODEC, BalloonDesignComponent::design,
-            PacketCodecs.BOOL, BalloonDesignComponent::showInTooltip,
+            PacketCodecs.BOOLEAN, BalloonDesignComponent::showInTooltip,
             BalloonDesignComponent::new
     );
 
@@ -38,9 +39,9 @@ public record BalloonDesignComponent(AirBalloonEntity.BalloonDesign design, bool
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(TooltipContext context, Consumer<Text> textConsumer, TooltipType type, ComponentsAccess components) {
         if (showInTooltip() && design != AirBalloonEntity.BalloonDesign.NONE) {
-            tooltip.accept(Text.literal(design().name()).formatted(Formatting.LIGHT_PURPLE));
+            textConsumer.accept(Text.literal(design().name()).formatted(Formatting.LIGHT_PURPLE));
         }
     }
 }

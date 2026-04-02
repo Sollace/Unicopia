@@ -1,16 +1,12 @@
 package com.minelittlepony.unicopia.client.render;
 
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
-import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry.DynamicItemRenderer;
+
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.item.ClampedModelPredicateProvider;
-import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
@@ -20,7 +16,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.registry.Registries;
 
-public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredicateProvider {
+public class PolearmRenderer/* implements DynamicItemRenderer, ClampedModelPredicateProvider*/ {
     private static final PolearmRenderer INSTANCE = new PolearmRenderer();
     private static final Identifier THROWING = Identifier.ofVanilla("throwing");
 
@@ -28,8 +24,8 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
 
     public static void register(Item...items) {
         for (Item item : items) {
-            BuiltinItemRendererRegistry.INSTANCE.register(item, INSTANCE);
-            ModelPredicateProviderRegistry.register(item, THROWING, INSTANCE);
+            //BuiltinItemRendererRegistry.INSTANCE.register(item, INSTANCE);
+            //ModelPredicateProviderRegistry.register(item, THROWING, INSTANCE);
         }
         ModelLoadingPlugin.register(context -> {
             for (Item item : items) {
@@ -61,10 +57,10 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
     }
 
     @Override
-    public void render(ItemStack stack, ModelTransformationMode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
-        if (mode == ModelTransformationMode.GUI || mode == ModelTransformationMode.GROUND || mode == ModelTransformationMode.FIXED) {
+    public void render(ItemStack stack, ItemDisplayContext mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+        if (mode == ItemDisplayContext.GUI || mode == ItemDisplayContext.GROUND || mode == ItemDisplayContext.FIXED) {
             // render as normal sprite
-            BakedModel model = MinecraftClient.getInstance().getBakedModelManager().getModel(getModelId(stack.getItem()));
+            BakedModel model = null;//MinecraftClient.getInstance().getBakedModelManager().getModel(getModelId(stack.getItem()));
             matrices.pop();
             matrices.push();
             MinecraftClient.getInstance().getItemRenderer().renderItem(stack, mode, false, matrices, vertexConsumers, light, overlay, model);
@@ -72,8 +68,8 @@ public class PolearmRenderer implements DynamicItemRenderer, ClampedModelPredica
             matrices.push();
         } else {
             matrices.push();
-            if (mode == ModelTransformationMode.THIRD_PERSON_LEFT_HAND || mode == ModelTransformationMode.THIRD_PERSON_RIGHT_HAND) {
-                int swap = mode == ModelTransformationMode.THIRD_PERSON_LEFT_HAND ? -1 : 1;
+            if (mode == ItemDisplayContext.THIRD_PERSON_LEFT_HAND || mode == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND) {
+                int swap = mode == ItemDisplayContext.THIRD_PERSON_LEFT_HAND ? -1 : 1;
                 matrices.scale(1.5F, -1.5F, -1.5F);
                 float offsetX = swap * 0.05F;
                 matrices.translate(offsetX, 0, 0.05F);

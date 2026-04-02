@@ -62,7 +62,7 @@ public class ClientNetworkHandlerImpl {
         Living.getOrEmpty(sender.getWorld().getEntityById(status.entityId())).ifPresent(living -> {
             if (status.status() == MsgEntityStatus.USE_TOTEM_OF_DYING) {
                 client.particleManager.addEmitter(living.asEntity(), ParticleTypes.TOTEM_OF_UNDYING, 30);
-                living.asWorld().playSound(living.asEntity().getX(), living.asEntity().getY(), living.asEntity().getZ(), SoundEvents.ITEM_TOTEM_USE, living.asEntity().getSoundCategory(), 1, 1, false);
+                living.asWorld().playSoundClient(living.asEntity().getX(), living.asEntity().getY(), living.asEntity().getZ(), SoundEvents.ITEM_TOTEM_USE, living.asEntity().getSoundCategory(), 1, 1, false);
                 if (living.asEntity() == client.player) {
                     ItemStack totem = TotemOfDying.getTotem(client.player, false);
                     client.gameRenderer.showFloatingItem(totem.isEmpty() ? UItems.TOTEM_OF_DYING.getDefaultStack() : totem);
@@ -122,9 +122,9 @@ public class ClientNetworkHandlerImpl {
             ItemStack stack = packet.stack();
             if (!stack.isEmpty()) {
                 if (!sender.isSilent()) {
-                    sender.getWorld().playSound(
+                    sender.getWorld().playSoundClient(
                             sender.getX(), sender.getY(), sender.getZ(),
-                            SoundEvents.ENTITY_ITEM_BREAK, sender.getSoundCategory(),
+                            SoundEvents.ENTITY_ITEM_BREAK.value(), sender.getSoundCategory(),
                             0.8F,
                             0.8F + sender.getWorld().random.nextFloat() * 0.4F,
                             false
@@ -142,7 +142,7 @@ public class ClientNetworkHandlerImpl {
                     vec3d2 = vec3d2.rotateX(-sender.getPitch() * (float) (Math.PI / 180.0));
                     vec3d2 = vec3d2.rotateY(-sender.getYaw() * (float) (Math.PI / 180.0));
                     vec3d2 = vec3d2.add(sender.getX(), sender.getEyeY(), sender.getZ());
-                    sender.getWorld().addParticle(new ItemStackParticleEffect(ParticleTypes.ITEM, stack), vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y + 0.05, vec3d.z);
+                    sender.getWorld().addParticleClient(new ItemStackParticleEffect(ParticleTypes.ITEM, stack), vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y + 0.05, vec3d.z);
                 }
             }
         }

@@ -38,6 +38,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.block.OrientationHelper;
 import net.minecraft.world.tick.ScheduledTickView;
 
 public class SlimePustuleBlock extends Block {
@@ -90,7 +91,7 @@ public class SlimePustuleBlock extends Block {
             VoxelShape shape = state.getCullingShape();
             float x = (float)MathHelper.lerp(random.nextFloat(), shape.getMin(Axis.X), shape.getMax(Axis.X));
             float z = (float)MathHelper.lerp(random.nextFloat(), shape.getMin(Axis.Z), shape.getMax(Axis.Z));
-            world.addParticle(new DustParticleEffect(DUST_COLOR, 1),
+            world.addParticleClient(new DustParticleEffect(DUST_COLOR, 1),
                     pos.getX() + x,
                     pos.getY() + random.nextDouble(),
                     pos.getZ() + z, 0, 0, 0);
@@ -100,7 +101,7 @@ public class SlimePustuleBlock extends Block {
             VoxelShape shape = state.getCullingShape();
             float x = (float)MathHelper.lerp(random.nextFloat(), shape.getMin(Axis.X), shape.getMax(Axis.X));
             float z = (float)MathHelper.lerp(random.nextFloat(), shape.getMin(Axis.Z), shape.getMax(Axis.Z));
-            world.addParticle(ParticleTypes.DRIPPING_HONEY,
+            world.addParticleClient(ParticleTypes.DRIPPING_HONEY,
                     pos.getX() + x,
                     pos.getY() + random.nextDouble(),
                     pos.getZ() + z, 0, 0, 0);
@@ -129,7 +130,7 @@ public class SlimePustuleBlock extends Block {
 
             world.playSound(null, pos, USounds.BLOCK_SLIME_PUSTULE_POP, SoundCategory.BLOCKS, 5, 1);
             for (int i = 0; i < 8; i++) {
-                world.addParticle(ParticleTypes.LAVA,
+                world.addParticleClient(ParticleTypes.LAVA,
                         pos.getX() + 0.5,
                         pos.getY() + 0.5,
                         pos.getZ() + 0.5,
@@ -137,7 +138,7 @@ public class SlimePustuleBlock extends Block {
                         0,
                         world.random.nextGaussian() * 1.5F
                 );
-                world.addParticle(ParticleTypes.CRIT,
+                world.addParticleClient(ParticleTypes.CRIT,
                         pos.getX() + 0.5,
                         pos.getY() + 0.5,
                         pos.getZ() + 0.5,
@@ -145,7 +146,7 @@ public class SlimePustuleBlock extends Block {
                         world.random.nextGaussian() * 1.5F,
                         world.random.nextGaussian() * 1.5F
                 );
-                world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, state),
+                world.addParticleClient(new BlockStateParticleEffect(ParticleTypes.BLOCK, state),
                         pos.getX() + 0.5,
                         pos.getY() + 0.5,
                         pos.getZ() + 0.5,
@@ -202,10 +203,11 @@ public class SlimePustuleBlock extends Block {
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        super.onStateReplaced(state, world, pos, newState, moved);
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        super.onStateReplaced(state, world, pos, moved);
+        BlockState newState = world.getBlockState(pos);
         if (state.isOf(this) && newState.isOf(this) && state.get(POWERED) != newState.get(POWERED)) {
-            world.updateNeighborsAlways(pos.up(), this);
+            world.updateNeighborsAlways(pos.up(), this, OrientationHelper.getEmissionOrientation(world, null, Direction.UP));
         }
     }
 

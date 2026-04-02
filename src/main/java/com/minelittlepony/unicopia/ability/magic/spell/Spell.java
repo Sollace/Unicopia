@@ -20,6 +20,7 @@ import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Util;
+import net.minecraft.util.Uuids;
 
 /**
  * Interface for a magic spells
@@ -145,7 +146,7 @@ public interface Spell extends NbtSerialisable, Affine {
     }
 
     static UUID getUuid(@Nullable NbtCompound compound) {
-        return compound == null || !compound.containsUuid("uuid") ? Util.NIL_UUID :  compound.getUuid("uuid");
+        return compound.get("uuid", Uuids.CODEC).orElse(Util.NIL_UUID);
     }
 
     static NbtCompound writeNbt(@Nullable Spell effect, WrapperLookup lookup) {

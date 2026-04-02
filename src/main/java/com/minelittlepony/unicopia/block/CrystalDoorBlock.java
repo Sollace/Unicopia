@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.block;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
@@ -9,6 +10,7 @@ import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.UItems;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -32,6 +34,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -152,7 +155,7 @@ public class CrystalDoorBlock extends DoorBlock implements BlockEntityProvider {
     private UUID getSignator(World world, BlockPos pos) {
         pos = world.getBlockState(pos).get(HALF) == DoubleBlockHalf.LOWER ? pos.up() : pos;
         var d = world.getBlockEntity(pos, UBlockEntities.CRYSTAL_DOOR);
-        return d.map(data -> data.signator).orElse(null);
+        return d.flatMap(data -> data.signator).orElse(null);
     }
 
     private void playOpenCloseSound(@Nullable Entity entity, World world, BlockPos pos, boolean open) {
@@ -165,29 +168,25 @@ public class CrystalDoorBlock extends DoorBlock implements BlockEntityProvider {
     }
 
     public static class TileData extends BlockEntity {
-        @Nullable
-        private UUID signator;
+        private Optional<UUID> signator = Optional.empty();
 
         public TileData(BlockPos pos, BlockState state) {
             super(UBlockEntities.CRYSTAL_DOOR, pos, state);
         }
 
         public void setSignator(UUID signator) {
-            this.signator = signator;
+            this.signator = Optional.ofNullable(signator);
             markDirty();
         }
 
         @Override
         public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
-            signator = nbt.containsUuid("signator") ? nbt.getUuid("signator") : null;
+            signator = nbt.get("signator", Uuids.CODEC);
         }
 
         @Override
         protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
-            if (signator != null) {
-                nbt.putUuid("signator", signator);
-            }
+            nbt.put("signator", CodecUtils.OPTIONAL_UUID, signator);
         }
-
     }
 }

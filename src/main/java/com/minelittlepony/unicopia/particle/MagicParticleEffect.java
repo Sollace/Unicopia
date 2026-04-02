@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.particle;
 
 import org.joml.Vector3f;
 
-import com.minelittlepony.common.util.Color;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,6 +12,7 @@ import net.minecraft.particle.ParticleType;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.random.Random;
 
 public record MagicParticleEffect (
@@ -25,13 +25,13 @@ public record MagicParticleEffect (
             Codecs.VECTOR_3F.fieldOf("color").forGetter(MagicParticleEffect::color)
     ).apply(instance, MagicParticleEffect::new));
     public static final PacketCodec<ByteBuf, MagicParticleEffect> PACKET_CODEC = PacketCodec.tuple(
-            PacketCodecs.BOOL, MagicParticleEffect::tinted,
+            PacketCodecs.BOOLEAN, MagicParticleEffect::tinted,
             PacketCodecs.VECTOR_3F, MagicParticleEffect::color,
             MagicParticleEffect::new
     );
 
     public MagicParticleEffect(int tint) {
-        this(true, new Vector3f(Color.r(tint), Color.g(tint), Color.b(tint)));
+        this(true, new Vector3f(ColorHelper.getRedFloat(tint), ColorHelper.getGreenFloat(tint), ColorHelper.getBlueFloat(tint)));
     }
 
     public MagicParticleEffect(Vector3f color) {

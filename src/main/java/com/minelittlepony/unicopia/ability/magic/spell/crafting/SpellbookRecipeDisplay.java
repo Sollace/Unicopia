@@ -127,7 +127,7 @@ public record SpellbookRecipeDisplay(List<Input> inputs, List<List<ItemStack>> r
             TRAIT_PAIR_CODEC.optionalFieldOf("trait").forGetter(Input::trait)
         ).apply(i, Input::new));
         private static final PacketCodec<RegistryByteBuf, Input> PACKET_CODEC = PacketCodec.tuple(
-                PacketCodecs.BOOL, Input::hidden,
+                PacketCodecs.BOOLEAN, Input::hidden,
                 PacketCodecs.optional(ItemStack.PACKET_CODEC.collect(PacketCodecs.toList())), Input::stacks,
                 PacketCodecs.optional(Trait.PACKET_CODEC.collect(PacketCodecs.toList())), Input::traits,
                 PacketCodecs.optional(TRAIT_PAIR_PACKET_CODEC), Input::trait,

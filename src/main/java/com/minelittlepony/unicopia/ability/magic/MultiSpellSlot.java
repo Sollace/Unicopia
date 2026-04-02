@@ -78,7 +78,7 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-        tracker.load(NbtSerialisable.readMap(compound.getCompound("spells"), key -> {
+        tracker.load(NbtSerialisable.readMap(compound.getCompoundOrEmpty("spells"), key -> {
             try {
                 return UUID.fromString(key);
             } catch (Throwable ignore) {}

@@ -53,6 +53,6 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
 
     @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/gl/Framebuffer.beginWrite(Z)V", shift = Shift.BEFORE))
     private void onBeforeFrameEnd(RenderTickCounter tickCounter, boolean tick, CallbackInfo info) {
-        ViewportShader.INSTANCE.render(pool, tickCounter.getTickDelta(false));
+        ViewportShader.INSTANCE.render(pool, tickCounter.getTickProgress(false));
     }
 }

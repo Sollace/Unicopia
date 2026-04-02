@@ -13,6 +13,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -87,8 +88,8 @@ public class CloudDoorBlock extends DoorBlock implements CloudLike {
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        baseState.onEntityCollision(world, pos, entity);
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler) {
+        baseState.onEntityCollision(world, pos, entity, handler);
 
         EquineContext context = EquineContext.of(entity);
 

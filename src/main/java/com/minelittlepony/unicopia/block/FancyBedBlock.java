@@ -76,8 +76,8 @@ public class FancyBedBlock extends BedBlock {
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        if (state.hasBlockEntity() && !state.isOf(newState.getBlock()) && state.get(PART) == BedPart.HEAD) {
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        if (state.hasBlockEntity() && !state.isOf(world.getBlockState(pos).getBlock()) && state.get(PART) == BedPart.HEAD) {
             world.getBlockEntity(pos, UBlockEntities.FANCY_BED).ifPresent(tile -> {
                 SheetPattern pattern = tile.getPattern();
                 if (pattern != SheetPattern.NONE) {
@@ -85,7 +85,7 @@ public class FancyBedBlock extends BedBlock {
                 }
             });
         }
-        super.onStateReplaced(state, world, pos, newState, moved);
+        super.onStateReplaced(state, world, pos, moved);
     }
 
     @Override
@@ -156,12 +156,12 @@ public class FancyBedBlock extends BedBlock {
 
         @Override
         public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
-            pattern = SheetPattern.byId(nbt.getString("pattern"));
+            pattern = nbt.get("pattern", SheetPattern.CODEC).orElse(SheetPattern.NONE);
         }
 
         @Override
         protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
-            nbt.putString("pattern", pattern.asString());
+            nbt.put("pattern", SheetPattern.CODEC, pattern);
         }
 
         @Override
@@ -215,8 +215,7 @@ public class FancyBedBlock extends BedBlock {
         RAINBOW_PBG(null),
         RAINBOW_PWR(null);
 
-        @SuppressWarnings("deprecation")
-        public static final EnumCodec<SheetPattern> CODEC = StringIdentifiable.createCodec(SheetPattern::values);
+        public static final Codec<SheetPattern> CODEC = StringIdentifiable.createCodec(SheetPattern::values);
 
         private final String name = name().toLowerCase(Locale.ROOT);
         @Nullable
@@ -234,10 +233,6 @@ public class FancyBedBlock extends BedBlock {
         @Override
         public String asString() {
             return name;
-        }
-
-        public static SheetPattern byId(String id) {
-            return CODEC.byId(id, NONE);
         }
     }
 }

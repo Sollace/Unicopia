@@ -8,15 +8,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.minelittlepony.unicopia.item.BaitedFishingRodItem;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
-
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.Registries;
 
 @Mixin(FishingBobberEntity.class)
@@ -55,8 +53,6 @@ abstract class MixinFishingBobberEntity extends ProjectileEntity implements Bait
 
     @Inject(method = "readCustomDataFromNbt", at = @At("HEAD"))
     private void onReadCustomDataFromNbt(NbtCompound nbt, CallbackInfo info) {
-        rodType = nbt.contains("rodType", NbtElement.STRING_TYPE)
-                ? NbtSerialisable.decode(Registries.ITEM.getCodec(), nbt.get("rodType"), getRegistryManager()).orElse(null)
-                : null;
+        rodType = nbt.get("rodType", Registries.ITEM.getCodec(), getRegistryManager().getOps(NbtOps.INSTANCE)).orElse(null);
     }
 }

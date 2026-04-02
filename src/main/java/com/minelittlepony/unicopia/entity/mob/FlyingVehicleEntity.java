@@ -15,10 +15,10 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -126,9 +126,9 @@ public abstract class FlyingVehicleEntity extends MobEntity implements MultiBoun
     @Override
     public void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
-        NbtList seats = compound.getList("seats", NbtElement.COMPOUND_TYPE);
+        NbtList seats = compound.getListOrEmpty("seats");
         for (int i = 0; i < this.seats.length; i++) {
-            this.seats[i] = i < seats.size() && seats.getCompound(i).containsUuid("id") ? seats.getCompound(i).getUuid("id") : null;
+            this.seats[i] = i < seats.size() ? seats.getCompound(i).flatMap(c -> c.get("id", Uuids.CODEC)).orElse(null) : null;
         }
     }
 
@@ -139,7 +139,7 @@ public abstract class FlyingVehicleEntity extends MobEntity implements MultiBoun
         for (int i = 0; i < this.seats.length; i++) {
             NbtCompound seat = new NbtCompound();
             if (this.seats[i] != null) {
-                seat.putUuid("id", this.seats[i]);
+                seat.put("id", Uuids.CODEC, this.seats[i]);
             }
             seats.add(seat);
         }

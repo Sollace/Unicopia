@@ -17,7 +17,8 @@ import com.minelittlepony.unicopia.client.TextHelper;
 import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.util.TypedActionResult;
 
-import net.minecraft.item.Item.TooltipContext;
+import net.minecraft.component.ComponentsAccess;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipAppender;
 import net.minecraft.item.tooltip.TooltipType;
@@ -92,7 +93,7 @@ public record CustomisedSpellType<T extends Spell> (
     }
 
     @Override
-    public void appendTooltip(TooltipContext context, Consumer<Text> tooltip, TooltipType type) {
+    public void appendTooltip(Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type, ComponentsAccess components) {
         if (isEmpty()) {
             return;
         }
@@ -101,7 +102,7 @@ public record CustomisedSpellType<T extends Spell> (
         if (!InteractionManager.getInstance().getClientSpecies().canCast()) {
             lore = lore.formatted(Formatting.OBFUSCATED);
         }
-        TextHelper.wrap(lore, 180).forEach(tooltip);
+        TextHelper.wrap(lore, 180).forEach(textConsumer);
         float corruption = ((int)traits().getCorruption() * 10) + type().getAffinity().getCorruption();
         List<Text> modifiers = new ArrayList<>();
         type().getTooltip().appendTooltip(this, modifiers);
@@ -109,9 +110,9 @@ public record CustomisedSpellType<T extends Spell> (
             modifiers.add(EffectUtils.formatModifierChange("affinity.unicopia.corruption", corruption, true));
         }
         if (!modifiers.isEmpty()) {
-            tooltip.accept(Text.empty());
-            tooltip.accept(Text.translatable("affinity.unicopia.when_cast").formatted(Formatting.GRAY));
-            modifiers.forEach(tooltip);
+            textConsumer.accept(Text.empty());
+            textConsumer.accept(Text.translatable("affinity.unicopia.when_cast").formatted(Formatting.GRAY));
+            modifiers.forEach(textConsumer);
         }
     }
 
@@ -127,6 +128,6 @@ public record CustomisedSpellType<T extends Spell> (
 
     public static <T extends Spell> CustomisedSpellType<T> fromNBT(NbtCompound compound) {
         SpellType<T> type = SpellType.getKey(compound);
-        return type.withTraits(SpellTraits.fromNbt(compound.getCompound("traits")).orElse(type.getTraits()));
+        return type.withTraits(SpellTraits.fromNbt(compound.getCompoundOrEmpty("traits")).orElse(type.getTraits()));
     }
 }

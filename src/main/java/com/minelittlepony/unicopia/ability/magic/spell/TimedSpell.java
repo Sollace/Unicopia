@@ -52,8 +52,8 @@ public interface TimedSpell extends Spell {
 
         @Override
         public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-            duration = compound.getInt("duration");
-            maxDuration = compound.getInt("maxDuration");
+            duration = compound.getInt("duration", 0);
+            maxDuration = compound.getInt("maxDuration", 0);
         }
     }
 }

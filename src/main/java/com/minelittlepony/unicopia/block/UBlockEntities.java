@@ -19,7 +19,7 @@ public interface UBlockEntities {
     BlockEntityType<CrystalDoorBlock.TileData> CRYSTAL_DOOR = create("crystal_door", FabricBlockEntityTypeBuilder.create(CrystalDoorBlock.TileData::new, UBlocks.CRYSTAL_DOOR));
 
     static <T extends BlockEntity> BlockEntityType<T> create(String id, FabricBlockEntityTypeBuilder<T> builder) {
-        return Registry.register(Registries.BLOCK_ENTITY_TYPE, id, builder.build(null));
+        return Registry.register(Registries.BLOCK_ENTITY_TYPE, id, builder.build());
     }
 
     static void bootstrap() {}

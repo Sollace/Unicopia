@@ -4,16 +4,15 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.mob.StormCloudEntity;
 import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
 import com.minelittlepony.unicopia.util.Tickable;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.Identifier;
@@ -54,9 +53,16 @@ public class WeatherConditions extends PersistentState implements Tickable {
     };
 
     private static final Identifier ID = Unicopia.id("weather_conditions");
+    private static final WorldOverlay.Accessor<WeatherConditions> KEY = WorldOverlay.createAccessor(ID, context -> RecordCodecBuilder.create(o -> o.group(
+            Codec.FLOAT.fieldOf("windYaw").forGetter(i -> i.windYaw),
+            Codec.FLOAT.fieldOf("prevWindYaw").forGetter(i -> i.prevWindYaw),
+            Codec.BOOL.fieldOf("prevDayState").forGetter(i -> i.prevDayState),
+            Codec.INT.fieldOf("interpolation").forGetter(i -> i.interpolation),
+            Codec.INT.fieldOf("maxInterpolation").forGetter(i -> i.maxInterpolation)
+    ).apply(o, (windYaw, prevWindYaw, prevDayState, interpolation, maxInterpolation) -> new WeatherConditions(context.getWorldOrThrow(), windYaw, prevWindYaw, prevDayState, interpolation, maxInterpolation))), WeatherConditions::new);
 
     public static WeatherConditions get(WorldView world) {
-        return WorldOverlay.getPersistableStorage(world, ID, WeatherConditions::new, WeatherConditions::new);
+        return KEY.get(world);
     }
 
     private final World world;
@@ -70,17 +76,17 @@ public class WeatherConditions extends PersistentState implements Tickable {
 
     private Map<UUID, Storm> storms = new HashMap<>();
 
-    private WeatherConditions(World world, NbtCompound compound) {
-        this(world);
-        windYaw = compound.getFloat("windYaw");
-        prevWindYaw = compound.getFloat("prevWindYaw");
-        prevDayState = compound.getBoolean("prevDayState");
-        interpolation = compound.getInt("interpolation");
-        maxInterpolation = compound.getInt("maxInterpolation");
-    }
-
     private WeatherConditions(World world) {
         this.world = world;
+    }
+
+    private WeatherConditions(World world, float windYaw, float prevWindYaw, boolean prevDayState, int interpolation, int maxInterpolation) {
+        this.world = world;
+        this.windYaw = windYaw;
+        this.prevWindYaw = prevWindYaw;
+        this.prevDayState = prevDayState;
+        this.interpolation = interpolation;
+        this.maxInterpolation = maxInterpolation;
     }
 
     public void addStorm(StormCloudEntity cloud) {
@@ -127,16 +133,6 @@ public class WeatherConditions extends PersistentState implements Tickable {
 
     public Vec3d getWindDirection() {
         return Vec3d.fromPolar(0, getWindYaw()).normalize();
-    }
-
-    @Override
-    public NbtCompound writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        compound.putFloat("windYaw", windYaw);
-        compound.putFloat("prevWindYaw", prevWindYaw);
-        compound.putBoolean("prevDayState", prevDayState);
-        compound.putInt("interpolation", interpolation);
-        compound.putInt("maxInterpolation", maxInterpolation);
-        return compound;
     }
 
     private class Storm {

@@ -10,6 +10,7 @@ import com.mojang.serialization.Codec;
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
@@ -162,7 +163,7 @@ public class CloudCarver extends CaveCarver {
                 c.topWrittenPositions.add(pos.asLong());
             }
             if (chunk.getBlockState(tmp).isOf(UBlocks.SOGGY_CLOUD)) {
-                chunk.setBlockState(tmp, UBlocks.CLOUD.getDefaultState(), false);
+                chunk.setBlockState(tmp.toImmutable(), UBlocks.CLOUD.getDefaultState(), Block.FORCE_STATE);
             }
             return true;
         }
@@ -171,7 +172,7 @@ public class CloudCarver extends CaveCarver {
 
     protected void processSurfaceBlocks(BlockPos.Mutable pos, CarverContext context, CaveCarverConfig config, Chunk chunk, Random random) {
         if (chunk.getBlockState(pos.move(Direction.UP)).isAir()) {
-            chunk.setBlockState(pos.move(Direction.DOWN), UBlocks.SOGGY_CLOUD.getDefaultState(), false);
+            chunk.setBlockState(pos.move(Direction.DOWN).toImmutable(), UBlocks.SOGGY_CLOUD.getDefaultState(), Block.FORCE_STATE);
         }
     }
 

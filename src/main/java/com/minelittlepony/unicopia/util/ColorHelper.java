@@ -13,8 +13,8 @@ public interface ColorHelper {
         int p = n % o;
         int q = (n + 1) % o;
         float r = (entity.age % speed + tickDelta) / 25.0f;
-        int fs = SheepEntity.getRgbColor(DyeColor.byId(p));
-        int gs = SheepEntity.getRgbColor(DyeColor.byId(q));
+        int fs = SheepEntity.getRgbColor(DyeColor.byIndex(p));
+        int gs = SheepEntity.getRgbColor(DyeColor.byIndex(q));
         return lerp(r, fs, gs);
     }
 

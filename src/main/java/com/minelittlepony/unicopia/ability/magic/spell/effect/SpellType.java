@@ -24,6 +24,7 @@ import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.RegistryUtils;
+import com.minelittlepony.unicopia.util.Untyped;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
@@ -213,18 +214,16 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         return Registry.register(REGISTRY, id, builder.build(id));
     }
 
-    @SuppressWarnings("unchecked")
     public static <T extends Spell> SpellType<T> empty() {
-        return (SpellType<T>)EMPTY_KEY;
+        return Untyped.cast(EMPTY_KEY);
     }
 
     public static <T extends Spell> SpellType<T> getKey(NbtCompound tag) {
-        return getKey(Identifier.tryParse(tag.getString("effect_id")));
+        return Untyped.cast(tag.get("effect_id", Identifier.CODEC).map(SpellType::getKey).orElseGet(SpellType::empty));
     }
 
-    @SuppressWarnings("unchecked")
     public static <T extends Spell> SpellType<T> getKey(@Nullable Identifier id) {
-        return (SpellType<T>)REGISTRY.getOptionalValue(id).orElse(EMPTY_KEY);
+        return Untyped.cast(REGISTRY.getOptionalValue(id).orElse(EMPTY_KEY));
     }
 
     public static SpellType<?> fromArgument(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {

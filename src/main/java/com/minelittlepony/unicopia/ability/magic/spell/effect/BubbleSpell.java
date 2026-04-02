@@ -167,8 +167,8 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell, Projectile
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        struggles.set(compound.getInt("struggles"));
-        radius.set(compound.getFloat("radius"));
+        struggles.set(compound.getInt("struggles", 0));
+        radius.set(compound.getFloat("radius", 0));
         timer.fromNBT(compound, lookup);
     }
 }

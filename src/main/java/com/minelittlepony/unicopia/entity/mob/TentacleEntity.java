@@ -337,7 +337,7 @@ public class TentacleEntity extends AbstractDecorationEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        setGrowth(nbt.getInt("growth"));
-        setMotionOffset(nbt.getInt("motion_offset"));
+        setGrowth(nbt.getInt("growth", 0));
+        setMotionOffset(nbt.getInt("motion_offset", 0));
     }
 }

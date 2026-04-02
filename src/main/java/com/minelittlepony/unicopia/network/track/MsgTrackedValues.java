@@ -50,7 +50,7 @@ public record MsgTrackedValues(
     public record TrackerEntries(int id, boolean wipe, List<DataTracker.Pair<?>> values, Map<Integer, byte[]> objects) {
         public static final PacketCodec<RegistryByteBuf, TrackerEntries> PACKET_CODEC = PacketCodec.tuple(
                 PacketCodecs.INTEGER, TrackerEntries::id,
-                PacketCodecs.BOOL, TrackerEntries::wipe,
+                PacketCodecs.BOOLEAN, TrackerEntries::wipe,
                 DataTracker.Pair.PACKET_CODEC.collect(PacketCodecs.toCollection(ArrayList::new)), TrackerEntries::values,
                 PacketCodecs.map(HashMap::new, PacketCodecs.INTEGER, PacketCodecs.BYTE_ARRAY), TrackerEntries::objects,
                 TrackerEntries::new

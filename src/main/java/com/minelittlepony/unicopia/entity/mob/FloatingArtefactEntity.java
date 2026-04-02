@@ -5,8 +5,6 @@ import java.util.Optional;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.server.world.Altar;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
-
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -15,6 +13,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -162,11 +161,11 @@ public class FloatingArtefactEntity extends StationaryObjectEntity {
     @Override
     protected void readCustomDataFromNbt(NbtCompound compound) {
         super.readCustomDataFromNbt(compound);
-        setStack(ItemStack.fromNbtOrEmpty(getRegistryManager(), compound.getCompound("Item")));
-        setState(State.valueOf(compound.getInt("State")));
-        setRotationSpeed(compound.getFloat("spin"), compound.getInt("spinDuration"));
-        ticksUntilRegen = compound.getInt("regen");
-        altar = NbtSerialisable.decode(Altar.CODEC, compound.get("altar"), getRegistryManager());
+        ItemStack.fromNbt(getRegistryManager(), compound.getCompoundOrEmpty("Item")).ifPresent(this::setStack);
+        setState(State.valueOf(compound.getInt("State", 0)));
+        setRotationSpeed(compound.getFloat("spin", 0), compound.getInt("spinDuration", 0));
+        ticksUntilRegen = compound.getInt("regen", 0);
+        altar = compound.get("altar", Altar.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE));
     }
 
     @Override
@@ -174,13 +173,13 @@ public class FloatingArtefactEntity extends StationaryObjectEntity {
         super.writeCustomDataToNbt(compound);
         ItemStack stack = getStack();
         if (!stack.isEmpty()) {
-            compound.put("Item", NbtSerialisable.encode(ItemStack.CODEC, stack, getRegistryManager()));
+            compound.put("Item", ItemStack.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE), stack);
         }
         compound.putInt("State", getState().ordinal());
         compound.putFloat("spin", getRotationSpeed());
         compound.putInt("spinDuration", boostDuration);
         compound.putInt("regen", ticksUntilRegen);
-        altar.ifPresent(altar -> compound.put("altar", NbtSerialisable.encode(Altar.CODEC, altar, getRegistryManager())));
+        compound.putNullable("altar", Altar.CODEC, altar.orElse(null));
     }
 
     @Override
@@ -242,6 +241,7 @@ public class FloatingArtefactEntity extends StationaryObjectEntity {
             return this == INITIALISING ? 1 : this == RUNNING ? 2 : 0.5F;
         }
 
+        @Deprecated
         static State valueOf(int state) {
             return state <= 0 || state >= VALUES.length ? INITIALISING : VALUES[state];
         }

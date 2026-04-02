@@ -32,7 +32,7 @@ public class EnchantedFruitBlock extends FruitBlock {
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
         return (state.get(ENCHANTED) ? Items.ENCHANTED_GOLDEN_APPLE : Items.GOLDEN_APPLE).getDefaultStack();
     }
 

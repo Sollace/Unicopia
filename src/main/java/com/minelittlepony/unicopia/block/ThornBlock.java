@@ -90,7 +90,7 @@ public class ThornBlock extends ConnectingBlock implements EarthPonyGrowAbility.
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (state.get(AGE) == MAX_AGE && world.isPlayerInRange(pos.getX(), pos.getY(), pos.getZ(), 3)) {
             Vec3d particlePos = pos.toCenterPos().add(VecHelper.triangular(random, 0, 0.5));
-            world.addImportantParticle(ParticleTypes.ASH, particlePos.x, particlePos.y, particlePos.z, 0, 0, 0);
+            world.addImportantParticleClient(ParticleTypes.ASH, particlePos.x, particlePos.y, particlePos.z, 0, 0, 0);
         }
     }
 

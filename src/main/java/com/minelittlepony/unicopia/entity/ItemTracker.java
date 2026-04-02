@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.*;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -94,7 +95,7 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tick
 
         if (!(living instanceof Pony)) {
             foundStacks.forEach(stack -> {
-                stack.inventoryTick(living.asWorld(), living.asEntity(), 0, false);
+                stack.inventoryTick(living.asWorld(), living.asEntity(), EquipmentSlot.SADDLE);
             });
         }
     }
@@ -133,8 +134,8 @@ public class ItemTracker implements NbtSerialisable, Copyable<ItemTracker>, Tick
         compound.getKeys().stream().map(Identifier::tryParse)
             .filter(Objects::nonNull)
             .map(id -> Map.entry(Registries.ITEM.get(id), compound.getLong(id.toString())))
-            .filter(i -> i.getKey() instanceof Trackable && i.getValue() > 0)
-            .forEach(item -> items.put((Trackable)item.getKey(), item.getValue()));
+            .filter(i -> i.getKey() instanceof Trackable && i.getValue().orElse(0L) > 0)
+            .forEach(item -> items.put((Trackable)item.getKey(), item.getValue().orElse(0L)));
     }
 
     @Override

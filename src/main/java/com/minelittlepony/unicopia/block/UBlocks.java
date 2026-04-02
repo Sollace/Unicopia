@@ -257,9 +257,9 @@ public interface UBlocks {
     Block ETCHED_CLOUD_SLAB = register("etched_cloud_slab", Settings.copy(ETCHED_CLOUD), s -> new CloudSlabBlock(false, null, s), ItemGroups.BUILDING_BLOCKS);
     Block ETCHED_CLOUD_STAIRS = register("etched_cloud_stairs", Settings.copy(ETCHED_CLOUD), s -> new CloudStairsBlock(ETCHED_CLOUD.getDefaultState(), s), ItemGroups.BUILDING_BLOCKS);
 
-    SoggyCloudBlock SOGGY_CLOUD = register("soggy_cloud", Settings.copy(CLOUD), s -> new SoggyCloudBlock(() -> UBlocks.CLOUD, s.hardness(0.7F)));
-    SoggyCloudSlabBlock SOGGY_CLOUD_SLAB = register("soggy_cloud_slab", Settings.copy(SOGGY_CLOUD), s -> new SoggyCloudSlabBlock(() -> UBlocks.CLOUD_SLAB, s));
-    SoggyCloudStairsBlock SOGGY_CLOUD_STAIRS = register("soggy_cloud_stairs", Settings.copy(CLOUD), s -> new SoggyCloudStairsBlock(SOGGY_CLOUD.getDefaultState(), () -> UBlocks.CLOUD_STAIRS, s));
+    SoggyCloudBlock SOGGY_CLOUD = register("soggy_cloud", Settings.copy(CLOUD), s -> new SoggyCloudBlock(() -> UBlocks.CLOUD.getDefaultState(), s.hardness(0.7F)));
+    SoggyCloudSlabBlock SOGGY_CLOUD_SLAB = register("soggy_cloud_slab", Settings.copy(SOGGY_CLOUD), s -> new SoggyCloudSlabBlock(() -> UBlocks.CLOUD_SLAB.getDefaultState(), s));
+    SoggyCloudStairsBlock SOGGY_CLOUD_STAIRS = register("soggy_cloud_stairs", Settings.copy(CLOUD), s -> new SoggyCloudStairsBlock(SOGGY_CLOUD.getDefaultState(), () -> UBlocks.CLOUD_STAIRS.getDefaultState(), s));
 
     Block DENSE_CLOUD = register("dense_cloud", s -> new NaturalCloudBlock(false, null, () -> UBlocks.COMPACTED_DENSE_CLOUD, s.mapColor(MapColor.GRAY).hardness(0.5F).resistance(0).sounds(BlockSoundGroup.WOOL).solid()), ItemGroups.BUILDING_BLOCKS);
     Block COMPACTED_DENSE_CLOUD = register("compacted_dense_cloud", Settings.copy(DENSE_CLOUD), s -> new CompactedCloudBlock(DENSE_CLOUD.getDefaultState(), s));

@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.server.world;
 
 import java.util.Locale;
+import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
 import org.jetbrains.annotations.Nullable;
@@ -13,6 +14,8 @@ import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
 import com.minelittlepony.unicopia.util.Tickable;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.EntityType;
@@ -30,6 +33,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
 
@@ -37,9 +41,15 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
     private static final Identifier ID = Unicopia.id("zap_apple_stage");
     static final long DAY_LENGTH = World.field_30969;
     static final long MOON_PHASES = DimensionType.MOON_SIZES.length;
+    private static final WorldOverlay.Accessor<ZapAppleStageStore> KEY = WorldOverlay.createAccessor(ID, context -> RecordCodecBuilder.create(o -> o.group(
+            Stage.CODEC.fieldOf("stage").forGetter(i -> i.lastStage),
+            Codec.BOOL.fieldOf("stageChanged").forGetter(i -> i.stageChanged),
+            Codec.BOOL.fieldOf("playedMoonEffect").forGetter(i -> i.playedMoonEffect),
+            Codec.INT.fieldOf("nextLightningEvent").forGetter(i -> i.nextLightningEvent)
+    ).apply(o, (lastStage, stageChanged, playedMoonEffect, nextLightningEvent) -> new ZapAppleStageStore(context.getWorldOrThrow(), lastStage, stageChanged, playedMoonEffect, nextLightningEvent))), ZapAppleStageStore::new);
 
-    public static ZapAppleStageStore get(World world) {
-        return WorldOverlay.getPersistableStorage(world, ID, ZapAppleStageStore::new, ZapAppleStageStore::new);
+    public static ZapAppleStageStore get(WorldView world) {
+        return KEY.get(world);
     }
 
     private final World world;
@@ -51,12 +61,12 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
     private int nextLightningEvent = 1200;
     private float prevSkyAngle;
 
-    ZapAppleStageStore(World world, NbtCompound compound) {
+    ZapAppleStageStore(World world, Stage lastStage, boolean stageChanged, boolean playedMoonEffect, int nextLightningEvent) {
         this(world);
-        lastStage = Stage.VALUES[Math.max(0, compound.getInt("stage")) % Stage.VALUES.length];
-        stageChanged = compound.getBoolean("stageChanged");
-        playedMoonEffect = compound.getBoolean("playedMoonEffect");
-        nextLightningEvent = compound.getInt("nextLightningEvent");
+        this.lastStage = lastStage;
+        this.stageChanged = stageChanged;
+        this.playedMoonEffect = playedMoonEffect;
+        this.nextLightningEvent = nextLightningEvent;
     }
 
     ZapAppleStageStore(World world) {
@@ -138,15 +148,6 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
         return lastStage;
     }
 
-    @Override
-    public NbtCompound writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        compound.putInt("stage", lastStage.ordinal());
-        compound.putBoolean("stageChanged", stageChanged);
-        compound.putBoolean("playedMoonEffect", playedMoonEffect);
-        compound.putInt("nextLightningEvent", nextLightningEvent);
-        return compound;
-    }
-
     public enum Stage implements StringIdentifiable {
         HIBERNATING,
         GREENING,
@@ -157,6 +158,7 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
         static final Stage[] VALUES = values();
         static final float MAX = VALUES.length;
 
+        public static final Codec<Stage> CODEC = StringIdentifiable.createCodec(Stage::values);
         public static final PacketCodec<ByteBuf, Stage> PACKET_CODEC = PacketCodecs.indexed(i -> VALUES[i], Stage::ordinal);
 
         private final float ordinal = ordinal();

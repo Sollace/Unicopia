@@ -19,7 +19,7 @@ public record Appearance(ItemStack item, boolean replaceFully) {
     ).apply(instance, Appearance::of));
     public static final PacketCodec<RegistryByteBuf, Appearance> PACKET_CODEC = PacketCodec.tuple(
             ItemStack.PACKET_CODEC, Appearance::item,
-            PacketCodecs.BOOL, Appearance::replaceFully,
+            PacketCodecs.BOOLEAN, Appearance::replaceFully,
             Appearance::of
     );
 

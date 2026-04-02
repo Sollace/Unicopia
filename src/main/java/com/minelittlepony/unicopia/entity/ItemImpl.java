@@ -17,7 +17,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
@@ -72,7 +71,7 @@ public class ItemImpl implements Equine<ItemEntity> {
             if (duck.isClingy(stack)) {
                 Random rng = entity.getWorld().random;
 
-                entity.getWorld().addParticle(duck.getParticleEffect(i),
+                entity.getWorld().addParticleClient(duck.getParticleEffect(i),
                         entity.getX() + rng.nextFloat() - 0.5,
                         entity.getY() + rng.nextFloat() - 0.5,
                         entity.getZ() + rng.nextFloat() - 0.5,
@@ -102,7 +101,7 @@ public class ItemImpl implements Equine<ItemEntity> {
                     double shift = Math.sin(ticks / 9D) / 9D;
                     double rise = -Math.cos(ticks / 9D) * getPhysics().getGravitySignum();
 
-                    entity.prevYaw = entity.prevYaw;
+                    entity.lastYaw = entity.lastYaw;
                     entity.setYaw(entity.getYaw() + 0.3F);
 
                     entity.setVelocity(
@@ -154,9 +153,7 @@ public class ItemImpl implements Equine<ItemEntity> {
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-        if (compound.contains("owner_race", NbtElement.STRING_TYPE)) {
-            setSpecies(Race.fromName(compound.getString("owner_race"), Race.HUMAN));
-        }
+        setSpecies(compound.get("owner_race", Race.CODEC).orElse(Race.HUMAN));
         physics.fromNBT(compound, lookup);
     }
 

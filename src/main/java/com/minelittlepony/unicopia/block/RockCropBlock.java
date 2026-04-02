@@ -87,12 +87,10 @@ public class RockCropBlock extends CropBlock {
     }
 
     @Override
-    protected void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        super.onStateReplaced(state, world, pos, newState, moved);
-        if (!moved && !(state.getBlock() == this && newState.getBlock() == this)) {
-            if (!world.isClient) {
-                world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, pos, 0);
-            }
+    protected void onStateReplaced(BlockState state, ServerWorld world, BlockPos pos, boolean moved) {
+        super.onStateReplaced(state, world, pos, moved);
+        if (!moved && !(state.getBlock() == this && world.getBlockState(pos).isOf(this))) {
+            world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, pos, 0);
         }
     }
 

@@ -32,7 +32,7 @@ public record LightningBoltParticleEffect (
             CodecUtils.VECTOR.optionalFieldOf("pathEndPoint").forGetter(LightningBoltParticleEffect::pathEndPoint)
     ).apply(instance, LightningBoltParticleEffect::new));
     public static final PacketCodec<RegistryByteBuf, LightningBoltParticleEffect> PACKET_CODEC = PacketCodec.tuple(
-            PacketCodecs.BOOL, LightningBoltParticleEffect::silent,
+            PacketCodecs.BOOLEAN, LightningBoltParticleEffect::silent,
             PacketCodecs.INTEGER, LightningBoltParticleEffect::changeFrequency,
             PacketCodecs.INTEGER, LightningBoltParticleEffect::maxBranches,
             PacketCodecs.FLOAT, LightningBoltParticleEffect::maxDeviation,

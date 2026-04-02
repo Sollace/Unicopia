@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoulFireBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCollisionHandler;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -14,9 +15,9 @@ public class SpectralFireBlock extends SoulFireBlock {
     }
 
     @Override
-    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+    protected void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity, EntityCollisionHandler handler) {
         if (!(entity instanceof ItemEntity)) {
-            super.onEntityCollision(state, world, pos, entity);
+            super.onEntityCollision(state, world, pos, entity, handler);
         }
     }
 }

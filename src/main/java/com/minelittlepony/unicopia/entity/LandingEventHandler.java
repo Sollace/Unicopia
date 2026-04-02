@@ -13,7 +13,7 @@ public class LandingEventHandler implements Tickable {
     @Nullable
     private final AtomicReference<Callback> callback = new AtomicReference<>();
     private double prevY;
-    private float prevFallDistance;
+    private double prevFallDistance;
 
     public LandingEventHandler(Living<?> living) {
         this.living = living;
@@ -44,7 +44,7 @@ public class LandingEventHandler implements Tickable {
         prevFallDistance = living.asEntity().fallDistance;
     }
 
-    float fire(float fallDistance) {
+    double fire(double fallDistance) {
         var event = callback.getAndSet(null);
         return event == null ? fallDistance : event.dispatch(fallDistance);
     }
@@ -61,7 +61,7 @@ public class LandingEventHandler implements Tickable {
     }
 
     public interface Callback {
-        float dispatch(float fallDistance);
+        float dispatch(double fallDistance);
 
         void onCancelled();
     }

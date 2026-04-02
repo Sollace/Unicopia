@@ -17,7 +17,7 @@ import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 
-public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock, ZapStagedBlock, ElectrifiedBlock {
+public class BaseZapAppleLeavesBlock extends TintedParticleLeavesBlock implements TintedBlock, ZapStagedBlock, ElectrifiedBlock {
     private static final MapCodec<BaseZapAppleLeavesBlock> CODEC = createCodec(BaseZapAppleLeavesBlock::new);
 
     public static Settings settings() {
@@ -33,7 +33,7 @@ public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock,
     }
 
     public BaseZapAppleLeavesBlock(Settings settings) {
-        super(settings);
+        super(0.01F, settings);
     }
 
     @Override

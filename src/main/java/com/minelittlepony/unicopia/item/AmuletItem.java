@@ -1,7 +1,8 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
+
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketsDelegate;
 import com.minelittlepony.unicopia.item.component.Charges;
@@ -9,6 +10,7 @@ import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
@@ -38,8 +40,9 @@ public class AmuletItem extends WearableItem {
         this(settings.attributeModifiers(modifiers), maxEnergy);
     }
 
+    @Deprecated
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> list, TooltipType type) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
         for (StringVisitable line : MinecraftClient.getInstance().textRenderer.getTextHandler().wrapLines(
                 Text.translatable(getTranslationKey() + ".lore"), 150, Style.EMPTY)) {
             MutableText compiled = Text.literal("").formatted(Formatting.ITALIC, Formatting.GRAY);
@@ -47,9 +50,9 @@ public class AmuletItem extends WearableItem {
                 compiled.append(s);
                 return Optional.empty();
             });
-            list.add(compiled);
+            textConsumer.accept(compiled);
         }
-        super.appendTooltip(stack, context, list, type);
+        super.appendTooltip(stack, context, displayComponent, textConsumer, type);
     }
 
     @Override

@@ -9,6 +9,7 @@ import net.minecraft.block.ButtonBlock;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.PillarBlock;
+import net.minecraft.block.TintedParticleLeavesBlock;
 import net.minecraft.block.enums.NoteBlockInstrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.EntityType;
@@ -65,7 +66,7 @@ public interface BlockConstructionUtils {
     }
 
     static Function<AbstractBlock.Settings, LeavesBlock> createLeavesBlock(BlockSoundGroup soundGroup) {
-        return s -> new LeavesBlock(s
+        return s -> new TintedParticleLeavesBlock(0.01F, s
                 .mapColor(MapColor.DARK_GREEN)
                 .strength(0.2f)
                 .ticksRandomly()

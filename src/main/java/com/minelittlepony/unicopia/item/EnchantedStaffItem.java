@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.item;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.USounds;
@@ -19,11 +20,13 @@ import com.minelittlepony.unicopia.item.component.Charges;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.item.group.MultiItem;
 
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.ParticleTypes;
@@ -97,10 +100,10 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Mu
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> lines, TooltipType type) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
         if (EnchantableItem.isEnchanted(stack)) {
             SpellType<?> key = EnchantableItem.getSpellKey(stack);
-            lines.add(Text.translatable(key.getTranslationKey()).formatted(key.getAffinity().getColor()));
+            textConsumer.accept(Text.translatable(key.getTranslationKey()).formatted(key.getAffinity().getColor()));
         }
     }
 
@@ -175,7 +178,7 @@ public class EnchantedStaffItem extends StaffItem implements EnchantableItem, Mu
 
                 float i = getMaxUseTime(stack, entity) - ticksRemaining;
 
-                world.addParticle(i > 150 ? ParticleTypes.LARGE_SMOKE : ParticleTypes.CLOUD, eyes.x, eyes.y, eyes.z,
+                world.addParticleClient(i > 150 ? ParticleTypes.LARGE_SMOKE : ParticleTypes.CLOUD, eyes.x, eyes.y, eyes.z,
                         (world.random.nextGaussian() - 0.5) / 10,
                         (world.random.nextGaussian() - 0.5) / 10,
                         (world.random.nextGaussian() - 0.5) / 10

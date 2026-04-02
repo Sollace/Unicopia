@@ -16,7 +16,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.enums.SlabType;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemPlacementContext;
@@ -108,7 +108,7 @@ public class CloudSlabBlock extends WaterloggableCloudBlock {
     }
 
     @Override
-    public boolean canFillWithFluid(PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
-        return state.get(SlabBlock.TYPE) != SlabType.DOUBLE && super.canFillWithFluid(player, world, pos, state, fluid);
+    public boolean canFillWithFluid(LivingEntity filler, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
+        return state.get(SlabBlock.TYPE) != SlabType.DOUBLE && super.canFillWithFluid(filler, world, pos, state, fluid);
     }
 }

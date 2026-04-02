@@ -72,7 +72,7 @@ public record Altar(
         for (int i = 0; i < 4; i++) {
             mutable.set(startingPoint);
             mutable.move(Direction.DOWN);
-            mutable.move(Direction.fromHorizontal(i), 2);
+            mutable.move(Direction.fromHorizontalQuarterTurns(i), 2);
 
             if (world.getBlockState(mutable).isOf(Blocks.SOUL_SAND)) {
                 if (checkSlab(world, mutable)) {

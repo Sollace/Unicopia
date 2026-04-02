@@ -52,7 +52,7 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-        bars.forEach((key, bar) -> bar.fromNBT(compound.getCompound(key), lookup));
+        bars.forEach((key, bar) -> bar.fromNBT(compound.getCompoundOrEmpty(key), lookup));
     }
 
     @Override
@@ -236,8 +236,8 @@ class ManaContainer implements MagicReserves, Tickable, NbtSerialisable, Copyabl
 
         @Override
         public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-            trailingValue = compound.getFloat("shadow");
-            load(compound.getFloat("value"));
+            trailingValue = compound.getFloat("shadow", 0);
+            load(compound.getFloat("value", 0));
         }
     }
 }

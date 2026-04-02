@@ -16,13 +16,10 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.*;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 public class PolearmItem extends Item implements ItemDuck {
     public PolearmItem(ToolMaterial material, int damage, float speed, int range, Settings settings) {
@@ -51,12 +48,12 @@ public class PolearmItem extends Item implements ItemDuck {
             List.of(
                 ToolComponent.Rule.ofAlwaysDropping(RegistryEntryList.of(Blocks.COBWEB.getRegistryEntry()), 15),
                 ToolComponent.Rule.of(Registries.createEntryLookup(Registries.BLOCK).getOrThrow(UTags.Blocks.POLEARM_MINEABLE), 1.5F)
-            ), 1, 2
+            ), 1, 2, false
         );
     }
 
     @Override
-    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
+    public void postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         boolean tooNear = target.distanceTo(attacker) <= 2;
         target.takeKnockback(0.15, attacker.getX() - target.getX(), attacker.getZ() - target.getZ());
         Living.updateVelocity(target);
@@ -64,13 +61,6 @@ public class PolearmItem extends Item implements ItemDuck {
             attacker.takeKnockback(attacker.getRandom().nextTriangular(0.4, 0.2), target.getX() - attacker.getX(), target.getZ() - attacker.getZ());
             Living.updateVelocity(attacker);
         }
-
-        return true;
-    }
-
-    @Override
-    public boolean canMine(BlockState state, World world, BlockPos pos, PlayerEntity miner) {
-        return !miner.isCreative();
     }
 
     @Override

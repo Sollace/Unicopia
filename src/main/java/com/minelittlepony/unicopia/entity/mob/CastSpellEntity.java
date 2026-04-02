@@ -34,6 +34,7 @@ import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -247,12 +248,8 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
         tag.put("level", NbtSerialisable.encode(Levelled.CODEC, level, getRegistryManager()));
         tag.put("corruption", NbtSerialisable.encode(Levelled.CODEC, corruption, getRegistryManager()));
 
-        if (controllingEntityUuid != null) {
-            tag.putUuid("owningEntity", controllingEntityUuid);
-        }
-        if (controllingSpellUuid != null) {
-            tag.putUuid("owningSpell", controllingSpellUuid);
-        }
+        tag.putNullable("owningEntity", Uuids.CODEC, controllingEntityUuid);
+        tag.putNullable("owningSpell", Uuids.CODEC, controllingSpellUuid);
 
         spells.getSlots().toNBT(tag, getRegistryManager());
         tag.putInt("age", age);
@@ -270,16 +267,16 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
         dataTracker.set(MAX_CORRUPTION, corruption.getMax());
         dataTracker.set(CORRUPTION, corruption.get());
 
-        controllingEntityUuid = tag.containsUuid("owningEntity") ? tag.getUuid("owningEntity") : null;
-        controllingSpellUuid = tag.containsUuid("owningSpell") ? tag.getUuid("owningSpell") : null;
+        controllingEntityUuid = tag.get("owningEntity", Uuids.CODEC).orElse(null);
+        controllingSpellUuid = tag.get("owningSpell", Uuids.CODEC).orElse(null);
 
         spells.getSlots().fromNBT(tag, getRegistryManager());
-        age = tag.getInt("age");
-        prevAge = tag.getInt("prevAge");
-        setDead(tag.getBoolean("dead"));
+        age = tag.getInt("age", 0);
+        prevAge = tag.getInt("prevAge", 0);
+        setDead(tag.getBoolean("dead", false));
 
         if (tag.contains("owner")) {
-            owner.fromNBT(tag.getCompound("owner"), getRegistryManager());
+            owner.fromNBT(tag.getCompoundOrEmpty("owner"), getRegistryManager());
         }
     }
 }

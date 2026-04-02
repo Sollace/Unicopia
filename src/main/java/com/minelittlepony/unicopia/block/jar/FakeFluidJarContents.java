@@ -14,11 +14,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 
 public record FakeFluidJarContents (
         TileData tile,
@@ -28,9 +28,9 @@ public record FakeFluidJarContents (
         Item filled
 ) implements JarContents {
     public FakeFluidJarContents(TileData tile, NbtCompound compound) {
-        this(tile, compound.getString("fluid"), compound.getInt("color"),
-                Registries.ITEM.get(Identifier.of(compound.getString("empty"))),
-                Registries.ITEM.get(Identifier.of(compound.getString("filled"))));
+        this(tile, compound.getString("fluid", ""), compound.getInt("color", 0),
+                compound.get("empty", Registries.ITEM.getCodec()).orElse(Items.AIR),
+                compound.get("filled", Registries.ITEM.getCodec()).orElse(Items.AIR));
     }
 
     @Override

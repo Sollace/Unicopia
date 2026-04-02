@@ -56,7 +56,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
@@ -142,7 +141,7 @@ public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
+    public boolean handleFallDamage(double fallDistance, float damageMultiplier, DamageSource damageSource) {
         boolean bl = super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
         currentFuseTime += (int)(fallDistance * 1.5f);
         if (currentFuseTime > fuseTime - 5) {
@@ -166,17 +165,11 @@ public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        dataTracker.set(CHARGED, nbt.getBoolean("powered"));
-        if (nbt.contains("Fuse", NbtElement.NUMBER_TYPE)) {
-            fuseTime = nbt.getShort("Fuse");
-        }
-        if (nbt.contains("Hugged", NbtElement.NUMBER_TYPE)) {
-            hugTime = nbt.getShort("Hugged");
-        }
-        if (nbt.contains("ExplosionRadius", NbtElement.NUMBER_TYPE)) {
-            explosionRadius = nbt.getByte("ExplosionRadius");
-        }
-        if (nbt.getBoolean("ignited")) {
+        dataTracker.set(CHARGED, nbt.getBoolean("powered", false));
+        fuseTime = nbt.getShort("Fuse", fuseTime);
+        hugTime = nbt.getShort("Hugged", hugTime);
+        explosionRadius = nbt.getByte("ExplosionRadius", explosionRadius);
+        if (nbt.getBoolean("ignited", false)) {
             ignite();
         }
     }
@@ -245,7 +238,7 @@ public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
     }
 
     private void spawnHeart() {
-        getWorld().addParticle(ParticleTypes.HEART, random.nextTriangular(getX(), 0.5), getY() + getHeight(), random.nextTriangular(getZ(), 0.5), 0, 0, 0);
+        getWorld().addParticleClient(ParticleTypes.HEART, random.nextTriangular(getX(), 0.5), getY() + getHeight(), random.nextTriangular(getZ(), 0.5), 0, 0, 0);
     }
 
     private Creature getCreature() {
@@ -415,9 +408,9 @@ public class FriendlyCreeperEntity extends TameableEntity implements Angerable {
     @Override
     public PassiveEntity createChild(ServerWorld world, PassiveEntity partner) {
         FriendlyCreeperEntity child = (FriendlyCreeperEntity)getType().create(world, SpawnReason.BREEDING);
-        UUID uUID = getOwnerUuid();
-        if (uUID != null) {
-            child.setOwnerUuid(uUID);
+        var owner = getOwnerReference();
+        if (owner != null) {
+            child.setOwner(owner);
             child.setTamed(true, true);
         }
         return child;

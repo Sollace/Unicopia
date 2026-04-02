@@ -87,9 +87,9 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         if (compound.contains("stats")) {
             stats.clear();
-            NbtCompound li = compound.getCompound("stats");
+            NbtCompound li = compound.getCompoundOrEmpty("stats");
             li.getKeys().forEach(key -> {
-                getStat(AbilitySlot.valueOf(key)).fromNBT(li.getCompound(key), lookup);
+                getStat(AbilitySlot.valueOf(key)).fromNBT(li.getCompoundOrEmpty(key), lookup);
             });
         }
     }
@@ -297,12 +297,12 @@ public class AbilityDispatcher implements Tickable, NbtSerialisable {
 
         @Override
         public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-            warmup = compound.getInt("warmup");
-            cooldown = compound.getInt("cooldown");
-            maxWarmup = compound.getInt("maxWarmup");
-            maxCooldown = compound.getInt("maxCooldown");
-            triggered = compound.getBoolean("triggered");
-            activeAbility = Abilities.REGISTRY.getOptionalValue(Identifier.of(compound.getString("activeAbility")));
+            warmup = compound.getInt("warmup", 0);
+            cooldown = compound.getInt("cooldown", 0);
+            maxWarmup = compound.getInt("maxWarmup", 0);
+            maxCooldown = compound.getInt("maxCooldown", 0);
+            triggered = compound.getBoolean("triggered", false);
+            activeAbility = Abilities.REGISTRY.getOptionalValue(Identifier.of(compound.getString("activeAbility", null)));
         }
     }
 }

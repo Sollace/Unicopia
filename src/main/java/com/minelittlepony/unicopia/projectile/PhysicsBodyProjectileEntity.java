@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.projectile;
 
-import java.util.Optional;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
@@ -32,15 +30,12 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -130,7 +125,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
             addVelocity(0, -0.025, 0);
         }
 
-        if (isBouncy() && isInsideWaterOrBubbleColumn()) {
+        if (isBouncy() && isTouchingWater()) {
             setVelocity(getVelocity().multiply(0.3).add(0, 0.05125, 0));
             inWaterTime++;
         } else {
@@ -158,14 +153,14 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
         if (isBouncy()) {
             setVelocity(getVelocity().multiply(-0.1, -0.3, -0.1));
             setYaw(getYaw() + 180);
-            prevYaw += 180;
+            lastYaw += 180;
             return;
         } else {
             ItemStack stack = asItemStack();
             if (stack.isIn(UTags.Items.HORSE_SHOES)) {
                 if (getWorld() instanceof ServerWorld sw) {
                     stack.damage(1 + random.nextInt(10), sw, null, i -> {
-                        playSound(USounds.Vanilla.ENTITY_ITEM_BREAK, 1, 1);
+                        playSound(USounds.Vanilla.ENTITY_ITEM_BREAK.value(), 1, 1);
                     });
                     if (!stack.isEmpty()) {
                         dropStack(sw, stack);
@@ -272,7 +267,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
             if (stack.isIn(UTags.Items.HORSE_SHOES)) {
                 if (getWorld() instanceof ServerWorld sw) {
                     stack.damage(1 + random.nextInt(10), sw, null, i -> {
-                        playSound(USounds.Vanilla.ENTITY_ITEM_BREAK, 1, 1);
+                        playSound(USounds.Vanilla.ENTITY_ITEM_BREAK.value(), 1, 1);
                     });
                 }
                 if (stack.isEmpty()) {
@@ -305,7 +300,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
         super.writeCustomDataToNbt(nbt);
         ItemStack stack = getStack();
         if (!stack.isEmpty()) {
-            ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, stack).result().ifPresent(item -> nbt.put("item", item));
+            nbt.put("item", ItemStack.CODEC, stack);
         }
         nbt.putString("damageType", damageType.getValue().toString());
     }
@@ -313,11 +308,7 @@ public class PhysicsBodyProjectileEntity extends PersistentProjectileEntity impl
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        setStack(ItemStack.fromNbtOrEmpty(getRegistryManager(), nbt.getCompound("item")));
-        if (nbt.contains("damageType", NbtElement.STRING_TYPE)) {
-            Optional.ofNullable(Identifier.tryParse(nbt.getString("damageType"))).ifPresent(id -> {
-                setDamageType(RegistryKey.of(RegistryKeys.DAMAGE_TYPE, id));
-            });
-        }
+        ItemStack.fromNbt(getRegistryManager(), nbt.getCompoundOrEmpty("item")).ifPresent(this::setStack);
+        nbt.get("damageType", RegistryKey.createCodec(RegistryKeys.DAMAGE_TYPE)).ifPresent(this::setDamageType);
     }
 }

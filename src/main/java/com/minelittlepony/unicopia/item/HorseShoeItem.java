@@ -1,6 +1,6 @@
 package com.minelittlepony.unicopia.item;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -14,6 +14,7 @@ import com.minelittlepony.unicopia.projectile.PhysicsBodyProjectileEntity;
 
 import net.minecraft.component.type.AttributeModifierSlot;
 import net.minecraft.component.type.AttributeModifiersComponent;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -41,10 +42,9 @@ public class HorseShoeItem extends HeavyProjectileItem {
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+    public void appendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
         float degradation = (stack.getDamage() / (float)stack.getMaxDamage());
         float inaccuracy = projectileInnacuracy + degradation * 30;
-        tooltip.add(Text.empty());
 
         var race = InteractionManager.getInstance().getClientPony().map(Pony::getCompositeRace).orElse(null);
         float speed = baseProjectileSpeed;
@@ -59,8 +59,9 @@ public class HorseShoeItem extends HeavyProjectileItem {
         speed /= 1.5F;
         speed *= 1 - (0.6F * degradation);
 
-        tooltip.add(Text.translatable("item.unicopia.horse_shoe.accuracy", 100 * (30 - inaccuracy) / 30).formatted(Formatting.GRAY));
-        tooltip.add(Text.translatable("item.unicopia.horse_shoe.speed", Math.max(0.2F, speed)).formatted(Formatting.GRAY));
+        textConsumer.accept(Text.empty());
+        textConsumer.accept(Text.translatable("item.unicopia.horse_shoe.accuracy", 100 * (30 - inaccuracy) / 30).formatted(Formatting.GRAY));
+        textConsumer.accept(Text.translatable("item.unicopia.horse_shoe.speed", Math.max(0.2F, speed)).formatted(Formatting.GRAY));
     }
 
     @Override

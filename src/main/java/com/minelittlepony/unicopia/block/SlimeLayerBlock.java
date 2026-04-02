@@ -25,7 +25,7 @@ public class SlimeLayerBlock extends SnowBlock {
     }
 
     @Override
-    public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
+    public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, double fallDistance) {
         if (entity.bypassesLandingEffects()) {
             super.onLandedUpon(world, state, pos, entity, fallDistance);
         } else {

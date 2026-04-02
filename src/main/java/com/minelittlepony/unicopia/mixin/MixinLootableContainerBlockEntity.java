@@ -36,7 +36,7 @@ abstract class MixinLootableContainerBlockEntity extends LockableContainerBlockE
 
     @Override
     public void readMimicAttributes(NbtCompound nbt) {
-        isMimic = nbt.contains("mimic") ? TriState.of(nbt.getBoolean("mimic")) : TriState.DEFAULT;
+        isMimic = nbt.getBoolean("mimic").map(TriState::of).orElse(TriState.DEFAULT);
     }
 
     @Override

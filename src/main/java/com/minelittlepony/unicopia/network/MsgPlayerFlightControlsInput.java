@@ -12,8 +12,8 @@ public record MsgPlayerFlightControlsInput (
         boolean descending
     ) implements Handled<ServerPlayerEntity> {
     public static final PacketCodec<ByteBuf, MsgPlayerFlightControlsInput> PACKET_CODEC = PacketCodec.tuple(
-            PacketCodecs.BOOL, MsgPlayerFlightControlsInput::ascending,
-            PacketCodecs.BOOL, MsgPlayerFlightControlsInput::descending,
+            PacketCodecs.BOOLEAN, MsgPlayerFlightControlsInput::ascending,
+            PacketCodecs.BOOLEAN, MsgPlayerFlightControlsInput::descending,
             MsgPlayerFlightControlsInput::new
     );
 

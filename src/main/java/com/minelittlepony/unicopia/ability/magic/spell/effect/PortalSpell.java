@@ -23,6 +23,7 @@ import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.particle.*;
 import com.minelittlepony.unicopia.server.world.Ether;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.minelittlepony.unicopia.util.shape.*;
 
 import net.minecraft.block.Block;
@@ -35,6 +36,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction.Axis;
 import net.minecraft.util.math.MathHelper;
@@ -262,7 +264,7 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         super.toNBT(compound, lookup);
-        targetPortalId.get().ifPresent(i -> compound.putUuid("targetPortalId", i));
+        compound.put("targetPortalId", CodecUtils.OPTIONAL_UUID, targetPortalId.get());
         compound.put("teleportationTarget", teleportationTarget.toNBT(lookup));
         compound.putFloat("pitch", getPitch());
         compound.putFloat("yaw", getYaw());
@@ -273,12 +275,12 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        targetPortalId.set(compound.containsUuid("targetPortalId") ? Optional.of(compound.getUuid("targetPortalId")) : Optional.empty());
-        teleportationTarget.fromNBT(compound.getCompound("teleportationTarget"), lookup);
-        pitch.set(compound.getFloat("pitch"));
-        yaw.set(compound.getFloat("yaw"));
-        targetPortalPitch.set(compound.getFloat("targetPortalPitch"));
-        targetPortalYaw.set(compound.getFloat("targetPortalYaw"));
+        targetPortalId.set(compound.get("targetPortalId", Uuids.CODEC));
+        teleportationTarget.fromNBT(compound.getCompoundOrEmpty("teleportationTarget"), lookup);
+        pitch.set(compound.getFloat("pitch", 0));
+        yaw.set(compound.getFloat("yaw", 0));
+        targetPortalPitch.set(compound.getFloat("targetPortalPitch", 0));
+        targetPortalYaw.set(compound.getFloat("targetPortalYaw", 0));
         particleArea = PARTICLE_AREA.rotate(
             pitch.get() * MathHelper.RADIANS_PER_DEGREE,
             (180 - yaw.get()) * MathHelper.RADIANS_PER_DEGREE

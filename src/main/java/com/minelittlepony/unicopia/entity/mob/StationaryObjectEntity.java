@@ -9,7 +9,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -66,9 +65,7 @@ public abstract class StationaryObjectEntity extends Entity implements UDamageSo
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound compound) {
-        if (compound.contains("health", NbtElement.FLOAT_TYPE)) {
-            setHealth(compound.getFloat("health"));
-        }
+        setHealth(compound.getFloat("health", getMaxHealth()));
     }
 
     @Override

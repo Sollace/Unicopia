@@ -51,7 +51,7 @@ public class RageAbilitySpell extends AbstractSpell {
             return false;
         }
 
-        if (source.asEntity().isInsideWaterOrBubbleColumn() || source.asEntity().isFrozen() || ticksToExtenguish > 0) {
+        if (source.asEntity().isTouchingWaterOrRain() || source.asEntity().isFrozen() || ticksToExtenguish > 0) {
             ticksExtenguishing++;
             source.playSound(USounds.Vanilla.ENTITY_GENERIC_EXTINGUISH_FIRE, 1);
             source.spawnParticles(ParticleTypes.CLOUD, 12);
@@ -147,6 +147,6 @@ public class RageAbilitySpell extends AbstractSpell {
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        age = compound.getInt("age");
+        age = compound.getInt("age", 0);
     }
 }

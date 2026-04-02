@@ -96,8 +96,8 @@ public class SproutBlock extends CropBlock implements TintedBlock {
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
-        return new ItemStack(seeds.asItem());
+    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
+        return seeds.asItem().getDefaultStack();
     }
 
     protected void onGrow(World world, BlockState state, BlockPos pos) {

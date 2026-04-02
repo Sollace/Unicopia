@@ -90,7 +90,7 @@ public class SpecterEntity extends HostileEntity {
                 float offset = 0.4F;
                 float yaw = getHeadYaw();
                 Vec3d offsetVec = new Vec3d((wasLeft ? offset : -offset), 0, 0).rotateY(yaw);
-                getWorld().addParticle(new FootprintParticleEffect(yaw), true, getX() + offsetVec.getX(), getY(), getZ() + offsetVec.getZ(), 0, 0, 0);
+                getWorld().addParticleClient(new FootprintParticleEffect(yaw), true, true, getX() + offsetVec.getX(), getY(), getZ() + offsetVec.getZ(), 0, 0, 0);
                 ParticleUtils.spawnParticles(new BlockStateParticleEffect(ParticleTypes.BLOCK, getSteppingBlockState()), getWorld(), getPos(), 6);
                 playSound(getSteppingBlockState().getSoundGroup().getStepSound(), 0.5F, 1);
             }

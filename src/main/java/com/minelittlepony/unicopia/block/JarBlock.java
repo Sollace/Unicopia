@@ -88,7 +88,7 @@ public class JarBlock extends TransparentBlock implements Waterloggable {
     @Override
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         if (this == UBlocks.LIGHTNING_JAR) {
-            world.addParticle(new LightningBoltParticleEffect(true, 10, 1, 0.6F, Optional.empty()), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0, 0);
+            world.addParticleClient(new LightningBoltParticleEffect(true, 10, 1, 0.6F, Optional.empty()), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0, 0);
         }
     }
 

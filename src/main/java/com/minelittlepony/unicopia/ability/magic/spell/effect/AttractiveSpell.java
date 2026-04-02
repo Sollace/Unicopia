@@ -159,7 +159,7 @@ public class AttractiveSpell extends ShieldSpell implements HomingSpell, TimedSp
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        target.fromNBT(compound.getCompound("target"), lookup);
+        target.fromNBT(compound.getCompoundOrEmpty("target"), lookup);
         timer.fromNBT(compound, lookup);
     }
 }

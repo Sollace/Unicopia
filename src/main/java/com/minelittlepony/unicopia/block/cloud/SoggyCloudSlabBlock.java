@@ -14,7 +14,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.util.Hand;
@@ -27,13 +26,13 @@ import net.minecraft.world.WorldView;
 
 public class SoggyCloudSlabBlock extends CloudSlabBlock {
     private static final MapCodec<SoggyCloudSlabBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            CodecUtils.supplierOf(Registries.BLOCK.getCodec()).fieldOf("dry_block").forGetter(b -> b.dryBlock),
+            CodecUtils.supplierOf(BlockState.CODEC).fieldOf("dry_block").forGetter(b -> b.dryBlock),
             BedBlock.createSettingsCodec()
     ).apply(instance, SoggyCloudSlabBlock::new));
 
-    private final Supplier<Block> dryBlock;
+    private final Supplier<BlockState> dryBlock;
 
-    public SoggyCloudSlabBlock(Supplier<Block> dryBlock, Settings settings) {
+    public SoggyCloudSlabBlock(Supplier<BlockState> dryBlock, Settings settings) {
         super(false, null, settings.ticksRandomly());
         setDefaultState(getDefaultState().with(MOISTURE, 7));
         this.dryBlock = dryBlock;
@@ -51,15 +50,15 @@ public class SoggyCloudSlabBlock extends CloudSlabBlock {
     }
 
     @Override
-    public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
-        return dryBlock.get().getPickStack(world, pos, state);
+    protected ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
+        return getStateWithMoisture(state, 0).getPickStack(world, pos, includeData);
     }
 
     @Nullable
     @Override
     public BlockState getStateWithMoisture(BlockState state, int moisture) {
         if (moisture <= 0) {
-            return StateUtil.copyState(state, dryBlock.get().getDefaultState());
+            return StateUtil.copyState(state, dryBlock.get());
         }
         return StateUtil.copyState(state, getDefaultState()).with(MOISTURE, moisture);
     }

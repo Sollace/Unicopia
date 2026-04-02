@@ -35,8 +35,10 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LazyEntityReference;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.PositionInterpolator;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -76,7 +78,7 @@ import net.minecraft.world.event.GameEvent;
 public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>, MagicImmune, Trap {
     private static final TrackedData<ItemStack> STACK = DataTracker.registerData(LevitatingItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<Integer> SLOT = DataTracker.registerData(LevitatingItemEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Optional<UUID>> OWNER_ID = DataTracker.registerData(LevitatingItemEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+    private static final TrackedData<Optional<LazyEntityReference<LivingEntity>>> OWNER_ID = DataTracker.registerData(LevitatingItemEntity.class, TrackedDataHandlerRegistry.LAZY_ENTITY_REFERENCE);
     private static final TrackedData<Optional<BlockPos>> MINING_POS = DataTracker.registerData(LevitatingItemEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_POS);
     private static final TrackedData<Direction> MINING_FACE = DataTracker.registerData(LevitatingItemEntity.class, TrackedDataHandlerRegistry.FACING);
     private static final TrackedData<Integer> HOLDING_POSITION = DataTracker.registerData(LevitatingItemEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -93,8 +95,7 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
     @Nullable
     private LevitatedItemsInventory.BlockBreakingRecord blockBreakingRecord;
 
-    private Vec3d lerpPos = Vec3d.ZERO;
-    private int lerpTicks;
+    private final PositionInterpolator interpolator = new PositionInterpolator(this, 3);
     private int swingTicks;
 
     @Nullable
@@ -254,7 +255,7 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
     }
 
     public void setMaster(PlayerEntity player) {
-        dataTracker.set(OWNER_ID, Optional.of(player.getUuid()));
+        dataTracker.set(OWNER_ID, Optional.of(new LazyEntityReference<LivingEntity>(player.getUuid())));
         master = player;
     }
 
@@ -280,7 +281,7 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
 
     @Override
     public Optional<UUID> getMasterId() {
-        return dataTracker.get(OWNER_ID);
+        return dataTracker.get(OWNER_ID).map(LazyEntityReference::getUuid);
     }
 
     public ItemStack getStack() {
@@ -292,25 +293,8 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
     }
 
     @Override
-    public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
-        lerpPos = new Vec3d(x, y, z);
-        lerpTicks = 3;
-        setRotation(yaw, pitch);
-    }
-
-    @Override
-    public double getLerpTargetX() {
-        return lerpTicks > 0 ? lerpPos.x : getX();
-    }
-
-    @Override
-    public double getLerpTargetY() {
-        return lerpTicks > 0 ? lerpPos.y : getY();
-    }
-
-    @Override
-    public double getLerpTargetZ() {
-        return lerpTicks > 0 ? lerpPos.z : getZ();
+    public PositionInterpolator getInterpolator() {
+        return interpolator;
     }
 
     public void swingAt(BlockPos pos) {
@@ -338,7 +322,7 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
         if (getMiningPos().isPresent()) {
             return false;
         }
-        if (!getStack().getItem().canMine(blockBreakingRecord.state, getWorld(), blockBreakingRecord.pos, miner)) {
+        if (!getStack().getItem().canMine(getStack(), blockBreakingRecord.state, getWorld(), blockBreakingRecord.pos, miner)) {
             return false;
         }
         if (!blockBreakingRecord.state.isToolRequired() || getStack().isSuitableFor(blockBreakingRecord.state)) {
@@ -476,15 +460,10 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
             }
 
             move(MovementType.SELF, targetPosition.subtract(getPos()).multiply(0.3));
-
-            lerpTicks = 0;
             updateTrackedPosition(getX(), getY(), getZ());
         }
 
-        if (lerpTicks > 0) {
-            lerpPosAndRotation(lerpTicks, lerpPos.x, lerpPos.y, lerpPos.z, getYaw(), getPitch());
-            lerpTicks--;
-        }
+        getInterpolator().tick();
     }
 
     @Override
@@ -597,7 +576,7 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
-        setStack(ItemStack.fromNbtOrEmpty(getWorld().getRegistryManager(), nbt.getCompound("stack")));
+        ItemStack.fromNbt(getWorld().getRegistryManager(), nbt.getCompoundOrEmpty("stack")).ifPresent(this::setStack);
         dataTracker.set(OWNER_ID, nbt.containsUuid("owner") ? Optional.of(nbt.getUuid("owner")) : Optional.empty());
         NbtList polarOffset = nbt.getList("polarPositionOffset", NbtElement.DOUBLE_TYPE);
         NbtList manualOffset = nbt.getList("manualPositionOffset", NbtElement.DOUBLE_TYPE);
@@ -606,7 +585,7 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
         if (nbt.contains("holdPosition", NbtElement.LIST_TYPE)) {
             setHoldingPosition(NbtSerialisable.readPositionVector(nbt.getList("holdPosition", NbtElement.DOUBLE_TYPE)));
         }
-        setForcedHoldingPosition(holdPosition != null && nbt.getBoolean("movementRestricted"));
+        setForcedHoldingPosition(holdPosition != null && nbt.getBoolean("movementRestricted", false));
     }
 
     @Override

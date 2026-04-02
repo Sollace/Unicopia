@@ -121,6 +121,6 @@ public class FireBoltSpell extends AbstractSpell implements HomingSpell,
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        target.fromNBT(compound.getCompound("target"), lookup);
+        target.fromNBT(compound.getCompoundOrEmpty("target"), lookup);
     }
 }

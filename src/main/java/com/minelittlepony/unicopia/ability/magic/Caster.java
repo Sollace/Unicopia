@@ -70,14 +70,14 @@ public interface Caster<E extends Entity> extends
             }
 
             if (getMaster() instanceof PlayerEntity player) {
-                if (!player.canModifyBlocks() || !asWorld().canPlayerModifyAt(player, pos)) {
+                if (!player.canModifyBlocks() || !asWorld().canEntityModifyAt(player, pos)) {
                     return false;
                 }
             } else {
                 if (asWorld() instanceof ServerWorld sw) {
                     @Nullable
                     PlayerEntity player = OfflinePlayerCache.getOfflinePlayer(sw, getMasterId().orElse(null));
-                    if (player != null && !player.canModifyBlocks() || !sw.canPlayerModifyAt(player, pos)) {
+                    if (player != null && !player.canModifyBlocks() || !sw.canEntityModifyAt(player, pos)) {
                         return false;
                     }
                 }

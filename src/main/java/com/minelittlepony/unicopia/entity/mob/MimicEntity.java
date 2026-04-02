@@ -36,7 +36,6 @@ import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.screen.GenericContainerScreenHandler;
@@ -130,7 +129,7 @@ public class MimicEntity extends PathAwareEntity {
         MimicEntity mimic = UEntities.MIMIC.create(world, SpawnReason.NATURAL);
         BlockState state = be.getCachedState();
         Direction facing = state.getOrEmpty(ChestBlock.FACING).orElse(null);
-        float yaw = facing.asRotation();
+        float yaw = facing.getPositiveHorizontalDegrees();
         be.setCachedState(be.getCachedState().getBlock().getDefaultState());
         mimic.updatePositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, yaw, 0);
         mimic.setHeadYaw(yaw);
@@ -342,13 +341,13 @@ public class MimicEntity extends PathAwareEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        setChest(nbt.contains("chest", NbtElement.COMPOUND_TYPE) ? readChestData(nbt.getCompound("chest")) : null);
+        setChest(nbt.getCompound("chest").map(this::readChestData).orElse(null));
     }
 
     @Nullable
     private ChestBlockEntity readChestData(NbtCompound nbt) {
-        BlockState state = BlockState.CODEC.decode(NbtOps.INSTANCE, nbt.getCompound("state")).result().get().getFirst();
-        if (BlockEntity.createFromNbt(getBlockPos(), state, nbt.getCompound("data"), getRegistryManager()) instanceof ChestBlockEntity data) {
+        @Nullable BlockState state = nbt.get("state", BlockState.CODEC).orElse(null);
+        if (state != null && BlockEntity.createFromNbt(getBlockPos(), state, nbt.getCompoundOrEmpty("data"), getRegistryManager()) instanceof ChestBlockEntity data) {
             data.setWorld(getWorld());
             ((MimicGeneratable)data).setAllowMimics(false);
             return data;

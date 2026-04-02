@@ -46,7 +46,7 @@ public interface Soakable {
 
     static void addMoistureParticles(BlockState state, World world, BlockPos pos, Random random) {
         if (random.nextInt(5) == 0) {
-            world.addParticle(ParticleTypes.DRIPPING_WATER,
+            world.addParticleClient(ParticleTypes.DRIPPING_WATER,
                     pos.getX() + random.nextFloat(),
                     pos.getY(),
                     pos.getZ() + random.nextFloat(),

@@ -23,7 +23,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -137,16 +136,16 @@ public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery>
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         clear();
-        NbtCompound disco = compound.getCompound("items");
+        NbtCompound disco = compound.getCompoundOrEmpty("items");
         disco.getKeys().forEach(key -> {
             Optional.ofNullable(Identifier.tryParse(key)).ifPresent(id -> {
-                loadTraits(id, disco.getCompound(key)).filter(SpellTraits::isPresent).ifPresent(val -> {
+                loadTraits(id, disco.getCompoundOrEmpty(key)).filter(SpellTraits::isPresent).ifPresent(val -> {
                     items.put(id, val);
                 });
             });
         });
-        Trait.fromNbt(compound.getList("traits", NbtElement.STRING_TYPE)).forEach(traits::add);
-        Trait.fromNbt(compound.getList("unreadTraits", NbtElement.STRING_TYPE)).forEach(unreadTraits::add);
+        Trait.fromNbt(compound.getListOrEmpty("traits")).forEach(traits::add);
+        Trait.fromNbt(compound.getListOrEmpty("unreadTraits")).forEach(unreadTraits::add);
     }
 
     private Optional<SpellTraits> loadTraits(Identifier itemId, NbtCompound nbt) {

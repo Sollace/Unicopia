@@ -66,7 +66,6 @@ public enum Trait implements CommandArgumentEnum<Trait> {
 
     private static final Trait[] VALUES = values();
     private static final Map<Identifier, Trait> IDS = Arrays.stream(values()).collect(Collectors.toMap(Trait::getId, Function.identity()));
-    @SuppressWarnings("deprecation")
     private static final EnumCodec<Trait> NAME_CODEC = StringIdentifiable.createCodec(Trait::values, n -> n.toLowerCase(Locale.ROOT));
     private static final Codec<Trait> ID_CODEC = Identifier.CODEC.xmap(id -> IDS.get(id), Trait::getId);
     public static final Codec<Trait> CODEC = Codec.xor(NAME_CODEC, ID_CODEC).xmap(Either::unwrap, Either::right);
@@ -159,6 +158,7 @@ public enum Trait implements CommandArgumentEnum<Trait> {
     public static Stream<Trait> fromNbt(NbtList nbt) {
         return nbt.stream()
                 .map(NbtElement::asString)
+                .flatMap(Optional::stream)
                 .map(Trait::of)
                 .flatMap(Optional::stream);
     }
@@ -168,7 +168,6 @@ public enum Trait implements CommandArgumentEnum<Trait> {
     }
 
     public static Optional<Trait> of(String name) {
-        @SuppressWarnings("deprecation")
         Trait trait = NAME_CODEC.byId(name);
         if (trait == null) {
             return Optional.ofNullable(Identifier.tryParse(name)).map(IDS::get);

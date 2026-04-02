@@ -105,8 +105,8 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        suppressionCounter = compound.getInt("suppressionCounter");
-        forced = compound.getBoolean("forced");
+        suppressionCounter = compound.getInt("suppressionCounter", 0);
+        forced = compound.getBoolean("forced", false);
         if (suppressionCounter > 0) {
             suppressed.set(true);
         }

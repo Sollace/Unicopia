@@ -27,7 +27,6 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -275,11 +274,11 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-        NbtList stacks = compound.getList("stacks", NbtElement.COMPOUND_TYPE);
+        NbtList stacks = compound.getListOrEmpty("stacks");
         this.stacks.clear();
         for (int i = 0; i < stacks.size(); i++) {
             LevitatingItemEntity stack = new LevitatingItemEntity(i, player.asEntity(), ItemStack.EMPTY);
-            stack.readNbt(stacks.getCompound(i));
+            stack.readNbt(stacks.getCompoundOrEmpty(i));
             stack.setSlot(i);
             onEntitySpawned(stack);
             if (!player.isClient()) {

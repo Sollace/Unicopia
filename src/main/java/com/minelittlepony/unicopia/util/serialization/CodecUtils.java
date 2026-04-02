@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.util.serialization;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -19,6 +20,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
@@ -32,6 +34,8 @@ public interface CodecUtils {
             Codec.DOUBLE.fieldOf("y").forGetter(Vec3d::getY),
             Codec.DOUBLE.fieldOf("z").forGetter(Vec3d::getZ)
     ).apply(instance, Vec3d::new)), Codec.DOUBLE.listOf(3, 3), list -> new Vec3d(list.get(0), list.get(1), list.get(2)));
+    Codec<Optional<Vec3d>> OPTIONAL_VECTOR = Codecs.optional(VECTOR);
+    Codec<Optional<UUID>> OPTIONAL_UUID = Codecs.optional(Uuids.CODEC);
     /**
      * Combines the result of two unrelated codecs into a single object.
      * <p>

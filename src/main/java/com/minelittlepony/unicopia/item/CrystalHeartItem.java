@@ -108,7 +108,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
             }
 
             BlockPos pos = entity.getBlockPos();
-            entity.getWorld().addParticle(ParticleTypes.COMPOSTER,
+            entity.getWorld().addParticleClient(ParticleTypes.COMPOSTER,
                     pos.getX() + entity.getWorld().getRandom().nextFloat(),
                     pos.getY() + entity.getWorld().getRandom().nextFloat(),
                     pos.getZ() + entity.getWorld().getRandom().nextFloat(),
@@ -124,7 +124,7 @@ public class CrystalHeartItem extends Item implements FloatingArtefactEntity.Art
 
                     if (e instanceof PlayerEntity
                             || (e instanceof TameableEntity t && t.isTamed())
-                            || (e instanceof Saddleable s && s.isSaddled())
+                            || (e instanceof MobEntity s && s.hasSaddleEquipped())
                             || (e instanceof MerchantEntity)) {
                         if (living.getHealth() < living.getMaxHealth()) {
                             outputs.add(living);

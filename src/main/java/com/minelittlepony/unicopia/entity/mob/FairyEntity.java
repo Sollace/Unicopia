@@ -34,7 +34,6 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
@@ -62,7 +61,7 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
         BirdNavigation birdNavigation = new BirdNavigation(this, world);
         birdNavigation.setCanPathThroughDoors(true);
         birdNavigation.setCanSwim(true);
-        birdNavigation.setCanEnterOpenDoors(true);
+        birdNavigation.setCanPathThroughDoors(true);
         return birdNavigation;
     }
 
@@ -108,7 +107,7 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
+    public boolean handleFallDamage(double fallDistance, float damageMultiplier, DamageSource damageSource) {
         return false;
     }
 
@@ -141,7 +140,7 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
         emitter.tick();
 
         if (getWorld().random.nextInt(20) == 3) {
-            getWorld().addParticle(new MagicParticleEffect(0xFFFFFF), getParticleX(1), getY(), getParticleZ(1), 0, 0, 0);
+            getWorld().addParticleClient(new MagicParticleEffect(0xFFFFFF), getParticleX(1), getY(), getParticleZ(1), 0, 0, 0);
         }
 
         if (age % 60 == 0) {
@@ -222,18 +221,14 @@ public class FairyEntity extends PathAwareEntity implements DynamicLightSource, 
     public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         tag.put("owner", owner.toNBT(getRegistryManager()));
-        stayingPos.ifPresent(pos -> {
-            tag.put("stayingPos", NbtHelper.fromBlockPos(pos));
-        });
+        stayingPos.ifPresent(pos -> tag.put("stayingPos", BlockPos.CODEC, pos));
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
-        if (tag.contains("owner")) {
-            owner.fromNBT(tag.getCompound("owner"), getRegistryManager());
-        }
-        stayingPos = tag.contains("stayingPos") ? NbtHelper.toBlockPos(tag, "stayingPos") : Optional.empty();
+        owner.fromNBT(tag.getCompoundOrEmpty("owner"), getRegistryManager());
+        stayingPos = tag.get("stayingPos", BlockPos.CODEC);
     }
 
     class FollowEntityGoal extends Goal {
