@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia;
 
 import java.util.Locale;
 
+import com.mojang.serialization.Codec;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.StringIdentifiable;
@@ -13,8 +15,7 @@ public enum FlightType implements StringIdentifiable {
     INSECTOID,
     ARTIFICIAL;
 
-    @SuppressWarnings("deprecation")
-    public static final EnumCodec<FlightType> CODEC = StringIdentifiable.createCodec(FlightType::values);
+    public static final Codec<FlightType> CODEC = StringIdentifiable.createCodec(FlightType::values);
 
     private final String name = name().toLowerCase(Locale.ROOT);
 

@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia;
 
 import java.util.Locale;
 
+import com.mojang.serialization.Codec;
+
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.StringIdentifiable;
@@ -12,8 +14,7 @@ public enum Affinity implements StringIdentifiable {
     NEUTRAL(Formatting.LIGHT_PURPLE, 0, 0.5F),
     BAD(Formatting.RED, 1, 1);
 
-    @SuppressWarnings("deprecation")
-    public static final EnumCodec<Affinity> CODEC = StringIdentifiable.createCodec(Affinity::values);
+    public static final Codec<Affinity> CODEC = StringIdentifiable.createCodec(Affinity::values);
 
     private final Formatting color;
 

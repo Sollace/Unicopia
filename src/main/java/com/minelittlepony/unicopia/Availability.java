@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia;
 
 import java.util.Locale;
 
+import com.mojang.serialization.Codec;
+
 import net.minecraft.util.StringIdentifiable;
 
 public enum Availability implements StringIdentifiable {
@@ -9,8 +11,7 @@ public enum Availability implements StringIdentifiable {
     COMMANDS,
     NONE;
 
-    @SuppressWarnings("deprecation")
-    public static final EnumCodec<Availability> CODEC = StringIdentifiable.createCodec(Availability::values);
+    public static final Codec<Availability> CODEC = StringIdentifiable.createCodec(Availability::values);
 
     private final String name = name().toLowerCase(Locale.ROOT);
 
