@@ -61,7 +61,7 @@ public class LandingEventHandler implements Tickable {
     }
 
     public interface Callback {
-        float dispatch(double fallDistance);
+        double dispatch(double fallDistance);
 
         void onCancelled();
     }

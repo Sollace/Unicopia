@@ -115,7 +115,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
         var r = new LandingEventHandler.Callback() {
             @Override
-            public float dispatch(float fallDistance) {
+            public double dispatch(double fallDistance) {
                 // fail if landing above the starting position
                 if (player.getY() > initialY) {
                     return fallDistance;
@@ -178,7 +178,7 @@ public class EarthPonyStompAbility implements Ability<Hit> {
 
                 iplayer.subtractEnergyCost(rad);
                 iplayer.asEntity().addExhaustion(3);
-                return 0F;
+                return 0D;
             }
 
             @Override
