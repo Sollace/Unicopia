@@ -16,8 +16,8 @@ public class ShulkerBehaviour extends EntityBehaviour<ShulkerEntity> {
     @Override
     public void update(Living<?> source, ShulkerEntity shulker, Disguise spell) {
         shulker.setYaw(0);
-        shulker.prevBodyYaw = 0;
-        shulker.bodyYaw = 0;
+        shulker.lastBodyYaw = 0;
+        shulker.setBodyYaw(0);
 
         super.update(source, shulker, spell);
 

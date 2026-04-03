@@ -31,7 +31,7 @@ public class ChickenBehaviour extends EntityBehaviour<ChickenEntity> {
                     if (egg.isEmpty()) {
                         egg = new ItemStack(Items.EGG);
 
-                        int slot = player.asEntity().getInventory().getMatchingSlot(egg.getRegistryEntry());
+                        int slot = player.asEntity().getInventory().getMatchingSlot(egg.getRegistryEntry(), egg);
                         if (slot > -1) {
                             player.asEntity().getInventory().removeStack(slot, 1);
                             entity.playSound(USounds.Vanilla.ENTITY_CHICKEN_EGG,

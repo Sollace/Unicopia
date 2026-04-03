@@ -8,7 +8,7 @@ public class WaterCreatureBehaviour extends EntityBehaviour<WaterCreatureEntity>
     @Override
     public void update(Living<?> source, WaterCreatureEntity entity, Disguise spell) {
 
-        if (source.asEntity().isInsideWaterOrBubbleColumn()) {
+        if (source.asEntity().isTouchingWaterOrRain()) {
             source.asEntity().setAir(source.asEntity().getAir() - 1);
             if (source.asEntity().getAir() == -20) {
                 source.asEntity().setAir(0);

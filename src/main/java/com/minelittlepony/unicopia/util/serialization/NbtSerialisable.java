@@ -55,6 +55,7 @@ public interface NbtSerialisable {
         return new Vec3d(list.getDouble(0, 0), list.getDouble(1, 0), list.getDouble(2, 0));
     }
 
+    @Deprecated
     static Vec3d readPositionVector(NbtList list) {
         return new Vec3d(
                 MathHelper.clamp(list.getDouble(0, 0), -3.0000512E7, 3.0000512E7),

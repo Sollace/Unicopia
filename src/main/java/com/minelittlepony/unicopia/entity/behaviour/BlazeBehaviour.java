@@ -35,9 +35,9 @@ public class BlazeBehaviour extends EntityBehaviour<BlazeEntity> {
 
         NbtCompound tag = spell.getDisguise().getOrCreateTag();
 
-        boolean firing = tag.getBoolean("isFiring");
-        int fireballCooldown = tag.getInt("fireballCooldown");
-        int fireballsFired = tag.getInt("fireballsFired");
+        boolean firing = tag.getBoolean("isFiring", false);
+        int fireballCooldown = tag.getInt("fireballCooldown", 0);
+        int fireballsFired = tag.getInt("fireballsFired", 0);
 
         if (player.sneakingChanged()) {
             boolean sneaking = player.asEntity().isSneaking();

@@ -8,7 +8,7 @@ import net.minecraft.util.math.MathHelper;
 public class CreeperBehaviour extends EntityBehaviour<CreeperEntity> {
     @Override
     public void update(Living<?> source, CreeperEntity entity, Disguise spell) {
-        int fuseCountDown = spell.getDisguise().getOrCreateTag().getInt("fuseCountdown");
+        int fuseCountDown = spell.getDisguise().getOrCreateTag().getInt("fuseCountdown", 0);
 
         boolean trigger = isSneakingOnGround(source);
 

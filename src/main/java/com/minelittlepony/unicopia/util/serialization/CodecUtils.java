@@ -24,6 +24,7 @@ import net.minecraft.util.Uuids;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public interface CodecUtils {
@@ -33,9 +34,18 @@ public interface CodecUtils {
             Codec.DOUBLE.fieldOf("x").forGetter(Vec3d::getX),
             Codec.DOUBLE.fieldOf("y").forGetter(Vec3d::getY),
             Codec.DOUBLE.fieldOf("z").forGetter(Vec3d::getZ)
-    ).apply(instance, Vec3d::new)), Codec.DOUBLE.listOf(3, 3), list -> new Vec3d(list.get(0), list.get(1), list.get(2)));
+    ).apply(instance, Vec3d::new)), Vec3d.CODEC);
     Codec<Optional<Vec3d>> OPTIONAL_VECTOR = Codecs.optional(VECTOR);
     Codec<Optional<UUID>> OPTIONAL_UUID = Codecs.optional(Uuids.CODEC);
+
+    double MAX_HOR_AXIS = 3.0000512E7;
+    double MAX_VER_AXIS = 2.0E7;
+    Codec<Vec3d> POSITION_VECTOR = Vec3d.CODEC.xmap(vec -> new Vec3d(
+            MathHelper.clamp(vec.x, -MAX_HOR_AXIS, MAX_HOR_AXIS),
+            MathHelper.clamp(vec.y, -MAX_VER_AXIS, MAX_VER_AXIS),
+            MathHelper.clamp(vec.z, -MAX_HOR_AXIS, MAX_HOR_AXIS)
+    ), Function.identity());
+
     /**
      * Combines the result of two unrelated codecs into a single object.
      * <p>

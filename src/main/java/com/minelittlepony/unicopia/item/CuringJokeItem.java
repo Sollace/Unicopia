@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
@@ -14,6 +12,7 @@ import com.minelittlepony.unicopia.util.InventoryUtil;
 import net.minecraft.block.Block;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -114,6 +113,6 @@ public class CuringJokeItem extends BlockItem {
             return InventoryUtil.stream(owner.getInventory());
         }
 
-        return StreamSupport.stream(entity.getEquippedItems().spliterator(), false);
+        return EquipmentSlot.VALUES.stream().filter(entity::hasStackEquipped).map(entity::getEquippedStack);
     }
 }

@@ -19,7 +19,7 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.VecHelper;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.authlib.GameProfile;
 
 import net.fabricmc.fabric.api.entity.FakePlayer;
@@ -48,8 +48,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
@@ -66,6 +64,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -577,14 +576,11 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
         ItemStack.fromNbt(getWorld().getRegistryManager(), nbt.getCompoundOrEmpty("stack")).ifPresent(this::setStack);
-        dataTracker.set(OWNER_ID, nbt.containsUuid("owner") ? Optional.of(nbt.getUuid("owner")) : Optional.empty());
-        NbtList polarOffset = nbt.getList("polarPositionOffset", NbtElement.DOUBLE_TYPE);
-        NbtList manualOffset = nbt.getList("manualPositionOffset", NbtElement.DOUBLE_TYPE);
-        setPolarPositionOffset(NbtSerialisable.readPositionVector(polarOffset));
-        setManualPositionOffset(NbtSerialisable.readPositionVector(manualOffset));
-        if (nbt.contains("holdPosition", NbtElement.LIST_TYPE)) {
-            setHoldingPosition(NbtSerialisable.readPositionVector(nbt.getList("holdPosition", NbtElement.DOUBLE_TYPE)));
-        }
+        dataTracker.set(OWNER_ID, nbt.get("owner", Uuids.CODEC).map(LazyEntityReference::new));
+        setPolarPositionOffset(nbt.get("polarPositionOffset", CodecUtils.POSITION_VECTOR).orElse(Vec3d.ZERO));
+        setManualPositionOffset(nbt.get("manualPositionOffset", CodecUtils.POSITION_VECTOR).orElse(Vec3d.ZERO));
+        setHoldingPosition(nbt.get("holdPosition", CodecUtils.POSITION_VECTOR).orElse(Vec3d.ZERO));
+
         setForcedHoldingPosition(holdPosition != null && nbt.getBoolean("movementRestricted", false));
     }
 
@@ -593,12 +589,10 @@ public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>,
         if (!getStack().isEmpty()) {
             nbt.put("stack", getStack().toNbt(getEntityWorld().getRegistryManager()));
         }
-        getMasterId().ifPresent(owner -> nbt.putUuid("owner", owner));
-        nbt.put("polarPositionOffset", toNbtList(polarPositionOffset.x, polarPositionOffset.y, polarPositionOffset.z));
-        nbt.put("manualPositionOffset", toNbtList(manualPositionOffset.x, manualPositionOffset.y, manualPositionOffset.z));
-        if (holdPosition != null) {
-            nbt.put("holdPosition", toNbtList(holdPosition.x, holdPosition.y, holdPosition.z));
-        }
+        nbt.putNullable("owner", Uuids.CODEC, getMasterId().orElse(null));
+        nbt.put("polarPositionOffset", CodecUtils.POSITION_VECTOR, polarPositionOffset);
+        nbt.put("manualPositionOffset", CodecUtils.POSITION_VECTOR, manualPositionOffset);
+        nbt.putNullable("holdPosition", CodecUtils.POSITION_VECTOR, holdPosition);
         nbt.putBoolean("movementRestricted", !canChangePositionHoldingFreely());
     }
 

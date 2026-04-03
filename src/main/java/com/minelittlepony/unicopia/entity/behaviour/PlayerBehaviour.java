@@ -16,9 +16,9 @@ public class PlayerBehaviour extends EntityBehaviour<PlayerEntity> {
             entity.capeX = pFrom.capeX;
             entity.capeY = pFrom.capeY;
             entity.capeZ = pFrom.capeZ;
-            entity.prevCapeX = pFrom.prevCapeX;
-            entity.prevCapeY = pFrom.prevCapeY;
-            entity.prevCapeZ = pFrom.prevCapeZ;
+            entity.lastCapeX = pFrom.lastCapeX;
+            entity.lastCapeY = pFrom.lastCapeY;
+            entity.lastCapeZ = pFrom.lastCapeZ;
         } else {
             ((PlayerEntityDuck)entity).callUpdateCapeAngles();
         }

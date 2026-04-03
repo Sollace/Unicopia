@@ -20,10 +20,10 @@ public class MinecartBehaviour extends EntityBehaviour<AbstractMinecartEntity> {
     @Override
     public void update(Living<?> source, AbstractMinecartEntity entity, Disguise spell) {
         entity.setYaw(entity.getYaw() - 90);
-        entity.prevYaw -= 90;
+        entity.lastYaw -= 90;
 
         entity.setPitch(0);
-        entity.prevPitch = 0;
+        entity.lastPitch = 0;
 
         LivingEntity living = source.asEntity();
         if (living.hurtTime > 0) {

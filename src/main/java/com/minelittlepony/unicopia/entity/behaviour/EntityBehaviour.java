@@ -138,9 +138,9 @@ public class EntityBehaviour<T extends Entity> {
             double y = positionOffset.y + Math.floor(from.getY());
             double z = positionOffset.z + Math.floor(from.getZ()) + 0.5;
 
-            to.prevX = x;
-            to.prevY = y;
-            to.prevZ = z;
+            to.lastX = x;
+            to.lastY = y;
+            to.lastZ = z;
 
             to.lastRenderX = x;
             to.lastRenderY = y;
@@ -154,9 +154,9 @@ public class EntityBehaviour<T extends Entity> {
         } else {
             to.copyPositionAndRotation(from);
 
-            to.prevX = positionOffset.x + from.prevX;
-            to.prevY = positionOffset.y + from.prevY;
-            to.prevZ = positionOffset.z + from.prevZ;
+            to.lastX = positionOffset.x + from.lastX;
+            to.lastY = positionOffset.y + from.lastY;
+            to.lastZ = positionOffset.z + from.lastZ;
 
             to.lastRenderX = positionOffset.x + from.lastRenderX;
             to.lastRenderY = positionOffset.y + from.lastRenderY;
@@ -166,9 +166,9 @@ public class EntityBehaviour<T extends Entity> {
         to.setVelocity(from.getVelocity());
 
         to.setPitch(from.getPitch());
-        to.prevPitch = from.prevPitch;
+        to.lastPitch = from.lastPitch;
         to.setYaw(from.getYaw());
-        to.prevYaw = from.prevYaw;
+        to.lastYaw = from.lastYaw;
         to.speed = from.speed;
         to.fallDistance = 0;
         to.setOnGround(from.isOnGround());
@@ -178,9 +178,9 @@ public class EntityBehaviour<T extends Entity> {
 
         if (to instanceof LivingEntity l) {
             l.headYaw = from.headYaw;
-            l.prevHeadYaw = from.prevHeadYaw;
+            l.lastHeadYaw = from.lastHeadYaw;
             l.bodyYaw = from.bodyYaw;
-            l.prevBodyYaw = from.prevBodyYaw;
+            l.lastBodyYaw = from.lastBodyYaw;
 
             LimbAnimationUtil.copy(from.limbAnimator, l.limbAnimator);
 

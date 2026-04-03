@@ -19,6 +19,7 @@ import net.minecraft.world.event.GameEvent;
 // TODO: Change to a ConsumeEffect
 @Deprecated
 public class TotemOfDying {
+    @Deprecated
     public static void tryUseTotem(DamageSource damage, LivingEntity entity) {
         ItemStack totem = getTotem(entity, true);
 
@@ -39,6 +40,7 @@ public class TotemOfDying {
         }
     }
 
+    @Deprecated
     public static ItemStack getTotem(LivingEntity entity, boolean consume) {
         for (Hand hand : Hand.values()) {
             ItemStack stack = entity.getStackInHand(hand);

@@ -56,7 +56,7 @@ public class SheepBehaviour extends EntityBehaviour<SheepEntity> {
                     int slot;
 
                     do {
-                        slot = inv.getMatchingSlot(dropType.getRegistryEntry());
+                        slot = inv.getMatchingSlot(dropType.getRegistryEntry(), dropType);
 
                         if (slot < 0) {
                             break;
