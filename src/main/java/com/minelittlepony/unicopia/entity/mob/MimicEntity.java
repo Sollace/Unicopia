@@ -53,6 +53,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockRenderView;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
 public class MimicEntity extends PathAwareEntity {
@@ -112,10 +113,13 @@ public class MimicEntity extends PathAwareEntity {
             return false;
         }
 
-        // TODO: Local difficulty?
-        int difficulty = world.getDifficulty().ordinal() - 1;
-        float threshold = 0.35F * ((EnchantmentUtil.getLuck(0, player) / 20F) + 0.5F);
-        return difficulty > 0 && world.random.nextFloat() < (difficulty / 3F) * threshold;
+        var localDifficulty = world.getLocalDifficulty(pos);
+        if (localDifficulty.getGlobalDifficulty() == Difficulty.PEACEFUL) {
+            return false;
+        }
+        float difficulty = MathHelper.clamp(localDifficulty.getLocalDifficulty(), 0F, 4F) / 4F;
+        float threshold = 0.8F * ((EnchantmentUtil.getLuck(0, player) / 20F) + 0.5F);
+        return threshold * world.random.nextFloat() < difficulty;
     }
 
     @SuppressWarnings("deprecation")

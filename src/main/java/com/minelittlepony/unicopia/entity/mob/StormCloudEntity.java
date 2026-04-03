@@ -126,6 +126,10 @@ public class StormCloudEntity extends Entity implements MagicImmune {
         dataTracker.set(TARGET_SIZE, size);
     }
 
+    public float getTargetSize() {
+        return dataTracker.get(TARGET_SIZE);
+    }
+
     public int getSizeInBlocks() {
         return (int)(getWidth() * (getSize(1) / 15F));
     }
@@ -135,9 +139,9 @@ public class StormCloudEntity extends Entity implements MagicImmune {
         setFireTicks(1);
 
         prevSize = currentSize;
-        float targetSize = dataTracker.get(TARGET_SIZE);
+        float targetSize = getTargetSize();
         if (currentSize != targetSize) {
-            float sizeDifference = (dataTracker.get(TARGET_SIZE) - currentSize);
+            float sizeDifference = (targetSize - currentSize);
             currentSize = Math.abs(sizeDifference) < 0.01F ? targetSize : currentSize + (sizeDifference * 0.02F);
         }
 
@@ -397,7 +401,8 @@ public class StormCloudEntity extends Entity implements MagicImmune {
     public void writeCustomDataToNbt(NbtCompound nbt) {
         nbt.putInt("stormTicks", getStormTicks());
         nbt.putInt("clearTicks", getClearTicks());
-        nbt.putFloat("size", getSize(1));
+        nbt.putBoolean("dissipating", isDissipating());
+        nbt.putFloat("size", getTargetSize());
         nbt.putBoolean("cursed", cursed);
         nbt.putInt("phase", phase);
         nbt.putInt("nextPhase", nextPhase);
@@ -407,8 +412,9 @@ public class StormCloudEntity extends Entity implements MagicImmune {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         setStormTicks(nbt.getInt("stormTicks"));
         setClearTicks(nbt.getInt("clearTicks"));
+        setDissipating(nbt.getBoolean("dissipating"));
         if (nbt.contains("size", NbtElement.FLOAT_TYPE)) {
-            setSize(currentSize = nbt.getFloat("size"));
+            setSize(nbt.getFloat("size"));
         }
         cursed = nbt.getBoolean("cursed");
         phase = nbt.getInt("phase");
