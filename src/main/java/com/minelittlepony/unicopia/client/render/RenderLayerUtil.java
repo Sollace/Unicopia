@@ -6,7 +6,7 @@ import java.util.function.Function;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.VertexConsumerProvider.Immediate;
-import net.minecraft.screen.PlayerScreenHandler;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.util.Identifier;
 
 public interface RenderLayerUtil {
@@ -17,7 +17,7 @@ public interface RenderLayerUtil {
         action.accept(layer -> {
             Identifier texture = com.minelittlepony.common.util.render.RenderLayerUtil.getTexture(layer).orElse(null);
 
-            if (texture == null || texture.equals(SHADOW_TEXTURE) || texture.equals(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE)) {
+            if (texture == null || texture.equals(SHADOW_TEXTURE) || texture.equals(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE)) {
                 return vertices.getBuffer(layer);
             }
             return VertexConsumers.union(

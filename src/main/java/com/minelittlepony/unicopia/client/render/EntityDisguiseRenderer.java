@@ -36,7 +36,7 @@ class EntityDisguiseRenderer {
 
     public <T extends LivingEntity> boolean render(Living<T> pony, Disguise disguise,
             double x, double y, double z,
-            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, Vec3d cameraPos) {
         int fireTicks = pony.asEntity().doesRenderOnFire() ? 1 : 0;
         if (!delegate.client.isPaused()) {
             disguise.update(pony, false);
@@ -55,11 +55,11 @@ class EntityDisguiseRenderer {
             e.setBoundingBox(pony.asEntity().getBoundingBox());
         }
 
-        render(ve, e, x, y, z, fireTicks, tickDelta, matrices, vertices, light);
+        render(ve, e, x, y, z, fireTicks, tickDelta, matrices, vertices, light, cameraPos);
         ve.getAttachments().forEach(attachment -> {
             PehkUtil.copyScale(pony.asEntity(), attachment.entity());
             Vec3d difference = attachment.entity().getPos().subtract(e.getPos());
-            render(ve, attachment.entity(), x + difference.x, y + difference.y, z + difference.z, fireTicks, tickDelta, matrices, vertices, light);
+            render(ve, attachment.entity(), x + difference.x, y + difference.y, z + difference.z, fireTicks, tickDelta, matrices, vertices, light, cameraPos);
             PehkUtil.clearScale(attachment.entity());
         });
 
@@ -79,7 +79,7 @@ class EntityDisguiseRenderer {
     @SuppressWarnings("deprecation")
     private void render(EntityAppearance ve, Entity e,
             double x, double y, double z,
-            int fireTicks, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+            int fireTicks, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Vec3d cameraPos) {
 
         if (ve.isAxisAligned() && (x != 0 || y != 0 || z != 0)) {
             Vec3d cam = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
@@ -103,12 +103,12 @@ class EntityDisguiseRenderer {
                 matrices.translate(x, y, z);
                 matrices.translate(-0.5, 0, -0.5);
 
-                r.render(blockEntity, 1, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV);
+                r.render(blockEntity, 1, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV, cameraPos);
 
                 matrices.pop();
 
                 BlockRenderType type = blockEntity.getCachedState().getRenderType();
-                if (type == BlockRenderType.ENTITYBLOCK_ANIMATED) {
+                if (type == BlockRenderType.INVISIBLE) {
                     return;
                 }
             }

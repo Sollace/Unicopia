@@ -60,7 +60,7 @@ public class HeldEntityFeatureRenderer<S extends BipedEntityRenderState, E exten
             carriedEntity.render(matrices, vertexConsumers, light);
             matrices.pop();
 
-            float equipProgress = 1 - sender.getEquipProgress(Hand.MAIN_HAND, MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false));
+            float equipProgress = 1 - sender.getEquipProgress(Hand.MAIN_HAND, MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(false));
 
             matrices.push();
             sender.invokeRenderArmHoldingItem(matrices, vertexConsumers, light, equipProgress, entity.handSwingProgress, Arm.LEFT);

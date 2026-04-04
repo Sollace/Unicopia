@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
-import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.minelittlepony.unicopia.command.CommandArgumentEnum;
@@ -56,7 +55,7 @@ public class PlayerPoser {
             float pitchChange = -0.5F;
             float yawChange = 0.8F;
 
-            if (state.rightHandStack.isIn(UTags.Items.POLEARMS) && (!ponyRace.isEquine() || model.rightArm.pitch != 0)) {
+            if (pony.isRightPolearm && (!ponyRace.isEquine() || model.rightArm.pitch != 0)) {
                 model.rightArm.pitch += pitchChange;
                 model.rightArm.yaw += yawChange;
                 if (state.handSwingProgress > 0 && rightHand == Hand.MAIN_HAND) {
@@ -65,7 +64,7 @@ public class PlayerPoser {
                 }
             }
 
-            if (state.leftHandStack.isIn(UTags.Items.POLEARMS) && (!ponyRace.isEquine() || model.leftArm.pitch != 0)) {
+            if (pony.isLeftPolearm && (!ponyRace.isEquine() || model.leftArm.pitch != 0)) {
                 model.leftArm.pitch += pitchChange;
                 model.leftArm.yaw -= yawChange;
                 if (state.handSwingProgress > 0 && leftHand == Hand.MAIN_HAND) {
@@ -137,7 +136,7 @@ public class PlayerPoser {
                     break;
                 }
                 case HANG: {
-                    float saw = MathHelper.sin(state.limbFrequency);
+                    float saw = MathHelper.sin(state.limbSwingAmplitude);
 
                     float pitch = 0.8F * saw;
 
@@ -168,15 +167,14 @@ public class PlayerPoser {
                         rotateArm(model.leftArm, 0, 0, -0.4F + pitch);
                         rotateArm(model.rightArm, 0, 0, 0.4F + pitch);
 
-                        model.leftArm.pivotX += x;
-                        model.leftArm.pivotY += y;
-                        model.leftArm.pivotZ += z;
+                        model.leftArm.originX += x;
+                        model.leftArm.originY += y;
+                        model.leftArm.originZ += z;
                         model.leftArm.roll -= cameraPitch;
 
-
-                        model.rightArm.pivotX -= x;
-                        model.rightArm.pivotY += y;
-                        model.rightArm.pivotZ += z;
+                        model.rightArm.originX -= x;
+                        model.rightArm.originY += y;
+                        model.rightArm.originZ += z;
                         model.rightArm.roll += cameraPitch;
                     }
                     break;
@@ -254,14 +252,14 @@ public class PlayerPoser {
                         rotateArm(model.leftArm, 0, 0, pitch);
                         rotateArm(model.rightArm, 0, 0, pitch);
 
-                        model.leftArm.pivotX += x;
-                        model.leftArm.pivotY += y;
-                        model.leftArm.pivotZ += z;
+                        model.leftArm.originX += x;
+                        model.leftArm.originY += y;
+                        model.leftArm.originZ += z;
                         model.leftArm.roll -= cameraPitch;
 
-                        model.rightArm.pivotX -= x;
-                        model.rightArm.pivotY += y;
-                        model.rightArm.pivotZ += z;
+                        model.rightArm.originX -= x;
+                        model.rightArm.originY += y;
+                        model.rightArm.originZ += z;
                         model.rightArm.roll += cameraPitch;
                     }
 
@@ -324,10 +322,10 @@ public class PlayerPoser {
                     if (!ponyRace.isEquine()) {
                         if (mainArm == Arm.LEFT) {
                             model.rightLeg.roll = -progress / 9F;
-                            model.rightLeg.pivotY -= progress * 5;
+                            model.rightLeg.originY -= progress * 5;
                         } else {
                             model.leftLeg.roll = -progress / 9F;
-                            model.leftLeg.pivotY -= progress * 5;
+                            model.leftLeg.originY -= progress * 5;
                         }
                         break;
                     }
@@ -345,8 +343,8 @@ public class PlayerPoser {
 
                     progress = AnimationUtil.seesaw(progress) * MathHelper.sin(state.age) / 7F;
 
-                    model.getHead().getChild("mare").pivotY = progress;
-                    model.getHead().getChild("stallion").pivotY = progress;
+                    model.getHead().getChild("mare").originY = progress;
+                    model.getHead().getChild("stallion").originY = progress;
                     break;
                 }
                 default:

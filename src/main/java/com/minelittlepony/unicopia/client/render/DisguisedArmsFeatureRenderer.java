@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.client.FirstPersonRendererOverrides.ArmRenderer;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
 import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.client.MinecraftClient;
@@ -52,7 +51,7 @@ public class DisguisedArmsFeatureRenderer<S extends BipedEntityRenderState> impl
     private final Function<EntityType<?>, Set<Pair<ModelPart, ModelPart>>> overlayModelCache = Util.memoize(type -> {
         return EntityModelLayers.getLayers()
                 .filter(layer -> layer.id().equals(EntityType.getId(type)) && !"main".equals(layer.name()))
-                .map(MinecraftClient.getInstance().getEntityModelLoader()::getModelPart)
+                .map(MinecraftClient.getInstance().getLoadedEntityModels()::getModelPart)
                 .map(model -> {
                     ModelPart arms = getPart(model, EntityModelPartNames.ARMS).orElse(null);
                     ModelPart leftArm = getPart(model, EntityModelPartNames.LEFT_ARM)
@@ -82,7 +81,7 @@ public class DisguisedArmsFeatureRenderer<S extends BipedEntityRenderState> impl
     @Override
     public boolean beforeRenderArms(ArmRenderer sender, MatrixStack matrices, VertexConsumerProvider vertexConsumers, S entity, int light) {
         if (CasterState.of(entity).appearance instanceof LivingEntity l) {
-            float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+            float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(false);
             float swingProgress = entity.handSwingProgress;
 
             Hand hand = entity.preferredArm == entity.mainArm ? Hand.MAIN_HAND : Hand.OFF_HAND;
@@ -90,7 +89,7 @@ public class DisguisedArmsFeatureRenderer<S extends BipedEntityRenderState> impl
             boolean bothHands = l instanceof ZombieEntity || l instanceof IronGolemEntity;
 
             if (bothHands || hand == Hand.MAIN_HAND) {
-                if (entity.getMainHandStack().isEmpty()) {
+                if (entity.getMainHandItemState().isEmpty()) {
                     matrices.push();
                     renderArmHoldingItem(l, matrices, vertexConsumers, light, 1 - sender.getEquipProgress(Hand.MAIN_HAND, tickDelta), hand == Hand.MAIN_HAND ? swingProgress : 0, entity.mainArm);
                     matrices.pop();
@@ -98,7 +97,7 @@ public class DisguisedArmsFeatureRenderer<S extends BipedEntityRenderState> impl
             }
 
             if (bothHands || hand == Hand.OFF_HAND) {
-                if ((entity.mainArm == Arm.LEFT ? entity.rightHandStack : entity.leftHandStack).isEmpty()) {
+                if ((entity.mainArm == Arm.LEFT ? entity.rightHandItemState : entity.leftHandItemState).isEmpty()) {
                     matrices.push();
                     renderArmHoldingItem(l, matrices, vertexConsumers, light, 1 - sender.getEquipProgress(Hand.OFF_HAND, tickDelta), hand == Hand.OFF_HAND ? swingProgress : 0, entity.mainArm.getOpposite());
                     matrices.pop();
@@ -142,7 +141,7 @@ public class DisguisedArmsFeatureRenderer<S extends BipedEntityRenderState> impl
             return;
         }
 
-        float tickDelta = client.getRenderTickCounter().getTickDelta(false);
+        float tickDelta = client.getRenderTickCounter().getTickProgress(false);
 
         LivingEntityRenderState state = (LivingEntityRenderState)renderer.getAndUpdateRenderState(entity, tickDelta);
 
@@ -175,11 +174,10 @@ public class DisguisedArmsFeatureRenderer<S extends BipedEntityRenderState> impl
         part.pitch = 0;
 
         if (MineLPDelegate.getInstance().getRace(entity).isEquine()) {
-            matrices.translate(0, -part.pivotY / 16F, 0);
+            matrices.translate(0, -part.originY / 16F, 0);
         }
 
         Identifier texture = renderer.getTexture(state);
-        RenderSystem.setShaderTexture(0, texture);
         part.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(texture)), light, OverlayTexture.DEFAULT_UV);
 
         Identifier overlayTexture = OVERLAY_TEXTURES.get(entity.getType());
@@ -187,8 +185,6 @@ public class DisguisedArmsFeatureRenderer<S extends BipedEntityRenderState> impl
             overlayModelCache.apply(entity.getType()).forEach(arms -> {
                 ModelPart armPart = right ? arms.getSecond() : arms.getFirst();
                 armPart.copyTransform(part);
-
-                RenderSystem.setShaderTexture(0, overlayTexture);
                 part.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(overlayTexture)), light, OverlayTexture.DEFAULT_UV);
             });
         }

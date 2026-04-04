@@ -9,6 +9,7 @@ import org.joml.Vector3f;
 import org.joml.Vector3fc;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.AbilityDispatcher;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -48,6 +49,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
+import net.minecraft.util.Arm;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -95,6 +97,9 @@ public class CasterState {
     public boolean pegasusAmulet;
     public boolean inHell;
 
+    public boolean isLeftPolearm;
+    public boolean isRightPolearm;
+
     public final BangleState mainhandBangle = new BangleState();
     public final BangleState offhandBangle = new BangleState();
     public TrinketsDelegate.EquippedStack eyewear = TrinketsDelegate.EquippedStack.EMPTY;
@@ -127,6 +132,8 @@ public class CasterState {
         showDebugInfo = false;
         hasDebugInfo = false;
         pegasusAmulet = false;
+        isLeftPolearm = false;
+        isRightPolearm = false;
         inHell = false;
         leanAmount = 0;
         yawOffset = 0;
@@ -210,6 +217,8 @@ public class CasterState {
                 pegasusAmulet = AmuletSelectors.PEGASUS_AMULET.test(l.asEntity());
                 mainhandBangle.update(FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.MAIN_GLOVE).findFirst().orElse(null));
                 offhandBangle.update(FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.SECONDARY_GLOVE).findFirst().orElse(null));
+                isLeftPolearm = l.asEntity().getStackInArm(Arm.LEFT).isIn(UTags.Items.POLEARMS);
+                isRightPolearm = l.asEntity().getStackInArm(Arm.RIGHT).isIn(UTags.Items.POLEARMS);
                 eyewear = GlassesItem.getForEntity(l.asEntity());
                 leanAmount = ((LivingEntityDuck)l.asEntity()).getLeaningPitch();
                 yawOffset = -(((LivingEntityRenderState)this.entityState).relativeHeadYaw + ((LivingEntityRenderState)this.entityState).bodyYaw);
