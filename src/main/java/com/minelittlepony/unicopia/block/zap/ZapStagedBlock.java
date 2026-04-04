@@ -64,18 +64,18 @@ public interface ZapStagedBlock {
         if (world.isAir(pos.down())) {
             if (stage == ZapAppleStageStore.Stage.FRUITING && mustFruit) {
                 world.setBlockState(pos.down(), UBlocks.ZAP_BULB.getDefaultState(), Block.NOTIFY_ALL);
-                store.triggerLightningStrike(pos);
+                store.triggerLightningStrike(world, pos);
             }
         }
 
         if (stage != ZapAppleStageStore.Stage.HIBERNATING && world.getRandom().nextInt(10) == 0) {
-            store.triggerLightningStrike(pos);
+            store.triggerLightningStrike(world, pos);
         }
 
         if (stage == ZapAppleStageStore.Stage.RIPE) {
             if (below.isOf(UBlocks.ZAP_BULB)) {
                 world.setBlockState(pos.down(), UBlocks.ZAP_APPLE.getDefaultState(), Block.NOTIFY_ALL);
-                store.playMoonEffect(pos);
+                store.playMoonEffect(world, pos);
             }
         }
 

@@ -1,20 +1,14 @@
 package com.minelittlepony.unicopia.server.world;
 
-import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.*;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.util.Tickable;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
-import com.mojang.serialization.Codec;
-
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -24,9 +18,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.PersistentState;
-import net.minecraft.world.PersistentStateType;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
 
 public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState implements Tickable {
 
@@ -40,50 +32,12 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
     @Nullable
     private final BiConsumer<Long2ObjectMap<T>, List<ServerPlayerEntity>> updateSender;
 
-    public static <T extends PersistentState> Accessor<T> createAccessor(Identifier id, Function<PersistentState.Context, Codec<T>> codec, Function<World, T> factory) {
-        var type = new PersistentStateType<>(
-                id.getNamespace() + "_" + id.getPath().replace('/', '_'),
-                context -> factory.apply(context.getWorldOrThrow()),
-                codec,
-                DataFixTypes.LEVEL
-        );
-
-        return world -> {
-            if (world instanceof ServerWorld serverWorld) {
-                return serverWorld.getPersistentStateManager().getOrCreate(type);
-            }
-
-            return ClientInstance.of((World)world, id, factory).instance();
-        };
-    }
-
-    public static <T extends PersistentState> Accessor<T> createAccessor(Identifier id, Codec<T> codec, Supplier<T> factory) {
-        var type = new PersistentStateType<>(
-                id.getNamespace() + "_" + id.getPath().replace('/', '_'),
-                factory,
-                codec,
-                DataFixTypes.LEVEL
-        );
-
-        return world -> {
-            if (world instanceof ServerWorld serverWorld) {
-                return serverWorld.getPersistentStateManager().getOrCreate(type);
-            }
-
-            return ClientInstance.of((World)world, id, w -> factory.get()).instance();
-        };
-    }
-
-    interface Accessor<T extends PersistentState> {
-        T get(WorldView world);
-    }
-
-    public static <T extends State> Accessor<WorldOverlay<T>> createAccessor(Identifier id, Supplier<T> factory, @Nullable BiConsumer<Long2ObjectMap<T>, List<ServerPlayerEntity>> updateSender) {
+    public static <T extends State> PersistentStateKey<WorldOverlay<T>> createAccessor(Identifier id, Supplier<T> factory, @Nullable BiConsumer<Long2ObjectMap<T>, List<ServerPlayerEntity>> updateSender) {
         return createAccessor(id, w -> new WorldOverlay<>(w, factory, updateSender));
     }
 
-    public static  <T extends State> Accessor<WorldOverlay<T>> createAccessor(Identifier id, Function<World, WorldOverlay<T>> overlayFactory) {
-        return createAccessor(id, context -> {
+    public static  <T extends State> PersistentStateKey<WorldOverlay<T>> createAccessor(Identifier id, Function<World, WorldOverlay<T>> overlayFactory) {
+        return new PersistentStateKey<>(id, context -> {
             return NbtCompound.CODEC.xmap(tag -> {
                 WorldOverlay<T> overlay = overlayFactory.apply(context.getWorldOrThrow());
                 overlay.readNbt(tag, context.getWorldOrThrow().getRegistryManager());
@@ -143,8 +97,8 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
         synchronized (locker) {
             chunks.long2ObjectEntrySet().removeIf(entry -> entry.getValue().tick());
 
-            if (world instanceof ServerWorld) {
-                chunks.forEach((chunkPos, chunk) -> chunk.sendUpdates((ServerWorld)world));
+            if (world instanceof ServerWorld sw) {
+                chunks.forEach((chunkPos, chunk) -> chunk.sendUpdates(sw));
             }
         }
     }
@@ -219,27 +173,5 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
 
     public interface State extends NbtSerialisable {
         boolean tick();
-    }
-
-    record ClientInstance<T extends PersistentState>(WeakReference<World> world, T instance) {
-        private static final Map<Identifier, ClientInstance<?>> INSTANCES = new HashMap<>();
-
-        @SuppressWarnings("unchecked")
-        public static <T extends PersistentState> ClientInstance<T> of(World world, Identifier id, Function<World, T> factory) {
-            return (ClientInstance<T>)INSTANCES.compute(id, (i, instance) -> {
-                if (instance == null || !instance.matches(world)) {
-                    return new ClientInstance<>(world, factory);
-                }
-                return instance;
-            });
-        }
-
-        public ClientInstance(World world, Function<World, T> factory) {
-            this(new WeakReference<>(world), factory.apply(world));
-        }
-
-        public boolean matches(World world) {
-            return this.world().get() == world;
-        }
     }
 }

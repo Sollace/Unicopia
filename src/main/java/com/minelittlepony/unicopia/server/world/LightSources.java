@@ -28,7 +28,7 @@ import net.minecraft.world.WorldView;
 
 public class LightSources extends PersistentState {
     private static final Identifier ID = Unicopia.id("light_sources");
-    private static final WorldOverlay.Accessor<LightSources> KEY = WorldOverlay.createAccessor(ID, context -> Codec.unit(() -> new LightSources(context.getWorldOrThrow())), LightSources::new);
+    private static final PersistentStateKey<LightSources> KEY = new PersistentStateKey<>(ID, context -> Codec.unit(() -> new LightSources(context.getWorldOrThrow())), LightSources::new);
 
     private final Object2LongMap<UUID> lightSourceLocations = new Object2LongOpenHashMap<>();
     private final Long2ObjectMap<ObjectSet<UUID>> lightSources = new Long2ObjectOpenHashMap<>();

@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.server.world;
 
 import java.util.Locale;
-import java.util.function.Function;
 import java.util.stream.StreamSupport;
 
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +12,6 @@ import com.minelittlepony.unicopia.network.MsgZapAppleStage;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
-import com.minelittlepony.unicopia.util.Tickable;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -21,10 +19,8 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.nbt.*;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
@@ -37,22 +33,20 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
 
-public class ZapAppleStageStore extends PersistentState implements Tickable {
+public class ZapAppleStageStore extends PersistentState {
     private static final Identifier ID = Unicopia.id("zap_apple_stage");
     static final long DAY_LENGTH = World.field_30969;
     static final long MOON_PHASES = DimensionType.MOON_SIZES.length;
-    private static final WorldOverlay.Accessor<ZapAppleStageStore> KEY = WorldOverlay.createAccessor(ID, context -> RecordCodecBuilder.create(o -> o.group(
+    private static final PersistentStateKey<ZapAppleStageStore> KEY = new PersistentStateKey<>(ID, RecordCodecBuilder.create(o -> o.group(
             Stage.CODEC.fieldOf("stage").forGetter(i -> i.lastStage),
             Codec.BOOL.fieldOf("stageChanged").forGetter(i -> i.stageChanged),
             Codec.BOOL.fieldOf("playedMoonEffect").forGetter(i -> i.playedMoonEffect),
             Codec.INT.fieldOf("nextLightningEvent").forGetter(i -> i.nextLightningEvent)
-    ).apply(o, (lastStage, stageChanged, playedMoonEffect, nextLightningEvent) -> new ZapAppleStageStore(context.getWorldOrThrow(), lastStage, stageChanged, playedMoonEffect, nextLightningEvent))), ZapAppleStageStore::new);
+    ).apply(o, ZapAppleStageStore::new)), ZapAppleStageStore::new);
 
     public static ZapAppleStageStore get(WorldView world) {
         return KEY.get(world);
     }
-
-    private final World world;
 
     private Stage lastStage = Stage.HIBERNATING;
 
@@ -61,20 +55,16 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
     private int nextLightningEvent = 1200;
     private float prevSkyAngle;
 
-    ZapAppleStageStore(World world, Stage lastStage, boolean stageChanged, boolean playedMoonEffect, int nextLightningEvent) {
-        this(world);
+    private ZapAppleStageStore() { }
+
+    private ZapAppleStageStore(Stage lastStage, boolean stageChanged, boolean playedMoonEffect, int nextLightningEvent) {
         this.lastStage = lastStage;
         this.stageChanged = stageChanged;
         this.playedMoonEffect = playedMoonEffect;
         this.nextLightningEvent = nextLightningEvent;
     }
 
-    ZapAppleStageStore(World world) {
-        this.world = world;
-    }
-
-    @Override
-    public void tick() {
+    public void tick(World world) {
         float skyAngle = MeteorlogicalUtil.getSkyAngle(world);
 
         if (skyAngle > MeteorlogicalUtil.SUNSET) {
@@ -92,7 +82,7 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
                     lastStage = lastStage.getNext();
                     playedMoonEffect = false;
                     markDirty();
-                    sendUpdate();
+                    sendUpdate(world);
                 }
             }
         } else if (stageChanged) {
@@ -103,20 +93,20 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
         prevSkyAngle = skyAngle;
     }
 
-    protected void sendUpdate() {
+    protected void sendUpdate(World world) {
         Channel.SERVER_ZAP_STAGE.sendToAllPlayers(new MsgZapAppleStage(getStage()), world);
     }
 
-    public void playMoonEffect(BlockPos pos) {
+    public void playMoonEffect(World world, BlockPos pos) {
         if (!playedMoonEffect) {
             playedMoonEffect = true;
             markDirty();
 
-            world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), USounds.Vanilla.ENTITY_WOLF_HOWL, SoundCategory.BLOCKS, 1.5F, 0.3F, world.random.nextInt(1200));
+            world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), USounds.AMBIENT_ZAP_APPLE_RIPEN, SoundCategory.BLOCKS, 1.5F, 0.3F, world.random.nextInt(1200));
         }
     }
 
-    public void triggerLightningStrike(BlockPos pos) {
+    public void triggerLightningStrike(World world, BlockPos pos) {
         world.emitGameEvent(GameEvent.LIGHTNING_STRIKE, pos, GameEvent.Emitter.of(world.getBlockState(pos)));
         ParticleUtils.spawnParticle(world, LightningBoltParticleEffect.DEFAULT, Vec3d.ofCenter(pos), Vec3d.ZERO);
 

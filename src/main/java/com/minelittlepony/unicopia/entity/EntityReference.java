@@ -16,6 +16,7 @@ import com.minelittlepony.unicopia.util.Untyped;
 import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.entity.Entity;
@@ -39,7 +40,7 @@ import net.minecraft.world.World;
  * @param <T> The type of the entity this reference points to.
  */
 public class EntityReference<T extends Entity> implements NbtSerialisable, TrackableObject<EntityReference<T>> {
-    public static final Codec<EntityReference<?>> CODEC = EntityValues.CODEC.xmap(r -> new EntityReference<>(r), r -> r.reference);
+    public static final Codec<EntityReference<?>> CODEC = EntityValues.CODEC.codec().xmap(r -> new EntityReference<>(r), r -> r.reference);
     public static final Codec<List<EntityReference<?>>> LIST_CODEC = CODEC.listOf();
 
     public static <T extends Entity> Codec<List<EntityReference<T>>> codec() {
@@ -130,14 +131,13 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
     @Override
     public void toNBT(NbtCompound tag, WrapperLookup lookup) {
         getTarget().ifPresent(ref -> {
-            EntityValues.CODEC.encodeStart(lookup.getOps(NbtOps.INSTANCE), ref).result().ifPresent(nbt -> tag.copyFrom((NbtCompound)nbt));
+            EntityValues.CODEC.codec().encodeStart(lookup.getOps(NbtOps.INSTANCE), ref).result().ifPresent(nbt -> tag.copyFrom((NbtCompound)nbt));
         });
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void fromNBT(NbtCompound tag, WrapperLookup lookup) {
-        this.reference = (EntityValues<T>)NbtSerialisable.decode(EntityValues.CODEC, tag, lookup).orElse(null);
+        this.reference = tag.decode(EntityValues.<T>mapCodec(), lookup.getOps(NbtOps.INSTANCE)).orElse(null);
         this.dirty = true;
         if (reference != null) {
             T value = directReference.get();
@@ -164,7 +164,7 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
     @Override
     public NbtCompound writeTrackedNbt(WrapperLookup lookup) {
         return getTarget()
-                .flatMap(ref -> EntityValues.CODEC.encodeStart(lookup.getOps(NbtOps.INSTANCE), ref).result())
+                .flatMap(ref -> EntityValues.CODEC.codec().encodeStart(lookup.getOps(NbtOps.INSTANCE), ref).result())
                 .map(NbtCompound.class::cast)
                 .orElseGet(NbtCompound::new);
     }
@@ -193,7 +193,7 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
             boolean isDead,
             Levelled.LevelStore level,
             Levelled.LevelStore corruption) {
-        public static final Codec<EntityValues<?>> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        public static final MapCodec<EntityValues<?>> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Uuids.CODEC.fieldOf("uuid").forGetter(EntityValues::uuid),
                 CodecUtils.VECTOR.fieldOf("pos").forGetter(EntityValues::pos),
                 Codec.INT.fieldOf("clientId").forGetter(EntityValues::clientId),
@@ -202,6 +202,10 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
                 Levelled.CODEC.fieldOf("level").forGetter(EntityValues::level),
                 Levelled.CODEC.fieldOf("corruption").forGetter(EntityValues::corruption)
         ).apply(instance, EntityValues::new));
+
+        public static <T extends Entity> MapCodec<EntityValues<T>> mapCodec() {
+            return Untyped.cast(CODEC);
+        }
 
         public EntityValues(Entity entity) {
             this(

@@ -23,8 +23,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.minelittlepony.unicopia.util.PosHelper;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -35,6 +33,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -215,18 +214,18 @@ public class HiveBlock extends ConnectingBlock implements BlockEntityProvider {
         }
 
         @Override
-        public void readNbt(NbtCompound nbt, WrapperLookup lookup) {
+        protected void readNbt(NbtCompound nbt, WrapperLookup lookup) {
             opening = nbt.getBoolean("opening", false);
             closing = nbt.getBoolean("closing", false);
             storedBlocks.clear();
-            NbtSerialisable.decode(Entry.MAP_CODEC, nbt.get("storedBlocks"), lookup).ifPresent(storedBlocks::putAll);
+            nbt.get("storedBlocks", Entry.MAP_CODEC, lookup.getOps(NbtOps.INSTANCE)).ifPresent(storedBlocks::putAll);
         }
 
         @Override
         protected void writeNbt(NbtCompound nbt, WrapperLookup lookup) {
             nbt.putBoolean("opening", opening);
             nbt.putBoolean("closing", closing);
-            nbt.put("storedBlocks", NbtSerialisable.encode(Entry.MAP_CODEC, storedBlocks, lookup));
+            nbt.put("storedBlocks", Entry.MAP_CODEC, lookup.getOps(NbtOps.INSTANCE), storedBlocks);
         }
 
         static void tick(World world, BlockPos pos, BlockState state, TileData data) {

@@ -27,7 +27,7 @@ public class DragonBreathStore extends PersistentState {
                 Entry.CODEC.listOf().xmap(l -> l.stream().filter(Entry::isValid).collect(Collectors.toList()), list -> list.stream().filter(Entry::canPersist).toList())
             )
             .xmap(DragonBreathStore::new, store -> store.payloads);
-    private static final WorldOverlay.Accessor<DragonBreathStore> KEY = WorldOverlay.createAccessor(ID, CODEC, DragonBreathStore::new);
+    private static final PersistentStateKey<DragonBreathStore> KEY = new PersistentStateKey<>(ID, CODEC, DragonBreathStore::new);
 
     public static DragonBreathStore get(WorldView world) {
         return KEY.get(world);

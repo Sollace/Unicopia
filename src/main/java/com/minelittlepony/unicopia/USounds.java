@@ -144,6 +144,8 @@ public interface USounds {
     SoundEvent AMBIENT_DARK_VORTEX_MOOD = register("ambient.dark_vortex.mood");
     SoundEvent AMBIENT_DARK_VORTEX_ADDITIONS = register("ambient.dark_vortex.additions");
 
+    SoundEvent AMBIENT_ZAP_APPLE_RIPEN = register("ambient.zap_apple.ripen"); //USounds.Vanilla.ENTITY_WOLF_HOWL
+
     SoundEvent GUI_ABILITY_FAIL = register("gui.ability.fail");
     SoundEvent GUI_SPELL_CRAFT_SUCCESS = register("gui.spellcraft.success");
     RegistryEntry.Reference<SoundEvent> GUI_SPELL_EQUIP = UI_BUTTON_CLICK;

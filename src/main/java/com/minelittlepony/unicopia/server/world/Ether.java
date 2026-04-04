@@ -16,7 +16,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.server.world.chunk.Chunk;
 import com.minelittlepony.unicopia.server.world.chunk.PositionalDataMap;
-import com.minelittlepony.unicopia.util.Tickable;
 import com.minelittlepony.unicopia.util.Untyped;
 import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.serialization.Codec;
@@ -32,12 +31,12 @@ import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class Ether extends PersistentState implements Tickable {
+public class Ether extends PersistentState {
     private static final Identifier ID = Unicopia.id("ether");
     private static final Codec<Map<UUID, Map<UUID, Entry>>> ENDPOINT_CODEC = Codec.unboundedMap(Uuids.CODEC, Codec.unboundedMap(Uuids.CODEC, Entry.CODEC));
     private static final RecordCodecBuilder<Ether, Map<Identifier, Map<UUID, Map<UUID, Entry>>>> DATA_MAP_CODEC = Codec.unboundedMap(Identifier.CODEC, ENDPOINT_CODEC).fieldOf("endpoints").<Ether>forGetter(o -> Untyped.cast(o.endpoints));
 
-    private static final WorldOverlay.Accessor<Ether> KEY = WorldOverlay.createAccessor(ID, context -> {
+    private static final PersistentStateKey<Ether> KEY = new PersistentStateKey<>(ID, context -> {
         return RecordCodecBuilder.create(i -> i.group(DATA_MAP_CODEC).apply(i, endpoints -> new Ether(context.getWorldOrThrow(), endpoints)));
     }, Ether::new);
 
@@ -95,8 +94,7 @@ public class Ether extends PersistentState implements Tickable {
         }
     }
 
-    @Override
-    public void tick() {
+    public void tick(World world) {
         endpoints.values().forEach(byType -> {
             byType.values().forEach(entries -> {
                 entries.values().forEach(MutableEntry::update);

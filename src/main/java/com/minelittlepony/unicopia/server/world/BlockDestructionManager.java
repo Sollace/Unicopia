@@ -27,7 +27,7 @@ public class BlockDestructionManager implements Tickable {
     public static final int UNSET_DAMAGE = -1;
     public static final int MAX_DAMAGE = 10;
 
-    private static final WorldOverlay.Accessor<WorldOverlay<Destruction>> KEY = WorldOverlay.createAccessor(ID, w -> new WorldOverlay<>(w, Destruction::new, BlockDestructionManager::sendUpdates));
+    private static final PersistentStateKey<WorldOverlay<Destruction>> KEY = WorldOverlay.createAccessor(ID, w -> new WorldOverlay<>(w, Destruction::new, BlockDestructionManager::sendUpdates));
 
     private final WorldOverlay<Destruction> chunks;
 
