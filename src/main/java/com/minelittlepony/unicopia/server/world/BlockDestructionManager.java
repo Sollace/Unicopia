@@ -27,6 +27,8 @@ public class BlockDestructionManager implements Tickable {
     public static final int UNSET_DAMAGE = -1;
     public static final int MAX_DAMAGE = 10;
 
+    private static final WorldOverlay.Accessor<WorldOverlay<Destruction>> KEY = WorldOverlay.createAccessor(ID, w -> new WorldOverlay<>(w, Destruction::new, BlockDestructionManager::sendUpdates));
+
     private final WorldOverlay<Destruction> chunks;
 
     public static Supplier<BlockDestructionManager> create(World world) {
@@ -38,7 +40,7 @@ public class BlockDestructionManager implements Tickable {
     }
 
     private BlockDestructionManager(World world) {
-        this.chunks = WorldOverlay.getOverlay(world, ID, w -> new WorldOverlay<>(world, Destruction::new, this::sendUpdates));
+        this.chunks = KEY.get(world);
     }
 
     public float getBlockDestruction(BlockPos pos) {
@@ -71,7 +73,7 @@ public class BlockDestructionManager implements Tickable {
         chunks.tick();
     }
 
-    private void sendUpdates(Long2ObjectMap<Destruction> destructions, List<ServerPlayerEntity> players) {
+    private static void sendUpdates(Long2ObjectMap<Destruction> destructions, List<ServerPlayerEntity> players) {
         Long2ObjectOpenHashMap<Float> values = new Long2ObjectOpenHashMap<>();
 
         destructions.forEach((blockPos, item) -> {
@@ -89,7 +91,7 @@ public class BlockDestructionManager implements Tickable {
         });
     }
 
-    private class Destruction implements WorldOverlay.State {
+    private static class Destruction implements WorldOverlay.State {
         float amount = UNSET_DAMAGE;
         int age = DESTRUCTION_COOLDOWN;
         boolean dirty;
@@ -120,8 +122,8 @@ public class BlockDestructionManager implements Tickable {
 
         @Override
         public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-            amount = compound.getFloat("destruction");
-            age = compound.getInt("age");
+            amount = compound.getFloat("destruction", UNSET_DAMAGE);
+            age = compound.getInt("age", 0);
             dirty = true;
         }
     }

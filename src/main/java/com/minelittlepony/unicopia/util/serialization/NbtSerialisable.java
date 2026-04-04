@@ -12,12 +12,14 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
+@Deprecated
 public interface NbtSerialisable {
     /**
      * Called to save this to nbt to persist state on file or to transmit over the network
      *
      * @param compound  Compound tag to write to.
      */
+    @Deprecated
     void toNBT(NbtCompound compound, WrapperLookup lookup);
 
     /**
@@ -25,8 +27,10 @@ public interface NbtSerialisable {
      *
      * @param compound  Compound tag to read from.
      */
+    @Deprecated
     void fromNBT(NbtCompound compound, WrapperLookup lookup);
 
+    @Deprecated
     default NbtCompound toNBT(WrapperLookup lookup) {
         NbtCompound compound = new NbtCompound();
         toNBT(compound, lookup);
@@ -42,10 +46,12 @@ public interface NbtSerialisable {
         return list;
     }
 
+    @Deprecated
     static <T> Optional<T> decode(Codec<T> codec, NbtElement nbt, WrapperLookup lookup) {
         return codec.decode(lookup.getOps(NbtOps.INSTANCE), nbt).result().map(Pair::getFirst);
     }
 
+    @Deprecated
     static <T> NbtElement encode(Codec<T> codec, T value, WrapperLookup lookup) {
         return codec.encodeStart(lookup.getOps(NbtOps.INSTANCE), value).result().get();
     }
@@ -64,21 +70,25 @@ public interface NbtSerialisable {
         );
     }
 
+    @Deprecated
     static NbtCompound subTag(String name, NbtCompound parent) {
         NbtCompound child = new NbtCompound();
         parent.put(name, child);
         return child;
     }
 
+    @Deprecated
     static NbtCompound subTag(String name, NbtCompound parent, Consumer<NbtCompound> writer) {
         writer.accept(subTag(name, parent));
         return parent;
     }
 
+    @Deprecated
     static <K, V> Map<K, V> readMap(NbtCompound nbt, Function<String, K> keyFunction, Function<NbtElement, V> valueFunction) {
         return readMap(nbt, keyFunction, (k, v) -> valueFunction.apply(v));
     }
 
+    @Deprecated
     static <K, V> Map<K, V> readMap(NbtCompound nbt, Function<String, K> keyFunction, BiFunction<K, NbtElement, V> valueFunction) {
         return nbt.getKeys().stream().map(k -> {
             K key = keyFunction.apply(k);
@@ -95,10 +105,12 @@ public interface NbtSerialisable {
         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
+    @Deprecated
     static <K, V> NbtCompound writeMap(Map<K, V> map, Function<K, String> keyFunction, Function<V, ? extends NbtElement> valueFunction) {
         return writeMap(new NbtCompound(), map, keyFunction, valueFunction);
     }
 
+    @Deprecated
     static <K, V> NbtCompound writeMap(NbtCompound nbt, Map<K, V> map, Function<K, String> keyFunction, Function<V, ? extends NbtElement> valueFunction) {
         map.forEach((k, v) -> nbt.put(keyFunction.apply(k), valueFunction.apply(v)));
         return nbt;

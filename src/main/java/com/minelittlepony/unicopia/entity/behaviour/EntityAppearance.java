@@ -204,7 +204,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         return entity;
     }
 
-    public void onImpact(Caster<?> pony, float distance, float damageMultiplier, DamageSource cause) {
+    public void onImpact(Caster<?> pony, double distance, float damageMultiplier, DamageSource cause) {
         EntityBehaviour.forEntity(entity).onImpact(pony, entity, distance, damageMultiplier, cause);
     }
 

@@ -114,7 +114,7 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
     }
 
     @Nullable
-    private Ether.Entry<?> getConnection(Caster<?> source) {
+    private Ether.MutableEntry<?> getConnection(Caster<?> source) {
         return delegate == null || placedEntityId.get().isEmpty() ? null : getWorld(source)
                 .map(world -> Ether.get(world).get(getDelegate().getTypeAndTraits().type(), placedEntityId.get().get(), delegate.getUuid()))
                 .orElse(null);

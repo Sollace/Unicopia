@@ -57,11 +57,28 @@ public class WorldOverlay<T extends WorldOverlay.State> extends PersistentState 
         };
     }
 
+    public static <T extends PersistentState> Accessor<T> createAccessor(Identifier id, Codec<T> codec, Supplier<T> factory) {
+        var type = new PersistentStateType<>(
+                id.getNamespace() + "_" + id.getPath().replace('/', '_'),
+                factory,
+                codec,
+                DataFixTypes.LEVEL
+        );
+
+        return world -> {
+            if (world instanceof ServerWorld serverWorld) {
+                return serverWorld.getPersistentStateManager().getOrCreate(type);
+            }
+
+            return ClientInstance.of((World)world, id, w -> factory.get()).instance();
+        };
+    }
+
     interface Accessor<T extends PersistentState> {
         T get(WorldView world);
     }
 
-    public static  <T extends State> Accessor<WorldOverlay<T>> createAccessor(Identifier id, Supplier<T> factory, @Nullable BiConsumer<Long2ObjectMap<T>, List<ServerPlayerEntity>> updateSender) {
+    public static <T extends State> Accessor<WorldOverlay<T>> createAccessor(Identifier id, Supplier<T> factory, @Nullable BiConsumer<Long2ObjectMap<T>, List<ServerPlayerEntity>> updateSender) {
         return createAccessor(id, w -> new WorldOverlay<>(w, factory, updateSender));
     }
 

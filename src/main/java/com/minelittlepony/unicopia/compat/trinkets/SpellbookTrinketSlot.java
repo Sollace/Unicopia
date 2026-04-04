@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.compat.trinkets;
 
 import com.minelittlepony.unicopia.container.SpellbookScreenHandler;
 import com.minelittlepony.unicopia.container.inventory.InventorySlot;
-import com.mojang.datafixers.util.Pair;
-
 import io.wispforest.accessories.api.menu.AccessoriesBasedSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -79,13 +77,13 @@ class SpellbookTrinketSlot extends InventorySlot {
     }
 
     @Override
-    public Pair<Identifier, Identifier> getBackgroundSprite() {
+    public Identifier getBackgroundSprite() {
         return slot.getBackgroundSprite();
     }
 
     @Override
     public Identifier getForegroundIdentifier() {
-        return slot.getBackgroundSprite().getSecond();
+        return slot.getBackgroundSprite();
     }
 
     @Override

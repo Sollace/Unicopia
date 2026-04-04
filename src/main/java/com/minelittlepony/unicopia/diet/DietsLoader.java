@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
@@ -16,6 +17,7 @@ import com.mojang.serialization.JsonOps;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.resource.JsonDataLoader;
+import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
@@ -30,19 +32,15 @@ public class DietsLoader implements IdentifiableResourceReloadListener {
 
     @Override
     public CompletableFuture<Void> reload(Synchronizer sync, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor) {
-
-        CompletableFuture<Map<Identifier, FoodGroup>> foodGroupsFuture = CompletableFuture.supplyAsync(() -> {
-            return loadData(manager, prepareExecutor, "diet/food_groups", FoodGroup.EFFECTS_CODEC)
-                    .entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> new FoodGroup(entry.getKey(), entry.getValue())));
-        }, prepareExecutor);
+        var foodGroupsFuture = CompletableFuture.supplyAsync(() -> loadData(manager, prepareExecutor, "diet/food_groups", FoodGroup.EFFECTS_CODEC).collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> new FoodGroup(entry.getKey(), entry.getValue())
+        )), prepareExecutor);
         @SuppressWarnings("unchecked")
-        CompletableFuture<Map<Race, DietProfile>> profilesFuture = CompletableFuture.supplyAsync(() -> {
+        var profilesFuture = CompletableFuture.supplyAsync(() -> {
             return Map.<Race, DietProfile>ofEntries(loadData(manager, prepareExecutor, "diet/races", DietProfile.CODEC)
-                    .entrySet().stream().flatMap(entry -> {
-                        return Race.REGISTRY.getOptionalValue(entry.getKey()).map(race -> {
-                            return Map.entry(race, entry.getValue());
-                        }).stream();
-                    }).toArray(Map.Entry[]::new));
+                    .flatMap(entry -> Race.REGISTRY.getOptionalValue(entry.getKey()).map(race -> Map.entry(race, entry.getValue())).stream())
+                    .toArray(Map.Entry[]::new));
         }, prepareExecutor);
 
         return CompletableFuture.allOf(foodGroupsFuture, profilesFuture).thenCompose(sync::whenPrepared).thenAcceptAsync(v -> {
@@ -62,9 +60,9 @@ public class DietsLoader implements IdentifiableResourceReloadListener {
         }, applyExecutor);
     }
 
-    private static <T> Map<Identifier, T> loadData(ResourceManager manager, Executor prepareExecutor, String path, Codec<T> codec) {
+    private static <T> Stream<Map.Entry<Identifier, T>> loadData(ResourceManager manager, Executor prepareExecutor, String path, Codec<T> codec) {
         Map<Identifier, T> results = new HashMap<>();
-        JsonDataLoader.load(manager, path, JsonOps.INSTANCE, codec, results);
-        return results;
+        JsonDataLoader.load(manager, ResourceFinder.json(path), JsonOps.INSTANCE, codec, results);
+        return results.entrySet().stream();
     }
 }

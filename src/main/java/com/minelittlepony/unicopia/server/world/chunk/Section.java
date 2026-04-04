@@ -51,7 +51,7 @@ public class Section<T extends PositionalDataMap.Hotspot> {
 
         for (T entry : entries) {
             BlockPos center = entry.getCenter();
-            int radius = MathHelper.ceil(entry.getRadius());
+            int radius = MathHelper.ceil(entry.radius());
 
             if (pos.equals(center)
                    || (isInRange(pos.getX(), center.getX(), radius)

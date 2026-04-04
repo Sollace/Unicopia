@@ -15,6 +15,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.event.GameEvent;
 
@@ -72,7 +73,9 @@ public class UnicopiaTrinket implements Accessory {
 
     @Override
     public void tick(ItemStack stack, SlotReference slot) {
-        item.inventoryTick(stack, slot.entity().getWorld(), slot.entity(), slot.slot(), false);
+        if (slot.entity().getWorld() instanceof ServerWorld sw) {
+            item.inventoryTick(stack, sw, slot.entity(), null);
+        }
     }
 
     @Override

@@ -212,7 +212,7 @@ public class CasterState {
                 offhandBangle.update(FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.SECONDARY_GLOVE).findFirst().orElse(null));
                 eyewear = GlassesItem.getForEntity(l.asEntity());
                 leanAmount = ((LivingEntityDuck)l.asEntity()).getLeaningPitch();
-                yawOffset = -(((LivingEntityRenderState)this.entityState).yawDegrees + ((LivingEntityRenderState)this.entityState).bodyYaw);
+                yawOffset = -(((LivingEntityRenderState)this.entityState).relativeHeadYaw + ((LivingEntityRenderState)this.entityState).bodyYaw);
                 gemYaw = l.asEntity().isSleeping() ? 0 : 180 - ((LivingEntityRenderState)this.entityState).bodyYaw;
             }
 
@@ -308,9 +308,9 @@ public class CasterState {
                 this.renderer = (EntityRenderer<T, S>)MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity.asEntity());
                 this.state = renderer.createRenderState();
                 renderer.updateRenderState(entity.asEntity(), this.state, tickDelta);
-                this.state.yawDegrees = 0;
+                this.state.relativeHeadYaw = 0;
                 this.state.bodyYaw = 0;
-                this.state.limbAmplitudeMultiplier = 0;
+                this.state.limbSwingAnimationProgress = 0;
             } else {
                 this.renderer = null;
                 this.state = null;

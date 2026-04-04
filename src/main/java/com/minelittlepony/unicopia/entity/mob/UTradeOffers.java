@@ -44,23 +44,23 @@ public interface UTradeOffers {
             factories.add(buy(Items.EMERALD, 8, UItems.MANGO, 1, 15, 1, 0.025F));
         });
 
-        TradeOfferHelper.registerWanderingTraderOffers(1, factories -> {
-            factories.add(buyTiered(UItems.GEMSTONE, 30, UItems.GOLDEN_FEATHER, 1, UItems.GOLDEN_WING, 1, 30, 2, 0.05F));
-            factories.add((e, rng) -> new TradeOffer(new TradedItem(UItems.GEMSTONE, 3), EnchantableItem.enchant(UItems.GEMSTONE.getDefaultStack(), SpellType.REGISTRY.getRandom(rng).get().value()), 20, 1, 0.05F));
-            factories.add(buy(UItems.GEMSTONE, 20, UItems.HAY_FRIES, 5, 50, 3, 0.06F));
-            factories.add(buy(Items.WHEAT, 17, UItems.HAY_BURGER, 1, 10, 6, 0.08F));
-            factories.add(buy(ItemTags.SMALL_FLOWERS, 2, UItems.DAFFODIL_DAISY_SANDWICH, 1, 10, 6, 0.08F));
-            factories.add(buy(UItems.ZAP_APPLE, 45, UItems.ZAP_APPLE_JAM_JAR, 5, 50, 3, 0.07F));
-            factories.add(buy(UItems.CIDER, 1, UItems.FRIENDSHIP_BRACELET, 1, 6, 1, 0.05F));
-            factories.add(buy(UItems.GEMSTONE, 5, UTags.Items.FRESH_APPLES, 2, 12, 3, 0.05F));
-            factories.add(buy(Items.EMERALD, 4, UItems.MANGO, 1, 35, 1, 0.025F));
-            factories.add(new JarredItemTradeOfferFactory());
-        });
-        TradeOfferHelper.registerWanderingTraderOffers(2, factories -> {
-            factories.add(buy(UItems.COOKED_ZAP_APPLE, 45, UItems.ZAP_APPLE_JAM_JAR, 15, 50, 7, 0.17F));
-            factories.add(buy(UItems.CRYSTAL_HEART, 1, UItems.MUSIC_DISC_CRUSADE, 1, 10, 6, 0.08F));
-            factories.add(buy(UItems.PEGASUS_AMULET, 1, UItems.ALICORN_AMULET, 1, 2, 6, 0.05F));
-            factories.add(buyForEmeralds(UItems.FRIENDSHIP_BRACELET, 2, 1, 10, 7, 0.17F));
+        TradeOfferHelper.registerWanderingTraderOffers(factories -> {
+            factories.addAll(TradeOfferHelper.WanderingTraderOffersBuilder.BUY_ITEMS_POOL,
+                    buyTiered(UItems.GEMSTONE, 30, UItems.GOLDEN_FEATHER, 1, UItems.GOLDEN_WING, 1, 30, 2, 0.05F),
+                    (e, rng) -> new TradeOffer(new TradedItem(UItems.GEMSTONE, 3), EnchantableItem.enchant(UItems.GEMSTONE.getDefaultStack(), SpellType.REGISTRY.getRandom(rng).get().value()), 20, 1, 0.05F),
+                    buy(UItems.GEMSTONE, 20, UItems.HAY_FRIES, 5, 50, 3, 0.06F),
+                    buy(Items.WHEAT, 17, UItems.HAY_BURGER, 1, 10, 6, 0.08F),
+                    buy(ItemTags.SMALL_FLOWERS, 2, UItems.DAFFODIL_DAISY_SANDWICH, 1, 10, 6, 0.08F),
+                    buy(UItems.ZAP_APPLE, 45, UItems.ZAP_APPLE_JAM_JAR, 5, 50, 3, 0.07F),
+                    buy(UItems.CIDER, 1, UItems.FRIENDSHIP_BRACELET, 1, 6, 1, 0.05F),
+                    buy(UItems.GEMSTONE, 5, UTags.Items.FRESH_APPLES, 2, 12, 3, 0.05F),
+                    buy(Items.EMERALD, 4, UItems.MANGO, 1, 35, 1, 0.025F),
+                    new JarredItemTradeOfferFactory(),
+                    buy(UItems.COOKED_ZAP_APPLE, 45, UItems.ZAP_APPLE_JAM_JAR, 15, 50, 7, 0.17F),
+                    buy(UItems.CRYSTAL_HEART, 1, UItems.MUSIC_DISC_CRUSADE, 1, 10, 6, 0.08F),
+                    buy(UItems.PEGASUS_AMULET, 1, UItems.ALICORN_AMULET, 1, 2, 6, 0.05F),
+                    buyForEmeralds(UItems.FRIENDSHIP_BRACELET, 2, 1, 10, 7, 0.17F)
+            );
         });
     }
 
@@ -92,7 +92,7 @@ public interface UTradeOffers {
         @Nullable
         @Override
         public TradeOffer create(Entity entity, Random rng) {
-            TradeOffers.Factory factory = Util.getRandom(TradeOffers.WANDERING_TRADER_TRADES.get(1), rng);
+            TradeOffers.Factory factory = Util.getRandom(Util.getRandom(TradeOffers.WANDERING_TRADER_TRADES, rng).getKey(), rng);
 
             if (factory == this) {
                 return null;

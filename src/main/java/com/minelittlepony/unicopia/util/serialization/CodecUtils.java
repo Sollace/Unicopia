@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia.util.serialization;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -45,6 +47,10 @@ public interface CodecUtils {
             MathHelper.clamp(vec.y, -MAX_VER_AXIS, MAX_VER_AXIS),
             MathHelper.clamp(vec.z, -MAX_HOR_AXIS, MAX_HOR_AXIS)
     ), Function.identity());
+
+    static <A, B> Codec<Map<A, B>> toMutable(Codec<Map<A, B>> codec) {
+        return codec.xmap(map -> new HashMap<>(map), Function.identity());
+    }
 
     /**
      * Combines the result of two unrelated codecs into a single object.

@@ -9,8 +9,6 @@ import com.minelittlepony.unicopia.container.inventory.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.recipe.URecipes;
-import com.mojang.datafixers.util.Pair;
-
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.EnchantmentEffectComponentTypes;
 import net.minecraft.component.type.EquippableComponent;
@@ -142,15 +140,15 @@ public class SpellbookScreenHandler extends AbstractRecipeScreenHandler {
                 }
 
                 @Override
-                public Pair<Identifier, Identifier> getBackgroundSprite() {
-                    return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, EMPTY_ARMOR_SLOT_TEXTURES[eq.getEntitySlotId()]);
+                public Identifier getBackgroundSprite() {
+                    return EMPTY_ARMOR_SLOT_TEXTURES[eq.getEntitySlotId()];
                 }
             });
         }
         addSlot(new InventorySlot(this, inventory, PlayerInventory.OFF_HAND_SLOT, rightHandX, equipmentY + slotSpacing) {
             @Override
-            public Pair<Identifier, Identifier> getBackgroundSprite() {
-                return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, PlayerScreenHandler.EMPTY_OFFHAND_ARMOR_SLOT);
+            public Identifier getBackgroundSprite() {
+                return PlayerScreenHandler.EMPTY_OFF_HAND_SLOT_TEXTURE;
             }
         });
 
@@ -210,7 +208,7 @@ public class SpellbookScreenHandler extends AbstractRecipeScreenHandler {
                         .orElseGet(input::getFallbackStack) : ItemStack.EMPTY;
                 outputSlot.setStack(resultStack);
 
-                setPreviousTrackedSlot(outputSlot.id, resultStack);
+                setReceivedStack(outputSlot.id, resultStack);
                 ((ServerPlayerEntity)this.inventory.player).networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(syncId, nextRevision(), outputSlot.id, outputSlot.getStack()));
             }
         });
@@ -413,7 +411,7 @@ public class SpellbookScreenHandler extends AbstractRecipeScreenHandler {
     @Override
     public void populateRecipeFinder(RecipeFinder finder) {
         input.provideRecipeInputs(finder);
-        for (ItemStack stack : inventory.main) {
+        for (ItemStack stack : inventory.getMainStacks()) {
             finder.addInput(stack);
         }
     }

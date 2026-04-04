@@ -37,7 +37,7 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
     }
 
     @Override
-    public void onImpact(Caster<?> source, FallingBlockEntity entity, float distance, float damageMultiplier, DamageSource cause) {
+    public void onImpact(Caster<?> source, FallingBlockEntity entity, double distance, float damageMultiplier, DamageSource cause) {
         if (source.asEntity().fallDistance > 3) {
             entity.fallDistance = source.asEntity().fallDistance;
             entity.handleFallDamage(distance, damageMultiplier, cause);

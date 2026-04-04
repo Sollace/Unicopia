@@ -114,7 +114,7 @@ public interface Caster<E extends Entity> extends
     default boolean canCastAt(Vec3d pos) {
         return !Ether.get(asWorld()).anyMatch(SpellType.ARCANE_PROTECTION, entry -> {
             var target = entry.entity.getTarget().orElse(null);
-            if (target != null && target.pos().distanceTo(pos) <= entry.getRadius()) {
+            if (target != null && target.pos().distanceTo(pos) <= entry.radius()) {
                 Caster<?> caster = entry.getCaster();
                 if (caster != null) {
                     AreaProtectionSpell spell = entry.getSpell();

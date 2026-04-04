@@ -37,7 +37,6 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import com.minelittlepony.unicopia.util.*;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import com.minelittlepony.unicopia.network.*;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
@@ -64,6 +63,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -799,7 +799,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     @Override
-    public float onImpact(float distance, float damageMultiplier, DamageSource cause) {
+    public double onImpact(double distance, float damageMultiplier, DamageSource cause) {
         distance = super.onImpact(distance, damageMultiplier, cause);
 
         if (EffectUtils.hasExtraDefenses(entity)) {
@@ -813,7 +813,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     @Override
-    protected float getEffectiveFallDistance(float distance) {
+    protected double getEffectiveFallDistance(double distance) {
         boolean extraProtection = getSpellSlot().get(SpellType.SHIELD).isPresent();
 
         if (!entity.isCreative() && !entity.isSpectator()) {
@@ -981,7 +981,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
-        compound.put("advancementTriggerCounts", NbtSerialisable.encode(TriggerCountTracker.CODEC, advancementProgress, lookup));
+        compound.put("advancementTriggerCounts", TriggerCountTracker.CODEC, lookup.getOps(NbtOps.INSTANCE), advancementProgress);
         compound.put("levitatingItems", levitatingItems.toNBT(lookup));
         super.toNBT(compound, lookup);
     }
@@ -989,7 +989,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         levitatingItems.fromNBT(compound.getCompoundOrEmpty("levitatingItems"), lookup);
-        advancementProgress = NbtSerialisable.decode(TriggerCountTracker.CODEC, compound.get("advancementTriggerCounts"), lookup).orElseGet(() -> new TriggerCountTracker(Map.of()));
+        advancementProgress = compound.get("advancementTriggerCounts", TriggerCountTracker.CODEC, lookup.getOps(NbtOps.INSTANCE)).orElseGet(() -> new TriggerCountTracker(Map.of()));
         super.fromNBT(compound, lookup);
     }
 

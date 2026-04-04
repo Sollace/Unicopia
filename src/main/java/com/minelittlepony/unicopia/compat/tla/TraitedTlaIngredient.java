@@ -8,8 +8,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen;
 import com.minelittlepony.unicopia.container.inventory.HexagonalCraftingGrid;
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import io.github.mattidragon.tlaapi.api.gui.GuiBuilder;
 import io.github.mattidragon.tlaapi.api.recipe.TlaIngredient;
 import net.minecraft.client.MinecraftClient;
@@ -37,9 +35,7 @@ public record TraitedTlaIngredient(Optional<TraitEntry> trait, TlaIngredient ing
 
     public void buildGui(TlaIngredient ingredientOverride, HexagonalCraftingGrid.Slot slot, GuiBuilder builder) {
         builder.addCustomWidget(slot.left() - 7, slot.top() - 7, 32, 32, (context, mouseX, mouseY, delta) -> {
-            RenderSystem.enableBlend();
             context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.SLOT, 0, 0, 0, 0, 0, 32, 32, 32, 32);
-            RenderSystem.disableBlend();
         });
         builder.addSlot(ingredientOverride, slot.left(), slot.top()).disableBackground();
         trait.ifPresent(traitEntry -> {

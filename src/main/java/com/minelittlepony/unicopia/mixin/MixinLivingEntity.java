@@ -169,8 +169,8 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
         get().onAttacking(target);
     }
 
-    @ModifyVariable(method = "handleFallDamage(FFLnet/minecraft/entity/damage/DamageSource;)Z", at = @At("HEAD"), ordinal = 0, argsOnly = true)
-    private float onHandleFallDamage(float distance, float distanceAgain, float damageMultiplier, DamageSource cause) {
+    @ModifyVariable(method = "handleFallDamage(DFLnet/minecraft/entity/damage/DamageSource;)Z", at = @At("HEAD"), ordinal = 0, argsOnly = true)
+    private double onHandleFallDamage(double distance, double distanceAgain, float damageMultiplier, DamageSource cause) {
         return get().onImpact(distance, damageMultiplier, cause);
     }
 

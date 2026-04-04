@@ -2,8 +2,6 @@ package com.minelittlepony.unicopia.entity;
 
 import java.util.*;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.InteractionManager;
@@ -74,6 +72,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -225,7 +224,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         if (!(entity instanceof PlayerEntity)) {
             if (!entity.hasVehicle() && getCarrierId().isPresent() && !asWorld().isClient && entity.age % 10 == 0) {
                 UUID carrierId = getCarrierId().get();
-                Entity carrier = ((ServerWorld)asWorld()).getEntity(carrierId);
+                Entity carrier = asWorld().getEntity(carrierId);
                 if (carrier != null) {
                     asEntity().startRiding(carrier, true);
                     Living.transmitPassengers(carrier);
@@ -288,59 +287,62 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
             if (entity.getWorld().isAir(BlockPos.ofFloored(targetPos))) {
                 String name = entity.getDisplayName().getString();
 
-                DragonBreathStore.popAll(entity.getServer(), name).forEach(stack -> {
-                    ItemStack payload = stack.payload();
-                    Item item = payload.getItem();
+                DragonBreathStore.popAll(entity.getServer(), name).forEach(pair -> {
+                    var store = pair.getFirst();
+                    pair.getSecond().forEach(stack -> {
+                        ItemStack payload = stack.payload();
+                        Item item = payload.getItem();
 
-                    boolean deliverAggressively = payload.isIn(UTags.Items.IS_DELIVERED_AGGRESSIVELY);
+                        boolean deliverAggressively = payload.isIn(UTags.Items.IS_DELIVERED_AGGRESSIVELY);
 
-                    Vec3d randomPos = deliverAggressively ? targetPos.add(0, 2, 0) : targetPos.add(VecHelper.triangular(entity.getRandom(), 0.1, 0.5));
+                        Vec3d randomPos = deliverAggressively ? targetPos.add(0, 2, 0) : targetPos.add(VecHelper.triangular(entity.getRandom(), 0.1, 0.5));
 
-                    if (deliverAggressively && item instanceof BlockItem blockItem) {
-                        do {
-                            ItemStack instance = payload.split(1);
-                            BlockPos pos = BlockPos.ofFloored(randomPos);
-                            if (!entity.getWorld().isAir(pos)) {
-                                stack.store().put(name, instance);
-                            } else {
+                        if (deliverAggressively && item instanceof BlockItem blockItem) {
+                            do {
+                                ItemStack instance = payload.split(1);
+                                BlockPos pos = BlockPos.ofFloored(randomPos);
+                                if (!entity.getWorld().isAir(pos)) {
+                                    store.put(name, instance);
+                                } else {
 
-                                for (int i = 0; i < 10; i++) {
-                                    ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(
-                                            VecHelper.triangular(entity.getRandom(), 0.1, 0.5)
-                                    ), Vec3d.ZERO);
+                                    for (int i = 0; i < 10; i++) {
+                                        ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(
+                                                VecHelper.triangular(entity.getRandom(), 0.1, 0.5)
+                                        ), Vec3d.ZERO);
+                                    }
+
+                                    ItemPlacementContext context = new ItemPlacementContext(entity.getWorld(), (PlayerEntity)null, Hand.MAIN_HAND, instance,
+                                            BlockHitResult.createMissed(Vec3d.ZERO, Direction.UP, pos)
+                                    );
+
+                                    BlockState state = blockItem.getBlock().getPlacementState(context);
+                                    if (state == null) {
+                                        state = blockItem.getBlock().getDefaultState();
+                                    }
+
+                                    entity.getWorld().setBlockState(pos, state);
+                                    BlockSoundGroup sound = state.getSoundGroup();
+                                    entity.getWorld().playSound(null, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1) * 0.5F, sound.getPitch() * 0.8F);
                                 }
-
-                                ItemPlacementContext context = new ItemPlacementContext(entity.getWorld(), (PlayerEntity)null, Hand.MAIN_HAND, instance,
-                                        BlockHitResult.createMissed(Vec3d.ZERO, Direction.UP, pos)
-                                );
-
-                                BlockState state = blockItem.getBlock().getPlacementState(context);
-                                if (state == null) {
-                                    state = blockItem.getBlock().getDefaultState();
-                                }
-
-                                entity.getWorld().setBlockState(pos, state);
-                                BlockSoundGroup sound = state.getSoundGroup();
-                                entity.getWorld().playSound(null, pos, sound.getPlaceSound(), SoundCategory.BLOCKS, (sound.getVolume() + 1) * 0.5F, sound.getPitch() * 0.8F);
-                            }
-                            randomPos = targetPos.add(VecHelper.triangular(entity.getRandom(), 0.1, 0.5));
-                        } while (!payload.isEmpty());
-                    } else {
-                        if (!entity.getWorld().isAir(BlockPos.ofFloored(randomPos))) {
-                            stack.store().put(name, stack.payload());
+                                randomPos = targetPos.add(VecHelper.triangular(entity.getRandom(), 0.1, 0.5));
+                            } while (!payload.isEmpty());
                         } else {
-                            for (int i = 0; i < 10; i++) {
-                                ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(VecHelper.triangular(entity.getRandom(), 0.1, 0.5)), Vec3d.ZERO);
-                            }
+                            if (!entity.getWorld().isAir(BlockPos.ofFloored(randomPos))) {
+                                store.put(name, stack.payload());
+                            } else {
+                                for (int i = 0; i < 10; i++) {
+                                    ParticleUtils.spawnParticle(entity.getWorld(), ParticleTypes.FLAME, randomPos.add(VecHelper.triangular(entity.getRandom(), 0.1, 0.5)), Vec3d.ZERO);
+                                }
 
-                            ItemEntity itemEntity = EntityType.ITEM.create(entity.getWorld(), SpawnReason.EVENT);
-                            itemEntity.setStack(payload);
-                            itemEntity.setPosition(randomPos);
-                            itemEntity.getWorld().spawnEntity(itemEntity);
-                            entity.getWorld().playSoundFromEntity(null, entity, USounds.ITEM_DRAGON_BREATH_ARRIVE, entity.getSoundCategory(), 1, 1);
-                            UCriteria.SEND_DRAGON_BREATH.triggerReceived(entity, payload.copy());
+                                ItemEntity itemEntity = EntityType.ITEM.create(entity.getWorld(), SpawnReason.EVENT);
+                                itemEntity.setStack(payload);
+                                itemEntity.setPosition(randomPos);
+                                itemEntity.getWorld().spawnEntity(itemEntity);
+                                entity.getWorld().playSoundFromEntity(null, entity, USounds.ITEM_DRAGON_BREATH_ARRIVE, entity.getSoundCategory(), 1, 1);
+                                UCriteria.SEND_DRAGON_BREATH.triggerReceived(entity, payload.copy());
+                            }
                         }
-                    }
+                    });
                 });
             }
         }
@@ -439,13 +441,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     public Stream<ItemStack> getArmourStacks() {
-        if (!TrinketsDelegate.hasTrinkets()) {
-            return StreamSupport.stream(entity.getArmorItems().spliterator(), false);
-        }
-        return Stream.concat(
-                TrinketsDelegate.getInstance(entity).getEquipped(entity, TrinketsDelegate.NECKLACE).map(TrinketsDelegate.EquippedStack::stack),
-                StreamSupport.stream(entity.getArmorItems().spliterator(), false)
-        );
+        return EquipmentUtil.getArmor(entity);
     }
 
     protected void giveBackItem(ServerWorld world, ItemStack stack) {
@@ -461,8 +457,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
                 .isPresent();
     }
 
-    public float onImpact(float distance, float damageMultiplier, DamageSource cause) {
-        float fallDistance = landEvent.fire(getEffectiveFallDistance(distance));
+    public double onImpact(double distance, float damageMultiplier, DamageSource cause) {
+        double fallDistance = landEvent.fire(getEffectiveFallDistance(distance));
 
         getSpellSlot().get(SpellPredicate.IS_DISGUISE).ifPresent(spell -> {
             spell.getDisguise().onImpact(this, fallDistance, damageMultiplier, cause);
@@ -470,7 +466,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return fallDistance;
     }
 
-    protected float getEffectiveFallDistance(float distance) {
+    protected double getEffectiveFallDistance(double distance) {
         return distance;
     }
 
@@ -487,7 +483,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         enchants.toNBT(compound, lookup);
         spells.getSlots().toNBT(compound, lookup);
-        getCarrierId().ifPresent(id -> compound.putUuid("carrier", id));
+        compound.putNullable("carrier", Uuids.CODEC, getCarrierId().orElse(null));
         toSyncronisedNbt(compound, lookup);
     }
 
@@ -495,7 +491,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         enchants.fromNBT(compound, lookup);
         spells.getSlots().fromNBT(compound, lookup);
-        setCarrier(compound.containsUuid("carrier") ? compound.getUuid("carrier") : null);
+        setCarrier(compound.get("carrier", Uuids.CODEC).orElse(null));
         fromSynchronizedNbt(compound, lookup);
     }
 
@@ -504,7 +500,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     public void fromSynchronizedNbt(NbtCompound compound, WrapperLookup lookup) {
-        armour.fromNBT(compound.getCompound("armour"), lookup);
+        armour.fromNBT(compound.getCompoundOrEmpty("armour"), lookup);
     }
 
     public void updateVelocity() {

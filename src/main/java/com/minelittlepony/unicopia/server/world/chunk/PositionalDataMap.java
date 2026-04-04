@@ -37,7 +37,7 @@ public class PositionalDataMap<T extends PositionalDataMap.Hotspot> {
     }
 
     public void update(T entry) {
-        Box entryBox = new Box(entry.getCenter()).expand(MathHelper.ceil(entry.getRadius()));
+        Box entryBox = new Box(entry.getCenter()).expand(MathHelper.ceil(entry.radius()));
         Set<Chunk<T>> oldChunks = entryToChunks.get(entry);
         Set<Chunk<T>> newChunks = getIntersectingChunks(entryBox);
         if (oldChunks != null) {
@@ -63,7 +63,7 @@ public class PositionalDataMap<T extends PositionalDataMap.Hotspot> {
     }
 
     public interface Hotspot {
-        float getRadius();
+        float radius();
 
         BlockPos getCenter();
     }

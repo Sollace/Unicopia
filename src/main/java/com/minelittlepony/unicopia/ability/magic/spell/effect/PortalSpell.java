@@ -90,7 +90,7 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
     }
 
     @SuppressWarnings("unchecked")
-    private Ether.Entry<PortalSpell> getDestination(Caster<?> source) {
+    private Ether.MutableEntry<PortalSpell> getDestination(Caster<?> source) {
         return targetPortalId.get().flatMap(id -> getDestinationReference()
                 .getTarget()
                 .map(target -> Ether.get(source.asWorld()).get((SpellType<PortalSpell>)getType(), target.uuid(), id))
@@ -103,15 +103,15 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
         return toPlaceable().apply(caster);
     }
 
-    protected void setDestination(@Nullable Ether.Entry<?> destination) {
+    protected void setDestination(@Nullable Ether.MutableEntry<?> destination) {
         if (destination == null) {
             teleportationTarget.set(null);
             targetPortalId.set(Optional.empty());
         } else {
             teleportationTarget.copyFrom(destination.entity);
-            targetPortalId.set(Optional.of(destination.getSpellId()));
-            targetPortalPitch.set(destination.getPitch());
-            targetPortalYaw.set(destination.getYaw());
+            targetPortalId.set(Optional.of(destination.spellId()));
+            targetPortalPitch.set(destination.pitch());
+            targetPortalYaw.set(destination.yaw());
         }
     }
 
@@ -135,7 +135,7 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
                             Ether.get(source.asWorld()).anyMatch(getType(), entry -> {
                                 if (entry.isAlive() && !entry.hasClaimant() && !entry.entityMatches(source.asEntity().getUuid())) {
                                     entry.claim(getUuid());
-                                    ownEntry.claim(entry.getSpellId());
+                                    ownEntry.claim(entry.spellId());
                                     synchronized (entry) {
                                         if (entry.getSpell() instanceof PortalSpell portal) {
                                             portal.setDestination(ownEntry);
@@ -147,8 +147,8 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
                             });
                         }
                     } else {
-                        targetPortalPitch.set(targetEntry.getPitch());
-                        targetPortalYaw.set(targetEntry.getYaw());
+                        targetPortalPitch.set(targetEntry.pitch());
+                        targetPortalYaw.set(targetEntry.yaw());
 
                         tickActive(source, targetEntry);
                     }
@@ -162,7 +162,7 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
         return !isDead();
     }
 
-    private void tickActive(Caster<?> source, Ether.Entry<?> destination) {
+    private void tickActive(Caster<?> source, Ether.MutableEntry<?> destination) {
         destination.entity.getTarget().ifPresent(target -> {
             Quaternionf rotationChange = getOrientationChange();
             var matrix = getPositionMatrix(source, source.asEntity().getPos(), rotationChange, new Matrix4f());

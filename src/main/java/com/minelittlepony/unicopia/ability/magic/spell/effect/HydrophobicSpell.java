@@ -180,8 +180,8 @@ public class HydrophobicSpell extends AbstractSpell {
         }
     }
 
-    public boolean blocksFlow(Ether.Entry<?> entry, Vec3d center, BlockPos pos, FluidState fluid) {
-        return fluid.isIn(affectedFluid) && pos.isWithinDistance(center, (double)entry.getRadius() + 1);
+    public boolean blocksFlow(Ether.MutableEntry<?> entry, Vec3d center, BlockPos pos, FluidState fluid) {
+        return fluid.isIn(affectedFluid) && pos.isWithinDistance(center, (double)entry.radius() + 1);
     }
 
     public static boolean blocksFluidFlow(BlockView world, BlockPos pos, FluidState state) {
@@ -191,7 +191,7 @@ public class HydrophobicSpell extends AbstractSpell {
 
         return Ether.get(sw).anyMatch(SpellType.HYDROPHOBIC, entry -> {
             var target = entry.entity.getTarget().orElse(null);
-            if (target == null || !pos.isWithinDistance(target.pos(), entry.getRadius() + 1)) {
+            if (target == null || !pos.isWithinDistance(target.pos(), entry.radius() + 1)) {
                 return false;
             }
             var spell = entry.getSpell();

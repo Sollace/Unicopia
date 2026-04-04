@@ -3,17 +3,13 @@ package com.minelittlepony.unicopia.item;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
-import com.minelittlepony.unicopia.util.InventoryUtil;
-
+import com.minelittlepony.unicopia.util.EquipmentUtil;
 import net.minecraft.block.Block;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -83,7 +79,7 @@ public class CuringJokeItem extends BlockItem {
     }
 
     static boolean uncurseItem(LivingEntity user) {
-        return getInventory(user)
+        return EquipmentUtil.getInventory(user)
                 .filter(s -> {
                     var enchantments = s.get(DataComponentTypes.ENCHANTMENTS);
                     return enchantments != null && enchantments.getEnchantments().stream().anyMatch(entry -> entry.isIn(EnchantmentTags.CURSE));
@@ -96,23 +92,11 @@ public class CuringJokeItem extends BlockItem {
     }
 
     static boolean repairItem(LivingEntity user) {
-        return getInventory(user)
+        return EquipmentUtil.getInventory(user)
                 .filter(s -> s.getDamage() < s.getMaxDamage())
                 .findAny().filter(s -> {
                     s.setDamage(0);
                     return true;
                 }).isPresent();
-    }
-
-    static Stream<ItemStack> getInventory(LivingEntity entity) {
-        if (entity instanceof PlayerEntity player) {
-            return InventoryUtil.stream(player.getInventory());
-        }
-
-        if (entity instanceof InventoryOwner owner) {
-            return InventoryUtil.stream(owner.getInventory());
-        }
-
-        return EquipmentSlot.VALUES.stream().filter(entity::hasStackEquipped).map(entity::getEquippedStack);
     }
 }

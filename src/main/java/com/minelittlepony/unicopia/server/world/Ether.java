@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -16,37 +17,53 @@ import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.server.world.chunk.Chunk;
 import com.minelittlepony.unicopia.server.world.chunk.PositionalDataMap;
 import com.minelittlepony.unicopia.util.Tickable;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
-import net.minecraft.nbt.*;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import com.minelittlepony.unicopia.util.Untyped;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class Ether extends PersistentState implements Tickable {
     private static final Identifier ID = Unicopia.id("ether");
+    private static final Codec<Map<UUID, Map<UUID, Entry>>> ENDPOINT_CODEC = Codec.unboundedMap(Uuids.CODEC, Codec.unboundedMap(Uuids.CODEC, Entry.CODEC));
+    private static final RecordCodecBuilder<Ether, Map<Identifier, Map<UUID, Map<UUID, Entry>>>> DATA_MAP_CODEC = Codec.unboundedMap(Identifier.CODEC, ENDPOINT_CODEC).fieldOf("endpoints").<Ether>forGetter(o -> Untyped.cast(o.endpoints));
 
-    public static Ether get(World world) {
-        return WorldOverlay.getPersistableStorage(world, ID, Ether::new, Ether::new);
+    private static final WorldOverlay.Accessor<Ether> KEY = WorldOverlay.createAccessor(ID, context -> {
+        return RecordCodecBuilder.create(i -> i.group(DATA_MAP_CODEC).apply(i, endpoints -> new Ether(context.getWorldOrThrow(), endpoints)));
+    }, Ether::new);
+
+    public static Ether get(WorldView world) {
+        return KEY.get(world);
     }
 
-    private final Map<Identifier, Map<UUID, Map<UUID, Entry<?>>>> endpoints;
-    private final PositionalDataMap<Entry<?>> positionData = new PositionalDataMap<>();
+    private final Map<Identifier, Map<UUID, Map<UUID, MutableEntry<?>>>> endpoints;
+    private final PositionalDataMap<MutableEntry<?>> positionData = new PositionalDataMap<>();
 
     private final Object locker = new Object();
 
     private final World world;
 
-    Ether(World world, NbtCompound compound) {
+    private Ether(World world, Map<Identifier, Map<UUID, Map<UUID, Entry>>> endpoints) {
         this.world = world;
-        this.endpoints = NbtSerialisable.readMap(compound.getCompound("endpoints"), Identifier::tryParse, typeNbt -> {
-            return NbtSerialisable.readMap((NbtCompound)typeNbt, UUID::fromString, entityNbt -> {
-                return NbtSerialisable.readMap((NbtCompound)entityNbt, UUID::fromString, nbt -> new Entry<>(nbt, world.getRegistryManager()));
-            });
-        });
+        this.endpoints = endpoints.entrySet().stream().map(endpoint -> {
+            Map<UUID, Map<UUID, MutableEntry<?>>> entities = endpoint.getValue().entrySet().stream().map(entry -> {
+                    Map<UUID, MutableEntry<?>> spells = entry.getValue().entrySet().stream()
+                            .filter(c -> !c.getValue().removed())
+                            .collect(Collectors.toMap(Map.Entry::getKey, c -> new MutableEntry<>(c.getValue())));
+                    return spells.isEmpty() ? null : Map.entry(entry.getKey(), spells);
+                })
+                .filter(Objects::nonNull).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            return entities.isEmpty() ? null : Map.entry(endpoint.getKey(), entities);
+        }).filter(Objects::nonNull).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     Ether(World world) {
@@ -54,28 +71,15 @@ public class Ether extends PersistentState implements Tickable {
         this.endpoints = new HashMap<>();
     }
 
-    @Override
-    public NbtCompound writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        synchronized (locker) {
-            pruneNodes();
-            compound.put("endpoints", NbtSerialisable.writeMap(endpoints, Identifier::toString, entities -> {
-                return NbtSerialisable.writeMap(entities, UUID::toString, spells -> {
-                    return NbtSerialisable.writeMap(spells, UUID::toString, e -> e.toNBT(lookup));
-                });
-            }));
-            return compound;
-        }
-    }
-
     @SuppressWarnings("unchecked")
-    public <T extends Spell> Entry<T> getOrCreate(T spell, Caster<?> caster) {
+    public <T extends Spell> MutableEntry<T> getOrCreate(T spell, Caster<?> caster) {
         synchronized (locker) {
-            Entry<T> entry = (Entry<T>)endpoints
+            MutableEntry<T> entry = (MutableEntry<T>)endpoints
                     .computeIfAbsent(spell.getTypeAndTraits().type().getId(), typeId -> new HashMap<>())
                     .computeIfAbsent(caster.asEntity().getUuid(), entityId -> new HashMap<>())
                     .computeIfAbsent(spell.getUuid(), spellid -> {
                         markDirty();
-                        return new Entry<>(spell, caster);
+                        return new MutableEntry<>(spell, caster);
                     });
 
             if (entry.spell.get() != spell) {
@@ -95,7 +99,7 @@ public class Ether extends PersistentState implements Tickable {
     public void tick() {
         endpoints.values().forEach(byType -> {
             byType.values().forEach(entries -> {
-                entries.values().forEach(Entry::update);
+                entries.values().forEach(MutableEntry::update);
             });
         });
     }
@@ -103,7 +107,7 @@ public class Ether extends PersistentState implements Tickable {
     public <T extends Spell> void remove(SpellType<T> spellType, UUID entityId) {
         synchronized (locker) {
             endpoints.computeIfPresent(spellType.getId(), (typeId, entries) -> {
-                Map<UUID, Entry<?>> data = entries.remove(entityId);
+                Map<UUID, MutableEntry<?>> data = entries.remove(entityId);
                 if (data != null) {
                     markDirty();
                     data.values().forEach(positionData::remove);
@@ -118,33 +122,33 @@ public class Ether extends PersistentState implements Tickable {
     }
 
     public <T extends Spell> void remove(T spell, Caster<?> caster) {
-        Entry<T> entry = get(spell, caster);
+        MutableEntry<T> entry = get(spell, caster);
         if (entry != null) {
             entry.markDead();
         }
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Spell> Entry<T> get(T spell, Caster<?> caster) {
+    public <T extends Spell> MutableEntry<T> get(T spell, Caster<?> caster) {
         return get((SpellType<T>)spell.getTypeAndTraits().type(), caster.asEntity().getUuid(), spell.getUuid());
     }
 
-    public <T extends Spell> Entry<T> get(SpellType<T> spell, EntityReference.EntityValues<?> entityId, @Nullable UUID spellId) {
+    public <T extends Spell> MutableEntry<T> get(SpellType<T> spell, EntityReference.EntityValues<?> entityId, @Nullable UUID spellId) {
         return get(spell, entityId.uuid(), spellId);
     }
 
     @SuppressWarnings("unchecked")
     @Nullable
-    public <T extends Spell> Entry<T> get(SpellType<T> spell, UUID entityId, @Nullable UUID spellId) {
+    public <T extends Spell> MutableEntry<T> get(SpellType<T> spell, UUID entityId, @Nullable UUID spellId) {
         if (spellId == null) {
             return null;
         }
         synchronized (locker) {
-            Entry<?> entry = endpoints
+            MutableEntry<?> entry = endpoints
                     .getOrDefault(spell.getId(), Map.of())
                     .getOrDefault(entityId, Map.of())
                     .get(spellId);
-            return entry == null || entry.isDead() ? null : (Entry<T>)entry;
+            return entry == null || entry.removed() ? null : (MutableEntry<T>)entry;
         }
     }
 
@@ -157,11 +161,11 @@ public class Ether extends PersistentState implements Tickable {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Spell> boolean anyMatch(SpellType<T> spellType, Predicate<Entry<T>> condition) {
+    public <T extends Spell> boolean anyMatch(SpellType<T> spellType, Predicate<MutableEntry<T>> condition) {
         synchronized (locker) {
             for (var entries : endpoints.getOrDefault(spellType.getId(), Map.of()).values()) {
                 for (var entry : entries.values()) {
-                    if (!entry.isDead() && condition.test((Entry<T>)entry)) {
+                    if (!entry.removed() && condition.test((MutableEntry<T>)entry)) {
                         return true;
                     }
                 }
@@ -170,25 +174,43 @@ public class Ether extends PersistentState implements Tickable {
         return false;
     }
 
-    public Set<Entry<?>> getAtPosition(BlockPos pos) {
+    public Set<MutableEntry<?>> getAtPosition(BlockPos pos) {
         return world.isClient() ? Set.of() : positionData.getState(pos);
     }
 
-    public Chunk<Entry<?>> getChunk(ChunkPos pos) {
+    public Chunk<MutableEntry<?>> getChunk(ChunkPos pos) {
         return world.isClient() ? null : positionData.getChunk(pos);
     }
 
-    private void pruneNodes() {
-        this.endpoints.values().removeIf(entities -> {
-            entities.values().removeIf(spells -> {
-                spells.values().removeIf(Entry::isDead);
-                return spells.isEmpty();
-            });
-            return entities.isEmpty();
-        });
+    public interface Entry {
+        Codec<Entry> CODEC = RecordCodecBuilder.create(i -> i.group(
+                MapCodec.assumeMapUnsafe(EntityReference.CODEC).forGetter(Entry::entity),
+                Codec.BOOL.fieldOf("removed").forGetter(Entry::removed),
+                Codec.FLOAT.fieldOf("pitch").forGetter(Entry::pitch),
+                Codec.FLOAT.fieldOf("yaw").forGetter(Entry::yaw),
+                Codec.FLOAT.fieldOf("radius").forGetter(Entry::radius),
+                Uuids.CODEC.optionalFieldOf("spellId", null).forGetter(Entry::spellId),
+                CodecUtils.setOf(Uuids.CODEC).fieldOf("claimants").forGetter(Entry::claimants)
+        ).apply(i, FrozenEntry::new));
+
+        EntityReference<?> entity();
+
+        float pitch();
+
+        float yaw();
+
+        float radius();
+
+        boolean removed();
+
+        @Nullable UUID spellId();
+
+        Set<UUID> claimants();
     }
 
-    public class Entry<T extends Spell> implements PositionalDataMap.Hotspot, NbtSerialisable {
+    public record FrozenEntry<T extends Spell>(EntityReference<?> entity, boolean removed, float pitch, float yaw, float radius, @Nullable UUID spellId, Set<UUID> claimants) implements Entry { }
+
+    public class MutableEntry<T extends Spell> implements Entry, PositionalDataMap.Hotspot {
         public final EntityReference<?> entity;
 
         @Nullable
@@ -204,16 +226,21 @@ public class Ether extends PersistentState implements Tickable {
 
         private final Set<UUID> claimants = new HashSet<>();
 
-        private BlockPos currentPos = BlockPos.ORIGIN;
-        private BlockPos previousPos = BlockPos.ORIGIN;
+        private Optional<BlockPos> currentPos = Optional.empty();
+        private Optional<BlockPos> previousPos = Optional.empty();
 
-        private Entry(NbtElement nbt, WrapperLookup lookup) {
-            this.entity = new EntityReference<>();
-            this.spell = new WeakReference<>(null);
-            this.fromNBT((NbtCompound)nbt, lookup);
+        private MutableEntry(Entry entry) {
+            this.entity = entry.entity();
+            this.removed = entry.removed();
+            this.pitch = entry.pitch();
+            this.yaw = entry.yaw();
+            this.radius = entry.radius();
+            this.spellId = entry.spellId();
+            this.claimants.addAll(entry.claimants());
+            update();
         }
 
-        public Entry(T spell, Caster<?> caster) {
+        public MutableEntry(T spell, Caster<?> caster) {
             this.entity = new EntityReference<>(caster.asEntity());
             this.spell = new WeakReference<>(spell);
             spellId = spell.getUuid();
@@ -222,7 +249,7 @@ public class Ether extends PersistentState implements Tickable {
 
         void update() {
             previousPos = currentPos;
-            currentPos = entity.getTarget().map(t -> BlockPos.ofFloored(t.pos())).orElse(BlockPos.ORIGIN);
+            currentPos = entity.getTarget().map(t -> BlockPos.ofFloored(t.pos()));
             if (!currentPos.equals(previousPos)) {
                 positionData.update(this);
             }
@@ -232,7 +259,13 @@ public class Ether extends PersistentState implements Tickable {
             return changed.getAndSet(false);
         }
 
-        public float getPitch() {
+        @Override
+        public EntityReference<?> entity() {
+            return entity;
+        }
+
+        @Override
+        public float pitch() {
             return pitch;
         }
 
@@ -244,7 +277,8 @@ public class Ether extends PersistentState implements Tickable {
             markDirty();
         }
 
-        public float getYaw() {
+        @Override
+        public float yaw() {
             return yaw;
         }
 
@@ -256,14 +290,13 @@ public class Ether extends PersistentState implements Tickable {
             markDirty();
         }
 
-
         @Override
         public BlockPos getCenter() {
-            return currentPos;
+            return currentPos.orElse(BlockPos.ORIGIN);
         }
 
         @Override
-        public float getRadius() {
+        public float radius() {
             return radius;
         }
 
@@ -279,18 +312,20 @@ public class Ether extends PersistentState implements Tickable {
         }
 
         public boolean isAlive() {
-            return !isDead();
+            return !removed();
         }
 
-        boolean isDead() {
+        @Override
+        public boolean removed() {
             if (!removed) {
                 getSpell();
             }
             return removed;
         }
 
+        @Override
         @Nullable
-        public UUID getSpellId() {
+        public UUID spellId() {
             return spellId;
         }
 
@@ -322,6 +357,11 @@ public class Ether extends PersistentState implements Tickable {
 
         public boolean hasClaimant() {
             return !claimants.isEmpty();
+        }
+
+        @Override
+        public Set<UUID> claimants() {
+            return Set.copyOf(claimants);
         }
 
         @Nullable
@@ -362,42 +402,8 @@ public class Ether extends PersistentState implements Tickable {
         }
 
         @Override
-        public void toNBT(NbtCompound compound, WrapperLookup lookup) {
-            entity.toNBT(compound, lookup);
-            compound.putBoolean("removed", removed);
-            compound.putFloat("pitch", pitch);
-            compound.putFloat("yaw", yaw);
-            compound.putFloat("radius", radius);
-            if (spellId != null) {
-                compound.putUuid("spellId", spellId);
-            }
-            NbtList list = new NbtList();
-            claimants.forEach(claimant -> {
-                list.add(NbtHelper.fromUuid(claimant));
-            });
-            compound.put("claimants", list);
-        }
-
-        @Override
-        public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-            entity.fromNBT(compound, lookup);
-            removed = compound.getBoolean("removed");
-            pitch = compound.getFloat("pitch");
-            yaw = compound.getFloat("yaw");
-            radius = compound.getFloat("radius");
-            spellId = compound.containsUuid("spellid") ? compound.getUuid("spellId") : null;
-
-            claimants.clear();
-            if (compound.contains("claimants", NbtElement.LIST_TYPE)) {
-                compound.getList("claimants", NbtElement.INT_ARRAY_TYPE).forEach(el -> {
-                    claimants.add(NbtHelper.toUuid(el));
-                });
-            }
-        }
-
-        @Override
         public boolean equals(Object other) {
-            return other instanceof Entry<?> e
+            return other instanceof MutableEntry<?> e
                     && e.entity.referenceEquals(entity)
                     && Objects.equals(e.spell.get(), spell.get());
         }

@@ -58,7 +58,7 @@ public class EntityBehaviour<T extends Entity> {
 
     }
 
-    public void onImpact(Caster<?> source, T entity, float distance, float damageMultiplier, DamageSource cause) {
+    public void onImpact(Caster<?> source, T entity, double distance, float damageMultiplier, DamageSource cause) {
 
     }
 

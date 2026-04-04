@@ -1,68 +1,58 @@
 package com.minelittlepony.unicopia.server.world;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.item.component.ConversionComponent;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.*;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.PersistentState;
-import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 
 public class DragonBreathStore extends PersistentState {
     private static final long PURGE_INTERVAL = 1000 * 60 * 60; // 1 hour
     private static final long MAX_MESSAGE_HOLD_TIME = PURGE_INTERVAL * 24; // 24 hours
+    private static final long MIN_MESSAGE_HOLD_TIME = 1000; // 1 second
     private static final Identifier ID = Unicopia.id("dragon_breath");
+    private static final Codec<DragonBreathStore> CODEC = Codec.unboundedMap(Codec.STRING,
+                Entry.CODEC.listOf().xmap(l -> l.stream().filter(Entry::isValid).collect(Collectors.toList()), list -> list.stream().filter(Entry::canPersist).toList())
+            )
+            .xmap(DragonBreathStore::new, store -> store.payloads);
+    private static final WorldOverlay.Accessor<DragonBreathStore> KEY = WorldOverlay.createAccessor(ID, CODEC, DragonBreathStore::new);
 
-    public static DragonBreathStore get(World world) {
-        return WorldOverlay.getPersistableStorage(world, ID, DragonBreathStore::new, DragonBreathStore::new);
+    public static DragonBreathStore get(WorldView world) {
+        return KEY.get(world);
     }
 
     private final Map<String, List<Entry>> payloads = new HashMap<>();
 
     private final Object locker = new Object();
 
-    DragonBreathStore(World world, NbtCompound compound) {
-        this(world);
-        compound.getKeys().forEach(key -> {
-            compound.getList(key, NbtElement.COMPOUND_TYPE).forEach(entry -> {
-                put(key, new Entry((NbtCompound)entry, world.getRegistryManager(), this));
-            });
+    private DragonBreathStore(Map<String, List<Entry>> payloads) {
+        payloads.forEach((recipient, entries) -> {
+            if (!entries.isEmpty()) {
+                this.payloads.put(recipient, entries);
+            }
         });
     }
 
-    DragonBreathStore(World world) {
+    private DragonBreathStore() {
 
     }
 
-    @Override
-    public NbtCompound writeNbt(NbtCompound compound, WrapperLookup lookup) {
-        synchronized (locker) {
-            payloads.forEach((id, uuids) -> {
-                NbtList list = new NbtList();
-                uuids.forEach(entry -> {
-                    if (entry.created < System.currentTimeMillis() - MAX_MESSAGE_HOLD_TIME) {
-                        list.add(entry.toNBT(new NbtCompound()));
-                    }
-                });
-                compound.put(id, list);
-            });
-
-            return compound;
-        }
-    }
-
-    public static Stream<Entry> popAll(MinecraftServer server, String recipient) {
+    public static Stream<Pair<DragonBreathStore, Stream<Entry>>> popAll(MinecraftServer server, String recipient) {
         return StreamSupport.stream(server.getWorlds().spliterator(), false)
                 .map(DragonBreathStore::get)
-                .flatMap(store -> store.popEntries(recipient).stream());
+                .map(store -> new Pair<>(store, store.popEntries(recipient).stream()));
     }
 
     public List<Entry> popEntries(String recipient) {
@@ -75,7 +65,7 @@ public class DragonBreathStore extends PersistentState {
             long now = System.currentTimeMillis();
             List<Entry> collected = new ArrayList<>();
             entries.removeIf(entry -> {
-                if (entry.created < now - 1000) {
+                if (entry.created < now - MIN_MESSAGE_HOLD_TIME) {
                     collected.add(entry);
                     return true;
                 }
@@ -115,7 +105,7 @@ public class DragonBreathStore extends PersistentState {
                }
                return false;
             })) {
-                put(recipient, new Entry(System.currentTimeMillis() + (long)(Math.random() * 1999), payload, this));
+                put(recipient, new Entry(payload));
             }
         }
     }
@@ -135,19 +125,22 @@ public class DragonBreathStore extends PersistentState {
         return payloads;
     }
 
-    public record Entry(
-            long created,
-            ItemStack payload,
-            DragonBreathStore store) {
+    public record Entry(long created, ItemStack payload) {
+        public static final Codec<Entry> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.LONG.fieldOf("created").forGetter(Entry::created),
+                ItemStack.CODEC.fieldOf("payload").forGetter(Entry::payload)
+        ).apply(i, Entry::new));
 
-        public Entry(NbtCompound compound, WrapperLookup lookup, DragonBreathStore store) {
-            this(compound.getLong("created"), ItemStack.fromNbtOrEmpty(lookup, compound.getCompound("payload")), store);
+        public Entry(ItemStack payload) {
+            this(System.currentTimeMillis() + (long)(Math.random() * 1999), payload);
         }
 
-        public NbtCompound toNBT(NbtCompound compound) {
-            compound.putLong("created", created);
-            compound.put("payload", ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, payload()).getOrThrow());
-            return compound;
+        public boolean isValid() {
+            return !payload.isEmpty();
+        }
+
+        public boolean canPersist() {
+            return isValid() && created() > System.currentTimeMillis() - MAX_MESSAGE_HOLD_TIME;
         }
     }
 }

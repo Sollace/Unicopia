@@ -37,7 +37,9 @@ public class TrinketSlotBackSprites {
                    }
                }
 
-               return MinecraftClient.getInstance().getTextureManager().registerDynamicTexture("trinket_slot" + originalId.getPath(), new NativeImageBackedTexture(generatedImage));
+               Identifier id = originalId.withPrefixedPath("trinket_slot" + originalId);
+               MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(() -> "Unicopia.TrinketSlotBackSprites/" + id.toString(), generatedImage));
+               return id;
            }).orElse(originalId);
         }).orElse(originalId);
     }

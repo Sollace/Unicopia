@@ -13,6 +13,7 @@ import com.minelittlepony.unicopia.util.serialization.ServerBoundByteBuf;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.resource.JsonDataLoader;
+import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
@@ -29,7 +30,7 @@ public class SpellbookChapterLoader extends JsonDataLoader<Chapter> implements I
     private Map<Identifier, IdentifiableChapter> chapters = new HashMap<>();
 
     public SpellbookChapterLoader() {
-        super(Chapter.CODEC, ID.getPath());
+        super(Chapter.CODEC, ResourceFinder.json(ID.getPath()));
     }
 
     @Override
