@@ -34,7 +34,11 @@ abstract class MixinKeyboardInput extends Input {
                 movementVector = new Vec2f(-movementVector.x, movementVector.y).normalize();
             }
 
-            if (UHud.INSTANCE.handleInput(this)) {
+            if (player.getAcrobatics().isImmobile()) {
+                movementVector = Vec2f.ZERO;
+            }
+
+            if (UHud.INSTANCE.handleInput(player, this)) {
                 movementVector = Vec2f.ZERO;
                 if (playerInput.jump()) {
                     playerInput = new PlayerInput(

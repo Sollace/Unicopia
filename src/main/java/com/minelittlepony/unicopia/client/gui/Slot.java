@@ -10,8 +10,6 @@ import com.minelittlepony.unicopia.ability.ActivationType;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
@@ -104,8 +102,6 @@ class Slot {
             }
         }
 
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.enableBlend();
         MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(getX(), getY(), 0);

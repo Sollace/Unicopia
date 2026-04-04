@@ -2,22 +2,16 @@ package com.minelittlepony.unicopia.client.gui;
 
 import org.joml.Matrix4f;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-
-import net.minecraft.client.gl.ShaderProgramKeys;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.MathHelper;
 
 public interface GradientUtil {
 
     static void fillVerticalGradient(MatrixStack matrices, int startX, int startY, int stopY, int endX, int endY, int colorStart, int colorStop, int colorEnd, int z) {
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
         fillVerticalGradient(matrices.peek().getPositionMatrix(), Tessellator.getInstance(), startX, startY, stopY, endX, endY, z, colorStart, colorStop, colorEnd);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.disableBlend();
     }
 
     private static void fillVerticalGradient(Matrix4f matrix, Tessellator tessellator, int startX, int startY, int stopY, int endX, int endY, int z, int colorStart, int colorStop, int colorEnd) {
@@ -36,23 +30,19 @@ public interface GradientUtil {
         final float toG = (colorEnd >> 8 & 0xFF) / 255F;
         final float toB = (colorEnd & 0xFF) / 255F;
 
-        BufferBuilder builder = tessellator.begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
+        Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        VertexConsumer builder = vertices.getBuffer(RenderLayer.getTranslucent());
         builder.vertex(matrix, endX, stopY, z).color(stopR, stopG, stopB, stopA);
         builder.vertex(matrix, endX, startY, z).color(fromR, fromG, fromB, fromA);
         builder.vertex(matrix, startX, startY, z).color(fromR, fromG, fromB, fromA);
         builder.vertex(matrix, startX, stopY, z).color(stopR, stopG, stopB, stopA);
         builder.vertex(matrix, startX, endY, z).color(toR, toG, toB, toA);
         builder.vertex(matrix, endX, endY, z).color(stopR, toG, toB, toA);
-        BufferRenderer.drawWithGlobalProgram(builder.end());
+        vertices.draw();
     }
 
     static void fillRadialGradient(MatrixStack matrices, int startX, int startY, int endX, int endY, int colorStart, int colorEnd, int z, float radius) {
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
         fillRadials(matrices.peek().getPositionMatrix(), Tessellator.getInstance(), startX, startY, endX, endY, z, colorStart, colorEnd, radius);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.disableBlend();
     }
 
     private static void fillRadials(Matrix4f matrix, Tessellator tessellator, int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd, float radius) {
@@ -74,14 +64,15 @@ public interface GradientUtil {
 
         float innerRadius = outerRadius * (1 - radius);
 
-        BufferBuilder builder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        VertexConsumer builder = vertices.getBuffer(RenderLayer.getTranslucent());
         for (double angle = 0; angle < DrawableUtil.TAU; angle += increment) {
             clampedVertex(builder, matrix, innerRadius, angle + increment, z, startX, endX, startY, endY).color(toR, toG, toB, toA);
             clampedVertex(builder, matrix, innerRadius, angle, z, startX, endX, startY, endY).color(toR, toG, toB, toA);
             clampedVertex(builder, matrix, outerRadius, angle, z, startX, endX, startY, endY).color(fromR, fromG, fromB, fromA);
             clampedVertex(builder, matrix, outerRadius, angle + increment, z, startX, endX, startY, endY).color(fromR, fromG, fromB, fromA);
         }
-        BufferRenderer.drawWithGlobalProgram(builder.end());
+        vertices.draw();
     }
 
     static float getX(double radius, double angle) {
@@ -92,7 +83,7 @@ public interface GradientUtil {
         return (float)(radius * MathHelper.cos((float)angle));
     }
 
-    private static VertexConsumer clampedVertex(BufferBuilder bufferBuilder, Matrix4f model, double radius, double angle, float z, int minX, int maxX, int minY, int maxY) {
+    private static VertexConsumer clampedVertex(VertexConsumer bufferBuilder, Matrix4f model, double radius, double angle, float z, int minX, int maxX, int minY, int maxY) {
         float midX = (maxX - minX) / 2F;
         float midY = (maxY - minY) / 2F;
 

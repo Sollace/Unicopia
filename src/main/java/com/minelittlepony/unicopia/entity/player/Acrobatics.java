@@ -8,6 +8,8 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation.Recipient;
 import com.minelittlepony.unicopia.entity.duck.LivingEntityDuck;
+import com.minelittlepony.unicopia.entity.effect.EffectUtils;
+import com.minelittlepony.unicopia.entity.effect.UEffects;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.util.PosHelper;
@@ -49,6 +51,10 @@ public class Acrobatics implements Tickable, NbtSerialisable {
 
     public boolean isImmobile() {
         return isFloppy() && entity.isOnGround();
+    }
+
+    public boolean isParalized() {
+        return EffectUtils.getAmplifier(entity, UEffects.PARALYSIS) > 1;
     }
 
     public boolean isFloppy() {

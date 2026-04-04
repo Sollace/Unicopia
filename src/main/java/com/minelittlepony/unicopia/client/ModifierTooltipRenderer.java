@@ -39,7 +39,7 @@ public class ModifierTooltipRenderer {
         appendTooltip(stack, UDataComponentTypes.BUTTERFLY_VARIANT, context, textConsumer, type);
         appendTooltip(stack, UDataComponentTypes.BALLOON_DESIGN, context, textConsumer, type);
         MimicComponent.appendTooltip(stack, context, textConsumer, type);
-        EnchantableItem.getSpellEffect(stack).appendTooltip(context, textConsumer, type);
+        EnchantableItem.getSpellEffect(stack).appendTooltip(context, textConsumer, type, stack);
         if (GlowableItem.isGlowing(stack)) {
             textConsumer.accept(Text.translatable("item.unicopia.friendship_bracelet.glowing").formatted(Formatting.ITALIC, Formatting.GRAY));
         }
@@ -56,7 +56,7 @@ public class ModifierTooltipRenderer {
     private void appendTooltip(ItemStack stack, ComponentType<? extends TooltipAppender> componentType, Item.TooltipContext context, Consumer<Text> textConsumer, TooltipType type, TooltipAppender fallback) {
         TooltipAppender tooltipAppender = stack.getOrDefault(componentType, fallback);
         if (tooltipAppender != null) {
-            tooltipAppender.appendTooltip(context, textConsumer, type);
+            tooltipAppender.appendTooltip(context, textConsumer, type, stack);
         }
     }
 }

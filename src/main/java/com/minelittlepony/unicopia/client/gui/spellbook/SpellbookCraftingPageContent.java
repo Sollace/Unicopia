@@ -8,8 +8,6 @@ import com.minelittlepony.unicopia.client.gui.DrawableUtil;
 import com.minelittlepony.unicopia.client.gui.MagicText;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.recipe.URecipeBookCategories;
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -39,7 +37,7 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
         });
         initContents();
         screen.addDrawable(this);
-        ((IViewRoot)screen).getChildElements().add(this);
+        screen.getChildElements().add(this);
     }
 
     @Override
@@ -95,7 +93,6 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
         matrices.push();
         matrices.translate(margin.left, margin.top, 0);
         matrices.translate(-2, -2, 200);
-        RenderSystem.enableBlend();
         int tileSize = 25;
 
         final int bottom = height - tileSize + 4;

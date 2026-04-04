@@ -25,7 +25,7 @@ public class HudEffects {
 
     public static void tryApply(@Nullable PlayerEntity player, RenderTickCounter tickCounter, boolean on) {
         if (player != null) {
-            apply(Pony.of(player), tickCounter.getTickDelta(false), on);
+            apply(Pony.of(player), tickCounter.getTickProgress(false), on);
         }
     }
 

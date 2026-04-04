@@ -19,8 +19,6 @@ import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen.ImageBut
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.group.ItemGroupRegistry;
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -148,7 +146,7 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
                 tree.build(this);
             });
             screen.addDrawable(this);
-            ((IViewRoot)screen).getChildElements().add(this);
+            screen.getChildElements().add(this);
         }
 
 
@@ -158,7 +156,6 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
             matrices.push();
             matrices.translate(margin.left, margin.top, 0);
             matrices.translate(-2, -2, 200);
-            RenderSystem.enableBlend();
             int tileSize = 25;
 
             final int bottom = height - tileSize + 4;
@@ -253,8 +250,6 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
             boolean known = discoveries.isKnown(trait);
             setStyle(known ? revealedStyle : hiddenStyle);
 
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            RenderSystem.enableBlend();
             context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.TEXTURE, getX() - 2, getY() - 8, 204, 219, 22, 32, 512, 256);
 
             if (!known) {

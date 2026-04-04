@@ -23,7 +23,7 @@ public record Structure(Bounds bounds, Schematic schematic) implements PageEleme
             MatrixStack matrices = context.getMatrices();
 
             MinecraftClient client = MinecraftClient.getInstance();
-            float tickDelta = client.player.age + client.getRenderTickCounter().getTickDelta(false);
+            float tickDelta = client.player.age + client.getRenderTickCounter().getTickProgress(false);
             float age = tickDelta % 360F;
 
             matrices.push();

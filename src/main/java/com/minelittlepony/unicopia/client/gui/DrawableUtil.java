@@ -4,19 +4,15 @@ import org.joml.Matrix4f;
 
 import com.minelittlepony.unicopia.Race;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 public interface DrawableUtil {
@@ -51,23 +47,17 @@ public interface DrawableUtil {
     }
 
     static void drawLine(MatrixStack matrices, int x1, int y1, int x2, int y2, int color) {
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
-        float r = (color >> 24 & 255) / 255F;
-        float g = (color >> 16 & 255) / 255F;
-        float b = (color >> 8 & 255) / 255F;
-        float k = (color & 255) / 255F;
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
-        BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        float r = ColorHelper.getAlpha(color);
+        float g = ColorHelper.getRed(color);
+        float b = ColorHelper.getGreen(color);
+        float k = ColorHelper.getBlue(color);
+        Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        VertexConsumer bufferBuilder = vertices.getBuffer(RenderLayer.getDebugLineStrip(3));
         bufferBuilder.vertex(matrix, x1, y1, 0).color(r, g, b, k);
         bufferBuilder.vertex(matrix, x2, y2, 0).color(r, g, b, k);
-        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-        RenderSystem.disableBlend();
+        vertices.draw();
     }
 
     /**
@@ -97,10 +87,10 @@ public interface DrawableUtil {
             return;
         }
 
-        float r = (color >> 24 & 255) / 255F;
-        float g = (color >> 16 & 255) / 255F;
-        float b = (color >> 8 & 255) / 255F;
-        float k = (color & 255) / 255F;
+        float r = ColorHelper.getAlpha(color);
+        float g = ColorHelper.getRed(color);
+        float b = ColorHelper.getGreen(color);
+        float k = ColorHelper.getBlue(color);
 
         arcAngle = Math.min(arcAngle, TAU - INCREMENT);
 
@@ -108,7 +98,8 @@ public interface DrawableUtil {
 
         Matrix4f model = matrices.peek().getPositionMatrix();
 
-        BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+        Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        VertexConsumer bufferBuilder = vertices.getBuffer(RenderLayer.getTranslucent());
 
         boolean shouldDraw = false;
 
@@ -126,14 +117,11 @@ public interface DrawableUtil {
 
         if (shouldDraw) {
             RenderSystem.setShaderColor(1, 1, 1, 1);
-            RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+            vertices.draw();
         }
     }
 
-    private static void cylendricalVertex(BufferBuilder bufferBuilder, Matrix4f model, double radius, double angle, float r, float g, float b, float k) {
+    private static void cylendricalVertex(VertexConsumer bufferBuilder, Matrix4f model, double radius, double angle, float r, float g, float b, float k) {
         bufferBuilder.vertex(model,
                 (float)(radius * MathHelper.sin((float)angle)),
                 (float)(radius * MathHelper.cos((float)angle)), 0).color(r, g, b, k).normal(2, 2, 2);

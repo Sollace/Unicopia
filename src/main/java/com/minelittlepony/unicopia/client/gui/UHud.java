@@ -21,8 +21,6 @@ import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.GlassesItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.util.TypedActionResult;
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -81,7 +79,6 @@ public class UHud {
         if (client.player == null) {
             return;
         }
-        RenderSystem.enableDepthTest();
 
         int scaledWidth = context.getScaledWindowWidth();
         int scaledHeight = context.getScaledWindowHeight();
@@ -89,7 +86,7 @@ public class UHud {
 
         Pony pony = Pony.of(client.player);
 
-        float tickDelta = tickCounter.getTickDelta(false);
+        float tickDelta = tickCounter.getTickProgress(false);
 
         matrices.push();
         renderViewEffects(pony, context, tickDelta);
@@ -144,9 +141,6 @@ public class UHud {
         if (message != null && messageTime > 0) {
             renderMessage(context, tickDelta);
         }
-
-        RenderSystem.setShaderColor(1, 1, 1,1);
-        RenderSystem.enableBlend();
 
         boolean swap = client.options.sneakKey.isPressed();
 
@@ -208,9 +202,6 @@ public class UHud {
             SpellIconRenderer.renderSpell(context, pony.getCharms().getEquippedSpell(Hand.OFF_HAND), hudX + 8 - xDirection * 2, hudY - 6, EQUIPPED_GEMSTONE_SCALE);
             matrices.pop();
         }
-
-        RenderSystem.disableBlend();
-        RenderSystem.disableDepthTest();
     }
 
     private void renderMessage(DrawContext context, float tickDelta) {
@@ -280,7 +271,7 @@ public class UHud {
             if (GlassesItem.isCoolAndHasShades(client.player)) {
                 final int delay = 7;
                 final int current = client.player.age / delay;
-                final int tint = DyeColor.byId(current % DyeColor.values().length).getSignColor();
+                final int tint = DyeColor.byIndex(current % DyeColor.values().length).getSignColor();
                 context.fillGradient(0, 0, scaledWidth, scaledHeight, 0x1F000000 | tint, 0x5F000000 | tint);
 
                 if (partySound == null || partySound.isDone()) {
@@ -403,17 +394,8 @@ public class UHud {
         }
     }
 
-    public boolean handleInput(Input input) {
-        if (client.isPaused() || client.player == null) {
-            return false;
-        }
-
-        if (Pony.of(client.player).getAcrobatics().isImmobile()) {
-            input.movementSideways = 0;
-            input.movementForward = 0;
-        }
-
-        return levitatingItemActions.handleInput(input) || EffectUtils.getAmplifier(client.player, UEffects.PARALYSIS) > 1;
+    public boolean handleInput(Pony pony, Input input) {
+        return levitatingItemActions.handleInput(input) || pony.getAcrobatics().isParalized();
     }
 
     void renderAbilityIcon(DrawContext context, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {

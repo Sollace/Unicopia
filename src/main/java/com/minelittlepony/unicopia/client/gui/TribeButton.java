@@ -5,11 +5,8 @@ import com.minelittlepony.common.client.gui.sprite.ISprite;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -30,15 +27,6 @@ public class TribeButton extends Button {
 
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float partialTicks) {
-        RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX);
-        RenderSystem.setShaderColor(1, 1, 1, alpha);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.blendFunc(
-                GlStateManager.SrcFactor.SRC_ALPHA,
-                GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA
-        );
-
         MinecraftClient mc = MinecraftClient.getInstance();
 
         context.drawTexture(RenderLayers::getGuiTextured, TribeSelectionScreen.TEXTURE, getX()  - 3, getY() - 13, 0, 0, 76, 69, TribeSelectionScreen.TEXTURE_SIZE, TribeSelectionScreen.TEXTURE_SIZE);

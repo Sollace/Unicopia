@@ -19,6 +19,7 @@ import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.component.ComponentMap;
 import net.minecraft.item.Item.TooltipContext;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.ScreenTexts;
@@ -213,7 +214,7 @@ public class DismissSpellScreen extends GameGui {
                 tooltip.add(Text.translatable("gui.unicopia.dispell_screen.spell_type", name));
                 type.traits().appendTooltip(tooltip);
                 tooltip.add(ScreenTexts.EMPTY);
-                type.appendTooltip(TooltipContext.create(client.world), tooltip::add, TooltipType.BASIC);
+                type.appendTooltip(TooltipContext.create(client.world), tooltip::add, TooltipType.BASIC, ComponentMap.EMPTY);
                 tooltip.add(ScreenTexts.EMPTY);
                 if (spell instanceof TimedSpell timed) {
                     tooltip.add(ScreenTexts.EMPTY);

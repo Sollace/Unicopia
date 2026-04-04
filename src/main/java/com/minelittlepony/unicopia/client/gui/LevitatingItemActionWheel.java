@@ -52,7 +52,7 @@ public class LevitatingItemActionWheel {
         } else if (pony.asEntity().getRootVehicle() instanceof LevitatingItemEntity target) {
             targetEntity = target;
         } else {
-            targetEntity = Trace.create(pony.asEntity(), 100, client.getRenderTickCounter().getTickDelta(false), e -> {
+            targetEntity = Trace.create(pony.asEntity(), 100, client.getRenderTickCounter().getTickProgress(false), e -> {
                 return e instanceof LevitatingItemEntity;
             }).<LevitatingItemEntity>getEntity().orElse(null);
         }

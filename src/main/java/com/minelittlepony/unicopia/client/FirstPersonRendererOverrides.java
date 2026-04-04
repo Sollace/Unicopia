@@ -35,7 +35,7 @@ public class FirstPersonRendererOverrides {
         }
 
         if (Pony.of(player).getAnimation().renderBothArms()) {
-            float swingProgress = player.getHandSwingProgress(MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false));
+            float swingProgress = player.getHandSwingProgress(MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(false));
 
             Hand hand = MoreObjects.firstNonNull(player.preferredHand, Hand.MAIN_HAND);
 
