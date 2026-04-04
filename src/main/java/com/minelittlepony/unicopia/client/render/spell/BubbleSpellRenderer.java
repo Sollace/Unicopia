@@ -43,7 +43,7 @@ public class BubbleSpellRenderer extends SpellRenderer<BubbleSpell, BubbleSpellR
         VertexConsumer buffer = vertices.getBuffer(RenderLayers.getMagicShield());
 
         Entity cameraEntity = MinecraftClient.getInstance().getCameraEntity();
-        float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false);
+        float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(false);
 
         matrices.push();
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));

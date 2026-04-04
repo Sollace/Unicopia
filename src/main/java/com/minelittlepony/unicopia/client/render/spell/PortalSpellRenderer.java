@@ -91,7 +91,7 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell, PortalSpellR
             matrices.translate(0, -0.01, 0);
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-spell.yaw));
             matrices.scale(grown, 1, grown);
-            boolean inRange = MinecraftClient.getInstance().player.getPos().distanceTo(target.pos()) < MinecraftClient.getInstance().gameRenderer.getViewDistance();
+            boolean inRange = MinecraftClient.getInstance().player.getPos().distanceTo(target.pos()) < MinecraftClient.getInstance().gameRenderer.getViewDistanceBlocks();
 
             PortalFrameBuffer buffer = PortalFrameBuffer.unpool(target.uuid());
             if (buffer != null) {

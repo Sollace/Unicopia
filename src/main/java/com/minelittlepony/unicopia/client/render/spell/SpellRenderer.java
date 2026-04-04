@@ -14,7 +14,7 @@ import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ModelTransformationMode;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
@@ -67,7 +67,7 @@ public abstract class SpellRenderer<T extends Spell, S extends SpellRenderer.Spe
         matrices.push();
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(caster.entityState.age));
 
-        client.getItemRenderer().renderItem(spell.type.getDefaultStack(), ModelTransformationMode.FIXED, light, 0, matrices, vertices, null, 0);
+        client.getItemRenderer().renderItem(spell.type.getDefaultStack(), ItemDisplayContext.FIXED, light, 0, matrices, vertices, null, 0);
         matrices.pop();
 
         if (spell instanceof TimedSpell timed) {

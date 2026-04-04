@@ -55,7 +55,7 @@ public class ShieldSpellRenderer extends SpellRenderer<ShieldSpell, ShieldSpellR
 
         if (caster.isCamera) {
             matrices.translate(0, -1.75F, 0);
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(client.cameraEntity.getPitch(client.getRenderTickCounter().getTickDelta(false))));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(client.cameraEntity.getPitch(client.getRenderTickCounter().getTickProgress(false))));
             model.render(matrices, buffer, light, 1, spell.radius, withAlpha((int)((alpha * 0.2F) * 255), spell.color));
         } else {
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
