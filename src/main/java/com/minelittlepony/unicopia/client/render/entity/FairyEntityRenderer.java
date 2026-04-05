@@ -15,8 +15,8 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -43,7 +43,7 @@ public class FairyEntityRenderer extends MobEntityRenderer<FairyEntity, FairyEnt
 
     @Override
     public Identifier getTexture(State entity) {
-        return PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
+        return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     }
 
     public static class State extends LivingEntityRenderState {

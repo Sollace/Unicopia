@@ -29,7 +29,7 @@ public class IgnominiousBulbEntityModel extends EntityModel<IgnominiousBulbEntit
         head.addChild("jaw", ModelPartBuilder.create().uv(112, 0).cuboid(-16, -27, 5, 32, 0, 32, Dilation.NONE), ModelTransform.of(1.3731F, -21.6152F, -11.61F, -1.9802F, 0.1003F, 0.0006F));
         head.addChild("head", ModelPartBuilder.create().uv(0, 71).cuboid(-23, -16, -46, 46, 23, 46, Dilation.NONE), ModelTransform.of(-0.0432F, -0.9905F, -0.1305F, -0.1309F, 0, 0));
 
-        ModelPartData leaves = root.addChild("leaves", ModelPartBuilder.create(), ModelTransform.pivot(0, 27, -1));
+        ModelPartData leaves = root.addChild("leaves", ModelPartBuilder.create(), ModelTransform.origin(0, 27, -1));
         leaves.addChild("leaf_1", ModelPartBuilder.create().uv(112, 0).cuboid(-16, 3, -55, 32, 0, 32, Dilation.NONE), ModelTransform.rotation(2.8316F, -1.0127F, -3.0858F));
         leaves.addChild("leaf_2", ModelPartBuilder.create().uv(112, 0).cuboid(-14, 12, -60, 32, 0, 32, Dilation.NONE), ModelTransform.rotation(2.6063F, -0.075F, -3.1196F));
         leaves.addChild("leaf_3", ModelPartBuilder.create().uv(112, 0).cuboid(-20, 1, -51, 32, 0, 32, Dilation.NONE), ModelTransform.rotation(-0.7079F, -1.4622F, 0.4842F));
@@ -53,7 +53,7 @@ public class IgnominiousBulbEntityModel extends EntityModel<IgnominiousBulbEntit
         part.xScale = state.scale;
         part.yScale = state.scale;
         part.zScale = state.scale;
-        part.pivotY = (1 - state.scale) * 24;
+        part.originY = (1 - state.scale) * 24;
         part.yaw = state.yaw;
 
         head.yScale = 1 - MathHelper.sin(state.age * 0.05F) * 0.02F;

@@ -39,7 +39,7 @@ public class StormCloudEntityModel extends EntityModel<StormCloudEntityRenderer.
 	public static TexturedModelData getTexturedModelData() {
 	    ModelData data = new ModelData();
         ModelPartData root = data.getRoot();
-        ModelPartData small_puffs = root.addChild("small_puffs", ModelPartBuilder.create(), ModelTransform.pivot(0, 24, 0));
+        ModelPartData small_puffs = root.addChild("small_puffs", ModelPartBuilder.create(), ModelTransform.origin(0, 24, 0));
 
         small_puffs.addChild("cube_r1", ModelPartBuilder.create()
                 .uv(0, 37).cuboid(-2, -20, -20, 7, 17, 20, Dilation.NONE)
@@ -61,7 +61,7 @@ public class StormCloudEntityModel extends EntityModel<StormCloudEntityRenderer.
         small_puffs.addChild("cube_r12", ModelPartBuilder.create().cuboid(-9.5F, -8.5F, -10, 7, 17, 20, Dilation.NONE), ModelTransform.of(8.842F, -13.6476F, -20.7083F, 0.1739F, 0.0151F, -0.0423F));
         small_puffs.addChild("cube_r13", ModelPartBuilder.create().uv(0, 37).cuboid(-2, -19, -6, 7, 17, 20, Dilation.NONE), ModelTransform.of(0, -6, 0, -0.3043F, 0, 1.5708F));
 
-        ModelPartData anvil_heads = root.addChild("anvil_heads", ModelPartBuilder.create(), ModelTransform.pivot(-2, 1, 0));
+        ModelPartData anvil_heads = root.addChild("anvil_heads", ModelPartBuilder.create(), ModelTransform.origin(-2, 1, 0));
         anvil_heads.addChild("cube_r14", ModelPartBuilder.create().cuboid(-3.5F, -1.5F, -4, 7, 17, 20, new Dilation(2)), ModelTransform.of(-5.5F, -4.5F, 16, -0.3927F, 0, 0));
         anvil_heads.addChild("cube_r15", ModelPartBuilder.create().cuboid(-2, -18, 4, 7, 17, 20, new Dilation(5)), ModelTransform.of(0, -6, 0, -0.1309F, 0, 0));
         anvil_heads.addChild("cube_r16", ModelPartBuilder.create().cuboid(0, -1.5F, -12.5F, 7, 17, 20, new Dilation(5)), ModelTransform.of(0, -6, 0, 0.3491F, 0, 0));
@@ -102,15 +102,15 @@ public class StormCloudEntityModel extends EntityModel<StormCloudEntityRenderer.
 	    }
 
 	    ModelPart part = getRootPart();
-	    part.pivotY = MathHelper.sin(state.age * 0.25F) * 0.03F * globalScale;
-	    part.pivotX = MathHelper.cos(state.age * 0.05125F) * 0.7F * globalScale;
-	    part.pivotZ = MathHelper.sin(state.age * 0.05125F) * 0.7F * globalScale;
+	    part.originY = MathHelper.sin(state.age * 0.25F) * 0.03F * globalScale;
+	    part.originX = MathHelper.cos(state.age * 0.05125F) * 0.7F * globalScale;
+	    part.originZ = MathHelper.sin(state.age * 0.05125F) * 0.7F * globalScale;
 	}
 
 	public void renderPuff(Vector3f position, MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, int color) {
 	    puff.hidden = false;
 	    puff.resetTransform();
-        puff.translate(position);
+        puff.moveOrigin(position);
         puff.render(matrices, vertexConsumer, light, overlay, color);
         puff.hidden = true;
 	}

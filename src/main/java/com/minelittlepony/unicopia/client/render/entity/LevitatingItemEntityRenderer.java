@@ -5,16 +5,16 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.item.ItemModelManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory.Context;
 import net.minecraft.client.render.entity.state.EntityRenderState;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -22,11 +22,11 @@ import net.minecraft.util.math.RotationAxis;
 
 public class LevitatingItemEntityRenderer extends EntityRenderer<LevitatingItemEntity, LevitatingItemEntityRenderer.State> {
 
-    private final ItemRenderer itemRenderer;
+    private final ItemModelManager itemModelManager;
 
     public LevitatingItemEntityRenderer(Context ctx) {
         super(ctx);
-        this.itemRenderer = ctx.getItemRenderer();
+        itemModelManager = ctx.getItemModelManager();
     }
 
     @Override
@@ -41,8 +41,8 @@ public class LevitatingItemEntityRenderer extends EntityRenderer<LevitatingItemE
         state.miningPos = entity.getMiningPos().orElse(null);
         state.miningFace = entity.getMiningFace();
         state.stack = entity.getStack();
-        state.stackModel = itemRenderer.getModel(state.stack, entity.getMaster(), ModelTransformationMode.GROUND);
         state.yOffset = MathHelper.sin(state.age / 20F) * 0.02F;
+        itemModelManager.clearAndUpdate(state.stackState, state.stack, ItemDisplayContext.GROUND, entity.getWorld(), null, 0);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class LevitatingItemEntityRenderer extends EntityRenderer<LevitatingItemE
                 matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(10 * MathHelper.sin(state.age)));
             }
 
-            itemRenderer.renderItem(state.stack, ModelTransformationMode.GROUND, false, matrices, vertices, light, OverlayTexture.DEFAULT_UV, state.stackModel);
+            state.stackState.render(matrices, vertices, light, OverlayTexture.DEFAULT_UV);
 
             /*matrices.scale(1.2F, 1.2F, 1.2F);
 
@@ -89,8 +89,7 @@ public class LevitatingItemEntityRenderer extends EntityRenderer<LevitatingItemE
         public BlockPos miningPos;
         public Direction miningFace = Direction.UP;
         public ItemStack stack = ItemStack.EMPTY;
-        @Nullable
-        public BakedModel stackModel;
+        public final ItemRenderState stackState = new ItemRenderState();
         public float yaw;
         public float yOffset;
     }

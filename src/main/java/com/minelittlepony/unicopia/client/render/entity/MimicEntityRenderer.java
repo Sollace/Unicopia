@@ -1,5 +1,8 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.entity.mob.MimicEntity;
@@ -26,6 +29,7 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.state.LivingEntityRenderState;
+import net.minecraft.client.render.model.BlockModelPart;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -53,9 +57,9 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
     public void updateRenderState(MimicEntity entity, State state, float tickDelta) {
         super.updateRenderState(entity, state, tickDelta);
         state.peekAmount = entity.getPeekAmount();
-        state.legAngle = entity.limbAnimator.getPos(tickDelta);
-        state.legSpeed = entity.limbAnimator.getSpeed(tickDelta);
-        state.bodyTilt = MathHelper.cos(state.legAngle * 0.6662F) * 1.4F * state.legSpeed * 10 * state.peekAmount;
+        state.legAnimationProgress = entity.limbAnimator.getAnimationProgress(tickDelta);
+        state.legAmplitude = entity.limbAnimator.getAmplitude(tickDelta);
+        state.bodyTilt = MathHelper.cos(state.legAnimationProgress * 0.6662F) * 1.4F * state.legAmplitude * 10 * state.peekAmount;
         state.destructionStage = FloatingArtefactEntityRenderer.getDestructionStage(entity);
         state.tickDelta = tickDelta;
 
@@ -73,11 +77,14 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
 
         if (state.peekAmount < 0.3F) {
             state.peekAmount = 0;
-            state.bodyYaw = entity.getHorizontalFacing().asRotation();
+            state.bodyYaw = entity.getHorizontalFacing().getPositiveHorizontalDegrees();
         }
         state.targeted = MinecraftClient.getInstance().targetedEntity == entity;
         state.renderView = entity.getBlockRenderView();
         state.random = entity.getRandom();
+
+        state.modelParts.clear();
+        MinecraftClient.getInstance().getBlockRenderManager().getModel(state.tileData.getCachedState()).addParts(state.random, state.modelParts);
     }
 
     @Override
@@ -106,7 +113,7 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
     }
 
     @Override
-    protected float method_3919() {
+    protected float getLyingPositionRotationDegrees() {
         return 0;
     }
 
@@ -117,8 +124,8 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
 
     public static class State extends LivingEntityRenderState {
         public float peekAmount;
-        public float legAngle;
-        public float legSpeed;
+        public float legAnimationProgress;
+        public float legAmplitude;
         public float bodyTilt;
         public int destructionStage;
         public float mouthOpenAmount;
@@ -129,6 +136,7 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
 
         public Random random = Random.create();
         public BlockRenderView renderView = EmptyBlockRenderView.INSTANCE;
+        public List<BlockModelPart> modelParts = new ArrayList<>();
     }
 
     static class ChestFeature extends FeatureRenderer<State, MimicModel> {
@@ -149,7 +157,7 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
                 BlockRenderManager renderer = client.getBlockRenderManager();
                 VertexConsumer buffer = vertexConsumers.getBuffer(RenderLayers.getBlockLayer(entity.tileData.getCachedState()));
 
-                renderer.renderBlock(entity.tileData.getCachedState(), entity.tileData.getPos(), entity.renderView, matrices, buffer, false, entity.random);
+                renderer.renderBlock(entity.tileData.getCachedState(), entity.tileData.getPos(), entity.renderView, matrices, buffer, false, entity.modelParts);
 
                 client.getBlockEntityRenderDispatcher().render(entity.tileData, entity.tickDelta, matrices, vertexConsumers);
 
@@ -232,7 +240,7 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
             root.addChild("lower_teeth", ModelPartBuilder.create()
                 .uv(0, 0).cuboid(-1, -1, 12, 2, 4, 1, Dilation.NONE)
                 .uv(0, 0).cuboid(-4, -1, 12, 2, 4, 1, Dilation.NONE)
-                .uv(0, 0).cuboid(2, -1, 12, 2, 4, 1, Dilation.NONE), ModelTransform.pivot(0, 13, -7))
+                .uv(0, 0).cuboid(2, -1, 12, 2, 4, 1, Dilation.NONE), ModelTransform.origin(0, 13, -7))
                 .addChild("cube_r2", ModelPartBuilder.create()
                     .uv(0, 0).cuboid(-6, -1, -6, 2, 4, 1, Dilation.NONE)
                     .uv(0, 0).cuboid(-9, -1, -6, 2, 4, 1, Dilation.NONE)
@@ -241,9 +249,9 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
                     .uv(0, 0).cuboid(-9, -1, 5, 2, 4, 1, Dilation.NONE)
                     .uv(0, 0).cuboid(-12, -1, 5, 2, 4, 1, Dilation.NONE), ModelTransform.of(0, 0, 0, 0, 1.5708F, 0));
             root.addChild("right_leg", ModelPartBuilder.create()
-                    .uv(7, 30).cuboid(-2.5F, -1.5F, -3.5F, 5, 7, 6, Dilation.NONE), ModelTransform.pivot(3.5F, 23.5F, 0));
+                    .uv(7, 30).cuboid(-2.5F, -1.5F, -3.5F, 5, 7, 6, Dilation.NONE), ModelTransform.origin(3.5F, 23.5F, 0));
             root.addChild("left_leg", ModelPartBuilder.create()
-                    .uv(7, 30).mirrored().cuboid(-9.5F, -1.5F, -3.5F, 5, 7, 6, Dilation.NONE), ModelTransform.pivot(3.5F, 23.5F, 0));
+                    .uv(7, 30).mirrored().cuboid(-9.5F, -1.5F, -3.5F, 5, 7, 6, Dilation.NONE), ModelTransform.origin(3.5F, 23.5F, 0));
             return TexturedModelData.of(data, 64, 64);
         }
 
@@ -255,12 +263,12 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
             lid.pitch = state.mouthOpenAmount;
             rightLeg.resetTransform();
             leftLeg.resetTransform();
-            rightLeg.pitch = MathHelper.cos(state.limbFrequency * 0.6662F) * 1.4F * state.limbAmplitudeMultiplier;
-            leftLeg.pitch = MathHelper.cos(state.limbFrequency * 0.6662F + (float) Math.PI) * 1.4F * state.limbAmplitudeMultiplier;
+            rightLeg.pitch = MathHelper.cos(state.limbSwingAnimationProgress * 0.6662F) * 1.4F * state.limbSwingAmplitude;
+            leftLeg.pitch = MathHelper.cos(state.limbSwingAnimationProgress * 0.6662F + (float) Math.PI) * 1.4F * state.limbSwingAmplitude;
             float revealPercentage = state.peekAmount;
             float velocy = (1 - revealPercentage) * -10F;
-            rightLeg.pivotY += velocy;
-            leftLeg.pivotY += velocy;
+            rightLeg.originY += velocy;
+            leftLeg.originY += velocy;
             rightLeg.visible = revealPercentage > 0.2F;
             leftLeg.visible = revealPercentage > 0.2F;
         }

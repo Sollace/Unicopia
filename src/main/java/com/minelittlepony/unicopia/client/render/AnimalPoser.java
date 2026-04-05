@@ -15,7 +15,7 @@ public class AnimalPoser {
 
         if (state.type == EntityType.PIG) {
             model.getPart(EntityModelPartNames.HEAD).ifPresent(part -> {
-                part.pivotY = 12;
+                part.originY = 12;
                 part.pitch = state.eatingHeadAngle;
             });
         }

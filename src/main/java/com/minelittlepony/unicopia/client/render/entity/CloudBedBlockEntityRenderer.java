@@ -29,6 +29,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBedBlock.Tile> {
@@ -70,7 +71,7 @@ public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBed
     }
 
     @Override
-    public void render(CloudBedBlock.Tile entity, float f, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public void render(CloudBedBlock.Tile entity, float f, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
         @Nullable
         World world = entity.getWorld();
 
@@ -146,7 +147,7 @@ public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBed
             float beddingScale = 1.002F;
             matrices.scale(beddingScale, beddingScale, beddingScale);
         }
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180 + direction.asRotation()));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180 + direction.getPositiveHorizontalDegrees()));
         matrices.translate(-0.5f, -0.5f, -0.5f);
         part.render(matrices, buffer, light, overlay);
         matrices.pop();

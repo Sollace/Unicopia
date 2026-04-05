@@ -12,7 +12,7 @@ public class SpellbookModel extends EntityModel<SpellbookEntityRenderer.State> {
     public SpellbookModel(ModelPart root) {
         super(root);
         book = new BookModel(root);
-        root.getChild("seam").pivotX -= 0.01F;
+        root.getChild("seam").originX -= 0.01F;
     }
 
     public static TexturedModelData getTexturedModelData() {

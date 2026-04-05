@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.block.ItemJarBlock;
 import com.minelittlepony.unicopia.block.ItemJarBlock.FluidJarContents;
 import com.minelittlepony.unicopia.block.jar.ItemsJarContents;
@@ -32,9 +31,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -53,7 +53,7 @@ public class ItemJarBlockEntityRenderer implements BlockEntityRenderer<ItemJarBl
     }
 
     @Override
-    public void render(ItemJarBlock.TileData data, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public void render(ItemJarBlock.TileData data, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
 
         ItemsJarContents items = data.getItems();
         if (items != null) {
@@ -94,7 +94,7 @@ public class ItemJarBlockEntityRenderer implements BlockEntityRenderer<ItemJarBl
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((rng.nextFloat() * 360) - 180));
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((rng.nextFloat() * 360) - 180));
             y -= 0.1F;
-            itemRenderer.renderItem(stack, ModelTransformationMode.FIXED, light, overlay, matrices, vertices, data.getWorld(), 0);
+            itemRenderer.renderItem(stack, ItemDisplayContext.FIXED, light, overlay, matrices, vertices, data.getWorld(), 0);
             matrices.pop();
         }
         matrices.pop();
@@ -141,7 +141,7 @@ public class ItemJarBlockEntityRenderer implements BlockEntityRenderer<ItemJarBl
         matrices.push();
         Sprite topSprite = sprite[0];
         float height = 0.6F * (amount / (float)FluidConstants.BUCKET);
-        boolean opaque = Color.a(color) >= 1;
+        boolean opaque = ColorHelper.getAlphaFloat(color) >= 1;
         CubeModel.render(
                 matrices,
                 vertices.getBuffer(opaque ? RenderLayer.getEntitySolid(topSprite.getAtlasId()) : RenderLayer.getEntityTranslucent(topSprite.getAtlasId())),

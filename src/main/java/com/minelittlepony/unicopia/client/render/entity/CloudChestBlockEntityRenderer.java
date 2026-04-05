@@ -25,6 +25,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.Vec3d;
 
 public class CloudChestBlockEntityRenderer extends ChestBlockEntityRenderer<ChestBlockEntity> {
     private static final LightmapCoordinatesRetriever<ChestBlockEntity> LIGHTING = new LightmapCoordinatesRetriever<>();
@@ -40,7 +41,7 @@ public class CloudChestBlockEntityRenderer extends ChestBlockEntityRenderer<Ches
     }
 
     @Override
-    public void render(ChestBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
+    public void render(ChestBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, Vec3d cameraPos) {
         BlockState state = entity.getWorld() != null ? entity.getCachedState() : Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
 
         if (!(state.getBlock() instanceof AbstractChestBlock)) {
@@ -52,7 +53,7 @@ public class CloudChestBlockEntityRenderer extends ChestBlockEntityRenderer<Ches
 
         matrices.push();
         matrices.translate(0.5f, 0.5f, 0.5f);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-state.get(ChestBlock.FACING).asRotation()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-state.get(ChestBlock.FACING).getPositiveHorizontalDegrees()));
         matrices.translate(-0.5f, -0.5f, -0.5f);
         model.setAngles(1 - (float)Math.pow(1 - properties.apply(ChestBlock.getAnimationProgressRetriever(entity)).get(tickDelta), 3));
         model.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(model.texture)), properties.apply(LIGHTING).applyAsInt(light), overlay);
@@ -84,7 +85,7 @@ public class CloudChestBlockEntityRenderer extends ChestBlockEntityRenderer<Ches
             root.addChild("lid", ModelPartBuilder.create()
                     .uv(0, 0).cuboid(6, -2, 13.8F, 2, 4, 1, Dilation.NONE)
                     .uv(0, 0).cuboid(6, -1, 14, 2, 2, 1, Dilation.NONE)
-                    .uv(0, 0).cuboid(0, 0, 0, 14, 5, 14, new Dilation(0.3F)), ModelTransform.pivot(1, 9, 1))
+                    .uv(0, 0).cuboid(0, 0, 0, 14, 5, 14, new Dilation(0.3F)), ModelTransform.origin(1, 9, 1))
                     .addChild("lock_r1", ModelPartBuilder.create()
                             .uv(0, 0).cuboid(-2, -4, -0.5F, 2, 4, 1, Dilation.NONE), ModelTransform.of(5, 1, 14.3F, 0, 0, 1.5708F));
             return TexturedModelData.of(data, 64, 64);
@@ -97,7 +98,7 @@ public class CloudChestBlockEntityRenderer extends ChestBlockEntityRenderer<Ches
             root.addChild("lid", ModelPartBuilder.create()
                     .uv(0, 0).cuboid(6, -2, 13.8F, 2, 4, 1, Dilation.NONE)
                     .uv(0, 0).cuboid(6, -1, 14, 2, 2, 1, Dilation.NONE)
-                    .uv(0, 0).cuboid(0, 0, 0, 15, 5, 14, new Dilation(0.3F)), ModelTransform.pivot(0, 9, 1))
+                    .uv(0, 0).cuboid(0, 0, 0, 15, 5, 14, new Dilation(0.3F)), ModelTransform.origin(0, 9, 1))
                     .addChild("lock_r1", ModelPartBuilder.create().uv(0, 0).cuboid(-2, -4, -0.5F, 2, 4, 1, Dilation.NONE), ModelTransform.of(5, 1, 14.3F, 0, 0, 1.5708F));
             return TexturedModelData.of(data, 64, 64);
         }
@@ -109,7 +110,7 @@ public class CloudChestBlockEntityRenderer extends ChestBlockEntityRenderer<Ches
             root.addChild("lid", ModelPartBuilder.create()
                     .uv(0, 0).cuboid(7, -2, 13.8F, 2, 4, 1, Dilation.NONE)
                     .uv(0, 0).cuboid(7, -1, 14, 2, 2, 1, Dilation.NONE)
-                    .uv(0, 0).cuboid(0, 0, 0, 15, 5, 14, new Dilation(0.3F)), ModelTransform.pivot(1, 9, 1))
+                    .uv(0, 0).cuboid(0, 0, 0, 15, 5, 14, new Dilation(0.3F)), ModelTransform.origin(1, 9, 1))
                     .addChild("lock_r1", ModelPartBuilder.create().uv(0, 0).cuboid(-2, -4, -0.5F, 2, 4, 1, Dilation.NONE), ModelTransform.of(6, 1, 14.3F, 0, 0, 1.5708F));
             return TexturedModelData.of(data, 64, 64);
         }

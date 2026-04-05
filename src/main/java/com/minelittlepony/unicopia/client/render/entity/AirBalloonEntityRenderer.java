@@ -72,7 +72,7 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
     public void updateRenderState(AirBalloonEntity entity, State state, float tickDelta) {
         super.updateRenderState(entity, state, tickDelta);
         state.yVelocity = MathHelper.clamp((float)Math.abs(entity.getVelocity().getY()) * 3F, 0.25F, 1F);
-        state.yaw = entity.getHorizontalFacing().asRotation();
+        state.yaw = entity.getHorizontalFacing().getPositiveHorizontalDegrees();
         state.design = entity.getDesign();
         state.basket = entity.getBasketType();
         state.inflation = entity.getInflation(tickDelta);
@@ -85,10 +85,10 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
         state.burnerWiggleProgress = entity.getBurner().getPullProgress(tickDelta);
         state.basketRoll = MathHelper.clamp(entity.getXVelocity(tickDelta), -0.5F, 0.5F);
         state.basketPitch = MathHelper.clamp(entity.getZVelocity(tickDelta), -0.5F, 0.5F);
-        state.accessoriesPivotX = state.inflation * MathHelper.sin(state.limbAmplitudeMultiplier + state.age / 5F) / 4F;
+        state.accessoriesPivotX = state.inflation * MathHelper.sin(state.limbSwingAmplitude + state.age / 5F) / 4F;
         state.burnerPivoyY = 32 * (1 - state.inflation) - (9 * state.inflation);
-        state.sandbagsPitch = MathHelper.cos(state.limbAmplitudeMultiplier + state.age / 5F) / 80F;
-        state.sandbagsRoll = MathHelper.sin(state.limbAmplitudeMultiplier + state.age / 5F) / 80F;
+        state.sandbagsPitch = MathHelper.cos(state.limbSwingAmplitude + state.age / 5F) / 80F;
+        state.sandbagsRoll = MathHelper.sin(state.limbSwingAmplitude + state.age / 5F) / 80F;
         if (state.leashData != null) {
             state.basketRoll *= -1;
             state.basketPitch *= -1;
@@ -143,8 +143,8 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
     }
 
     @Override
-    protected float method_3919() {
-        return 90.0F;
+    protected float getLyingPositionRotationDegrees() {
+        return 0;
     }
 
     private Identifier getComponentTexture(String componentName) {

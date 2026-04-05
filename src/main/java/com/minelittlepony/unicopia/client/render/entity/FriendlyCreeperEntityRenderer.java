@@ -11,8 +11,8 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.CreeperEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.EntityModelPartNames;
+import net.minecraft.client.render.entity.model.LoadedEntityModels;
 import net.minecraft.client.render.entity.state.CreeperEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityPose;
@@ -25,7 +25,7 @@ public class FriendlyCreeperEntityRenderer extends MobEntityRenderer<FriendlyCre
 
     public FriendlyCreeperEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new Model(context.getPart(EntityModelLayers.CREEPER)), 0.5f);
-        addFeature(new ChargeFeature(this, context.getModelLoader()));
+        addFeature(new ChargeFeature(this, context.getEntityModels()));
     }
 
     @Override
@@ -90,16 +90,16 @@ public class FriendlyCreeperEntityRenderer extends MobEntityRenderer<FriendlyCre
             super.setAngles(state);
             if (state.isInPose(EntityPose.SITTING)) {
                 float legSpread = 0.001F;
-                leftHindLeg.pivotZ -= 3;
+                leftHindLeg.originZ -= 3;
                 leftHindLeg.pitch = MathHelper.HALF_PI;
                 leftHindLeg.yaw = legSpread;
-                rightHindLeg.pivotZ -= 3;
+                rightHindLeg.originZ -= 3;
                 rightHindLeg.pitch = MathHelper.HALF_PI;
                 rightHindLeg.yaw = -legSpread;
-                leftFrontLeg.pivotZ += 3;
+                leftFrontLeg.originZ += 3;
                 leftFrontLeg.pitch = -MathHelper.HALF_PI;
                 leftFrontLeg.yaw = -legSpread;
-                rightFrontLeg.pivotZ += 3;
+                rightFrontLeg.originZ += 3;
                 rightFrontLeg.pitch = -MathHelper.HALF_PI;
                 rightFrontLeg.yaw = legSpread;
             }
@@ -110,9 +110,9 @@ public class FriendlyCreeperEntityRenderer extends MobEntityRenderer<FriendlyCre
         private static final Identifier SKIN = Identifier.ofVanilla("textures/entity/creeper/creeper_armor.png");
         private final Model model;
 
-        public ChargeFeature(FeatureRendererContext<CreeperEntityRenderState, Model> context, EntityModelLoader loader) {
+        public ChargeFeature(FeatureRendererContext<CreeperEntityRenderState, Model> context, LoadedEntityModels models) {
             super(context);
-            model = new Model(loader.getModelPart(EntityModelLayers.CREEPER_ARMOR));
+            model = new Model(models.getModelPart(EntityModelLayers.CREEPER_ARMOR));
         }
 
         @Override

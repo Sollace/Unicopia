@@ -44,7 +44,7 @@ public class TentacleEntityModel extends EntityModel<TentacleEntityRenderer.Stat
 	public static TexturedModelData getTexturedModelData() {
 	    ModelData data = new ModelData();
         data.getRoot()
-                .addChild("bone_a", ModelPartBuilder.create().uv(0, 0).cuboid(-7, -10, -7, 14, 16, 14, Dilation.NONE), ModelTransform.pivot(0, 24, 0))
+                .addChild("bone_a", ModelPartBuilder.create().uv(0, 0).cuboid(-7, -10, -7, 14, 16, 14, Dilation.NONE), ModelTransform.origin(0, 24, 0))
                 .addChild("bone_b", ModelPartBuilder.create().uv(0, 30).cuboid(-6, -18, -6, 12, 19, 12, Dilation.NONE), ModelTransform.of(0, -9, 0, -0.2618F, 0, 0))
                 .addChild("bone_c", ModelPartBuilder.create().uv(48, 20).cuboid(-5, -23, -5, 10, 23, 10, Dilation.NONE), ModelTransform.of(0, -16, 0, 0, 0, 0))
                 .addChild("bone_d", ModelPartBuilder.create().uv(40, 53).cuboid(-4, -23, -4, 8, 21, 8, Dilation.NONE), ModelTransform.of(0, -18, 0, -0.1745F, 0, 0))

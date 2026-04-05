@@ -76,7 +76,7 @@ public class ButterflyEntityRenderer extends MobEntityRenderer<ButterflyEntity, 
 
     @Override
     protected int getSkyLight(ButterflyEntity entity, BlockPos pos) {
-        return (int)(super.getSkyLight(entity, pos) * (entity.getWorld() instanceof ClientWorld w ? w.getSkyBrightness(MinecraftClient.getInstance().getRenderTickCounter().getTickDelta(false)) : 1));
+        return (int)(super.getSkyLight(entity, pos) * (entity.getWorld() instanceof ClientWorld w ? w.getSkyBrightness(MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(false)) : 1));
     }
 
     public static class State extends LivingEntityRenderState {
@@ -94,8 +94,8 @@ public class ButterflyEntityRenderer extends MobEntityRenderer<ButterflyEntity, 
 
         public ButterflyEntityModel(ModelPart tree) {
             super(tree, RenderLayers::getEntityAlpha);
-            tree.pivotX = -10;
-            tree.pivotY = 12;
+            tree.originX = -10;
+            tree.originY = 12;
             leftWing = tree.getChild("left_wing");
             rightWing = tree.getChild("right_wing");
         }

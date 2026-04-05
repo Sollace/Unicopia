@@ -44,9 +44,9 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
         if (state.open) {
             state.breath = MathHelper.sin(entity.age / 20) * 0.01F + 0.1F;
 
-            state.leftPageRot = Math.min(state.limbAmplitudeMultiplier + (state.breath * 10), 1);
+            state.leftPageRot = Math.min(state.limbSwingAnimationProgress + (state.breath * 10), 1);
             state.rightPageRot = Math.min(1 - state.leftPageRot, 1);
-            state.openAngle = 0.9f - state.limbFrequency;
+            state.openAngle = 0.9f - state.limbSwingAmplitude;
 
             state.leftPageRot = state.age % 250 < 5 ? (state.age % 5) / 5F : state.leftPageRot;
             state.rightPageRot = state.age % 250 > 105 && state.age % 250 < 110  ? 1-(state.age % 5) / 5F : state.rightPageRot;
@@ -64,7 +64,7 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
     }
 
     @Override
-    protected float method_3919() {
+    protected float getLyingPositionRotationDegrees() {
         return 0;
     }
 

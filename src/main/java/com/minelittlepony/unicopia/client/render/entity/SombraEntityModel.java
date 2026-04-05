@@ -40,7 +40,7 @@ public class SombraEntityModel extends EntityModel<SombraEntityRenderer.State> {
 		        .uv(0, 0).cuboid(-5, -13, -4, 8, 8, 8, Dilation.NONE) // head
         		.uv(0, 4).cuboid(1, -15, -4, 2, 2, 2, Dilation.NONE)  // ear
         		.uv(0, 4).cuboid(1, -15, 2, 2, 2, 2, Dilation.NONE)   // ear
-        		, ModelTransform.pivot(0, 20, 0));
+        		, ModelTransform.origin(0, 20, 0));
 
 		head.addChild("mane", ModelPartBuilder.create()
 		        .uv(32, 0).cuboid(-2.4982F, -6.1228F, -1.5F, 8, 7, 3, Dilation.NONE), ModelTransform.of(-1, -12, 0, 0, 0, 0.48F));
@@ -79,26 +79,26 @@ public class SombraEntityModel extends EntityModel<SombraEntityRenderer.State> {
 	public void setAngles(SombraEntityRenderer.State state) {
 	    super.setAngles(state);
 	    ModelPart part = getRootPart();
-        part.pivotY = state.scale * -20;
+        part.originY = state.scale * -20;
         part.xScale = state.scale;
         part.yScale = state.scale;
         part.zScale = state.scale;
 
         lowerJaw.resetTransform();
-        lowerJaw.pivotY -= state.jawsOpenAmount * 3;
-        lowerJaw.pivotX -= state.jawsOpenAmount * 3;
+        lowerJaw.originY -= state.jawsOpenAmount * 3;
+        lowerJaw.originX -= state.jawsOpenAmount * 3;
         lowerJaw.roll += state.jawsOpenAmount - 0.9F;
 
         upperJaw.resetTransform();
         upperJaw.roll -= state.jawsOpenAmount * 0.2F;
 
 	    part.yaw = -MathHelper.HALF_PI;
-	    part.pivotY += MathHelper.sin(state.age * 0.05F);
-	    part.pivotZ = MathHelper.cos(state.age * 0.045F);
+	    part.originY += MathHelper.sin(state.age * 0.05F);
+	    part.originZ = MathHelper.cos(state.age * 0.045F);
 
 	    head.pitch = state.pitch * MathHelper.RADIANS_PER_DEGREE;
-	    head.yaw = state.yawDegrees * MathHelper.RADIANS_PER_DEGREE;
+	    head.yaw = state.relativeHeadYaw * MathHelper.RADIANS_PER_DEGREE;
 
-	    body.roll = state.limbAmplitudeMultiplier * 0.3F;
+	    body.roll = state.limbSwingAmplitude * 0.3F;
 	}
 }

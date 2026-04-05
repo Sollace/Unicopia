@@ -49,7 +49,7 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntityRenderer.
     public static TexturedModelData getBasketModelData() {
         ModelData modelData = new ModelData();
         ModelPartData root = modelData.getRoot();
-        ModelPartData basket = root.addChild("basket", ModelPartBuilder.create().uv(0, 0).cuboid(-16, -1, -16, 32, 2, 30, Dilation.NONE), ModelTransform.pivot(0, 24, 0));
+        ModelPartData basket = root.addChild("basket", ModelPartBuilder.create().uv(0, 0).cuboid(-16, -1, -16, 32, 2, 30, Dilation.NONE), ModelTransform.origin(0, 24, 0));
         basket.addChild("walls", ModelPartBuilder.create().uv(0, 66).cuboid(-17, -12, -16, 2, 11, 30, Dilation.NONE)
                 .uv(64, 68).cuboid(15, -12, -16, 2, 11, 30, Dilation.NONE)
                 .uv(80, 38).cuboid(-16, -12, -17, 32, 11, 2, Dilation.NONE)
@@ -66,7 +66,7 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntityRenderer.
     public static TexturedModelData getBurnerModelData() {
         ModelData modelData = new ModelData();
         ModelPartData root = modelData.getRoot();
-        root.addChild("burner", ModelPartBuilder.create().uv(8, 0).cuboid(-5.5F, -47, -5.5F, 11, 15, 11, Dilation.NONE), ModelTransform.pivot(0, 24, 0));
+        root.addChild("burner", ModelPartBuilder.create().uv(8, 0).cuboid(-5.5F, -47, -5.5F, 11, 15, 11, Dilation.NONE), ModelTransform.origin(0, 24, 0));
         float angle = 0.37854F;
         float half = MathHelper.HALF_PI;
         root.addChild("rope_d", ModelPartBuilder.create().cuboid(0, -68, 0, 2, 66, 2, Dilation.NONE), ModelTransform.of(-0, -20, -0, angle, 0, -angle));
@@ -100,7 +100,7 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntityRenderer.
     public static TexturedModelData getCanopyModelData() {
         ModelData modelData = new ModelData();
         ModelPartData root = modelData.getRoot();
-        ModelPartData balloon = root.addChild("canopy", ModelPartBuilder.create().cuboid(-54, -178, -59, 112, 120, 112, Dilation.NONE), ModelTransform.pivot(0, 24, 0));
+        ModelPartData balloon = root.addChild("canopy", ModelPartBuilder.create().cuboid(-54, -178, -59, 112, 120, 112, Dilation.NONE), ModelTransform.origin(0, 24, 0));
         balloon.addChild("rope_d", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(-14, -11, -16, 0.4363F, 0, -0.4363F));
         balloon.addChild("rope_c", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(-14, -11, 11, -0.4363F, 0, -0.4363F));
         balloon.addChild("rope_b", ModelPartBuilder.create().cuboid(-2, -68, 0, 2, 68, 2, Dilation.NONE), ModelTransform.of(17, -11, 11, -0.4363F, 0, 0.4363F));
@@ -121,11 +121,11 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntityRenderer.
 
     public static void getHangingBagModelData(String name, ModelPartData root, float x, float z) {
         ModelPartData bag = root.addChild(name, ModelPartBuilder.create()
-                .uv(16, 19).cuboid(-0.5F, 0, -0.5F, 1, 9, 1, Dilation.NONE), ModelTransform.pivot(x, -35, z));
+                .uv(16, 19).cuboid(-0.5F, 0, -0.5F, 1, 9, 1, Dilation.NONE), ModelTransform.origin(x, -35, z));
         ModelPartData knot = bag.addChild("knot", ModelPartBuilder.create()
                 .uv(0, 0).cuboid(-3, 1, -3, 6, 7, 6, Dilation.NONE)
                 .uv(12, 14).cuboid(-2, 0, -2, 4, 1, 4, Dilation.NONE)
-                .uv(0, 13).cuboid(-2, 8, -2, 4, 1, 4, Dilation.NONE), ModelTransform.pivot(0, 9, 0));
+                .uv(0, 13).cuboid(-2, 8, -2, 4, 1, 4, Dilation.NONE), ModelTransform.origin(0, 9, 0));
         knot.addChild("cube_r1", ModelPartBuilder.create().uv(8, 14).cuboid(0, 8, -2, 0, 4, 4, Dilation.NONE), ModelTransform.of(0, 1, 0, 0, -0.7854F, 0));
         knot.addChild("cube_r2", ModelPartBuilder.create().uv(8, 14).cuboid(0, 8, -2, 0, 4, 4, Dilation.NONE), ModelTransform.of(0, 1, 0, 0, 0.7854F, 0));
     }
@@ -156,15 +156,15 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntityRenderer.
                 strut.visible = lifted;
             });
 
-            root.pivotX = state.accessoriesPivotX + state.burnerWiggleProgress * MathHelper.sin(state.age) * 2.5F;
-            root.pivotZ += state.burnerWiggleProgress * MathHelper.cos(state.age) * 2.5F;
-            root.pivotY = state.burnerPivoyY + state.burnerWiggleProgress * 7;
+            root.originX = state.accessoriesPivotX + state.burnerWiggleProgress * MathHelper.sin(state.age) * 2.5F;
+            root.originZ += state.burnerWiggleProgress * MathHelper.cos(state.age) * 2.5F;
+            root.originY = state.burnerPivoyY + state.burnerWiggleProgress * 7;
         }
         if (isBalloon || isSandbags) {
-            root.pivotY = state.burnerWiggleProgress * 3;
-            root.pivotX = state.accessoriesPivotX;
+            root.originY = state.burnerWiggleProgress * 3;
+            root.originX = state.accessoriesPivotX;
             if (state.basket.isOf(WoodType.BAMBOO)) {
-                ropes.forEach(rope -> rope.pivotY = 0);
+                ropes.forEach(rope -> rope.originY = 0);
             }
         }
 
@@ -189,21 +189,21 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntityRenderer.
             float rollRatio = root.roll / rope.roll;
             float pitchRatio = root.pitch / rope.pitch;
 
-            rope.pivotY -= 5F * rollRatio;
-            rope.pivotY -= 5F * pitchRatio;
+            rope.originY -= 5F * rollRatio;
+            rope.originY -= 5F * pitchRatio;
 
             if (i == 0 || i == 3) {
-                rope.pivotZ -= 5 * pitchRatio;
+                rope.originZ -= 5 * pitchRatio;
             }
             if (i == 2 || i == 1) {
-                rope.pivotZ += 5 * pitchRatio;
+                rope.originZ += 5 * pitchRatio;
             }
 
             if (i == 2 || i == 3) {
-                rope.pivotX -= 5 * rollRatio;
+                rope.originX -= 5 * rollRatio;
             }
             if (i == 0 || i == 1) {
-                rope.pivotX += 5 * rollRatio;
+                rope.originX += 5 * rollRatio;
             }
 
             if (isBalloon) {

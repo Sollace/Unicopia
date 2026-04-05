@@ -11,6 +11,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3d;
 
 public class WeatherVaneBlockEntityRenderer implements BlockEntityRenderer<WeatherVaneBlock.WeatherVane> {
     private static final Identifier TEXTURE = Unicopia.id("textures/entity/weather_vane.png");
@@ -28,7 +29,7 @@ public class WeatherVaneBlockEntityRenderer implements BlockEntityRenderer<Weath
         ModelPartData root = modelData.getRoot();
 
         root.addChild("base", ModelPartBuilder.create()
-                .uv(30, 14).mirrored().cuboid(-9, -1, 7, 2, 1, 2, Dilation.NONE), ModelTransform.pivot(8, 0, -8));
+                .uv(30, 14).mirrored().cuboid(-9, -1, 7, 2, 1, 2, Dilation.NONE), ModelTransform.origin(8, 0, -8));
 
         ModelPartData pole = root.addChild("pole", ModelPartBuilder.create(), ModelTransform.NONE);
 
@@ -45,7 +46,7 @@ public class WeatherVaneBlockEntityRenderer implements BlockEntityRenderer<Weath
 
 
     @Override
-    public void render(WeatherVane entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
+    public void render(WeatherVane entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay, Vec3d cameraPos) {
         matrices.push();
         matrices.scale(1, -1, -1);
         matrices.translate(0.5F, 0, -0.5F);

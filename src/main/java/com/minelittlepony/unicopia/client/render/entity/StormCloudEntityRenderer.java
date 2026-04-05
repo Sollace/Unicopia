@@ -67,7 +67,7 @@ public class StormCloudEntityRenderer extends EntityRenderer<StormCloudEntity, S
 
         model.setAngles(state);
         model.render(matrices, buffer, light, OverlayTexture.DEFAULT_UV, DEFAULT_COLOR);
-        model.getRootPart().rotate(matrices);
+        model.getRootPart().applyTransform(matrices);
         for (Vector3f puffPosition : state.puffLocations) {
             model.renderPuff(puffPosition, matrices, buffer, light, OverlayTexture.DEFAULT_UV, DEFAULT_COLOR);
         }
