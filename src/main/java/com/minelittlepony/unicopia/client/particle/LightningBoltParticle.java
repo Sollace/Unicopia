@@ -7,8 +7,6 @@ import org.joml.Vector3f;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.RenderLayer;
@@ -53,7 +51,7 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
             });
 
             if (!effect.silent()) {
-                world.playSound(x, y, z, USounds.Vanilla.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000, 8, true);
+                world.playSoundClient(x, y, z, USounds.Vanilla.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000, 8, true);
             }
         }
 
@@ -74,9 +72,9 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
 
         for (int i = 0; i < kinks - 1; i++) {
             start = start.add(segmentLength, new Vector3f()).add(
-                    (float)world.random.nextTriangular(0, deviation),
+                    world.random.nextTriangular(0, deviation),
                     0,
-                    (float)world.random.nextTriangular(0, deviation)
+                    world.random.nextTriangular(0, deviation)
             );
             nodes.add(start);
         }
@@ -94,9 +92,9 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
 
         while (nodes.size() < intendedLength) {
             startPos = startPos.add(
-                    (float)world.random.nextTriangular(0F, deviation),
-                    (float)world.random.nextTriangular(0F, deviation),
-                    (float)world.random.nextTriangular(0F, deviation),
+                    world.random.nextTriangular(0F, deviation),
+                    world.random.nextTriangular(0F, deviation),
+                    world.random.nextTriangular(0F, deviation),
                     new Vector3f()
             );
 
@@ -107,17 +105,15 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
     }
 
     @Override
-    public void buildGeometry(VertexConsumer drawer, Camera camera, float tickDelta) {
+    public void render(VertexConsumer drawer, Camera camera, float tickDelta) {
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         VertexConsumer buffer = immediate.getBuffer(RenderLayer.getLightning());
 
-        RenderSystem.disableCull();
-
         Vec3d cam = camera.getPos();
 
-        float x = (float)(MathHelper.lerp(tickDelta, prevPosX, this.x) - cam.getX());
-        float y = (float)(MathHelper.lerp(tickDelta, prevPosY, this.y) - cam.getY());
-        float z = (float)(MathHelper.lerp(tickDelta, prevPosZ, this.z) - cam.getZ());
+        float x = (float)(MathHelper.lerp(tickDelta, lastX, this.x) - cam.getX());
+        float y = (float)(MathHelper.lerp(tickDelta, lastY, this.y) - cam.getY());
+        float z = (float)(MathHelper.lerp(tickDelta, lastZ, this.z) - cam.getZ());
 
         Vector3f origin = new Vector3f(x, y, z);
         Vector3f from = new Vector3f();
@@ -133,8 +129,6 @@ public class LightningBoltParticle extends AbstractGeometryBasedParticle {
         }
 
         immediate.draw();
-
-        RenderSystem.enableCull();
     }
 
     private void renderBranch(VertexConsumer buffer, float thickness, Vector3f from, Vector3f to) {

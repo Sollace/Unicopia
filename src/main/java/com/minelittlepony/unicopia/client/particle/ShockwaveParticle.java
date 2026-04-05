@@ -5,7 +5,7 @@ import com.minelittlepony.unicopia.client.render.RenderUtil;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.SimpleParticleType;
@@ -31,11 +31,11 @@ public class ShockwaveParticle extends AbstractBillboardParticle {
     }
 
     @Override
-    protected void renderQuads(Tessellator te, float x, float y, float z, float tickDelta) {
+    protected void renderQuads(VertexConsumer buffer, float x, float y, float z, float tickDelta) {
         if (age < 5 || age % 6 == 0) {
             BlockState state = world.getBlockState(BlockPos.ofFloored(this.x, this.y - 0.5, this.z));
             if (!state.isAir()) {
-                world.playSound(this.x, this.y, this.z, state.getSoundGroup().getBreakSound(), SoundCategory.AMBIENT, 2.5F, 0.4F, true);
+                world.playSoundClient(this.x, this.y, this.z, state.getSoundGroup().getBreakSound(), SoundCategory.AMBIENT, 2.5F, 0.4F, true);
             }
         }
 
@@ -50,7 +50,7 @@ public class ShockwaveParticle extends AbstractBillboardParticle {
             matrices.translate(-0.5, 0, -0.5);
             int sides = 5;
             for (int i = 0; i < sides; i++) {
-                RenderUtil.renderFace(matrices, te, red, green, blue, 0.3F, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+                RenderUtil.renderFace(matrices, buffer, red, green, blue, 0.3F, LightmapTextureManager.MAX_LIGHT_COORDINATE);
                 matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(360 / sides));
                 matrices.translate(-1, 0, 0);
             }

@@ -4,11 +4,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 
 public class RenderUtil {
@@ -28,18 +24,16 @@ public class RenderUtil {
             new Vertex(0, 0, 0, 0, 1)
     };
 
-    public static void renderFace(MatrixStack matrices, Tessellator te, float r, float g, float b, float a, int light) {
-        renderFace(matrices, te, r, g, b, a, light, 1, 1);
+    public static void renderFace(MatrixStack matrices, VertexConsumer buffer, float r, float g, float b, float a, int light) {
+        renderFace(matrices, buffer, r, g, b, a, light, 1, 1);
     }
 
-    public static void renderFace(MatrixStack matrices, Tessellator te, float r, float g, float b, float a, int light, float uScale, float vScale) {
-        BufferBuilder buffer = te.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+    public static void renderFace(MatrixStack matrices, VertexConsumer buffer, float r, float g, float b, float a, int light, float uScale, float vScale) {
         Matrix4f positionmatrix = matrices.peek().getPositionMatrix();
         for (Vertex vertex : UNIT_FACE) {
             Vector4f position = vertex.position(positionmatrix);
             buffer.vertex(position.x, position.y, position.z).texture(vertex.texture().x * uScale, vertex.texture().y * vScale).color(r, g, b, a).light(light);
         }
-        BufferRenderer.drawWithGlobalProgram(buffer.end());
     }
 
     public record Vertex(Vector3f position, Vector3f texture) {

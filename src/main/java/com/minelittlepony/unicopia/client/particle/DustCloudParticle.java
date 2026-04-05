@@ -2,16 +2,11 @@ package com.minelittlepony.unicopia.client.particle;
 
 import org.joml.Vector4f;
 
-import com.minelittlepony.common.util.Color;
 import com.minelittlepony.unicopia.client.render.model.FanModel;
 import com.minelittlepony.unicopia.client.render.model.VertexLightSource;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
@@ -53,9 +48,9 @@ public class DustCloudParticle extends AbstractBillboardParticle {
         };
         if (!effect.getBlockState().isOf(Blocks.GRASS_BLOCK)) {
             int i = MinecraftClient.getInstance().getBlockColors().getColor(effect.getBlockState(), world, BlockPos.ofFloored(x, y, z), 0);
-            red *= Color.r(i);
-            green *= Color.g(i);
-            blue *= Color.b(i);
+            red *= ColorHelper.getRedFloat(i);
+            green *= ColorHelper.getGreenFloat(i);
+            blue *= ColorHelper.getBlueFloat(i);
         }
     }
 
@@ -73,7 +68,7 @@ public class DustCloudParticle extends AbstractBillboardParticle {
     }
 
     @Override
-    protected void renderQuads(Tessellator te, float x, float y, float z, float tickDelta) {
+    protected void renderQuads(VertexConsumer buffer, float x, float y, float z, float tickDelta) {
         float scale = getScale(tickDelta) * 0.5F;
         float alpha = this.alpha * (1 - ((float)age / maxAge));
         int color = ColorHelper.withAlpha((int)(alpha * 255), Colors.WHITE);
@@ -90,9 +85,7 @@ public class DustCloudParticle extends AbstractBillboardParticle {
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((SEPARATION * i + angle)));
             float ringScale = 1 + MathHelper.sin(((i * 10) + age + tickDelta) * 0.05F) * 0.1F;
 
-            BufferBuilder buffer = te.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
             model.render(matrices, buffer, 0, scale * ringScale, color);
-            BufferRenderer.drawWithGlobalProgram(buffer.end());
             matrices.pop();
         }
     }

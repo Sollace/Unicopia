@@ -1,9 +1,9 @@
 package com.minelittlepony.unicopia.client.particle;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.minelittlepony.unicopia.client.render.RenderLayers;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
@@ -17,27 +17,19 @@ public abstract class AbstractBillboardParticle extends AbstractGeometryBasedPar
     }
 
     @Override
-    public void buildGeometry(VertexConsumer drawer, Camera camera, float tickDelta) {
-        RenderSystem.setShaderTexture(0, getTexture());
-
-        RenderSystem.disableCull();
-        RenderSystem.enableBlend();
-        RenderSystem.enableDepthTest();
-        RenderSystem.defaultBlendFunc();
-
+    public void render(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
         Vec3d cam = camera.getPos();
 
-        float renderX = (float)(MathHelper.lerp(tickDelta, prevPosX, x) - cam.getX());
-        float renderY = (float)(MathHelper.lerp(tickDelta, prevPosY, y) - cam.getY());
-        float renderZ = (float)(MathHelper.lerp(tickDelta, prevPosZ, z) - cam.getZ());
+        float renderX = (float)(MathHelper.lerp(tickDelta, lastX, x) - cam.getX());
+        float renderY = (float)(MathHelper.lerp(tickDelta, lastY, y) - cam.getY());
+        float renderZ = (float)(MathHelper.lerp(tickDelta, lastZ, z) - cam.getZ());
 
-        renderQuads(Tessellator.getInstance(), renderX, renderY, renderZ, tickDelta);
-
-        RenderSystem.enableCull();
-        RenderSystem.disableDepthTest();
+        var immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        renderQuads(immediate.getBuffer(RenderLayers.getTranslucentParticle(getTexture())), renderX, renderY, renderZ, tickDelta);
+        immediate.draw();
     }
 
-    protected abstract void renderQuads(Tessellator te, float x, float y, float z, float tickDelta);
+    protected abstract void renderQuads(VertexConsumer vertexConsumer, float x, float y, float z, float tickDelta);
 
     protected abstract Identifier getTexture();
 }

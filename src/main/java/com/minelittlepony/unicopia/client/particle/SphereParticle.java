@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.client.particle;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.render.Camera;
@@ -61,28 +60,24 @@ public class SphereParticle extends Particle {
     }
 
     @Override
-    public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
+    public void render(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
 
         if (alpha <= 0 || radius <= 0) {
             return;
         }
 
         float[] color = ColorHelper.changeSaturation(red, green, blue, 4);
-        RenderSystem.setShaderColor(color[0], color[1], color[2], alpha / 3F);
-        RenderSystem.disableCull();
-        RenderSystem.disableDepthTest();
-        RenderSystem.depthMask(false);
 
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-        VertexConsumer buffer = immediate.getBuffer(RenderLayers.getMagicNoColor());
+        VertexConsumer buffer = immediate.getBuffer(RenderLayers.getMagicColored(net.minecraft.util.math.ColorHelper.fromFloats(color[0], color[1], color[2], alpha / 3F)));
 
         MatrixStack matrices = new MatrixStack();
 
         matrices.push();
         matrices.translate(
-                MathHelper.lerp(tickDelta, prevPosX, x) - camera.getPos().x,
-                MathHelper.lerp(tickDelta, prevPosY, y) - camera.getPos().y,
-                MathHelper.lerp(tickDelta, prevPosZ, z) - camera.getPos().z
+                MathHelper.lerp(tickDelta, lastX, x) - camera.getPos().x,
+                MathHelper.lerp(tickDelta, lastY, y) - camera.getPos().y,
+                MathHelper.lerp(tickDelta, lastZ, z) - camera.getPos().z
         );
 
         float scale = MathHelper.lerp(tickDelta, prevRadius, radius);
@@ -95,11 +90,7 @@ public class SphereParticle extends Particle {
 
         prevRadius = radius;
 
-        RenderSystem.enableDepthTest();
-        RenderSystem.enableCull();
-        RenderSystem.depthMask(true);
         RenderSystem.setShaderColor(1, 1, 1, 1);
-        RenderSystem.setShader(ShaderProgramKeys.PARTICLE);
     }
 
     protected void renderModel(MatrixStack matrices, VertexConsumer buffer, float lerpedRad, float tickDelta, int light) {

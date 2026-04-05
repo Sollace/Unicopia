@@ -38,8 +38,8 @@ public class RainboomParticle extends OrientedBillboardParticle {
         baseSize++;
 
         if (age == 1) {
-            world.playSound(x, y, z, USounds.PARTICLE_RAINBOOM_THUNDER, SoundCategory.AMBIENT, 5, 0.3F, true);
-            world.playSound(x, y, z, USounds.PARTICLE_RAINBOOM_REVERB, SoundCategory.AMBIENT, 10, 1.3F, true);
+            world.playSoundClient(x, y, z, USounds.PARTICLE_RAINBOOM_THUNDER, SoundCategory.AMBIENT, 5, 0.3F, true);
+            world.playSoundClient(x, y, z, USounds.PARTICLE_RAINBOOM_REVERB, SoundCategory.AMBIENT, 10, 1.3F, true);
         }
     }
 }

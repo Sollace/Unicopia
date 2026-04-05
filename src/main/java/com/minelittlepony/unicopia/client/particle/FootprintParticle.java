@@ -36,12 +36,12 @@ public class FootprintParticle extends SpriteBillboardParticle {
     }
 
     @Override
-    public void buildGeometry(VertexConsumer drawer, Camera camera, float tickDelta) {
+    public void render(VertexConsumer drawer, Camera camera, float tickDelta) {
         Vec3d cam = camera.getPos();
 
-        float renderX = (float)(MathHelper.lerp(tickDelta, prevPosX, x) - cam.getX());
-        float renderY = (float)(MathHelper.lerp(tickDelta, prevPosY, y) - cam.getY());
-        float renderZ = (float)(MathHelper.lerp(tickDelta, prevPosZ, z) - cam.getZ());
+        float renderX = (float)(MathHelper.lerp(tickDelta, lastX, x) - cam.getX());
+        float renderY = (float)(MathHelper.lerp(tickDelta, lastY, y) - cam.getY());
+        float renderZ = (float)(MathHelper.lerp(tickDelta, lastZ, z) - cam.getZ());
 
         Vector3f[] corners = new Vector3f[]{
                 new Vector3f(-1, 0, -1),

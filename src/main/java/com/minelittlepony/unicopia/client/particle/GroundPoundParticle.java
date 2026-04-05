@@ -29,7 +29,7 @@ public class GroundPoundParticle extends Particle {
     }
 
     @Override
-    public void buildGeometry(VertexConsumer vertexConsumer, Camera camera, float f) {
+    public void render(VertexConsumer vertexConsumer, Camera camera, float f) {
     }
 
     protected Vec3d getPos() {

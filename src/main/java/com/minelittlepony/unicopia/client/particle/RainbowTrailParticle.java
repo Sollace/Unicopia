@@ -9,14 +9,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.client.render.bezier.BezierSegment;
 import com.minelittlepony.unicopia.client.render.bezier.Trail;
 import com.minelittlepony.unicopia.particle.TargetBoundParticleEffect;
-import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.client.gl.ShaderProgramKeys;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
@@ -61,15 +55,12 @@ public class RainbowTrailParticle extends AbstractBillboardParticle {
     }
 
     @Override
-    protected void renderQuads(Tessellator te, float x, float y, float z, float tickDelta) {
+    protected void renderQuads(VertexConsumer buffer, float x, float y, float z, float tickDelta) {
         float alpha = this.alpha * (1 - (float)age / maxAge);
         int light = getBrightness(tickDelta);
         float scale = getScale(tickDelta);
 
         List<Trail.Segment> segments = trail.getSegments();
-
-        @Nullable
-        BufferBuilder buffer = null;
 
         for (int i = 0; i < segments.size() - 1; i++) {
             segments.get(i).getPlane(segments.get(i + 1), bezier);
@@ -78,16 +69,7 @@ public class RainbowTrailParticle extends AbstractBillboardParticle {
                 corner.position().mul(scale).add(x, y, z);
             }
 
-            if (buffer == null) {
-                buffer = te.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
-            }
-
             quad(buffer, bezier.corners(), segments.get(i).getAlpha() * alpha, tickDelta, light);
-        }
-
-        if (buffer != null) {
-            RenderSystem.setShader(ShaderProgramKeys.POSITION_TEX_COLOR);
-            BufferRenderer.drawWithGlobalProgram(buffer.end());
         }
     }
 

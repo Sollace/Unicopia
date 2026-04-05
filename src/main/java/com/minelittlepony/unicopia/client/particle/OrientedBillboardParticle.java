@@ -6,7 +6,6 @@ import org.joml.Vector3f;
 import com.minelittlepony.unicopia.particle.OrientedBillboardParticleEffect;
 
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.*;
@@ -27,15 +26,15 @@ public abstract class OrientedBillboardParticle extends AbstractBillboardParticl
     }
 
     @Override
-    public void buildGeometry(VertexConsumer drawer, Camera camera, float tickDelta) {
+    public void render(VertexConsumer drawer, Camera camera, float tickDelta) {
         if (!fixed) {
             rotation = camera.getRotation();
         }
-        super.buildGeometry(drawer, camera, tickDelta);
+        super.render(drawer, camera, tickDelta);
     }
 
     @Override
-    protected void renderQuads(Tessellator te, float x, float y, float z, float tickDelta) {
+    protected void renderQuads(VertexConsumer te, float x, float y, float z, float tickDelta) {
         Vector3f[] corners = new Vector3f[]{
                 new Vector3f(-1, -1, 0),
                 new Vector3f(-1,  1, 0),
