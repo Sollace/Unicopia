@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.*;
-import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
 import net.minecraft.client.MinecraftClient;
@@ -13,6 +12,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -134,7 +134,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
         matrices.push();
         matrices.translate(xx, yy, 300F);
 
-        context.drawTexture(RenderLayers::getGuiTextured, reveal ? trait.getSprite() : UNKNOWN, 2, 1, 0, 0, 0, size, size, size, size);
+        context.drawTexture(RenderLayer::getGuiTextured, reveal ? trait.getSprite() : UNKNOWN, 2, 1, 0, 0, 0, size, size, size, size);
 
         matrices.translate(9, 3 + size / 2, 0);
         matrices.scale(0.5F, 0.5F, 1);

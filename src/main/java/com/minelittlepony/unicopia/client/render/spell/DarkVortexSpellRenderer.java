@@ -76,7 +76,7 @@ public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell, Dark
 
         float visualRadius = Math.min(state.radius * 0.8F, absDistance - 1F);
 
-        SphereModel.SPHERE.render(matrices, vertices.getBuffer(RenderLayers.getSolid()), light, 1, visualRadius, Colors.BLACK);
+        SphereModel.SPHERE.render(matrices, vertices.getBuffer(RenderLayer.getSolid()), light, 1, visualRadius, Colors.BLACK);
         SphereModel.SPHERE.render(matrices, vertices.getBuffer(RenderLayers.getMagicColored()), light, 1, visualRadius + 0.05F, DISTORTION_ZONE_COLOR);
         SphereModel.SPHERE.render(matrices, vertices.getBuffer(RenderLayers.getMagicColored()), light, 1, visualRadius + 0.1F, DISTORTION_ZONE_COLOR);
         SphereModel.SPHERE.render(matrices, vertices.getBuffer(RenderLayers.getMagicColored()), light, 1, visualRadius + 0.15F, DISTORTION_ZONE_COLOR);
@@ -89,7 +89,7 @@ public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell, Dark
             cameraDistortion += distance;
         }
 
-        SphereModel.DISK.render(matrices, vertices.getBuffer(RenderLayers.getEndPortal()), light, 1, state.radius * 0.5F, 0);
+        SphereModel.DISK.render(matrices, vertices.getBuffer(RenderLayer.getEndPortal()), light, 1, state.radius * 0.5F, 0);
 
         if (state.radius > 0.3F && absDistance > state.radius) {
             double g = Math.sqrt(ray.x * ray.x + ray.z * ray.z);

@@ -33,8 +33,9 @@ public class ViewportShader {
                     return;
                 }
 
-                processor.setUniforms("Saturation", 1 - corruption + 0.05F);
-                processor.render(client.getFramebuffer(), pool);
+                processor.render(client.getFramebuffer(), pool, pass -> {
+                    pass.setUniform("Saturation", 1 - corruption + 0.05F);
+                });
             }
         }
     }

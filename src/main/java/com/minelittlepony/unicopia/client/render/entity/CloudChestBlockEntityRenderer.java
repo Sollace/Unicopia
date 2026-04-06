@@ -66,7 +66,7 @@ public class CloudChestBlockEntityRenderer extends ChestBlockEntityRenderer<Ches
                 : DoubleBlockProperties.PropertyRetriever::getFallback;
     }
 
-    static class Model {
+    public static class Model {
         private final ModelPart tree;
         private final ModelPart lid;
 
@@ -115,8 +115,8 @@ public class CloudChestBlockEntityRenderer extends ChestBlockEntityRenderer<Ches
             return TexturedModelData.of(data, 64, 64);
         }
 
-        public void setAngles(float animationProgress) {
-            lid.pitch = -(animationProgress * 1.5707964f);
+        public void setAngles(float openness) {
+            lid.pitch = -(openness * 1.5707964f);
         }
 
         public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {

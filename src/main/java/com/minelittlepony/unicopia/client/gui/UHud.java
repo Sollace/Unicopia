@@ -9,7 +9,6 @@ import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.ability.*;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.client.render.spell.DarkVortexSpellRenderer;
 import com.minelittlepony.unicopia.client.sound.*;
 import com.minelittlepony.unicopia.entity.ItemTracker;
@@ -173,7 +172,7 @@ public class UHud {
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-26));
             matrices.scale(0.8F, 0.8F, 1);
             int u = replacing ? 16 : 3;
-            context.drawTexture(RenderLayers::getGuiTextured, HUD_TEXTURE, 0, 0, u, 120, 13, 7, HUD_TEXTURE_SIZE, HUD_TEXTURE_SIZE);
+            context.drawTexture(RenderLayer::getGuiTextured, HUD_TEXTURE, 0, 0, u, 120, 13, 7, HUD_TEXTURE_SIZE, HUD_TEXTURE_SIZE);
             matrices.pop();
         }
 
@@ -186,9 +185,9 @@ public class UHud {
         //if (maxPages > 0) {
             DrawableUtil.drawScaledText(context, Text.literal((currentPage + 1) + "/" + (maxPages + 1)), 44, 38, 0.5F, Colors.WHITE);
             //down
-            context.drawTexture(RenderLayers::getGuiTextured, HUD_TEXTURE, 42, 43, 52, currentPage == 0 ? 6 : 0, 6, 6, HUD_TEXTURE_SIZE, HUD_TEXTURE_SIZE);
+            context.drawTexture(RenderLayer::getGuiTextured, HUD_TEXTURE, 42, 43, 52, currentPage == 0 ? 6 : 0, 6, 6, HUD_TEXTURE_SIZE, HUD_TEXTURE_SIZE);
             //up
-            context.drawTexture(RenderLayers::getGuiTextured, HUD_TEXTURE, 48, 43, 57, currentPage < maxPages ? 0 : 6, 8, 6, HUD_TEXTURE_SIZE, HUD_TEXTURE_SIZE);
+            context.drawTexture(RenderLayer::getGuiTextured, HUD_TEXTURE, 48, 43, 57, currentPage < maxPages ? 0 : 6, 8, 6, HUD_TEXTURE_SIZE, HUD_TEXTURE_SIZE);
         //}
 
         matrices.pop();
@@ -228,7 +227,7 @@ public class UHud {
         int scaledHeight = context.getScaledWindowHeight();
 
         if (vortexDistortion > 25) {
-            context.fill(RenderLayers.getEndPortal(), 0, 0, scaledWidth, scaledHeight, 0);
+            context.fill(RenderLayer.getEndPortal(), 0, 0, scaledWidth, scaledHeight, 0);
             context.getMatrices().push();
             context.getMatrices().translate(scaledWidth / 2, scaledHeight / 2, 0);
             DrawableUtil.drawArc(context.getMatrices(), 0, 20, 0, MathHelper.TAU, 0x000000FF);
@@ -400,7 +399,7 @@ public class UHud {
 
     void renderAbilityIcon(DrawContext context, AbilityDispatcher.Stat stat, int x, int y, int u, int v, int frameWidth, int frameHeight) {
         stat.getAbility(Unicopia.getConfig().hudPage.get()).ifPresent(ability -> {
-            context.drawTexture(RenderLayers::getGuiTextured, ability.getIcon(Pony.of(client.player)), x, y, 0, 0, frameWidth, frameHeight, u, v);
+            context.drawTexture(RenderLayer::getGuiTextured, ability.getIcon(Pony.of(client.player)), x, y, 0, 0, frameWidth, frameHeight, u, v);
         });
     }
 

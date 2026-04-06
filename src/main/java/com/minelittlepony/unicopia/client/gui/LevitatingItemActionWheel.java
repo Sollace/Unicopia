@@ -9,7 +9,6 @@ import org.joml.Quaternionf;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
 
-import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.network.Channel;
@@ -20,6 +19,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -162,7 +162,7 @@ public class LevitatingItemActionWheel {
             int x = (int)(MathHelper.sin(iconPositionAngle) * segmenticonRadius);
             int y = (int)(MathHelper.cos(iconPositionAngle) * segmenticonRadius);
 
-            context.drawTexture(RenderLayers::getGuiTextured, UHud.HUD_TEXTURE, x - iconSize / 2, y - iconSize / 2, 144 + action.getU() * iconSize, action.getV() * iconSize, iconSize, iconSize, 256, 256);
+            context.drawTexture(RenderLayer::getGuiTextured, UHud.HUD_TEXTURE, x - iconSize / 2, y - iconSize / 2, 144 + action.getU() * iconSize, action.getV() * iconSize, iconSize, iconSize, 256, 256);
         }
     }
 

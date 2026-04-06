@@ -7,12 +7,12 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import com.minelittlepony.unicopia.item.component.Appearance;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 
-import net.minecraft.client.render.item.ItemModels;
+import net.minecraft.client.item.ItemModelManager;
 import net.minecraft.item.ItemStack;
 
-@Mixin(ItemModels.class)
+@Mixin(ItemModelManager.class)
 abstract class MixinItemModels {
-    @ModifyVariable(method = "getModel(Lnet/minecraft/item/ItemStack;)Lnet/minecraft/client/render/model/BakedModel;",
+    @ModifyVariable(method = "update(Lnet/minecraft/client/render/item/ItemRenderState;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemDisplayContext;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
             at = @At("HEAD"),
             index = 1)
     private ItemStack modifyStack(ItemStack stack) {

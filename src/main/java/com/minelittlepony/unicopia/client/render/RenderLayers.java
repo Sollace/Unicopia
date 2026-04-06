@@ -4,26 +4,22 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import com.minelittlepony.common.util.Color;
+import com.minelittlepony.unicopia.client.render.shader.URenderPipelines;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.RenderPhase;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.model.ModelBaker;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TriState;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ColorHelper;
 
-public final class RenderLayers extends RenderLayer {
-    private RenderLayers() {
-        super(null, null, null, 0, false, false, null, null);
-    }
+import static net.minecraft.client.render.RenderLayer.*;
+
+public final class RenderLayers {
+
     public static final int DEFAULT_MAGIC_COLOR = ColorHelper.fromFloats(0.6F, 0.8F, 0.9F, 1);
 
-    private static final List<RenderLayer> BLOCK_DESTRUCTION_STAGE_LAYERS = ModelBaker.BLOCK_DESTRUCTION_STAGE_TEXTURES.stream().map(texture -> {
+    private static final List<RenderLayer> BLOCK_DESTRUCTION_STAGE_LAYERS = ModelBaker.BLOCK_DESTRUCTION_RENDER_LAYERS;/*BLOCK_DESTRUCTION_STAGE_TEXTURES.stream().map(texture -> {
         RenderPhase.Texture texture2 = new RenderPhase.Texture(texture, TriState.DEFAULT, false);
         return (RenderLayer)RenderLayer.of("alpha_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256,
                 MultiPhaseParameters.builder()
@@ -34,31 +30,18 @@ public final class RenderLayers extends RenderLayer {
                 .depthTest(EQUAL_DEPTH_TEST)
                 .transparency(CRUMBLING_TRANSPARENCY)
                 .build(false));
-    }).toList();
+    }).toList();*/
 
-    private static final RenderLayer MAGIC_NO_COLOR = of("magic_no_color", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
-            VertexFormat.DrawMode.QUADS, 256, true, true, MultiPhaseParameters.builder()
-            .program(POSITION_COLOR_PROGRAM)
-            .transparency(TRANSLUCENT_TRANSPARENCY)
+    private static final RenderLayer MAGIC_NO_COLOR = of("magic_no_color", 256, true, true, URenderPipelines.TRANSLUCENT_SOLID, MultiPhaseParameters.builder()
             .target(TRANSLUCENT_TARGET)
         .build(false));
 
-    private static final RenderLayer MAGIC_SHIELD = of("magic_shield", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
-            VertexFormat.DrawMode.QUADS, 256, true, true, MultiPhaseParameters.builder()
-            .program(POSITION_COLOR_PROGRAM)
-            .transparency(TRANSLUCENT_TRANSPARENCY)
+    private static final RenderLayer MAGIC_SHIELD = of("magic_shield", 256, true, true, URenderPipelines.TRANSLUCENT_SOLID_NO_CULL, MultiPhaseParameters.builder()
             .target(TRANSLUCENT_TARGET)
-            .cull(DISABLE_CULLING)
-            .writeMaskState(COLOR_MASK)
         .build(false));
 
     private static final Function<Integer, RenderLayer> MAGIC_COLORIN_FUNC = Util.memoize(color -> {
-        return of("magic_colored_" + color,
-                    VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
-                    VertexFormat.DrawMode.QUADS, 256, true, true,
-            MultiPhaseParameters.builder()
-                .program(POSITION_COLOR_PROGRAM)
-                .transparency(TRANSLUCENT_TRANSPARENCY)
+        return of("magic_colored_" + color, 1536, true, true, URenderPipelines.TRANSLUCENT_SOLID_NO_CULL, MultiPhaseParameters.builder()
                 .layering(VIEW_OFFSET_Z_LAYERING)
                // .target(TRANSLUCENT_TARGET)
                 .texturing(solid(color))
@@ -67,18 +50,16 @@ public final class RenderLayers extends RenderLayer {
     private static final RenderLayer MAGIC_COLORED = getMagicColored(DEFAULT_MAGIC_COLOR);
 
     private static final BiFunction<Identifier, Integer, RenderLayer> MAGIC_TINT_FUNC = Util.memoize((texture, color) -> {
-        return of("magic_tint_" + color,
-                    VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL,
-                    VertexFormat.DrawMode.QUADS, 256, true, true,
-            MultiPhaseParameters.builder()
+        return of("magic_tint_" + color, 1536, true, true, URenderPipelines.TRANSLUCENT_SOLID_NO_CULL, MultiPhaseParameters.builder()
                 .texture(new Colored(texture, color))
-                .program(EYES_PROGRAM)
-                .writeMaskState(COLOR_MASK)
-                .transparency(TRANSLUCENT_TRANSPARENCY)
                 .layering(VIEW_OFFSET_Z_LAYERING)
-                .cull(DISABLE_CULLING)
             .build(false));
     });
+
+    private static final Function<Identifier, RenderLayer> PORTAL = Util.memoize(texture -> of("portal", 256, false, false, URenderPipelines.RENDERTYPE_PORTAL_SURFACE, MultiPhaseParameters.builder()
+            .texture(new Texture(texture, TriState.FALSE, false))
+            .target(TRANSLUCENT_TARGET)
+        .build(false)));
 
     public static RenderLayer getCrumbling(int stage) {
         return BLOCK_DESTRUCTION_STAGE_LAYERS.get(stage);
@@ -102,6 +83,10 @@ public final class RenderLayers extends RenderLayer {
 
     public static RenderLayer getMagicColored(Identifier texture, int color) {
         return MAGIC_TINT_FUNC.apply(texture, color);
+    }
+
+    public static RenderLayer getPortal(Identifier texture) {
+        return PORTAL.apply(texture);
     }
 
     private static Texturing solid(int color) {

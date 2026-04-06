@@ -9,9 +9,9 @@ import com.minelittlepony.unicopia.ability.AbilitySlot;
 import com.minelittlepony.unicopia.ability.ActivationType;
 import com.minelittlepony.unicopia.client.KeyBindingsHandler;
 import com.minelittlepony.unicopia.client.UnicopiaClient;
-import com.minelittlepony.unicopia.client.render.RenderLayers;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.util.Arm;
@@ -107,7 +107,7 @@ class Slot {
         matrices.translate(getX(), getY(), 0);
 
         // background
-        context.drawTexture(RenderLayers::getGuiTextured, UHud.HUD_TEXTURE, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
+        context.drawTexture(RenderLayer::getGuiTextured, UHud.HUD_TEXTURE, 0, 0, backgroundU, backgroundV, size, size, 128, 128);
 
         int iconPosition = ((size - iconSize + slotPadding + 1) / 2);
         int sz = iconSize - slotPadding;
@@ -140,9 +140,9 @@ class Slot {
         // contents
         boolean flip = MinecraftClient.getInstance().player.getMainArm() == Arm.LEFT;
         if (flip) {
-            context.drawTexture(RenderLayers::getGuiTextured, UHud.HUD_TEXTURE, 0, 0, size, size, foregroundU + uOffset + size, foregroundV + vOffset, -size, size, 128, 128);
+            context.drawTexture(RenderLayer::getGuiTextured, UHud.HUD_TEXTURE, 0, 0, size, size, foregroundU + uOffset + size, foregroundV + vOffset, -size, size, 128, 128);
         } else {
-            context.drawTexture(RenderLayers::getGuiTextured, UHud.HUD_TEXTURE, 0, 0, foregroundU + uOffset, foregroundV + vOffset, size, size, 128, 128);
+            context.drawTexture(RenderLayer::getGuiTextured, UHud.HUD_TEXTURE, 0, 0, foregroundU + uOffset, foregroundV + vOffset, size, size, 128, 128);
         }
     }
 

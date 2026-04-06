@@ -1,9 +1,8 @@
 package com.minelittlepony.unicopia.client.particle;
 
-import com.minelittlepony.unicopia.client.render.RenderLayers;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Identifier;
@@ -25,7 +24,7 @@ public abstract class AbstractBillboardParticle extends AbstractGeometryBasedPar
         float renderZ = (float)(MathHelper.lerp(tickDelta, lastZ, z) - cam.getZ());
 
         var immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-        renderQuads(immediate.getBuffer(RenderLayers.getTranslucentParticle(getTexture())), renderX, renderY, renderZ, tickDelta);
+        renderQuads(immediate.getBuffer(RenderLayer.getTranslucentParticle(getTexture())), renderX, renderY, renderZ, tickDelta);
         immediate.draw();
     }
 

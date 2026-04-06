@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.item;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Predicate;
 
 import com.minelittlepony.unicopia.InteractionManager;
@@ -11,12 +12,14 @@ import com.minelittlepony.unicopia.entity.player.PlayerCharmTracker;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.item.group.MultiItem;
 import com.minelittlepony.unicopia.util.TypedActionResult;
+import com.mojang.serialization.Codec;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
 
@@ -99,7 +102,7 @@ public class GemstoneItem extends Item implements MultiItem {
         return super.getName();
     }
 
-    public enum Shape {
+    public enum Shape implements StringIdentifiable {
         ARROW,
         BRUSH,
         CROSS,
@@ -119,9 +122,13 @@ public class GemstoneItem extends Item implements MultiItem {
         WAVE;
 
         public static final int LENGTH = values().length;
+        public static final Codec<Shape> CODEC = StringIdentifiable.createCodec(Shape::values);
 
-        public float getId() {
-            return ordinal() / (float)LENGTH;
+        private final String name = name().toLowerCase(Locale.ROOT);
+
+        @Override
+        public String asString() {
+            return name;
         }
     }
 }

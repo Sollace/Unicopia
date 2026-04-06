@@ -4,7 +4,6 @@ import com.minelittlepony.unicopia.block.ItemJarBlock.FluidJarContents;
 import com.minelittlepony.unicopia.block.ItemJarBlock.JarContents;
 import com.minelittlepony.unicopia.block.ItemJarBlock.TileData;
 import com.minelittlepony.unicopia.util.FluidHelper;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import com.minelittlepony.unicopia.util.TypedActionResult;
 
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
@@ -51,7 +50,7 @@ public record FluidOnlyJarContents (
 
     @Override
     public NbtCompound toNBT(NbtCompound compound, WrapperLookup lookup) {
-        compound.put("fluid", NbtSerialisable.encode(FluidVariant.CODEC, fluid, lookup));
+        compound.put("fluid", FluidVariant.CODEC, lookup.getOps(NbtOps.INSTANCE), fluid);
         compound.putLong("amount", amount);
         return compound;
     }

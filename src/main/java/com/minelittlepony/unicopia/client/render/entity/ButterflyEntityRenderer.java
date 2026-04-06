@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.client.render.entity;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
 
 import net.minecraft.client.MinecraftClient;
@@ -69,7 +68,7 @@ public class ButterflyEntityRenderer extends MobEntityRenderer<ButterflyEntity, 
     @Nullable
     protected RenderLayer getRenderLayer(State state, boolean showBody, boolean translucent, boolean showOutline) {
         if (showBody && !translucent && state.translucent) {
-            return RenderLayers.getEntityTranslucent(getTexture(state));
+            return RenderLayer.getEntityTranslucent(getTexture(state));
         }
         return super.getRenderLayer(state, showBody, translucent, showOutline);
     }
@@ -93,7 +92,7 @@ public class ButterflyEntityRenderer extends MobEntityRenderer<ButterflyEntity, 
         private final ModelPart rightWing;
 
         public ButterflyEntityModel(ModelPart tree) {
-            super(tree, RenderLayers::getEntityAlpha);
+            super(tree, RenderLayer::getEntityAlpha);
             tree.originX = -10;
             tree.originY = 12;
             leftWing = tree.getChild("left_wing");

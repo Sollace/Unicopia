@@ -5,7 +5,6 @@ import java.util.Set;
 import org.joml.Quaternionf;
 
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.entity.mob.SpecterEntity;
 
 import net.minecraft.client.MinecraftClient;
@@ -16,6 +15,7 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory.Context;
@@ -113,14 +113,14 @@ public class SpecterEntityRenderer extends BipedEntityRenderer<SpecterEntity, Sp
 
     static class SpecterEntityModel extends BipedEntityModel<State> {
         public SpecterEntityModel(ModelPart root) {
-            super(root, RenderLayers::getEyes);
+            super(root, RenderLayer::getEyes);
             root.hidden = true;
         }
     }
 
     static class SpecterEyesModel extends EntityModel<State> {
         public SpecterEyesModel(ModelPart root) {
-            super(root, RenderLayers::getEyes);
+            super(root, RenderLayer::getEyes);
         }
 
         static TexturedModelData createModelData() {

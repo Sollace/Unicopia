@@ -14,37 +14,36 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
+import com.minelittlepony.unicopia.client.render.RenderUtil;
 import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
-import com.minelittlepony.unicopia.client.render.shader.UShaders;
-import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.mixin.client.MixinMinecraftClient;
-import com.mojang.blaze3d.platform.GlConst;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.ProjectionType;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.FilterMode;
+import com.mojang.blaze3d.textures.TextureFormat;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.SimpleFramebuffer;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Frustum;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.util.Pool;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker.Builder;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Colors;
-import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 
 class PortalFrameBuffer implements AutoCloseable {
     private static final LoadingCache<UUID, PortalFrameBuffer> CACHE = CacheBuilder.newBuilder()
@@ -63,18 +62,17 @@ class PortalFrameBuffer implements AutoCloseable {
         }
     }
 
+    private final MinecraftClient client = MinecraftClient.getInstance();
+
     @Nullable
-    private SimpleFramebuffer framebuffer;
+    private PortalTexture texture;
     @Nullable
     private WorldRenderer renderer;
-    @Nullable
-    private ClientWorld world;
 
     private final Camera camera = new Camera();
+    private final VirtualCameraEntity cameraEntity = new VirtualCameraEntity();
 
     private boolean closed;
-
-    private final MinecraftClient client = MinecraftClient.getInstance();
 
     private final Pool pool = new Pool(3);
 
@@ -83,44 +81,35 @@ class PortalFrameBuffer implements AutoCloseable {
     @Nullable
     private Frustum frustum;
 
-    PortalFrameBuffer(UUID id) { }
+    private final Identifier textureId;
+
+    PortalFrameBuffer(UUID id) {
+        this.textureId = Unicopia.id("portal_surface/" + id.toString());
+    }
 
     public void draw(MatrixStack matrices, VertexConsumerProvider vertices) {
         matrices.translate(0, -0.001, 0);
 
         RenderSystem.assertOnRenderThread();
-        GlStateManager._colorMask(true, true, true, false);
-        GlStateManager._enableDepthTest();
-        GlStateManager._disableCull();
 
-        if (!(closed || framebuffer == null)) {
-            Tessellator tessellator = RenderSystem.renderThreadTesselator();
-            RenderSystem.setShader(UShaders.RENDER_TYPE_PORTAL_SURFACE);
-            RenderSystem.setShaderTexture(0, framebuffer.getColorAttachment());
-            BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-
-            SphereModel.DISK.render(matrices, buffer, 1, 2F, Colors.WHITE);
-            BufferRenderer.drawWithGlobalProgram(buffer.end());
+        if (!(closed || texture == null)) {
+            SphereModel.DISK.render(matrices, vertices.getBuffer(RenderLayers.getPortal(textureId)), 1, 2F, Colors.WHITE);
         } else {
-            int skyColor = client.world.getSkyColor(client.gameRenderer.getCamera().getPos(), client.getRenderTickCounter().getTickDelta(false));
+            int skyColor = client.world.getSkyColor(client.gameRenderer.getCamera().getPos(), client.getRenderTickCounter().getTickProgress(false));
             SphereModel.DISK.render(matrices, vertices.getBuffer(RenderLayers.getMagicShield()), 0, 0, 2, skyColor);
         }
-
-        GlStateManager._enableCull();
-        GlStateManager._colorMask(true, true, true, true);
-        GlStateManager._depthMask(true);
     }
 
-    public void build(PortalSpellRenderer.State spell, CasterState caster, EntityReference.EntityValues<Entity> target) {
+    public void build(PortalSpellRenderer.State spell, CasterState caster) {
         closed = false;
 
         long refreshRate = Unicopia.getConfig().fancyPortalRefreshRate.get();
-        if (refreshRate > 0 && framebuffer != null && System.currentTimeMillis() % refreshRate != 0) {
+        if (refreshRate > 0 && texture != null && System.currentTimeMillis() % refreshRate != 0) {
             return;
         }
 
         if (pendingDraw && recursionCount > Math.max(0, Unicopia.getConfig().maxPortalRecursion.get())) {
-            innerBuild(spell, caster, target);
+            innerBuild(spell, caster);
             return;
         }
 
@@ -129,13 +118,13 @@ class PortalFrameBuffer implements AutoCloseable {
         }
         pendingDraw = true;
         if (recursionCount > 0) {
-            innerBuild(spell, caster, target);
+            innerBuild(spell, caster);
         } else {
-            ((MixinMinecraftClient)client).getRenderTaskQueue().add(() -> innerBuild(spell, caster, target));
+            ((MixinMinecraftClient)client).getRenderTaskQueue().add(() -> innerBuild(spell, caster));
         }
     }
 
-    private void innerBuild(PortalSpellRenderer.State spell, CasterState caster, EntityReference.EntityValues<Entity> target) {
+    private void innerBuild(PortalSpellRenderer.State spell, CasterState caster) {
         synchronized (client) {
             pendingDraw = false;
 
@@ -144,7 +133,8 @@ class PortalFrameBuffer implements AutoCloseable {
             }
             recursionCount++;
 
-            Entity globalCameraEntity = client.cameraEntity;
+            @Nullable
+            final Entity globalCameraEntity = client.getCameraEntity();
 
             try {
                 if (closed || client.interactionManager == null) {
@@ -152,19 +142,9 @@ class PortalFrameBuffer implements AutoCloseable {
                     return;
                 }
 
-                Camera camera = client.gameRenderer.getCamera();
-
-                Entity cameraEntity = UEntities.CAST_SPELL.create(MinecraftClient.getInstance().world, SpawnReason.LOAD);
-
-                Vec3d pos = target.pos();
-
-                Vector4f transformedPos = spell.positionMatrix.transform(new Vector4f(pos.toVector3f(), 1));
-                cameraEntity.setPosition(transformedPos.x, transformedPos.y + 0.5F, transformedPos.z);
-                cameraEntity.setPitch(MathHelper.clamp(camera.getPitch() + spell.pitchChange, -90, 90));
-                cameraEntity.setYaw(MathHelper.wrapDegrees(camera.getYaw() + spell.yawChange));
-
+                cameraEntity.updatePositionAndAngles(camera.getFocusedEntity(), spell);
                 client.cameraEntity = cameraEntity;
-                drawWorld(cameraEntity, 400, 400);
+                drawWorld();
             } finally {
                 client.cameraEntity = globalCameraEntity;
                 recursionCount--;
@@ -172,46 +152,31 @@ class PortalFrameBuffer implements AutoCloseable {
         }
     }
 
-    private void drawWorld(Entity cameraEntity, int width, int height) {
-        Window window = client.getWindow();
+    private void drawWorld() {
+        final Window window = client.getWindow();
+        final ClientWorld world = (ClientWorld)cameraEntity.getWorld();
+        float tickDelta = client.getRenderTickCounter().getTickProgress(false);
 
-        int globalFramebufferWidth = window.getFramebufferWidth();
-        int globalFramebufferHeight = window.getFramebufferHeight();
+        final int width = window.getFramebufferWidth();
+        final int height = window.getFramebufferHeight();
 
-        width = globalFramebufferWidth;
-        height = globalFramebufferHeight;
-
-        Matrix4f proj = RenderSystem.getProjectionMatrix();
+        final Matrix4f proj = RenderSystem.getProjectionMatrix();
         try {
-            client.getFramebuffer().endWrite();
-
-            if (framebuffer == null) {
-                framebuffer = new SimpleFramebuffer(width, height, true);
-                framebuffer.setClearColor(0, 0, 0, 0);
-                framebuffer.clear();
+            if (texture == null) {
+                texture = new PortalTexture(textureId, width, height);
             }
+            texture.resize(width, height);
 
-            window.setFramebufferWidth(width);
-            window.setFramebufferHeight(height);
-
-            RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT | GlConst.GL_COLOR_BUFFER_BIT);
-            RenderSystem.enableCull();
-
-            if (cameraEntity.getWorld() != world) {
-                world = (ClientWorld)cameraEntity.getWorld();
-            }
+            RenderUtil.copyBufferToBuffer(client.getFramebuffer(), texture.swapbuffer);
 
             if (renderer == null) {
                 renderer = new WorldRenderer(client, client.getEntityRenderDispatcher(), client.getBlockEntityRenderDispatcher(), client.getBufferBuilders());
+                client.gameRenderer.getCamera().update(world, cameraEntity, !client.options.getPerspective().isFirstPerson(), client.options.getPerspective().isFrontView(), tickDelta);
                 renderer.setWorld(world);
-                renderer.scheduleChunkRenders3x3x3(
-                        ChunkSectionPos.getSectionCoord((int)cameraEntity.getX()),
-                        ChunkSectionPos.getSectionCoord((int)cameraEntity.getY()),
-                        ChunkSectionPos.getSectionCoord((int)cameraEntity.getZ())
-                );
+                client.gameRenderer.getCamera().update(world, cameraEntity.focusedEntity, !client.options.getPerspective().isFirstPerson(), client.options.getPerspective().isFrontView(), tickDelta);
             }
 
-            camera.update(world, cameraEntity, false, false, 1);
+            camera.update(world, cameraEntity, !client.options.getPerspective().isFirstPerson(), client.options.getPerspective().isFrontView(), tickDelta);
 
             float fov = 120;
             Matrix4f projectionMatrix = client.gameRenderer.getBasicProjectionMatrix(fov);
@@ -219,27 +184,90 @@ class PortalFrameBuffer implements AutoCloseable {
             Quaternionf cameraInverseRotation = camera.getRotation().conjugate(new Quaternionf());
             Matrix4f positionMatrix = new Matrix4f().rotation(cameraInverseRotation);
             renderer.setupFrustum(camera.getPos(), positionMatrix, projectionMatrix);
-            framebuffer.beginWrite(true);
             renderer.render(pool,
                     client.getRenderTickCounter(), false, camera, client.gameRenderer,
-                    client.gameRenderer.getLightmapTextureManager(),
                     positionMatrix,
                     projectionMatrix
             );
-            // Strip transparency
-            RenderSystem.colorMask(false, false, false, true);
-            RenderSystem.clearColor(1, 1, 1, 1);
-            RenderSystem.clear(GlConst.GL_COLOR_BUFFER_BIT);
-            RenderSystem.colorMask(true, true, true, true);
-
-            framebuffer.endWrite();
+            RenderUtil.copyBufferToTexture(client.getFramebuffer(), texture.getGlTexture());
+            RenderUtil.copyBufferToBuffer(texture.swapbuffer, client.getFramebuffer());
         } finally {
-            client.getFramebuffer().beginWrite(true);
+
             client.getBlockEntityRenderDispatcher().setWorld(client.world);
             RenderSystem.setProjectionMatrix(proj, ProjectionType.PERSPECTIVE);
+        }
+    }
 
-            window.setFramebufferWidth(globalFramebufferWidth);
-            window.setFramebufferHeight(globalFramebufferHeight);
+    private class VirtualCameraEntity extends Entity {
+        private static final EntityDimensions DIMENSIONS = EntityDimensions.fixed(0, 0);
+        @Nullable
+        private Entity focusedEntity;
+
+        public VirtualCameraEntity() {
+            super(UEntities.CAST_SPELL, client.world);
+        }
+
+        public void updatePositionAndAngles(Entity focusedEntity, PortalSpellRenderer.State spell) {
+            this.focusedEntity = focusedEntity;
+            Camera camera = client.gameRenderer.getCamera();
+
+            Vector4f transformedPos = spell.positionMatrix.transform(new Vector4f(camera.getPos().toVector3f(), 1));
+            setPosition(transformedPos.x, transformedPos.y, transformedPos.z);
+            setPitch(MathHelper.clamp(camera.getPitch() + spell.pitchChange, -90, 90));
+            setYaw(MathHelper.wrapDegrees(camera.getYaw() + spell.yawChange));
+        }
+
+        @Override
+        public EntityDimensions getDimensions(EntityPose pose) {
+            return DIMENSIONS;
+        }
+
+        @Override
+        protected void initDataTracker(Builder builder) {
+        }
+
+        @Override
+        public boolean damage(ServerWorld world, DamageSource source, float amount) {
+            return false;
+        }
+
+        @Override
+        protected void readCustomDataFromNbt(NbtCompound nbt) { }
+
+        @Override
+        protected void writeCustomDataToNbt(NbtCompound nbt) { }
+    }
+
+    static class PortalTexture extends AbstractTexture implements AutoCloseable {
+        public final SimpleFramebuffer swapbuffer;
+
+        private int width;
+        private int height;
+
+        public PortalTexture(Identifier id, int width, int height) {
+            this.width = width;
+            this.height = height;
+            glTexture = RenderSystem.getDevice().createTexture(() -> "Unicopia / Portal / Color", TextureFormat.RGBA8, width, height, 1);
+            glTexture.setTextureFilter(FilterMode.NEAREST, false);
+            swapbuffer = new SimpleFramebuffer("Unicopia/Portal Swap", width, height, true);
+            MinecraftClient.getInstance().getTextureManager().registerTexture(id, this);
+        }
+
+        public void resize(int width, int height) {
+            if (width != this.width || height != this.height) {
+                this.width = width;
+                this.height = height;
+                glTexture.close();
+                glTexture = RenderSystem.getDevice().createTexture(() -> "Unicopia / Portal / Color", TextureFormat.RGBA8, width, height, 1);
+                glTexture.setTextureFilter(FilterMode.NEAREST, false);
+                swapbuffer.resize(width, height);
+            }
+        }
+
+        @Override
+        public void close() {
+            super.close();
+            swapbuffer.delete();
         }
     }
 
@@ -247,10 +275,10 @@ class PortalFrameBuffer implements AutoCloseable {
     public void close() {
         synchronized (client) {
             closed = true;
-            if (framebuffer != null) {
-                SimpleFramebuffer fb = framebuffer;
-                framebuffer = null;
-                fb.delete();
+            if (texture != null) {
+                PortalTexture fb = texture;
+                texture = null;
+                fb.close();
             }
             if (renderer != null) {
                 renderer.getChunkBuilder().stop();

@@ -10,13 +10,13 @@ import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.common.client.gui.element.Label;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgRequestSpeciesChange;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
@@ -142,14 +142,14 @@ public class TribeSelectionScreen extends GameGui implements HidesHud {
             var element = options.get(0);
 
             float diff = (targetScroll - MathHelper.lerp(client.getRenderTickCounter().getTickProgress(false), prevScrollPosition, scrollPosition)) * 7;
-            context.drawTexture(RenderLayers::getGuiTextured, TEXTURE, (width / 2) + 40 + (scrollPosition < targetScroll ? (int)diff : 0), element.getY() - 20, 10, 165, 153, 30, 85, 312, 312);
-            context.drawTexture(RenderLayers::getGuiTextured, TEXTURE, (width / 2) - 80 + (scrollPosition > targetScroll ? (int)diff : 0), element.getY() - 20, 10, 195, 153, 30, 85, 312, 312);
+            context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, (width / 2) + 40 + (scrollPosition < targetScroll ? (int)diff : 0), element.getY() - 20, 10, 165, 153, 30, 85, 312, 312);
+            context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, (width / 2) - 80 + (scrollPosition > targetScroll ? (int)diff : 0), element.getY() - 20, 10, 195, 153, 30, 85, 312, 312);
             if (element.getBounds().left < 0) {
-                context.drawTexture(RenderLayers::getGuiTextured, TEXTURE, 20, element.getY() - 10, 10, 188, 235, 24, 60, 312, 312);
+                context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, 20, element.getY() - 10, 10, 188, 235, 24, 60, 312, 312);
             }
             element = options.get(options.size() - 1);
             if (element.getBounds().right() > width) {
-                context.drawTexture(RenderLayers::getGuiTextured, TEXTURE, width - 50, element.getY() - 10, 10, 164, 235, 24, 60, 312, 312);
+                context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, width - 50, element.getY() - 10, 10, 164, 235, 24, 60, 312, 312);
             }
         }
     }

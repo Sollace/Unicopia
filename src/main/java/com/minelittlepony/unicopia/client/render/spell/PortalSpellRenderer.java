@@ -8,7 +8,6 @@ import org.joml.Quaternionf;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.PortalSpell;
-import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.client.render.spell.SpellRenderer.SpellRenderState;
@@ -17,6 +16,7 @@ import com.minelittlepony.unicopia.entity.EntityReference.EntityValues;
 import com.minelittlepony.unicopia.entity.mob.CastSpellEntity;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -62,7 +62,7 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell, PortalSpellR
     public void render(MatrixStack matrices, VertexConsumerProvider vertices, State spell, CasterState caster, int light) {
         super.render(matrices, vertices, spell, caster, light);
 
-        VertexConsumer buff = vertices.getBuffer(RenderLayers.getEndGateway());
+        VertexConsumer buff = vertices.getBuffer(RenderLayer.getEndGateway());
 
         matrices.push();
         matrices.translate(0, 0.02, 0);
@@ -96,14 +96,14 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell, PortalSpellR
             PortalFrameBuffer buffer = PortalFrameBuffer.unpool(target.uuid());
             if (buffer != null) {
                 if (inRange) {
-                    buffer.build(spell, caster, target);
+                    buffer.build(spell, caster);
                 }
                 buffer.draw(matrices, vertices);
             }
             if (!inRange) {
                 buffer = PortalFrameBuffer.unpool(spell.portalUuid);
                 if (buffer != null) {
-                    buffer.build(spell, caster, spell.portalState);
+                    buffer.build(spell, caster);
                 }
             }
             matrices.pop();

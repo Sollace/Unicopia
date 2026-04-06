@@ -92,7 +92,7 @@ public class WorldRenderDelegate {
                 recurseFrosting = true;
                 RenderLayerUtil.createUnionBuffer(c -> {
                     client.getEntityRenderDispatcher().render(entity, x, y, z, tickDelta, matrices, c, light);
-                }, vertices, texture -> RenderLayers.getEntityTranslucent(frostingTexture));
+                }, vertices, texture -> RenderLayer.getEntityTranslucent(frostingTexture));
                 recurseFrosting = false;
                 return true;
             }
@@ -102,7 +102,7 @@ public class WorldRenderDelegate {
             return false;
         }
 
-        return Equine.of(entity).filter(eq -> onEntityRender(eq, x, y, z, tickDelta, matrices, vertices, light)).isPresent();
+        return Equine.of(entity).filter(eq -> onEntityRender(eq, x, y, z, tickDelta, matrices, vertices, light, MinecraftClient.getInstance().gameRenderer.getCamera().getPos())).isPresent();
     }
 
     public void afterEntityRender(Equine<?> pony, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
@@ -146,7 +146,7 @@ public class WorldRenderDelegate {
 
     private boolean onEntityRender(Equine<?> pony,
             double x, double y, double z,
-            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, Vec3d cameraPos) {
 
         if (!recurseMinion && pony instanceof Creature creature && creature.isMinion()) {
             try {
@@ -173,7 +173,7 @@ public class WorldRenderDelegate {
         }
 
         if (pony instanceof Living living) {
-            return onLivingRender(living, x, y, z, tickDelta, matrices, vertices, light);
+            return onLivingRender(living, x, y, z, tickDelta, matrices, vertices, light, cameraPos);
         }
 
         return false;
@@ -181,7 +181,7 @@ public class WorldRenderDelegate {
 
     private boolean onLivingRender(Living<?> pony,
             double x, double y, double z,
-            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Vec3d cameraPos) {
 
         if (pony.isBeingCarried()) {
             return true;
@@ -236,23 +236,23 @@ public class WorldRenderDelegate {
             flipAngles(owner);
         }
 
-        return disguiseLookup.getAppearanceFor(pony).map(effect -> disguiseRenderer.render(pony, effect, x, y, z, tickDelta, matrices, vertexConsumers, light)).orElse(false);
+        return disguiseLookup.getAppearanceFor(pony).map(effect -> disguiseRenderer.render(pony, effect, x, y, z, tickDelta, matrices, vertexConsumers, light, cameraPos)).orElse(false);
     }
 
     private void flipAngles(Entity entity) {
         if (entity instanceof PlayerEntity) {
-            entity.prevYaw *= -1;
+            entity.lastYaw *= -1;
             entity.setYaw(entity.getYaw() * -1);
 
-            entity.prevPitch *= -1;
+            entity.lastPitch *= -1;
             entity.setPitch(entity.getPitch() * -1);
         }
 
         if (entity instanceof LivingEntity living) {
             living.bodyYaw = -living.bodyYaw;
-            living.prevBodyYaw = -living.prevBodyYaw;
+            living.lastBodyYaw = -living.lastBodyYaw;
             living.headYaw = -living.headYaw;
-            living.prevHeadYaw = -living.prevHeadYaw;
+            living.lastHeadYaw = -living.lastHeadYaw;
         }
     }
 }

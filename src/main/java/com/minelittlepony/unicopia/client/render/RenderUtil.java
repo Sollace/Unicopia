@@ -3,7 +3,12 @@ package com.minelittlepony.unicopia.client.render;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+import org.spongepowered.include.com.google.common.base.Preconditions;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTexture;
+
+import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
 
@@ -34,6 +39,18 @@ public class RenderUtil {
             Vector4f position = vertex.position(positionmatrix);
             buffer.vertex(position.x, position.y, position.z).texture(vertex.texture().x * uScale, vertex.texture().y * vScale).color(r, g, b, a).light(light);
         }
+    }
+
+    public static void copyBufferToBuffer(Framebuffer from, Framebuffer to) {
+        var commandEncoder = RenderSystem.getDevice().createCommandEncoder();
+        Preconditions.checkArgument(from.textureWidth == to.textureWidth && from.textureHeight == to.textureHeight, "Buffers must be the same size");
+
+        commandEncoder.copyTextureToTexture(to.getDepthAttachment(), from.getDepthAttachment(), 0, 0, 0, 0, 0, from.textureWidth, from.textureHeight);
+        commandEncoder.copyTextureToTexture(to.getColorAttachment(), from.getColorAttachment(), 0, 0, 0, 0, 0, from.textureWidth, from.textureHeight);
+    }
+
+    public static void copyBufferToTexture(Framebuffer from, GpuTexture to) {
+        RenderSystem.getDevice().createCommandEncoder().copyTextureToTexture(to, from.getColorAttachment(), 0, 0, 0, 0, 0, from.textureWidth, from.textureHeight);
     }
 
     public record Vertex(Vector3f position, Vector3f texture) {

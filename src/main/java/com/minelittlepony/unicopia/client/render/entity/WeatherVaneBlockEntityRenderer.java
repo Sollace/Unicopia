@@ -3,9 +3,8 @@ package com.minelittlepony.unicopia.client.render.entity;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.WeatherVaneBlock;
 import com.minelittlepony.unicopia.block.WeatherVaneBlock.WeatherVane;
-import com.minelittlepony.unicopia.client.render.RenderLayers;
-
 import net.minecraft.client.model.*;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -52,7 +51,7 @@ public class WeatherVaneBlockEntityRenderer implements BlockEntityRenderer<Weath
         matrices.translate(0.5F, 0, -0.5F);
 
         pole.yaw = entity.getAngle(tickDelta);
-        root.render(matrices, vertices.getBuffer(RenderLayers.getEntityCutoutNoCull(TEXTURE, true)), light, overlay);
+        root.render(matrices, vertices.getBuffer(RenderLayer.getEntityCutoutNoCull(TEXTURE, true)), light, overlay);
 
         matrices.pop();
     }

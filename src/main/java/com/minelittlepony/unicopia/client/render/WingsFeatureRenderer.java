@@ -86,7 +86,7 @@ public class WingsFeatureRenderer<S extends BipedEntityRenderState> implements A
     protected void createWing(String name, ModelPartData parent, Dilation dilation, int k) {
         ModelPartData base = parent.addChild(name,
                 ModelPartBuilder.create().cuboid(0, 0, 0, 2, 10, 2, dilation),
-                ModelTransform.pivot(k * 2, 2, 2 + k * 0.5F));
+                ModelTransform.origin(k * 2, 2, 2 + k * 0.5F));
 
         for (int i = 0; i < FEATHER_COUNT; i++) {
             int texX = (i % 2) * 8;
@@ -95,7 +95,7 @@ public class WingsFeatureRenderer<S extends BipedEntityRenderState> implements A
                     ModelPartBuilder.create()
                         .uv(8 + texX, 0)
                         .cuboid(-k * (i % 2) / 90F, 0, 0, 2, featherLength, 2, dilation),
-                    ModelTransform.pivot(0, 9, 0));
+                    ModelTransform.origin(0, 9, 0));
         }
     }
 
