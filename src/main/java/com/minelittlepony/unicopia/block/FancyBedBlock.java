@@ -70,6 +70,10 @@ public class FancyBedBlock extends BedBlock {
         return (MapCodec)CODEC;
     }
 
+    public String getBase() {
+        return base;
+    }
+
     @Override
     protected VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return SHAPES.get(state.get(PART).ordinal()).apply(BedBlock.getOppositePartDirection(state));

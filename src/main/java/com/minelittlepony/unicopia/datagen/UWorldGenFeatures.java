@@ -22,7 +22,7 @@ import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.MusicType;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.collection.DataPool;
+import net.minecraft.util.collection.Pool;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.floatprovider.ConstantFloatProvider;
@@ -74,7 +74,7 @@ public class UWorldGenFeatures {
             25,
             PlacedFeatures.createEntry(Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(
             new RandomizedIntBlockStateProvider(
-                new WeightedBlockStateProvider(DataPool.<BlockState>builder()
+                new WeightedBlockStateProvider(Pool.<BlockState>builder()
                         .add(UBlocks.CLAM_SHELL.getDefaultState(), 1)
                         .add(UBlocks.SCALLOP_SHELL.getDefaultState(), 2)
                         .add(UBlocks.TURRET_SHELL.getDefaultState(), 2)
@@ -122,7 +122,7 @@ public class UWorldGenFeatures {
                     .spawnSettings(applyAll(new SpawnSettings.Builder(),
                                 DefaultBiomeFeatures::addFarmAnimals,
                                 DefaultBiomeFeatures::addBatsAndMonsters
-                            ).spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.WOLF, 5, 4, 4))
+                            ).spawn(SpawnGroup.CREATURE, 5, new SpawnSettings.SpawnEntry(EntityType.WOLF, 4, 4))
                             .build())
                     .generationSettings(applyAll(new GenerationSettings.LookupBackedBuilder(registerable.getRegistryLookup(RegistryKeys.PLACED_FEATURE), registerable.getRegistryLookup(RegistryKeys.CONFIGURED_CARVER)),
                                 DefaultBiomeFeatures::addLandCarvers,
@@ -137,7 +137,7 @@ public class UWorldGenFeatures {
                                 DefaultBiomeFeatures::addDefaultFlowers,
                                 DefaultBiomeFeatures::addForestGrass,
                                 DefaultBiomeFeatures::addDefaultMushrooms,
-                                DefaultBiomeFeatures::addDefaultVegetation
+                                builder -> DefaultBiomeFeatures.addDefaultVegetation(builder, false)
                             )
                             .build())
                     .build());

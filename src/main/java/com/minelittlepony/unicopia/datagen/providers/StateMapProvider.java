@@ -13,10 +13,10 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 
 public class StateMapProvider implements DataProvider {
-    private final DataCollector collector;
+    private final DataCollector<Entry> collector;
 
     public StateMapProvider(FabricDataOutput output) {
-        collector = new DataCollector(output.getResolver(DataOutput.OutputType.DATA_PACK, "state_maps"));
+        collector = new DataCollector<>(output.getResolver(DataOutput.OutputType.DATA_PACK, "state_maps"), Entry.CODEC);
     }
 
     @Override
@@ -26,15 +26,10 @@ public class StateMapProvider implements DataProvider {
 
     @Override
     public CompletableFuture<?> run(DataWriter writer) {
-        var exporter = collector.prime(Entry.CODEC);
-
-        new StateMapGenerator().generate((id, builder) -> {
-            exporter.accept(id.getId(), new Entry(builder.build(), false));
-        });
-
+        var exporter = collector.prime();
+        new StateMapGenerator().generate((id, builder) -> exporter.accept(id.getId(), new Entry(builder.build(), false)));
         return collector.upload(writer);
     }
-
 
     record Entry(ReversableBlockStateConverter entries, boolean replace) {
         public static final Codec<Entry> CODEC = RecordCodecBuilder.create(i -> i.group(

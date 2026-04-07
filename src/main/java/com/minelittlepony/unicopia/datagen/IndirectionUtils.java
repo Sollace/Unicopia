@@ -2,23 +2,20 @@ package com.minelittlepony.unicopia.datagen;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
-
-import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import java.util.Optional;
 import com.minelittlepony.unicopia.util.Untyped;
 
 import net.minecraft.block.Block;
-import net.minecraft.data.client.BlockStateSupplier;
-import net.minecraft.data.client.BlockStateVariant;
-import net.minecraft.data.client.When;
+import net.minecraft.client.data.BlockModelDefinitionCreator;
+import net.minecraft.client.render.model.json.BlockModelDefinition;
+import net.minecraft.client.render.model.json.MultipartModelComponent;
+import net.minecraft.client.render.model.json.MultipartModelCondition;
+import net.minecraft.client.render.model.json.MultipartModelConditionBuilder;
+import net.minecraft.client.render.model.json.WeightedVariant;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.state.StateManager;
 import net.minecraft.util.Identifier;
 
 public interface IndirectionUtils {
@@ -42,8 +39,8 @@ public interface IndirectionUtils {
         return new IndirectMultipartBlockStateSupplier(block);
     }
 
-    public class IndirectMultipartBlockStateSupplier implements BlockStateSupplier, DataCollector.Identifiable {
-        private final List<IndirectMultipartBlockStateSupplier.Multipart> multiparts = new ArrayList<>();
+    public class IndirectMultipartBlockStateSupplier implements BlockModelDefinitionCreator, DataCollector.Identifiable {
+        private final List<Part> parts = new ArrayList<>();
 
         private final Identifier block;
 
@@ -61,75 +58,31 @@ public interface IndirectionUtils {
             return block;
         }
 
-        public IndirectMultipartBlockStateSupplier with(List<BlockStateVariant> variants) {
-            this.multiparts.add(new IndirectMultipartBlockStateSupplier.Multipart(variants));
+        public IndirectMultipartBlockStateSupplier with(WeightedVariant variant) {
+            parts.add(new Part(Optional.empty(), variant));
             return this;
         }
 
-        public IndirectMultipartBlockStateSupplier with(BlockStateVariant variant) {
-            return this.with(ImmutableList.of(variant));
-        }
-
-        public IndirectMultipartBlockStateSupplier with(When condition, List<BlockStateVariant> variants) {
-            this.multiparts.add(new IndirectMultipartBlockStateSupplier.ConditionalMultipart(condition, variants));
+        public IndirectMultipartBlockStateSupplier with(MultipartModelCondition condition, WeightedVariant variant) {
+            parts.add(new Part(Optional.of(condition), variant));
             return this;
         }
 
-        public IndirectMultipartBlockStateSupplier with(When condition, BlockStateVariant... variants) {
-            return this.with(condition, ImmutableList.copyOf(variants));
-        }
-
-        public IndirectMultipartBlockStateSupplier with(When condition, BlockStateVariant variant) {
-            return this.with(condition, ImmutableList.of(variant));
+        public IndirectMultipartBlockStateSupplier with(MultipartModelConditionBuilder conditionBuilder, WeightedVariant part) {
+            return with(conditionBuilder.build(), part);
         }
 
         @Override
-        public JsonElement get() {
-            JsonArray jsonArray = new JsonArray();
-            this.multiparts.stream().map(IndirectMultipartBlockStateSupplier.Multipart::get).forEach(jsonArray::add);
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.add("multipart", jsonArray);
-            return jsonObject;
+        public BlockModelDefinition createBlockModelDefinition() {
+            return new BlockModelDefinition(
+                Optional.empty(),
+                Optional.of(new BlockModelDefinition.Multipart(parts.stream().map(Part::toComponent).toList()))
+            );
         }
 
-        static class ConditionalMultipart extends IndirectMultipartBlockStateSupplier.Multipart {
-            private final When when;
-
-            ConditionalMultipart(When when, List<BlockStateVariant> variants) {
-                super(variants);
-                this.when = when;
-            }
-
-            @Override
-            public void validate(StateManager<?, ?> stateManager) {
-                this.when.validate(stateManager);
-            }
-
-            @Override
-            public void extraToJson(JsonObject json) {
-                json.add("when", this.when.get());
-            }
-        }
-
-        static class Multipart implements Supplier<JsonElement> {
-            private final List<BlockStateVariant> variants;
-
-            Multipart(List<BlockStateVariant> variants) {
-                this.variants = variants;
-            }
-
-            public void validate(StateManager<?, ?> stateManager) {
-            }
-
-            public void extraToJson(JsonObject json) {
-            }
-
-            @Override
-            public JsonElement get() {
-                JsonObject jsonObject = new JsonObject();
-                this.extraToJson(jsonObject);
-                jsonObject.add("apply", BlockStateVariant.toJson(this.variants));
-                return jsonObject;
+        record Part(Optional<MultipartModelCondition> condition, WeightedVariant variants) {
+            public MultipartModelComponent toComponent() {
+                return new MultipartModelComponent(condition, variants.toModel());
             }
         }
     }

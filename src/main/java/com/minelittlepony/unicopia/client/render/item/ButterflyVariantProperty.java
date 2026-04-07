@@ -12,7 +12,8 @@ import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
 
 public record ButterflyVariantProperty() implements SelectProperty<ButterflyEntity.Variant> {
-    public static final SelectProperty.Type<ButterflyVariantProperty, ButterflyEntity.Variant> TYPE = SelectProperty.Type.create(MapCodec.unit(new ButterflyVariantProperty()), ButterflyEntity.Variant.CODEC);
+    public static final ButterflyVariantProperty INSTANCE = new ButterflyVariantProperty();
+    public static final SelectProperty.Type<ButterflyVariantProperty, ButterflyEntity.Variant> TYPE = SelectProperty.Type.create(MapCodec.unit(INSTANCE), ButterflyEntity.Variant.CODEC);
 
     @Override
     public ButterflyEntity.Variant getValue(ItemStack stack, ClientWorld world, LivingEntity user, int seed, ItemDisplayContext displayContext) {

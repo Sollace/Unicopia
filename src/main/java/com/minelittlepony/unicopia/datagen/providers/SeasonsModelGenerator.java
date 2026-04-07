@@ -8,7 +8,7 @@ import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.item.UItems;
 
-import net.minecraft.data.client.BlockStateModelGenerator;
+import net.minecraft.client.data.BlockStateModelGenerator;
 import net.minecraft.util.Identifier;
 
 public class SeasonsModelGenerator extends UBlockStateModelGenerator {
@@ -16,10 +16,10 @@ public class SeasonsModelGenerator extends UBlockStateModelGenerator {
     private static final String[] SEASONS = { "fall", "summer", "winter" };
 
     public SeasonsModelGenerator(BlockStateModelGenerator modelGenerator, BiConsumer<Identifier, Supplier<JsonElement>> seasonsModelConsumer) {
-        super(modelGenerator.blockStateCollector, (id, jsonSupplier) -> {
-            modelGenerator.modelCollector.accept(id, jsonSupplier);
+        super(modelGenerator.blockStateCollector, modelGenerator.itemModelOutput, (id, modelSupplier) -> {
+            modelGenerator.modelCollector.accept(id, modelSupplier);
             seasonsModelConsumer.accept(id, () -> {
-                JsonObject textures = jsonSupplier.get().getAsJsonObject().getAsJsonObject("textures");
+                JsonObject textures = modelSupplier.get().getAsJsonObject().getAsJsonObject("textures");
                 JsonObject seasonTextures = new JsonObject();
                 for (String season : SEASONS) {
                     seasonTextures.add(season, createTextures(season, textures));
@@ -28,7 +28,7 @@ public class SeasonsModelGenerator extends UBlockStateModelGenerator {
                 model.add("textures", seasonTextures);
                 return model;
             });
-        }, modelGenerator::excludeFromSimpleItemModelGeneration);
+        });
     }
 
     private static JsonObject createTextures(String season, JsonObject input) {

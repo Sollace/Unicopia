@@ -7,33 +7,31 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.datagen.DataCollector;
 import com.minelittlepony.unicopia.diet.DietProfile;
 import com.minelittlepony.unicopia.diet.FoodGroup;
-import com.mojang.serialization.JsonOps;
-
+import com.minelittlepony.unicopia.diet.FoodGroupEffects;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
-import net.minecraft.data.server.tag.TagProvider;
-import net.minecraft.data.server.tag.TagProvider.TagLookup;
+import net.minecraft.data.tag.TagProvider;
+import net.minecraft.data.tag.TagProvider.TagLookup;
 import net.minecraft.item.Item;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 public class DietsProvider implements DataProvider {
-    private final DataCollector dietsCollector;
-    private final DataCollector categoriesCollector;
+    private final DataCollector<DietProfile> dietsCollector;
+    private final DataCollector<FoodGroupEffects> categoriesCollector;
 
     private final CompletableFuture<TagLookup<Item>> itemTagLookup;
 
     public DietsProvider(FabricDataOutput output, TagProvider<Item> tagProvider) {
-        this.dietsCollector = new DataCollector(output.getResolver(DataOutput.OutputType.DATA_PACK, "diet/races"));
-        this.categoriesCollector = new DataCollector(output.getResolver(DataOutput.OutputType.DATA_PACK, "diet/food_groups"));
+        this.dietsCollector = new DataCollector<>(output.getResolver(DataOutput.OutputType.DATA_PACK, "diet/races"), DietProfile.CODEC);
+        this.categoriesCollector = new DataCollector<>(output.getResolver(DataOutput.OutputType.DATA_PACK, "diet/food_groups"), FoodGroup.EFFECTS_CODEC);
         itemTagLookup = tagProvider.getTagLookupFuture();
     }
 
@@ -55,7 +53,7 @@ public class DietsProvider implements DataProvider {
                     }
                     keyToGroupId.computeIfAbsent(key.id(), i -> new HashSet<>()).add(id);
                 });
-                diets.accept(id, () -> FoodGroup.EFFECTS_CODEC.encode(attributes, JsonOps.INSTANCE, new JsonObject()).result().get());
+                diets.accept(id, attributes);
             });
             var profiles = dietsCollector.prime();
             new DietProfileGenerator().generate((race, profile) -> {
@@ -67,7 +65,7 @@ public class DietsProvider implements DataProvider {
                 if (!issues.isEmpty()) {
                     throw new IllegalArgumentException("Diet profile " + id + " failed validation: " + issues.toString());
                 }
-                profiles.accept(id, () -> DietProfile.CODEC.encode(profile, JsonOps.INSTANCE, new JsonObject()).result().get());
+                profiles.accept(id, profile);
             });
             keyToGroupId.forEach((tag, groups) -> {
                if (groups.size() > 1) {

@@ -20,6 +20,7 @@ public class USoundEventTagProvider extends FabricTagProvider<SoundEvent> {
         getOrCreateTagBuilder(UTags.Sounds.POISON_JOKE_EVENTS).add(
                 SoundEvents.AMBIENT_CAVE.registryKey(),
                 SoundEvents.MUSIC_MENU.registryKey(),
+                SoundEvents.ITEM_SHIELD_BREAK.registryKey(),
                 SoundEvents.ENTITY_GENERIC_EXPLODE.registryKey(),
                 SoundEvents.AMBIENT_NETHER_WASTES_LOOP.registryKey(),
                 SoundEvents.AMBIENT_NETHER_WASTES_MOOD.registryKey(),
@@ -34,7 +35,6 @@ public class USoundEventTagProvider extends FabricTagProvider<SoundEvent> {
                 SoundEvents.BLOCK_WOODEN_PRESSURE_PLATE_CLICK_OFF,
                 SoundEvents.BLOCK_WOODEN_DOOR_CLOSE,
                 SoundEvents.BLOCK_STONE_BREAK,
-                SoundEvents.ITEM_SHIELD_BREAK,
                 SoundEvents.ENTITY_BLAZE_AMBIENT,
                 SoundEvents.ENTITY_ZOMBIE_AMBIENT,
                 SoundEvents.ENTITY_DROWNED_AMBIENT,
@@ -48,6 +48,5 @@ public class USoundEventTagProvider extends FabricTagProvider<SoundEvent> {
                 SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_ULTRA_RARE,
                 SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_RARE
         );
-
     }
 }

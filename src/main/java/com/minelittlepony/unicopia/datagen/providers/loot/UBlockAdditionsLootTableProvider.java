@@ -12,7 +12,7 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.data.server.loottable.BlockLootTableGenerator;
+import net.minecraft.data.loottable.BlockLootTableGenerator;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.loot.LootPool;
@@ -30,11 +30,12 @@ import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.loot.provider.number.UniformLootNumberProvider;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.component.ComponentPredicateTypes;
+import net.minecraft.predicate.component.ComponentsPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.EnchantmentsPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
-import net.minecraft.predicate.item.ItemSubPredicateTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
@@ -62,9 +63,10 @@ public class UBlockAdditionsLootTableProvider extends FabricBlockLootTableProvid
     }
 
     public LootCondition.Builder createWithGemFinderCondition() {
-        return MatchToolLootCondition.builder(ItemPredicate.Builder.create().subPredicate(ItemSubPredicateTypes.ENCHANTMENTS, EnchantmentsPredicate.enchantments(List.of(
+        return MatchToolLootCondition.builder(ItemPredicate.Builder.create().components(ComponentsPredicate.Builder.create()
+                .partial(ComponentPredicateTypes.ENCHANTMENTS, EnchantmentsPredicate.enchantments(List.of(
             new EnchantmentPredicate(entryOf(UEnchantments.GEM_FINDER), NumberRange.IntRange.atLeast(1))
-        ))));
+        ))).build()));
     }
 
     public <T> RegistryEntry<T> entryOf(RegistryKey<T> key) {

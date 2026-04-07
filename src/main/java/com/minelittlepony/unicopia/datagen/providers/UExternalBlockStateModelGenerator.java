@@ -1,12 +1,7 @@
 package com.minelittlepony.unicopia.datagen.providers;
 
-import static net.minecraft.data.client.TextureKey.SIDE;
-import static net.minecraft.data.client.TextureKey.TOP;
-import static net.minecraft.data.client.VariantSettings.MODEL;
-import static net.minecraft.data.client.VariantSettings.X;
-import static net.minecraft.data.client.VariantSettings.Y;
-import static net.minecraft.data.client.VariantSettings.Rotation.R0;
-import static net.minecraft.data.client.VariantSettings.Rotation.R90;
+import static net.minecraft.client.data.TextureKey.SIDE;
+import static net.minecraft.client.data.TextureKey.TOP;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -16,19 +11,19 @@ import com.minelittlepony.unicopia.block.EdibleBlock;
 import com.minelittlepony.unicopia.datagen.IndirectionUtils;
 import com.minelittlepony.unicopia.datagen.IndirectionUtils.IndirectMultipartBlockStateSupplier;
 
-import net.minecraft.data.client.BlockStateModelGenerator;
-import net.minecraft.data.client.BlockStateSupplier;
-import net.minecraft.data.client.BlockStateVariant;
-import net.minecraft.data.client.TextureMap;
-import net.minecraft.data.client.When;
+import net.minecraft.client.data.BlockModelDefinitionCreator;
+import net.minecraft.client.data.BlockStateModelGenerator;
+import net.minecraft.client.data.TextureMap;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Direction;
 
+import static net.minecraft.util.math.AxisRotation.*;
+
 public class UExternalBlockStateModelGenerator extends UBlockStateModelGenerator {
-    public UExternalBlockStateModelGenerator(BlockStateModelGenerator modelGenerator, Consumer<BlockStateSupplier> blockStateCollector) {
-        super(blockStateCollector, modelGenerator.modelCollector, modelGenerator::excludeFromSimpleItemModelGeneration);
+    public UExternalBlockStateModelGenerator(BlockStateModelGenerator modelGenerator, Consumer<BlockModelDefinitionCreator> blockStateCollector) {
+        super(blockStateCollector, modelGenerator.itemModelOutput, modelGenerator.modelCollector);
     }
 
     @Override
@@ -65,12 +60,11 @@ public class UExternalBlockStateModelGenerator extends UBlockStateModelGenerator
 
                 BooleanProperty segment = EdibleBlock.SEGMENTS[index];
 
-                supplier.with(When.create().set(EdibleBlock.AXIS, axis).set(segment, true), BlockStateVariant.create()
-                        .put(MODEL, uploadedModels.computeIfAbsent(i, ii -> {
+                supplier.with(createMultipartConditionBuilder().put(EdibleBlock.AXIS, axis).put(segment, true), createWeightedVariant(createModelVariant(uploadedModels.computeIfAbsent(i, ii -> {
                             return BlockModels.BALE_MODELS[ii].getLeft().upload(blockId.withPath(p -> "block/" + p + BlockModels.BALE_MODELS[ii].getRight()), textures, modelCollector);
                         }))
-                        .put(X, axis == Direction.Axis.Y ? R0 : axis == Direction.Axis.X ? R90 : R90)
-                        .put(Y, axis == Direction.Axis.Y ? R0 : axis == Direction.Axis.X ? R90 : R0)
+                        .withRotationX(axis == Direction.Axis.Y ? R0 : axis == Direction.Axis.X ? R90 : R90)
+                        .withRotationY(axis == Direction.Axis.Y ? R0 : axis == Direction.Axis.X ? R90 : R0))
                 );
             }
         }

@@ -3,7 +3,7 @@ package com.minelittlepony.unicopia.datagen.providers.recipe;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
 
-import net.minecraft.data.server.recipe.RecipeExporter;
+import net.minecraft.data.recipe.RecipeExporter;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.RegistryKey;

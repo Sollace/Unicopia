@@ -36,11 +36,12 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.TagPredicate;
+import net.minecraft.predicate.component.ComponentPredicateTypes;
+import net.minecraft.predicate.component.ComponentsPredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.EnchantmentsPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
-import net.minecraft.predicate.item.ItemSubPredicateTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKeys;
@@ -244,9 +245,14 @@ public class UAdvancementsProvider extends FabricAdvancementProvider {
     public static AdvancementCriterion<?> enchant(RegistryEntry<Enchantment> enchantment) {
         return Criteria.ENCHANTED_ITEM.create(new EnchantedItemCriterion.Conditions(
                 Optional.empty(),
-                Optional.of(ItemPredicate.Builder.create()
-                    .subPredicate(ItemSubPredicateTypes.ENCHANTMENTS, EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(enchantment, NumberRange.IntRange.ANY))))
-                    .build()),
+                Optional.of(
+                    ItemPredicate.Builder.create().components(
+                        ComponentsPredicate.Builder.create().partial(
+                            ComponentPredicateTypes.ENCHANTMENTS,
+                            EnchantmentsPredicate.enchantments(List.of(new EnchantmentPredicate(enchantment, NumberRange.IntRange.ANY)))
+                        ).build()
+                    ).build()
+                ),
                 NumberRange.IntRange.ANY
         ));
     }

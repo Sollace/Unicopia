@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import com.google.gson.JsonElement;
 import com.minelittlepony.unicopia.Unicopia;
+import com.minelittlepony.unicopia.block.FancyBedBlock;
 import com.minelittlepony.unicopia.block.FruitBearingBlock;
 import com.minelittlepony.unicopia.block.PieBlock;
 import com.minelittlepony.unicopia.block.PileBlock;
@@ -15,6 +13,8 @@ import com.minelittlepony.unicopia.block.ShellsBlock;
 import com.minelittlepony.unicopia.block.SlimePustuleBlock;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.zap.ZapAppleLeavesBlock;
+import com.minelittlepony.unicopia.client.render.item.CloudBedModelRenderer;
+import com.minelittlepony.unicopia.client.render.item.CloudChestModelRenderer;
 import com.minelittlepony.unicopia.datagen.UBlockFamilies;
 import com.minelittlepony.unicopia.server.world.Tree;
 
@@ -24,20 +24,22 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ConnectingBlock;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.data.client.BlockStateModelGenerator;
-import net.minecraft.data.client.BlockStateSupplier;
-import net.minecraft.data.client.BlockStateVariant;
-import net.minecraft.data.client.BlockStateVariantMap;
-import net.minecraft.data.client.Model;
-import net.minecraft.data.client.ModelIds;
-import net.minecraft.data.client.Models;
-import net.minecraft.data.client.MultipartBlockStateSupplier;
-import net.minecraft.data.client.TextureKey;
-import net.minecraft.data.client.TextureMap;
-import net.minecraft.data.client.TexturedModel;
-import net.minecraft.data.client.VariantSettings;
-import net.minecraft.data.client.VariantsBlockStateSupplier;
-import net.minecraft.data.client.When;
+import net.minecraft.client.data.BlockModelDefinitionCreator;
+import net.minecraft.client.data.BlockStateModelGenerator;
+import net.minecraft.client.data.BlockStateVariantMap;
+import net.minecraft.client.data.ItemModelOutput;
+import net.minecraft.client.data.ItemModels;
+import net.minecraft.client.data.Model;
+import net.minecraft.client.data.ModelIds;
+import net.minecraft.client.data.ModelSupplier;
+import net.minecraft.client.data.Models;
+import net.minecraft.client.data.MultipartBlockModelDefinitionCreator;
+import net.minecraft.client.data.TextureKey;
+import net.minecraft.client.data.TextureMap;
+import net.minecraft.client.data.TexturedModel;
+import net.minecraft.client.data.VariantsBlockModelDefinitionCreator;
+import net.minecraft.client.render.model.json.ModelVariantOperator;
+import net.minecraft.client.render.model.json.WeightedVariant;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -47,34 +49,53 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.AxisRotation;
 import net.minecraft.util.math.Direction;
 
-import static net.minecraft.data.client.TextureKey.*;
-import static net.minecraft.data.client.VariantSettings.*;
-import static net.minecraft.data.client.VariantSettings.Rotation.*;
+import static net.minecraft.client.data.TextureKey.*;
+import static net.minecraft.util.math.AxisRotation.*;
 
 public class UBlockStateModelGenerator extends BlockStateModelGenerator {
     static final Identifier AIR_BLOCK_ID = Identifier.ofVanilla("block/air");
     static final Identifier AIR_ITEM_ID = Identifier.ofVanilla("item/air");
 
+    private static final BlockStateVariantMap<ModelVariantOperator> UP_DEFAULT_ROTATION_OPERATIONS = BlockStateVariantMap.operations(Properties.FACING)
+            .register(Direction.DOWN, ROTATE_X_180)
+            .register(Direction.UP, NO_OP)
+            .register(Direction.NORTH, ROTATE_X_90)
+            .register(Direction.SOUTH, ROTATE_X_90.then(ROTATE_Y_180))
+            .register(Direction.WEST, ROTATE_X_90.then(ROTATE_Y_270))
+            .register(Direction.EAST, ROTATE_X_90.then(ROTATE_Y_90));
+    private static final BlockStateVariantMap<ModelVariantOperator> DOWN_DEFAULT_ROTATION_OPERATIONS = Util.make(BlockStateVariantMap.operations(Properties.FACING), map -> createDownDefaultFacingVariantMap(map::register));
+
+    public static final void createDownDefaultFacingVariantMap(BiConsumer<Direction, ModelVariantOperator> builder) {
+        builder.accept(Direction.DOWN, NO_OP);
+        builder.accept(Direction.UP, ROTATE_X_180);
+        builder.accept(Direction.SOUTH, ROTATE_X_90);
+        builder.accept(Direction.NORTH, ROTATE_X_90.then(ROTATE_Y_180));
+        builder.accept(Direction.EAST, ROTATE_X_90.then(ROTATE_Y_270));
+        builder.accept(Direction.WEST, ROTATE_X_90.then(ROTATE_Y_90));
+    }
+
     static UBlockStateModelGenerator create(BlockStateModelGenerator modelGenerator) {
-        return new UBlockStateModelGenerator(modelGenerator.blockStateCollector, modelGenerator.modelCollector, modelGenerator::excludeFromSimpleItemModelGeneration);
+        return new UBlockStateModelGenerator(modelGenerator);
     }
 
     protected UBlockStateModelGenerator(BlockStateModelGenerator modelGenerator) {
-        this(modelGenerator.blockStateCollector, modelGenerator.modelCollector, modelGenerator::excludeFromSimpleItemModelGeneration);
+        this(modelGenerator.blockStateCollector, modelGenerator.itemModelOutput, modelGenerator.modelCollector);
     }
 
     public UBlockStateModelGenerator(
-            Consumer<BlockStateSupplier> blockStateCollector,
-            BiConsumer<Identifier, Supplier<JsonElement>> modelCollector,
-            Consumer<Block> simpleItemModelExemptionCollector) {
-        super(blockStateCollector, (id, jsonSupplier) -> {
+            Consumer<BlockModelDefinitionCreator> blockStateCollector,
+            ItemModelOutput itemModelCollector,
+            BiConsumer<Identifier, ModelSupplier> modelCollector) {
+        super(blockStateCollector, itemModelCollector, (id, modelSupplier) -> {
             if (AIR_BLOCK_ID.equals(id) || AIR_ITEM_ID.equals(id)) {
-                throw new IllegalStateException("Registered air id for block model: " + jsonSupplier.get().toString());
+                throw new IllegalStateException("Registered air id for block model: " + modelSupplier.get().toString());
             }
-            modelCollector.accept(id, jsonSupplier);
-        }, item -> simpleItemModelExemptionCollector.accept(Block.getBlockFromItem(item)));
+            modelCollector.accept(id, modelSupplier);
+        });
     }
 
     @Override
@@ -102,12 +123,12 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
 
         registerAll(UBlockStateModelGenerator::registerCompactedBlock, UBlocks.COMPACTED_CLOUD, UBlocks.COMPACTED_CLOUD_BRICKS, UBlocks.COMPACTED_CLOUD_PLANKS, UBlocks.COMPACTED_DENSE_CLOUD, UBlocks.COMPACTED_ETCHED_CLOUD);
         registerChest(UBlocks.CLOUD_CHEST, UBlocks.CLOUD);
-        registerFancyBed(UBlocks.CLOUD_BED, UBlocks.CLOUD);
-        registerFancyBed(UBlocks.CLOTH_BED, Blocks.SPRUCE_PLANKS);
+        registerFancyBed(UBlocks.CLOUD_BED, UBlocks.CLOUD, true);
+        registerFancyBed(UBlocks.CLOTH_BED, Blocks.SPRUCE_PLANKS, false);
 
         // chitin blocks
         registerTopsoil(UBlocks.SURFACE_CHITIN, UBlocks.CHITIN);
-        registerHollow(UBlocks.CHITIN);
+        registerSingleton(UBlocks.CHITIN, BlockModels.CUBE_BOTTOM);
         registerCubeAllModelTexturePool(UBlocks.CHISELLED_CHITIN).family(UBlockFamilies.CHISELED_CHITIN);
         registerCubeAllModelTexturePool(UBlocks.POLISHED_CHITIN).family(UBlockFamilies.POLISHED_CHITIN);
         registerHiveBlock(UBlocks.HIVE);
@@ -116,23 +137,23 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerHull(UBlocks.POLISHED_CHITIN_HULL, UBlocks.CHITIN, UBlocks.POLISHED_CHITIN);
         registerItemModel(UBlocks.SLIME_PUSTULE.asItem());
         registerSlimeLayers(UBlocks.SLIME);
-        blockStateCollector.accept(VariantsBlockStateSupplier.create(UBlocks.SLIME_PUSTULE)
-                .coordinate(BlockStateVariantMap.create(SlimePustuleBlock.SHAPE)
-                .register(state -> BlockStateVariant.create().put(MODEL, ModelIds.getBlockSubModelId(UBlocks.SLIME_PUSTULE, "_" + state.asString())))));
+        blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(UBlocks.SLIME_PUSTULE)
+                .with(BlockStateVariantMap.models(SlimePustuleBlock.SHAPE)
+                .generate(state -> createWeightedVariant(ModelIds.getBlockSubModelId(UBlocks.SLIME_PUSTULE, "_" + state.asString())))));
         registerPie(UBlocks.APPLE_PIE);
 
         // palm wood
-        registerLog(UBlocks.PALM_LOG).log(UBlocks.PALM_LOG).wood(UBlocks.PALM_WOOD);
-        registerLog(UBlocks.STRIPPED_PALM_LOG).log(UBlocks.STRIPPED_PALM_LOG).wood(UBlocks.STRIPPED_PALM_WOOD);
+        createLogTexturePool(UBlocks.PALM_LOG).log(UBlocks.PALM_LOG).wood(UBlocks.PALM_WOOD);
+        createLogTexturePool(UBlocks.STRIPPED_PALM_LOG).log(UBlocks.STRIPPED_PALM_LOG).wood(UBlocks.STRIPPED_PALM_WOOD);
         registerCubeAllModelTexturePool(UBlocks.PALM_PLANKS).family(UBlockFamilies.PALM);
         registerHangingSign(UBlocks.STRIPPED_PALM_LOG, UBlocks.PALM_HANGING_SIGN, UBlocks.PALM_WALL_HANGING_SIGN);
         registerSingleton(UBlocks.PALM_LEAVES, TexturedModel.LEAVES);
 
         // zap wood
-        registerLog(UBlocks.ZAP_LOG)
+        createLogTexturePool(UBlocks.ZAP_LOG)
             .log(UBlocks.ZAP_LOG).wood(UBlocks.ZAP_WOOD)
             .log(UBlocks.WAXED_ZAP_LOG).wood(UBlocks.WAXED_ZAP_WOOD);
-        registerLog(UBlocks.STRIPPED_ZAP_LOG)
+        createLogTexturePool(UBlocks.STRIPPED_ZAP_LOG)
             .log(UBlocks.STRIPPED_ZAP_LOG).wood(UBlocks.STRIPPED_ZAP_WOOD)
             .log(UBlocks.WAXED_STRIPPED_ZAP_LOG).wood(UBlocks.WAXED_STRIPPED_ZAP_WOOD);
         registerCubeAllModelTexturePool(UBlocks.ZAP_PLANKS).family(UBlockFamilies.ZAP).parented(UBlocks.ZAP_PLANKS, UBlocks.WAXED_ZAP_PLANKS).family(UBlockFamilies.WAXED_ZAP);
@@ -142,13 +163,13 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
 
         // golden oak wood
         registerSimpleCubeAll(UBlocks.GOLDEN_OAK_LEAVES);
-        registerLog(UBlocks.GOLDEN_OAK_LOG).log(UBlocks.GOLDEN_OAK_LOG).wood(UBlocks.GOLDEN_OAK_WOOD);
-        registerLog(UBlocks.STRIPPED_GOLDEN_OAK_LOG).log(UBlocks.STRIPPED_GOLDEN_OAK_LOG).wood(UBlocks.STRIPPED_GOLDEN_OAK_WOOD);
+        createLogTexturePool(UBlocks.GOLDEN_OAK_LOG).log(UBlocks.GOLDEN_OAK_LOG).wood(UBlocks.GOLDEN_OAK_WOOD);
+        createLogTexturePool(UBlocks.STRIPPED_GOLDEN_OAK_LOG).log(UBlocks.STRIPPED_GOLDEN_OAK_LOG).wood(UBlocks.STRIPPED_GOLDEN_OAK_WOOD);
         registerCubeAllModelTexturePool(UBlocks.GOLDEN_OAK_PLANKS).family(UBlockFamilies.GOLDEN_OAK);
 
         // plants
-        Tree.REGISTRY.stream().filter(tree -> tree.sapling().isPresent()).forEach(tree -> registerFlowerPotPlant(tree.sapling().get(), tree.pot().get(), TintType.NOT_TINTED));
-        registerTintableCross(UBlocks.CURING_JOKE, TintType.NOT_TINTED);
+        Tree.REGISTRY.stream().filter(tree -> tree.sapling().isPresent()).forEach(tree -> registerFlowerPotPlant(tree.sapling().get(), tree.pot().get(), CrossType.NOT_TINTED));
+        registerTintableCross(UBlocks.CURING_JOKE, CrossType.NOT_TINTED);
         registerWithStages(UBlocks.GOLD_ROOT, Properties.AGE_7, BlockModels.CROP, 0, 0, 1, 1, 2, 2, 2, 3);
 
         registerTallCrop(UBlocks.PINEAPPLE, Properties.AGE_7, Properties.BLOCK_HALF,
@@ -164,7 +185,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerParentedItemModel(UBlocks.MANGO_LEAVES, ModelIds.getBlockModelId(Blocks.JUNGLE_LEAVES));
 
         // fruit
-        UModelProvider.FRUITS.forEach((block, item) -> registerSingleton(block, TextureMap.cross(ModelIds.getItemModelId(item)), BlockModels.FRUIT));
+        UModelProvider.FRUITS.forEach((block, item) -> registerSingleton(block, BlockModels.FRUIT));
 
         // shells
         registerAll(UBlockStateModelGenerator::registerShell, UBlocks.CLAM_SHELL, UBlocks.TURRET_SHELL, UBlocks.SCALLOP_SHELL);
@@ -177,7 +198,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerItemModel(UBlocks.MYSTERIOUS_EGG.asItem());
         FireModels.registerSoulFire(this, UBlocks.SPECTRAL_FIRE, Blocks.SOUL_FIRE);
 
-        blockStateCollector.accept(createSingletonBlockState(UBlocks.JAR, BlockModels.TEMPLATE_JAR));
+        blockStateCollector.accept(createSingletonBlockState(UBlocks.JAR, createWeightedVariant(BlockModels.TEMPLATE_JAR)));
         registerWeatherJar(UBlocks.CLOUD_JAR);
         registerWeatherJar(UBlocks.STORM_JAR);
         registerWeatherJar(UBlocks.ZAP_JAR);
@@ -185,9 +206,9 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
     }
 
     public void registerWeatherJar(Block jar) {
-        blockStateCollector.accept(MultipartBlockStateSupplier.create(jar)
-                .with(BlockStateVariant.create().put(VariantSettings.MODEL, BlockModels.TEMPLATE_JAR))
-                .with(BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(jar, "_filling"))));
+        blockStateCollector.accept(MultipartBlockModelDefinitionCreator.create(jar)
+                .with(createWeightedVariant(BlockModels.TEMPLATE_JAR))
+                .with(createWeightedVariant(ModelIds.getBlockSubModelId(jar, "_filling"))));
     }
 
     @SafeVarargs
@@ -200,9 +221,8 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
 
     @Override
     public void registerParentedItemModel(Block block, Identifier parentModelId) {
-        Item item = block.asItem();
-        if (item != Items.AIR) {
-            registerParentedItemModel(item, parentModelId);
+        if (block.asItem() != Items.AIR) {
+            super.registerParentedItemModel(block, parentModelId);
         }
     }
 
@@ -213,10 +233,10 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
             @Override
             public BlockTexturePool stairs(Block block) {
                 TextureMap textMap = textures.copyAndAdd(BlockModels.STEP, textures.getTexture(SIDE));
-                Identifier inner = BlockModels.INNER_STAIRS.upload(block, textMap, modelCollector);
+                WeightedVariant inner = createWeightedVariant(BlockModels.INNER_STAIRS.upload(block, textMap, modelCollector));
                 Identifier straight = BlockModels.STRAIGHT_STAIRS.upload(block, textMap, modelCollector);
-                Identifier outer = BlockModels.OUTER_STAIRS.upload(block, textMap, modelCollector);
-                blockStateCollector.accept(BlockStateModelGenerator.createStairsBlockState(block, inner, straight, outer));
+                WeightedVariant outer = createWeightedVariant(BlockModels.OUTER_STAIRS.upload(block, textMap, modelCollector));
+                blockStateCollector.accept(createStairsBlockState(block, inner, createWeightedVariant(straight), outer));
                 registerParentedItemModel(block, straight);
                 return this;
             }
@@ -232,20 +252,20 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
             @Override
             public BlockTexturePool stairs(Block block) {
                 TextureMap textMap = textures.copyAndAdd(BlockModels.STEP, twoStepTexture);
-                Identifier inner = BlockModels.INNER_STAIRS.upload(block, textMap, modelCollector);
+                WeightedVariant inner = createWeightedVariant(BlockModels.INNER_STAIRS.upload(block, textMap, modelCollector));
                 Identifier straight = BlockModels.STRAIGHT_STAIRS.upload(block, textMap, modelCollector);
-                Identifier outer = BlockModels.OUTER_STAIRS.upload(block, textMap, modelCollector);
-                blockStateCollector.accept(BlockStateModelGenerator.createStairsBlockState(block, inner, straight, outer));
+                WeightedVariant outer = createWeightedVariant(BlockModels.OUTER_STAIRS.upload(block, textMap, modelCollector));
+                blockStateCollector.accept(createStairsBlockState(block, inner, createWeightedVariant(straight), outer));
                 registerParentedItemModel(block, straight);
                 return this;
             }
 
             @Override
             public BlockTexturePool slab(Block block) {
-                TextureMap textMap = textures.copyAndAdd(SIDE, twoStepTexture);
+                TextureMap textMap = textures.copyAndAdd(TextureKey.SIDE, twoStepTexture);
                 Identifier lower = Models.SLAB.upload(block, textMap, modelCollector);
-                Identifier upper = Models.SLAB_TOP.upload(block, textMap, modelCollector);
-                blockStateCollector.accept(BlockStateModelGenerator.createSlabBlockState(block, lower, upper, baseModelId));
+                WeightedVariant upper = createWeightedVariant(Models.SLAB_TOP.upload(block, textMap, modelCollector));
+                blockStateCollector.accept(createSlabBlockState(block, createWeightedVariant(lower), upper, createWeightedVariant(baseModelId)));
                 registerParentedItemModel(block, lower);
                 return this;
             }
@@ -255,42 +275,31 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
     public void registerTopsoil(Block block, Block dirt) {
         TexturedModel model = TexturedModel.CUBE_BOTTOM_TOP.get(dirt);
         registerTopSoil(block,
-                model.upload(block, modelCollector),
-                BlockStateVariant.create().put(MODEL, Models.CUBE_BOTTOM_TOP.upload(dirt, "_snow", model.getTextures()
+                createWeightedVariant(model.upload(block, modelCollector)),
+                createWeightedVariant(Models.CUBE_BOTTOM_TOP.upload(dirt, "_snow", model.getTextures()
                         .copyAndAdd(SIDE, ModelIds.getBlockSubModelId(dirt, "_side_snow_covered")
                 ), modelCollector))
         );
     }
 
-    public void registerHollow(Block block) {
-        Identifier outside = ModelIds.getBlockModelId(UBlocks.CHITIN);
-        Identifier inside = ModelIds.getBlockSubModelId(UBlocks.CHITIN, "_bottom");
-        registerSingleton(UBlocks.CHITIN, new TextureMap()
-                .put(SIDE, outside)
-                .put(TOP, outside)
-                .put(BOTTOM, inside), Models.CUBE_BOTTOM_TOP);
-    }
-
     public void registerRotated(Block block, TexturedModel.Factory modelFactory) {
         Identifier modelId = modelFactory.get(block).upload(block, modelCollector);
-        blockStateCollector.accept(VariantsBlockStateSupplier.create(block, BlockStateVariant.create()
-                .put(MODEL, modelId))
-                .coordinate(createUpDefaultFacingVariantMap()));
+        blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(block, createWeightedVariant(modelId))
+                .coordinate(UP_DEFAULT_ROTATION_OPERATIONS));
     }
 
     public void registerPlunderVine(Block plant, Block bud) {
-        var rotationVariants = BlockStateVariantMap.create(Properties.FACING);
-        createDownDefaultFacingVariantMap(rotationVariants::register);
-        blockStateCollector.accept(VariantsBlockStateSupplier.create(bud, BlockStateVariant.create()
-                .put(MODEL, ModelIds.getBlockModelId(bud)))
-                .coordinate(rotationVariants));
+        blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(bud, createWeightedVariant(ModelIds.getBlockModelId(bud)))
+                .coordinate(DOWN_DEFAULT_ROTATION_OPERATIONS));
 
-        var supplier = MultipartBlockStateSupplier.create(plant);
+        var supplier = MultipartBlockModelDefinitionCreator.create(plant);
         String[] stages = { "", "_2", "_3", "_4", "_4"};
         Properties.AGE_4.getValues().forEach(age -> {
             Identifier modelId = ModelIds.getBlockSubModelId(plant, "_branch" + stages[age]);
             createDownDefaultFacingVariantMap((direction, variant) -> {
-                supplier.with(When.create().set(Properties.AGE_4, age).set(ConnectingBlock.FACING_PROPERTIES.get(direction), true), variant.put(MODEL, modelId));
+                supplier.with(createMultipartConditionBuilder().put(Properties.AGE_4, age).put(ConnectingBlock.FACING_PROPERTIES.get(direction), true),
+                        createWeightedVariant(variant.apply(createModelVariant(modelId)))
+                );
             });
         });
 
@@ -298,36 +307,25 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerParentedItemModel(bud, ModelIds.getBlockModelId(bud));
     }
 
-    public final void createDownDefaultFacingVariantMap(BiConsumer<Direction, BlockStateVariant> builder) {
-        builder.accept(Direction.DOWN, BlockStateVariant.create());
-        builder.accept(Direction.UP, BlockStateVariant.create().put(X, R180));
-        builder.accept(Direction.SOUTH, BlockStateVariant.create().put(X, R90));
-        builder.accept(Direction.NORTH, BlockStateVariant.create().put(X, R90).put(Y, R180));
-        builder.accept(Direction.EAST, BlockStateVariant.create().put(X, R90).put(Y, R270));
-        builder.accept(Direction.WEST, BlockStateVariant.create().put(X, R90).put(Y, R90));
-    }
-
     public void registerCompactedBlock(Block block) {
         for (Model model : BlockModels.FLATTENED_MODELS) {
             model.upload(block, TextureMap.all(ModelIds.getBlockModelId(block).withPath(p -> p.replace("compacted_", ""))), modelCollector);
         }
-        MultipartBlockStateSupplier supplier = MultipartBlockStateSupplier.create(block);
+        MultipartBlockModelDefinitionCreator supplier = MultipartBlockModelDefinitionCreator.create(block);
         for (byte i = 0; i < BlockModels.FLATTENED_MODEL_ROTATIONS.length; i++) {
             final BooleanProperty yAxis = (i & 0b100) == 0 ? Properties.DOWN : Properties.UP;
             final BooleanProperty xAxis = (i & 0b010) == 0 ? Properties.NORTH: Properties.SOUTH;
             final BooleanProperty zAxis = (i & 0b001) == 0 ? Properties.EAST : Properties.WEST;
-            final Rotation xRot = yAxis == Properties.DOWN ? R0 : R180;
-            final Rotation yRot = BlockModels.FLATTENED_MODEL_ROTATIONS[i];
+            final AxisRotation xRot = yAxis == Properties.DOWN ? R0 : R180;
+            final AxisRotation yRot = BlockModels.FLATTENED_MODEL_ROTATIONS[i];
             final String[] suffexes = yRot.ordinal() % 2 == 0 ? BlockModels.FLATTENED_MODEL_SUFFEXES : BlockModels.FLATTENED_MODEL_SUFFEXES_ROT;
             for (byte v = 0; v < suffexes.length; v++) {
-                supplier.with(When.create()
-                            .set(yAxis, (v & 0b100) != 0)
-                            .set(xAxis, (v & 0b010) != 0)
-                            .set(zAxis, (v & 0b001) != 0), BlockStateVariant.create()
-                        .put(MODEL, ModelIds.getBlockSubModelId(block, "_corner_" + suffexes[v]))
-                        .put(UVLOCK, true)
-                        .put(X, xRot)
-                        .put(Y, yRot)
+                supplier.with(createMultipartConditionBuilder()
+                            .put(yAxis, (v & 0b100) != 0)
+                            .put(xAxis, (v & 0b010) != 0)
+                            .put(zAxis, (v & 0b001) != 0), createWeightedVariant(createModelVariant(ModelIds.getBlockSubModelId(block, "_corner_" + suffexes[v]))
+                        .withUVLock(true)
+                        .withRotationX(xRot).withRotationY(yRot))
                 );
             }
         }
@@ -335,35 +333,41 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
     }
 
     public void registerChest(Block chest, Block particleSource) {
-        registerBuiltin(ModelIds.getBlockModelId(chest), particleSource).includeWithoutItem(chest);
-        ItemModels.CHEST.upload(ModelIds.getItemModelId(chest.asItem()), TextureMap.particle(particleSource), modelCollector);
+        registerBuiltinWithParticle(chest, particleSource);
+        Item item = chest.asItem();
+        Identifier identifier = Models.TEMPLATE_CHEST.upload(item, TextureMap.particle(particleSource), modelCollector);
+        itemModelOutput.accept(item, ItemModels.special(identifier, new CloudChestModelRenderer.Unbaked(CloudChestModelRenderer.TEXTURE, 0)));
     }
 
-    public void registerFancyBed(Block bed, Block particleSource) {
+    public void registerFancyBed(Block bed, Block particleSource, boolean translucent) {
         registerBuiltinWithParticle(bed, ModelIds.getBlockModelId(particleSource));
-        super.registerBed(bed, particleSource);
+        WeightedVariant weightedVariant = createWeightedVariant(ModelIds.getBlockModelId(bed));
+        this.blockStateCollector.accept(createSingletonBlockState(bed, weightedVariant));
+        Item item = bed.asItem();
+        Identifier itemModelId = Models.TEMPLATE_BED.upload(ModelIds.getItemModelId(item), TextureMap.particle(particleSource), modelCollector);
+        this.itemModelOutput.accept(item, ItemModels.special(itemModelId, new CloudBedModelRenderer.Unbaked(Unicopia.id("textures/entity/bed/" + ((FancyBedBlock)bed).getBase() + ".png"), translucent)));
     }
 
     public void registerStableDoor(Block door) {
-        var variants = BlockStateVariantMap.create(Properties.HORIZONTAL_FACING, Properties.DOUBLE_BLOCK_HALF, Properties.DOOR_HINGE, Properties.OPEN);
+        var variants = BlockStateVariantMap.models(Properties.HORIZONTAL_FACING, Properties.DOUBLE_BLOCK_HALF, Properties.DOOR_HINGE, Properties.OPEN);
         registerItemModel(door.asItem());
         buildDoorStateModels(door, "", variants::register);
-        blockStateCollector.accept(VariantsBlockStateSupplier.create(door).coordinate(variants));
+        blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(door).with(variants));
     }
 
     public void registerLockingDoor(Block door) {
-        var variants = BlockStateVariantMap.create(Properties.HORIZONTAL_FACING, Properties.DOUBLE_BLOCK_HALF, Properties.DOOR_HINGE, Properties.OPEN, Properties.LOCKED);
+        var variants = BlockStateVariantMap.models(Properties.HORIZONTAL_FACING, Properties.DOUBLE_BLOCK_HALF, Properties.DOOR_HINGE, Properties.OPEN, Properties.LOCKED);
         registerItemModel(door.asItem());
         buildDoorStateModels(door, "", (facing, half, hinge, open, map) -> variants.register(facing, half, hinge, open, false, map));
         buildDoorStateModels(door, "_locked", (facing, half, hinge, open, map) -> variants.register(facing, half, hinge, open, true, map));
-        blockStateCollector.accept(VariantsBlockStateSupplier.create(door).coordinate(variants));
+        blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(door).with(variants));
     }
 
     private void buildDoorStateModels(Block door, String suffex, DoorStateConsumer variants) {
         TextureMap topTextures = new TextureMap()
                 .put(TextureKey.TOP, TextureMap.getSubId(door, "_top" + suffex))
                 .put(TextureKey.BOTTOM, TextureMap.getSubId(door, "_bottom" + suffex));
-        TextureMap bottomTextures = topTextures.copyAndAdd(TOP, topTextures.getTexture(BOTTOM));
+        TextureMap bottomTextures = topTextures.copyAndAdd(TextureKey.TOP, topTextures.getTexture(TextureKey.BOTTOM));
         fillStableDoorVariantMap(variants, DoubleBlockHalf.LOWER,
                 BlockModels.DOOR_LEFT.upload(door, "_bottom_left" + suffex, bottomTextures, modelCollector),
                 BlockModels.DOOR_RIGHT.upload(door, "_bottom_right" + suffex, bottomTextures, modelCollector)
@@ -387,19 +391,16 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
     public static void fillStableDoorVariantMap(
             DoorStateConsumer variantMap,
             DoubleBlockHalf targetHalf,
-            DoorHinge hinge, boolean open, Rotation rotation,
+            DoorHinge hinge, boolean open, AxisRotation rotation,
             Identifier modelId) {
 
         for (int i = 0; i < BlockRotation.DIRECTIONS.length; i++) {
-            variantMap.register(BlockRotation.DIRECTIONS[i], targetHalf, hinge, open, BlockStateVariant.create()
-                    .put(MODEL, modelId)
-                    .put(Y, BlockRotation.cycle(rotation, i))
-            );
+            variantMap.register(BlockRotation.DIRECTIONS[i], targetHalf, hinge, open, createWeightedVariant(createModelVariant(modelId).withRotationY(BlockRotation.cycle(rotation, i))));
         }
     }
 
     interface DoorStateConsumer {
-        void register(Direction direction, DoubleBlockHalf half, DoorHinge hinge, boolean open, BlockStateVariant variant);
+        void register(Direction direction, DoubleBlockHalf half, DoorHinge hinge, boolean open, WeightedVariant variant);
     }
 
     public void registerPillar(Block pillar) {
@@ -410,33 +411,33 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
                 .put(END, ModelIds.getBlockSubModelId(pillar, "_side_end"));
         Identifier middle = BlockModels.TEMPLATE_PILLAR.upload(pillar, textures, modelCollector);
         Identifier end = BlockModels.TEMPLATE_PILLAR_END.upload(pillar, textures, modelCollector);
-        blockStateCollector.accept(MultipartBlockStateSupplier.create(pillar)
-                .with(When.create().set(Properties.AXIS, Direction.Axis.X), BlockStateVariant.create().put(MODEL, middle).put(X, R90).put(Y, R90))
-                .with(When.create().set(Properties.AXIS, Direction.Axis.X).set(Properties.NORTH, false), BlockStateVariant.create().put(MODEL, end).put(X, R270).put(Y, R90))
-                .with(When.create().set(Properties.AXIS, Direction.Axis.X).set(Properties.SOUTH, false), BlockStateVariant.create().put(MODEL, end).put(X, R90).put(Y, R90))
+        blockStateCollector.accept(MultipartBlockModelDefinitionCreator.create(pillar)
+                .with(createMultipartConditionBuilder().put(Properties.AXIS, Direction.Axis.X), createWeightedVariant(createModelVariant(middle).withRotationX(R90).withRotationY(R90)))
+                .with(createMultipartConditionBuilder().put(Properties.AXIS, Direction.Axis.X).put(Properties.NORTH, false), createWeightedVariant(createModelVariant(end).withRotationX(R270).withRotationY(R90)))
+                .with(createMultipartConditionBuilder().put(Properties.AXIS, Direction.Axis.X).put(Properties.SOUTH, false), createWeightedVariant(createModelVariant(end).withRotationX(R90).withRotationY(R90)))
 
-                .with(When.create().set(Properties.AXIS, Direction.Axis.Y), BlockStateVariant.create().put(MODEL, middle))
-                .with(When.create().set(Properties.AXIS, Direction.Axis.Y).set(Properties.NORTH, false), BlockStateVariant.create().put(MODEL, end).put(X, R180))
-                .with(When.create().set(Properties.AXIS, Direction.Axis.Y).set(Properties.SOUTH, false), BlockStateVariant.create().put(MODEL, end))
+                .with(createMultipartConditionBuilder().put(Properties.AXIS, Direction.Axis.Y), createWeightedVariant(middle))
+                .with(createMultipartConditionBuilder().put(Properties.AXIS, Direction.Axis.Y).put(Properties.NORTH, false), createWeightedVariant(createModelVariant(end).withRotationX(R180)))
+                .with(createMultipartConditionBuilder().put(Properties.AXIS, Direction.Axis.Y).put(Properties.SOUTH, false), createWeightedVariant(end))
 
-                .with(When.create().set(Properties.AXIS, Direction.Axis.Z), BlockStateVariant.create().put(MODEL, middle).put(X, R90))
-                .with(When.create().set(Properties.AXIS, Direction.Axis.Z).set(Properties.NORTH, false), BlockStateVariant.create().put(MODEL, end).put(X, R90))
-                .with(When.create().set(Properties.AXIS, Direction.Axis.Z).set(Properties.SOUTH, false), BlockStateVariant.create().put(MODEL, end).put(X, R270))
+                .with(createMultipartConditionBuilder().put(Properties.AXIS, Direction.Axis.Z), createWeightedVariant(createModelVariant(middle).withRotationX(R90)))
+                .with(createMultipartConditionBuilder().put(Properties.AXIS, Direction.Axis.Z).put(Properties.NORTH, false), createWeightedVariant(createModelVariant(end).withRotationX(R90)))
+                .with(createMultipartConditionBuilder().put(Properties.AXIS, Direction.Axis.Z).put(Properties.SOUTH, false), createWeightedVariant(createModelVariant(end).withRotationX(R270)))
         );
-        ItemModels.TEMPLATE_PILLAR.upload(ModelIds.getItemModelId(pillar.asItem()), textures, modelCollector);
+        com.minelittlepony.unicopia.datagen.providers.ItemModels.TEMPLATE_PILLAR.upload(ModelIds.getItemModelId(pillar.asItem()), textures, modelCollector);
     }
 
     public void registerHiveBlock(Block hive) {
         Identifier core = ModelIds.getBlockSubModelId(hive, "_core");
         Identifier side = ModelIds.getBlockSubModelId(hive, "_side");
-        blockStateCollector.accept(MultipartBlockStateSupplier.create(hive)
-                .with(BlockStateVariant.create().put(MODEL, core))
-                .with(When.create().set(Properties.NORTH, true), BlockStateVariant.create().put(MODEL, side).put(UVLOCK, true))
-                .with(When.create().set(Properties.EAST, true), BlockStateVariant.create().put(MODEL, side).put(UVLOCK, true).put(Y, R90))
-                .with(When.create().set(Properties.SOUTH, true), BlockStateVariant.create().put(MODEL, side).put(UVLOCK, true).put(Y, R180))
-                .with(When.create().set(Properties.WEST, true), BlockStateVariant.create().put(MODEL, side).put(UVLOCK, true).put(Y, R270))
-                .with(When.create().set(Properties.DOWN, true), BlockStateVariant.create().put(MODEL, side).put(UVLOCK, true).put(X, R90))
-                .with(When.create().set(Properties.UP, true), BlockStateVariant.create().put(MODEL, side).put(UVLOCK, true).put(X, R270)));
+        blockStateCollector.accept(MultipartBlockModelDefinitionCreator.create(hive)
+                .with(createWeightedVariant(core))
+                .with(createMultipartConditionBuilder().put(Properties.NORTH, true), createWeightedVariant(createModelVariant(side).withUVLock(true)))
+                .with(createMultipartConditionBuilder().put(Properties.EAST, true), createWeightedVariant(createModelVariant(side).withUVLock(true).withRotationY(R90)))
+                .with(createMultipartConditionBuilder().put(Properties.SOUTH, true), createWeightedVariant(createModelVariant(side).withUVLock(true).withRotationY(R180)))
+                .with(createMultipartConditionBuilder().put(Properties.WEST, true), createWeightedVariant(createModelVariant(side).withUVLock(true).withRotationY(R270)))
+                .with(createMultipartConditionBuilder().put(Properties.DOWN, true), createWeightedVariant(createModelVariant(side).withUVLock(true).withRotationX(R90)))
+                .with(createMultipartConditionBuilder().put(Properties.UP, true), createWeightedVariant(createModelVariant(side).withUVLock(true).withRotationX(R270))));
         Models.CUBE_ALL.upload(ModelIds.getItemModelId(hive.asItem()), TextureMap.all(ModelIds.getBlockSubModelId(hive, "_side")), modelCollector);
     }
 
@@ -446,9 +447,9 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         }
         int offset = ageProperty.getValues().iterator().next();
         Int2ObjectOpenHashMap<Identifier> uploadedModels = new Int2ObjectOpenHashMap<>();
-        blockStateCollector.accept(VariantsBlockStateSupplier.create(crop)
-                .coordinate(BlockStateVariantMap.create(ageProperty)
-                .register(age -> BlockStateVariant.create().put(MODEL, uploadedModels.computeIfAbsent(stages[age - offset], stage -> {
+        blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(crop)
+                .with(BlockStateVariantMap.models(ageProperty)
+                .generate(age -> createWeightedVariant(uploadedModels.computeIfAbsent(stages[age - offset], stage -> {
                     return modelFactory.upload(crop, "_stage" + stage, modelCollector);
                 })))));
     }
@@ -458,9 +459,9 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
             throw new IllegalArgumentException();
         }
         int offset = ageProperty.getValues().iterator().next();
-        blockStateCollector.accept(VariantsBlockStateSupplier.create(crop)
-                .coordinate(BlockStateVariantMap.create(ageProperty)
-                .register(age -> BlockStateVariant.create().put(MODEL, ModelIds.getBlockSubModelId(crop, "_stage" + stages[age - offset])))));
+        blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(crop)
+                .with(BlockStateVariantMap.models(ageProperty)
+                .generate(age -> createWeightedVariant(ModelIds.getBlockSubModelId(crop, "_stage" + stages[age - offset])))));
     }
 
     public <T extends Enum<T> & StringIdentifiable> void registerTallCrop(Block crop,
@@ -468,19 +469,18 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
             EnumProperty<T> partProperty,
             int[] ... ageTextureIndices) {
         Map<String, Identifier> uploadedModels = new HashMap<>();
-        blockStateCollector.accept(VariantsBlockStateSupplier.create(crop).coordinate(BlockStateVariantMap.create(partProperty, ageProperty).register((part, age) -> {
+        blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(crop).with(BlockStateVariantMap.models(partProperty, ageProperty).generate((part, age) -> {
             int i = ageTextureIndices[part.ordinal()][age];
             Identifier identifier = uploadedModels.computeIfAbsent("_" + part.asString() + "_stage" + i, variant -> createSubModel(crop, variant, Models.CROSS, TextureMap::cross));
-            return BlockStateVariant.create().put(MODEL, identifier);
+            return createWeightedVariant(identifier);
         })));
     }
 
     public void registerSlimeLayers(Block block) {
         Identifier fullModel = ModelIds.getBlockModelId(Blocks.SLIME_BLOCK);
-        blockStateCollector.accept(VariantsBlockStateSupplier.create(block)
-                .coordinate(BlockStateVariantMap.create(Properties.LAYERS)
-                        .register(height -> BlockStateVariant.create()
-                                .put(VariantSettings.MODEL, height < 8 ? ModelIds.getBlockSubModelId(block, "_height" + height * 2) : fullModel))));
+        blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(block)
+                .with(BlockStateVariantMap.models(Properties.LAYERS)
+                        .generate(height -> createWeightedVariant(height < 8 ? ModelIds.getBlockSubModelId(block, "_height" + height * 2) : fullModel))));
         registerParentedItemModel(block, ModelIds.getBlockSubModelId(block, "_height2"));
     }
 
@@ -491,27 +491,26 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
                 .put(SIDE, ModelIds.getBlockSubModelId(pie, "_side"))
                 .put(INSIDE, ModelIds.getBlockSubModelId(pie, "_inside"));
         TextureMap stompedTextures = textures.copyAndAdd(TOP, ModelIds.getBlockSubModelId(pie, "_top_stomped"));
-        blockStateCollector.accept(VariantsBlockStateSupplier.create(pie).coordinate(BlockStateVariantMap.create(PieBlock.BITES, PieBlock.STOMPED).register((bites, stomped) -> {
-            return BlockStateVariant.create().put(MODEL, BlockModels.PIE_MODELS[bites].upload(pie, (stomped ? "_stomped" : ""), stomped ? stompedTextures : textures, modelCollector));
+        blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(pie).with(BlockStateVariantMap.models(PieBlock.BITES, PieBlock.STOMPED).generate((bites, stomped) -> {
+            return createWeightedVariant(BlockModels.PIE_MODELS[bites].upload(pie, (stomped ? "_stomped" : ""), stomped ? stompedTextures : textures, modelCollector));
         })));
     }
 
     public void registerFloweringLeaves(Block block) {
         Identifier baseModel = TexturedModel.LEAVES.upload(block, modelCollector);
         Identifier floweringModel = Models.CUBE_ALL.upload(block, "_flowering", TextureMap.of(ALL, ModelIds.getBlockSubModelId(block, "_flowering")), modelCollector);
-        blockStateCollector.accept(MultipartBlockStateSupplier.create(block)
-                .with(BlockStateVariant.create().put(MODEL, baseModel))
-                .with(When.create().set(FruitBearingBlock.STAGE, FruitBearingBlock.Stage.FLOWERING), BlockStateVariant.create().put(MODEL, floweringModel)));
+        blockStateCollector.accept(MultipartBlockModelDefinitionCreator.create(block)
+                .with(createWeightedVariant(baseModel))
+                .with(createMultipartConditionBuilder().put(FruitBearingBlock.STAGE, FruitBearingBlock.Stage.FLOWERING), createWeightedVariant(floweringModel)));
     }
 
     public void registerZapLeaves(Block block) {
         Identifier baseModel = TexturedModel.LEAVES.upload(block, modelCollector);
         Identifier floweringModel = Registries.BLOCK.getId(block).withPrefixedPath("block/flowering_");
         Identifier airModel = ModelIds.getBlockModelId(Blocks.AIR);
-        blockStateCollector.accept(VariantsBlockStateSupplier.create(block)
-                .coordinate(BlockStateVariantMap.create(ZapAppleLeavesBlock.STAGE)
-                .register(stage -> BlockStateVariant.create()
-                        .put(MODEL, switch (stage) {
+        blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(block)
+                .with(BlockStateVariantMap.models(ZapAppleLeavesBlock.STAGE)
+                .generate(stage -> createWeightedVariant(switch (stage) {
                             case HIBERNATING -> airModel;
                             case FLOWERING -> floweringModel;
                             default -> baseModel;
@@ -519,26 +518,24 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
     }
 
     public void registerSprout(Block sprout) {
-        blockStateCollector.accept(VariantsBlockStateSupplier.create(sprout)
-                .coordinate(BlockStateVariantMap.create(Properties.AGE_7)
-                .register(age -> BlockStateVariant.create()
-                        .put(MODEL, Unicopia.id("block/apple_sprout_stage" + age)))));
+        blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(sprout)
+                .with(BlockStateVariantMap.models(Properties.AGE_7)
+                .generate(age -> createWeightedVariant(Unicopia.id("block/apple_sprout_stage" + age)))));
     }
 
     public void registerShell(Block shell) {
-        blockStateCollector.accept(VariantsBlockStateSupplier.create(shell)
-                .coordinate(BlockStateVariantMap.create(ShellsBlock.COUNT)
-                .register(count -> BlockStateVariant.create()
-                        .put(MODEL, BlockModels.SHELL_MODELS[count - 1].upload(shell, TextureMap.of(BlockModels.SHELL, Registries.BLOCK.getId(shell).withPrefixedPath("item/")), modelCollector)))));
+        blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(shell)
+                .with(BlockStateVariantMap.models(ShellsBlock.COUNT)
+                .generate(count -> createWeightedVariant(BlockModels.SHELL_MODELS[count - 1].upload(shell, TextureMap.of(BlockModels.SHELL, Registries.BLOCK.getId(shell).withPrefixedPath("item/")), modelCollector)))));
     }
 
     public void registerHull(Block block, Block core, Block shell) {
-        blockStateCollector.accept(VariantsBlockStateSupplier.create(
+        blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(
                 block,
-                BlockStateVariant.create().put(MODEL, Models.CUBE_BOTTOM_TOP.upload(block, new TextureMap()
+                createWeightedVariant(Models.CUBE_BOTTOM_TOP.upload(block, new TextureMap()
                         .put(BOTTOM, ModelIds.getBlockModelId(core))
                         .put(TOP, ModelIds.getBlockModelId(shell))
                         .put(SIDE, ModelIds.getBlockSubModelId(shell, "_half")), modelCollector))
-        ).coordinate(createUpDefaultFacingVariantMap()));
+        ).coordinate(UP_DEFAULT_ROTATION_OPERATIONS));
     }
 }

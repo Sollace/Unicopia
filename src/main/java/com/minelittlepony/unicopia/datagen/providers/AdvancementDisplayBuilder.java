@@ -131,7 +131,7 @@ public class AdvancementDisplayBuilder {
                     display.shouldShowToast(),
                     display.shouldAnnounceToChat(),
                     display.isHidden()
-            ).frame(display.getFrame()).background(display.getBackground().orElse(null)).group(group);
+            ).frame(display.getFrame()).background(display.getBackground().map(i -> i.id()).orElse(null)).group(group);
         }
 
         public void children(Consumer<Parent> children) {

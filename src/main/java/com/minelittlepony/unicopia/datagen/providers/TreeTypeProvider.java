@@ -10,8 +10,6 @@ import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.UWoodTypes;
 import com.minelittlepony.unicopia.datagen.DataCollector;
 import com.minelittlepony.unicopia.item.UItems;
-import com.mojang.serialization.JsonOps;
-
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.block.Blocks;
@@ -23,10 +21,10 @@ import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 
 public class TreeTypeProvider implements DataProvider {
-    private final DataCollector collector;
+    private final DataCollector<TreeTypeDef> collector;
 
     public TreeTypeProvider(FabricDataOutput output) {
-        collector = new DataCollector(output.getResolver(DataOutput.OutputType.DATA_PACK, "tree_types"));
+        collector = new DataCollector<>(output.getResolver(DataOutput.OutputType.DATA_PACK, "tree_types"), TreeTypeDef.CODEC);
     }
 
     @Override
@@ -37,11 +35,7 @@ public class TreeTypeProvider implements DataProvider {
     @Override
     public CompletableFuture<?> run(DataWriter writer) {
         var exporter = collector.prime();
-
-        generate((id, treeType) -> {
-            exporter.accept(id, () -> TreeTypeDef.CODEC.encodeStart(JsonOps.INSTANCE, treeType.build()).getOrThrow());
-        });
-
+        generate((id, treeType) -> exporter.accept(id, treeType.build()));
         return collector.upload(writer);
     }
 

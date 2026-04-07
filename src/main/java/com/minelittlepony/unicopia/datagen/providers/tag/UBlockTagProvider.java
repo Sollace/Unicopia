@@ -263,7 +263,7 @@ public class UBlockTagProvider extends FabricTagProvider.BlockTagProvider {
     }
 
     private void populateConventionalTags() {
-        getOrCreateTagBuilder(UConventionalTags.Blocks.CONCRETE_POWDERS).add(Arrays.stream(DyeColor.values()).map(i -> Registries.BLOCK.get(Identifier.of(i.getName() + "_concrete_powder"))).toArray(Block[]::new));
+        getOrCreateTagBuilder(UConventionalTags.Blocks.CONCRETE_POWDERS).add(Arrays.stream(DyeColor.values()).map(i -> Registries.BLOCK.get(Identifier.of(i.getId() + "_concrete_powder"))).toArray(Block[]::new));
         getOrCreateTagBuilder(UConventionalTags.Blocks.CORAL_BLOCKS).add(Blocks.TUBE_CORAL_BLOCK, Blocks.BRAIN_CORAL_BLOCK, Blocks.BUBBLE_CORAL_BLOCK, Blocks.FIRE_CORAL_BLOCK, Blocks.HORN_CORAL_BLOCK);
         getOrCreateTagBuilder(UConventionalTags.Blocks.CORAL_FANS).add(Blocks.TUBE_CORAL_FAN, Blocks.BRAIN_CORAL_FAN, Blocks.BUBBLE_CORAL_FAN, Blocks.FIRE_CORAL_FAN, Blocks.HORN_CORAL_FAN);
         getOrCreateTagBuilder(UConventionalTags.Blocks.CORALS).add(Blocks.TUBE_CORAL, Blocks.BRAIN_CORAL, Blocks.BUBBLE_CORAL, Blocks.FIRE_CORAL, Blocks.HORN_CORAL);

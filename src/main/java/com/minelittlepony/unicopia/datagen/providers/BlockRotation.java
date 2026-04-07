@@ -1,16 +1,16 @@
 package com.minelittlepony.unicopia.datagen.providers;
 
-import net.minecraft.data.client.VariantSettings;
-import net.minecraft.data.client.VariantSettings.Rotation;
 import net.minecraft.util.math.Direction;
 
 import static net.minecraft.util.math.Direction.*;
 
+import net.minecraft.util.math.AxisRotation;
+
 public class BlockRotation {
-    private static final Rotation[] ROTATIONS = Rotation.values();
+    private static final AxisRotation[] ROTATIONS = AxisRotation.values();
     public static final Direction[] DIRECTIONS = { EAST, SOUTH, WEST, NORTH };
 
-    public static VariantSettings.Rotation cycle(Rotation rotation, int steps) {
+    public static AxisRotation cycle(AxisRotation rotation, int steps) {
         int index = rotation.ordinal() + steps;
         while (index < 0) {
             index += ROTATIONS.length;
@@ -18,11 +18,11 @@ public class BlockRotation {
         return ROTATIONS[index % ROTATIONS.length];
     }
 
-    public static Rotation next(Rotation rotation) {
+    public static AxisRotation next(AxisRotation rotation) {
         return cycle(rotation, 1);
     }
 
-    public static Rotation previous(Rotation rotation) {
+    public static AxisRotation previous(AxisRotation rotation) {
         return cycle(rotation, -1);
     }
 }

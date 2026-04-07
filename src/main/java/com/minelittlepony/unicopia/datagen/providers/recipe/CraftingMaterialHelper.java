@@ -10,12 +10,13 @@ import com.mojang.datafixers.util.Either;
 
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.advancement.AdvancementCriterion;
-import net.minecraft.data.server.recipe.RecipeGenerator;
-import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
-import net.minecraft.data.server.recipe.StonecuttingRecipeJsonBuilder;
+import net.minecraft.data.recipe.RecipeGenerator;
+import net.minecraft.data.recipe.ShapedRecipeJsonBuilder;
+import net.minecraft.data.recipe.StonecuttingRecipeJsonBuilder;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
-import net.minecraft.predicate.ComponentPredicate;
+import net.minecraft.predicate.component.ComponentMapPredicate;
+import net.minecraft.predicate.component.ComponentsPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.book.RecipeCategory;
@@ -78,7 +79,7 @@ public interface CraftingMaterialHelper {
     default AdvancementCriterion<?> conditionsFromSpell(RegistryEntryLookup<Item> items, ItemConvertible gem, SpellType<?> spell) {
         return RecipeGenerator.conditionsFromItemPredicates(ItemPredicate.Builder.create()
                 .items(items, gem)
-                .component(ComponentPredicate.builder().add(UDataComponentTypes.STORED_SPELL, spell).build())
+                .components(ComponentsPredicate.Builder.create().exact(ComponentMapPredicate.of(UDataComponentTypes.STORED_SPELL, spell)).build())
                 .build()
         );
     }

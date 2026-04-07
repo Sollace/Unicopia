@@ -12,7 +12,8 @@ import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.item.ItemStack;
 
 public record BalloonDesignProperty() implements SelectProperty<AirBalloonEntity.BalloonDesign> {
-    public static final SelectProperty.Type<BalloonDesignProperty, AirBalloonEntity.BalloonDesign> TYPE = SelectProperty.Type.create(MapCodec.unit(new BalloonDesignProperty()), AirBalloonEntity.BalloonDesign.CODEC);
+    public static final BalloonDesignProperty INSTANCE = new BalloonDesignProperty();
+    public static final SelectProperty.Type<BalloonDesignProperty, AirBalloonEntity.BalloonDesign> TYPE = SelectProperty.Type.create(MapCodec.unit(INSTANCE), AirBalloonEntity.BalloonDesign.CODEC);
 
     @Override
     public AirBalloonEntity.BalloonDesign getValue(ItemStack stack, ClientWorld world, LivingEntity user, int seed, ItemDisplayContext displayContext) {

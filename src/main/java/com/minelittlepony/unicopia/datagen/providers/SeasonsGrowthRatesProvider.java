@@ -3,11 +3,11 @@ package com.minelittlepony.unicopia.datagen.providers;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.datagen.DataCollector;
 import com.minelittlepony.unicopia.server.world.UTreeGen;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.block.Block;
@@ -18,10 +18,10 @@ import net.minecraft.data.DataWriter;
 
 public class SeasonsGrowthRatesProvider implements DataProvider {
 
-    private final DataCollector collectedData;
+    private final DataCollector<Crop> collectedData;
 
     public SeasonsGrowthRatesProvider(FabricDataOutput output) {
-        this.collectedData = new DataCollector(output.getResolver(DataOutput.OutputType.DATA_PACK, "seasons/crop"));
+        this.collectedData = new DataCollector<>(output.getResolver(DataOutput.OutputType.DATA_PACK, "seasons/crop"), Crop.CODEC);
     }
 
     @Override
@@ -32,9 +32,7 @@ public class SeasonsGrowthRatesProvider implements DataProvider {
     @Override
     public CompletableFuture<?> run(DataWriter writer) {
         var exporter = collectedData.prime();
-        generate((block, crop) -> {
-            exporter.accept(Registries.BLOCK.getId(block), crop::toJson);
-        });
+        generate((block, crop) -> exporter.accept(Registries.BLOCK.getId(block), crop));
         return collectedData.upload(writer);
     }
 
@@ -78,14 +76,11 @@ public class SeasonsGrowthRatesProvider implements DataProvider {
     }
 
     record Crop(float spring, float summer, float fall, float winter) {
-
-        JsonElement toJson() {
-            JsonObject json = new JsonObject();
-            json.addProperty("spring", spring);
-            json.addProperty("summer", summer);
-            json.addProperty("winter", winter);
-            json.addProperty("fall", fall);
-            return json;
-        }
+        public static final Codec<Crop> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.FLOAT.fieldOf("spring").forGetter(Crop::spring),
+                Codec.FLOAT.fieldOf("summer").forGetter(Crop::summer),
+                Codec.FLOAT.fieldOf("fall").forGetter(Crop::fall),
+                Codec.FLOAT.fieldOf("winter").forGetter(Crop::winter)
+        ).apply(i, Crop::new));
     }
 }

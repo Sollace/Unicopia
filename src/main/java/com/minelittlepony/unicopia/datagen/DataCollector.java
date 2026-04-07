@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
-
+import java.util.function.Function;
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
@@ -16,39 +15,40 @@ import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.util.Identifier;
 
-public class DataCollector {
-    private final HashMap<Identifier, Supplier<JsonElement>> values = new HashMap<>();
+public class DataCollector<T> {
+    private final HashMap<Identifier, T> values = new HashMap<>();
 
     private final PathResolver resolver;
+    private final Function<T, JsonElement> jsonConversionFunction;
 
-    public DataCollector(PathResolver resolver) {
+    public DataCollector(PathResolver resolver, Function<T, JsonElement> jsonConversionFunction) {
         this.resolver = resolver;
+        this.jsonConversionFunction = jsonConversionFunction;
+    }
+
+    public DataCollector(PathResolver resolver, Codec<T> codec) {
+        this(resolver, t -> codec.encodeStart(JsonOps.INSTANCE, t).getOrThrow());
     }
 
     public boolean isDefined(Identifier id) {
         return values.containsKey(id);
     }
 
-    public <T extends Supplier<JsonElement>> Consumer<T> prime(BiConsumer<T, BiConsumer<Identifier, Supplier<JsonElement>>> converter) {
+    public <V> Consumer<V> prime(BiConsumer<V, BiConsumer<Identifier, T>> converter) {
         var consumer = prime();
         return element -> converter.accept(element, consumer);
     }
 
-    public BiConsumer<Identifier, Supplier<JsonElement>> prime() {
+    public BiConsumer<Identifier, T> prime() {
         values.clear();
-        return (Identifier id, Supplier<JsonElement> value) ->
+        return (Identifier id, T value) ->
             Preconditions.checkState(values.put(id, value) == null, "Duplicate model definition for " + id);
-    }
-
-    public <T> BiConsumer<Identifier, T> prime(Codec<T> codec) {
-        var consumer = prime();
-        return (id, value) -> consumer.accept(id, () -> codec.encodeStart(JsonOps.INSTANCE, value).getOrThrow());
     }
 
     public CompletableFuture<?> upload(DataWriter cache) {
         return CompletableFuture.allOf(values.entrySet()
                 .stream()
-                .map(entry -> DataProvider.writeToPath(cache, entry.getValue().get(), resolver.resolveJson(entry.getKey())))
+                .map(entry -> DataProvider.writeToPath(cache, jsonConversionFunction.apply(entry.getValue()), resolver.resolveJson(entry.getKey())))
                 .toArray(CompletableFuture[]::new)
         );
     }

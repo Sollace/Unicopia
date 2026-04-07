@@ -4,26 +4,34 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.datagen.DataCollector;
 import com.minelittlepony.unicopia.item.BedsheetsItem;
 import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
+
+import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataWriter;
-import net.minecraft.data.client.BlockStateModelGenerator;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
-import net.minecraft.data.client.ItemModelGenerator;
-import net.minecraft.data.client.ModelIds;
-import net.minecraft.data.client.Models;
-import net.minecraft.data.client.TextureKey;
-import net.minecraft.data.client.TextureMap;
+import net.minecraft.client.data.BlockModelDefinitionCreator;
+import net.minecraft.client.data.BlockStateModelGenerator;
+import net.minecraft.client.data.ItemModelGenerator;
+import net.minecraft.client.data.ModelIds;
+import net.minecraft.client.data.Models;
+import net.minecraft.client.data.TextureKey;
+import net.minecraft.client.data.TextureMap;
+import net.minecraft.client.render.model.json.BlockModelDefinition;
 
 public class UModelProvider extends FabricModelProvider {
     public static final Map<Block, Item> FRUITS = Map.of(UBlocks.GREEN_APPLE, UItems.GREEN_APPLE,
@@ -35,13 +43,13 @@ public class UModelProvider extends FabricModelProvider {
             UBlocks.ZAP_BULB, UItems.ZAP_BULB
     );
 
-    private final DataCollector seasonsModels;
-    private final DataCollector indirectBlockStatesDefinitions;
+    private final DataCollector<Supplier<JsonElement>> seasonsModels;
+    private final DataCollector<BlockModelDefinition> indirectBlockStatesDefinitions;
 
     public UModelProvider(FabricDataOutput output) {
         super(output);
-        seasonsModels = new DataCollector(output.getResolver(DataOutput.OutputType.RESOURCE_PACK, "seasons/models"));
-        indirectBlockStatesDefinitions = new DataCollector(output.getResolver(DataOutput.OutputType.RESOURCE_PACK, "blockstates"));
+        seasonsModels = new DataCollector<>(output.getResolver(DataOutput.OutputType.RESOURCE_PACK, "seasons/models"), Supplier::get);
+        indirectBlockStatesDefinitions = new DataCollector<>(output.getResolver(DataOutput.OutputType.RESOURCE_PACK, "blockstates"), BlockModelDefinition.CODEC);
     }
 
     @Override
@@ -49,7 +57,7 @@ public class UModelProvider extends FabricModelProvider {
         UBlockStateModelGenerator.create(modelGenerator0).register();
         new UExternalBlockStateModelGenerator(modelGenerator0, indirectBlockStatesDefinitions.prime((states, consumer) -> {
             if (states instanceof DataCollector.Identifiable i) {
-                consumer.accept(i.getId(), states);
+                consumer.accept(i.getId(), states.createBlockModelDefinition());
             }
         })).register();
         new SeasonsModelGenerator(modelGenerator0, seasonsModels.prime()).register();
@@ -116,7 +124,7 @@ public class UModelProvider extends FabricModelProvider {
         ItemModels.register(itemModelGenerator, ItemModels.HANDHELD_STAFF, UItems.MEADOWBROOKS_STAFF);
         ItemModels.item("handheld_staff", TextureKey.LAYER0, TextureKey.LAYER1).upload(ModelIds.getItemModelId(UItems.MAGIC_STAFF), new TextureMap()
                 .put(TextureKey.LAYER0, ModelIds.getItemSubModelId(UItems.MAGIC_STAFF, "_base"))
-                .put(TextureKey.LAYER1, ModelIds.getItemSubModelId(UItems.MAGIC_STAFF, "_magic")), itemModelGenerator.writer);
+                .put(TextureKey.LAYER1, ModelIds.getItemSubModelId(UItems.MAGIC_STAFF, "_magic")), itemModelGenerator.modelCollector);
 
         ItemModels.registerParented(itemModelGenerator, UItems.GOLDEN_STICK, Items.BLAZE_ROD);
 
@@ -135,7 +143,7 @@ public class UModelProvider extends FabricModelProvider {
 
         ItemModels.registerButterfly(itemModelGenerator, UItems.BUTTERFLY);
         ItemModels.registerBalloonDesigns(itemModelGenerator, UItems.GIANT_BALLOON);
-        ItemModels.registerSpectralBlock(itemModelGenerator, UItems.SPECTRAL_CLOCK);
+        ItemModels.registerSpectralClock(itemModelGenerator, UItems.SPECTRAL_CLOCK);
         ModelOverrides.of(ItemModels.GENERATED)
             .addUniform("count", 2, 16, ModelIds.getItemModelId(UItems.ROCK_CANDY))
             .upload(UItems.ROCK_CANDY, itemModelGenerator);
