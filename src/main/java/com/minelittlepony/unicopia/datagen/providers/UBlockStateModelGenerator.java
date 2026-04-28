@@ -11,10 +11,13 @@ import com.minelittlepony.unicopia.block.PieBlock;
 import com.minelittlepony.unicopia.block.PileBlock;
 import com.minelittlepony.unicopia.block.ShellsBlock;
 import com.minelittlepony.unicopia.block.SlimePustuleBlock;
+import com.minelittlepony.unicopia.block.TintedBlock;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.zap.ZapAppleLeavesBlock;
+import com.minelittlepony.unicopia.client.render.item.BlockTintSource;
 import com.minelittlepony.unicopia.client.render.item.CloudBedModelRenderer;
 import com.minelittlepony.unicopia.client.render.item.CloudChestModelRenderer;
+import com.minelittlepony.unicopia.client.render.item.JarContentsModelRenderer;
 import com.minelittlepony.unicopia.datagen.UBlockFamilies;
 import com.minelittlepony.unicopia.server.world.Tree;
 
@@ -198,17 +201,25 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerItemModel(UBlocks.MYSTERIOUS_EGG.asItem());
         FireModels.registerSoulFire(this, UBlocks.SPECTRAL_FIRE, Blocks.SOUL_FIRE);
 
-        blockStateCollector.accept(createSingletonBlockState(UBlocks.JAR, createWeightedVariant(BlockModels.TEMPLATE_JAR)));
+
+        registerJar(UBlocks.JAR);
         registerWeatherJar(UBlocks.CLOUD_JAR);
         registerWeatherJar(UBlocks.STORM_JAR);
         registerWeatherJar(UBlocks.ZAP_JAR);
         registerWeatherJar(UBlocks.LIGHTNING_JAR);
+
+        TintedBlock.REGISTRY.forEach(block -> registerTintedItemModel(block, ModelIds.getBlockModelId(block), BlockTintSource.INSTANCE));
     }
 
     public void registerWeatherJar(Block jar) {
         blockStateCollector.accept(MultipartBlockModelDefinitionCreator.create(jar)
                 .with(createWeightedVariant(BlockModels.TEMPLATE_JAR))
                 .with(createWeightedVariant(ModelIds.getBlockSubModelId(jar, "_filling"))));
+    }
+
+    public void registerJar(Block jar) {
+        blockStateCollector.accept(createSingletonBlockState(jar, createWeightedVariant(BlockModels.TEMPLATE_JAR)));
+        itemModelOutput.accept(jar.asItem(), ItemModels.special(ModelIds.getBlockModelId(jar), new JarContentsModelRenderer.Unbaked()));
     }
 
     @SafeVarargs

@@ -96,65 +96,7 @@ public interface URenderers {
         BlockEntityRendererFactories.register(UBlockEntities.CLOUD_CHEST, CloudChestBlockEntityRenderer::new);
         BlockEntityRendererFactories.register(UBlockEntities.ITEM_JAR, ItemJarBlockEntityRenderer::new);
 
-        //register(URenderers::renderJarItem, UItems.FILLED_JAR);
-        //register(URenderers::renderBedItem, UItems.CLOTH_BED, UItems.CLOUD_BED);
-        //register(URenderers::renderChestItem, UBlocks.CLOUD_CHEST.asItem());
-        //PolearmRenderer.register(UItems.WOODEN_POLEARM, UItems.STONE_POLEARM, UItems.IRON_POLEARM, UItems.GOLDEN_POLEARM, UItems.DIAMOND_POLEARM, UItems.NETHERITE_POLEARM);
-        //ModelPredicateProviderRegistry.register(UItems.GEMSTONE, Identifier.ofVanilla("affinity"), (stack, world, entity, seed) -> EnchantableItem.getSpellKey(stack).getAffinity().getAlignment());
-        //ModelPredicateProviderRegistry.register(UItems.GEMSTONE, Identifier.ofVanilla("shape"), (stack, world, entity, seed) -> EnchantableItem.getSpellKey(stack).getGemShape().getId());
-        //ModelPredicateProviderRegistry.register(UItems.ROCK_CANDY, Identifier.ofVanilla("count"), (stack, world, entity, seed) -> stack.getCount() / (float)stack.getMaxCount());
-        /*ModelPredicateProviderRegistry.register(UItems.BUTTERFLY, Identifier.ofVanilla("variant"), (stack, world, entity, seed) -> {
-            // float operations do be weird like
-            return BufferflyVariantComponent.get(stack).variant().ordinal() * (1F / ButterflyEntity.Variant.VALUES.length);
-        });*/
-        /*ModelPredicateProviderRegistry.register(UItems.GIANT_BALLOON, Identifier.ofVanilla("design"), (stack, world, entity, seed) -> {
-            // float operations do be weird like
-            return BalloonDesignComponent.get(stack).design().ordinal() * (1F / AirBalloonEntity.BalloonDesign.VALUES.length);
-        });*/
-        /*ModelPredicateProviderRegistry.register(Unicopia.id("zap_cycle"), new ClampedModelPredicateProvider() {
-            private double targetAngle;
-            private double lastAngle;
-            private long lastTick;
-
-            @Override
-            public float unclampedCall(ItemStack stack, ClientWorld world, @Nullable LivingEntity holder, int seed) {
-                @Nullable
-                Entity entity = holder != null ? holder : stack.getHolder();
-                if (entity == null) {
-                    return 0;
-                }
-                if (world == null && entity.getWorld() instanceof ClientWorld cw) {
-                    world = cw;
-                }
-
-                if (world == null) {
-                    return 0;
-                }
-                if (world.getTime() != lastTick) {
-                    targetAngle = world.getDimension().natural() ? UnicopiaClient.getInstance().getZapAppleStage().getCycleProgress(world) : Math.random();
-                    lastAngle = lastAngle + (targetAngle - lastAngle) * 0.1;
-                }
-
-                return (float)lastAngle;
-            }
-        });*/
-        /*ModelPredicateProviderRegistry.register(UItems.BAITED_FISHING_ROD, Identifier.ofVanilla("cast"), (stack, world, entity, seed) -> {
-            if (entity == null) {
-                return 0;
-            } else {
-                boolean main = entity.getMainHandStack() == stack;
-                boolean offhand = entity.getOffHandStack() == stack && !(entity.getMainHandStack().getItem() instanceof FishingRodItem);
-
-                return (main || offhand) && entity instanceof PlayerEntity p && p.fishHook != null ? 1 : 0;
-            }
-        });*/
-
         ColorProviderRegistry.BLOCK.register(BlockTintSource::getColor, TintedBlock.REGISTRY.stream().toArray(Block[]::new));
-        //ColorProviderRegistry.ITEM.register((stack, i) -> getTintedBlockColor(Block.getBlockFromItem(stack.getItem()).getDefaultState(), null, null, i), TintedBlock.REGISTRY.stream().map(Block::asItem).filter(i -> i != Items.AIR).toArray(Item[]::new));
-        //ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 ? -1 : DyedColorComponent.getColor(stack, DyedColorComponent.DEFAULT_COLOR), UItems.FRIENDSHIP_BRACELET);
-        //ColorProviderRegistry.ITEM.register((stack, i) -> i > 0 || !EnchantableItem.isEnchanted(stack) ? Colors.WHITE : EnchantableItem.getSpellKey(stack).getColor() | 0xFF000000, UItems.GEMSTONE);
-        //ColorProviderRegistry.ITEM.register((stack, i) -> i == 1 && EnchantableItem.isEnchanted(stack) ? EnchantableItem.getSpellKey(stack).getColor() | 0xFF000000 : Colors.WHITE, UItems.MAGIC_STAFF);
-
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(), UBlocks.TRANSLUCENT_BLOCKS.stream().toArray(Block[]::new));
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getTranslucent(), UBlocks.SEMI_TRANSPARENT_BLOCKS.stream().toArray(Block[]::new));
         // for lava boats

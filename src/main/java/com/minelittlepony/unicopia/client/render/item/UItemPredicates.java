@@ -3,12 +3,8 @@ package com.minelittlepony.unicopia.client.render.item;
 import com.minelittlepony.unicopia.Unicopia;
 import com.mojang.serialization.MapCodec;
 
-import net.minecraft.client.render.item.model.ItemModel;
-import net.minecraft.client.render.item.model.ItemModelTypes;
 import net.minecraft.client.render.item.model.special.SpecialModelRenderer;
 import net.minecraft.client.render.item.model.special.SpecialModelTypes;
-import net.minecraft.client.render.item.property.bool.BooleanProperties;
-import net.minecraft.client.render.item.property.bool.BooleanProperty;
 import net.minecraft.client.render.item.property.numeric.NumericProperties;
 import net.minecraft.client.render.item.property.numeric.NumericProperty;
 import net.minecraft.client.render.item.property.select.SelectProperties;
@@ -22,20 +18,12 @@ public interface UItemPredicates {
         SelectProperties.ID_MAPPER.put(Unicopia.id(name), type);
     }
 
-    private static void flag(String name, MapCodec<? extends BooleanProperty> codec) {
-        BooleanProperties.ID_MAPPER.put(Unicopia.id(name), codec);
-    }
-
     private static void range(String name, MapCodec<? extends NumericProperty> codec) {
         NumericProperties.ID_MAPPER.put(Unicopia.id(name), codec);
     }
 
     private static void tint(String name, MapCodec<? extends TintSource> codec) {
         TintSourceTypes.ID_MAPPER.put(Unicopia.id(name), codec);
-    }
-
-    private static void model(String name, MapCodec<? extends ItemModel.Unbaked> codec) {
-        ItemModelTypes.ID_MAPPER.put(Unicopia.id(name), codec);
     }
 
     private static void specialModel(String name, MapCodec<? extends SpecialModelRenderer.Unbaked> codec) {
@@ -47,8 +35,6 @@ public interface UItemPredicates {
         option("balloon_design", BalloonDesignProperty.TYPE);
         option("butterfly_variant", ButterflyVariantProperty.TYPE);
         option("affinity", AffinityProperty.TYPE);
-        /* baited fishing rods ---> */ //FishingRodCastProperty.CODEC
-        /* rock candy ---> */ // CountProperty.CODEC
 
         range("zap_apple_cycle", ZapAppleCycleProperty.CODEC);
 

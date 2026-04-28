@@ -1,19 +1,14 @@
 package com.minelittlepony.unicopia.datagen.providers;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 import java.util.function.Supplier;
-
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.datagen.DataCollector;
 import com.minelittlepony.unicopia.item.BedsheetsItem;
-import com.minelittlepony.unicopia.item.GemstoneItem;
 import com.minelittlepony.unicopia.item.UItems;
 
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
@@ -24,14 +19,10 @@ import net.minecraft.data.DataWriter;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
-import net.minecraft.client.data.BlockModelDefinitionCreator;
 import net.minecraft.client.data.BlockStateModelGenerator;
 import net.minecraft.client.data.ItemModelGenerator;
-import net.minecraft.client.data.ModelIds;
-import net.minecraft.client.data.Models;
-import net.minecraft.client.data.TextureKey;
-import net.minecraft.client.data.TextureMap;
 import net.minecraft.client.render.model.json.BlockModelDefinition;
+import net.minecraft.component.type.DyedColorComponent;
 
 public class UModelProvider extends FabricModelProvider {
     public static final Map<Block, Item> FRUITS = Map.of(UBlocks.GREEN_APPLE, UItems.GREEN_APPLE,
@@ -82,7 +73,7 @@ public class UModelProvider extends FabricModelProvider {
                     UItems.COOKED_TROPICAL_FISH, UItems.COOKED_PUFFERFISH, UItems.COOKED_FROG_LEGS,
                 UItems.DAFFODIL_DAISY_SANDWICH, UItems.DRAGON_BREATH_SCROLL, UItems.TOTEM_OF_DYING,
                 UItems.EMPTY_JAR,
-                UItems.FRIENDSHIP_BRACELET, UItems.FRIED_AXOLOTL, UItems.FROG_LEGS,
+                UItems.FRIED_AXOLOTL, UItems.FROG_LEGS,
                 UItems.GOLDEN_FEATHER, UItems.GOLDEN_OAK_SEEDS, UItems.GOLDEN_WING, UItems.GREEN_APPLE_SEEDS, UItems.GREEN_APPLE, UItems.GROGARS_BELL,
                     UItems.GRYPHON_FEATHER, UItems.GREEN_FRIED_EGG,
                 UItems.HAY_BURGER, UItems.HAY_FRIES, UItems.HORSE_SHOE_FRIES,
@@ -110,6 +101,7 @@ public class UModelProvider extends FabricModelProvider {
         // horseshoes
                 UItems.COPPER_HORSE_SHOE, UItems.GOLDEN_HORSE_SHOE, UItems.IRON_HORSE_SHOE, UItems.NETHERITE_HORSE_SHOE
         );
+        ItemModels.registerDyeable(itemModelGenerator, UItems.FRIENDSHIP_BRACELET, DyedColorComponent.DEFAULT_COLOR);
         // spawn eggs
         ItemModels.register(itemModelGenerator, ItemModels.TEMPLATE_SPAWN_EGG, UItems.BUTTERFLY_SPAWN_EGG, UItems.LOOT_BUG_SPAWN_EGG);
         // amulets
@@ -122,10 +114,7 @@ public class UModelProvider extends FabricModelProvider {
         ItemModels.register(itemModelGenerator, ItemModels.TEMPLATE_EYEWEAR, UItems.SUNGLASSES);
         // staffs
         ItemModels.register(itemModelGenerator, ItemModels.HANDHELD_STAFF, UItems.MEADOWBROOKS_STAFF);
-        ItemModels.item("handheld_staff", TextureKey.LAYER0, TextureKey.LAYER1).upload(ModelIds.getItemModelId(UItems.MAGIC_STAFF), new TextureMap()
-                .put(TextureKey.LAYER0, ModelIds.getItemSubModelId(UItems.MAGIC_STAFF, "_base"))
-                .put(TextureKey.LAYER1, ModelIds.getItemSubModelId(UItems.MAGIC_STAFF, "_magic")), itemModelGenerator.modelCollector);
-
+        ItemModels.registerMagicStaff(itemModelGenerator, UItems.MAGIC_STAFF);
         ItemModels.registerParented(itemModelGenerator, UItems.GOLDEN_STICK, Items.BLAZE_ROD);
 
         // polearms
@@ -144,25 +133,10 @@ public class UModelProvider extends FabricModelProvider {
         ItemModels.registerButterfly(itemModelGenerator, UItems.BUTTERFLY);
         ItemModels.registerBalloonDesigns(itemModelGenerator, UItems.GIANT_BALLOON);
         ItemModels.registerSpectralClock(itemModelGenerator, UItems.SPECTRAL_CLOCK);
-        ModelOverrides.of(ItemModels.GENERATED)
-            .addUniform("count", 2, 16, ModelIds.getItemModelId(UItems.ROCK_CANDY))
-            .upload(UItems.ROCK_CANDY, itemModelGenerator);
-
-        List.of(UItems.PINEAPPLE, UItems.CANDIED_APPLE).forEach(item -> {
-            ModelOverrides.of(ItemModels.GENERATED)
-                .addOverride(ModelIds.getItemSubModelId(item, "_bite1"), "damage", 0.3F)
-                .addOverride(ModelIds.getItemSubModelId(item, "_bite2"), "damage", 0.6F)
-                .upload(item, itemModelGenerator);
-        });
-
-        // gemstone
-        ModelOverrides.of(ItemModels.GENERATED)
-                .addUniform("shape", List.of(GemstoneItem.Shape.values()), GemstoneItem.Shape::getId, shape -> ModelIds.getItemSubModelId(UItems.GEMSTONE, "_" + shape.name().toLowerCase(Locale.ROOT)))
-                .upload(UItems.GEMSTONE, itemModelGenerator);
-
-        // fishing rod
-        ModelOverrides.of(Models.HANDHELD_ROD)
-                .addOverride(ModelIds.getItemSubModelId(Items.FISHING_ROD, "_cast"), "cast", 1)
-                .upload(UItems.BAITED_FISHING_ROD, itemModelGenerator);
+        ItemModels.registerStagedFoodItem(itemModelGenerator, UItems.ROCK_CANDY, 2, 16, "");
+        ItemModels.registerStagedFoodItem(itemModelGenerator, UItems.PINEAPPLE, 1, 2, "bite");
+        ItemModels.registerStagedFoodItem(itemModelGenerator, UItems.CANDIED_APPLE, 1, 2, "bite");
+        ItemModels.registerGemstone(itemModelGenerator, UItems.GEMSTONE);
+        ItemModels.registerCustomFishingRod(itemModelGenerator, UItems.BAITED_FISHING_ROD);
     }
 }
