@@ -44,8 +44,8 @@ public class DietsLoader implements IdentifiableResourceReloadListener {
         }, prepareExecutor);
 
         return CompletableFuture.allOf(foodGroupsFuture, profilesFuture).thenCompose(sync::whenPrepared).thenAcceptAsync(v -> {
-            var profiles = profilesFuture.getNow(Map.of());
-            var foodGroups = foodGroupsFuture.getNow(Map.of());
+            Map<Race, DietProfile> profiles = profilesFuture.getNow(Map.of());
+            Map<Identifier, FoodGroup> foodGroups = foodGroupsFuture.getNow(Map.of());
             profiles.entrySet().removeIf(entry -> {
                 StringBuilder issueList = new StringBuilder();
                 entry.getValue().validate(issue -> {
