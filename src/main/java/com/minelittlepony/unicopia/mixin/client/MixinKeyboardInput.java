@@ -16,8 +16,8 @@ import net.minecraft.util.math.Vec2f;
 
 @Mixin(KeyboardInput.class)
 abstract class MixinKeyboardInput extends Input {
-    @Inject(method = "tick(ZF)V", at = @At("RETURN"))
-    private void onTick(boolean a, float b, CallbackInfo info) {
+    @Inject(method = "tick()V", at = @At("TAIL"))
+    private void onTick(CallbackInfo info) {
         Pony player = Pony.of(MinecraftClient.getInstance().player);
 
         if (player != null) {

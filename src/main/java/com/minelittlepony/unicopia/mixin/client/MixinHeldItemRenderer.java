@@ -24,12 +24,12 @@ abstract class MixinHeldItemRenderer implements FirstPersonRendererOverrides.Arm
     @Shadow
     private float equipProgressMainHand;
     @Shadow
-    private float prevEquipProgressMainHand;
+    private float lastEquipProgressMainHand;
 
     @Shadow
     private float equipProgressOffHand;
     @Shadow
-    private float prevEquipProgressOffHand;
+    private float lastEquipProgressOffHand;
 
     @Override
     @Invoker("renderArmHoldingItem")
@@ -38,7 +38,7 @@ abstract class MixinHeldItemRenderer implements FirstPersonRendererOverrides.Arm
     @Override
     public float getEquipProgress(Hand hand, float tickDelta) {
         return MathHelper.lerp(tickDelta,
-                hand == Hand.MAIN_HAND ? prevEquipProgressMainHand : prevEquipProgressOffHand,
+                hand == Hand.MAIN_HAND ? lastEquipProgressMainHand : lastEquipProgressOffHand,
                 hand == Hand.MAIN_HAND ? equipProgressMainHand : equipProgressOffHand
         );
     }

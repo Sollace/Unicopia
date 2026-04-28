@@ -22,8 +22,8 @@ abstract class MixinServerWorld implements StructureWorldAccess, NocturnalSleepM
 
     private NocturnalSleepManager nocturnalSleepManager;
 
-    @Inject(method = "onBlockChanged", at = @At("HEAD"))
-    private void onOnBlockChanged(BlockPos pos, BlockState oldState, BlockState newState, CallbackInfo info) {
+    @Inject(method = "updateListeners", at = @At("HEAD"))
+    private void onOnBlockChanged(BlockPos pos, BlockState oldState, BlockState newState, int flags, CallbackInfo info) {
         ((BlockDestructionManager.Source)this).getDestructionManager().onBlockChanged(pos, oldState, newState);
     }
 

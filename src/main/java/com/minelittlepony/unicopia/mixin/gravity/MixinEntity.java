@@ -99,6 +99,16 @@ abstract class MixinEntity {
         return unicopiaIsGravityInverted() ? -heightDifference : heightDifference;
     }
 
+    // specifically for players
+    @ModifyVariable(
+            method = "handleFall(DDDZ)V",
+            at = @At("HEAD"),
+            ordinal = 1,
+            argsOnly = true)
+    private double modifyFallDistanceOnFall(double value) {
+        return unicopiaIsGravityInverted() ? -value : value;
+    }
+
     // invert check for walking up a step
     @ModifyVariable(
             method = "adjustMovementForCollisions(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Lnet/minecraft/world/World;Ljava/util/List;)Lnet/minecraft/util/math/Vec3d;",

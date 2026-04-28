@@ -22,10 +22,10 @@ public interface MixinStructurePool {
     @Mutable
     void setElements(ObjectArrayList<StructurePoolElement> elements);
 
-    @Accessor("elementCounts")
+    @Accessor("elementWeights")
     List<Pair<StructurePoolElement, Integer>> getElementCounts();
 
-    @Accessor("elementCounts")
+    @Accessor("elementWeights")
     @Mutable
-    void setElementCounts(List<Pair<StructurePoolElement, Integer>> elementCounts);
+    void setElementCounts(List<Pair<StructurePoolElement, Integer>> elementWeights);
 }

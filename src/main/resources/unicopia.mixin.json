@@ -80,7 +80,6 @@
     "gravity.MixinWorld",
     "gravity.MixinPlayerEntity",
     "gravity.MixinPistonBlockEntity",
-    "gravity.MixinServerPlayerEntity",
     "gravity.MixinServerPlayNetworkHandler",
     "gravity.MixinWorldChunk",
     "seasons.MixinFertilizableUtil",

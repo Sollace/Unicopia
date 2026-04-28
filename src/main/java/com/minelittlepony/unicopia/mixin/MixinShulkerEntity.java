@@ -14,10 +14,10 @@ public interface MixinShulkerEntity {
     @Accessor
     void setOpenProgress(float value);
 
-    @Accessor
+    @Accessor("lastOpenProgress")
     float getPrevOpenProgress();
 
-    @Accessor
+    @Accessor("lastOpenProgress")
     void setPrevOpenProgress(float value);
 
     @Invoker("getPeekAmount")

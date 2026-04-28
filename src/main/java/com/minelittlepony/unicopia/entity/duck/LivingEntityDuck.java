@@ -18,18 +18,12 @@ public interface LivingEntityDuck extends EntityDuck {
 
     void setLastLeaningPitch(float pitch);
 
-    double getServerX();
-
-    double getServerY();
-
-    double getServerZ();
-
     default void copyLeaningAnglesFrom(LivingEntityDuck other) {
         setLeaningPitch(other.getLeaningPitch());
         setLastLeaningPitch(other.getLastLeaningPitch());
     }
 
     static Vec3d serverPos(LivingEntity entity) {
-        return new Vec3d(((LivingEntityDuck)entity).getServerX(), ((LivingEntityDuck)entity).getServerY(), ((LivingEntityDuck)entity).getServerZ());
+        return entity.getTrackedPosition().getPos();
     }
 }

@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -20,7 +21,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -38,9 +38,10 @@ abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHan
     @Accessor("inTeleportationState")
     public abstract void setPreventMotionChecks(boolean enabled);
 
-    @Inject(method = "dropPlayerItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;", at = @At("RETURN"))
-    private void onDropItem(ItemStack stack, boolean scatter, boolean retainOwnership, CallbackInfoReturnable<ItemEntity> info) {
-        get().onDropItem((ServerWorld)getWorld(), info.getReturnValue());
+    @ModifyReturnValue(method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;", at = @At("RETURN"))
+    private ItemEntity onDropItem(ItemEntity item) {
+        get().onDropItem((ServerWorld)getWorld(), item);
+        return item;
     }
 
     @SuppressWarnings("unchecked")
@@ -60,15 +61,15 @@ abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHan
     private void onTrySleep(BlockPos pos, CallbackInfoReturnable<Either<PlayerEntity.SleepFailureReason, Unit>> info) {
         // Day/Night check is overriden using EntitySleepEvents.ALLOW_SLEEP_TIME in NocturnalSleepManager
         if (get().canSleepNow(getWorld().isDay()) == ActionResult.FAIL) {
-            ((PlayerEntity)this).sendMessage(Text.translatable("block.unicopia.bed.no_sleep.nocturnal"), true);
+            this.sendMessage(Text.translatable("block.unicopia.bed.no_sleep.nocturnal"), true);
 
             info.setReturnValue(Either.left(PlayerEntity.SleepFailureReason.OTHER_PROBLEM));
         }
     }
 
-    @Inject(method = "updateKilledAdvancementCriterion(Lnet/minecraft/entity/Entity;ILnet/minecraft/entity/damage/DamageSource;)V",
+    @Inject(method = "updateKilledAdvancementCriterion(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/damage/DamageSource;)V",
             at = @At("TAIL"))
-    private void onUpdateKilledAdvancementCriterion(Entity entityKilled, int score, DamageSource damageSource, CallbackInfo info) {
+    private void onUpdateKilledAdvancementCriterion(Entity entityKilled, DamageSource damageSource, CallbackInfo info) {
         get().onKill(entityKilled, damageSource);
     }
 

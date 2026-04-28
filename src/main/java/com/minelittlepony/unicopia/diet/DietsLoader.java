@@ -30,13 +30,14 @@ public class DietsLoader implements IdentifiableResourceReloadListener {
         return ID;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public CompletableFuture<Void> reload(Synchronizer sync, ResourceManager manager, Executor prepareExecutor, Executor applyExecutor) {
         var foodGroupsFuture = CompletableFuture.supplyAsync(() -> loadData(manager, prepareExecutor, "diet/food_groups", FoodGroup.EFFECTS_CODEC).collect(Collectors.toMap(
                 Map.Entry::getKey,
                 entry -> new FoodGroup(entry.getKey(), entry.getValue())
         )), prepareExecutor);
-        @SuppressWarnings("unchecked")
+
         var profilesFuture = CompletableFuture.supplyAsync(() -> {
             return Map.<Race, DietProfile>ofEntries(loadData(manager, prepareExecutor, "diet/races", DietProfile.CODEC)
                     .flatMap(entry -> Race.REGISTRY.getOptionalValue(entry.getKey()).map(race -> Map.entry(race, entry.getValue())).stream())
