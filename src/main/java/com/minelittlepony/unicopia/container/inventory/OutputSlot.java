@@ -53,7 +53,7 @@ public class OutputSlot extends CraftingResultSlot implements SpellbookSlot {
     public void onTakeItem(PlayerEntity player, ItemStack stack) {
         Pony pony = Pony.of(player);
         InventoryUtil.stream(input).forEach(s -> {
-            pony.getDiscoveries().unlock(s.getItem());
+            pony.getDiscoveries().unlock(s);
         });
         pony.getMagicalReserves().getXp().add(MathHelper.clamp(player.getWorld().getRandom().nextFloat() / 10F, 0.001F, 0.3F));
         super.onTakeItem(player, stack);

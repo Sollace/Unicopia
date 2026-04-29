@@ -3,8 +3,6 @@ package com.minelittlepony.unicopia.ability.magic.spell.trait;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.command.CommandArgumentEnum;
 import com.mojang.datafixers.util.Either;
@@ -14,8 +12,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.command.argument.EnumArgumentType;
 import net.minecraft.component.type.AttributeModifiersComponent;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.*;
@@ -153,14 +149,6 @@ public enum Trait implements CommandArgumentEnum<Trait> {
 
     public static Collection<Trait> all() {
         return IDS.values();
-    }
-
-    public static Stream<Trait> fromNbt(NbtList nbt) {
-        return nbt.stream()
-                .map(NbtElement::asString)
-                .flatMap(Optional::stream)
-                .map(Trait::of)
-                .flatMap(Optional::stream);
     }
 
     public static Optional<Trait> fromId(Identifier id) {

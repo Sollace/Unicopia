@@ -8,6 +8,7 @@ import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import io.netty.buffer.ByteBuf;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -22,6 +23,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 
@@ -53,24 +55,26 @@ public class TreeTypeLoader extends JsonDataLoader<TreeTypeLoader.TreeTypeDef> i
     }
 
     public record TreeTypeDef (
-            Set<Identifier> logs,
-            Set<Identifier> leaves,
+            Set<RegistryKey<Block>> logs,
+            Set<RegistryKey<Block>> leaves,
             Set<Drop> drops,
             boolean wideTrunk,
             int rarity,
             float leavesRatio
     ) {
+        private static final Codec<Set<RegistryKey<Block>>> BLOCK_KEY_SET_CODEC = CodecUtils.setOf(RegistryKey.createCodec(RegistryKeys.BLOCK));
+        private static final PacketCodec<ByteBuf, Set<RegistryKey<Block>>> BLOCK_KEY_SET_PACKET_CODEC = RegistryKey.createPacketCodec(RegistryKeys.BLOCK).collect(PacketCodecs.toCollection(HashSet::new));
         public static final Codec<TreeTypeDef> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                CodecUtils.setOf(Identifier.CODEC).fieldOf("logs").forGetter(TreeTypeDef::logs),
-                CodecUtils.setOf(Identifier.CODEC).fieldOf("leaves").forGetter(TreeTypeDef::leaves),
+                BLOCK_KEY_SET_CODEC.fieldOf("logs").forGetter(TreeTypeDef::logs),
+                BLOCK_KEY_SET_CODEC.fieldOf("leaves").forGetter(TreeTypeDef::leaves),
                 CodecUtils.setOf(Drop.CODEC).fieldOf("drops").forGetter(TreeTypeDef::drops),
                 Codec.BOOL.optionalFieldOf("wideTrunk", false).forGetter(TreeTypeDef::wideTrunk),
                 Codec.INT.optionalFieldOf("rarity", 0).forGetter(TreeTypeDef::rarity),
                 Codec.FLOAT.fieldOf("leavesRatio").forGetter(TreeTypeDef::leavesRatio)
         ).apply(instance, TreeTypeDef::new));
         public static final PacketCodec<RegistryByteBuf, TreeTypeDef> PACKET_CODEC = PacketCodec.tuple(
-                Identifier.PACKET_CODEC.collect(PacketCodecs.toCollection(HashSet::new)), TreeTypeDef::logs,
-                Identifier.PACKET_CODEC.collect(PacketCodecs.toCollection(HashSet::new)), TreeTypeDef::leaves,
+                BLOCK_KEY_SET_PACKET_CODEC, TreeTypeDef::logs,
+                BLOCK_KEY_SET_PACKET_CODEC, TreeTypeDef::leaves,
                 Drop.PACKET_CODEC.collect(PacketCodecs.toCollection(HashSet::new)), TreeTypeDef::drops,
                 PacketCodecs.BOOLEAN, TreeTypeDef::wideTrunk,
                 PacketCodecs.INTEGER, TreeTypeDef::rarity,
@@ -128,8 +132,8 @@ public class TreeTypeLoader extends JsonDataLoader<TreeTypeLoader.TreeTypeDef> i
         }
 
         public static class Builder {
-            private final Set<Identifier> logs = new HashSet<>();
-            private final Set<Identifier> leaves = new HashSet<>();
+            private final Set<RegistryKey<Block>> logs = new HashSet<>();
+            private final Set<RegistryKey<Block>> leaves = new HashSet<>();
             private final Set<Drop> drops = new HashSet<>();
 
             private boolean wideTrunk = false;
@@ -146,13 +150,15 @@ public class TreeTypeLoader extends JsonDataLoader<TreeTypeLoader.TreeTypeDef> i
                 return this;
             }
 
+            @SuppressWarnings("deprecation")
             public Builder logs(Block...blocks) {
-                Arrays.stream(blocks).map(Registries.BLOCK::getId).forEach(logs::add);
+                Arrays.stream(blocks).map(block -> block.getRegistryEntry().registryKey()).forEach(logs::add);
                 return this;
             }
 
+            @SuppressWarnings("deprecation")
             public Builder leaves(Block...blocks) {
-                Arrays.stream(blocks).map(Registries.BLOCK::getId).forEach(leaves::add);
+                Arrays.stream(blocks).map(block -> block.getRegistryEntry().registryKey()).forEach(leaves::add);
                 return this;
             }
 

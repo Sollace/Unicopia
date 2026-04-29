@@ -3,10 +3,9 @@ package com.minelittlepony.unicopia.ability.magic.spell.trait;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.advancement.UCriteria;
@@ -16,26 +15,28 @@ import com.minelittlepony.unicopia.network.MsgMarkTraitRead;
 import com.minelittlepony.unicopia.network.MsgUnlockTraits;
 import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
+import com.mojang.serialization.Codec;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery> {
+    private static final Codec<Map<RegistryKey<Item>, SpellTraits>> ENTRIES_CODEC = Codec.unboundedMap(RegistryKey.createCodec(RegistryKeys.ITEM), SpellTraits.CODEC);
     private final Set<Trait> unreadTraits = new HashSet<>();
 
     private final Set<Trait> traits = new HashSet<>();
-    private final Map<Identifier, SpellTraits> items = new HashMap<>();
+    private final Map<RegistryKey<Item>, SpellTraits> items = new HashMap<>();
 
     private final Pony pony;
 
@@ -61,12 +62,14 @@ public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery>
         }
     }
 
-    public void unlock(Item item) {
-        if (item == Items.AIR) {
+    public void unlock(ItemStack stack) {
+        if (stack.isEmpty()) {
             return;
         }
-        SpellTraits traits = SpellTraits.of(item);
-        items.put(Registries.ITEM.getId(item), traits);
+        @SuppressWarnings("deprecation")
+        var key = stack.getItem().getRegistryEntry().registryKey();
+        SpellTraits traits = SpellTraits.of(key);
+        items.put(key, traits);
         Set<Trait> newTraits = new HashSet<>();
         traits.entries().forEach(e -> {
             if (this.traits.add(e.getKey())) {
@@ -110,10 +113,10 @@ public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery>
     }
 
     @Environment(EnvType.CLIENT)
-    public void appendTooltip(ItemStack stack, List<Text> tooltip) {
+    public void appendTooltip(ItemStack stack, Consumer<Text> textConsumer) {
         SpellTraits.getEmbeddedTraits(stack)
             .orElseGet(() -> getKnownTraits(stack.getItem()))
-            .appendTooltip(tooltip);
+            .appendTooltip(textConsumer);
     }
 
     @Override
@@ -136,27 +139,25 @@ public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery>
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         clear();
-        NbtCompound disco = compound.getCompoundOrEmpty("items");
-        disco.getKeys().forEach(key -> {
-            Optional.ofNullable(Identifier.tryParse(key)).ifPresent(id -> {
-                loadTraits(id, disco.getCompoundOrEmpty(key)).filter(SpellTraits::isPresent).ifPresent(val -> {
-                    items.put(id, val);
-                });
-            });
+        compound.get("items", ENTRIES_CODEC).orElse(Map.of()).forEach((id, traits) -> {
+            traits = loadTraits(id, traits);
+            if (traits.isPresent()) {
+                items.put(id, traits);
+            }
         });
-        Trait.fromNbt(compound.getListOrEmpty("traits")).forEach(traits::add);
-        Trait.fromNbt(compound.getListOrEmpty("unreadTraits")).forEach(unreadTraits::add);
+        compound.get("traits", Trait.SET_CODEC).orElse(Set.of()).forEach(traits::add);
+        compound.get("unreadTraits", Trait.SET_CODEC).orElse(Set.of()).forEach(unreadTraits::add);
     }
 
-    private Optional<SpellTraits> loadTraits(Identifier itemId, NbtCompound nbt) {
+    private SpellTraits loadTraits(RegistryKey<Item> itemKey, SpellTraits storedTraits) {
         if (!pony.isClient()) {
-            return Registries.ITEM.getOptionalValue(itemId)
-                    .flatMap(item -> Optional.of(SpellTraits.of(item)))
-                    .filter(SpellTraits::isPresent)
-                    .or(() -> SpellTraits.fromNbt(nbt));
+            SpellTraits itemTraits = SpellTraits.of(itemKey);
+            if (itemTraits.isPresent()) {
+                return itemTraits;
+            }
         }
 
-        return SpellTraits.fromNbt(nbt);
+        return storedTraits;
     }
 
     @Override

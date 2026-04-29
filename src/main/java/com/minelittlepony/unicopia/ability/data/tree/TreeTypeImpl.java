@@ -4,18 +4,19 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 
 public record TreeTypeImpl (
         Identifier name,
         boolean wideTrunk,
-        Set<Identifier> logs,
-        Set<Identifier> leaves,
+        Set<RegistryKey<Block>> logs,
+        Set<RegistryKey<Block>> leaves,
         Supplier<Optional<Supplier<ItemStack>>> pool,
         int rarity,
         float leavesRatio
@@ -43,8 +44,9 @@ public record TreeTypeImpl (
         return ItemStack.EMPTY;
     }
 
-    private static boolean findMatch(Set<Identifier> ids, BlockState state) {
-        return ids.contains(Registries.BLOCK.getId(state.getBlock()));
+    @SuppressWarnings("deprecation")
+    private static boolean findMatch(Set<RegistryKey<Block>> ids, BlockState state) {
+        return ids.contains(state.getBlock().getRegistryEntry().registryKey());
     }
 
     static boolean isNonPersistent(BlockState state) {

@@ -29,10 +29,10 @@ import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 
 public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Identifier, TraitLoader.TraitStream>> implements IdentifiableResourceReloadListener {
@@ -90,11 +90,11 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, SpellTraits::union))
                 .entrySet();
 
-        SpellTraits.load(Registries.ITEM.getEntrySet().stream()
-                .map(entry -> Map.entry(
-                        entry.getKey().getValue(),
+        SpellTraits.load(Registries.ITEM.streamEntries()
+                .map(reference -> Map.entry(
+                        reference.registryKey(),
                         newRegistry.stream()
-                            .filter(p -> p.getKey().test(entry.getValue()))
+                            .filter(p -> p.getKey().test(reference))
                             .map(Map.Entry::getValue)
                             .reduce(SpellTraits::union)
                             .orElse(SpellTraits.EMPTY)
@@ -146,7 +146,7 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
             }
         }
 
-        interface Key extends Predicate<ItemConvertible> {
+        interface Key extends Predicate<RegistryEntry<Item>> {
             Codec<Key> CODEC = Codec.xor(Tag.CODEC, Id.CODEC).xmap(
                     Either::unwrap,
                     key -> key instanceof Tag l ? Either.left(l) : Either.right((Id)key)
@@ -155,20 +155,18 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
             record Tag(TagKey<Item> tag) implements Key {
                 static final Codec<Tag> CODEC = TagKey.codec(RegistryKeys.ITEM).xmap(Tag::new, Tag::tag);
 
-                @SuppressWarnings("deprecation")
                 @Override
-                public boolean test(ItemConvertible item) {
-                    return item.asItem().getRegistryEntry().isIn(tag);
+                public boolean test(RegistryEntry<Item> item) {
+                    return item.isIn(tag);
                 }
             }
 
             record Id(RegistryKey<Item> key) implements Key {
                 static final Codec<Id> CODEC = RegistryKey.createCodec(RegistryKeys.ITEM).xmap(Id::new, Id::key);
 
-                @SuppressWarnings("deprecation")
                 @Override
-                public boolean test(ItemConvertible item) {
-                    return item.asItem().getRegistryEntry().matchesKey(key);
+                public boolean test(RegistryEntry<Item> item) {
+                    return item.matchesKey(key);
                 }
             }
         }

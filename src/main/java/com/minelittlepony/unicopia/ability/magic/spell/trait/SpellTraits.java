@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,15 +38,15 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 
 public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     public static final SpellTraits EMPTY = new SpellTraits(Map.of());
     private static final SpellTraits SPAWN_EGG_TRAITS = new SpellTraits(Map.of(Trait.LIFE, 20F));
 
-    private static Map<Identifier, SpellTraits> REGISTRY = new HashMap<>();
+    private static Map<RegistryKey<Item>, SpellTraits> REGISTRY = new HashMap<>();
     static final Map<Trait, List<Item>> ITEMS = new HashMap<>();
 
     public static final Codec<SpellTraits> CODEC = Codec.unboundedMap(Trait.CODEC, Codec.FLOAT).flatXmap(
@@ -57,7 +58,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
             traits -> traits.traits
     );
 
-    public static void load(Map<Identifier, SpellTraits> newRegistry) {
+    public static void load(Map<RegistryKey<Item>, SpellTraits> newRegistry) {
         REGISTRY = newRegistry;
         ITEMS.clear();
         REGISTRY.forEach((itemId, traits) -> {
@@ -76,7 +77,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return EMPTY;
     }
 
-    public static Map<Identifier, SpellTraits> all() {
+    public static Map<RegistryKey<Item>, SpellTraits> all() {
         return new HashMap<>(REGISTRY);
     }
 
@@ -164,11 +165,11 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     @Environment(EnvType.CLIENT)
-    public void appendTooltip(List<Text> tooltip) {
+    public void appendTooltip(Consumer<Text> textConsumer) {
         if (isEmpty()) {
             return;
         }
-        tooltip.add(1, new ItemTraitsTooltipRenderer(this));
+        textConsumer.accept(new ItemTraitsTooltipRenderer(this));
     }
 
     public NbtCompound toNbt() {
@@ -232,9 +233,10 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static SpellTraits of(ItemStack stack) {
-        return getEmbeddedTraits(stack).orElseGet(() -> of(stack.getItem()));
+        return getEmbeddedTraits(stack).orElseGet(() -> of(stack.getRegistryEntry().getKey().orElseThrow()));
     }
 
+    @Deprecated
     public static SpellTraits of(Item item) {
         if (item instanceof ItemWithTraits i) {
             return i.getDefaultTraits();
@@ -242,11 +244,23 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         if (item instanceof SpawnEggItem) {
             return SPAWN_EGG_TRAITS;
         }
-        return REGISTRY.getOrDefault(Registries.ITEM.getId(item), EMPTY);
+        return REGISTRY.getOrDefault(item.getRegistryEntry().registryKey(), EMPTY);
     }
 
+    public static SpellTraits of(RegistryKey<Item> key) {
+        Item item = Registries.ITEM.get(key);
+        if (item instanceof ItemWithTraits i) {
+            return i.getDefaultTraits();
+        }
+        if (item instanceof SpawnEggItem) {
+            return SPAWN_EGG_TRAITS;
+        }
+        return REGISTRY.getOrDefault(key, EMPTY);
+    }
+
+    @SuppressWarnings("deprecation")
     public static SpellTraits of(Block block) {
-        return of(block.asItem());
+        return of(block.asItem().getRegistryEntry().registryKey());
     }
 
     public static Stream<Item> getItems(Trait trait) {
@@ -257,6 +271,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         return Optional.ofNullable(stack.get(UDataComponentTypes.SPELL_TRAITS));
     }
 
+    @Deprecated
     public static Optional<SpellTraits> fromNbt(NbtCompound traits) {
         return CODEC.decode(NbtOps.INSTANCE, traits).result().map(Pair::getFirst);
     }
