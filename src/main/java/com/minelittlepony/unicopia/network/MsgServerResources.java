@@ -11,22 +11,25 @@ import com.minelittlepony.unicopia.recipe.CloudShapingRecipe;
 import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.util.Untyped;
 
+import net.minecraft.item.Item;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.display.CuttingRecipeDisplay;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 
 public record MsgServerResources (
-        Map<Identifier, SpellTraits> traits,
+        Map<RegistryKey<Item>, SpellTraits> traits,
         SpellbookChapters chapters,
         Map<Identifier, TreeTypeLoader.TreeTypeDef> treeTypes,
         CuttingRecipeDisplay.Grouping<CloudShapingRecipe> cloudCuttingRecipes,
         PonyDiets diets
     ) {
     public static final PacketCodec<RegistryByteBuf, MsgServerResources> PACKET_CODEC = PacketCodec.tuple(
-            PacketCodecs.map(HashMap::new, Identifier.PACKET_CODEC, SpellTraits.PACKET_CODEC), MsgServerResources::traits,
+            PacketCodecs.map(HashMap::new, RegistryKey.createPacketCodec(RegistryKeys.ITEM), SpellTraits.PACKET_CODEC), MsgServerResources::traits,
             SpellbookChapters.PACKET_CODEC, MsgServerResources::chapters,
             PacketCodecs.map(HashMap::new, Identifier.PACKET_CODEC, TreeTypeLoader.TreeTypeDef.PACKET_CODEC), MsgServerResources::treeTypes,
             CuttingRecipeDisplay.Grouping.codec(), MsgServerResources::cloudCuttingRecipes,

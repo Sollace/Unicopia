@@ -128,6 +128,6 @@ public record CustomisedSpellType<T extends Spell> (
 
     public static <T extends Spell> CustomisedSpellType<T> fromNBT(NbtCompound compound) {
         SpellType<T> type = SpellType.getKey(compound);
-        return type.withTraits(SpellTraits.fromNbt(compound.getCompoundOrEmpty("traits")).orElse(type.getTraits()));
+        return type.withTraits(compound.get("traits", SpellTraits.CODEC).orElse(type.getTraits()));
     }
 }

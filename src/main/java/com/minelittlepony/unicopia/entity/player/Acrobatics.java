@@ -21,6 +21,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.SideShapeType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.tag.BlockTags;
@@ -199,14 +200,12 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         compound.putInt("ticksHanging", ticksHanging);
-        getHangingPosition().ifPresent(pos -> {
-            compound.put("hangingPosition", NbtSerialisable.encode(BlockPos.CODEC, pos, lookup));
-        });
+        compound.put("hangingPosition", BlockPos.CODEC, lookup.getOps(NbtOps.INSTANCE), getHangingPosition().orElse(null));
     }
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         ticksHanging = compound.getInt("ticksHanging", 0);
-        hangingPos.set(NbtSerialisable.decode(BlockPos.CODEC, compound.get("hangingPosition"), lookup));
+        hangingPos.set(compound.get("hangingPosition", BlockPos.CODEC, lookup.getOps(NbtOps.INSTANCE)));
     }
 }

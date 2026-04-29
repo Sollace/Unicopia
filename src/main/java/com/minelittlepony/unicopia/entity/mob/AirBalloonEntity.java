@@ -11,7 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -53,8 +53,8 @@ import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.item.component.BalloonDesignComponent;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.server.world.WeatherConditions;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
+import com.mojang.serialization.Codec;
 
 import io.netty.buffer.ByteBuf;
 
@@ -64,6 +64,8 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
     private static final TrackedData<Integer> INFLATION = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<String> BASKET_TYPE = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.STRING);
     private static final TrackedData<Integer> BALLOON_DESIGN = DataTracker.registerData(AirBalloonEntity.class, TrackedDataHandlerRegistry.INTEGER);
+
+    private static final Codec<List<ItemStack>> FUEL_CODEC = ItemStack.OPTIONAL_CODEC.listOf();
 
     private static final int BASKET_GRID_SIZE = 2;
     private static final int TOP_GRID_SIZE = 4;
@@ -737,11 +739,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         prevInflation = compound.getInt("inflationAmount", 0);
         setInflation(prevInflation);
         activeFuel = MathHelper.clamp(compound.getInt("fuel", 0), 0, maxFuel);
-        fuelItems = compound.contains("fuelItems") ? compound
-                .getListOrEmpty("fuelItems").stream()
-                .flatMap(item -> ItemStack.fromNbt(getRegistryManager(), item).stream())
-                .limit(64)
-                .collect(Collectors.toList()) : new ArrayList<>();
+        fuelItems = new ArrayList<>(compound.get("fuelItems", FUEL_CODEC, getRegistryManager().getOps(NbtOps.INSTANCE)).stream().flatMap(List::stream).toList());
     }
 
     @Override
@@ -753,11 +751,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         compound.putInt("boostTicks", getBoostTicks());
         compound.putInt("inflationAmount", getInflation());
         compound.putInt("fuel", activeFuel);
-        NbtList fuelItemsNbt = new NbtList();
-        fuelItems.forEach(item -> {
-            fuelItemsNbt.add(NbtSerialisable.encode(ItemStack.OPTIONAL_CODEC, item, getRegistryManager()));
-        });
-        compound.put("fuelItems", fuelItemsNbt);
+        compound.put("fuelItems", FUEL_CODEC, getRegistryManager().getOps(NbtOps.INSTANCE), fuelItems);
     }
 
     @Override

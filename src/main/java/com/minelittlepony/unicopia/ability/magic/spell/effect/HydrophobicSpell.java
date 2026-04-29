@@ -18,7 +18,6 @@ import com.minelittlepony.unicopia.particle.UParticles;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.server.world.Ether;
 import com.minelittlepony.unicopia.util.serialization.CodecUtils;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import com.minelittlepony.unicopia.util.shape.*;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -138,14 +137,14 @@ public class HydrophobicSpell extends AbstractSpell {
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         super.toNBT(compound, lookup);
-        compound.put("storedFluidPositions", NbtSerialisable.encode(Entry.SET_CODEC, storedFluidPositions, lookup));
+        compound.put("storedFluidPositions", Entry.SET_CODEC, lookup.getOps(NbtOps.INSTANCE), storedFluidPositions);
     }
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
         storedFluidPositions.clear();
-        NbtSerialisable.decode(Entry.SET_CODEC, compound.get("storedFluidPositions"), lookup).ifPresent(storedFluidPositions::addAll);
+        compound.get("storedFluidPositions", Entry.SET_CODEC, lookup.getOps(NbtOps.INSTANCE)).ifPresent(storedFluidPositions::addAll);
     }
     /**
      * Calculates the maximum radius of the shield. aka The area of effect.

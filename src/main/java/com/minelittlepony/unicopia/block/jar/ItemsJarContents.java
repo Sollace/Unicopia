@@ -10,7 +10,6 @@ import com.minelittlepony.unicopia.block.ItemJarBlock.TileData;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.mixin.MixinEntityBucketItem;
 import com.minelittlepony.unicopia.util.FluidHelper;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import com.minelittlepony.unicopia.util.TypedActionResult;
 import com.mojang.serialization.Codec;
 
@@ -21,6 +20,7 @@ import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
@@ -39,7 +39,7 @@ public record ItemsJarContents (
     }
 
     public ItemsJarContents(TileData tile, NbtCompound compound, WrapperLookup lookup) {
-        this(tile, new ArrayList<>(NbtSerialisable.decode(STACKS_CODEC, compound.get("items"), lookup).orElse(List.of())));
+        this(tile, new ArrayList<>(compound.get("items", STACKS_CODEC, lookup.getOps(NbtOps.INSTANCE)).orElse(List.of())));
     }
 
     @Override
@@ -197,7 +197,7 @@ public record ItemsJarContents (
 
     @Override
     public NbtCompound toNBT(NbtCompound compound, WrapperLookup lookup) {
-        compound.put("items", NbtSerialisable.encode(STACKS_CODEC, stacks, lookup));
+        compound.put("items", STACKS_CODEC, lookup.getOps(NbtOps.INSTANCE), stacks);
         return compound;
     }
 

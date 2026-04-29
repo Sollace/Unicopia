@@ -20,8 +20,6 @@ import com.minelittlepony.unicopia.item.AmuletItem;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.projectile.MagicProjectileEntity;
 import com.minelittlepony.unicopia.projectile.ProjectileDelegate;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
-
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -199,9 +197,8 @@ public class MindSwapSpell extends MimicSpell implements ProjectileDelegate.Enti
         super.toNBT(compound, lookup);
         compound.put("counterpart", counterpart.toNBT(lookup));
         compound.putBoolean("initialized", initialized);
-
-        myStoredInventory.ifPresent(mine -> compound.put("myStoredInventory", NbtSerialisable.encode(Inventory.CODEC, mine, lookup)));
-        theirStoredInventory.ifPresent(theirs -> compound.put("theirStoredInventory", NbtSerialisable.encode(Inventory.CODEC, theirs, lookup)));
+        compound.putNullable("myStoredInventory", Inventory.CODEC, lookup.getOps(NbtOps.INSTANCE), myStoredInventory.orElse(null));
+        compound.putNullable("theirStoredInventory", Inventory.CODEC, lookup.getOps(NbtOps.INSTANCE), theirStoredInventory.orElse(null));
     }
 
     @Override

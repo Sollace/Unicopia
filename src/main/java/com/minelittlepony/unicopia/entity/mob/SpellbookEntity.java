@@ -19,8 +19,6 @@ import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;
 import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.server.world.Altar;
 import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
-
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.block.Blocks;
@@ -408,14 +406,12 @@ public class SpellbookEntity extends MobEntity implements MagicImmune {
         compound.putInt("activeTicks", activeTicks);
         compound.putBoolean("prevDaytime", prevDaytime);
         compound.putBoolean("altered", isAltered());
-        compound.put("spellbookState", NbtSerialisable.encode(SpellbookState.CODEC, state, getRegistryManager()));
+        compound.put("spellbookState", SpellbookState.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE), state);
         getForcedState().map(t -> {
             compound.putBoolean("locked", t);
             return null;
         });
-        altar.ifPresent(altar -> {
-            compound.put("altar", NbtSerialisable.encode(Altar.CODEC, altar, getRegistryManager()));
-        });
+        compound.putNullable("altar", Altar.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE), altar.orElse(null));
     }
 
     @Override

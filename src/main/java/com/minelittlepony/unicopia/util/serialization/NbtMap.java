@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.serialization.Codec;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class NbtMap<K, V> implements NbtSerialisable {
@@ -48,12 +49,12 @@ public class NbtMap<K, V> implements NbtSerialisable {
 
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
-        compound.put("data", NbtSerialisable.encode(codec, data, lookup));
+        compound.put("data", codec, lookup.getOps(NbtOps.INSTANCE), data);
     }
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         data.clear();
-        NbtSerialisable.decode(codec, compound.get("data"), lookup).ifPresent(data::putAll);
+        compound.get("data", codec, lookup.getOps(NbtOps.INSTANCE)).ifPresent(data::putAll);
     }
 }

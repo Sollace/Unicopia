@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,20 +16,19 @@ import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.FollowingParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.particle.UParticles;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
-
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 
 public class ChangelingFeedingSpell extends AbstractSpell {
-    private List<EntityReference<LivingEntity>> targets = List.of();
+    private List<EntityReference<LivingEntity>> targets = new ArrayList<>();
     private int nextTargetIndex;
 
     private float healthToDrain;
@@ -93,7 +93,6 @@ public class ChangelingFeedingSpell extends AbstractSpell {
     }
 
     private float drain(Pony changeling, float max) {
-        List<EntityReference<LivingEntity>> targets = this.targets;
         while (!targets.isEmpty()) {
             int index = MathHelper.clamp(nextTargetIndex, 0, targets.size());
             LivingEntity l = targets.get(index).getOrEmpty(changeling.asWorld()).orElse(null);
@@ -148,7 +147,7 @@ public class ChangelingFeedingSpell extends AbstractSpell {
         compound.putFloat("healthToDrain", healthToDrain);
         compound.putInt("foodToDrain", foodToDrain);
         compound.putFloat("damageThisTick", damageThisTick);
-        compound.put("targets", NbtSerialisable.encode(EntityReference.<LivingEntity>listCodec(), targets, lookup));
+        compound.put("targets", EntityReference.listCodec(), lookup.getOps(NbtOps.INSTANCE), targets);
     }
 
     @Override
@@ -157,6 +156,6 @@ public class ChangelingFeedingSpell extends AbstractSpell {
         healthToDrain = compound.getFloat("healthToDrain", 0);
         foodToDrain = compound.getInt("foodToDrain", 0);
         damageThisTick = compound.getFloat("damageThisTick", 0);
-        targets = NbtSerialisable.decode(EntityReference.<LivingEntity>listCodec(), compound.get("targets"), lookup).orElse(List.of());
+        targets = compound.get("targets", EntityReference.<LivingEntity>listCodec(), lookup.getOps(NbtOps.INSTANCE)).map(ArrayList::new).orElseGet(ArrayList::new);
     }
 }

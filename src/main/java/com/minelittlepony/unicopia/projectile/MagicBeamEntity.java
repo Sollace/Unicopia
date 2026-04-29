@@ -21,14 +21,13 @@ import com.minelittlepony.unicopia.entity.EntityPhysics;
 import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -183,10 +182,10 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
         getDataTracker().set(HYDROPHOBIC, compound.getBoolean("hydrophobic", false));
         physics.fromNBT(compound, getRegistryManager());
         spells.getSlots().fromNBT(compound, getRegistryManager());
-        var level = NbtSerialisable.decode(Levelled.CODEC, compound.get("level"), getRegistryManager()).orElse(Levelled.ZERO);
+        var level = compound.get("level", Levelled.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE)).orElse(Levelled.ZERO);
         dataTracker.set(MAX_LEVEL, level.getMax());
         dataTracker.set(LEVEL, level.get());
-        var corruption = NbtSerialisable.decode(Levelled.CODEC, compound.get("corruption"), getRegistryManager()).orElse(Levelled.ZERO);
+        var corruption = compound.get("corruption", Levelled.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE)).orElse(Levelled.ZERO);
         dataTracker.set(MAX_CORRUPTION, corruption.getMax());
         dataTracker.set(CORRUPTION, corruption.get());
     }
@@ -194,8 +193,8 @@ public class MagicBeamEntity extends MagicProjectileEntity implements Caster<Mag
     @Override
     public void writeCustomDataToNbt(NbtCompound compound) {
         super.writeCustomDataToNbt(compound);
-        compound.put("level", NbtSerialisable.encode(Levelled.CODEC, level, getRegistryManager()));
-        compound.put("corruption", NbtSerialisable.encode(Levelled.CODEC, corruption, getRegistryManager()));
+        compound.put("level", Levelled.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE), level);
+        compound.put("corruption", Levelled.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE), corruption);
         compound.putBoolean("hydrophobic", getHydrophobic());
         physics.toNBT(compound, getRegistryManager());
         spells.getSlots().toNBT(compound, getRegistryManager());

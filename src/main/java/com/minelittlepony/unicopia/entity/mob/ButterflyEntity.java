@@ -10,7 +10,6 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.item.component.BufferflyVariantComponent;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import com.mojang.serialization.Codec;
 
 import io.netty.buffer.ByteBuf;
@@ -30,6 +29,7 @@ import net.minecraft.entity.mob.AmbientEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -342,12 +342,8 @@ public class ButterflyEntity extends AmbientEntity {
         super.writeCustomDataToNbt(nbt);
         nbt.putInt("ticksResting", ticksResting);
         nbt.putInt("breedingCooldown", breedingCooldown);
-        hoveringPosition.ifPresent(pos -> {
-            nbt.put("hoveringPosition", NbtSerialisable.encode(BlockPos.CODEC, pos, getRegistryManager()));
-        });
-        flowerPosition.ifPresent(pos -> {
-            nbt.put("flowerPosition", NbtSerialisable.encode(BlockPos.CODEC, pos, getRegistryManager()));
-        });
+        nbt.putNullable("hoveringPosition", BlockPos.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE), hoveringPosition.orElse(null));
+        nbt.putNullable("flowerPosition", BlockPos.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE), flowerPosition.orElse(null));
         NbtCompound visited = new NbtCompound();
         this.visited.forEach((pos, time) -> {
             visited.putLong(String.valueOf(pos.asLong()), time);
@@ -360,8 +356,8 @@ public class ButterflyEntity extends AmbientEntity {
         super.readCustomDataFromNbt(nbt);
         ticksResting = nbt.getInt("ticksResting", 0);
         breedingCooldown = nbt.getInt("breedingCooldown", 0);
-        hoveringPosition = NbtSerialisable.decode(BlockPos.CODEC, nbt.get("hoveringPosition"), getRegistryManager());
-        flowerPosition = NbtSerialisable.decode(BlockPos.CODEC, nbt.get("flowerPosition"), getRegistryManager());
+        hoveringPosition = nbt.get("hoveringPosition", BlockPos.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE));
+        flowerPosition = nbt.get("flowerPosition", BlockPos.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE));
         NbtCompound visited = nbt.getCompoundOrEmpty("visited");
         this.visited.clear();
         visited.getKeys().forEach(key -> {

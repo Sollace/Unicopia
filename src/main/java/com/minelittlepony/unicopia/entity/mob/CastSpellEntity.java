@@ -19,8 +19,6 @@ import com.minelittlepony.unicopia.entity.MagicImmune;
 import com.minelittlepony.unicopia.entity.Physics;
 import com.minelittlepony.unicopia.network.track.Trackable;
 import com.minelittlepony.unicopia.server.world.Ether;
-import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -32,6 +30,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.data.DataTracker.Builder;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Uuids;
@@ -245,8 +244,8 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound tag) {
-        tag.put("level", NbtSerialisable.encode(Levelled.CODEC, level, getRegistryManager()));
-        tag.put("corruption", NbtSerialisable.encode(Levelled.CODEC, corruption, getRegistryManager()));
+        tag.put("level", Levelled.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE), level);
+        tag.put("corruption", Levelled.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE), corruption);
 
         tag.putNullable("owningEntity", Uuids.CODEC, controllingEntityUuid);
         tag.putNullable("owningSpell", Uuids.CODEC, controllingSpellUuid);
@@ -260,10 +259,10 @@ public class CastSpellEntity extends LightEmittingEntity implements Caster<CastS
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound tag) {
-        var level = NbtSerialisable.decode(Levelled.CODEC, tag.get("level"), getRegistryManager()).orElse(Levelled.ZERO);
+        var level = tag.get("level", Levelled.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE)).orElse(Levelled.ZERO);
         dataTracker.set(MAX_LEVEL, level.getMax());
         dataTracker.set(LEVEL, level.get());
-        var corruption = NbtSerialisable.decode(Levelled.CODEC, tag.get("corruption"), getRegistryManager()).orElse(Levelled.ZERO);
+        var corruption = tag.get("corruption", Levelled.CODEC, getRegistryManager().getOps(NbtOps.INSTANCE)).orElse(Levelled.ZERO);
         dataTracker.set(MAX_CORRUPTION, corruption.getMax());
         dataTracker.set(CORRUPTION, corruption.get());
 

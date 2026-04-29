@@ -205,7 +205,6 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
         }
 
     static class MimicModel extends EntityModel<MimicEntityRenderer.State> {
-        private ModelPart part;
         private ModelPart lid;
         private ModelPart leftLeg;
         private ModelPart rightLeg;
