@@ -44,7 +44,6 @@ reckon {
 repositories {
     mavenLocal()
     flatDir { dirs 'lib' }
-    maven { name 'trinkets'; url 'https://maven.ladysnake.org/releases' }
     maven { name 'mod-menu'; url 'https://maven.terraformersmc.com/' }
     maven { name 'minelp-snapshot'; url 'https://repo.minelittlepony-mod.com/maven/snapshot' }
     maven { name 'minelp-releases'; url 'https://repo.minelittlepony-mod.com/maven/release' }
@@ -82,18 +81,8 @@ dependencies {
 
     modImplementation "com.github.MattiDragon:TlaApi:${project.tla_version}"
     include "com.github.MattiDragon:TlaApi:${project.tla_version}"
-
-    if (project.trinkets_type == 'trinkets') {
-      modCompileOnly "dev.emi:trinkets:${project.trinkets_version}"
-      modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.3.0"
-      modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0"
-    }/* else {
-      modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:5.3.0"
-      modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:5.3.0"
-      modCompileOnly "dev.emi:trinkets-dummy:${project.trinkets_version}"
-    }*/
     
-    if (project.trinkets_type == 'accessories') {
+    if (project.use_accessories == '1') {
       modCompileOnly "io.wispforest:accessories-fabric:${project.accessories_version}"
       modCompileOnly "io.wispforest:owo-lib:${project.owo_version}"
     } else {

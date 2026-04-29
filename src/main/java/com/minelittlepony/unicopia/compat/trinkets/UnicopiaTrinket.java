@@ -6,8 +6,8 @@ import com.minelittlepony.unicopia.item.FriendshipBraceletItem;
 import com.minelittlepony.unicopia.item.WearableItem;
 import com.minelittlepony.unicopia.item.component.Issuer;
 
-import io.wispforest.accessories.api.Accessory;
 import io.wispforest.accessories.api.attributes.AccessoryAttributeBuilder;
+import io.wispforest.accessories.api.core.Accessory;
 import io.wispforest.accessories.api.slot.SlotReference;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.EquippableComponent;

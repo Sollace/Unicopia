@@ -6,8 +6,8 @@ import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.item.enchantment.UEnchantments;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import io.wispforest.accessories.api.AccessoriesContainer;
-import io.wispforest.accessories.api.AccessoryRegistry;
-import io.wispforest.accessories.api.DropRule;
+import io.wispforest.accessories.api.core.AccessoryRegistry;
+import io.wispforest.accessories.api.events.DropRule;
 import io.wispforest.accessories.api.events.OnDropCallback;
 import io.wispforest.accessories.api.menu.AccessoriesBasedSlot;
 import net.minecraft.entity.LivingEntity;
@@ -17,8 +17,6 @@ import net.minecraft.screen.slot.Slot;
 
 public class TrinketsDelegateImpl implements TrinketsDelegate {
     public static final TrinketsDelegateImpl INSTANCE = new TrinketsDelegateImpl();
-
-    // who tf designed this api?
 
     @Override
     public void bootstrap() {
