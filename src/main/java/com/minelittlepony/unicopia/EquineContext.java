@@ -4,6 +4,7 @@ import com.google.common.base.MoreObjects;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
+import net.minecraft.block.EntityShapeContext;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemUsageContext;
@@ -41,8 +42,10 @@ public interface EquineContext {
         if (context == ShapeContext.absent()) {
             return InteractionManager.getInstance().getEquineContext();
         }
-        EquineContext result = context instanceof Container c ? c.get() : ABSENT;
-        return result == null ? ABSENT : result;
+        if (context instanceof EntityShapeContext esc) {
+            return of(esc.getEntity());
+        }
+        return ABSENT;
     }
 
     static EquineContext of(ItemUsageContext context) {
@@ -54,9 +57,5 @@ public interface EquineContext {
             return c;
         }
         return MoreObjects.firstNonNull(Equine.of(entity).orElse(null), ABSENT);
-    }
-
-    interface Container {
-        EquineContext get();
     }
 }

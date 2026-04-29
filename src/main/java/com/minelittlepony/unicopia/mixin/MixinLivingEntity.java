@@ -165,7 +165,7 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
     }
 
     @ModifyReturnValue(method = "hurtByWater()Z", at = @At("RETURN"))
-    private boolean onCanBeHurtByWater(boolean hurt, CallbackInfoReturnable<Boolean> info) {
+    private boolean onCanBeHurtByWater(boolean hurt) {
         TriState hurtByWater = get().canBeHurtByWater();
         if (hurtByWater != TriState.DEFAULT) {
             return hurtByWater.get();

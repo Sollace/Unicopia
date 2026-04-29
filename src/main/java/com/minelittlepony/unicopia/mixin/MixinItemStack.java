@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.mixin;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import com.llamalad7.mixinextras.sugar.Local;
 import com.minelittlepony.unicopia.client.ModifierTooltipRenderer;
 import com.minelittlepony.unicopia.entity.effect.FoodPoisoningStatusEffect;
 import com.minelittlepony.unicopia.item.DamageChecker;
@@ -22,6 +22,7 @@ import com.minelittlepony.unicopia.util.TypedActionResult;
 
 import net.minecraft.component.ComponentHolder;
 import net.minecraft.component.ComponentType;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -71,13 +72,13 @@ abstract class MixinItemStack implements ItemStackDuck {
         getTransientComponents().setCarrier(null);
     }
 
-    @Inject(method = "getTooltip",
+    @Inject(method = "appendTooltip",
             at = @At(value = "INVOKE",
-            target = "net/minecraft/item/ItemStack.appendAttributeModifiersTooltip(Ljava/util/function/Consumer;Lnet/minecraft/entity/player/PlayerEntity;)V"
+            target = "net/minecraft/item/ItemStack.appendAttributeModifiersTooltip(Ljava/util/function/Consumer;Lnet/minecraft/component/type/TooltipDisplayComponent;Lnet/minecraft/entity/player/PlayerEntity;)V"
     ))
-    public void onGetTooltip(Item.TooltipContext context, @Nullable PlayerEntity player, TooltipType type, CallbackInfoReturnable<List<Text>> info, @Local List<Text> lines) {
+    public void onGetTooltip(Item.TooltipContext context, TooltipDisplayComponent displayComponent, @Nullable PlayerEntity player, TooltipType type, Consumer<Text> textConsumer, CallbackInfo info) {
         ItemStack self = (ItemStack)(Object)this;
-        ModifierTooltipRenderer.INSTANCE.getTooltip(self, context, player, type, lines);
+        ModifierTooltipRenderer.INSTANCE.getTooltip(self, context, displayComponent, player, type, textConsumer);
     }
 
     @ModifyReturnValue(method = "takesDamageFrom", at = @At("RETURN"))

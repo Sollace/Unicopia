@@ -26,7 +26,6 @@
     "MixinEntity",
     "MixinEntityBucketItem",
     "MixinEntityView",
-    "MixinEntityShapeContext",
     "MixinFallingBlock",
     "MixinFallingBlockEntity",
     "MixinFlowableFluid",

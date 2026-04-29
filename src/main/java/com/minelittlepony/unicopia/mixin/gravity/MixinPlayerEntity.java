@@ -2,16 +2,13 @@ package com.minelittlepony.unicopia.mixin.gravity;
 
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.minelittlepony.unicopia.entity.Equine;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -26,11 +23,12 @@ abstract class MixinPlayerEntity {
         return movement;
     }
 
-    @Inject(method = "adjustMovementForSneaking", at = @At("RETURN"), cancellable = true)
-    private void unflipMovementForSneaking(Vec3d movement, MovementType type, CallbackInfoReturnable<Vec3d> info) {
+    @ModifyReturnValue(method = "adjustMovementForSneaking", at = @At("RETURN"))
+    private Vec3d unflipMovementForSneaking(Vec3d result) {
         if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
-            info.setReturnValue(info.getReturnValue().multiply(1, -1, 1));
+            return result.multiply(1, -1, 1);
         }
+        return result;
     }
 
     @ModifyArg(method = "isSpaceAroundPlayerEmpty",
@@ -46,7 +44,7 @@ abstract class MixinPlayerEntity {
     @ModifyArg(method = "isSpaceAroundPlayerEmpty",
             at = @At(value = "INVOKE", target = "net/minecraft/util/math/Box.<init>(DDDDDD)V"),
             index = 4)
-    private double invertStepHeightCheckBoxTop(double top, @Local(argsOnly = true) float stepHeight) {
+    private double invertStepHeightCheckBoxTop(double top, @Local(argsOnly = true, ordinal = 2) double stepHeight) {
         if (this instanceof Equine.Container eq && eq.get().getPhysics().isGravityNegative()) {
             return eq.get().asEntity().getBoundingBox().maxY + stepHeight + 1.0E-5F;
         }

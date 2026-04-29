@@ -212,7 +212,7 @@ public class DismissSpellScreen extends GameGui {
                 color = type.type().getColor();
                 name.setStyle(name.getStyle().withColor(color == 0 ? 0xFFAAAAAA : color));
                 tooltip.add(Text.translatable("gui.unicopia.dispell_screen.spell_type", name));
-                type.traits().appendTooltip(tooltip);
+                type.traits().appendTooltip(tooltip::add);
                 tooltip.add(ScreenTexts.EMPTY);
                 type.appendTooltip(TooltipContext.create(client.world), tooltip::add, TooltipType.BASIC, ComponentMap.EMPTY);
                 tooltip.add(ScreenTexts.EMPTY);

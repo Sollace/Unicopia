@@ -85,7 +85,7 @@ abstract class MixinEntity {
     // fix sprinting particles
     @ModifyArg(method = "spawnSprintingParticles",
             at = @At(value = "INVOKE",
-                target = "net/minecraft/world/World.addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)V"),
+                target = "net/minecraft/world/World.addParticleClient(Lnet/minecraft/particle/ParticleEffect;DDDDDD)V"),
             index = 2)
     private double modifyParticleY(double y) {
         return unicopiaIsGravityInverted() ? ((Entity)(Object)this).getHeight() - y + (((Entity)(Object)this).getY() * 2) : y;
