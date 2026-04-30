@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.entity.player;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -10,13 +12,14 @@ import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.TypedActionResult;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
+import com.mojang.serialization.Codec;
 
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
 
 public class PlayerCharmTracker implements NbtSerialisable, Copyable<PlayerCharmTracker> {
+    private static final Codec<List<CustomisedSpellType<?>>> HAND_SPELLS_CODEC = CustomisedSpellType.CODEC.listOf();
 
     private final Pony pony;
 
@@ -72,20 +75,15 @@ public class PlayerCharmTracker implements NbtSerialisable, Copyable<PlayerCharm
 
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
-        NbtList equippedSpells = new NbtList();
-        for (CustomisedSpellType<?> spell : handSpells) {
-            equippedSpells.add(spell.toNbt(new NbtCompound()));
-        }
-        compound.put("handSpells", equippedSpells);
+        compound.put("handSpells", HAND_SPELLS_CODEC, Arrays.asList(handSpells));
     }
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-        if (compound.contains("handSpells")) {
-            NbtList list = compound.getListOrEmpty("handSpells");
+        compound.get("handSpells", HAND_SPELLS_CODEC).ifPresent(list -> {
             for (int i = 0; i < handSpells.length && i < list.size(); i++) {
-                handSpells[i] = CustomisedSpellType.fromNBT(list.getCompoundOrEmpty(i));
+                handSpells[i] = list.get(i);
             }
-        }
+        });
     }
 }

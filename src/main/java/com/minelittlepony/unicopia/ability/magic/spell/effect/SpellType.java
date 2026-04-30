@@ -218,8 +218,12 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
         return Untyped.cast(EMPTY_KEY);
     }
 
+    public static <T extends Spell> Codec<SpellType<T>> codec() {
+        return Untyped.cast(CODEC);
+    }
+
     public static <T extends Spell> SpellType<T> getKey(NbtCompound tag) {
-        return Untyped.cast(tag.get("effect_id", Identifier.CODEC).map(SpellType::getKey).orElseGet(SpellType::empty));
+        return Untyped.cast(tag.get("effect_id", CODEC).orElseGet(SpellType::empty));
     }
 
     public static <T extends Spell> SpellType<T> getKey(@Nullable Identifier id) {

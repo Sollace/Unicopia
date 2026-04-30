@@ -103,6 +103,7 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
         public Entry(Caster<?> owner) {
             this.owner = owner;
         }
+
         public Entry(Caster<?> owner, T spell) {
             this.owner = owner;
             this.spell.set(spell);

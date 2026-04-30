@@ -15,8 +15,10 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellTyp
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.server.world.Ether;
+import com.minelittlepony.unicopia.util.Untyped;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
@@ -135,7 +137,7 @@ public interface Spell extends NbtSerialisable, Affine {
     static <T extends Spell> T readNbt(@Nullable NbtCompound compound, WrapperLookup lookup) {
         try {
             if (compound != null) {
-                return CustomisedSpellType.<T>fromNBT(compound).create(compound, lookup);
+                return Untyped.cast(CustomisedSpellType.CODEC.decode(lookup.getOps(NbtOps.INSTANCE), compound).getOrThrow().getFirst().create(compound, lookup));
             }
         } catch (Exception e) {
             Unicopia.LOGGER.fatal("Invalid spell nbt {}", e);

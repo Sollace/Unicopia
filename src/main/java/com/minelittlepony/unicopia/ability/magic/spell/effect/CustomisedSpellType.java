@@ -16,6 +16,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.client.TextHelper;
 import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.util.TypedActionResult;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.component.ComponentsAccess;
 import net.minecraft.item.Item;
@@ -33,6 +35,10 @@ public record CustomisedSpellType<T extends Spell> (
         SpellTraits traits,
         Supplier<SpellTraits> traitsDifferenceSupplier
     ) implements SpellPredicate<T>, TooltipAppender {
+    public static final Codec<CustomisedSpellType<?>> CODEC = RecordCodecBuilder.create(i -> i.group(
+        SpellType.CODEC.fieldOf("effect_id").forGetter(CustomisedSpellType::type),
+        SpellTraits.CODEC.fieldOf("traits").forGetter(CustomisedSpellType::traits)
+    ).apply(i, (type, traits) -> type.withTraits(traits)));
 
     public boolean isEmpty() {
         return type.isEmpty();
@@ -127,7 +133,7 @@ public record CustomisedSpellType<T extends Spell> (
     }
 
     public static <T extends Spell> CustomisedSpellType<T> fromNBT(NbtCompound compound) {
-        SpellType<T> type = SpellType.getKey(compound);
+        SpellType<T> type = compound.get("effect_id", SpellType.<T>codec()).orElseGet(SpellType::empty);
         return type.withTraits(compound.get("traits", SpellTraits.CODEC).orElse(type.getTraits()));
     }
 }
