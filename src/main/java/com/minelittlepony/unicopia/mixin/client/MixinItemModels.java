@@ -14,7 +14,8 @@ import net.minecraft.item.ItemStack;
 abstract class MixinItemModels {
     @ModifyVariable(method = "update(Lnet/minecraft/client/render/item/ItemRenderState;Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ItemDisplayContext;Lnet/minecraft/world/World;Lnet/minecraft/entity/LivingEntity;I)V",
             at = @At("HEAD"),
-            index = 1)
+            ordinal = 0,
+            argsOnly = true)
     private ItemStack modifyStack(ItemStack stack) {
         Appearance appearance = stack.get(UDataComponentTypes.APPEARANCE);
         if (appearance != null && appearance.replaceFully()) {

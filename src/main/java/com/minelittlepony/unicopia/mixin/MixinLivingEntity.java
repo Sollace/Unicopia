@@ -104,8 +104,8 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
     private void onIsPushable(CallbackInfoReturnable<Boolean> info) {
         Caster.of(this)
             .flatMap(c -> c.getSpellSlot().get(SpellPredicate.IS_DISGUISE))
-            .map(AbstractDisguiseSpell::getDisguise)
-            .map(EntityAppearance::getAppearance)
+            .map(AbstractDisguiseSpell::getAppearance)
+            .map(EntityAppearance::getEntity)
             .filter(Entity::isPushable)
             .ifPresent(v -> {
                 info.setReturnValue(false);

@@ -94,6 +94,7 @@
     "client.MixinClientWorld",
     "client.MixinClientPlayNetworkHandler",
     "client.MixinEntityRenderDispatcher",
+    "client.MixinEntityRenderer",
     "client.MixinFishingBobberEntityRenderer",
     "client.MixinGameRenderer",
     "client.MixinHeldItemRenderer",

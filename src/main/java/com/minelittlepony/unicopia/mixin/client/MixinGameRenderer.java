@@ -32,7 +32,8 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
         BatEyesApplicator.INSTANCE.enable();
     }
 
-    @ModifyArg(method = "renderWorld", at = @At(value = "INVOKE", target = "net/minecraft/client/render/GameRenderer.tiltViewWhenHurt(Lnet/minecraft/client/util/math/MatrixStack;F)V"), index = 0)
+    @ModifyArg(method = "renderWorld", at = @At(value = "INVOKE",
+            target = "net/minecraft/client/render/GameRenderer.tiltViewWhenHurt(Lnet/minecraft/client/util/math/MatrixStack;F)V"), index = 0)
     private MatrixStack tiltViewWhenHurt(MatrixStack matrices) {
         float roll = UnicopiaClient.getCamera().calculateRoll(client.options.getPerspective().isFirstPerson(), client.options.getFov().getValue().floatValue());
         if (roll != 0) {
@@ -51,7 +52,8 @@ abstract class MixinGameRenderer implements AutoCloseable, SynchronousResourceRe
         return BatEyesApplicator.getWorldBrightness(initial, entity, tickDelta);
     }
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "net/minecraft/client/gl/Framebuffer.beginWrite(Z)V", shift = Shift.BEFORE))
+    @Inject(method = "render(Lnet/minecraft/client/render/RenderTickCounter;Z)V",
+            at = @At(value = "INVOKE", target = "net/minecraft/client/render/WorldRenderer.drawEntityOutlinesFramebuffer()V", shift = Shift.AFTER))
     private void onBeforeFrameEnd(RenderTickCounter tickCounter, boolean tick, CallbackInfo info) {
         ViewportShader.INSTANCE.render(pool, tickCounter.getTickProgress(false));
     }

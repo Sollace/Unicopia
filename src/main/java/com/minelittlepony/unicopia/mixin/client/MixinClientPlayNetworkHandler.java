@@ -36,8 +36,8 @@ abstract class MixinClientPlayNetworkHandler extends ClientCommonNetworkHandler 
         if (living != null) {
             living.getSpellSlot()
                 .get(SpellPredicate.IS_DISGUISE)
-                .map(Disguise::getDisguise)
-                .map(EntityAppearance::getAppearance)
+                .map(Disguise::getAppearance)
+                .map(EntityAppearance::getEntity)
                 .ifPresent(appearance -> {
                     appearance.handleStatus(packet.getStatus());
                 });
