@@ -45,7 +45,7 @@ public interface UTradeOffers {
         });
 
         TradeOfferHelper.registerWanderingTraderOffers(factories -> {
-            factories.addAll(TradeOfferHelper.WanderingTraderOffersBuilder.BUY_ITEMS_POOL,
+            factories.addOffersToPool(TradeOfferHelper.WanderingTraderOffersBuilder.BUY_ITEMS_POOL,
                     buyTiered(UItems.GEMSTONE, 30, UItems.GOLDEN_FEATHER, 1, UItems.GOLDEN_WING, 1, 30, 2, 0.05F),
                     (e, rng) -> new TradeOffer(new TradedItem(UItems.GEMSTONE, 3), EnchantableItem.enchant(UItems.GEMSTONE.getDefaultStack(), SpellType.REGISTRY.getRandom(rng).get().value()), 20, 1, 0.05F),
                     buy(UItems.GEMSTONE, 20, UItems.HAY_FRIES, 5, 50, 3, 0.06F),
