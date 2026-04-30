@@ -195,8 +195,8 @@ public class CasterState {
 
             appearance = caster.getSpellSlot().get(SpellPredicate.IS_DISGUISE)
                     .map(Disguise.class::cast)
-                    .flatMap(Disguise::getAppearance)
-                    .map(EntityAppearance::getAppearance)
+                    .map(Disguise::getAppearance)
+                    .map(EntityAppearance::getEntity)
                     .orElse(null);
 
             if (caster instanceof Pony pony) {

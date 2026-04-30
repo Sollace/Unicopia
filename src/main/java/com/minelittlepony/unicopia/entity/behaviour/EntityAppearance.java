@@ -81,7 +81,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     private boolean dirty;
 
     @Nullable
-    public Entity getAppearance() {
+    public Entity getEntity() {
         return entity;
     }
 
@@ -375,7 +375,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
 
     @Override
     public void getCollissionShapes(ShapeContext context, Consumer<VoxelShape> output) {
-        EntityCollisions.getCollissionShapes(getAppearance(), context, output);
+        EntityCollisions.getCollissionShapes(getEntity(), context, output);
         getAttachments().forEach(e -> EntityCollisions.getCollissionShapes(e.entity(), context, output));
     }
 
@@ -413,7 +413,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         destination.entityId = entityId;
         destination.entity = entity;
         destination.blockEntity = blockEntity;
-        destination.attachments.addAll(attachments);
+        destination.attachments = new ArrayList<>(attachments);
         destination.dimensions = dimensions;
         destination.tag = tag == null ? null : tag.copy();
         destination.entityNbt = entityNbt == null ? null : entityNbt.copy();

@@ -33,7 +33,7 @@ public class BlazeBehaviour extends EntityBehaviour<BlazeEntity> {
     @Override
     public void update(Pony player, BlazeEntity entity, Disguise spell) {
 
-        NbtCompound tag = spell.getDisguise().getOrCreateTag();
+        NbtCompound tag = spell.getAppearance().getOrCreateTag();
 
         boolean firing = tag.getBoolean("isFiring", false);
         int fireballCooldown = tag.getInt("fireballCooldown", 0);

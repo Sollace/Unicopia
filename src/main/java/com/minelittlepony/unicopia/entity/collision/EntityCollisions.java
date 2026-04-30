@@ -45,7 +45,7 @@ public class EntityCollisions {
         return collectCollisionBoxes(box, collector -> {
             world.getOtherEntities(entity, box.expand(50), e -> {
                 Caster.of(e).flatMap(c -> c.getSpellSlot().get(SpellPredicate.IS_DISGUISE)).ifPresent(p -> {
-                    p.getDisguise().getCollissionShapes(ctx, collector);
+                    p.getAppearance().getCollissionShapes(ctx, collector);
                 });
                 if (e instanceof ComplexCollidable collidable) {
                     collidable.getCollissionShapes(ctx, collector);

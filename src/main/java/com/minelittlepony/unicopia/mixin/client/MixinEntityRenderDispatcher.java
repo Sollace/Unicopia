@@ -1,55 +1,61 @@
 package com.minelittlepony.unicopia.mixin.client;
 
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.minelittlepony.unicopia.client.render.WorldRenderDelegate;
 import com.minelittlepony.unicopia.client.render.entity.HitboxController;
 import com.minelittlepony.unicopia.client.render.spell.SpellEffectsRenderDispatcher;
-import com.minelittlepony.unicopia.entity.Equine;
+import com.minelittlepony.unicopia.util.Untyped;
 
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.state.EntityHitboxAndView;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 
 @Mixin(EntityRenderDispatcher.class)
 abstract class MixinEntityRenderDispatcher implements SpellEffectsRenderDispatcher.RenderDispatcherAccessor {
-    private static final String OUTER_RENDER = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V";
-    private static final String INNER_RENDER = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/client/render/entity/EntityRenderer;)V";
-
-    @Inject(method = OUTER_RENDER, at = @At("HEAD"), cancellable = true)
-    private <E extends Entity> void beforeRender(E entity, double x, double y, double z, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
-        if (WorldRenderDelegate.INSTANCE.beforeEntityRender(entity, x, y, z, tickDelta, matrices, vertexConsumers, light)) {
-            info.cancel();
-        }
-    }
-
-    @ModifyExpressionValue(method = INNER_RENDER, at = @At(
-            value = "FIELD",
-            target = "net/minecraft/client/render/entity/EntityRenderDispatcher.renderHitboxes:Z",
-            opcode = Opcodes.GETFIELD
+    @WrapOperation(
+        method = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
+        at = @At(
+            value = "INVOKE",
+            target = "net/minecraft/client/render/entity/EntityRenderDispatcher.render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/client/render/entity/EntityRenderer;)V"
     ))
-    private <E extends Entity> boolean beforeRenderHitboxes(boolean renderHitboxes, E entity) {
-        return renderHitboxes && HitboxController.of(getRenderer(entity)).shouldRenderHitbox(entity);
+    private <E extends Entity, S extends EntityRenderState> void wrapRender(
+            EntityRenderDispatcher self,
+            E entity,
+            double x,
+            double y,
+            double z,
+            float tickDelta,
+            MatrixStack matrices,
+            VertexConsumerProvider vertices,
+            int light,
+            EntityRenderer<? super E, S> renderer, Operation<Void> operation) {
+        WorldRenderDelegate.INSTANCE.handleEntityRender((entity1, x1, y1, z1, vertices1, light1, renderer1) -> {
+            operation.call(entity1, x1, y1, z1, tickDelta, matrices, vertices1, light1, renderer1);
+        }, entity, x, y, z, tickDelta, matrices, vertices, light);
     }
-
-    @Inject(method = OUTER_RENDER, at = @At("RETURN"))
-    private <E extends Entity> void afterRender(E entity, double x, double y, double z, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, CallbackInfo info) {
-        Equine.of(entity).ifPresent(eq -> WorldRenderDelegate.INSTANCE.afterEntityRender(eq, matrices, vertexConsumers, light));
-    }
-
-    @Shadow
-    public abstract <T extends Entity> EntityRenderer<? super T, ?> getRenderer(T entity);
 
     @Accessor("renderShadows")
     @Override
     public abstract boolean shouldRenderShadows();
+}
+
+@Mixin(EntityRenderer.class)
+abstract class MixinEntityRenderer<T extends Entity, S extends EntityRenderState> {
+    @Inject(method = "createHitbox", at = @At("HEAD"), cancellable = true)
+    private void onCreateHitbox(T entity, float tickProgress, boolean green, CallbackInfoReturnable<EntityHitboxAndView> info) {
+        if (!HitboxController.of(Untyped.cast(this)).shouldRenderHitbox(entity)) {
+            info.setReturnValue(null);
+        }
+    }
 }

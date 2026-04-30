@@ -573,8 +573,8 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         effectiveRace = morphedRace.orElse(intrinsicRace);
         compositeRace = morphedRace.orElseGet(() -> getSpellSlot()
                 .get(SpellPredicate.IS_MIMIC)
-                .map(AbstractDisguiseSpell::getDisguise)
-                .map(EntityAppearance::getAppearance)
+                .map(AbstractDisguiseSpell::getAppearance)
+                .map(EntityAppearance::getEntity)
                 .flatMap(Pony::of)
                 .map(Pony::getSpecies)
                 .orElse(intrinsicRace)).composite(

@@ -2,27 +2,21 @@ package com.minelittlepony.unicopia.client.render;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
-import com.minelittlepony.unicopia.client.render.spell.SpellEffectsRenderDispatcher;
 import com.minelittlepony.unicopia.compat.pehkui.PehkUtil;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.behaviour.EntityAppearance;
 import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
-
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -34,98 +28,98 @@ class EntityDisguiseRenderer {
         this.delegate = delegate;
     }
 
-    public <T extends LivingEntity> boolean render(Living<T> pony, Disguise disguise,
+    @Nullable
+    public Entity prepare(Living<?> pony, Disguise disguise,
             double x, double y, double z,
-            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, Vec3d cameraPos) {
-        int fireTicks = pony.asEntity().doesRenderOnFire() ? 1 : 0;
+            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+
         if (!delegate.client.isPaused()) {
             disguise.update(pony, false);
         }
 
-        EntityAppearance ve = disguise.getDisguise();
-        Entity e = ve.getAppearance();
+        EntityAppearance appearance = disguise.getAppearance();
+        Entity e = appearance.getEntity();
 
         if (e == null) {
-            return false;
+            return null;
         }
 
-        PehkUtil.copyScale(pony.asEntity(), e);
+        BlockEntity blockEntity = appearance.getBlockEntity();
+        if (blockEntity != null) {
+            blockEntity.setWorld(e.getWorld());
+        }
+
+        int fireTicks = pony.asEntity().doesRenderOnFire() ? 1 : 0;
 
         if (delegate.client.getEntityRenderDispatcher().shouldRenderHitboxes()) {
             e.setBoundingBox(pony.asEntity().getBoundingBox());
         }
+        e.setFireTicks(fireTicks);
 
-        render(ve, e, x, y, z, fireTicks, tickDelta, matrices, vertices, light, cameraPos);
-        ve.getAttachments().forEach(attachment -> {
+        appearance.getAttachments().forEach(attachment -> {
             PehkUtil.copyScale(pony.asEntity(), attachment.entity());
-            Vec3d difference = attachment.entity().getPos().subtract(e.getPos());
-            render(ve, attachment.entity(), x + difference.x, y + difference.y, z + difference.z, fireTicks, tickDelta, matrices, vertices, light, cameraPos);
-            PehkUtil.clearScale(attachment.entity());
+            attachment.entity().setFireTicks(fireTicks);
         });
 
-        matrices.push();
-        matrices.translate(x, y, z);
+        PehkUtil.copyScale(pony.asEntity(), e);
+        return e;
+    }
 
-        var state = delegate.client.getEntityRenderDispatcher().getRenderer(pony.asEntity()).getAndUpdateRenderState(pony.asEntity(), tickDelta);
+    @Nullable
+    public void render(EntityRenderRedispatcher<Entity> dispatcher, EntityAppearance appearance,
+            double x, double y, double z,
+            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
+        Entity entity = appearance.getEntity();
 
-        SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertices, light, CasterState.of(state));
-        matrices.pop();
+        Vec3d cameraPos = delegate.client.gameRenderer.getCamera().getPos();
 
-        delegate.afterEntityRender(pony, matrices, vertices, light);
-        PehkUtil.clearScale(e);
-        return true;
+        if (appearance.isAxisAligned() && (x != 0 || y != 0 || z != 0)) {
+            x = MathHelper.lerp(tickDelta, entity.lastRenderX, entity.getX()) - cameraPos.x;
+            y = MathHelper.lerp(tickDelta, entity.lastRenderY, entity.getY()) - cameraPos.y;
+            z = MathHelper.lerp(tickDelta, entity.lastRenderZ, entity.getZ()) - cameraPos.z;
+        }
+
+        BlockEntity blockEntity = appearance.getBlockEntity();
+
+        if (blockEntity == null || !renderBlockEntity(updateBlockEntity(blockEntity, entity), matrices, vertices, x, y, z, light, cameraPos)) {
+            dispatcher.render(entity, x, y, z, delegate.applyOverlays(entity, vertices), light);
+        }
+        Vec3d origin = entity.getPos().subtract(x, y, z);
+        appearance.getAttachments().forEach(attachment -> {
+            Vec3d pos = attachment.entity().getPos().subtract(origin);
+            if (blockEntity == null || !renderBlockEntity(updateBlockEntity(blockEntity, attachment.entity()), matrices, vertices, pos.x, pos.y, pos.z, light, cameraPos)) {
+                dispatcher.render(entity, pos.x, pos.y, pos.z, vertices, light);
+            }
+        });
     }
 
     @SuppressWarnings("deprecation")
-    private void render(EntityAppearance ve, Entity e,
-            double x, double y, double z,
-            int fireTicks, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Vec3d cameraPos) {
-
-        if (ve.isAxisAligned() && (x != 0 || y != 0 || z != 0)) {
-            Vec3d cam = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
-
-            x = MathHelper.lerp(tickDelta, e.lastRenderX, e.getX()) - cam.x;
-            y = MathHelper.lerp(tickDelta, e.lastRenderY, e.getY()) - cam.y;
-            z = MathHelper.lerp(tickDelta, e.lastRenderZ, e.getZ()) - cam.z;
+    private BlockEntity updateBlockEntity(BlockEntity blockEntity, Entity entityReference) {
+        ((MixinBlockEntity)blockEntity).setPos(entityReference.getBlockPos());
+        if (entityReference instanceof FallingBlockEntity fbe) {
+            blockEntity.setCachedState(fbe.getBlockState());
         }
+        return blockEntity;
+    }
 
-        BlockEntity blockEntity = ve.getBlockEntity();
+    private boolean renderBlockEntity(BlockEntity blockEntity, MatrixStack matrices, VertexConsumerProvider vertices, double x, double y, double z, int light, Vec3d cameraPos) {
+        var renderer = MinecraftClient.getInstance().getBlockEntityRenderDispatcher().get(blockEntity);
+        if (renderer != null) {
+            matrices.push();
+            matrices.translate(x - 0.5, y, z - 0.5);
+            matrices.translate(-0.5, 0, -0.5);
 
-        if (blockEntity != null) {
-            BlockEntityRenderer<BlockEntity> r = MinecraftClient.getInstance().getBlockEntityRenderDispatcher().get(blockEntity);
-            if (r != null) {
-                ((MixinBlockEntity)blockEntity).setPos(e.getBlockPos());
-                if (e instanceof FallingBlockEntity fbe) {
-                    blockEntity.setCachedState(fbe.getBlockState());
-                }
-                blockEntity.setWorld(e.getWorld());
-                matrices.push();
-                matrices.translate(x, y, z);
-                matrices.translate(-0.5, 0, -0.5);
+            renderer.render(blockEntity, 1, matrices, vertices, light, OverlayTexture.DEFAULT_UV, cameraPos);
 
-                r.render(blockEntity, 1, matrices, vertexConsumers, light, OverlayTexture.DEFAULT_UV, cameraPos);
+            matrices.pop();
 
-                matrices.pop();
-
-                BlockRenderType type = blockEntity.getCachedState().getRenderType();
-                if (type == BlockRenderType.INVISIBLE) {
-                    return;
-                }
+            BlockRenderType type = blockEntity.getCachedState().getRenderType();
+            if (type == BlockRenderType.INVISIBLE) {
+                return false;
             }
         }
 
-        e.setFireTicks(fireTicks);
-
-        EntityRenderDispatcher dispatcher = delegate.client.getEntityRenderDispatcher();
-        if (e instanceof FallingBlockEntity) {
-            dispatcher.setRenderShadows(false);
-        }
-        dispatcher.render(e, x, y, z, tickDelta, matrices, vertexConsumers, light);
-        if (e instanceof FallingBlockEntity) {
-            dispatcher.setRenderShadows(true);
-        }
-        e.setFireTicks(0);
-
+        return true;
     }
 
     @Nullable

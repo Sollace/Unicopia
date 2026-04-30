@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
-import java.util.Optional;
-
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.SpellPredicate;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
@@ -39,13 +37,13 @@ public abstract class AbstractDisguiseSpell extends AbstractSpell implements Dis
     }
 
     @Override
-    public EntityAppearance getDisguise() {
+    public EntityAppearance getAppearance() {
         return disguise;
     }
 
     @Override
     public boolean onProjectileImpact(ProjectileEntity projectile) {
-        return disguise.getAppearance() == projectile;
+        return disguise.getEntity() == projectile;
     }
 
     @Override
@@ -65,17 +63,12 @@ public abstract class AbstractDisguiseSpell extends AbstractSpell implements Dis
         disguise.fromNBT(compound, lookup);
     }
 
-    @Override
-    public Optional<EntityAppearance> getAppearance() {
-        return Optional.ofNullable(disguise);
-    }
-
     public static Entity getAppearance(Entity e) {
         return e instanceof PlayerEntity ? Pony.of((PlayerEntity)e)
                 .getSpellSlot()
                 .get(SpellPredicate.IS_DISGUISE)
-                .map(AbstractDisguiseSpell::getDisguise)
-                .map(EntityAppearance::getAppearance)
+                .map(AbstractDisguiseSpell::getAppearance)
+                .map(EntityAppearance::getEntity)
                 .orElse(e) : e;
     }
 }

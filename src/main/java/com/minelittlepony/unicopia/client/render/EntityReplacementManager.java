@@ -64,7 +64,7 @@ class EntityReplacementManager implements Disguise {
     }
 
     @Override
-    public EntityAppearance getDisguise() {
+    public EntityAppearance getAppearance() {
         return disguise;
     }
 

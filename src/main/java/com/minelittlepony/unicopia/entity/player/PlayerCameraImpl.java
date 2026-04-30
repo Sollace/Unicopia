@@ -54,7 +54,7 @@ public class PlayerCameraImpl extends MotionCompositor implements PlayerCamera {
     public float calculateDistance(float distance) {
         return player.getSpellSlot()
             .get(SpellPredicate.IS_DISGUISE)
-            .map(AbstractDisguiseSpell::getDisguise)
+            .map(AbstractDisguiseSpell::getAppearance)
             .flatMap(d -> d.getDistance(player))
             .orElse(1F) * distance;
     }

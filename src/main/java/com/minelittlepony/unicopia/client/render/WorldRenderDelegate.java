@@ -1,11 +1,13 @@
 package com.minelittlepony.unicopia.client.render;
 
 import java.util.Optional;
+import java.util.Set;
+
+import org.jetbrains.annotations.Nullable;
+
 import com.minelittlepony.unicopia.EquinePredicates;
-import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
-import com.minelittlepony.unicopia.client.render.model.SphereModel;
+import com.minelittlepony.unicopia.client.render.ModelPartHooks.EnqueudHeadRender;
 import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.ItemImpl;
@@ -13,13 +15,13 @@ import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.duck.LavaAffine;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.ColorHelper;
+import com.minelittlepony.unicopia.util.Untyped;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import net.minecraft.block.enums.CameraSubmersionType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.BackgroundRenderer.FogType;
-import net.minecraft.client.render.VertexConsumerProvider.Immediate;
+import net.minecraft.client.render.entity.state.EntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,19 +29,19 @@ import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import static net.minecraft.util.math.ColorHelper.*;
 
 public class WorldRenderDelegate {
     public static final WorldRenderDelegate INSTANCE = new WorldRenderDelegate();
     private static final Optional<Vec3d> RED_SKY_COLOR = Optional.of(new Vec3d(1, 0, 0));
-    private static final int DIVER_HELMET_COLOR = fromFloats(0.1F, 0.5F, 0.5F, 0.5F);
 
     private final EntityReplacementManager disguiseLookup = new EntityReplacementManager();
     private final EntityDisguiseRenderer disguiseRenderer = new EntityDisguiseRenderer(this);
     private final SmittenEyesRenderer smittenEyesRenderer = new SmittenEyesRenderer();
+    private final FishBowlRenderer fishBowlRenderer = new FishBowlRenderer();
 
-    private boolean recurseMinion;
-    private boolean recurseFrosting;
+    private static final int[] DEFAULT_FOG_DIFF = { 0, 0 };
+    private static final int[] SEAPONY_UNDERWATER_FOG_DIFF = { -30, 190 };
+    private static final int[] SEAPONY_SURFACE_FOG_DIFF = { -130, 0 };
 
     final MinecraftClient client = MinecraftClient.getInstance();
 
@@ -51,153 +53,110 @@ public class WorldRenderDelegate {
     }
 
     public void applyFog(Camera camera, FogType fogType, float viewDistance, boolean thickFog, float tickDelta) {
-        if (camera.getSubmersionType() == CameraSubmersionType.WATER) {
-            if (EquinePredicates.PLAYER_SEAPONY.test(MinecraftClient.getInstance().player)) {
-                Fog fog = RenderSystem.getShaderFog();
+        if (EquinePredicates.PLAYER_SEAPONY.test(MinecraftClient.getInstance().player)) {
+            final int[] distanceChange = switch (camera.getSubmersionType()) {
+                case WATER -> SEAPONY_UNDERWATER_FOG_DIFF;
+                case NONE -> SEAPONY_SURFACE_FOG_DIFF;
+                default -> DEFAULT_FOG_DIFF;
+            };
+
+            if (distanceChange != DEFAULT_FOG_DIFF) {
+                final Fog fog = RenderSystem.getShaderFog();
                 RenderSystem.setShaderFog(new Fog(
-                        fog.start() - 30,
-                        fog.end() + 190,
-                        fog.shape(),
-                        fog.red(),
-                        fog.green(),
-                        fog.blue(),
-                        fog.alpha()
-                ));
-            }
-        }
-        if (camera.getSubmersionType() == CameraSubmersionType.NONE) {
-            if (EquinePredicates.PLAYER_SEAPONY.test(MinecraftClient.getInstance().player)) {
-                Fog fog = RenderSystem.getShaderFog();
-                RenderSystem.setShaderFog(new Fog(
-                        fog.start() - 130,
-                        fog.end(),
-                        fog.shape(),
-                        fog.red(),
-                        fog.green(),
-                        fog.blue(),
-                        fog.alpha()
+                    fog.start() + distanceChange[0], fog.end() + distanceChange[1],
+                    fog.shape(),
+                    fog.red(), fog.green(), fog.blue(), fog.alpha()
                 ));
             }
         }
     }
 
-    public boolean beforeEntityRender(Entity entity,
-            double x, double y, double z,
-            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
-
-        if (!recurseFrosting && entity instanceof BoatEntity && entity instanceof LavaAffine affine && affine.isLavaAffine()) {
-            Identifier frostingTexture = Unicopia.id("textures/entity/" + EntityType.getId(entity.getType()).getPath() + "/frosting.png");
-
-            if (MinecraftClient.getInstance().getResourceManager().getResource(frostingTexture).isPresent()) {
-                recurseFrosting = true;
-                RenderLayerUtil.createUnionBuffer(c -> {
-                    client.getEntityRenderDispatcher().render(entity, x, y, z, tickDelta, matrices, c, light);
-                }, vertices, texture -> RenderLayer.getEntityTranslucent(frostingTexture));
-                recurseFrosting = false;
-                return true;
-            }
-        }
-
-        if (recurseFrosting) {
-            return false;
-        }
-
-        return Equine.of(entity).filter(eq -> onEntityRender(eq, x, y, z, tickDelta, matrices, vertices, light, MinecraftClient.getInstance().gameRenderer.getCamera().getPos())).isPresent();
-    }
-
-    public void afterEntityRender(Equine<?> pony, MatrixStack matrices, VertexConsumerProvider vertices, int light) {
-        if (recurseFrosting) {
-            return;
-        }
-
-        if (pony instanceof Creature creature && smittenEyesRenderer.isSmitten(creature)) {
-            smittenEyesRenderer.render(creature, matrices, vertices, light, 0);
-        }
-
-        if (pony instanceof Pony p) {
-            if (p.getCompositeRace().includes(Race.SEAPONY)
-                    && pony.asEntity().isSubmergedInWater()
-                    && MineLPDelegate.getInstance().getPlayerPonyRace(p.asEntity()) != Race.SEAPONY) {
-
-                for (var head : ModelPartHooks.stopCollecting()) {
-                    matrices.push();
-                    head.transform(matrices, 1F);
-
-                    Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-                    RenderLayer layer = RenderLayers.getMagicColored();
-                    float scale = 0.9F;
-
-                    SphereModel.SPHERE.render(matrices, immediate.getBuffer(layer), light, 0, scale, DIVER_HELMET_COLOR);
-                    SphereModel.SPHERE.render(matrices, immediate.getBuffer(layer), light, 0, scale + 0.2F, DIVER_HELMET_COLOR);
-
-                    matrices.pop();
-                }
-            }
-        }
-
-        if (pony instanceof ItemImpl || pony instanceof Living) {
-            matrices.pop();
-
-            if (pony instanceof Living && pony.getPhysics().isGravityNegative()) {
-                flipAngles(pony.asEntity());
-            }
-        }
-    }
-
-    private boolean onEntityRender(Equine<?> pony,
-            double x, double y, double z,
-            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, Vec3d cameraPos) {
-
-        if (!recurseMinion && pony instanceof Creature creature && creature.isMinion()) {
-            try {
-                recurseMinion = true;
-                RenderLayerUtil.createUnionBuffer(c -> {
-                    client.getEntityRenderDispatcher().render(creature.asEntity(), x, y, z, tickDelta, matrices, c, light);
-                }, vertices, texture -> RenderLayers.getMagicColored(texture, creature.isDiscorded() ? 0x33FF0000 : ColorHelper.getRainbowColor(creature.asEntity(), 25, 1) )); // 0x8800AA00
-                return true;
-            } catch (Throwable t) {
-                Unicopia.LOGGER.error("Error whilst rendering minion", t);
-            } finally {
-                recurseMinion = false;
-            }
-        }
-
-        if (pony instanceof ItemImpl) {
-            matrices.push();
-
-            if (pony.getPhysics().isGravityNegative()) {
-                matrices.translate(0, -((ItemImpl) pony).asEntity().getHeight() * 1.1, 0);
-            }
-
-            return false;
-        }
-
-        if (pony instanceof Living living) {
-            return onLivingRender(living, x, y, z, tickDelta, matrices, vertices, light, cameraPos);
-        }
-
-        return false;
-    }
-
-    private boolean onLivingRender(Living<?> pony,
-            double x, double y, double z,
-            float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Vec3d cameraPos) {
-
-        if (pony.isBeingCarried()) {
-            return true;
-        }
+    public <E extends Entity, S extends EntityRenderState> void handleEntityRender(
+            EntityRenderRedispatcher<Entity> dispatcher,
+            E entity,
+            double x,
+            double y,
+            double z,
+            float tickDelta,
+            MatrixStack matrices,
+            VertexConsumerProvider vertices,
+            int light) {
+        @Nullable final Equine<?> equine = Equine.of(entity).orElse(null);
+        @Nullable final Entity flippedEntity = equine != null && equine.getPhysics().isGravityNegative() ? entity : null;
 
         matrices.push();
 
-        Entity owner = pony.asEntity();
+        if (equine instanceof Living living && !living.isBeingCarried()) {
+            applyTransforms(living, entity, x, y, z, matrices);
+        }
 
-        boolean negative = pony.getPhysics().isGravityNegative();
+        if (flippedEntity != null) {
+            if (equine instanceof ItemImpl) {
+                matrices.translate(0, -flippedEntity.getHeight() * 1.1, 0);
+            }
+            flipAngles(entity);
+        }
 
-        matrices.translate(x, y + owner.getHeight() / 2, z);
+        var disguise = equine instanceof Living living ? disguiseLookup.getAppearanceFor(living).orElse(null) : null;
 
-        if (pony instanceof Pony p) {
-            boolean firstPerson = MinecraftClient.getInstance().options.getPerspective().isFirstPerson();
-            float fovEffectScale = MinecraftClient.getInstance().options.getFovEffectScale().getValue().floatValue();
+        if (equine instanceof Living living) {
+            Entity replacement = disguiseRenderer.prepare(living, disguise, x, y, z, tickDelta, matrices, vertices, light);
+            if (replacement != null) {
+                entity = Untyped.cast(replacement);
+            }
+        }
+
+        final boolean hasSmittenEyes = equine instanceof Creature creature && smittenEyesRenderer.isSmitten(creature);
+        final boolean hasFishbowl = fishBowlRenderer.shouldRender(equine);
+
+        if (hasSmittenEyes || hasFishbowl) {
+            ModelPartHooks.startCollecting();
+        }
+
+        if (disguise == null) {
+            dispatcher.render(entity, x, y, z, applyOverlays(entity, vertices), light);
+        } else {
+            disguiseRenderer.render(dispatcher, disguise.getAppearance(), x, y, z, tickDelta, matrices, vertices, light);
+        }
+
+        Set<EnqueudHeadRender> headParts = ModelPartHooks.stopCollecting();
+
+        if (hasSmittenEyes) {
+            smittenEyesRenderer.render(headParts, entity, matrices, vertices, light);
+        }
+
+        if (hasFishbowl) {
+            fishBowlRenderer.render(headParts, matrices, vertices, light);
+        }
+
+        matrices.pop();
+
+        if (flippedEntity != null) {
+            flipAngles(flippedEntity);
+        }
+    }
+
+    public VertexConsumerProvider applyOverlays(Entity entity, VertexConsumerProvider vertices) {
+        if (entity instanceof BoatEntity && entity instanceof LavaAffine affine && affine.isLavaAffine()) {
+            Identifier frostingTexture = Unicopia.id("textures/entity/" + EntityType.getId(entity.getType()).getPath() + "/frosting.png");
+            vertices = RenderLayerUtil.createUnionBuffer(vertices, texture -> RenderLayer.getEntityTranslucent(frostingTexture));
+        }
+
+        if (Equine.of(entity).orElse(null) instanceof Creature creature && creature.isMinion()) {
+            vertices = RenderLayerUtil.createUnionBuffer(vertices, texture -> RenderLayers.getMagicColored(texture, creature.isDiscorded() ? 0x33FF0000 : ColorHelper.getRainbowColor(creature.asEntity(), 25, 1) )); // 0x8800AA00
+        }
+
+        return vertices;
+    }
+
+    private void applyTransforms(Equine<?> equine, Entity entity, double x, double y, double z, MatrixStack matrices) {
+        boolean negative = equine.getPhysics().isGravityNegative();
+
+        matrices.translate(x, y + entity.getHeight() / 2, z);
+
+        if (equine instanceof Pony p) {
+            boolean firstPerson = client.options.getPerspective().isFirstPerson();
+            float fovEffectScale = client.options.getFovEffectScale().getValue().floatValue();
             float sidewaysRoll = p.getCamera().calculateRoll(firstPerson, fovEffectScale);
 
             if (p.getAcrobatics().isFloppy()) {
@@ -214,29 +173,12 @@ public class WorldRenderDelegate {
             float forwardPitch = p.getInterpolator().interpolate("g_kdive", p.getMotion().isDiving() ? 80 : 0, 15);
 
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(forwardPitch));
-
-            if (p.getCompositeRace().includes(Race.SEAPONY)
-                    && pony.asEntity().isSubmergedInWater()
-                    && MineLPDelegate.getInstance().getPlayerPonyRace(p.asEntity()) != Race.SEAPONY) {
-                ModelPartHooks.startCollecting();
-            }
         } else {
             float roll = negative ? 180 : 0;
-
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(roll));
-
-            if (pony instanceof Creature creature && smittenEyesRenderer.isSmitten(creature)) {
-                ModelPartHooks.startCollecting();
-            }
         }
 
-        matrices.translate(-x, -y - owner.getHeight() / 2, -z);
-
-        if (negative) {
-            flipAngles(owner);
-        }
-
-        return disguiseLookup.getAppearanceFor(pony).map(effect -> disguiseRenderer.render(pony, effect, x, y, z, tickDelta, matrices, vertexConsumers, light, cameraPos)).orElse(false);
+        matrices.translate(-x, -y - entity.getHeight() / 2, -z);
     }
 
     private void flipAngles(Entity entity) {

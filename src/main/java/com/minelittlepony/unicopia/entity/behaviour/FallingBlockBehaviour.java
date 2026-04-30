@@ -100,11 +100,11 @@ public class FallingBlockBehaviour extends EntityBehaviour<FallingBlockEntity> {
 
             if (state.get(Properties.WATERLOGGED) != logged) {
                 entity = new FallingBlockEntity(entity.getWorld(), entity.getX(), entity.getY(), entity.getZ(), state.with(Properties.WATERLOGGED, logged));
-                spell.getDisguise().setAppearance(entity);
+                spell.getAppearance().setAppearance(entity);
             }
         }
 
-        EntityAppearance disguise = spell.getDisguise();
+        EntityAppearance disguise = spell.getAppearance();
 
         BlockEntity be = disguise.getBlockEntity();
 

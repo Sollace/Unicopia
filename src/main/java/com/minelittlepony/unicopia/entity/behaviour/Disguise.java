@@ -22,34 +22,34 @@ import net.minecraft.entity.player.PlayerEntity;
 
 public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider {
 
-    EntityAppearance getDisguise();
+    EntityAppearance getAppearance();
 
     boolean isDead();
 
-    default Optional<EntityAppearance> getAppearance() {
-        return Optional.ofNullable(getDisguise());
+    default Optional<EntityAppearance> getOptionalAppearance() {
+        return Optional.ofNullable(getAppearance());
     }
 
     @Override
     default FlightType getFlightType() {
-        return getAppearance().map(EntityAppearance::getFlightType).orElse(FlightType.UNSET);
+        return getOptionalAppearance().map(EntityAppearance::getFlightType).orElse(FlightType.UNSET);
     }
 
     @Override
     default Optional<EntityDimensions> getTargetDimensions(Pony player) {
-        return getAppearance().flatMap(d -> d.getTargetDimensions(player));
+        return getOptionalAppearance().flatMap(d -> d.getTargetDimensions(player));
     }
 
     default boolean isOf(@Nullable Entity entity) {
-        return getDisguise().isOf(entity);
+        return getAppearance().isOf(entity);
     }
 
     default Disguise setDisguise(@Nullable Entity entity) {
-        if (entity == getDisguise().getAppearance()) {
+        if (entity == getAppearance().getEntity()) {
             entity = null;
         }
 
-        getDisguise().setAppearance(entity);
+        getAppearance().setAppearance(entity);
         return this;
     }
 
@@ -66,7 +66,7 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
             return true;
         }
 
-        Entity entity = getDisguise().getOrCreate(source);
+        Entity entity = getAppearance().getOrCreate(source);
 
         if (entity == null) {
             owner.setInvisible(false);
@@ -91,7 +91,7 @@ public interface Disguise extends FlightType.Provider, PlayerDimensions.Provider
 
         behaviour.copyBaseAttributes(owner, entity);
 
-        if (tick && !getDisguise().skipsUpdate()) {
+        if (tick && !getAppearance().skipsUpdate()) {
             ((RotatedView)entity.getWorld()).setMirrorEntityStatuses(entity.getWorld().isClient);
             if (entity.getWorld().isClient) {
                 entity.tick();

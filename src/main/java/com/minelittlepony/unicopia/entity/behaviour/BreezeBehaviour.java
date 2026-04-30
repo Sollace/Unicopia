@@ -48,7 +48,7 @@ public class BreezeBehaviour extends EntityBehaviour<BreezeEntity> {
             }
         }
 
-        NbtCompound tag = spell.getDisguise().getOrCreateTag();
+        NbtCompound tag = spell.getAppearance().getOrCreateTag();
 
         boolean firing = tag.getBoolean("isFiring", false);
         int fireballCooldown = tag.getInt("fireballCooldown", 0);

@@ -271,7 +271,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return !isInvisible()
             && getSpellSlot()
             .get(SpellPredicate.IS_DISGUISE)
-            .filter(spell -> spell.getDisguise().getAppearance() == entity)
+            .filter(spell -> spell.getAppearance().getEntity() == entity)
             .isEmpty();
     }
 
@@ -422,7 +422,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     public Optional<BlockPos> chooseClimbingPos() {
         return getSpellSlot().get(SpellPredicate.IS_DISGUISE)
-                .map(AbstractDisguiseSpell::getDisguise)
+                .map(AbstractDisguiseSpell::getAppearance)
                 .filter(EntityAppearance::canClimbWalls)
                 .map(v -> entity.getBlockPos());
     }
@@ -461,7 +461,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         double fallDistance = landEvent.fire(getEffectiveFallDistance(distance));
 
         getSpellSlot().get(SpellPredicate.IS_DISGUISE).ifPresent(spell -> {
-            spell.getDisguise().onImpact(this, fallDistance, damageMultiplier, cause);
+            spell.getAppearance().onImpact(this, fallDistance, damageMultiplier, cause);
         });
         return fallDistance;
     }

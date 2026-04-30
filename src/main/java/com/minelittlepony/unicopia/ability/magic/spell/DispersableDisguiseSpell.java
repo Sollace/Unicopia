@@ -71,18 +71,17 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
             setDead();
         }
 
-        Entity owner = source.asEntity();
-        Entity appearance = getDisguise().getAppearance();
-
         if (isSuppressed()) {
             if (--suppressionCounter <= 0) {
                 suppressed.set(false);
             }
 
-            owner.setInvisible(false);
+            source.asEntity().setInvisible(false);
             if (source instanceof Pony) {
                 ((Pony)source).setInvisible(false);
             }
+
+            Entity appearance = getAppearance().getEntity();
 
             if (appearance != null) {
                 appearance.setInvisible(true);
@@ -113,7 +112,7 @@ public class DispersableDisguiseSpell extends AbstractDisguiseSpell implements I
     }
 
     @Override
-    public Optional<EntityAppearance> getAppearance() {
-        return isSuppressed() ? Optional.empty() : super.getAppearance();
+    public Optional<EntityAppearance> getOptionalAppearance() {
+        return isSuppressed() ? Optional.empty() : super.getOptionalAppearance();
     }
 }

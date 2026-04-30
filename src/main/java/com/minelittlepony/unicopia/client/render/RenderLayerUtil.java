@@ -14,7 +14,13 @@ public interface RenderLayerUtil {
 
     static void createUnionBuffer(Consumer<VertexConsumerProvider> action, VertexConsumerProvider vertices, Function<Identifier, RenderLayer> overlayFunction) {
         Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEffectVertexConsumers();
-        action.accept(layer -> {
+        action.accept(createUnionBuffer(vertices, overlayFunction));
+        immediate.draw();
+    }
+
+    static VertexConsumerProvider createUnionBuffer(VertexConsumerProvider vertices, Function<Identifier, RenderLayer> overlayFunction) {
+        Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEffectVertexConsumers();
+        return layer -> {
             Identifier texture = com.minelittlepony.common.util.render.RenderLayerUtil.getTexture(layer).orElse(null);
 
             if (texture == null || texture.equals(SHADOW_TEXTURE) || texture.equals(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE)) {
@@ -24,7 +30,6 @@ public interface RenderLayerUtil {
                     vertices.getBuffer(layer),
                     immediate.getBuffer(overlayFunction.apply(texture))
             );
-        });
-        immediate.draw();
+        };
     }
 }
