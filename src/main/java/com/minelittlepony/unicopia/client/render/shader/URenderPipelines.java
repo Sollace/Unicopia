@@ -44,6 +44,7 @@ public interface URenderPipelines {
 
     RenderPipeline RENDERTYPE_PORTAL_SURFACE = register(
         RenderPipeline.builder(RenderPipelines.MATRICES_SNIPPET, RenderPipelines.FOG_SNIPPET)
+            .withLocation(Unicopia.id("portal_surface"))
             .withVertexShader(Unicopia.id("core/rendertype_portal_surface"))
             .withFragmentShader(Unicopia.id("core/rendertype_portal_surface"))
             .withSampler("Sampler0")
