@@ -16,7 +16,6 @@ import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class ObjectTracker<T extends TrackableObject<T>> {
     private final Map<UUID, T> trackedObjects = new Object2ObjectOpenHashMap<>();
@@ -86,7 +85,7 @@ public class ObjectTracker<T extends TrackableObject<T>> {
         destination.quickAccess = Map.copyOf(destination.trackedObjects);
     }
 
-    synchronized Optional<MsgTrackedValues.TrackerObjects> getInitialPairs(WrapperLookup lookup) {
+    synchronized Optional<MsgTrackedValues.TrackerObjects> getInitialPairs(DynamicRegistryManager lookup) {
         if (trackedObjects.isEmpty()) {
             return Optional.empty();
         }
@@ -101,7 +100,7 @@ public class ObjectTracker<T extends TrackableObject<T>> {
         return Optional.of(new MsgTrackedValues.TrackerObjects(id, Set.of(), updates));
     }
 
-    synchronized Optional<MsgTrackedValues.TrackerObjects> getDirtyPairs(WrapperLookup lookup) {
+    synchronized Optional<MsgTrackedValues.TrackerObjects> getDirtyPairs(DynamicRegistryManager lookup) {
         if (!trackedObjects.isEmpty()) {
             Map<UUID, byte[]> updates = new HashMap<>();
             Set<UUID> removedTrackableObjects = new HashSet<>();
@@ -140,7 +139,7 @@ public class ObjectTracker<T extends TrackableObject<T>> {
                 trackedObjects.put(id, o);
             }
 
-            o.read(new RegistryByteBuf(Unpooled.wrappedBuffer(data), lookup), lookup);
+            o.read(new RegistryByteBuf(Unpooled.wrappedBuffer(data), lookup));
         });
         quickAccess = Map.copyOf(trackedObjects);
     }
