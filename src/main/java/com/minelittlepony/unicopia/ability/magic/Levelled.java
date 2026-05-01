@@ -6,6 +6,10 @@ import java.util.function.IntSupplier;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+
 /**
  * Object with levelling capabilities.
  */
@@ -14,6 +18,11 @@ public interface Levelled {
             Codec.INT.fieldOf("value").forGetter(LevelStore::get),
             Codec.INT.fieldOf("max").forGetter(LevelStore::getMax)
     ).apply(instance, Levelled::of));
+    PacketCodec<ByteBuf, LevelStore> PACKET_CODEC = PacketCodec.tuple(
+            PacketCodecs.INTEGER, LevelStore::get,
+            PacketCodecs.INTEGER, LevelStore::getMax,
+            Levelled::of
+    );
 
     LevelStore ZERO = of(0, 1);
 

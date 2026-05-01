@@ -127,8 +127,6 @@ public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileD
         super.fromNBT(compound, lookup);
         timer.fromNBT(compound, lookup);
         lights.clear();
-        compound.getList("lights").ifPresent(l -> l.forEach(nbt -> {
-            lights.add(new EntityReference<>((NbtCompound)nbt, lookup));
-        }));
+        compound.get("lights", EntityReference.<FairyEntity>listCodec()).ifPresent(lights::addAll);
     }
 }

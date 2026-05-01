@@ -20,9 +20,8 @@ import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 /**
@@ -140,20 +139,10 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
         }
 
         @Override
-        public void readTrackedNbt(NbtCompound nbt, WrapperLookup lookup) {
-            spell.fromNBT(nbt, lookup);
-        }
-
-        @Override
-        public NbtCompound writeTrackedNbt(WrapperLookup lookup) {
-            return spell.toNBT(lookup);
-        }
-
-        @Override
-        public void read(RegistryByteBuf buffer, WrapperLookup lookup) {
+        public void read(RegistryByteBuf buffer) {
             byte contentType = buffer.readByte();
             if (contentType == 1) {
-                readTrackedNbt(PacketCodecs.NBT_COMPOUND.decode(buffer), lookup);
+                spell.fromNBT(buffer.readNbt(), buffer.getRegistryManager());
             } else {
                 T spell = this.spell.get();
                 if (spell != null) {
@@ -163,11 +152,16 @@ class MultiSpellSlot implements SpellSlots, NbtSerialisable {
         }
 
         @Override
-        public Optional<? extends ByteBuf> write(Status status, WrapperLookup lookup) {
+        public void write(RegistryByteBuf buffer) {
+            buffer.writeNbt(spell.toNBT(buffer.getRegistryManager()));
+        }
+
+        @Override
+        public Optional<? extends ByteBuf> write(Status status, DynamicRegistryManager lookup) {
             if (status != Status.DEFAULT) {
-                ByteBuf buffer = new PacketByteBuf(Unpooled.buffer());
+                RegistryByteBuf buffer = new RegistryByteBuf(Unpooled.buffer(), lookup);
                 buffer.writeByte(1);
-                PacketCodecs.NBT_COMPOUND.encode(buffer, spell.toNBT(lookup));
+                buffer.writeNbt(spell.toNBT(lookup));
                 return Optional.of(buffer);
             }
             @Nullable T spell = this.spell.get();

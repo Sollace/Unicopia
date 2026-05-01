@@ -25,13 +25,13 @@ public interface PacketCodecUtils {
             (registry, value) -> RegistryKey.of(RegistryKey.ofRegistry(registry), value)
     );
     PacketCodec<PacketByteBuf, Optional<RegistryKey<?>>> OPTIONAL_REGISTRY_KEY = PacketCodecs.optional(REGISTRY_KEY);
-    PacketCodec<PacketByteBuf, Vec3d> VECTOR = PacketCodec.tuple(
+    PacketCodec<ByteBuf, Vec3d> VECTOR = PacketCodec.tuple(
             PacketCodecs.DOUBLE, Vec3d::getX,
             PacketCodecs.DOUBLE, Vec3d::getY,
             PacketCodecs.DOUBLE, Vec3d::getZ,
             Vec3d::new
     );
-    PacketCodec<PacketByteBuf, Optional<Vec3d>> OPTIONAL_VECTOR = PacketCodecs.optional(VECTOR);
+    PacketCodec<ByteBuf, Optional<Vec3d>> OPTIONAL_VECTOR = PacketCodecs.optional(VECTOR);
     PacketCodec<ByteBuf, Optional<BlockPos>> OPTIONAL_POS = PacketCodecs.optional(BlockPos.PACKET_CODEC);
     PacketCodec<ByteBuf, Set<String>> STRING_SET = PacketCodecs.STRING.collect(PacketCodecs.toCollection(HashSet::new));
 

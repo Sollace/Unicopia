@@ -4,30 +4,24 @@ import java.util.Optional;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.RegistryByteBuf;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.registry.DynamicRegistryManager;
 
 public interface TrackableObject<T extends TrackableObject<T>> {
     Status getStatus();
 
-    default void read(RegistryByteBuf buffer, WrapperLookup lookup) {
-        readTrackedNbt(PacketCodecs.NBT_COMPOUND.decode(buffer), lookup);
-    }
+    void read(RegistryByteBuf buffer);
 
-    default Optional<? extends ByteBuf> write(Status status, WrapperLookup lookup) {
+    void write(RegistryByteBuf buffer);
+
+    default Optional<? extends ByteBuf> write(Status status, DynamicRegistryManager lookup) {
         if (status == Status.NEW || status == Status.UPDATED) {
-            ByteBuf buffer = Unpooled.buffer();
-            PacketCodecs.NBT_COMPOUND.encode(buffer, writeTrackedNbt(lookup));
+            RegistryByteBuf buffer = new RegistryByteBuf(Unpooled.buffer(), lookup);
+            write(buffer);
             return Optional.of(buffer);
         }
         return Optional.empty();
     }
-
-    void readTrackedNbt(NbtCompound nbt, WrapperLookup lookup);
-
-    NbtCompound writeTrackedNbt(WrapperLookup lookup);
 
     void discard(boolean immediate);
 

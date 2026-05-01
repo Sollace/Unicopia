@@ -49,6 +49,8 @@ import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.Vec3d;
@@ -302,19 +304,28 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         compound.putString("entityId", entityId);
-
-        if (entityNbt != null) {
-            compound.put("entity", entityNbt);
-        } else if (entity != null) {
-            compound.put("entity", encodeEntityToNBT(entity));
+        var nbt = getEntityNbt();
+        if (nbt != null) {
+            compound.put("entity", nbt);
         }
+    }
+
+    @Nullable
+    private NbtCompound getEntityNbt() {
+        if (entityNbt == null && entity != null) {
+            entityNbt = encodeEntityToNBT(entity);
+        }
+        return entityNbt;
     }
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
-        String newId = compound.getString("entityId").orElse(null);
+        String newId = compound.getString("entityId").orElse("");
+        loadEntityFromNbt(newId, compound.getCompound("entity").orElse(null));
+    }
 
-        String newPlayerName = compound.getCompound("entity").flatMap(e -> e.getString("playerName")).orElse(null);
+    private void loadEntityFromNbt(String newId, @Nullable NbtCompound newNbt) {
+        String newPlayerName = newNbt == null ? null : newNbt.getString("playerName").orElse(null);
         String oldPlayerName = entity instanceof PlayerEntity player ? player.getGameProfile().getName() : null;
 
         if (!Objects.equals(newId, entityId) || !Objects.equals(newPlayerName, oldPlayerName)) {
@@ -322,11 +333,10 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
             remove();
         }
 
-        if (compound.contains("entity")) {
-            entityId = newId;
+        entityId = newId;
+        entityNbt = newNbt;
 
-            entityNbt = compound.getCompoundOrEmpty("entity");
-
+        if (entityNbt != null) {
             if (entity != null) {
                 try {
                     entity.readNbt(entityNbt);
@@ -335,6 +345,7 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
                 }
 
                 attachments.clear();
+                // onCreate re-populates the attachments
                 entity = EntityBehaviour.forEntity(entity).onCreate(entity, this, false);
             }
         }
@@ -393,13 +404,14 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
     }
 
     @Override
-    public void readTrackedNbt(NbtCompound nbt, WrapperLookup lookup) {
-        fromNBT(nbt, lookup);
+    public void read(RegistryByteBuf buffer) {
+        loadEntityFromNbt(buffer.readString(), buffer.readNullable(PacketCodecs.NBT_COMPOUND));
     }
 
     @Override
-    public NbtCompound writeTrackedNbt(WrapperLookup lookup) {
-        return toNBT(lookup);
+    public void write(RegistryByteBuf buffer) {
+        buffer.writeString(entityId);
+        buffer.writeNullable(getEntityNbt(), PacketCodecs.NBT_COMPOUND);
     }
 
     @Override
@@ -418,5 +430,4 @@ public class EntityAppearance implements NbtSerialisable, PlayerDimensions.Provi
         destination.tag = tag == null ? null : tag.copy();
         destination.entityNbt = entityNbt == null ? null : entityNbt.copy();
     }
-
 }

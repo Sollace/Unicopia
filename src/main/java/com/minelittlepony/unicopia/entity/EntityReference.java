@@ -15,14 +15,19 @@ import com.minelittlepony.unicopia.network.track.TrackableObject;
 import com.minelittlepony.unicopia.util.Untyped;
 import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
+import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
@@ -43,7 +48,7 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
     public static final Codec<EntityReference<?>> CODEC = EntityValues.CODEC.codec().xmap(r -> new EntityReference<>(r), r -> r.reference);
     public static final Codec<List<EntityReference<?>>> LIST_CODEC = CODEC.listOf();
 
-    public static <T extends Entity> Codec<List<EntityReference<T>>> codec() {
+    public static <T extends Entity> Codec<EntityReference<T>> codec() {
         return Untyped.cast(CODEC);
     }
 
@@ -162,16 +167,20 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
     }
 
     @Override
-    public NbtCompound writeTrackedNbt(WrapperLookup lookup) {
-        return getTarget()
-                .flatMap(ref -> EntityValues.CODEC.codec().encodeStart(lookup.getOps(NbtOps.INSTANCE), ref).result())
-                .map(NbtCompound.class::cast)
-                .orElseGet(NbtCompound::new);
+    public void write(RegistryByteBuf buffer) {
+        buffer.writeOptional(getTarget(), EntityValues.packetCodec());
     }
 
     @Override
-    public void readTrackedNbt(NbtCompound compound, WrapperLookup lookup) {
-        fromNBT(compound, lookup);
+    public void read(RegistryByteBuf buffer) {
+        reference = buffer.readNullable(EntityValues.packetCodec());
+        dirty = true;
+        if (reference != null) {
+            T value = directReference.get();
+            if (value != null) {
+                reference = new EntityValues<>(value);
+            }
+        }
     }
 
     @Override
@@ -202,9 +211,23 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
                 Levelled.CODEC.fieldOf("level").forGetter(EntityValues::level),
                 Levelled.CODEC.fieldOf("corruption").forGetter(EntityValues::corruption)
         ).apply(instance, EntityValues::new));
+        public static final PacketCodec<ByteBuf, EntityValues<?>> PACKET_CODEC = PacketCodec.tuple(
+                Uuids.PACKET_CODEC, EntityValues::uuid,
+                PacketCodecUtils.VECTOR, EntityValues::pos,
+                PacketCodecs.INTEGER, EntityValues::clientId,
+                PacketCodecs.BOOLEAN, EntityValues::isPlayer,
+                PacketCodecs.BOOLEAN, EntityValues::isDead,
+                Levelled.PACKET_CODEC, EntityValues::level,
+                Levelled.PACKET_CODEC, EntityValues::corruption,
+                EntityValues::new
+        );
 
         public static <T extends Entity> MapCodec<EntityValues<T>> mapCodec() {
             return Untyped.cast(CODEC);
+        }
+
+        public static <T extends Entity> PacketCodec<ByteBuf, EntityValues<T>> packetCodec() {
+            return Untyped.cast(PACKET_CODEC);
         }
 
         public EntityValues(Entity entity) {

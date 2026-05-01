@@ -17,7 +17,6 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 
 public class DataTracker {
     private final List<Pair<?>> codecs = new ObjectArrayList<>();
@@ -76,13 +75,13 @@ public class DataTracker {
         }
     }
 
-    synchronized Optional<MsgTrackedValues.TrackerEntries> getInitialPairs(WrapperLookup lookup) {
+    synchronized Optional<MsgTrackedValues.TrackerEntries> getInitialPairs(DynamicRegistryManager lookup) {
         initial = false;
         dirtyIndices = new IntOpenHashSet();
         return Optional.of(new MsgTrackedValues.TrackerEntries(id, true, codecs, Untyped.cast(writePersistentObjects(lookup, true))));
     }
 
-    public synchronized Optional<MsgTrackedValues.TrackerEntries> getDirtyPairs(WrapperLookup lookup) {
+    public synchronized Optional<MsgTrackedValues.TrackerEntries> getDirtyPairs(DynamicRegistryManager lookup) {
         if (initial) {
             return getInitialPairs(lookup);
         }
@@ -102,7 +101,7 @@ public class DataTracker {
         return Optional.of(new MsgTrackedValues.TrackerEntries(id, false, pairs, updates));
     }
 
-    private Map<Integer, byte[]> writePersistentObjects(WrapperLookup lookup, boolean initial) {
+    private Map<Integer, byte[]> writePersistentObjects(DynamicRegistryManager lookup, boolean initial) {
         Map<Integer, byte[]> updates = new HashMap<>();
         for (int i = 0; i < persistentObjects.size(); i++) {
             TrackableObject<?> o = persistentObjects.get(i);
@@ -130,7 +129,7 @@ public class DataTracker {
         for (var entry : values.objects().entrySet()) {
             TrackableObject<?> o = persistentObjects.get(entry.getKey());
             if (o != null) {
-                o.read(new RegistryByteBuf(Unpooled.wrappedBuffer(entry.getValue()), lookup), lookup);
+                o.read(new RegistryByteBuf(Unpooled.wrappedBuffer(entry.getValue()), lookup));
             }
         }
     }
