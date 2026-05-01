@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.item.component;
 
+import java.util.List;
 import java.util.function.UnaryOperator;
 
 import com.minelittlepony.unicopia.Unicopia;
@@ -7,9 +8,16 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.diet.DietProfile;
+import com.minelittlepony.unicopia.item.consume.ApplyToSurroundingEntitiesConsumeEffect;
+import com.minelittlepony.unicopia.item.consume.UseTotemOfDying;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.component.ComponentType;
+import net.minecraft.component.type.DeathProtectionComponent;
+import net.minecraft.item.consume.ConsumeEffect;
+import net.minecraft.network.RegistryByteBuf;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -28,6 +36,20 @@ public interface UDataComponentTypes {
     ComponentType<BreaksIntoItemComponent> ITEM_AFTER_BREAKING = register("item_after_breaking", builder -> builder.codec(BreaksIntoItemComponent.CODEC).packetCodec(BreaksIntoItemComponent.PACKET_CODEC));
     ComponentType<ConversionComponent> ITEM_AFTER_DRAGON_BREATH = register("item_after_dragon_breath", builder -> builder.codec(ConversionComponent.CODEC).packetCodec(ConversionComponent.PACKET_CODEC));
     ComponentType<MimicComponent> MIMIC = register("mimic", builder -> builder.codec(MimicComponent.CODEC).packetCodec(MimicComponent.PACKET_CODEC));
+    ComponentType<DeathProtectionComponent> DEATH_CAUSING = register("death_causing", builder -> builder.codec(DeathProtectionComponent.CODEC).packetCodec(DeathProtectionComponent.PACKET_CODEC));
+
+
+    ConsumeEffect.Type<ApplyToSurroundingEntitiesConsumeEffect> APPLY_TO_SURROUNDING_ENTITIES = register("apply_to_surrounding_entities", ApplyToSurroundingEntitiesConsumeEffect.CODEC, ApplyToSurroundingEntitiesConsumeEffect.PACKET_CODEC);
+    ConsumeEffect.Type<UseTotemOfDying> USE_TOTEM_OF_DYING = register("use_totem_of_dying", UseTotemOfDying.CODEC, UseTotemOfDying.PACKET_CODEC);
+
+    DeathProtectionComponent TOTEM_OF_DYING = new DeathProtectionComponent(List.of(
+            new UseTotemOfDying(true),
+            new ApplyToSurroundingEntitiesConsumeEffect(10, List.of(new UseTotemOfDying(false)))
+    ));
+
+    private static <T extends ConsumeEffect> ConsumeEffect.Type<T> register(String id, MapCodec<T> codec, PacketCodec<RegistryByteBuf, T> packetCodec) {
+        return Registry.register(Registries.CONSUME_EFFECT_TYPE, id, new ConsumeEffect.Type<>(codec, packetCodec));
+    }
 
     private static <T> ComponentType<T> register(String name, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
         return Registry.register(Registries.DATA_COMPONENT_TYPE, Unicopia.id(name), builderOperator.apply(ComponentType.builder()).build());

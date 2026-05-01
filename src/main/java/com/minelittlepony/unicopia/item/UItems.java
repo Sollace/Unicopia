@@ -176,7 +176,7 @@ public interface UItems {
 
     Item GIANT_BALLOON = register("giant_balloon", s -> new GiantBalloonItem(s.maxCount(1).component(UDataComponentTypes.BALLOON_DESIGN, BalloonDesignComponent.DEFAULT)), ItemGroups.TOOLS);
     Item SPECTRAL_CLOCK = register("spectral_clock", Item::new, ItemGroups.TOOLS);
-    Item TOTEM_OF_DYING = register("totem_of_dying", s -> new Item(s.maxCount(1).rarity(Rarity.UNCOMMON)), ItemGroups.COMBAT);
+    Item TOTEM_OF_DYING = register("totem_of_dying", s -> new Item(s.maxCount(1).rarity(Rarity.UNCOMMON).component(UDataComponentTypes.DEATH_CAUSING, UDataComponentTypes.TOTEM_OF_DYING)), ItemGroups.COMBAT);
 
     Item WHITE_BED_SHEETS = register(CloudBedBlock.SheetPattern.WHITE);
     Item LIGHT_GRAY_BED_SHEETS = register(CloudBedBlock.SheetPattern.LIGHT_GRAY);
