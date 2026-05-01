@@ -9,7 +9,9 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -120,6 +122,24 @@ public interface CodecUtils {
                 b -> b.map(TriState::of).orElse(TriState.DEFAULT),
                 t -> Optional.ofNullable(t.get())
         );
+    }
+
+    static <K, V> Codec<Map.Entry<K, V>> mapEntryOf(MapCodec<K> keyCodec, MapCodec<V> valueCodec) {
+        return RecordCodecBuilder.create(i -> i.group(
+                keyCodec.forGetter(Map.Entry::getKey),
+                valueCodec.fieldOf("target").forGetter(Map.Entry::getValue)
+        ).apply(i, Map::entry));
+    }
+
+    static <K, V> Codec<Map<K, V>> mapOf(Codec<Map.Entry<K, V>> entryCodec) {
+        return setOf(entryCodec).xmap(
+                set -> set.stream().collect(entriesToMap()),
+                Map::entrySet
+        );
+    }
+
+    static <K, V> Collector<Map.Entry<K, V>, ?, Map<K, V>> entriesToMap() {
+        return Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue);
     }
 
     static <T> Codec<DefaultedList<T>> defaultedList(Codec<T> elementCodec, T empty) {

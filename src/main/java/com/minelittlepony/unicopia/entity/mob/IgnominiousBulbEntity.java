@@ -13,7 +13,8 @@ import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.EntityReference;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.VecHelper;
-
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
+import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -30,7 +31,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
@@ -54,6 +55,9 @@ public class IgnominiousBulbEntity extends MobEntity {
         new BlockPos(-4, 0,  0),                         new BlockPos(4, 0,  0),
         new BlockPos(-3, 0,  3), new BlockPos(0, 0,  4), new BlockPos(3, 0,  4)
     );
+    private static final Codec<Map<BlockPos, EntityReference<TentacleEntity>>> TENTACLES_CODEC = CodecUtils.mapOf(CodecUtils.mapEntryOf(
+        BlockPos.CODEC.fieldOf("pos"), EntityReference.<TentacleEntity>codec().fieldOf("target")
+    ));
 
     @Nullable
     private Map<BlockPos, EntityReference<TentacleEntity>> tentacles;
@@ -334,14 +338,7 @@ public class IgnominiousBulbEntity extends MobEntity {
         super.writeCustomDataToNbt(nbt);
         nbt.putBoolean("angry", isAngry());
         nbt.putInt("age", getAge());
-        NbtList tentacles = new NbtList();
-        getTentacles().forEach((pos, tentacle) -> {
-            var compound = new NbtCompound();
-            compound.put("pos", BlockPos.CODEC, pos);
-            compound.put("target", tentacle.toNBT(getRegistryManager()));
-            tentacles.add(compound);
-        });
-        nbt.put("tentacles", tentacles);
+        nbt.put("tentacles", TENTACLES_CODEC, getRegistryManager().getOps(NbtOps.INSTANCE), getTentacles());
     }
 
     @Override
@@ -350,16 +347,7 @@ public class IgnominiousBulbEntity extends MobEntity {
         setAngry(nbt.getBoolean("angry", false));
         setAge(nbt.getInt("age", 0));
         if (!getWorld().isClient) {
-            if (nbt.contains("tentacles")) {
-                var tentacles = new HashMap<BlockPos, EntityReference<TentacleEntity>>();
-                nbt.getList("tentacles").ifPresent(l -> l.forEach(tag -> {
-                    var compound = (NbtCompound)tag;
-                    compound.get("pos", BlockPos.CODEC).ifPresent(pos -> {
-                        tentacles.put(pos, new EntityReference<>(compound.getCompoundOrEmpty("target"), getRegistryManager()));
-                    });
-                }));
-                this.tentacles = tentacles;
-            }
+            tentacles = nbt.get("tentacles", TENTACLES_CODEC, getRegistryManager().getOps(NbtOps.INSTANCE)).map(HashMap::new).orElseGet(null);
         }
     }
 
