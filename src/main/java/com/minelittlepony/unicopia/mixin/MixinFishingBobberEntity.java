@@ -48,7 +48,7 @@ abstract class MixinFishingBobberEntity extends ProjectileEntity implements Bait
 
     @Inject(method = "writeCustomDataToNbt", at = @At("HEAD"))
     private void onWriteCustomDataToNbt(NbtCompound nbt, CallbackInfo info) {
-        nbt.putString("rodType", Registries.ITEM.getId(rodType == null ? Items.FISHING_ROD : rodType).toString());
+        nbt.put("rodType", Registries.ITEM.getCodec(), rodType == null ? Items.FISHING_ROD : rodType);
     }
 
     @Inject(method = "readCustomDataFromNbt", at = @At("HEAD"))

@@ -6,8 +6,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.minelittlepony.unicopia.client.render.WorldRenderDelegate;
 import com.minelittlepony.unicopia.client.render.entity.HitboxController;
 import com.minelittlepony.unicopia.client.render.spell.SpellEffectsRenderDispatcher;
@@ -23,14 +23,8 @@ import net.minecraft.entity.Entity;
 
 @Mixin(EntityRenderDispatcher.class)
 abstract class MixinEntityRenderDispatcher implements SpellEffectsRenderDispatcher.RenderDispatcherAccessor {
-    @WrapOperation(
-        method = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
-        at = @At(
-            value = "INVOKE",
-            target = "net/minecraft/client/render/entity/EntityRenderDispatcher.render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/client/render/entity/EntityRenderer;)V"
-    ))
+    @WrapMethod(method = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V")
     private <E extends Entity, S extends EntityRenderState> void wrapRender(
-            EntityRenderDispatcher self,
             E entity,
             double x,
             double y,
@@ -39,7 +33,7 @@ abstract class MixinEntityRenderDispatcher implements SpellEffectsRenderDispatch
             MatrixStack matrices,
             VertexConsumerProvider vertices,
             int light,
-            EntityRenderer<? super E, S> renderer, Operation<Void> operation) {
+            Operation<Void> operation) {
         WorldRenderDelegate.INSTANCE.handleEntityRender((entity1, x1, y1, z1, vertices1, light1, renderer1) -> {
             operation.call(entity1, x1, y1, z1, tickDelta, matrices, vertices1, light1, renderer1);
         }, entity, x, y, z, tickDelta, matrices, vertices, light);

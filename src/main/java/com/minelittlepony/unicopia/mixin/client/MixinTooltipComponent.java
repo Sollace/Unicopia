@@ -12,8 +12,8 @@ import net.minecraft.text.OrderedText;
 interface MixinTooltipComponent {
     @Inject(method = "of", at = @At("HEAD"), cancellable = true)
     private static void onOf(OrderedText text, CallbackInfoReturnable<TooltipComponent> info) {
-        if (text instanceof TooltipComponent) {
-            info.setReturnValue((TooltipComponent)text);
+        if (text instanceof TooltipComponent c) {
+            info.setReturnValue(c);
         }
     }
 }
