@@ -28,7 +28,7 @@ public interface BlockModels {
     TextureKey SHELL = TextureKey.of("shell");
     TextureKey STEP = TextureKey.of("step");
 
-    TexturedModel.Factory FRUIT = TexturedModel.makeFactory(TextureMap::cross, block("fruit", TextureKey.CROSS));
+    TexturedModel.Factory FRUIT = TexturedModel.makeFactory(block -> TextureMap.of(TextureKey.CROSS, TextureMap.getId(block.asItem())), block("fruit", TextureKey.CROSS));
     TexturedModel.Factory CUBE_BOTTOM = TexturedModel.makeFactory(block -> {
         Identifier outside = ModelIds.getBlockModelId(block);
         Identifier inside = ModelIds.getBlockSubModelId(block, "_bottom");
