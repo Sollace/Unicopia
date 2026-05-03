@@ -8,7 +8,11 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
+import com.minelittlepony.unicopia.util.Untyped;
+
 import io.netty.buffer.ByteBuf;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
@@ -34,6 +38,7 @@ public interface PacketCodecUtils {
     PacketCodec<ByteBuf, Optional<Vec3d>> OPTIONAL_VECTOR = PacketCodecs.optional(VECTOR);
     PacketCodec<ByteBuf, Optional<BlockPos>> OPTIONAL_POS = PacketCodecs.optional(BlockPos.PACKET_CODEC);
     PacketCodec<ByteBuf, Set<String>> STRING_SET = PacketCodecs.STRING.collect(PacketCodecs.toCollection(HashSet::new));
+    PacketCodec<ByteBuf, BlockState> BLOCK_STATE = PacketCodecs.INTEGER.xmap(Block::getStateFromRawId, Block::getRawIdFromState);
 
     Function<Class<?>, PacketCodec<ByteBuf, ?>> ENUM_CODEC_CACHE = Util.memoize(type -> {
         final Object[] values = type.getEnumConstants();
@@ -47,6 +52,14 @@ public interface PacketCodecUtils {
 
     static <B extends ByteBuf, K, V> PacketCodec.ResultFunction<B, V, Map<K, V>> toMap(Function<V, K> keyFunction) {
         return codec -> map(HashMap::new, codec, keyFunction, Integer.MAX_VALUE);
+    }
+
+    static <K, B extends ByteBuf, C> PacketCodec<B, C> dispatch(Function<? extends C, K> typeGetter, PacketCodec<? super B, K> typeCodec, Map<K, PacketCodec<? super B, ? extends C>> types) {
+        return PacketCodec.ofStatic((buffer, value) -> {
+            K type = typeGetter.apply(Untyped.cast(value));
+            typeCodec.encode(buffer, type);
+            types.get(type).encode(buffer, Untyped.cast(value));
+        }, buffer -> types.get(typeCodec.decode(buffer)).decode(buffer));
     }
 
     static <B extends ByteBuf, K, V, C extends Map<K, V>> PacketCodec<B, C> map(

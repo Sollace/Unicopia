@@ -11,14 +11,15 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import com.mojang.datafixers.util.Pair;
+import com.minelittlepony.unicopia.util.Untyped;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.Decoder;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.Encoder;
 import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.MapLike;
+import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.util.TriState;
@@ -54,52 +55,30 @@ public interface CodecUtils {
         return codec.xmap(map -> new HashMap<>(map), Function.identity());
     }
 
-    /**
-     * Combines the result of two unrelated codecs into a single object.
-     * <p>
-     * The first codec serves as the "base" whilst the second codec serves as an additional field to merge into
-     * that object when serializing. Deserializing produces a pair with the parent value and the extra value.
-     * <p>
-     * Recommended usage:
-     * <code>
-     * Codec<MyObject> CODEC = CodecUtils.extend(SOME_CODEC, MY_FIELD_CODEC.fieldOf("my_extra_field")).xmap(
-     *      pair -> new MyObject(pair.getLeft(), pair.getRight()),
-     *      myObject -> Pair.of(myObject.parent(), myObject.myExtraField());
-     * </code>
-     * <p>
-     * Json:
-     * <code>
-     * {
-     *   "something": "something",
-     *   "something_else": 1,
-     *
-     *   "my_extra_field": "HAH EAT THAT CODECS"
-     * }
-     * </code>
-     * @param <A> The base type
-     * @param <B> Type of the field to append
-     * @param baseCodec   Codec for the base type
-     * @param fieldCodec  Codec for the appended field
-     * @return A codec for serializing objects of the base with the extra field inserted
-     */
-    static <A, B> Codec<Pair<Optional<A>, Optional<B>>> extend(Codec<A> baseCodec, MapCodec<B> fieldCodec) {
-        return Codec.of(new Encoder<Pair<Optional<A>, Optional<B>>>() {
+    static <V> MapCodec<V> dispatched(Function<V, String> typeGetter, Map<String, Codec<? extends V>> typeLookup) {
+        return new MapCodec<>() {
             @Override
-            public <T> DataResult<T> encode(Pair<Optional<A>, Optional<B>> input, DynamicOps<T> ops, T prefix) {
-                return baseCodec.encode(input.getFirst().get(), ops, prefix)
-                        .flatMap(l -> input.getSecond()
-                            .map(r -> fieldCodec.encode(r, ops, ops.mapBuilder()).build(prefix).flatMap(rr -> ops.getMap(rr).flatMap(rrr -> ops.mergeToMap(l, rrr))))
-                            .orElse(DataResult.success(l)));
+            public <T> DataResult<V> decode(DynamicOps<T> ops, MapLike<T> input) {
+                var entries = input.entries().filter(entry -> typeLookup.containsKey(ops.getStringValue(entry.getFirst()).getOrThrow())).toList();
+                if (entries.size() != 1) {
+                    return DataResult.error(() -> "Map only have one key. Instead found " + entries.size() + " in " + input);
+                }
+
+                return typeLookup.get(entries.get(0).getFirst()).decode(ops, entries.get(0).getSecond()).map(pair -> pair.getFirst());
             }
-        }, new Decoder<Pair<Optional<A>, Optional<B>>>() {
+
             @Override
-            public <T> DataResult<Pair<Pair<Optional<A>, Optional<B>>, T>> decode(DynamicOps<T> ops, T input) {
-                return DataResult.success(new Pair<>(new Pair<>(
-                        baseCodec.decode(ops, input).map(Pair::getFirst).result(),
-                        fieldCodec.decode(ops, ops.getMap(input).result().get()).result()
-                ), input));
+            public <T> RecordBuilder<T> encode(V input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
+                var type = typeGetter.apply(Untyped.cast(input));
+                prefix.add(ops.createString(type), typeLookup.get(type).encodeStart(ops, Untyped.cast(input)));
+                return prefix;
             }
-        });
+
+            @Override
+            public <T> Stream<T> keys(DynamicOps<T> ops) {
+                return typeLookup.keySet().stream().map(ops::createString);
+            }
+        };
     }
 
     static <K> Codec<K> apply(Codec<K> codec, UnaryOperator<Codec<K>> func) {

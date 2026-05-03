@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Stack;
 import java.util.UUID;
@@ -7,7 +8,7 @@ import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.container.spellbook.SpellbookChapters;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
 import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity;
 import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity.Action;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -20,6 +21,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.recipe.display.CuttingRecipeDisplay;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -56,7 +58,7 @@ public class InteractionManager {
         return ParticleSpawner.EMPTY;
     }
 
-    public SpellbookChapters readChapters(RegistryByteBuf buf) {
+    public Map<Identifier, SpellbookChapter> readChapters(RegistryByteBuf buf) {
         throw new RuntimeException("Method not supported");
     }
 

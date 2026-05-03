@@ -20,7 +20,7 @@ import com.minelittlepony.unicopia.client.gui.UHud;
 import com.minelittlepony.unicopia.client.gui.spellbook.ClientChapters;
 import com.minelittlepony.unicopia.client.particle.ClientBoundParticleSpawner;
 import com.minelittlepony.unicopia.client.sound.*;
-import com.minelittlepony.unicopia.container.spellbook.SpellbookChapters;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity;
 import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
@@ -65,8 +65,8 @@ public class ClientInteractionManager extends InteractionManager {
     private CuttingRecipeDisplay.Grouping<CloudShapingRecipe> recipes = CuttingRecipeDisplay.Grouping.empty();
 
     @Override
-    public SpellbookChapters readChapters(RegistryByteBuf buffer) {
-        return new SpellbookChapters.Impl(buffer.readMap(Identifier.PACKET_CODEC, b -> ClientChapters.loadChapter(buffer)));
+    public Map<Identifier, SpellbookChapter> readChapters(RegistryByteBuf buffer) {
+        return buffer.readMap(Identifier.PACKET_CODEC, b -> ClientChapters.loadChapter(buffer));
     }
 
     @Override

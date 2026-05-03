@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -10,7 +9,6 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.recipe.URecipes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
-import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -29,10 +27,10 @@ import net.minecraft.world.World;
  * A recipe for creating a new spell from input traits and items.
  */
 public class SpellCraftingRecipe implements SpellbookRecipe {
-    private static final Codec<ItemStack> RESULT_CODEC = CodecUtils.extend(ItemStack.CODEC, SpellType.REGISTRY.getCodec().fieldOf("spell")).xmap(
-            pair -> pair.getSecond().map(spell -> EnchantableItem.enchant(pair.getFirst().orElse(ItemStack.EMPTY), spell)).orElse(pair.getFirst().orElse(ItemStack.EMPTY)),
-            stack -> Pair.of(Optional.of(stack), EnchantableItem.getSpellKeyOrEmpty(stack))
-    );
+    private static final Codec<ItemStack> RESULT_CODEC = RecordCodecBuilder.create(i -> i.group(
+            ItemStack.MAP_CODEC.forGetter(stack -> stack),
+            SpellType.REGISTRY.getCodec().optionalFieldOf("spell").forGetter(stack -> EnchantableItem.getSpellKeyOrEmpty(stack))
+    ).apply(i, (stack, spell) -> spell.map(s -> EnchantableItem.enchant(stack, s)).orElse(stack)));
 
     public static final MapCodec<SpellCraftingRecipe> CODEC = RecordCodecBuilder.<SpellCraftingRecipe>mapCodec(instance -> instance.group(
             IngredientWithSpell.CODEC.fieldOf("material").forGetter(recipe -> recipe.material),

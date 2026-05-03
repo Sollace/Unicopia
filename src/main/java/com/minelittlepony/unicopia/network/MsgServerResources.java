@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.minelittlepony.unicopia.ability.data.tree.TreeTypeLoader;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
 import com.minelittlepony.unicopia.container.spellbook.SpellbookChapterLoader;
 import com.minelittlepony.unicopia.container.spellbook.SpellbookChapters;
 import com.minelittlepony.unicopia.diet.PonyDiets;
@@ -23,7 +24,7 @@ import net.minecraft.util.Identifier;
 
 public record MsgServerResources (
         Map<RegistryKey<Item>, SpellTraits> traits,
-        SpellbookChapters chapters,
+        Map<Identifier, SpellbookChapter> chapters,
         Map<Identifier, TreeTypeLoader.TreeTypeDef> treeTypes,
         CuttingRecipeDisplay.Grouping<CloudShapingRecipe> cloudCuttingRecipes,
         PonyDiets diets
@@ -40,7 +41,7 @@ public record MsgServerResources (
     public MsgServerResources(MinecraftServer server) {
         this(
             SpellTraits.all(),
-            SpellbookChapterLoader.INSTANCE.getChapters(server),
+            SpellbookChapterLoader.INSTANCE.getChapters(),
             TreeTypeLoader.INSTANCE.getEntries(),
             getCloudCuttingRecipes(server),
             PonyDiets.getInstance()

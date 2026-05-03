@@ -1,32 +1,37 @@
 package com.minelittlepony.unicopia.container.spellbook;
 
 import java.util.List;
-import com.google.gson.JsonElement;
+import java.util.Map;
+
 import com.google.gson.JsonObject;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
-import com.minelittlepony.unicopia.block.state.StateUtil;
-import com.minelittlepony.unicopia.util.serialization.ServerBoundByteBuf;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
+import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.block.Block;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.block.BlockState;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.recipe.display.RecipeDisplay;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryElementCodec;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.util.math.Vec3i;
 
 public interface ChapterPageElement {
     byte IMAGE = 0;
@@ -49,207 +54,191 @@ public interface ChapterPageElement {
             PacketCodecs.INTEGER, o -> o.height,
             Bounds::new
     );
-
     Codec<ChapterPageElement> CODEC = Codecs.JSON_ELEMENT.xmap(json -> {
         if (!json.isJsonPrimitive()) {
             JsonObject el = JsonHelper.asObject(json, "element");
-            if (el.has("texture")) return new Image(el);
-            if (el.has("recipe")) return new Recipe(el);
-            if (el.has("item")) return new Stack(el);
-            if (el.has("ingredients")) return new Ingredients(el);
-            if (el.has("structure")) return new Structure(el);
+            if (el.has("texture")) return Image.CODEC.decode(JsonOps.INSTANCE, el).getOrThrow().getFirst();
+            if (el.has("recipe")) return Recipe.CODEC.decode(JsonOps.INSTANCE, el.get("recipe")).getOrThrow().getFirst();
+            if (el.has("item")) return Stack.CODEC.decode(JsonOps.INSTANCE, el).getOrThrow().getFirst();
+            if (el.has("ingredients")) return Ingredients.CODEC.decode(JsonOps.INSTANCE, el.get("ingredients")).getOrThrow().getFirst();
+            if (el.has("structure")) return Structure.CODEC.decode(JsonOps.INSTANCE, el.get("structure")).getOrThrow().getFirst();
         }
-        return new TextBlock(json);
+        return TextBlock.CODEC.decode(JsonOps.INSTANCE, json).getOrThrow().getFirst();
     }, page -> {
         throw new RuntimeException();
     });
+    PacketCodec<RegistryByteBuf, ChapterPageElement> PACKET_CODEC = PacketCodecUtils.dispatch(ChapterPageElement::getType, PacketCodecs.BYTE, Map.of(
+            IMAGE, Image.PACKET_CODEC,
+            STACK, Stack.PACKET_CODEC,
+            TEXT_BLOCK, TextBlock.PACKET_CODEC,
+            STRUCTURE, Structure.PACKET_CODEC,
+            INGREDIENTS, Ingredients.PACKET_CODEC
+    ));
 
-    static void write(ServerBoundByteBuf buffer, ChapterPageElement element) {
-        element.toBuffer(buffer);
-    }
-
-    @Deprecated
-    private static Bounds boundsFromJson(JsonObject el) {
-        return new Bounds(
-            JsonHelper.getInt(el, "y", 0),
-            JsonHelper.getInt(el, "x", 0),
-            JsonHelper.getInt(el, "width", 0),
-            JsonHelper.getInt(el, "height", 0)
-        );
-    }
-
-    @Deprecated
-    private static void boundsToBuffer(Bounds bounds, PacketByteBuf buffer) {
-        buffer.writeInt(bounds.top);
-        buffer.writeInt(bounds.left);
-        buffer.writeInt(bounds.width);
-        buffer.writeInt(bounds.height);
-    }
-
-    void toBuffer(ServerBoundByteBuf buffer);
+    byte getType();
 
     record Image (Identifier texture, Bounds bounds, Flow flow) implements ChapterPageElement {
-        @Deprecated
-        public Image(JsonObject json) {
-            this(
-                Identifier.of(JsonHelper.getString(json, "texture")),
-                boundsFromJson(json),
-                Flow.valueOf(JsonHelper.getString(json, "flow", "RIGHT"))
-            );
-        }
+        public static final Codec<Image> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Identifier.CODEC.fieldOf("texture").forGetter(Image::texture),
+                BOUNDS_CODEC.fieldOf("bounds").forGetter(Image::bounds),
+                Flow.CODEC.fieldOf("flow").forGetter(Image::flow)
+        ).apply(i, Image::new));
+        public static final PacketCodec<RegistryByteBuf, Image> PACKET_CODEC = PacketCodec.tuple(
+                Identifier.PACKET_CODEC, Image::texture,
+                BOUNDS_PACKET_CODEC, Image::bounds,
+                Flow.PACKET_CODEC, Image::flow,
+                Image::new
+        );
+
         @Override
-        public void toBuffer(ServerBoundByteBuf buffer) {
-            buffer.writeByte(IMAGE);
-            buffer.writeIdentifier(texture);
-            boundsToBuffer(bounds, buffer);
-            buffer.writeEnumConstant(flow);
+        public byte getType() {
+            return IMAGE;
         }
     }
 
-    record Recipe(Identifier value) implements ChapterPageElement {
-        private static final PacketCodec<RegistryByteBuf, List<RecipeDisplay>> DISPLAYS_PACKET_CODEC = RecipeDisplay.STREAM_CODEC.collect(PacketCodecs.toList());
-        @Deprecated
-        public Recipe(JsonObject json) {
-            this(Identifier.of(JsonHelper.getString(json, "recipe")));
-        }
+    record Recipe(RegistryEntry<net.minecraft.recipe.Recipe<?>> recipe, List<RecipeDisplay> recipeDisplays) implements ChapterPageElement {
+        public static final Codec<Recipe> CODEC = RegistryElementCodec.of(RegistryKeys.RECIPE, net.minecraft.recipe.Recipe.CODEC, false)
+                .xmap(entry -> new Recipe(entry, entry.value().getDisplays()), recipe -> recipe.recipe());
+        public static final PacketCodec<RegistryByteBuf, Recipe> PACKET_CODEC = RecipeDisplay.STREAM_CODEC.collect(PacketCodecs.toList()).xmap(displays -> new Recipe(null, displays), Recipe::recipeDisplays);
 
         @Override
-        public void toBuffer(ServerBoundByteBuf buffer) {
-            buffer.writeByte(RECIPE);
-            DISPLAYS_PACKET_CODEC.encode(buffer, buffer.getServer()
-                    .getRecipeManager()
-                    .get(RegistryKey.of(RegistryKeys.RECIPE, value))
-                    .map(recipe -> recipe.value().getDisplays())
-                    .orElse(List.of())
-            );
+        public byte getType() {
+            return RECIPE;
         }
     }
 
     record Stack (IngredientWithSpell ingredient, Bounds bounds) implements ChapterPageElement {
-        @Deprecated
-        public Stack(JsonObject json) {
-            this(IngredientWithSpell.FLEXIBLE_CODEC.decode(JsonOps.INSTANCE, json.get("item")).result().get().getFirst(), boundsFromJson(json));
-        }
+        public static final Codec<Stack> CODEC = RecordCodecBuilder.create(i -> i.group(
+                IngredientWithSpell.FLEXIBLE_CODEC.fieldOf("item").forGetter(Stack::ingredient),
+                MapCodec.assumeMapUnsafe(BOUNDS_CODEC).forGetter(Stack::bounds)
+        ).apply(i, Stack::new));
+        public static final PacketCodec<RegistryByteBuf, Stack> PACKET_CODEC = PacketCodec.tuple(
+                IngredientWithSpell.PACKET_CODEC, Stack::ingredient,
+                BOUNDS_PACKET_CODEC, Stack::bounds,
+                Stack::new
+        );
+
         @Override
-        public void toBuffer(ServerBoundByteBuf buffer) {
-            buffer.writeByte(STACK);
-            IngredientWithSpell.PACKET_CODEC.encode(buffer, ingredient);
-            boundsToBuffer(bounds, buffer);
+        public byte getType() {
+            return STACK;
         }
     }
 
     record TextBlock (Text text) implements ChapterPageElement {
-        @Deprecated
-        public TextBlock(JsonElement json) {
-            this(json.isJsonPrimitive() ? Text.translatable(json.getAsString()) : Text.Serialization.fromJsonTree(json, DynamicRegistryManager.EMPTY));
-        }
+        public static final Codec<TextBlock> CODEC = Codec.xor(
+                Codec.STRING.flatXmap(s -> DataResult.success((Text)Text.translatable(s)), text -> DataResult.error(() -> "Cannot Serialize text to a plain string")),
+                TextCodecs.CODEC
+        ).xmap(Either::unwrap, Either::right).xmap(TextBlock::new, TextBlock::text);
+        public static final PacketCodec<ByteBuf, TextBlock> PACKET_CODEC = TextCodecs.PACKET_CODEC.xmap(TextBlock::new, TextBlock::text);
 
         @Override
-        public void toBuffer(ServerBoundByteBuf buffer) {
-            buffer.writeByte(TEXT_BLOCK);
-            TextCodecs.PACKET_CODEC.encode(buffer, text);
+        public byte getType() {
+            return TEXT_BLOCK;
         }
     }
 
-    record Ingredients(List<ChapterPageElement> entries) implements ChapterPageElement {
-        @Deprecated
-        public Ingredients(JsonObject json) {
-            this(JsonHelper.getArray(json, "ingredients").asList().stream()
-                        .map(JsonElement::getAsJsonObject)
-                        .map(Ingredients::loadIngredient)
-                        .toList());
-        }
-
-        @Deprecated
-        static ChapterPageElement loadIngredient(JsonObject json) {
-            int count = JsonHelper.getInt(json, "count", 1);
-            if (json.has("item")) return new Multi(count, new Id((byte)1, Identifier.tryParse(json.get("item").getAsString())));
-            if (json.has("trait")) return new Multi(count, new Id((byte)2, Trait.of(json.get("trait").getAsString()).orElseThrow().getId()));
-            if (json.has("spell")) return new Multi(count, new Id((byte)4, Identifier.tryParse(json.get("spell").getAsString())));
-            return new Multi(count, new TextBlock(json.get("text")));
-        }
-
-        record Id(byte id, Identifier value) implements ChapterPageElement {
-            @Override
-            public void toBuffer(ServerBoundByteBuf buffer) {
-                buffer.writeByte(id);
-                buffer.writeIdentifier(value);
-            }
-        }
-
-        record Multi(int count, ChapterPageElement element) implements ChapterPageElement {
-            @Override
-            public void toBuffer(ServerBoundByteBuf buffer) {
-                buffer.writeVarInt(count);
-                element.toBuffer(buffer);
-            }
-        }
+    record Ingredients(List<Multi> entries) implements ChapterPageElement {
+        public static final Codec<Ingredients> CODEC = Multi.CODEC.listOf().xmap(Ingredients::new, Ingredients::entries);
+        public static final PacketCodec<ByteBuf, Ingredients> PACKET_CODEC = Multi.PACKET_CODEC.collect(PacketCodecs.toList()).xmap(Ingredients::new, Ingredients::entries);
 
         @Override
-        public void toBuffer(ServerBoundByteBuf buffer) {
-            buffer.writeByte(INGREDIENTS);
-            buffer.writeCollection(entries, (b, c) -> c.toBuffer(buffer));
+        public byte getType() {
+            return INGREDIENTS;
         }
+
+        public record Multi(ChapterPageElement element, int count) {
+            private static final MapCodec<ChapterPageElement> ELEMENT_CODEC = CodecUtils.<ChapterPageElement>dispatched(element -> switch(element.getType()) {
+                case 1 -> "item";
+                case 2 -> "trait";
+                case 3 -> "text";
+                case 4 -> "spell";
+                default -> "text";
+            }, Map.of(
+                "item", Identifier.CODEC.xmap(id -> new Id((byte)1, id), Id::value),
+                "trait", Trait.CODEC.xmap(trait -> trait.getId(), id -> Trait.fromId(id).get()).xmap(id -> new Id((byte)2, id), Id::value),
+                "text", TextBlock.CODEC,
+                "spell", Identifier.CODEC.xmap(id -> new Id((byte)1, id), Id::value)
+            ));
+            public static final Codec<Multi> CODEC = RecordCodecBuilder.create(i -> i.group(
+                    ELEMENT_CODEC.forGetter(Multi::element),
+                    Codec.INT.optionalFieldOf("count", 1).forGetter(Multi::count)
+            ).apply(i, Multi::new));
+            private static final PacketCodec<ByteBuf, ChapterPageElement> ELEMENT_PACKET_CODEC = PacketCodecUtils.dispatch(ChapterPageElement::getType, PacketCodecs.BYTE, Map.of(
+                    (byte)1, Id.packetCodec((byte)1),
+                    (byte)2, Id.packetCodec((byte)2),
+                    (byte)3, TextBlock.PACKET_CODEC,
+                    (byte)4, Id.packetCodec((byte)4)
+            ));
+            public static final PacketCodec<ByteBuf, Multi> PACKET_CODEC = PacketCodec.tuple(
+                    ELEMENT_PACKET_CODEC, Multi::element,
+                    PacketCodecs.INTEGER, Multi::count,
+                    Multi::new
+            );
+
+            record Id(byte id, Identifier value) implements ChapterPageElement {
+                public static PacketCodec<ByteBuf, Id> packetCodec(byte type) {
+                    return Identifier.PACKET_CODEC.xmap(id -> new Id(type, id), Id::value);
+                }
+
+                @Override
+                public byte getType() {
+                    return id;
+                }
+            }
+        }
+
     }
 
     record Structure(List<ChapterPageElement> commands) implements ChapterPageElement {
-        @Deprecated
-        public Structure(JsonObject json) {
-            this(JsonHelper.getArray(json, "structure").asList().stream()
-                        .map(JsonElement::getAsJsonObject)
-                        .map(Structure::loadCommand)
-                        .toList());
-        }
+        public static final Codec<Structure> CODEC = Codec.xor(Set.CODEC, Fill.CODEC)
+                .xmap(either -> (ChapterPageElement)Either.unwrap(either), element -> element instanceof Set s ? Either.left(s) : Either.right((Fill)element))
+                .listOf().xmap(Structure::new, Structure::commands);
 
-        @Deprecated
-        static ChapterPageElement loadCommand(JsonObject json) {
-            if (json.has("pos")) {
-                var pos = JsonHelper.getArray(json, "pos");
-                return new Set(
-                        pos.get(0).getAsInt(), pos.get(1).getAsInt(), pos.get(2).getAsInt(),
-                        StateUtil.stateFromString(json.get("state").getAsString())
-                );
-            }
-
-            var min = JsonHelper.getArray(json, "min");
-            var max = JsonHelper.getArray(json, "max");
-            return new Fill(
-                    min.get(0).getAsInt(), min.get(1).getAsInt(), min.get(2).getAsInt(),
-                    max.get(0).getAsInt(), max.get(1).getAsInt(), max.get(2).getAsInt(),
-                    StateUtil.stateFromString(json.get("state").getAsString())
-            );
-        }
+        private static final PacketCodec<ByteBuf, ChapterPageElement> COMMAND_PACKET_CODEC = PacketCodecUtils.dispatch(ChapterPageElement::getType, PacketCodecs.BYTE, Map.of(
+                (byte)1, Set.PACKET_CODEC,
+                (byte)2, Fill.PACKET_CODEC
+        ));
+        public static final PacketCodec<ByteBuf, Structure> PACKET_CODEC = COMMAND_PACKET_CODEC.collect(PacketCodecs.toList()).xmap(Structure::new, Structure::commands);
 
         @Override
-        public void toBuffer(ServerBoundByteBuf buffer) {
-            buffer.writeByte(STRUCTURE);
-            buffer.writeCollection(commands, (b, c) -> c.toBuffer(buffer));
+        public byte getType() {
+            return STRUCTURE;
         }
 
-        record Set(int x, int y, int z, BlockState state) implements ChapterPageElement {
-            @Override
-            public void toBuffer(ServerBoundByteBuf buffer) {
-                buffer.writeByte(1);
-                buffer.writeInt(x);
-                buffer.writeInt(y);
-                buffer.writeInt(z);
-                buffer.writeInt(Block.getRawIdFromState(state));
-            }
+        record Set(Vec3i pos, BlockState state) implements ChapterPageElement {
+            public static final Codec<Set> CODEC = RecordCodecBuilder.create(i -> i.group(
+                    Vec3i.CODEC.fieldOf("pos").forGetter(Set::pos),
+                    BlockState.CODEC.fieldOf("state").forGetter(Set::state)
+            ).apply(i, Set::new));
+            public static final PacketCodec<ByteBuf, Set> PACKET_CODEC = PacketCodec.tuple(
+                    Vec3i.PACKET_CODEC, Set::pos,
+                    PacketCodecUtils.BLOCK_STATE, Set::state,
+                    Set::new
+            );
 
+            @Override
+            public byte getType() {
+                return 1;
+            }
         }
-        record Fill(int x1, int y1, int z1, int x2, int y2, int z2, BlockState state) implements ChapterPageElement {
-            @Override
-            public void toBuffer(ServerBoundByteBuf buffer) {
-                buffer.writeByte(2);
-                buffer.writeInt(x1);
-                buffer.writeInt(y1);
-                buffer.writeInt(z1);
-                buffer.writeInt(x2);
-                buffer.writeInt(y2);
-                buffer.writeInt(z2);
-                buffer.writeInt(Block.getRawIdFromState(state));
-            }
 
+        record Fill(Vec3i min, Vec3i max, BlockState state) implements ChapterPageElement {
+            public static final Codec<Fill> CODEC = RecordCodecBuilder.create(i -> i.group(
+                    Vec3i.CODEC.fieldOf("min").forGetter(Fill::min),
+                    Vec3i.CODEC.fieldOf("max").forGetter(Fill::max),
+                    BlockState.CODEC.fieldOf("state").forGetter(Fill::state)
+            ).apply(i, Fill::new));
+            public static final PacketCodec<ByteBuf, Fill> PACKET_CODEC = PacketCodec.tuple(
+                    Vec3i.PACKET_CODEC, Fill::min,
+                    Vec3i.PACKET_CODEC, Fill::max,
+                    PacketCodecUtils.BLOCK_STATE, Fill::state,
+                    Fill::new
+            );
+
+            @Override
+            public byte getType() {
+                return 2;
+            }
         }
     }
 }
