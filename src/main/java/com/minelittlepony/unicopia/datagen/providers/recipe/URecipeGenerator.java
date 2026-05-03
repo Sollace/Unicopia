@@ -779,27 +779,27 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
                 .sound(SoundEvents.ITEM_AXE_STRIP)
                 .result(stripped)
                 .result(Items.GOLD_NUGGET, 8)
-                .offerTo(exporter, convertBetween(stripped, unstripped));
+                .offerTo(farmersDelightExporter, convertBetween(stripped, unstripped));
         });
 
         ShapelessRecipeJsonBuilder.create(items, RecipeCategory.MISC, UItems.APPLE_PIE)
             .input(FarmersDelightContent.APPLE_PIE).criterion(hasItem(FarmersDelightContent.APPLE_PIE), conditionsFromItem(FarmersDelightContent.APPLE_PIE))
-            .offerTo(exporter, "apple_pie_to_apple_pie");
+            .offerTo(farmersDelightExporter, "apple_pie_to_apple_pie");
         ShapelessRecipeJsonBuilder.create(items, RecipeCategory.MISC, FarmersDelightContent.APPLE_PIE)
             .input(UItems.APPLE_PIE).criterion(hasItem(UItems.APPLE_PIE), conditionsFromItem(UItems.APPLE_PIE))
-            .offerTo(exporter, "apple_pie_from_apple_pie");
+            .offerTo(farmersDelightExporter, "apple_pie_from_apple_pie");
 
         CuttingBoardRecipeJsonBuilder.create(UItems.HAY_FRIES, "axe_dig")
                 .input(Blocks.HAY_BLOCK).criterion(hasItem(Blocks.HAY_BLOCK), conditionsFromItem(Blocks.HAY_BLOCK))
                 .sound(SoundEvents.ITEM_AXE_SCRAPE)
                 .result(UItems.HAY_FRIES, 9)
-                .offerTo(exporter);
+                .offerTo(farmersDelightExporter);
 
         CuttingBoardRecipeJsonBuilder.create(UItems.APPLE_PIE_SLICE, Ingredient.fromTag(items.getOrThrow(UConventionalTags.Items.TOOL_KNIVES)))
             .input(UBlocks.APPLE_PIE).criterion(hasItem(UBlocks.APPLE_PIE), conditionsFromItem(UBlocks.APPLE_PIE))
             .sound(USounds.BLOCK_PIE_SLICE)
             .result(UItems.APPLE_PIE_SLICE, 4)
-            .offerTo(exporter);
+            .offerTo(farmersDelightExporter);
     }
 
     public void offerCompactingRecipe(RecipeCategory category, ItemConvertible output, ItemConvertible input, int resultCount) {
