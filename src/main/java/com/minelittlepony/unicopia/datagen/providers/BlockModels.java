@@ -43,8 +43,8 @@ public interface BlockModels {
     Model OUTER_STAIRS = block("outer_seethrough_stairs", "_outer", TextureKey.BOTTOM, TextureKey.TOP, TextureKey.SIDE, STEP);
     Model DOOR_LEFT = block("door_left", TextureKey.BOTTOM, TextureKey.TOP);
     Model DOOR_RIGHT = block("door_right", TextureKey.BOTTOM, TextureKey.TOP);
-    Model TEMPLATE_PILLAR = block("template_pillar", TextureKey.SIDE);
-    Model TEMPLATE_PILLAR_END = block("template_pillar_end", "_end", TextureKey.BOTTOM, TextureKey.TOP, TextureKey.END);
+    Model TEMPLATE_PILLAR = block("template_pillar", TextureKey.SIDE, TextureKey.TOP, TextureKey.BOTTOM);
+    Model TEMPLATE_PILLAR_END = block("template_pillar_end", "_end", TextureKey.SIDE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.END);
     Identifier TEMPLATE_JAR = Unicopia.id("block/template_jar");
 
     Factory CROP = Factory.of(TextureMap::crop, Models.CROP);
@@ -72,20 +72,20 @@ public interface BlockModels {
             .map(suffex -> new Pair<>(block("template_bale_" + suffex, "_" + suffex, TextureKey.TOP, TextureKey.SIDE), "_" + suffex))
             .toArray(Pair[]::new);
 
-    static Model block(String parent, TextureKey ... requiredTextureKeys) {
-        return new Model(Optional.of(Unicopia.id("block/" + parent)), Optional.empty(), requiredTextureKeys);
+    static Model block(String parent, TextureKey ... usedTextures) {
+        return new Model(Optional.of(Unicopia.id("block/" + parent)), Optional.empty(), usedTextures);
     }
 
-    static Model block(String parent, String variant, TextureKey ... requiredTextureKeys) {
-        return new Model(Optional.of(Unicopia.id("block/" + parent)), Optional.of(variant), requiredTextureKeys);
+    static Model block(String parent, String variant, TextureKey ... usedTextures) {
+        return new Model(Optional.of(Unicopia.id("block/" + parent)), Optional.of(variant), usedTextures);
     }
 
-    static Model block(Identifier parent, TextureKey ... requiredTextureKeys) {
-        return new Model(Optional.of(parent.withPrefixedPath("block/")), Optional.empty(), requiredTextureKeys);
+    static Model block(Identifier parent, TextureKey ... usedTextures) {
+        return new Model(Optional.of(parent.withPrefixedPath("block/")), Optional.empty(), usedTextures);
     }
 
-    static Model block(Identifier parent, String variant, TextureKey ... requiredTextureKeys) {
-        return new Model(Optional.of(parent.withPrefixedPath("block/")), Optional.of(variant), requiredTextureKeys);
+    static Model block(Identifier parent, String variant, TextureKey ... usedTextures) {
+        return new Model(Optional.of(parent.withPrefixedPath("block/")), Optional.of(variant), usedTextures);
     }
 
     public interface Factory {

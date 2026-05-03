@@ -128,9 +128,9 @@ public class UBlockLootTableProvider extends FabricBlockLootTableProvider {
         addDrop(UBlocks.ETCHED_CLOUD_SLAB, slab -> decomposingSlabDrops(slab, UItems.CLOUD_LUMP, 4));
 
         // fruit
-        UModelProvider.FRUITS.forEach((block, drop) -> {
-            if (block != UBlocks.GOLDEN_APPLE) {
-                addDrop(block, fortuneBonusDrops(drop));
+        UModelProvider.FRUITS.forEach(block -> {
+            if (block != UBlocks.GOLDEN_APPLE && block != UBlocks.BANANAS) {
+                addDrop(block, fortuneBonusDrops(block.asItem()));
             }
         });
         addDrop(UBlocks.GOLDEN_APPLE, LootTable.builder().pool(LootPool.builder()

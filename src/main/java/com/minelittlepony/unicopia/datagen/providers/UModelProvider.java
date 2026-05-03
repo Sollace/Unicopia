@@ -1,7 +1,7 @@
 package com.minelittlepony.unicopia.datagen.providers;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import com.google.gson.JsonElement;
@@ -10,7 +10,6 @@ import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.datagen.DataCollector;
 import com.minelittlepony.unicopia.item.BedsheetsItem;
 import com.minelittlepony.unicopia.item.UItems;
-
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.block.Block;
@@ -25,14 +24,14 @@ import net.minecraft.client.render.model.json.BlockModelDefinition;
 import net.minecraft.component.type.DyedColorComponent;
 
 public class UModelProvider extends FabricModelProvider {
-    public static final Map<Block, Item> FRUITS = Map.of(
-            UBlocks.GREEN_APPLE, UItems.GREEN_APPLE,
-            UBlocks.GOLDEN_APPLE, Items.GOLDEN_APPLE,
-            UBlocks.MANGO, UItems.MANGO,
-            UBlocks.SOUR_APPLE, UItems.SOUR_APPLE,
-            UBlocks.SWEET_APPLE, UItems.SWEET_APPLE,
-            UBlocks.ZAP_APPLE, UItems.ZAP_APPLE,
-            UBlocks.ZAP_BULB, UItems.ZAP_BULB
+    public static final Set<Block> FRUITS = Set.of(
+            UBlocks.GREEN_APPLE,
+            UBlocks.GOLDEN_APPLE,
+            UBlocks.MANGO,
+            UBlocks.SOUR_APPLE,
+            UBlocks.SWEET_APPLE,
+            UBlocks.ZAP_APPLE,
+            UBlocks.ZAP_BULB
     );
 
     private final DataCollector<Supplier<JsonElement>> seasonsModels;
@@ -79,17 +78,16 @@ public class UModelProvider extends FabricModelProvider {
                 UItems.HAY_BURGER, UItems.HAY_FRIES, UItems.HORSE_SHOE_FRIES,
                 UItems.IMPORTED_OATS,
                 UItems.JAM_TOAST, UItems.JUICE,
-                UItems.LIGHTNING_JAR,
                 UItems.MANGO, UItems.MUFFIN,
                 UItems.OATMEAL, UItems.OATMEAL_COOKIE, UItems.SCONE,
-                UItems.PEBBLES, UItems.PEGASUS_FEATHER, UItems.PINECONE, UItems.PINECONE_COOKIE, UItems.PINEAPPLE_CROWN,
-                UItems.RAIN_CLOUD_JAR, UItems.ROCK_STEW, UItems.ROCK,
+                UItems.PEGASUS_FEATHER, UItems.PINECONE, UItems.PINECONE_COOKIE, UItems.PINEAPPLE_CROWN,
+                UItems.ROCK_STEW, UItems.ROCK,
                     UItems.ROTTEN_APPLE, UItems.ROTTEN_COD, UItems.ROTTEN_TROPICAL_FISH, UItems.ROTTEN_SALMON, UItems.ROTTEN_PUFFERFISH,
-                UItems.SALT_CUBE, UItems.SCALLOP_SHELL, UItems.SHELLY, UItems.SOUR_APPLE, UItems.SPELLBOOK, UItems.STORM_CLOUD_JAR,
+                UItems.SALT_CUBE, UItems.SCALLOP_SHELL, UItems.SHELLY, UItems.SOUR_APPLE, UItems.SPELLBOOK,
                     UItems.SWEET_APPLE,
                 UItems.TOAST, UItems.TOM, UItems.TURRET_SHELL,
                 UItems.WEIRD_ROCK, UItems.WHEAT_WORMS,
-                UItems.ZAP_APPLE_JAM_JAR, UItems.ZAP_APPLE, UItems.ZAP_BULB,
+                UItems.ZAP_APPLE, UItems.ZAP_BULB,
         // discs
                 UItems.MUSIC_DISC_CRUSADE, UItems.MUSIC_DISC_FUNK, UItems.MUSIC_DISC_PET, UItems.MUSIC_DISC_POPULAR,
         // baskets
@@ -103,13 +101,14 @@ public class UModelProvider extends FabricModelProvider {
         );
         ItemModels.registerDyeable(itemModelGenerator, UItems.FRIENDSHIP_BRACELET, DyedColorComponent.DEFAULT_COLOR);
         // spawn eggs
-        ItemModels.register(itemModelGenerator, ItemModels.TEMPLATE_SPAWN_EGG, UItems.BUTTERFLY_SPAWN_EGG, UItems.LOOT_BUG_SPAWN_EGG);
+        ItemModels.register(itemModelGenerator, ItemModels.GENERATED, UItems.BUTTERFLY_SPAWN_EGG, UItems.LOOT_BUG_SPAWN_EGG);
         // amulets
         ItemModels.register(itemModelGenerator, ItemModels.TEMPLATE_AMULET, UItems.ALICORN_AMULET, UItems.BROKEN_ALICORN_AMULET, UItems.PEARL_NECKLACE, UItems.PEGASUS_AMULET, UItems.UNICORN_AMULET);
         // mugs
         ItemModels.register(itemModelGenerator, ItemModels.TEMPLATE_MUG, UItems.CIDER, UItems.LOVE_BOTTLE, UItems.LOVE_BUCKET, UItems.LOVE_MUG, UItems.MUG);
         // jars
-        ItemModels.register(itemModelGenerator, ItemModels.BUILTIN_ENTITY, UItems.FILLED_JAR);
+        ItemModels.register(itemModelGenerator, ItemModels.GENERATED, UItems.EMPTY_JAR);
+        ItemModels.registerFilledJar(itemModelGenerator, UItems.FILLED_JAR);
         // eyewear
         ItemModels.register(itemModelGenerator, ItemModels.TEMPLATE_EYEWEAR, UItems.SUNGLASSES);
         // staffs
@@ -138,5 +137,6 @@ public class UModelProvider extends FabricModelProvider {
         ItemModels.registerStagedFoodItem(itemModelGenerator, UItems.CANDIED_APPLE, 1, 2, "bite");
         ItemModels.registerGemstone(itemModelGenerator, UItems.GEMSTONE);
         ItemModels.registerCustomFishingRod(itemModelGenerator, UItems.BAITED_FISHING_ROD);
+
     }
 }

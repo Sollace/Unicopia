@@ -12,12 +12,16 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.render.item.BalloonDesignProperty;
 import com.minelittlepony.unicopia.client.render.item.ButterflyVariantProperty;
 import com.minelittlepony.unicopia.client.render.item.GemShapeProperty;
+import com.minelittlepony.unicopia.client.render.item.JarContentsModelRenderer;
 import com.minelittlepony.unicopia.client.render.item.PolearmModelRenderer;
 import com.minelittlepony.unicopia.client.render.item.SpellTintSource;
 import com.minelittlepony.unicopia.client.render.item.ZapAppleCycleProperty;
 import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.mob.ButterflyEntity;
 import com.minelittlepony.unicopia.item.GemstoneItem;
+import com.minelittlepony.unicopia.item.UItems;
+
+import net.minecraft.block.Blocks;
 import net.minecraft.client.data.ItemModelGenerator;
 import net.minecraft.client.data.Model;
 import net.minecraft.client.data.ModelIds;
@@ -50,7 +54,6 @@ interface ItemModels {
     Model BUILTIN_ENTITY = new Model(Optional.of(Identifier.ofVanilla("builtin/entity")), Optional.empty());
     Model TEMPLATE_AMULET = item("template_amulet", TextureKey.LAYER0);
     Model TEMPLATE_EYEWEAR = item("template_eyewear", TextureKey.LAYER0);
-    Model TEMPLATE_SPAWN_EGG = item(Identifier.ofVanilla("template_spawn_egg"));
     Model TEMPLATE_MUG = item("template_mug", TextureKey.LAYER0);
     Model TEMPLATE_PILLAR = item("template_pillar", TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE, TextureKey.END);
     Model HANDHELD_STAFF = item("handheld_staff", TextureKey.LAYER0);
@@ -84,7 +87,7 @@ interface ItemModels {
     }
 
     static void registerParented(ItemModelGenerator itemModelGenerator, Item item, ItemConvertible parent) {
-        ItemModels.item(Registries.ITEM.getId(parent.asItem())).upload(ModelIds.getItemModelId(item), new TextureMap(), itemModelGenerator.modelCollector);
+        item(Registries.ITEM.getId(parent.asItem())).upload(ModelIds.getItemModelId(item), new TextureMap(), itemModelGenerator.modelCollector);
     }
 
     static void registerPolearm(ItemModelGenerator itemModelGenerator, Item item) {
@@ -156,6 +159,14 @@ interface ItemModels {
     private static <T extends StringIdentifiable> ItemModel.Unbaked createVariantItemModel(Item item, ItemModelGenerator itemModelGenerator, T variant) {
         Identifier subModelId = Registries.ITEM.getId(item).withPath(p -> "item/" + variant.asString() + "_" + p);
         return basic(GENERATED.upload(subModelId, TextureMap.layer0(subModelId), itemModelGenerator.modelCollector));
+    }
+
+    static void registerFilledJar(ItemModelGenerator itemModelGenerator, Item jar) {
+        itemModelGenerator.output.accept(jar.asItem(), composite(
+                basic(ModelIds.getItemModelId(UItems.EMPTY_JAR)),
+                special(Models.TEMPLATE_CHEST.upload(jar.asItem(), TextureMap.particle(Blocks.GLASS), itemModelGenerator.modelCollector), new JarContentsModelRenderer.Unbaked())
+            )
+        );
     }
 
     static void registerSpectralClock(ItemModelGenerator itemModelGenerator, Item clock) {

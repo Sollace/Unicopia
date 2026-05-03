@@ -102,8 +102,8 @@ public interface UBlocks {
     Block ZAP_LEAVES = register("zap_leaves", ZapAppleLeavesBlock.settings(), ZapAppleLeavesBlock::new, ItemGroups.NATURAL);
     Block FLOWERING_ZAP_LEAVES = register("flowering_zap_leaves", BaseZapAppleLeavesBlock.settings(), BaseZapAppleLeavesBlock::new, ItemGroups.NATURAL);
     Block ZAP_LEAVES_PLACEHOLDER = register("zap_leaves_placeholder", s -> new ZapAppleLeavesPlaceholderBlock(s.replaceable().noCollision().dropsNothing().air()));
-    Block ZAP_BULB = register("zap_bulb", s -> new FruitBlock(Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE, false, s.mapColor(MapColor.GRAY).strength(500, 1200).sounds(BlockSoundGroup.AZALEA_LEAVES)));
-    Block ZAP_APPLE = register("zap_apple", s -> new FruitBlock(Direction.DOWN, ZAP_LEAVES, FruitBlock.DEFAULT_SHAPE, false, s.mapColor(MapColor.GRAY).sounds(BlockSoundGroup.AZALEA_LEAVES)));
+    Block ZAP_BULB = register("zap_bulb", s -> new FruitBlock(Direction.DOWN, ZAP_LEAVES, Unicopia.key(RegistryKeys.ITEM, "zap_bulb"), FruitBlock.DEFAULT_SHAPE, false, s.mapColor(MapColor.GRAY).strength(500, 1200).sounds(BlockSoundGroup.AZALEA_LEAVES)));
+    Block ZAP_APPLE = register("zap_apple", s -> new FruitBlock(Direction.DOWN, ZAP_LEAVES, Unicopia.key(RegistryKeys.ITEM, "zap_apple"), FruitBlock.DEFAULT_SHAPE, false, s.mapColor(MapColor.GRAY).sounds(BlockSoundGroup.AZALEA_LEAVES)));
 
     Block PALM_LOG = register("palm_log", BlockConstructionUtils.createLogBlock(UMapColors.PALM_LOG_END, UMapColors.PALM_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
     Block PALM_WOOD = register("palm_wood", BlockConstructionUtils.createWoodBlock(UMapColors.PALM_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
@@ -125,7 +125,7 @@ public interface UBlocks {
     Block PALM_WALL_HANGING_SIGN = register("palm_wall_hanging_sign", s -> new WallHangingSignBlock(UWoodTypes.PALM, s.mapColor(PALM_LOG.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0f).burnable().lootTable(PALM_HANGING_SIGN.getLootTableKey())));
 
     Block PALM_LEAVES = register("palm_leaves", BlockConstructionUtils.createLeavesBlock(BlockSoundGroup.GRASS), ItemGroups.BUILDING_BLOCKS);
-    Block BANANAS = register("bananas", s -> new FruitBlock(Direction.DOWN, PALM_LEAVES, VoxelShapes.fullCube(), s.mapColor(MapColor.YELLOW).sounds(BlockSoundGroup.WOOD).noCollision().ticksRandomly().breakInstantly().pistonBehavior(PistonBehavior.DESTROY)));
+    Block BANANAS = register("bananas", s -> new FruitBlock(Direction.DOWN, PALM_LEAVES, Unicopia.key(RegistryKeys.ITEM, "banana"), VoxelShapes.fullCube(), s.mapColor(MapColor.YELLOW).sounds(BlockSoundGroup.WOOD).noCollision().ticksRandomly().breakInstantly().pistonBehavior(PistonBehavior.DESTROY)));
 
     PineappleCropBlock PINEAPPLE = register("pineapple", s -> new PineappleCropBlock(s.sounds(BlockSoundGroup.GRASS).noCollision().breakInstantly().pistonBehavior(PistonBehavior.DESTROY)));
 
@@ -135,7 +135,7 @@ public interface UBlocks {
             () -> UItems.MANGO.getDefaultStack(),
             s
     ), ItemGroups.NATURAL);
-    Block MANGO = register("mango", s -> new FruitBlock(Direction.DOWN, MANGO_LEAVES, FruitBlock.DEFAULT_SHAPE, s.mapColor(MapColor.ORANGE)));
+    Block MANGO = register("mango", s -> new FruitBlock(Direction.DOWN, MANGO_LEAVES, Unicopia.key(RegistryKeys.ITEM, "mango"), FruitBlock.DEFAULT_SHAPE, s.mapColor(MapColor.ORANGE)));
 
     Block WEATHER_VANE = register("weather_vane", s -> new WeatherVaneBlock(s.mapColor(MapColor.BLACK).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.METAL).nonOpaque().pistonBehavior(PistonBehavior.BLOCK)), ItemGroups.TOOLS);
 
@@ -145,7 +145,7 @@ public interface UBlocks {
             () -> UItems.GREEN_APPLE.getDefaultStack(),
             s
     ), ItemGroups.NATURAL);
-    Block GREEN_APPLE = register("green_apple", s -> new FruitBlock(Direction.DOWN, GREEN_APPLE_LEAVES, FruitBlock.DEFAULT_SHAPE, s.mapColor(MapColor.GREEN)));
+    Block GREEN_APPLE = register("green_apple", s -> new FruitBlock(Direction.DOWN, GREEN_APPLE_LEAVES, Unicopia.key(RegistryKeys.ITEM, "green_apple"), FruitBlock.DEFAULT_SHAPE, s.mapColor(MapColor.GREEN)));
     Block GREEN_APPLE_SPROUT = register("green_apple_sprout", SproutBlock.settings(), s -> new SproutBlock(0xE5FFFF88, () -> UItems.GREEN_APPLE_SEEDS, () -> UTreeGen.GREEN_APPLE_TREE.sapling().map(Block::getDefaultState).get(), s));
 
     Block SWEET_APPLE_LEAVES = register("sweet_apple_leaves", Settings.copy(Blocks.OAK_LEAVES), s -> new FruitBearingBlock(
@@ -154,7 +154,7 @@ public interface UBlocks {
             () -> UItems.SWEET_APPLE.getDefaultStack(),
             s
     ), ItemGroups.NATURAL);
-    Block SWEET_APPLE = register("sweet_apple", s -> new FruitBlock(Direction.DOWN, SWEET_APPLE_LEAVES, FruitBlock.DEFAULT_SHAPE, s.mapColor(MapColor.GREEN)));
+    Block SWEET_APPLE = register("sweet_apple", s -> new FruitBlock(Direction.DOWN, SWEET_APPLE_LEAVES, Unicopia.key(RegistryKeys.ITEM, "sweet_apple"), FruitBlock.DEFAULT_SHAPE, s.mapColor(MapColor.GREEN)));
     Block SWEET_APPLE_SPROUT = register("sweet_apple_sprout", SproutBlock.settings(), s -> new SproutBlock(0xE5FFCC88, () -> UItems.SWEET_APPLE_SEEDS, () -> UTreeGen.SWEET_APPLE_TREE.sapling().map(Block::getDefaultState).get(), s));
 
     Block SOUR_APPLE_LEAVES = register("sour_apple_leaves", Settings.copy(Blocks.OAK_LEAVES), s -> new FruitBearingBlock(
@@ -163,9 +163,10 @@ public interface UBlocks {
             () -> UItems.SOUR_APPLE.getDefaultStack(),
             s
     ), ItemGroups.NATURAL);
-    Block SOUR_APPLE = register("sour_apple", s -> new FruitBlock(Direction.DOWN, SOUR_APPLE_LEAVES, FruitBlock.DEFAULT_SHAPE, s.mapColor(MapColor.GREEN)));
+    Block SOUR_APPLE = register("sour_apple", s -> new FruitBlock(Direction.DOWN, SOUR_APPLE_LEAVES, Unicopia.key(RegistryKeys.ITEM, "sour_apple"), FruitBlock.DEFAULT_SHAPE, s.mapColor(MapColor.GREEN)));
     Block SOUR_APPLE_SPROUT = register("sour_apple_sprout", SproutBlock.settings(), s -> new SproutBlock(0xE5FFCC88, () -> UItems.SOUR_APPLE_SEEDS, () -> UTreeGen.SOUR_APPLE_TREE.sapling().map(Block::getDefaultState).get(), s));
 
+    // TODO: Separate into two blocks (block.toItem() is returning "pie_with_hoof" which is incorrect)
     Block APPLE_PIE = register("apple_pie", s -> new PieBlock(
             () -> UItems.APPLE_PIE_SLICE,
             () -> UItems.APPLE_PIE,
@@ -178,7 +179,7 @@ public interface UBlocks {
             () -> Items.GOLDEN_APPLE.getDefaultStack(),
             s
     ), ItemGroups.NATURAL);
-    Block GOLDEN_APPLE = register("golden_apple", s -> new EnchantedFruitBlock(Direction.DOWN, GOLDEN_OAK_LEAVES, FruitBlock.DEFAULT_SHAPE, false, s.mapColor(MapColor.GOLD)));
+    Block GOLDEN_APPLE = register("golden_apple", s -> new EnchantedFruitBlock(Direction.DOWN, GOLDEN_OAK_LEAVES, RegistryKey.of(RegistryKeys.ITEM, Identifier.ofVanilla("golden_apple")), FruitBlock.DEFAULT_SHAPE, false, s.mapColor(MapColor.GOLD)));
     Block GOLDEN_OAK_SPROUT = register("golden_oak_sprout", SproutBlock.settings(), s -> new SproutBlock(0xE5FFCC88, () -> UItems.GOLDEN_OAK_SEEDS, () -> UTreeGen.GOLDEN_OAK_TREE.sapling().map(Block::getDefaultState).get(), s));
     StrippablePillarBlock GOLDEN_OAK_LOG = register("golden_oak_log", BlockConstructionUtils.createMetallicLogBlock(MapColor.OFF_WHITE, MapColor.GOLD), ItemGroups.BUILDING_BLOCKS);
     StrippablePillarBlock GOLDEN_OAK_WOOD = register("golden_oak_wood", BlockConstructionUtils.createMetallicWoodBlock(MapColor.OFF_WHITE), ItemGroups.BUILDING_BLOCKS);

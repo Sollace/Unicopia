@@ -11,13 +11,13 @@ import com.minelittlepony.unicopia.block.PieBlock;
 import com.minelittlepony.unicopia.block.PileBlock;
 import com.minelittlepony.unicopia.block.ShellsBlock;
 import com.minelittlepony.unicopia.block.SlimePustuleBlock;
+import com.minelittlepony.unicopia.block.SproutBlock;
 import com.minelittlepony.unicopia.block.TintedBlock;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.block.zap.ZapAppleLeavesBlock;
 import com.minelittlepony.unicopia.client.render.item.BlockTintSource;
 import com.minelittlepony.unicopia.client.render.item.CloudBedModelRenderer;
 import com.minelittlepony.unicopia.client.render.item.CloudChestModelRenderer;
-import com.minelittlepony.unicopia.client.render.item.JarContentsModelRenderer;
 import com.minelittlepony.unicopia.datagen.UBlockFamilies;
 import com.minelittlepony.unicopia.server.world.Tree;
 
@@ -58,6 +58,7 @@ import net.minecraft.util.math.Direction;
 
 import static net.minecraft.client.data.TextureKey.*;
 import static net.minecraft.util.math.AxisRotation.*;
+import static com.minelittlepony.unicopia.datagen.providers.ItemModels.*;
 
 public class UBlockStateModelGenerator extends BlockStateModelGenerator {
     static final Identifier AIR_BLOCK_ID = Identifier.ofVanilla("block/air");
@@ -108,8 +109,8 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         }
 
         // handmade
-        registerAll((g, block) -> g.registerParentedItemModel(block, ModelIds.getBlockModelId(block)), UBlocks.SHAPING_BENCH, UBlocks.SURFACE_CHITIN);
         registerAll(UBlockStateModelGenerator::registerSimpleState, UBlocks.SHAPING_BENCH, UBlocks.BANANAS);
+        registerAll((g, block) -> g.registerParentedItemModel(block, ModelIds.getBlockModelId(block)), UBlocks.SHAPING_BENCH, UBlocks.SURFACE_CHITIN);
         // doors
         registerAll(UBlockStateModelGenerator::registerStableDoor, UBlocks.STABLE_DOOR, UBlocks.DARK_OAK_DOOR, UBlocks.CLOUD_DOOR);
         registerLockingDoor(UBlocks.CRYSTAL_DOOR);
@@ -171,7 +172,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerCubeAllModelTexturePool(UBlocks.GOLDEN_OAK_PLANKS).family(UBlockFamilies.GOLDEN_OAK);
 
         // plants
-        Tree.REGISTRY.stream().filter(tree -> tree.sapling().isPresent()).forEach(tree -> registerFlowerPotPlant(tree.sapling().get(), tree.pot().get(), CrossType.NOT_TINTED));
+        Tree.REGISTRY.stream().filter(tree -> tree.sapling().isPresent()).forEach(tree -> registerFlowerPotPlantAndItem(tree.sapling().get(), tree.pot().get(), CrossType.NOT_TINTED));
         registerTintableCross(UBlocks.CURING_JOKE, CrossType.NOT_TINTED);
         registerWithStages(UBlocks.GOLD_ROOT, Properties.AGE_7, BlockModels.CROP, 0, 0, 1, 1, 2, 2, 2, 3);
 
@@ -188,7 +189,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerTintedItemModel(UBlocks.MANGO_LEAVES, ModelIds.getBlockModelId(Blocks.JUNGLE_LEAVES), BlockTintSource.INSTANCE);
 
         // fruit
-        UModelProvider.FRUITS.forEach((block, item) -> registerSingleton(block, BlockModels.FRUIT));
+        UModelProvider.FRUITS.forEach(block -> registerSingleton(block, BlockModels.FRUIT));
 
         // shells
         registerAll(UBlockStateModelGenerator::registerShell, UBlocks.CLAM_SHELL, UBlocks.TURRET_SHELL, UBlocks.SCALLOP_SHELL);
@@ -199,7 +200,6 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerWithStages(UBlocks.FROSTED_OBSIDIAN, Properties.AGE_3, BlockModels.CUBE_ALL, 0, 1, 2, 3);
         registerWithStagesBuiltinModels(UBlocks.ROCKS, Properties.AGE_7, 0, 1, 2, 3, 4, 5, 6, 7);
         registerWithStagesBuiltinModels(UBlocks.MYSTERIOUS_EGG, PileBlock.COUNT, 1, 2, 3);
-        registerItemModel(UBlocks.MYSTERIOUS_EGG.asItem());
         FireModels.registerSoulFire(this, UBlocks.SPECTRAL_FIRE, Blocks.SOUL_FIRE);
 
         registerJar(UBlocks.JAR);
@@ -209,8 +209,11 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerWeatherJar(UBlocks.LIGHTNING_JAR);
 
         TintedBlock.REGISTRY.forEach(block -> {
-            Unicopia.LOGGER.info("Tinted block: " + block.getRegistryEntry().getIdAsString());
-            if (block == UBlocks.MANGO_LEAVES) return;
+            if (block == UBlocks.MANGO_LEAVES || block instanceof SproutBlock) {
+                Unicopia.LOGGER.info("[Skipped] Tinted block: " + block);
+                return;
+            }
+            Unicopia.LOGGER.info("Tinted block: " + block);
             registerTintedItemModel(block, ModelIds.getBlockModelId(block), BlockTintSource.INSTANCE);
         });
     }
@@ -219,11 +222,11 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         blockStateCollector.accept(MultipartBlockModelDefinitionCreator.create(jar)
                 .with(createWeightedVariant(BlockModels.TEMPLATE_JAR))
                 .with(createWeightedVariant(ModelIds.getBlockSubModelId(jar, "_filling"))));
+        registerItemModel(jar.asItem());
     }
 
     public void registerJar(Block jar) {
         blockStateCollector.accept(createSingletonBlockState(jar, createWeightedVariant(BlockModels.TEMPLATE_JAR)));
-        itemModelOutput.accept(jar.asItem(), ItemModels.special(ModelIds.getBlockModelId(jar), new JarContentsModelRenderer.Unbaked()));
     }
 
     @SafeVarargs
@@ -437,7 +440,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
                 .with(createMultipartConditionBuilder().put(Properties.AXIS, Direction.Axis.Z).put(Properties.NORTH, false), createWeightedVariant(createModelVariant(end).withRotationX(R90)))
                 .with(createMultipartConditionBuilder().put(Properties.AXIS, Direction.Axis.Z).put(Properties.SOUTH, false), createWeightedVariant(createModelVariant(end).withRotationX(R270)))
         );
-        com.minelittlepony.unicopia.datagen.providers.ItemModels.TEMPLATE_PILLAR.upload(ModelIds.getItemModelId(pillar.asItem()), textures, modelCollector);
+        registerItemModel(pillar.asItem(), TEMPLATE_PILLAR.upload(ModelIds.getItemModelId(pillar.asItem()), textures, modelCollector));
     }
 
     public void registerHiveBlock(Block hive) {
@@ -451,7 +454,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
                 .with(createMultipartConditionBuilder().put(Properties.WEST, true), createWeightedVariant(createModelVariant(side).withUVLock(true).withRotationY(R270)))
                 .with(createMultipartConditionBuilder().put(Properties.DOWN, true), createWeightedVariant(createModelVariant(side).withUVLock(true).withRotationX(R90)))
                 .with(createMultipartConditionBuilder().put(Properties.UP, true), createWeightedVariant(createModelVariant(side).withUVLock(true).withRotationX(R270))));
-        Models.CUBE_ALL.upload(ModelIds.getItemModelId(hive.asItem()), TextureMap.all(ModelIds.getBlockSubModelId(hive, "_side")), modelCollector);
+        registerItemModel(hive.asItem(), Models.CUBE_ALL.upload(ModelIds.getItemModelId(hive.asItem()), TextureMap.all(side), modelCollector));
     }
 
     public void registerWithStages(Block crop, Property<Integer> ageProperty, BlockModels.Factory modelFactory, int ... stages) {
@@ -475,6 +478,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(crop)
                 .with(BlockStateVariantMap.models(ageProperty)
                 .generate(age -> createWeightedVariant(ModelIds.getBlockSubModelId(crop, "_stage" + stages[age - offset])))));
+        registerItemModel(crop.asItem());
     }
 
     public <T extends Enum<T> & StringIdentifiable> void registerTallCrop(Block crop,
@@ -534,6 +538,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         blockStateCollector.accept(VariantsBlockModelDefinitionCreator.of(sprout)
                 .with(BlockStateVariantMap.models(Properties.AGE_7)
                 .generate(age -> createWeightedVariant(Unicopia.id("block/apple_sprout_stage" + age)))));
+        registerItemModel(sprout.asItem());
     }
 
     public void registerShell(Block shell) {
