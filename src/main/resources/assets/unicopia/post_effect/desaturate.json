@@ -4,27 +4,18 @@
     },
     "passes": [
         {
-            "program": "minecraft:post/color_convolve",
+            "vertex_shader": "minecraft:post/blit",
+            "fragment_shader": "minecraft:post/color_convolve",
             "inputs": [
-              {
-                "sampler_name": "Diffuse",
-                "target": "minecraft:main"
-              }
+                {
+                    "sampler_name": "In",
+                    "target": "minecraft:main"
+                }
             ],
-            "output": "swap",
+            "output": "minecraft:main",
             "uniforms": [
-                { "name": "Saturation", "values": [ 0.2 ] }
+                { "name": "Saturation", "type": "float" }
             ]
-        },
-        {
-            "program": "minecraft:post/blit",
-            "inputs": [
-              {
-                "sampler_name": "In",
-                "target": "swap"
-              }
-            ],
-            "output": "minecraft:main"
         }
     ]
 }
