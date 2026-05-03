@@ -231,15 +231,6 @@ public class URecipeProvider extends FabricRecipeProvider {
             .input(UItems.GEMSTONE).criterion("has_gemstone", conditionsFromItem(UItems.GEMSTONE))
             .offerTo(exporter);
 
-        // magic staff
-        SpellShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.MAGIC_STAFF)
-            .input('*', UItems.GEMSTONE).criterion(hasItem(UItems.GEMSTONE), conditionsFromItem(UItems.GEMSTONE))
-            .input('#', ConventionalItemTags.WOODEN_RODS).criterion(hasItem(Items.STICK), conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
-            .pattern("  *")
-            .pattern(" # ")
-            .pattern("#  ")
-            .offerTo(exporter);
-
         // crystal heart
         ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, UItems.CRYSTAL_HEART)
             .input('#', UItems.CRYSTAL_SHARD).criterion("has_crystal_shard", conditionsFromItem(UItems.CRYSTAL_SHARD))
@@ -272,6 +263,15 @@ public class URecipeProvider extends FabricRecipeProvider {
             .pattern("*#*")
             .offerTo(exporter);
         ComplexRecipeJsonBuilder.create(GlowingRecipe::new).offerTo(exporter, "friendship_bracelet_glowing");
+
+        // magic staff
+        SpellShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.MAGIC_STAFF)
+            .input('*', UItems.GEMSTONE).criterion(hasItem(UItems.GEMSTONE), conditionsFromItem(UItems.GEMSTONE))
+            .input('/', ConventionalItemTags.WOODEN_RODS).criterion(hasItem(Items.STICK), conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
+            .pattern("  *")
+            .pattern(" / ")
+            .pattern("/  ")
+            .offerTo(exporter);
 
         // meadowbrook's staff
         ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.MEADOWBROOKS_STAFF)
