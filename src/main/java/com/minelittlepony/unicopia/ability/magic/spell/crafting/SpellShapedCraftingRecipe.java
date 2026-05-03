@@ -1,5 +1,9 @@
 package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 
+import java.util.Optional;
+
+import com.google.common.base.Predicates;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.recipe.URecipes;
 import com.mojang.serialization.Codec;
@@ -10,24 +14,29 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RawShapedRecipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
+import net.minecraft.world.World;
 
 public class SpellShapedCraftingRecipe extends ShapedRecipe {
     public static final MapCodec<SpellShapedCraftingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codec.STRING.optionalFieldOf("group", "").forGetter(SpellShapedCraftingRecipe::getGroup),
             CraftingRecipeCategory.CODEC.fieldOf("category").orElse(CraftingRecipeCategory.MISC).forGetter(SpellShapedCraftingRecipe::getCategory),
-            RawShapedRecipe.CODEC.forGetter(recipe -> recipe.raw), ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
+            RawShapedRecipe.CODEC.forGetter(recipe -> recipe.raw),
+            Ingredient.CODEC.optionalFieldOf("spell_source").forGetter(recipe -> recipe.spellSource),
+            ItemStack.VALIDATED_CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
             Codec.BOOL.optionalFieldOf("show_notification", true).forGetter(SpellShapedCraftingRecipe::showNotification)
     ).apply(instance, SpellShapedCraftingRecipe::new));
     public static final PacketCodec<RegistryByteBuf, SpellShapedCraftingRecipe> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.STRING, SpellShapedCraftingRecipe::getGroup,
             CraftingRecipeCategory.PACKET_CODEC, SpellShapedCraftingRecipe::getCategory,
             RawShapedRecipe.PACKET_CODEC, recipe -> recipe.raw,
+            Ingredient.OPTIONAL_PACKET_CODEC, recipe -> recipe.spellSource,
             ItemStack.PACKET_CODEC, recipe -> recipe.result,
             PacketCodecs.BOOLEAN, SpellShapedCraftingRecipe::showNotification,
             SpellShapedCraftingRecipe::new
@@ -36,8 +45,11 @@ public class SpellShapedCraftingRecipe extends ShapedRecipe {
     private final RawShapedRecipe raw;
     private final ItemStack result;
 
-    public SpellShapedCraftingRecipe(String group, CraftingRecipeCategory category, RawShapedRecipe raw, ItemStack result, boolean showNotification) {
+    private final Optional<Ingredient> spellSource;
+
+    public SpellShapedCraftingRecipe(String group, CraftingRecipeCategory category, RawShapedRecipe raw, Optional<Ingredient> spellSource, ItemStack result, boolean showNotification) {
         super(group, category, raw, result, showNotification);
+        this.spellSource = spellSource;
         this.raw = raw;
         this.result = result;
     }
@@ -48,8 +60,14 @@ public class SpellShapedCraftingRecipe extends ShapedRecipe {
     }
 
     @Override
+    public boolean matches(CraftingRecipeInput input, World world) {
+        return super.matches(input, world) && (spellSource.isEmpty() || input.getStacks().stream().anyMatch(spellSource.get()));
+    }
+
+    @Override
     public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
         return inventory.getStacks().stream()
+            .filter(spellSource.isPresent() ? spellSource.get() : Predicates.alwaysTrue())
             .filter(EnchantableItem::isEnchanted)
             .map(EnchantableItem::getSpellEffect)
             .findFirst()

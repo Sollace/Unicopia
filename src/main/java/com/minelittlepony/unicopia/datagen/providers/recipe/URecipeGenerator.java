@@ -271,6 +271,7 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
 
         // magic staff
         SpellShapedRecipeJsonBuilder.create(items, RecipeCategory.TOOLS, UItems.MAGIC_STAFF)
+            .withSpellFrom(UItems.GEMSTONE)
             .input('*', UItems.GEMSTONE).criterion(hasItem(UItems.GEMSTONE), conditionsFromItem(UItems.GEMSTONE))
             .input('/', ConventionalItemTags.WOODEN_RODS).criterion(hasItem(Items.STICK), conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
             .pattern("  *")
