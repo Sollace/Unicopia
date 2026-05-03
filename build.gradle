@@ -32,7 +32,8 @@ loom {
 
 fabricApi {
     configureDataGeneration {
-      modId = 'unicopia'
+        modId = 'unicopia'
+        client = true
     }
 }
 

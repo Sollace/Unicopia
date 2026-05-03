@@ -38,7 +38,6 @@ public interface UDataComponentTypes {
     ComponentType<MimicComponent> MIMIC = register("mimic", builder -> builder.codec(MimicComponent.CODEC).packetCodec(MimicComponent.PACKET_CODEC));
     ComponentType<DeathProtectionComponent> DEATH_CAUSING = register("death_causing", builder -> builder.codec(DeathProtectionComponent.CODEC).packetCodec(DeathProtectionComponent.PACKET_CODEC));
 
-
     ConsumeEffect.Type<ApplyToSurroundingEntitiesConsumeEffect> APPLY_TO_SURROUNDING_ENTITIES = register("apply_to_surrounding_entities", ApplyToSurroundingEntitiesConsumeEffect.CODEC, ApplyToSurroundingEntitiesConsumeEffect.PACKET_CODEC);
     ConsumeEffect.Type<UseTotemOfDying> USE_TOTEM_OF_DYING = register("use_totem_of_dying", UseTotemOfDying.CODEC, UseTotemOfDying.PACKET_CODEC);
 

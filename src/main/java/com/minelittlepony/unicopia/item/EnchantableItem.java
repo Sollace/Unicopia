@@ -5,13 +5,13 @@ import java.util.function.Predicate;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.Affinity;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.util.TypedActionResult;
+import com.minelittlepony.unicopia.util.Untyped;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemConvertible;
@@ -24,15 +24,10 @@ public interface EnchantableItem extends ItemConvertible {
     }
 
     static TypedActionResult<CustomisedSpellType<?>> consumeSpell(ItemStack stack, PlayerEntity player, @Nullable Predicate<CustomisedSpellType<?>> filter, boolean consume) {
-
-        if (!isEnchanted(stack)) {
-            return TypedActionResult.pass(SpellType.EMPTY_KEY.withTraits());
-        }
-
         SpellType<Spell> key = EnchantableItem.getSpellKey(stack);
 
         if (key.isEmpty()) {
-            return TypedActionResult.fail(SpellType.EMPTY_KEY.withTraits());
+            return TypedActionResult.pass(SpellType.EMPTY_KEY.withTraits());
         }
 
         CustomisedSpellType<?> result = key.withTraits(SpellTraits.of(stack));
@@ -42,7 +37,7 @@ public interface EnchantableItem extends ItemConvertible {
         }
 
         if (!player.getWorld().isClient && consume) {
-            player.swingHand(player.getStackInHand(Hand.OFF_HAND) == stack ? Hand.OFF_HAND : Hand.MAIN_HAND);
+            player.swingHand(player.getStackInHand(Hand.OFF_HAND) == stack ? Hand.OFF_HAND : Hand.MAIN_HAND, true);
             player.getItemCooldownManager().set(stack, 20);
 
             if (!player.isCreative()) {
@@ -62,11 +57,7 @@ public interface EnchantableItem extends ItemConvertible {
     }
 
     static ItemStack enchant(ItemStack stack, SpellType<?> type) {
-        return enchant(stack, type, type.getAffinity());
-    }
-
-    static ItemStack enchant(ItemStack stack, SpellType<?> type, Affinity affinity) {
-        if (type.isEmpty()) {
+        if (stack.isEmpty() || type.isEmpty()) {
             return unenchant(stack);
         }
         stack.set(UDataComponentTypes.STORED_SPELL, type);
@@ -84,8 +75,7 @@ public interface EnchantableItem extends ItemConvertible {
         return type.isEmpty() ? Optional.empty() : Optional.of(type);
     }
 
-    @SuppressWarnings("unchecked")
     static <T extends Spell> SpellType<T> getSpellKey(ItemStack stack) {
-        return (SpellType<T>)stack.getOrDefault(UDataComponentTypes.STORED_SPELL, SpellType.empty());
+        return Untyped.cast(stack.getOrDefault(UDataComponentTypes.STORED_SPELL, SpellType.empty()));
     }
 }

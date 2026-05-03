@@ -25,7 +25,8 @@ import net.minecraft.client.render.model.json.BlockModelDefinition;
 import net.minecraft.component.type.DyedColorComponent;
 
 public class UModelProvider extends FabricModelProvider {
-    public static final Map<Block, Item> FRUITS = Map.of(UBlocks.GREEN_APPLE, UItems.GREEN_APPLE,
+    public static final Map<Block, Item> FRUITS = Map.of(
+            UBlocks.GREEN_APPLE, UItems.GREEN_APPLE,
             UBlocks.GOLDEN_APPLE, Items.GOLDEN_APPLE,
             UBlocks.MANGO, UItems.MANGO,
             UBlocks.SOUR_APPLE, UItems.SOUR_APPLE,
@@ -72,9 +73,8 @@ public class UModelProvider extends FabricModelProvider {
                     UItems.CLOUD_LUMP, UItems.CRISPY_HAY_FRIES, UItems.CRYSTAL_HEART, UItems.CRYSTAL_SHARD,
                     UItems.COOKED_TROPICAL_FISH, UItems.COOKED_PUFFERFISH, UItems.COOKED_FROG_LEGS,
                 UItems.DAFFODIL_DAISY_SANDWICH, UItems.DRAGON_BREATH_SCROLL, UItems.TOTEM_OF_DYING,
-                UItems.EMPTY_JAR,
                 UItems.FRIED_AXOLOTL, UItems.FROG_LEGS,
-                UItems.GOLDEN_FEATHER, UItems.GOLDEN_OAK_SEEDS, UItems.GOLDEN_WING, UItems.GREEN_APPLE_SEEDS, UItems.GREEN_APPLE, UItems.GROGARS_BELL,
+                UItems.GOLDEN_FEATHER, UItems.GOLDEN_WING, UItems.GREEN_APPLE, UItems.GROGARS_BELL,
                     UItems.GRYPHON_FEATHER, UItems.GREEN_FRIED_EGG,
                 UItems.HAY_BURGER, UItems.HAY_FRIES, UItems.HORSE_SHOE_FRIES,
                 UItems.IMPORTED_OATS,
@@ -85,10 +85,10 @@ public class UModelProvider extends FabricModelProvider {
                 UItems.PEBBLES, UItems.PEGASUS_FEATHER, UItems.PINECONE, UItems.PINECONE_COOKIE, UItems.PINEAPPLE_CROWN,
                 UItems.RAIN_CLOUD_JAR, UItems.ROCK_STEW, UItems.ROCK,
                     UItems.ROTTEN_APPLE, UItems.ROTTEN_COD, UItems.ROTTEN_TROPICAL_FISH, UItems.ROTTEN_SALMON, UItems.ROTTEN_PUFFERFISH,
-                UItems.SALT_CUBE, UItems.SCALLOP_SHELL, UItems.SHELLY, UItems.SOUR_APPLE_SEEDS, UItems.SOUR_APPLE, UItems.SPELLBOOK, UItems.STORM_CLOUD_JAR,
-                    UItems.SWEET_APPLE_SEEDS, UItems.SWEET_APPLE,
+                UItems.SALT_CUBE, UItems.SCALLOP_SHELL, UItems.SHELLY, UItems.SOUR_APPLE, UItems.SPELLBOOK, UItems.STORM_CLOUD_JAR,
+                    UItems.SWEET_APPLE,
                 UItems.TOAST, UItems.TOM, UItems.TURRET_SHELL,
-                UItems.WEIRD_ROCK, UItems.WHEAT_WORMS, UBlocks.WEATHER_VANE.asItem(),
+                UItems.WEIRD_ROCK, UItems.WHEAT_WORMS,
                 UItems.ZAP_APPLE_JAM_JAR, UItems.ZAP_APPLE, UItems.ZAP_BULB,
         // discs
                 UItems.MUSIC_DISC_CRUSADE, UItems.MUSIC_DISC_FUNK, UItems.MUSIC_DISC_PET, UItems.MUSIC_DISC_POPULAR,

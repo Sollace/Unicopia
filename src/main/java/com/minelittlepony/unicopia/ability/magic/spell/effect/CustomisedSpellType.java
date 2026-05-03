@@ -15,6 +15,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.Spell;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.client.TextHelper;
 import com.minelittlepony.unicopia.entity.effect.EffectUtils;
+import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.util.TypedActionResult;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -39,6 +40,10 @@ public record CustomisedSpellType<T extends Spell> (
         SpellType.CODEC.fieldOf("effect_id").forGetter(CustomisedSpellType::type),
         SpellTraits.CODEC.fieldOf("traits").forGetter(CustomisedSpellType::traits)
     ).apply(i, (type, traits) -> type.withTraits(traits)));
+
+    public static <T extends Spell> CustomisedSpellType<T> empty() {
+        return SpellType.<T>empty().withTraits();
+    }
 
     public boolean isEmpty() {
         return type.isEmpty();
@@ -96,6 +101,16 @@ public record CustomisedSpellType<T extends Spell> (
 
     public ItemStack getDefaultStack() {
         return traits.applyTo(type.getDefualtStack());
+    }
+
+    public ItemStack applyTo(ItemStack stack) {
+        if (stack.isEmpty() || type.isEmpty()) {
+            stack.remove(UDataComponentTypes.STORED_SPELL);
+            stack.remove(UDataComponentTypes.SPELL_TRAITS);
+            return stack;
+        }
+        stack.set(UDataComponentTypes.STORED_SPELL, type);
+        return traits().applyTo(stack);
     }
 
     @Override

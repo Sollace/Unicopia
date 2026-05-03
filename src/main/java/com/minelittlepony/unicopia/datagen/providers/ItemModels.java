@@ -102,11 +102,12 @@ interface ItemModels {
 
     @SuppressWarnings("unchecked")
     static void registerButterfly(ItemModelGenerator itemModelGenerator, Item item) {
+        var base = basic(itemModelGenerator.upload(item, GENERATED));
         itemModelGenerator.output.accept(item, select(
                 ButterflyVariantProperty.INSTANCE,
-                createVariantItemModel(item, itemModelGenerator, ButterflyEntity.Variant.BUTTERFLY),
+                base,
                 Arrays.stream(ButterflyEntity.Variant.VALUES)
-                    .map(variant -> switchCase(variant, createVariantItemModel(item, itemModelGenerator, variant)))
+                    .map(variant -> switchCase(variant, variant == ButterflyEntity.Variant.BUTTERFLY ? base : createVariantItemModel(item, itemModelGenerator, variant)))
                     .toArray(SelectItemModel.SwitchCase[]::new)));
     }
 
@@ -136,11 +137,12 @@ interface ItemModels {
 
     @SuppressWarnings("unchecked")
     static void registerBalloonDesigns(ItemModelGenerator itemModelGenerator, Item item) {
+        var base = basic(itemModelGenerator.upload(item, GENERATED));
         itemModelGenerator.output.accept(item, select(
                 BalloonDesignProperty.INSTANCE,
-                createVariantItemModel(item, itemModelGenerator, AirBalloonEntity.BalloonDesign.NONE),
+                base,
                 Arrays.stream(AirBalloonEntity.BalloonDesign.VALUES)
-                    .map(variant -> switchCase(variant, createVariantItemModel(item, itemModelGenerator, variant)))
+                    .map(variant -> switchCase(variant, variant == AirBalloonEntity.BalloonDesign.NONE ? base : createVariantItemModel(item, itemModelGenerator, variant)))
                     .toArray(SelectItemModel.SwitchCase[]::new)));
     }
 
@@ -152,8 +154,7 @@ interface ItemModels {
     }
 
     private static <T extends StringIdentifiable> ItemModel.Unbaked createVariantItemModel(Item item, ItemModelGenerator itemModelGenerator, T variant) {
-        String name = variant.asString();
-        Identifier subModelId = Registries.ITEM.getId(item).withPath(p -> "item/" + name + "_" + p);
+        Identifier subModelId = Registries.ITEM.getId(item).withPath(p -> "item/" + variant.asString() + "_" + p);
         return basic(GENERATED.upload(subModelId, TextureMap.layer0(subModelId), itemModelGenerator.modelCollector));
     }
 

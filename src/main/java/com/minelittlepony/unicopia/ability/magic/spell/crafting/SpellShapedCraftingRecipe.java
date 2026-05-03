@@ -50,11 +50,10 @@ public class SpellShapedCraftingRecipe extends ShapedRecipe {
     @Override
     public ItemStack craft(CraftingRecipeInput inventory, WrapperLookup registries) {
         return inventory.getStacks().stream()
-            .filter(stack -> stack.getItem() instanceof EnchantableItem)
             .filter(EnchantableItem::isEnchanted)
-            .map(stack -> EnchantableItem.getSpellEffect(stack))
+            .map(EnchantableItem::getSpellEffect)
             .findFirst()
-            .map(spell -> spell.traits().applyTo(EnchantableItem.enchant(super.craft(inventory, registries), spell.type())))
-            .orElseGet(() -> super.craft(inventory, registries));
+            .orElseGet(CustomisedSpellType::empty)
+            .applyTo(super.craft(inventory, registries));
     }
 }

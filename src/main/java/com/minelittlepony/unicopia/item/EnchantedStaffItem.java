@@ -39,7 +39,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class EnchantedStaffItem extends StaffItem implements EnchantableItem, MultiItem, Charges.ChargeChangeCallback {
+public class EnchantedStaffItem extends StaffItem implements MultiItem, Charges.ChargeChangeCallback {
     private static final Map<EntityType<?>, SpellType<?>> ENTITY_TYPE_TO_SPELL = new HashMap<>();
 
     public static <T extends Spell> SpellType<T> register(EntityType<?> entityType, SpellType<T> spellType) {

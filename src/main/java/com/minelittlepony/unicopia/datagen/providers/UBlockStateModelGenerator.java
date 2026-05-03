@@ -185,7 +185,7 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerAll(UBlockStateModelGenerator::registerFloweringLeaves, UBlocks.GREEN_APPLE_LEAVES, UBlocks.SOUR_APPLE_LEAVES, UBlocks.SWEET_APPLE_LEAVES);
         registerAll(UBlockStateModelGenerator::registerSprout, UBlocks.GREEN_APPLE_SPROUT, UBlocks.SOUR_APPLE_SPROUT, UBlocks.SWEET_APPLE_SPROUT, UBlocks.GOLDEN_OAK_SPROUT);
         registerStateWithModelReference(UBlocks.MANGO_LEAVES, Blocks.JUNGLE_LEAVES);
-        registerParentedItemModel(UBlocks.MANGO_LEAVES, ModelIds.getBlockModelId(Blocks.JUNGLE_LEAVES));
+        registerTintedItemModel(UBlocks.MANGO_LEAVES, ModelIds.getBlockModelId(Blocks.JUNGLE_LEAVES), BlockTintSource.INSTANCE);
 
         // fruit
         UModelProvider.FRUITS.forEach((block, item) -> registerSingleton(block, BlockModels.FRUIT));
@@ -195,12 +195,12 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         // other
         registerSimpleCubeAll(UBlocks.WORM_BLOCK);
         registerBuiltinWithParticle(UBlocks.WEATHER_VANE, UBlocks.WEATHER_VANE.asItem());
+        registerItemModel(UBlocks.WEATHER_VANE.asItem());
         registerWithStages(UBlocks.FROSTED_OBSIDIAN, Properties.AGE_3, BlockModels.CUBE_ALL, 0, 1, 2, 3);
         registerWithStagesBuiltinModels(UBlocks.ROCKS, Properties.AGE_7, 0, 1, 2, 3, 4, 5, 6, 7);
         registerWithStagesBuiltinModels(UBlocks.MYSTERIOUS_EGG, PileBlock.COUNT, 1, 2, 3);
         registerItemModel(UBlocks.MYSTERIOUS_EGG.asItem());
         FireModels.registerSoulFire(this, UBlocks.SPECTRAL_FIRE, Blocks.SOUL_FIRE);
-
 
         registerJar(UBlocks.JAR);
         registerWeatherJar(UBlocks.CLOUD_JAR);
@@ -208,7 +208,11 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
         registerWeatherJar(UBlocks.ZAP_JAR);
         registerWeatherJar(UBlocks.LIGHTNING_JAR);
 
-        TintedBlock.REGISTRY.forEach(block -> registerTintedItemModel(block, ModelIds.getBlockModelId(block), BlockTintSource.INSTANCE));
+        TintedBlock.REGISTRY.forEach(block -> {
+            Unicopia.LOGGER.info("Tinted block: " + block.getRegistryEntry().getIdAsString());
+            if (block == UBlocks.MANGO_LEAVES) return;
+            registerTintedItemModel(block, ModelIds.getBlockModelId(block), BlockTintSource.INSTANCE);
+        });
     }
 
     public void registerWeatherJar(Block jar) {
@@ -352,8 +356,6 @@ public class UBlockStateModelGenerator extends BlockStateModelGenerator {
 
     public void registerFancyBed(Block bed, Block particleSource, boolean translucent) {
         registerBuiltinWithParticle(bed, ModelIds.getBlockModelId(particleSource));
-        WeightedVariant weightedVariant = createWeightedVariant(ModelIds.getBlockModelId(bed));
-        this.blockStateCollector.accept(createSingletonBlockState(bed, weightedVariant));
         Item item = bed.asItem();
         Identifier itemModelId = Models.TEMPLATE_BED.upload(ModelIds.getItemModelId(item), TextureMap.particle(particleSource), modelCollector);
         this.itemModelOutput.accept(item, ItemModels.special(itemModelId, new CloudBedModelRenderer.Unbaked(Unicopia.id("textures/entity/bed/" + ((FancyBedBlock)bed).getBase() + ".png"), translucent)));
