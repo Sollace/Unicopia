@@ -266,6 +266,7 @@ public class URecipeProvider extends FabricRecipeProvider {
 
         // magic staff
         SpellShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.MAGIC_STAFF)
+            .withSpellFrom(UItems.GEMSTONE)
             .input('*', UItems.GEMSTONE).criterion(hasItem(UItems.GEMSTONE), conditionsFromItem(UItems.GEMSTONE))
             .input('/', ConventionalItemTags.WOODEN_RODS).criterion(hasItem(Items.STICK), conditionsFromTag(ConventionalItemTags.WOODEN_RODS))
             .pattern("  *")
