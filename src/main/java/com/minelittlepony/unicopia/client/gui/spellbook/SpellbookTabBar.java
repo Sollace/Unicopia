@@ -49,7 +49,7 @@ public class SpellbookTabBar {
         int tabHeight = 23;
 
         List<Chapter> leftTabs = chapters.getTabs(side)
-                .sorted(Comparator.comparing(Chapter::tabY))
+                .sorted(Comparator.comparing(c -> c.details().tabY()))
                 .toList();
 
 
@@ -57,7 +57,7 @@ public class SpellbookTabBar {
         float squashFactor = Math.min(1, (float)(backgroundHeight - 40) / ((tabHeight + 8) * leftTabs.size()));
 
         for (int i = 0; i < totalTabs; i++) {
-            int tabY = (int)((leftTabs.get(i).tabY() * tabHeight + (i * 5)) * squashFactor);
+            int tabY = (int)((leftTabs.get(i).details().tabY() * tabHeight + (i * 5)) * squashFactor);
             int width = tabWidth;
             if (leftTabs.get(i) == chapters.getCurrentChapter()) {
                 width += 3;

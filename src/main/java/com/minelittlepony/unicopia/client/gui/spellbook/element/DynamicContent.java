@@ -11,20 +11,19 @@ import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Con
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Drawable;
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.container.spellbook.Flow;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter.Page;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.text.Text;
-import net.minecraft.text.TextCodecs;
 import net.minecraft.util.*;
 
 public class DynamicContent implements Content {
     private static final Text UNKNOWN = Text.of("???");
 
     private SpellbookState.PageState state = new SpellbookState.PageState();
-    private final List<Page> pages;
+    private final List<GuiPage> pages;
 
     private Bounds bounds = Bounds.empty();
 
@@ -32,7 +31,7 @@ public class DynamicContent implements Content {
     private final Panel rightPanel = new Panel(this);
 
     public DynamicContent(List<Page> pages) {
-        this.pages = pages;
+        this.pages = pages.stream().map(GuiPage::new).toList();
     }
 
     @Override
@@ -56,7 +55,7 @@ public class DynamicContent implements Content {
         }
     }
 
-    Optional<Page> getPage(int index) {
+    Optional<GuiPage> getPage(int index) {
         if (index < 0 || index >= pages.size()) {
             return Optional.empty();
         }
@@ -91,10 +90,8 @@ public class DynamicContent implements Content {
         rightPanel.init(screen, pageIndex + 1);
     }
 
-    public static class Page implements Drawable {
-        private final Text title;
-        private final int level;
-        private final int color;
+    public static class GuiPage implements Drawable {
+        private final Page page;
 
         private final List<PageElement> elements;
 
@@ -102,11 +99,9 @@ public class DynamicContent implements Content {
 
         private Bounds bounds = Bounds.empty();
 
-        public Page(RegistryByteBuf buffer) {
-            title = TextCodecs.PACKET_CODEC.decode(buffer);
-            level = buffer.readInt();
-            color = buffer.readInt();
-            elements = buffer.readList(r -> PageElement.read(buffer));
+        public GuiPage(Page page) {
+            this.page = page;
+            elements = page.elements().stream().map(PageElement::of).toList();
         }
 
         protected int getLineLimitAt(int yPosition) {
@@ -128,7 +123,7 @@ public class DynamicContent implements Content {
         }
 
         protected int getLevel() {
-            return level;
+            return page.level();
         }
 
         protected Bounds getBounds() {
@@ -136,7 +131,7 @@ public class DynamicContent implements Content {
         }
 
         public int getColor() {
-            return color == 0 ? MagicText.getColor() : color;
+            return page.color() == 0 ? MagicText.getColor() : page.color();
         }
 
         public void reset() {
@@ -147,11 +142,12 @@ public class DynamicContent implements Content {
             if (elements.isEmpty()) {
                 return;
             }
+            int level = getLevel();
             boolean needsMoreXp = level < 0 || Pony.of(MinecraftClient.getInstance().player).getLevel().get() < level;
             int x = bounds.left;
             int y = bounds.top - 16;
 
-            DrawableUtil.drawScaledText(context, needsMoreXp ? UNKNOWN : title, x, y, 1.3F, MagicText.getColor());
+            DrawableUtil.drawScaledText(context, needsMoreXp ? UNKNOWN : page.title(), x, y, 1.3F, MagicText.getColor());
             DrawableUtil.drawScaledText(context, Text.translatable("gui.unicopia.spellbook.page.level_requirement", level < 0 ? "???" : "" + (level + 1)).formatted(Formatting.DARK_GREEN), x, y + 12, 0.8F, MagicText.getColor());
         }
 
@@ -199,7 +195,7 @@ public class DynamicContent implements Content {
 
         @Override
         public String toString() {
-            return "DynamicContents$Page[title=" + title + ",elements=" + elements + "]";
+            return "DynamicContents$Page[" + page + ",elements=" + elements + "]";
         }
     }
 }

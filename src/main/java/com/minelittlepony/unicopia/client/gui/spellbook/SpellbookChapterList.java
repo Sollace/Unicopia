@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.unicopia.Debug;
+import com.minelittlepony.unicopia.client.gui.spellbook.element.DynamicContent;
 import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
 import com.minelittlepony.unicopia.container.spellbook.TabSide;
 
@@ -30,7 +31,7 @@ public class SpellbookChapterList {
     }
 
     public Stream<Chapter> getTabs(TabSide side) {
-        return chapters.values().stream().filter(chapter -> chapter.side() == side);
+        return chapters.values().stream().filter(chapter -> chapter.details().side() == side);
     }
 
     public Chapter getCurrentChapter() {
@@ -50,10 +51,11 @@ public class SpellbookChapterList {
 
     public record Chapter (
         Identifier id,
-        TabSide side,
-        int tabY,
-        int color,
-        Optional<Content> content) implements SpellbookChapter {
+        SpellbookChapter details,
+        Optional<Content> content) {
+        public Chapter(Identifier id, SpellbookChapter details) {
+            this(id, details, Optional.of(new DynamicContent(details.pages())));
+        }
 
         public static Identifier createIcon(Identifier id, String suffex) {
             return id.withPath(p -> "textures/gui/container/pages/" + p + suffex + ".png");

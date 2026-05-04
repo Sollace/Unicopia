@@ -7,7 +7,7 @@ import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.common.client.gui.dimension.Padding;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen;
-import com.minelittlepony.unicopia.client.gui.spellbook.element.DynamicContent.Page;
+import com.minelittlepony.unicopia.client.gui.spellbook.element.DynamicContent.GuiPage;
 
 import net.minecraft.client.gui.DrawContext;
 
@@ -18,7 +18,7 @@ class Panel extends ScrollContainer {
         this.content = content;
     }
 
-    private Optional<Page> page = Optional.empty();
+    private Optional<GuiPage> page = Optional.empty();
 
     public void init(SpellbookScreen screen, int pageIndex) {
         verticalScrollbar.layoutToEnd = true;

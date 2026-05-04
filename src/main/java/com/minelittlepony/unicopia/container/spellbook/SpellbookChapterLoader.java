@@ -17,17 +17,17 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
 
-public class SpellbookChapterLoader extends JsonDataLoader<Chapter> implements IdentifiableResourceReloadListener {
+public class SpellbookChapterLoader extends JsonDataLoader<SpellbookChapter> implements IdentifiableResourceReloadListener {
     private static final Identifier ID = Unicopia.id("spellbook/chapters");
     private static final Executor EXECUTOR = CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS);
 
     public static final SpellbookChapterLoader INSTANCE = new SpellbookChapterLoader();
 
     private boolean dirty;
-    private Map<Identifier, Chapter> chapters = new HashMap<>();
+    private Map<Identifier, SpellbookChapter> chapters = new HashMap<>();
 
     public SpellbookChapterLoader() {
-        super(Chapter.CODEC, ResourceFinder.json(ID.getPath()));
+        super(SpellbookChapter.CODEC, ResourceFinder.json(ID.getPath()));
     }
 
     @Override
@@ -47,7 +47,7 @@ public class SpellbookChapterLoader extends JsonDataLoader<Chapter> implements I
     }
 
     @Override
-    protected void apply(Map<Identifier, Chapter> data, ResourceManager manager, Profiler profiler) {
+    protected void apply(Map<Identifier, SpellbookChapter> data, ResourceManager manager, Profiler profiler) {
         chapters = data;
 
         if (Debug.SPELLBOOK_CHAPTERS) {

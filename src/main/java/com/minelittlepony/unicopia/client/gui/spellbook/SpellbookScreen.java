@@ -17,6 +17,7 @@ import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
 import com.minelittlepony.unicopia.compat.trinkets.TrinketSlotBackSprites;
 import com.minelittlepony.unicopia.container.*;
 import com.minelittlepony.unicopia.container.inventory.*;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
 import com.minelittlepony.unicopia.container.spellbook.TabSide;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSpellbookStateChanged;
@@ -53,9 +54,9 @@ public class SpellbookScreen extends RecipeBookScreen<SpellbookScreenHandler> im
 
     private final SpellbookTraitDexPageContent traitDex = new SpellbookTraitDexPageContent(this);
     private final SpellbookChapterList chapters = new SpellbookChapterList(this,
-        new Chapter(SpellbookState.CRAFTING_ID, TabSide.LEFT, 0, 0, Optional.of(new SpellbookCraftingPageContent(this))),
-        new Chapter(SpellbookState.PROFILE_ID, TabSide.LEFT, 1, 0, Optional.of(new SpellbookProfilePageContent(this))),
-        new Chapter(SpellbookState.TRAIT_DEX_ID, TabSide.LEFT, 3, 0, Optional.of(traitDex))
+        new Chapter(SpellbookState.CRAFTING_ID, new SpellbookChapter(TabSide.LEFT, 0, 0, List.of()), Optional.of(new SpellbookCraftingPageContent(this))),
+        new Chapter(SpellbookState.PROFILE_ID, new SpellbookChapter(TabSide.LEFT, 1, 0, List.of()), Optional.of(new SpellbookProfilePageContent(this))),
+        new Chapter(SpellbookState.TRAIT_DEX_ID, new SpellbookChapter(TabSide.LEFT, 3, 0, List.of()), Optional.of(traitDex))
     );
     private final SpellbookTabBar tabs = new SpellbookTabBar(this, chapters);
 
@@ -149,7 +150,7 @@ public class SpellbookScreen extends RecipeBookScreen<SpellbookScreenHandler> im
             Bounds bounds = tab.bounds();
             boolean hover = bounds.contains(mouseX, mouseY);
 
-            int color = tab.chapter().color() & 0xFFFFFF;
+            int color = tab.chapter().details().color() & 0xFFFFFF;
 
             int v = 100 + (hover ? 24 : 0);
             if (color == 0xFFFFFF || color == 0) {
@@ -158,7 +159,7 @@ public class SpellbookScreen extends RecipeBookScreen<SpellbookScreenHandler> im
                 RenderSystem.setShaderColor(ColorHelper.getRed(color) / 255F, ColorHelper.getGreen(color) / 255F, ColorHelper.getBlue(color) / 255F, 1);
             }
 
-            boolean isRight = tab.chapter().side() == TabSide.RIGHT;
+            boolean isRight = tab.chapter().details().side() == TabSide.RIGHT;
 
             context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, bounds.left, bounds.top, isRight ? 510 - bounds.width : 402, v, bounds.width, bounds.height, 512, 256);
             RenderSystem.setShaderColor(1, 1, 1, 1);

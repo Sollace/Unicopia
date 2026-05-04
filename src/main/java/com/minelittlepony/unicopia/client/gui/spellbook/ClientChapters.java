@@ -1,13 +1,10 @@
 package com.minelittlepony.unicopia.client.gui.spellbook;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.*;
-import com.minelittlepony.unicopia.client.gui.spellbook.element.DynamicContent;
 import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
-import com.minelittlepony.unicopia.container.spellbook.TabSide;
-
-import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.util.*;
 
 public class ClientChapters {
@@ -17,18 +14,7 @@ public class ClientChapters {
         return CHAPTERS;
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public static void load(Map<Identifier, SpellbookChapter> chapters) {
-        CHAPTERS = (Map)chapters;
-    }
-
-    public static SpellbookChapter loadChapter(RegistryByteBuf buffer) {
-        return new Chapter(
-                buffer.readIdentifier(),
-                buffer.readEnumConstant(TabSide.class),
-                buffer.readInt(),
-                buffer.readInt(),
-                Optional.of(new DynamicContent(buffer.readList(r -> new DynamicContent.Page(buffer))))
-        );
+        CHAPTERS = chapters.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> new Chapter(entry.getKey(), entry.getValue())));
     }
 }

@@ -8,8 +8,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 
-import com.minelittlepony.unicopia.util.Untyped;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -52,14 +50,6 @@ public interface PacketCodecUtils {
 
     static <B extends ByteBuf, K, V> PacketCodec.ResultFunction<B, V, Map<K, V>> toMap(Function<V, K> keyFunction) {
         return codec -> map(HashMap::new, codec, keyFunction, Integer.MAX_VALUE);
-    }
-
-    static <K, B extends ByteBuf, C> PacketCodec<B, C> dispatch(Function<? extends C, K> typeGetter, PacketCodec<? super B, K> typeCodec, Map<K, PacketCodec<? super B, ? extends C>> types) {
-        return PacketCodec.ofStatic((buffer, value) -> {
-            K type = typeGetter.apply(Untyped.cast(value));
-            typeCodec.encode(buffer, type);
-            types.get(type).encode(buffer, Untyped.cast(value));
-        }, buffer -> types.get(typeCodec.decode(buffer)).decode(buffer));
     }
 
     static <B extends ByteBuf, K, V, C extends Map<K, V>> PacketCodec<B, C> map(

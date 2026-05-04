@@ -28,7 +28,7 @@ class TextBlock implements PageElement {
     }
 
     @Override
-    public void compile(DynamicContent.Page page, int y, IViewRoot container) {
+    public void compile(DynamicContent.GuiPage page, int y, IViewRoot container) {
         wrappedText.clear();
         ParagraphWrappingVisitor visitor = new ParagraphWrappingVisitor(
                 yPosition -> page.getLineLimitAt(y + yPosition),
@@ -43,7 +43,7 @@ class TextBlock implements PageElement {
     }
 
     @Override
-    public void draw(DynamicContent.Page page, DrawContext context, int mouseX, int mouseY, IViewRoot container) {
+    public void draw(DynamicContent.GuiPage page, DrawContext context, int mouseX, int mouseY, IViewRoot container) {
         TextRenderer font = MinecraftClient.getInstance().textRenderer;
         boolean needsMoreXp = page.getLevel() < 0 || Pony.of(MinecraftClient.getInstance().player).getLevel().get() < page.getLevel();
         MatrixStack matrices = context.getMatrices();

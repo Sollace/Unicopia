@@ -17,10 +17,8 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.client.gui.DismissSpellScreen;
 import com.minelittlepony.unicopia.client.gui.UHud;
-import com.minelittlepony.unicopia.client.gui.spellbook.ClientChapters;
 import com.minelittlepony.unicopia.client.particle.ClientBoundParticleSpawner;
 import com.minelittlepony.unicopia.client.sound.*;
-import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
 import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity;
 import com.minelittlepony.unicopia.entity.player.PlayerPhysics;
@@ -46,11 +44,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.recipe.display.CuttingRecipeDisplay;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -63,11 +59,6 @@ public class ClientInteractionManager extends InteractionManager {
     private final Map<UUID, Int2ObjectMap<WeakReference<TickableSoundInstance>>> entitySounds = new HashMap<>();
 
     private CuttingRecipeDisplay.Grouping<CloudShapingRecipe> recipes = CuttingRecipeDisplay.Grouping.empty();
-
-    @Override
-    public Map<Identifier, SpellbookChapter> readChapters(RegistryByteBuf buffer) {
-        return buffer.readMap(Identifier.PACKET_CODEC, b -> ClientChapters.loadChapter(buffer));
-    }
 
     @Override
     public CuttingRecipeDisplay.Grouping<CloudShapingRecipe> getCloudShapingRecipes() {
