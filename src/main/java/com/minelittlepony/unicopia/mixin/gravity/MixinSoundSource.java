@@ -44,11 +44,4 @@ abstract class MixinSoundSource {
     private boolean isRelative() {
         return AL10.alGetSourcei(pointer, AL10.AL_SOURCE_RELATIVE) == Source.field_31894 /*(1)*/;
     }
-
-    @Unique
-    private Vec3d getPosition() {
-        float[] pos = { 0, 0, 0 };
-        AL10.alGetSourcefv(pointer, AL10.AL_POSITION, pos);
-        return new Vec3d(pos[0], pos[1], pos[2]);
-    }
 }
