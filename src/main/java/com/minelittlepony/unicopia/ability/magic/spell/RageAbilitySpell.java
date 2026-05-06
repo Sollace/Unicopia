@@ -7,6 +7,7 @@ import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.*;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation;
 import com.minelittlepony.unicopia.client.render.PlayerPoser.Animation.Recipient;
+import com.minelittlepony.unicopia.entity.Living;
 import com.minelittlepony.unicopia.entity.player.MagicReserves.Bar;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.block.BlockState;
@@ -133,8 +134,9 @@ public class RageAbilitySpell extends AbstractSpell {
             source.spawnParticles(ParticleTypes.CLOUD, 3);
         }
 
-        age++;
-        source.asEntity().setInvulnerable(age < 25);
+        if (++age < 2 && source instanceof Living l) {
+            l.setInvulnerabilityTicks(25);
+        }
         return true;
     }
 

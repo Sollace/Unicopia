@@ -99,6 +99,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     private Optional<Living<?>> target = Optional.empty();
 
+
     private int invinsibilityTicks;
 
     private final List<Tickable> tickers = new ArrayList<>();
@@ -111,6 +112,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     protected final DataTrackerManager trackers;
     protected final DataTracker tracker;
 
+    private final DataTracker.Entry<Integer> invulnerableTicks;
     protected final DataTracker.Entry<Optional<UUID>> carrierId;
 
     protected Living(T entity) {
@@ -123,11 +125,24 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         this.jumpingHeuristic = addTicker(new Interactable(((LivingEntityDuck)entity)::isJumping));
 
         carrierId = tracker.startTracking(TrackableDataType.UUID, Optional.empty());
+        invulnerableTicks = tracker.startTracking(TrackableDataType.INT, -1);
     }
 
     public <Q extends Tickable> Q addTicker(Q tickable) {
         tickers.add(Objects.requireNonNull(tickable, "tickable cannot be null"));
         return tickable;
+    }
+
+    public int getInvulnerabilityTicks() {
+        return invulnerableTicks.get();
+    }
+
+    public void setInvulnerabilityTicks(int ticks) {
+        invulnerableTicks.set(entity.age + Math.max(0, ticks));
+    }
+
+    public boolean isInvulnerable() {
+        return invulnerableTicks.get() > entity.age;
     }
 
     public boolean isInvisible() {
@@ -489,6 +504,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         enchants.toNBT(compound, lookup);
         spells.getSlots().toNBT(compound, lookup);
         getCarrierId().ifPresent(id -> compound.putUuid("carrier", id));
+        compound.putInt("ticksInvulnerable", getInvulnerabilityTicks());
         toSyncronisedNbt(compound, lookup);
     }
 
@@ -497,6 +513,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         enchants.fromNBT(compound, lookup);
         spells.getSlots().fromNBT(compound, lookup);
         setCarrier(compound.containsUuid("carrier") ? compound.getUuid("carrier") : null);
+        setInvulnerabilityTicks(compound.getInt("ticksInvulnerable"));
         fromSynchronizedNbt(compound, lookup);
     }
 

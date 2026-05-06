@@ -84,6 +84,14 @@ abstract class MixinEntity implements EntityDuck, Trackable {
         return self.hasVehicle() && self.getVehicle() instanceof LavaAffine affine && affine.isLavaAffine();
     }
 
+    @Inject(method = "isInvulnerable", at = @At("HEAD"), cancellable = true)
+    private void onIsInvulnerable(CallbackInfoReturnable<Boolean> info) {
+        Living<?> living = Living.living((Entity)(Object)this);
+        if (living != null && living.isInvulnerable()) {
+            info.setReturnValue(true);
+        }
+    }
+
     @Inject(method = "isFireImmune", at = @At("HEAD"), cancellable = true)
     private void onIsFireImmune(CallbackInfoReturnable<Boolean> info) {
         if (isLavaAffine() || (this instanceof Equine.Container c) && c.get().getCompositeRace().includes(Race.KIRIN)) {

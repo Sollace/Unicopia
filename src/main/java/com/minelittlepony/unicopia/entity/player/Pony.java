@@ -106,7 +106,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     private float magicExhaustion = 0;
 
-    private int ticksInvulnerable;
     private int ticksMetamorphising;
 
     private int ticksInSun;
@@ -378,10 +377,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return ticksSunImmunity > 0;
     }
 
-    public void setInvulnerabilityTicks(int ticks) {
-        this.ticksInvulnerable = Math.max(0, ticks);
-    }
-
     public int getTicksMetamorphising() {
         return ticksMetamorphising;
     }
@@ -462,10 +457,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     public boolean beforeUpdate() {
         if (compositeRace.includes(Race.UNSET) || entity.age % 2 == 0) {
             recalculateCompositeRace();
-        }
-
-        if (ticksInvulnerable > 0) {
-            entity.setInvulnerable(--ticksInvulnerable > 0);
         }
 
         if (isClient()) {
@@ -1014,7 +1005,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         compound.put("gravity", gravity.toNBT(lookup));
         compound.put("charms", charms.toNBT(lookup));
         compound.put("discoveries", discoveries.toNBT(lookup));
-        compound.putInt("ticksInvulnerable", ticksInvulnerable);
         compound.putInt("ticksMetamorphising", ticksMetamorphising);
     }
 
@@ -1029,7 +1019,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         discoveries.fromNBT(compound.getCompound("discoveries"), lookup);
         acrobatics.fromNBT(compound.getCompound("acrobatics"), lookup);
         magicExhaustion = compound.getFloat("magicExhaustion");
-        ticksInvulnerable = compound.getInt("ticksInvulnerable");
         ticksInSun = compound.getInt("ticksInSun");
         hasShades = compound.getBoolean("hasShades");
         ticksMetamorphising = compound.getInt("ticksMetamorphising");
