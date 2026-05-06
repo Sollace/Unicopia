@@ -154,7 +154,7 @@ public class UModelProvider extends FabricModelProvider {
 
         // fishing rod
         ModelOverrides.of(Models.HANDHELD_ROD)
-                .addOverride(ModelIds.getItemSubModelId(Items.FISHING_ROD, "_cast"), "cast", 1)
+                .addOverride("cast", 1, g -> ModelIds.getItemSubModelId(Items.FISHING_ROD, "_cast"))
                 .upload(UItems.BAITED_FISHING_ROD, itemModelGenerator);
     }
 }
