@@ -31,7 +31,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.OpenToLanScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourceType;
@@ -74,12 +73,16 @@ public class UnicopiaClient implements ClientModInitializer {
         if (cam == PlayerCamera.DEFAULT) {
             return pos;
         }
-        Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
+        float roll = MathHelper.wrapDegrees(cam.calculateRoll());
+        if (MathHelper.approximatelyEquals(Math.abs(roll), 0)) {
+            return pos;
+        }
+        Vec3d cameraPos = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
 
-        Vector3f rotated = pos.subtract(camera.getPos()).toVector3f();
-        rotated = rotated.rotateAxis(cam.calculateRoll() * MathHelper.RADIANS_PER_DEGREE, 0, 1, 0);
+        Vector3f rotated = pos.subtract(cameraPos).toVector3f();
+        rotated = rotated.rotateAxis(roll * MathHelper.RADIANS_PER_DEGREE, 0, 1, 0);
 
-        return new Vec3d(rotated).add(camera.getPos());
+        return new Vec3d(rotated).add(cameraPos);
     }
 
     public static Race getPreferredRace() {
