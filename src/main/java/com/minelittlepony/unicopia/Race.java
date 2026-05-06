@@ -182,7 +182,7 @@ public record Race (
     }
 
     public Race or(Race other) {
-        return isEquine() ? this : other;
+        return isUnset() ? other : this;
     }
 
     @Override

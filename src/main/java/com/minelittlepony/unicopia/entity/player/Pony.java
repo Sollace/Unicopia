@@ -320,6 +320,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public void setSuppressedRace(Race race) {
         suppressedRace.set(race.validate(entity));
+        recalculateCompositeRace();
     }
 
     public void clearSuppressedRace() {
@@ -559,7 +560,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     private void recalculateCompositeRace() {
         Race intrinsicRace = getPersistentSpecies();
-        Race suppressedRace = getSuppressedRace();
+        Race suppressedRace = getSuppressedRace().or(Race.SEAPONY);
         Optional<Race> morphedRace = MetamorphosisStatusEffect.getEffectiveRace(entity);
         effectiveRace = morphedRace.orElse(intrinsicRace);
         compositeRace = morphedRace.orElseGet(() -> getSpellSlot()
@@ -572,7 +573,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
               AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
             : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
             : null,
-            AmuletSelectors.PEARL_NECKLACE.test(entity) ? suppressedRace.or(Race.SEAPONY) : null
+            AmuletSelectors.PEARL_NECKLACE.test(entity) ? suppressedRace : null
         );
         UCriteria.PLAYER_CHANGE_RACE.trigger(entity);
         if (prevMorphedRace.isPresent() && morphedRace.isEmpty()) {
