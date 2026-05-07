@@ -137,6 +137,14 @@ abstract class MixinEntity implements EntityDuck, Trackable {
         }
     }
 
+    @Inject(method = "dropStack(Lnet/minecraft/item/ItemStack;F)Lnet/minecraft/entity/ItemEntity;", at = @At("RETURN"))
+    private void onDropItem(ItemStack stack, float yOffset, CallbackInfoReturnable<ItemEntity> info) {
+        ItemEntity item = info.getReturnValue();
+        if (item != null) {
+            Living.getOrEmpty((Entity)(Object)this).ifPresent(l -> l.onDropItem(item));
+        }
+    }
+
     @Inject(method = "move", at = @At("HEAD"))
     private void beforeMove(MovementType movementType, Vec3d movement, CallbackInfo info) {
         Living<?> living = Living.living((Entity)(Object)this);

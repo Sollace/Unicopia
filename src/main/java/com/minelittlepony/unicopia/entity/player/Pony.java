@@ -783,13 +783,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         return Optional.empty();
     }
 
-    public void onDropItem(ItemEntity itemDropped) {
-        Equine.of(itemDropped).ifPresent(eq -> {
-            eq.setSpecies(getSpecies());
-            eq.getPhysics().setBaseGravityModifier(gravity.getPersistantGravityModifier());
-        });
-    }
-
     @Override
     public float onImpact(float distance, float damageMultiplier, DamageSource cause) {
         distance = super.onImpact(distance, damageMultiplier, cause);

@@ -490,6 +490,16 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return distance;
     }
 
+    public void onDropItem(ItemEntity itemDropped) {
+        Equine.of(itemDropped).ifPresent(eq -> {
+            eq.setSpecies(getSpecies());
+            eq.getPhysics().setBaseGravityModifier(getPhysics().getPersistantGravityModifier());
+            if (eq.getPhysics().isGravityNegative()) {
+                eq.asEntity().setVelocity(eq.asEntity().getVelocity().multiply(1, -1, 1));
+            }
+        });
+    }
+
     @Override
     public float getCloudWalkingStrength() {
         return asWorld().getRegistryManager().get(RegistryKeys.ENCHANTMENT).getEntry(net.minecraft.enchantment.Enchantments.FEATHER_FALLING).map(featherFalling -> {

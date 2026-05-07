@@ -103,6 +103,10 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
         return gravity.get();
     }
 
+    public float getPersistantGravityModifier() {
+        return getGravityModifier();
+    }
+
     @Override
     public float getGravityModifier() {
 
