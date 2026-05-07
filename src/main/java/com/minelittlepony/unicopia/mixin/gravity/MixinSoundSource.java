@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.minelittlepony.unicopia.client.UnicopiaClient;
@@ -23,13 +24,10 @@ abstract class MixinSoundSource {
     @Nullable
     private Vec3d unicopiaOriginalPos = null;
 
-    @Inject(method = "setPosition", at = @At("HEAD"))
-    private Vec3d modifyPosition(Vec3d pos, CallbackInfo info) {
+    @ModifyVariable(method = "setPosition", at = @At("HEAD"))
+    private Vec3d modifyPosition(Vec3d pos) {
         unicopiaOriginalPos = pos;
-        if (isRelative()) {
-            return UnicopiaClient.getAdjustedSoundPosition(pos);
-        }
-        return pos;
+        return UnicopiaClient.getAdjustedSoundPosition(pos, isRelative());
     }
 
     @Inject(method = "setRelative", at = @At("RETURN"))

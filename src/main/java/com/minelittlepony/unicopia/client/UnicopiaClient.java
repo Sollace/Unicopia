@@ -1,8 +1,6 @@
 package com.minelittlepony.unicopia.client;
 
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
-
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.event.ScreenInitCallback;
 import com.minelittlepony.common.event.ScreenInitCallback.ButtonList;
@@ -68,7 +66,7 @@ public class UnicopiaClient implements ClientModInitializer {
     }
 
 
-    public static Vec3d getAdjustedSoundPosition(Vec3d pos) {
+    public static Vec3d getAdjustedSoundPosition(Vec3d pos, boolean isPositionRelative) {
         PlayerCamera cam = getCamera();
         if (cam == PlayerCamera.DEFAULT) {
             return pos;
@@ -77,12 +75,19 @@ public class UnicopiaClient implements ClientModInitializer {
         if (MathHelper.approximatelyEquals(Math.abs(roll), 0)) {
             return pos;
         }
-        Vec3d cameraPos = MinecraftClient.getInstance().gameRenderer.getCamera().getPos();
+        var camera = MinecraftClient.getInstance().gameRenderer.getCamera();
+        Vec3d cameraPos = camera.getPos();
+        Vec3d relativePos = isPositionRelative ? pos : pos.subtract(cameraPos);
+        if (MathHelper.approximatelyEquals(relativePos.length(), 0)) {
+            return pos;
+        }
+        Vec3d newPos = new Vec3d(relativePos.toVector3f().rotateAxis(roll * MathHelper.RADIANS_PER_DEGREE, 0, 1, 0));
+        if (!isPositionRelative) {
+            newPos = newPos.add(cameraPos);
+        }
 
-        Vector3f rotated = pos.subtract(cameraPos).toVector3f();
-        rotated = rotated.rotateAxis(roll * MathHelper.RADIANS_PER_DEGREE, 0, 1, 0);
-
-        return new Vec3d(rotated).add(cameraPos);
+        System.out.println("Sound position rotated around camera " + pos + "->" + newPos);
+        return newPos;
     }
 
     public static Race getPreferredRace() {
