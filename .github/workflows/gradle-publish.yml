@@ -5,7 +5,7 @@ on:
       - '*'
 jobs:
   gradle:
-    runs-on: debian
+    runs-on: codeberg-medium
     steps:
       - name: Checkout Commit
         uses: https://github.com/actions/checkout@v7
