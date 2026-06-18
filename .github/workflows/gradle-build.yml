@@ -12,6 +12,7 @@ jobs:
       - name: Set up JDK
         uses: https://github.com/actions/setup-java@v5
         with:
+          distribution: 'temurin'
           java-version: 21
       - name: Build Gradle
         uses: https://github.com/gradle/actions/setup-gradle@v6
