@@ -6,14 +6,14 @@ jobs:
     runs-on: codeberg-small
     steps:
       - name: Checkout Commit
-        uses: github.com/actions/checkout@v6
+        uses: https://github.com/actions/checkout@v6
       - name: Fetch Tags
         run: git fetch --unshallow --tags -f
       - name: Set up JDK
-        uses: github.com/actions/setup-java@v5
+        uses: https://github.com/actions/setup-java@v5
         with:
           java-version: 21
       - name: Build Gradle
-        uses: github.com/gradle/actions/setup-gradle@v6
+        uses: https://github.com/gradle/actions/setup-gradle@v6
         with:
           arguments: check
