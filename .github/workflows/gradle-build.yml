@@ -16,5 +16,4 @@ jobs:
           java-version: 21
       - name: Build Gradle
         uses: https://github.com/gradle/actions/setup-gradle@v6
-        with:
-          arguments: check
+        run: ./gradlew check
