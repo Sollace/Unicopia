@@ -6,7 +6,7 @@ jobs:
     runs-on: debian
     steps:
       - name: Checkout Commit
-        uses: https://github.com/actions/checkout@v6
+        uses: https://github.com/actions/checkout@v7
       - name: Fetch Tags
         run: git fetch --unshallow --tags -f
       - name: Set up JDK
