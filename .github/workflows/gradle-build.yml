@@ -3,7 +3,7 @@ on:
   - push
 jobs:
   gradle:
-    runs-on: codeberg-small
+    runs-on: codeberg-medium
     steps:
       - name: Checkout Commit
         uses: https://github.com/actions/checkout@v6
