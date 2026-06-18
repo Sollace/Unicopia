@@ -3,7 +3,7 @@ on:
   - push
 jobs:
   gradle:
-    runs-on: ubuntu-latest
+    runs-on: codeberg-small
     steps:
       - name: Checkout Commit
         uses: actions/checkout@v2
