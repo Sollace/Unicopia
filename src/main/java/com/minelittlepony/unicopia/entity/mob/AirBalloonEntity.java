@@ -243,10 +243,10 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
             if (activeFuel > -6 && age % 2 == 0) {
                 activeFuel -= boosting ? 50 : 1;
-                if (activeFuel <= -6) {
-                    setBoostTicks(0);
-                    setAscending(false);
-                }
+            }
+            if (activeFuel <= -6) {
+                setBoostTicks(0);
+                setAscending(false);
             }
         } else {
             if (inflation < getMaxInflation() && inflation > 0) {
@@ -345,6 +345,15 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
             if (getBurnerBoundingBox().expand(0.7).contains(getPos().add(relativePositionOffset))) {
                 if (stack.isOf(Items.FLINT_AND_STEEL)) {
+                    if (activeFuel <= -6) {
+                        setAscending(false);
+                        playSound(USounds.Vanilla.ITEM_FLINTANDSTEEL_USE, 1, 1);
+                        if (!player.isSneaky()) {
+                            getWorld().emitGameEvent(player, GameEvent.ENTITY_INTERACT, getBlockPos());
+                        }
+                        burner.setPulling();
+                        return ActionResult.FAIL;
+                    }
                     setAscending(!isAscending());
                     if (isAscending()) {
                         playSound(USounds.ENTITY_HOT_AIR_BALLOON_BOOST, 1, 1);
