@@ -173,6 +173,11 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
         return get().onImpact(distance, damageMultiplier, cause);
     }
 
+    @Inject(method = "onDismounted(Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"))
+    private void onOnDismounted(Entity vehicle, CallbackInfo info) {
+        get().onDismounted(vehicle);
+    }
+
     @Inject(method = "hurtByWater()Z", at = @At("HEAD"), cancellable = true)
     private void onCanBeHurtByWater(CallbackInfoReturnable<Boolean> info) {
         TriState hurtByWater = get().canBeHurtByWater();

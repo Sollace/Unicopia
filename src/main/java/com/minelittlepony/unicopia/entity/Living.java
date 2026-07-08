@@ -486,6 +486,10 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return fallDistance;
     }
 
+    public void onDismounted(Entity vehicle) {
+        setCarrier((UUID)null);
+    }
+
     protected float getEffectiveFallDistance(float distance) {
         return distance;
     }

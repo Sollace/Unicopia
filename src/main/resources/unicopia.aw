@@ -18,6 +18,8 @@ mutable             field    net/minecraft/loot/LootPool                        
 
 accessible          method   net/minecraft/entity/LightningEntity                  cleanOxidation (Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;)V
 
+accessible          method   net/minecraft/entity/player/PlayerEntity              shouldDismount ()Z
+
 accessible          class    net/minecraft/datafixer/fix/ItemStackComponentizationFix$StackData
 accessible          field    net/minecraft/datafixer/fix/AttributeIdFix            UUID_TO_ID     Ljava/util/Map;
 mutable             field    net/minecraft/datafixer/fix/AttributeIdFix            UUID_TO_ID     Ljava/util/Map;

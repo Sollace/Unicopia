@@ -460,25 +460,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             recalculateCompositeRace();
         }
 
-        if (isClient()) {
-            if (entity.hasVehicle() && entity.isSneaking()) {
-
-                @Nullable
-                Entity vehicle = entity.getVehicle();
-
-                if (vehicle instanceof Trap) {
-                    entity.setSneaking(false);
-                }
-
-                if (vehicle != null && (!(vehicle instanceof Trap trap) || trap.attemptDismount(entity))) {
-                    setCarrier((UUID)null);
-                    entity.stopRiding();
-                    entity.refreshPositionAfterTeleport(vehicle.getPos());
-                    Living.transmitPassengers(vehicle);
-                }
-            }
-        }
-
         magicExhaustion = ManaConsumptionUtil.burnFood(entity, magicExhaustion);
 
         powers.tick();
