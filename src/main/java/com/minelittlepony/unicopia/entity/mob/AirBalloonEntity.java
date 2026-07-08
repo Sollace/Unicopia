@@ -20,7 +20,6 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -385,7 +384,6 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
                     }
 
                     int sandbagId = MathHelper.clamp(-xPush, 0, 1) + MathHelper.clamp(-zPush, 0, 1) * 2;
-                    player.sendMessage(Text.literal(sandbagId + ""));
 
                     getSandbag(sandbagId).setPulling();
 

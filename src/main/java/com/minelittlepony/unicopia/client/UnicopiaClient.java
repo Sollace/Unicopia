@@ -86,7 +86,6 @@ public class UnicopiaClient implements ClientModInitializer {
             newPos = newPos.add(cameraPos);
         }
 
-        System.out.println("Sound position rotated around camera " + pos + "->" + newPos);
         return newPos;
     }
 
