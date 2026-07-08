@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.EarthPonyKickAbility.Buckable;
-import com.mojang.datafixers.util.Function5;
+import com.mojang.datafixers.util.Function6;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -16,6 +16,8 @@ import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.math.*;
@@ -32,14 +34,16 @@ public class FruitBlock extends Block implements Buckable {
     protected final Direction attachmentFace;
     protected final Block stem;
     protected final VoxelShape shape;
+    protected final RegistryKey<Item> fruitKey;
 
     @Nullable
     private Item cachedItem;
 
-    public static <T extends FruitBlock> MapCodec<T> createCodec(Function5<Direction, Block, VoxelShape, Boolean, Settings, T> constructor) {
+    public static <T extends FruitBlock> MapCodec<T> createCodec(Function6<Direction, Block, RegistryKey<Item>, VoxelShape, Boolean, Settings, T> constructor) {
         return RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Direction.CODEC.fieldOf("attachment_face").forGetter(b -> b.attachmentFace),
                 Registries.BLOCK.getCodec().fieldOf("stem").forGetter(b -> b.stem),
+                RegistryKey.createCodec(RegistryKeys.ITEM).fieldOf("fruit_item").forGetter(b -> b.fruitKey),
                 RecordCodecBuilder.<VoxelShape>create(i -> i.group(
                         Codec.DOUBLE.fieldOf("stem_offset").forGetter(b -> (double)0),
                         Codec.DOUBLE.fieldOf("fruit_offset").forGetter(b -> (double)0)
@@ -61,15 +65,16 @@ public class FruitBlock extends Block implements Buckable {
         return CODEC;
     }
 
-    public FruitBlock(Direction attachmentFace, Block stem, VoxelShape shape, Settings settings) {
-        this(attachmentFace, stem, shape, true, settings.sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY));
+    public FruitBlock(Direction attachmentFace, Block stem, RegistryKey<Item> fruitKey, VoxelShape shape, Settings settings) {
+        this(attachmentFace, stem, fruitKey, shape, true, settings.sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY));
     }
 
-    public FruitBlock(Direction attachmentFace, Block stem, VoxelShape shape, boolean flammable, Settings settings) {
+    public FruitBlock(Direction attachmentFace, Block stem, RegistryKey<Item> fruitKey, VoxelShape shape, boolean flammable, Settings settings) {
         super(settings.nonOpaque().suffocates(BlockConstructionUtils::never).blockVision(BlockConstructionUtils::never));
         this.attachmentFace = attachmentFace;
         this.stem = stem;
         this.shape = shape;
+        this.fruitKey = fruitKey;
 
         if (flammable) {
             FlammableBlockRegistry.getDefaultInstance().add(this, 20, 50);
@@ -79,7 +84,7 @@ public class FruitBlock extends Block implements Buckable {
     @Override
     public Item asItem() {
         if (cachedItem == null) {
-            cachedItem = Registries.ITEM.get(Registries.BLOCK.getId(this));
+            cachedItem = Registries.ITEM.get(fruitKey);
         }
 
         return cachedItem;

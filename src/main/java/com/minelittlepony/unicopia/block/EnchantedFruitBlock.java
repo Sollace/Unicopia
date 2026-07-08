@@ -3,10 +3,12 @@ package com.minelittlepony.unicopia.block;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.ParticleUtil;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
@@ -21,8 +23,8 @@ public class EnchantedFruitBlock extends FruitBlock {
 
     private static final MapCodec<EnchantedFruitBlock> CODEC = createCodec(EnchantedFruitBlock::new);
 
-    public EnchantedFruitBlock(Direction attachmentFace, Block stem, VoxelShape shape, boolean flammable, Settings settings) {
-        super(attachmentFace, stem, shape, flammable, settings);
+    public EnchantedFruitBlock(Direction attachmentFace, Block stem, RegistryKey<Item> fruitKey, VoxelShape shape, boolean flammable, Settings settings) {
+        super(attachmentFace, stem, fruitKey, shape, flammable, settings);
         setDefaultState(getDefaultState().with(ENCHANTED, false));
     }
 

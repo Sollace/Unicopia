@@ -9,6 +9,8 @@ import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
@@ -64,6 +66,10 @@ public class Unicopia implements ModInitializer {
 
     public static Identifier id(String name) {
         return Identifier.of(DEFAULT_NAMESPACE, name);
+    }
+
+    public static <T> RegistryKey<T> key(RegistryKey<Registry<T>> registry, String name) {
+        return RegistryKey.of(registry, id(name));
     }
 
     @Override
