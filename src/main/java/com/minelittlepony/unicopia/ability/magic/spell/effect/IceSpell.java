@@ -4,10 +4,9 @@ import java.util.List;
 
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
-import com.minelittlepony.unicopia.ability.magic.spell.attribute.AttributeFormat;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttribute;
-import com.minelittlepony.unicopia.ability.magic.spell.attribute.SpellAttributeType;
 import com.minelittlepony.unicopia.ability.magic.spell.attribute.TooltipFactory;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
@@ -16,8 +15,6 @@ import com.minelittlepony.unicopia.block.state.StatePredicate;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.VecHelper;
-import com.minelittlepony.unicopia.util.shape.Sphere;
-
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.TntEntity;
@@ -36,7 +33,7 @@ public class IceSpell extends AbstractSpell {
             .with(Trait.ICE, 15)
             .build();
 
-    private static final SpellAttribute<Float> RANGE = SpellAttribute.create(SpellAttributeType.RANGE, AttributeFormat.REGULAR, AttributeFormat.PERCENTAGE, Trait.POWER, power -> Math.max(0, 3 + power));
+    private static final SpellAttribute<Float> RANGE = AbstractAreaEffectSpell.range(3);
 
     static final TooltipFactory TOOLTIP = RANGE;
 
@@ -49,7 +46,7 @@ public class IceSpell extends AbstractSpell {
         boolean submerged = source.asEntity().isSubmergedInWater() || source.asEntity().isSubmergedIn(FluidTags.LAVA);
         float radius = RANGE.get(getTraits());
 
-        long blocksAffected = new Sphere(false, radius).translate(source.getOrigin()).getBlockPositions().filter(i -> {
+        long blocksAffected = AbstractAreaEffectSpell.randomBlockPositions(source, false, radius).filter(i -> {
             if (source.canModifyAt(i) && applyBlockSingle(source.asEntity(), source.asWorld(), i, situation)) {
 
                 if (submerged & source.getOrigin().isWithinDistance(i, RANGE.get(getTraits()) - 1)) {

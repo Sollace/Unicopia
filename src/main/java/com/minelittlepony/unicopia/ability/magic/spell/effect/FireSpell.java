@@ -67,7 +67,7 @@ public class FireSpell extends AbstractAreaEffectSpell implements ProjectileDele
             generateParticles(source);
         }
 
-        return new Sphere(false, RANGE.get(getTraits())).translate(source.getOrigin()).getBlockPositions().reduce(false,
+        return AbstractAreaEffectSpell.randomBlockPositions(source, false, RANGE.get(getTraits())).reduce(false,
                 (r, i) -> source.canModifyAt(i) && applyBlocks(source.asWorld(), i),
                 (a, b) -> a || b)
                 || applyEntities(source, source.getOriginVector());
