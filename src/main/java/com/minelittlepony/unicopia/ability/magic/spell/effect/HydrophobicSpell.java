@@ -68,7 +68,8 @@ public class HydrophobicSpell extends AbstractSpell {
         if (!source.isClient()) {
             World world = source.asWorld();
 
-            Shape area = new Sphere(false, getRange(source)).translate(source.getOriginVector());
+            double range = getRange(source);
+            Shape area = new Sphere(false, range).translate(source.getOriginVector());
 
             storedFluidPositions.removeIf(entry -> {
                if (!area.isPointInside(Vec3d.ofCenter(entry.pos()))) {
@@ -81,20 +82,29 @@ public class HydrophobicSpell extends AbstractSpell {
                return false;
             });
 
-            area.getBlockPositions().forEach(pos -> {
-                pos = new BlockPos(pos);
-                BlockState state = world.getBlockState(pos);
+            area.getSectionPositions().forEach(section -> {
+                if (source.asWorld().isChunkLoaded(section.getX(), section.getZ())) {
+                    var chunk = source.asWorld().getChunk(section.getX(), section.getZ());
 
-                if (source.canModifyAt(pos) && state.getFluidState().isIn(affectedFluid)) {
-                    Block block = state.getBlock();
-
-                    if (block instanceof FluidBlock) {
-                        world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
-                        storedFluidPositions.add(new Entry(pos, state));
-                    } else if (state.contains(Properties.WATERLOGGED)) {
-                        world.setBlockState(pos, state.cycle(Properties.WATERLOGGED), Block.NOTIFY_LISTENERS);
-                        storedFluidPositions.add(new Entry(pos, state));
+                    var sec = chunk.getSection(chunk.getSectionIndex((section.getY() * 16) + 1));
+                    if (sec.isEmpty() || !sec.hasRandomFluidTicks()) {
+                        return;
                     }
+                    BlockPos.stream(section.multiply(16), section.add(1, 1, 1).multiply(16)).forEach(pos -> {
+                        BlockState state = world.getBlockState(pos);
+
+                        if (source.canModifyAt(pos) && state.getFluidState().isIn(affectedFluid)) {
+                            Block block = state.getBlock();
+
+                            if (block instanceof FluidBlock) {
+                                world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+                                storedFluidPositions.add(new Entry(new BlockPos(pos), state));
+                            } else if (state.contains(Properties.WATERLOGGED)) {
+                                world.setBlockState(pos, state.cycle(Properties.WATERLOGGED), Block.NOTIFY_LISTENERS);
+                                storedFluidPositions.add(new Entry(new BlockPos(pos), state));
+                            }
+                        }
+                    });
                 }
             });
 
@@ -102,7 +112,6 @@ public class HydrophobicSpell extends AbstractSpell {
                 setDead();
             }
 
-            double range = getRange(source);
             Ether.get(source.asWorld()).getOrCreate(this, source).setRadius((float)range);
 
             source.spawnParticles(new Sphere(true, range), 10, pos -> {
