@@ -17,6 +17,8 @@ import com.minelittlepony.unicopia.server.world.chunk.Chunk;
 import com.minelittlepony.unicopia.server.world.chunk.PositionalDataMap;
 import com.minelittlepony.unicopia.util.Tickable;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
+
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Identifier;
@@ -82,6 +84,9 @@ public class Ether extends PersistentState implements Tickable {
                 entry.spell = new WeakReference<>(spell);
                 markDirty();
             }
+
+            ((EntityReference<Entity>)entry.entity).set(caster.asEntity());
+
             if (entry.removed) {
                 entry.removed = false;
                 positionData.update(entry);
