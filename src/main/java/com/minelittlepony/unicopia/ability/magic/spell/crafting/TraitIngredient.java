@@ -3,6 +3,8 @@ package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import com.google.common.collect.Interner;
+import com.google.common.collect.Interners;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
@@ -17,6 +19,7 @@ public record TraitIngredient (
         Optional<SpellTraits> min,
         Optional<SpellTraits> max
     ) implements Predicate<SpellTraits> {
+    private static final Interner<TraitIngredient> INTERNER = Interners.newWeakInterner();
     public static final TraitIngredient EMPTY = new TraitIngredient(Optional.empty(), Optional.empty());
     private static final Codec<TraitIngredient> INLINE_CODEC = SpellTraits.CODEC.xmap(
             traits -> new TraitIngredient(Optional.ofNullable(traits), Optional.empty()),
@@ -24,7 +27,7 @@ public record TraitIngredient (
     private static final Codec<TraitIngredient> STRUCTURED_CODEC = RecordCodecBuilder.<TraitIngredient>create(instance -> instance.group(
             SpellTraits.CODEC.optionalFieldOf("min").forGetter(TraitIngredient::min),
             SpellTraits.CODEC.optionalFieldOf("max").forGetter(TraitIngredient::max)
-    ).apply(instance, TraitIngredient::new)).flatXmap(
+    ).apply(instance, TraitIngredient::of)).flatXmap(
             ingredient -> !ingredient.isEmpty() ? DataResult.success(ingredient) : DataResult.error(() -> "No min or max supplied for ingredient"),
             DataResult::success
     );
@@ -35,7 +38,7 @@ public record TraitIngredient (
     public static final PacketCodec<PacketByteBuf, TraitIngredient> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.optional(SpellTraits.PACKET_CODEC), TraitIngredient::min,
             PacketCodecs.optional(SpellTraits.PACKET_CODEC), TraitIngredient::max,
-            TraitIngredient::new
+            TraitIngredient::of
     );
 
     public static TraitIngredient of(SpellTraits minTraits) {
@@ -49,10 +52,15 @@ public record TraitIngredient (
         if (minTraits.isEmpty() && maxTraits.isEmpty()) {
             return EMPTY;
         }
-        return new TraitIngredient(
-                Optional.of(minTraits).filter(s -> !s.isEmpty()),
-                Optional.of(maxTraits).filter(s -> !s.isEmpty())
-        );
+
+        return of(Optional.of(minTraits), Optional.of(maxTraits));
+    }
+
+    public static TraitIngredient of(Optional<SpellTraits> minTraits, Optional<SpellTraits> maxTraits) {
+        if ((minTraits.isEmpty() || minTraits.get().isEmpty()) && (maxTraits.isEmpty() || maxTraits.get().isEmpty())) {
+            return EMPTY;
+        }
+        return INTERNER.intern(new TraitIngredient(minTraits.filter(s -> !s.isEmpty()), maxTraits.filter(s -> !s.isEmpty())));
     }
 
     public boolean isEmpty() {
