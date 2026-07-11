@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.network.MsgZapAppleStage;
 import com.minelittlepony.unicopia.particle.LightningBoltParticleEffect;
 import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
+import com.minelittlepony.unicopia.util.MeteorlogicalUtil.DayPhase;
 import com.minelittlepony.unicopia.util.Tickable;
 
 import io.netty.buffer.ByteBuf;
@@ -44,16 +45,16 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
     private final World world;
 
     private Stage lastStage = Stage.HIBERNATING;
+    @Nullable
+    private DayPhase lastPhase;
 
-    private boolean stageChanged;
     private boolean playedMoonEffect;
     private int nextLightningEvent = 1200;
-    private float prevSkyAngle;
 
     ZapAppleStageStore(World world, NbtCompound compound) {
         this(world);
         lastStage = Stage.VALUES[Math.max(0, compound.getInt("stage")) % Stage.VALUES.length];
-        stageChanged = compound.getBoolean("stageChanged");
+        lastPhase = compound.contains("phase") ? DayPhase.VALUES[Math.abs(compound.getInt("phase")) % DayPhase.VALUES.length] : null;
         playedMoonEffect = compound.getBoolean("playedMoonEffect");
         nextLightningEvent = compound.getInt("nextLightningEvent");
     }
@@ -64,36 +65,31 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
 
     @Override
     public void tick() {
-        float skyAngle = MeteorlogicalUtil.getSkyAngle(world);
+        DayPhase phase = MeteorlogicalUtil.getDayPhase(world);
 
-        if (skyAngle > MeteorlogicalUtil.SUNSET) {
-            if (nextLightningEvent > 0) {
-                nextLightningEvent--;
-                markDirty();
+        if (phase != lastPhase) {
+            // only trigger on the day-to-night transition
+            if (!phase.isDay() && (phase.isDay() != lastPhase.isDay())
+                    // cycle starts on a full moon
+                    && (lastStage != Stage.HIBERNATING || world.getMoonPhase() == MeteorlogicalUtil.FULL_MOON)) {
+                progressStage();
             }
 
-            if (!stageChanged && MathHelper.approximatelyEquals(skyAngle, MeteorlogicalUtil.MIDNIGHT) || (
-                    MeteorlogicalUtil.isBetween(skyAngle, MeteorlogicalUtil.MIDNIGHT, MeteorlogicalUtil.MOONSET)
-                && MeteorlogicalUtil.isBetween(prevSkyAngle, MeteorlogicalUtil.SUNSET, MeteorlogicalUtil.MIDNIGHT)
-            )) {
-                stageChanged = true;
-                if (lastStage != Stage.HIBERNATING || world.getMoonPhase() == MeteorlogicalUtil.FULL_MOON) {
-                    lastStage = lastStage.getNext();
-                    playedMoonEffect = false;
-                    markDirty();
-                    sendUpdate();
-                }
-            }
-        } else if (stageChanged) {
-            stageChanged = false;
+            lastPhase = phase;
             markDirty();
         }
 
-        prevSkyAngle = skyAngle;
+
+        if (!lastPhase.isDay() && nextLightningEvent > 0) {
+            nextLightningEvent--;
+            markDirty();
+        }
     }
 
-    protected void sendUpdate() {
-        Channel.SERVER_ZAP_STAGE.sendToAllPlayers(new MsgZapAppleStage(getStage()), world);
+    private void progressStage() {
+        lastStage = lastStage.getNext();
+        playedMoonEffect = false;
+        Channel.SERVER_ZAP_STAGE.sendToAllPlayers(new MsgZapAppleStage(lastStage), world);
     }
 
     public void playMoonEffect(BlockPos pos) {
@@ -124,13 +120,6 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
     }
 
     /**
-     * Returns true during nights that the zap apples must change their states.
-     */
-    public boolean hasStageChanged() {
-        return stageChanged;
-    }
-
-    /**
      * Returns the current zap apple ripening stage.
      */
     public Stage getStage() {
@@ -140,7 +129,9 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
     @Override
     public NbtCompound writeNbt(NbtCompound compound, WrapperLookup lookup) {
         compound.putInt("stage", lastStage.ordinal());
-        compound.putBoolean("stageChanged", stageChanged);
+        if (lastPhase != null) {
+            compound.putInt("phase", lastPhase.ordinal());
+        }
         compound.putBoolean("playedMoonEffect", playedMoonEffect);
         compound.putInt("nextLightningEvent", nextLightningEvent);
         return compound;

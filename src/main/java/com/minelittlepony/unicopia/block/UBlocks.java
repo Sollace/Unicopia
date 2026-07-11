@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.block;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.cloud.CloudPillarBlock;
@@ -99,8 +100,8 @@ public interface UBlocks {
     Block ZAP_LEAVES = register("zap_leaves", new ZapAppleLeavesBlock(ZapAppleLeavesBlock.settings()), ItemGroups.NATURAL);
     Block FLOWERING_ZAP_LEAVES = register("flowering_zap_leaves", new BaseZapAppleLeavesBlock(BaseZapAppleLeavesBlock.settings()), ItemGroups.NATURAL);
     Block ZAP_LEAVES_PLACEHOLDER = register("zap_leaves_placeholder", new ZapAppleLeavesPlaceholderBlock(Settings.create().replaceable().noCollision().dropsNothing().air()));
-    Block ZAP_BULB = register("zap_bulb", new FruitBlock(Direction.DOWN, ZAP_LEAVES, Unicopia.key(RegistryKeys.ITEM, "zap_bulb"), FruitBlock.DEFAULT_SHAPE, false, Settings.create().mapColor(MapColor.GRAY).strength(500, 1200).sounds(BlockSoundGroup.AZALEA_LEAVES)));
-    Block ZAP_APPLE = register("zap_apple", new FruitBlock(Direction.DOWN, ZAP_LEAVES, Unicopia.key(RegistryKeys.ITEM, "zap_apple"), FruitBlock.DEFAULT_SHAPE, false, Settings.create().mapColor(MapColor.GRAY).sounds(BlockSoundGroup.AZALEA_LEAVES)));
+    Block ZAP_BULB = register("zap_bulb", new FruitBlock(Direction.DOWN, Set.of(ZAP_LEAVES, FLOWERING_ZAP_LEAVES), Unicopia.key(RegistryKeys.ITEM, "zap_bulb"), FruitBlock.DEFAULT_SHAPE, false, Settings.create().mapColor(MapColor.GRAY).strength(500, 1200).sounds(BlockSoundGroup.AZALEA_LEAVES)));
+    Block ZAP_APPLE = register("zap_apple", new FruitBlock(Direction.DOWN, Set.of(ZAP_LEAVES, FLOWERING_ZAP_LEAVES), Unicopia.key(RegistryKeys.ITEM, "zap_apple"), FruitBlock.DEFAULT_SHAPE, false, Settings.create().mapColor(MapColor.GRAY).sounds(BlockSoundGroup.AZALEA_LEAVES)));
 
     Block PALM_LOG = register("palm_log", BlockConstructionUtils.createLogBlock(UMapColors.PALM_LOG_END, UMapColors.PALM_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
     Block PALM_WOOD = register("palm_wood", BlockConstructionUtils.createWoodBlock(UMapColors.PALM_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);

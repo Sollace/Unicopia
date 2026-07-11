@@ -9,6 +9,7 @@ import net.minecraft.util.hit.HitResult.Type;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.LightType;
+import net.minecraft.world.LunarWorldView;
 import net.minecraft.world.World;
 
 public interface MeteorlogicalUtil {
@@ -25,6 +26,10 @@ public interface MeteorlogicalUtil {
 
     static boolean isBetween(float skyAngle, float start, float end) {
         return skyAngle >= start && skyAngle <= end;
+    }
+
+    static boolean isCloseTo(float skyAngle, float value, float deviation) {
+        return isBetween(skyAngle, value - deviation, value + deviation);
     }
 
     static boolean isLookingIntoSun(World world, Entity entity) {
@@ -86,7 +91,7 @@ public interface MeteorlogicalUtil {
     /**
      * Gets the sun angle on a scale of 0-2 where 0=sunrise, 1=sunset, and >1 is night
      *
-     * 0 = sunrisde
+     * 0 = sunrise
      * 0-0.5 = morning
      * 0.5 = noon
      * 0.5-1 = evening
@@ -98,8 +103,35 @@ public interface MeteorlogicalUtil {
      * @param world
      * @return The sun angle
      */
-    static float getSkyAngle(World world) {
+    static float getSkyAngle(LunarWorldView world) {
         return ((world.getSkyAngle(1) + 0.25F) % 1F) * 2;
+    }
+
+    /**
+     * Gets the current day phase.
+     */
+    static DayPhase getDayPhase(LunarWorldView world) {
+        float skyAngle = getSkyAngle(world);
+
+        if (isCloseTo(skyAngle, SUNRISE, 0.1F)) {
+            return DayPhase.SUNRISE;
+        }
+        if (skyAngle < 0.5F) {
+            return DayPhase.MORNING;
+        }
+        if (isCloseTo(skyAngle, NOON, 0.1F)) {
+            return DayPhase.NOON;
+        }
+        if (skyAngle < 1F) {
+            return DayPhase.EVENING;
+        }
+        if (isCloseTo(skyAngle, SUNSET, 0.1F)) {
+            return DayPhase.SUNSET;
+        }
+        if (isCloseTo(skyAngle, MIDNIGHT, 0.1F)) {
+            return DayPhase.MIDNIGHT;
+        }
+        return DayPhase.NIGHT;
     }
 
     static boolean isPositionExposedToSun(World world, BlockPos pos) {
@@ -112,5 +144,47 @@ public interface MeteorlogicalUtil {
                 && !world.isRaining()
                 && !world.isThundering()
                 && world.isDay();
+    }
+
+    public enum DayPhase {
+        SUNRISE(true),
+        MORNING(true),
+        NOON(true),
+        EVENING(true),
+        SUNSET(false),
+        NIGHT(false),
+        MIDNIGHT(false),
+        AFTER_MIDNIGHT(false);
+
+        public static final DayPhase[] VALUES = values();
+
+        private final boolean day;
+        private final boolean transitionary;
+
+        DayPhase(boolean day) {
+            this.day = day;
+            this.transitionary = ordinal() % 2 == 0;
+        }
+
+        public boolean isDay() {
+            return day;
+        }
+
+        public boolean isTransition() {
+            return transitionary;
+        }
+
+        public DayPhase simplified() {
+            if (this == SUNRISE) {
+                return MORNING;
+            }
+            if (this == NOON || this == SUNSET) {
+                return EVENING;
+            }
+            if (this == MIDNIGHT || this == AFTER_MIDNIGHT) {
+                return NIGHT;
+            }
+            return this;
+        }
     }
 }

@@ -5,7 +5,6 @@ import com.minelittlepony.unicopia.server.world.ZapAppleStageStore;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -21,7 +20,7 @@ public interface ZapStagedBlock {
         ZapAppleStageStore.Stage currentStage = ZapAppleStageStore.get(sw).getStage();
         if (currentStage != getStage(state)) {
             state = getState(currentStage);
-            world.setBlockState(pos, state);
+            changeLeavesState(currentStage, world, state, pos);
         }
         world.scheduleBlockTick(pos, state.getBlock(), 1);
     }
@@ -33,7 +32,7 @@ public interface ZapStagedBlock {
             int transitionRate = getTransitionRate(currentStage);
             if (transitionRate == 0 || random.nextInt(transitionRate) == 0) {
                 state = getState(currentStage);
-                world.setBlockState(pos, state);
+                changeLeavesState(currentStage, world, state, pos);
                 onStageChanged(store, currentStage, world, state, pos, random);
             }
         }
@@ -44,7 +43,7 @@ public interface ZapStagedBlock {
         if (stage == ZapAppleStageStore.Stage.HIBERNATING || stage == ZapAppleStageStore.Stage.GREENING) {
             return 10;
         }
-        return 2500;
+        return 1500;
     }
 
     default BlockState getState(ZapAppleStageStore.Stage stage) {
@@ -58,12 +57,12 @@ public interface ZapStagedBlock {
     }
 
     private static void onStageChanged(ZapAppleStageStore store, ZapAppleStageStore.Stage stage, ServerWorld world, BlockState state, BlockPos pos, Random random) {
-        boolean mustFruit = Random.create(state.getRenderingSeed(pos)).nextInt(5) < 2;
+        BlockPos down = pos.down();
         BlockState below = world.getBlockState(pos.down());
 
-        if (world.isAir(pos.down())) {
-            if (stage == ZapAppleStageStore.Stage.FRUITING && mustFruit) {
-                world.setBlockState(pos.down(), UBlocks.ZAP_BULB.getDefaultState(), Block.NOTIFY_ALL);
+        if (stage == ZapAppleStageStore.Stage.FRUITING && world.isAir(down)) {
+            if (Random.create(state.getRenderingSeed(pos)).nextInt(5) < 2) {
+                world.setBlockState(down, UBlocks.ZAP_BULB.getDefaultState(), Block.NOTIFY_ALL);
                 store.triggerLightningStrike(pos);
             }
         }
@@ -72,17 +71,22 @@ public interface ZapStagedBlock {
             store.triggerLightningStrike(pos);
         }
 
-        if (stage == ZapAppleStageStore.Stage.RIPE) {
-            if (below.isOf(UBlocks.ZAP_BULB)) {
-                world.setBlockState(pos.down(), UBlocks.ZAP_APPLE.getDefaultState(), Block.NOTIFY_ALL);
-                store.playMoonEffect(pos);
-            }
+        if (stage == ZapAppleStageStore.Stage.RIPE && below.isOf(UBlocks.ZAP_BULB)) {
+            world.setBlockState(down, UBlocks.ZAP_APPLE.getDefaultState(), Block.NOTIFY_ALL);
+            store.playMoonEffect(pos);
         }
 
-        if (mustFruit && stage == ZapAppleStageStore.Stage.HIBERNATING) {
-            if (below.isOf(UBlocks.ZAP_APPLE) || below.isOf(UBlocks.ZAP_BULB)) {
-                world.setBlockState(pos.down(), Blocks.AIR.getDefaultState());
-            }
+        if (stage == ZapAppleStageStore.Stage.HIBERNATING && (below.isOf(UBlocks.ZAP_APPLE) || below.isOf(UBlocks.ZAP_BULB))) {
+            world.breakBlock(down, false);
         }
+    }
+
+    private static void changeLeavesState(ZapAppleStageStore.Stage stage, World world, BlockState state, BlockPos pos) {
+        BlockPos down = pos.down();
+        BlockState below = world.getBlockState(down);
+        if (stage == ZapAppleStageStore.Stage.HIBERNATING && (below.isOf(UBlocks.ZAP_APPLE) || below.isOf(UBlocks.ZAP_BULB))) {
+            world.breakBlock(down, false);
+        }
+        world.setBlockState(pos, state);
     }
 }
