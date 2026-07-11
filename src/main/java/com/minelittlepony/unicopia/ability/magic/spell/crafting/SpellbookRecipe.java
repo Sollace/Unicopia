@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.recipe.URecipes;
+import com.mojang.datafixers.util.Pair;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
@@ -54,23 +55,23 @@ public interface SpellbookRecipe extends Recipe<SpellbookRecipe.Input> {
         }
     }
 
-    public record Input(ItemStack stackToModify, ItemStack[] stacks, float[] factors, SpellTraits traits, int gemSlotIndex) implements RecipeInput {
+    public record Input(ItemStack stackToModify, List<Pair<Float, ItemStack>> stacks, SpellTraits traits, int gemSlotIndex) implements RecipeInput {
         @Override
         public ItemStack getStackInSlot(int slot) {
-            return stacks[slot];
+            return stacks.get(slot).getSecond();
         }
 
         public float getFactor(int slot) {
-            return factors[slot];
+            return stacks.get(slot).getFirst();
         }
 
         @Override
         public int getSize() {
-            return stacks.length;
+            return stacks.size();
         }
 
         public boolean hasIngredients() {
-            for (int i = 0; i < gemSlotIndex; i++) {
+            for (int i = 0; i < getSize(); i++) {
                 if (!getStackInSlot(i).isEmpty()) {
                     return true;
                 }

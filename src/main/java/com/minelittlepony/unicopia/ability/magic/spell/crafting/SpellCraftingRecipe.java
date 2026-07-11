@@ -3,13 +3,9 @@ package com.minelittlepony.unicopia.ability.magic.spell.crafting;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.recipe.URecipes;
-import com.minelittlepony.unicopia.util.InventoryUtil;
 import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -94,19 +90,16 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
     @Override
     public boolean matches(Input inventory, World world) {
 
-        if (!material.test(inventory.stackToModify())) {
+        if (!material.test(inventory.stackToModify()) || !requiredTraits.test(inventory.traits())) {
             return false;
         }
 
         if (requiredItems.isEmpty()) {
-            return requiredTraits.test(inventory.traits());
+            return true;
         }
 
         var outstandingRequirements = new ArrayList<>(requiredItems);
-        var ingredients = InventoryUtil.slots(inventory)
-                .filter(slot -> !inventory.getStackInSlot(slot).isEmpty())
-                .map(slot -> Pair.of(inventory.getFactor(slot), inventory.getStackInSlot(slot)))
-                .collect(Collectors.toList());
+        var ingredients = new ArrayList<>(inventory.stacks());
 
         outstandingRequirements.removeIf(requirement -> {
             var found = ingredients.stream().filter(pair -> requirement.test(pair.getSecond())).findAny();
@@ -114,13 +107,7 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
             return found.isPresent();
         });
 
-        if (!outstandingRequirements.isEmpty()) {
-            return false;
-        }
-
-        return requiredTraits.test(SpellTraits.union(
-            ingredients.stream().map(pair -> SpellTraits.of(pair.getSecond()).multiply(pair.getFirst())).toArray(SpellTraits[]::new)
-        ));
+        return outstandingRequirements.isEmpty();
     }
 
     @Override
