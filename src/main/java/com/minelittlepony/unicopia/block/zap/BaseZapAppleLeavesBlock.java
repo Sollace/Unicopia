@@ -63,11 +63,6 @@ public class BaseZapAppleLeavesBlock extends LeavesBlock implements TintedBlock,
         return ZapAppleStageStore.Stage.FLOWERING;
     }
 
-    @Override
-    protected final boolean shouldDecay(BlockState state) {
-        return false;
-    }
-
     @Deprecated
     @Override
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
