@@ -105,7 +105,7 @@ public class SpellCraftingRecipe implements SpellbookRecipe {
         var outstandingRequirements = new ArrayList<>(requiredItems);
         var ingredients = InventoryUtil.slots(inventory)
                 .filter(slot -> !inventory.getStackInSlot(slot).isEmpty())
-                .map(slot -> Pair.of(slot, inventory.getStackInSlot(slot)))
+                .map(slot -> Pair.of(inventory.getFactor(slot), inventory.getStackInSlot(slot)))
                 .collect(Collectors.toList());
 
         outstandingRequirements.removeIf(requirement -> {
