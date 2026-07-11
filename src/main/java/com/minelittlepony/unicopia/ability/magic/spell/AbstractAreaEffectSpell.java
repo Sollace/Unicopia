@@ -18,9 +18,9 @@ import net.minecraft.util.math.Vec3d;
 
 public abstract class AbstractAreaEffectSpell extends AbstractSpell {
 
-    public static final int MIN_RANGE = 30;
+    public static final int MIN_RANGE = 3;
     public static final int MID_RANGE = 15;
-    public static final int MAX_RANGE = 33;
+    public static final int MAX_RANGE = 32;
 
     protected static final SpellAttribute<Float> RANGE = range(4);
     public static final TooltipFactory TOOLTIP = RANGE;
