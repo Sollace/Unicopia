@@ -43,6 +43,9 @@ public interface ZapStagedBlock {
         if (stage == ZapAppleStageStore.Stage.HIBERNATING || stage == ZapAppleStageStore.Stage.GREENING) {
             return 10;
         }
+        if (stage == ZapAppleStageStore.Stage.RIPE) {
+            return 300;
+        }
         return 1500;
     }
 
