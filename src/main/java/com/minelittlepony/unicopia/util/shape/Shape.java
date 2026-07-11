@@ -42,13 +42,6 @@ public interface Shape extends PointGenerator {
         ).filter(pos -> isPointInside(Vec3d.ofCenter(pos)));
     }
 
-    default Stream<BlockPos> getSectionPositions() {
-        return BlockPos.stream(
-                BlockPos.ofFloored(getLowerBound().multiply(1/16D)),
-                BlockPos.ofFloored(getUpperBound().multiply(1/16D))
-        );
-    }
-
     /**
      * Returns a endless stream of random block positions that fit inside this shape.
      */
