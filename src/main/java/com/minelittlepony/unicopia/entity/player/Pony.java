@@ -1008,7 +1008,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 || oldPlayer.getPersistentSpecies().isUnset();
 
         Race oldSuppressedRace = oldPlayer.getSuppressedRace();
-        Race newRace = oldPlayer.respawnRace != Race.UNSET && !alive ? oldPlayer.respawnRace : oldPlayer.getSpecies();
+        Race newRace = oldPlayer.respawnRace != Race.UNSET && !alive ? oldPlayer.respawnRace : oldPlayer.getPersistentSpecies();
 
         if (forcedSwap || !newRace.canCast()) {
             getSpellSlot().clear();
