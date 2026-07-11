@@ -69,7 +69,7 @@ public class ZapAppleStageStore extends PersistentState implements Tickable {
 
         if (phase != lastPhase) {
             // only trigger on the day-to-night transition
-            if (!phase.isDay() && (phase.isDay() != lastPhase.isDay())
+            if (!phase.isDay() && (lastPhase == null || phase.isDay() != lastPhase.isDay())
                     // cycle starts on a full moon
                     && (lastStage != Stage.HIBERNATING || world.getMoonPhase() == MeteorlogicalUtil.FULL_MOON)) {
                 progressStage();

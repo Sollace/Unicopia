@@ -128,10 +128,13 @@ public interface MeteorlogicalUtil {
         if (isCloseTo(skyAngle, SUNSET, 0.1F)) {
             return DayPhase.SUNSET;
         }
+        if (skyAngle < MIDNIGHT) {
+            return DayPhase.NIGHT;
+        }
         if (isCloseTo(skyAngle, MIDNIGHT, 0.1F)) {
             return DayPhase.MIDNIGHT;
         }
-        return DayPhase.NIGHT;
+        return DayPhase.AFTER_MIDNIGHT;
     }
 
     static boolean isPositionExposedToSun(World world, BlockPos pos) {
