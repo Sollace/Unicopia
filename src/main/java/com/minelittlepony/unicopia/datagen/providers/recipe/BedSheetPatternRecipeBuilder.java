@@ -1,33 +1,27 @@
 package com.minelittlepony.unicopia.datagen.providers.recipe;
 
 import java.util.Arrays;
-import java.util.stream.Stream;
-
-import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.item.UItems;
 import com.minelittlepony.unicopia.recipe.ExclusiveIngredient;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.data.server.recipe.RecipeProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
-import net.minecraft.data.server.recipe.ShapelessRecipeJsonBuilder;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.Registries;
 
 public class BedSheetPatternRecipeBuilder {
     record PatternTemplate(int[] symbols, int[] uniqueSymbols, String[] pattern) {
-        static final PatternTemplate ONE_COLOR = new PatternTemplate(new String[] { "###", "# #", " ##" });
-        static final PatternTemplate TWO_COLOR = new PatternTemplate(new String[] { "#%#", "% %", " %#" });
-        static final PatternTemplate THREE_COLOR = new PatternTemplate(new String[] { "cvc", "h h", " vc" });
-        static final PatternTemplate FOUR_COLOR = new PatternTemplate(new String[] { "wgb", "p g", " pw" });
-        static final PatternTemplate SEVEN_COLOR = new PatternTemplate(new String[] { "roy", "l b", " pg" });
+        static final PatternTemplate ONE_COLOR = new PatternTemplate("###", "# #", " ##");
+        static final PatternTemplate TWO_COLOR = new PatternTemplate("#%#", "% %", " %#");
+        static final PatternTemplate THREE_COLOR = new PatternTemplate("cvc", "h h", " vc");
+        static final PatternTemplate FOUR_COLOR = new PatternTemplate("wgb", "p g", " pw");
+        static final PatternTemplate SEVEN_COLOR = new PatternTemplate("roy", "l b", " pg");
 
-        PatternTemplate(String[] pattern) {
+        PatternTemplate(String...pattern) {
             this(Arrays.stream(pattern).flatMapToInt(l -> l.chars()).filter(ch -> ch != ' ').toArray(), pattern);
         }
 
@@ -36,27 +30,22 @@ public class BedSheetPatternRecipeBuilder {
         }
 
         void offerWithoutConversion(RecipeExporter exporter, ItemConvertible output, ItemConvertible...wool) {
-            offerRecipe(this, null, exporter, output, wool);
+            offerRecipe(this, exporter, output, wool);
         }
 
         void offerTo(RecipeExporter exporter, ItemConvertible output, ItemConvertible...wool) {
-            Int2ObjectMap<ItemConvertible> symbolMap = new Int2ObjectOpenHashMap<>();
-            offerRecipe(this, symbolMap, exporter, output, wool);
-            offerBedSheetConversionRecipe(exporter, output, Arrays.stream(symbols).mapToObj(symbolMap::get));
+            offerRecipe(this, exporter, output, wool);
+            offerBedSheetConversionRecipe(this, exporter, output, wool);
         }
     }
 
     private static void offerRecipe(PatternTemplate template,
-            @Nullable Int2ObjectMap<ItemConvertible> symbolMap,
             RecipeExporter exporter,
             ItemConvertible output,
             ItemConvertible...wool) {
-        ShapedRecipeJsonBuilder builder = ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output);
+        var builder = ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output);
         for (int i = 0; i < template.uniqueSymbols().length; i++) {
             builder.input((char)template.uniqueSymbols()[i], wool[i]);
-            if (symbolMap != null) {
-                symbolMap.put(template.uniqueSymbols()[i], wool[i]);
-            }
         }
         for (int i = 0; i < template.pattern().length; i++) {
             builder.pattern(template.pattern()[i]);
@@ -67,14 +56,19 @@ public class BedSheetPatternRecipeBuilder {
         builder.group("bed_sheet").offerTo(exporter);
     }
 
-    private static void offerBedSheetConversionRecipe(RecipeExporter exporter, ItemConvertible output, Stream<ItemConvertible> wools) {
-        var builder = ShapelessRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output, 2)
-            .input(new ExclusiveIngredient(Ingredient.fromTag(UTags.Items.WOOL_BED_SHEETS), Ingredient.ofItems(output)).toVanilla())
-            .criterion("has_bed_sheet", RecipeProvider.conditionsFromTag(UTags.Items.WOOL_BED_SHEETS));
-        wools.forEach(input -> {
-            builder.input(input).criterion(RecipeProvider.hasItem(input), RecipeProvider.conditionsFromItem(input));
-        });
+    private static void offerBedSheetConversionRecipe(PatternTemplate template, RecipeExporter exporter, ItemConvertible output, ItemConvertible...wool) {
+        var builder = ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output, 2);
+
+        for (int i = 0; i < template.uniqueSymbols().length; i++) {
+            builder.input((char)template.uniqueSymbols()[i], wool[i]);
+        }
+        builder.input('X', new ExclusiveIngredient(Ingredient.fromTag(UTags.Items.WOOL_BED_SHEETS), Ingredient.ofItems(output)).toVanilla());
+        for (int i = 0; i < template.pattern().length - 1; i++) {
+            builder.pattern(template.pattern()[i]);
+        }
+        builder.pattern(template.pattern()[template.pattern().length - 1].replace(' ', 'X'));
         builder
+            .criterion("has_bed_sheet", RecipeProvider.conditionsFromItem(output))
             .group("bed_sheet_convert")
             .offerTo(exporter, RecipeProvider.convertBetween(output, UItems.WHITE_BED_SHEETS));
     }
