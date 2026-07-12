@@ -70,7 +70,7 @@ public class BedSheetPatternRecipeBuilder {
         builder
             .criterion("has_bed_sheet", RecipeProvider.conditionsFromItem(output))
             .group("bed_sheet_convert")
-            .offerTo(exporter, RecipeProvider.convertBetween(output, UItems.WHITE_BED_SHEETS));
+            .offerTo(exporter, Registries.ITEM.getId(output.asItem()).withPath(RecipeProvider.convertBetween(output, UItems.WHITE_BED_SHEETS)));
     }
 
 }

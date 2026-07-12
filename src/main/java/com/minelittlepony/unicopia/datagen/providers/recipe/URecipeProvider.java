@@ -96,15 +96,15 @@ public class URecipeProvider extends FabricRecipeProvider {
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.SUNGLASSES)
             .input(ConventionalItemTags.GLASS_BLOCKS)
             .input(UItems.SUNGLASSES).criterion("has_broken_sunglasses", conditionsFromItem(UItems.BROKEN_SUNGLASSES))
-            .offerTo(exporter, convertBetween(UItems.SUNGLASSES, UItems.BROKEN_SUNGLASSES));
+            .offerTo(exporter, recipeId(convertBetween(UItems.SUNGLASSES, UItems.BROKEN_SUNGLASSES)));
 
         // farmers delight
         offerFarmersDelightCuttingRecipes(withConditions(exporter, ResourceConditions.allModsLoaded("farmersdelight")));
     }
 
     private void offerJarRecipes(RecipeExporter exporter) {
-        ComplexRecipeJsonBuilder.create(JarExtractRecipe::new).offerTo(exporter, "empty_jar_from_filled_jar");
-        ComplexRecipeJsonBuilder.create(JarInsertRecipe::new).offerTo(exporter, "filled_jar");
+        ComplexRecipeJsonBuilder.create(JarExtractRecipe::new).offerTo(exporter, recipeId("empty_jar_from_filled_jar"));
+        ComplexRecipeJsonBuilder.create(JarInsertRecipe::new).offerTo(exporter, recipeId("filled_jar"));
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.EMPTY_JAR, 7)
             .input('#', ItemTags.PLANKS)
             .input('*', ConventionalItemTags.GLASS_BLOCKS).criterion("has_glass", conditionsFromTag(ConventionalItemTags.GLASS_BLOCKS))
@@ -262,7 +262,7 @@ public class URecipeProvider extends FabricRecipeProvider {
             .pattern("# #")
             .pattern("*#*")
             .offerTo(exporter);
-        ComplexRecipeJsonBuilder.create(GlowingRecipe::new).offerTo(exporter, "friendship_bracelet_glowing");
+        ComplexRecipeJsonBuilder.create(GlowingRecipe::new).offerTo(exporter, recipeId("friendship_bracelet_glowing"));
 
         // magic staff
         SpellShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.MAGIC_STAFF)
@@ -315,7 +315,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         SpellcraftingRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.ALICORN_AMULET, SpellType.EMPTY_KEY)
             .base(UItems.GEMSTONE, SpellType.DARK_VORTEX)
             .traits(new SpellTraits.Builder().with(Trait.DARKNESS, 30).with(Trait.POWER, 30).with(Trait.BLOOD, 30))
-            .offerTo(exporter, "alicorn_amulet");
+            .offerTo(exporter, recipeId("alicorn_amulet"));
 
         SpellcraftingRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.UNICORN_AMULET, SpellType.EMPTY_KEY)
             .base(UItems.BROKEN_ALICORN_AMULET, SpellType.EMPTY_KEY)
@@ -325,17 +325,17 @@ public class URecipeProvider extends FabricRecipeProvider {
             .input(Items.TOTEM_OF_UNDYING, SpellType.EMPTY_KEY)
             .traits(new SpellTraits.Builder())
             .criterion(hasItem(UItems.BROKEN_ALICORN_AMULET), conditionsFromItem(UItems.BROKEN_ALICORN_AMULET))
-            .offerTo(exporter, "unicorn_amulet");
+            .offerTo(exporter, recipeId("unicorn_amulet"));
 
         SpellcraftingRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.DRAGON_BREATH_SCROLL, SpellType.EMPTY_KEY)
             .base(Items.PAPER, SpellType.EMPTY_KEY)
             .input(Items.PAPER, SpellType.EMPTY_KEY)
             .traits(new SpellTraits.Builder().with(Trait.FIRE, 1))
-            .offerTo(exporter, "dragon_breath_scroll");
+            .offerTo(exporter, recipeId("dragon_breath_scroll"));
 
-        ComplexSpellcraftingRecipeJsonBuilder.create(SpellDuplicatingRecipe::new, UItems.BOTCHED_GEM).offerTo(exporter, "spell_duplicating");
-        ComplexSpellcraftingRecipeJsonBuilder.create(SpellEnhancingRecipe::new, UItems.BOTCHED_GEM).offerTo(exporter, "trait_combining_botched_gem");
-        ComplexSpellcraftingRecipeJsonBuilder.create(SpellEnhancingRecipe::new, UItems.GEMSTONE).offerTo(exporter, "trait_combining_gemstone");
+        ComplexSpellcraftingRecipeJsonBuilder.create(SpellDuplicatingRecipe::new, UItems.BOTCHED_GEM).offerTo(exporter, recipeId("spell_duplicating"));
+        ComplexSpellcraftingRecipeJsonBuilder.create(SpellEnhancingRecipe::new, UItems.BOTCHED_GEM).offerTo(exporter, recipeId("trait_combining_botched_gem"));
+        ComplexSpellcraftingRecipeJsonBuilder.create(SpellEnhancingRecipe::new, UItems.GEMSTONE).offerTo(exporter, recipeId("trait_combining_gemstone"));
 
         AltarRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.SPECTRAL_CLOCK)
             .input(Items.CLOCK).criterion("has_clock", conditionsFromItem(Items.CLOCK))
@@ -383,7 +383,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         ShapedRecipeJsonBuilder.create(RecipeCategory.FOOD, Items.BREAD)
             .input('#', UItems.OATS).criterion("has_oats", conditionsFromItem(UItems.OATS))
             .pattern("###")
-            .offerTo(exporter, convertBetween(Items.BREAD, UItems.OATS));
+            .offerTo(exporter, recipeId(convertBetween(Items.BREAD, UItems.OATS)));
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, UItems.JUICE)
             .input(Ingredient.fromTag(UTags.Items.FRESH_APPLES), 6).criterion(hasItem(Items.APPLE), conditionsFromTag(UTags.Items.FRESH_APPLES))
             .input(Items.GLASS_BOTTLE)
@@ -496,7 +496,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         TrickCraftingRecipeJsonBuilder.create(RecipeCategory.FOOD, output)
             .input(UItems.ZAP_APPLE).criterion(hasItem(UItems.ZAP_APPLE), conditionsFromItem(UItems.ZAP_APPLE))
             .input(input)
-            .offerTo(exporter, convertBetween(output, input) + "_trick");
+            .offerTo(exporter, recipeId(convertBetween(output, input) + "_trick"));
     }
 
     private void offerSeaponyRecipes(RecipeExporter exporter) {
@@ -554,7 +554,7 @@ public class URecipeProvider extends FabricRecipeProvider {
             .input('#', ItemTags.SAND).criterion("has_sand", conditionsFromTag(ItemTags.SAND))
             .pattern("*#")
             .pattern("#*")
-            .offerTo(exporter, convertBetween(Items.DIRT, UItems.WHEAT_WORMS));
+            .offerTo(exporter, recipeId(convertBetween(Items.DIRT, UItems.WHEAT_WORMS)));
 
         offerShapelessRecipe(exporter, Items.BONE_MEAL, UTags.Items.SHELLS, "bonemeal", 3);
 
@@ -590,7 +590,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, output, outputCount)
             .input(input).criterion(CraftingMaterialHelper.hasTag(input), conditionsFromTag(input))
             .group(group)
-            .offerTo(exporter, getItemPath(output) + "_from_" + input.id().getPath());
+            .offerTo(exporter, recipeId(getItemPath(output) + "_from_" + input.id().getPath()));
     }
 
     public static void offerPieRecipe(RecipeExporter exporter, ItemConvertible pie, ItemConvertible slice, ItemConvertible crust, TagKey<Item> filling) {
@@ -604,7 +604,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         ShapelessRecipeJsonBuilder.create(RecipeCategory.FOOD, pie)
             .input(slice, 4)
             .criterion(hasItem(slice), conditionsFromItem(slice))
-            .offerTo(exporter, getItemPath(pie) + "_from_" + getItemPath(slice));
+            .offerTo(exporter, recipeId(getItemPath(pie) + "_from_" + getItemPath(slice)));
     }
 
     public static void offerBasketRecipe(RecipeExporter exporter, ItemConvertible output, Either<ItemConvertible, TagKey<Item>> input) {
@@ -730,7 +730,7 @@ public class URecipeProvider extends FabricRecipeProvider {
         PatternTemplate.THREE_COLOR.offerTo(exporter, UItems.RAINBOW_BPY_BED_SHEETS, Items.PINK_WOOL, Items.YELLOW_WOOL, Items.LIGHT_BLUE_WOOL);
         PatternTemplate.THREE_COLOR.offerTo(exporter, UItems.RAINBOW_BPW_BED_SHEETS, Items.PINK_WOOL, Items.LIGHT_BLUE_WOOL, Items.WHITE_WOOL);
         PatternTemplate.FOUR_COLOR.offerTo(exporter, UItems.RAINBOW_PBG_BED_SHEETS, Items.PURPLE_WOOL, Items.WHITE_WOOL, Items.LIGHT_GRAY_WOOL, Items.BLACK_WOOL);
-        PatternTemplate.SEVEN_COLOR.offerTo(exporter, UItems.RAINBOW_BED_SHEETS, UItems.RAINBOW_BED_SHEETS, Items.LIGHT_BLUE_WOOL, Items.RED_WOOL, Items.ORANGE_WOOL, Items.YELLOW_WOOL, Items.BLUE_WOOL, Items.GREEN_WOOL, Items.PURPLE_WOOL);
+        PatternTemplate.SEVEN_COLOR.offerTo(exporter, UItems.RAINBOW_BED_SHEETS, Items.LIGHT_BLUE_WOOL, Items.RED_WOOL, Items.ORANGE_WOOL, Items.YELLOW_WOOL, Items.BLUE_WOOL, Items.GREEN_WOOL, Items.PURPLE_WOOL);
     }
 
     private void offerFarmersDelightCuttingRecipes(RecipeExporter exporter) {
@@ -743,7 +743,7 @@ public class URecipeProvider extends FabricRecipeProvider {
                 .result(unwaxed)
                 .result(Items.HONEYCOMB)
                 .sound(SoundEvents.ITEM_AXE_WAX_OFF)
-                .offerTo(exporter, getItemPath(unwaxed) + "_from_waxed");
+                .offerTo(exporter, recipeId(getItemPath(unwaxed) + "_from_waxed"));
         });
         List.of(UBlockFamilies.ZAP, UBlockFamilies.PALM).forEach(family -> {
             family.getVariants().forEach((variant, block) -> {
@@ -752,7 +752,7 @@ public class URecipeProvider extends FabricRecipeProvider {
                     .input(block).criterion(hasItem(block), conditionsFromItem(block))
                     .sound(SoundEvents.ITEM_AXE_STRIP)
                     .result(family.getBaseBlock())
-                    .offerTo(exporter, getItemPath(block));
+                    .offerTo(exporter, recipeId(getItemPath(block)));
             });
         });
         CuttingBoardRecipeJsonBuilder.create(UBlocks.PALM_PLANKS, "axe_dig")
@@ -772,7 +772,7 @@ public class URecipeProvider extends FabricRecipeProvider {
                 .sound(SoundEvents.ITEM_AXE_STRIP)
                 .result(stripped)
                 .result(Identifier.of("farmersdelight:tree_bark"))
-                .offerTo(exporter, convertBetween(stripped, unstripped));
+                .offerTo(exporter, recipeId(convertBetween(stripped, unstripped)));
         });
         Map.of(
                 UBlocks.GOLDEN_OAK_LOG, UBlocks.STRIPPED_GOLDEN_OAK_LOG,
@@ -783,15 +783,15 @@ public class URecipeProvider extends FabricRecipeProvider {
                 .sound(SoundEvents.ITEM_AXE_STRIP)
                 .result(stripped)
                 .result(Items.GOLD_NUGGET, 8)
-                .offerTo(exporter, convertBetween(stripped, unstripped));
+                .offerTo(exporter, recipeId(convertBetween(stripped, unstripped)));
         });
 
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.APPLE_PIE)
             .input(FarmersDelightContent.APPLE_PIE).criterion(hasItem(FarmersDelightContent.APPLE_PIE), conditionsFromItem(FarmersDelightContent.APPLE_PIE))
-            .offerTo(exporter, "apple_pie_to_apple_pie");
+            .offerTo(exporter, recipeId("apple_pie_to_apple_pie"));
         ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, FarmersDelightContent.APPLE_PIE)
             .input(UItems.APPLE_PIE).criterion(hasItem(UItems.APPLE_PIE), conditionsFromItem(UItems.APPLE_PIE))
-            .offerTo(exporter, "apple_pie_from_apple_pie");
+            .offerTo(exporter, recipeId("apple_pie_from_apple_pie"));
 
         CuttingBoardRecipeJsonBuilder.create(UItems.HAY_FRIES, "axe_dig")
                 .input(Blocks.HAY_BLOCK).criterion(hasItem(Blocks.HAY_BLOCK), conditionsFromItem(Blocks.HAY_BLOCK))
@@ -833,7 +833,7 @@ public class URecipeProvider extends FabricRecipeProvider {
             .input(Items.HONEYCOMB)
             .input(input).criterion(hasItem(input), conditionsFromItem(input))
             .group(getItemPath(output))
-            .offerTo(exporter, convertBetween(output, Items.HONEYCOMB));
+            .offerTo(exporter, recipeId(convertBetween(output, Items.HONEYCOMB)));
     }
 
     public static void offerCloudShapingRecipe(RecipeExporter exporter, RecipeCategory category, ItemConvertible output, ItemConvertible input) {
@@ -843,7 +843,7 @@ public class URecipeProvider extends FabricRecipeProvider {
     public static void offerCloudShapingRecipe(RecipeExporter exporter, RecipeCategory category, ItemConvertible output, ItemConvertible input, int count) {
         CraftingMaterialHelper.createCloudShaping(Ingredient.ofItems(input), category, output, count)
             .criterion(RecipeProvider.hasItem(input), RecipeProvider.conditionsFromItem(input))
-            .offerTo(exporter, RecipeProvider.convertBetween(output, input) + "_cloud_shaping");
+            .offerTo(exporter, recipeId(RecipeProvider.convertBetween(output, input) + "_cloud_shaping"));
     }
 
     public static void offerGrowing(RecipeExporter exporter, Block output, Block fuel, Block target) {
@@ -878,5 +878,9 @@ public class URecipeProvider extends FabricRecipeProvider {
         return conditionsFromItemPredicates(
             Stream.of(items).map(item -> ItemPredicate.Builder.create().items(item).build()).toArray(ItemPredicate[]::new)
         );
+    }
+
+    public static Identifier recipeId(String key) {
+        return Unicopia.id(key);
     }
 }
