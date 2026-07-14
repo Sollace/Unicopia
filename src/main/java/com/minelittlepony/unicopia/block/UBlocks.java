@@ -122,7 +122,7 @@ public interface UBlocks {
     Block PALM_HANGING_SIGN = register("palm_hanging_sign", new HangingSignBlock(UWoodTypes.PALM, Settings.create().mapColor(PALM_LOG.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1).burnable()));
     Block PALM_WALL_HANGING_SIGN = register("palm_wall_hanging_sign", new WallHangingSignBlock(UWoodTypes.PALM, Settings.create().mapColor(PALM_LOG.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0f).burnable().dropsLike(PALM_HANGING_SIGN)));
 
-    Block PALM_LEAVES = register("palm_leaves", BlockConstructionUtils.createLeavesBlock(BlockSoundGroup.GRASS), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_LEAVES = register("palm_leaves", BlockConstructionUtils.createLeavesBlock(DiagonallyStableLeavesBlock::new, BlockSoundGroup.GRASS), ItemGroups.BUILDING_BLOCKS);
     Block BANANAS = register("bananas", new FruitBlock(Direction.DOWN, PALM_LEAVES, Unicopia.key(RegistryKeys.ITEM, "banana"), VoxelShapes.fullCube(), Settings.create().mapColor(MapColor.YELLOW).sounds(BlockSoundGroup.WOOD).noCollision().ticksRandomly().breakInstantly().pistonBehavior(PistonBehavior.DESTROY)));
 
     PineappleCropBlock PINEAPPLE = register("pineapple", new PineappleCropBlock(Settings.create().sounds(BlockSoundGroup.GRASS).noCollision().breakInstantly().pistonBehavior(PistonBehavior.DESTROY)));

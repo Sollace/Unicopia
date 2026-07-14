@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.block;
 
+import java.util.function.Function;
+
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockSetType;
 import net.minecraft.block.BlockState;
@@ -63,7 +65,11 @@ public interface BlockConstructionUtils {
     }
 
     static LeavesBlock createLeavesBlock(BlockSoundGroup soundGroup) {
-        return new LeavesBlock(AbstractBlock.Settings.create()
+        return createLeavesBlock(LeavesBlock::new, soundGroup);
+    }
+
+    static <T extends LeavesBlock> T createLeavesBlock(Function<AbstractBlock.Settings, T> factory, BlockSoundGroup soundGroup) {
+        return factory.apply(AbstractBlock.Settings.create()
                 .mapColor(MapColor.DARK_GREEN)
                 .strength(0.2f)
                 .ticksRandomly()
