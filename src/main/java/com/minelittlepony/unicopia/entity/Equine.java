@@ -36,9 +36,14 @@ public interface Equine<T extends Entity> extends NbtSerialisable, Tickable, Pro
                 : Optional.empty();
     }
 
-    interface Container<T extends Equine<?>> {
+    static <E extends Entity, T extends Equine<? extends E>> Container<T> cast(@Nullable E entity) {
+        return entity instanceof Container c ? ((Container<T>)c) : null;
+    }
+
+    interface Container<T extends Equine<?>> extends EquineContext.Container {
         Equine<?> create();
 
+        @Override
         T get();
     }
 }
