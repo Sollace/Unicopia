@@ -16,15 +16,15 @@ import net.minecraft.item.ItemStack;
 
 @Mixin(EntityShapeContext.class)
 abstract class MixinEntityShapeContext implements EquineContext.Container {
-    private EquineContext equineContext;
+    private EquineContext.Container equineContext;
 
     @Inject(method = "<init>", at = @At("TAIL"))
     private void init(boolean descending, double minY, ItemStack heldItem, Predicate<FluidState> walkOnFluidPredicate, @Nullable Entity entity, CallbackInfo into) {
-        equineContext = EquineContext.of(entity);
+        equineContext = EquineContext.lazy(entity);
     }
 
     @Override
     public EquineContext get() {
-        return equineContext;
+        return equineContext.get();
     }
 }

@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -10,6 +12,7 @@ import net.minecraft.item.ItemUsageContext;
 
 public interface EquineContext {
     EquineContext ABSENT = () -> Race.UNSET;
+    Container ABSENT_REF = () -> ABSENT;
 
     Race getSpecies();
 
@@ -49,11 +52,18 @@ public interface EquineContext {
         return MoreObjects.firstNonNull(Pony.of(context.getPlayer()), ABSENT);
     }
 
-    static EquineContext of(Entity entity) {
+    static EquineContext of(@Nullable Entity entity) {
         if (entity instanceof EquineContext c) {
             return c;
         }
         return MoreObjects.firstNonNull(Equine.of(entity).orElse(null), ABSENT);
+    }
+
+    static Container lazy(@Nullable Entity entity) {
+        if (entity instanceof EquineContext c) {
+            return () -> c;
+        }
+        return MoreObjects.firstNonNull(Equine.cast(entity), ABSENT_REF);
     }
 
     interface Container {

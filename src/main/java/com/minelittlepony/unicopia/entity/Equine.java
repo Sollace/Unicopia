@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.EquineContext;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.projectile.ProjectileImpactListener;
 import com.minelittlepony.unicopia.util.Tickable;
+import com.minelittlepony.unicopia.util.Untyped;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.minecraft.entity.Entity;
@@ -36,9 +37,14 @@ public interface Equine<T extends Entity> extends NbtSerialisable, Tickable, Pro
                 : Optional.empty();
     }
 
-    interface Container<T extends Equine<?>> {
+    static <E extends Entity, T extends Equine<? extends E>> Container<T> cast(@Nullable E entity) {
+        return entity instanceof Container c ? Untyped.cast(c) : null;
+    }
+
+    interface Container<T extends Equine<?>> extends EquineContext.Container {
         Equine<?> create();
 
+        @Override
         T get();
     }
 }
