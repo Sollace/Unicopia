@@ -16,7 +16,7 @@ import net.fabricmc.loader.api.FabricLoader;
 public class UnicopiaMixinPlugin implements IMixinConfigPlugin {
     private static final String MIXIN_PACKAGE = "com.minelittlepony.unicopia.mixin";
 
-    private final Supplier<Boolean> hasConnector = requireMod("connectormod");
+    private final Supplier<Boolean> hasConnector = requireMod("connectormod", "connector");
     private final Set<Map.Entry<String, Supplier<Boolean>>> modRequirements = Map.of(
         "sodium", requireMod("sodium"),
         "trinkets", requireMod("strinkets"),
@@ -27,8 +27,15 @@ public class UnicopiaMixinPlugin implements IMixinConfigPlugin {
         "fabricified", () -> !hasConnector.get()
     ).entrySet();
 
-    private static Supplier<Boolean> requireMod(String modid) {
-        return Suppliers.memoize(() -> FabricLoader.getInstance().isModLoaded(modid));
+    private static Supplier<Boolean> requireMod(String...modids) {
+        return Suppliers.memoize(() -> {
+            for (int i = 0; i < modids.length; i++) {
+                if (FabricLoader.getInstance().isModLoaded(modids[i])) {
+                    return true;
+                }
+            }
+            return false;
+        });
     }
 
     @Override
