@@ -131,7 +131,7 @@ public class SegmentedCropBlock extends CropBlock implements SegmentedBlock {
         if (world.getBaseLightLevel(tip, 0) >= 9) {
             int age = getAge(state);
             if (age < getMaxAge()) {
-                float moisture = CropBlock.getAvailableMoisture(world.getBlockState(root).getBlock(), world, root);
+                float moisture = ((CropBlockAccessor)this).unicopia_getAvailableMoisture(world.getBlockState(root), world, root);
                 int steps = FertilizableUtil.getGrowthSteps(world, pos, state, random);
                 while (steps-- > 0) {
                     if (random.nextInt((int)(BASE_GROWTH_CHANCE / moisture) + 1) == 0) {

@@ -78,6 +78,8 @@
     "seasons.MixinFertilizableUtil",
     "ad_astra.MixinApiHelper",
     "ad_astra.MixinOxygenApi",
+    "fabricified.MixinCropBlock",
+    "forgified.MixinCropBlock",
     "forgified.MixinIForgeBoat"
   ],
   "client": [

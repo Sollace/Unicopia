@@ -1,16 +1,35 @@
 package com.minelittlepony.unicopia;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
+import com.google.common.base.Suppliers;
+
 import net.fabricmc.loader.api.FabricLoader;
 
 public class UnicopiaMixinPlugin implements IMixinConfigPlugin {
     private static final String MIXIN_PACKAGE = "com.minelittlepony.unicopia.mixin";
+
+    private final Supplier<Boolean> hasConnector = requireMod("connectormod");
+    private final Set<Map.Entry<String, Supplier<Boolean>>> modRequirements = Map.of(
+        "sodium", requireMod("sodium"),
+        "trinkets", requireMod("strinkets"),
+        "seasons", requireMod("seasons"),
+        "ad_astra", requireMod("ad_astra"),
+        "minelp", requireMod("minelp"),
+        "forgified", hasConnector,
+        "fabricified", () -> !hasConnector.get()
+    ).entrySet();
+
+    private static Supplier<Boolean> requireMod(String modid) {
+        return Suppliers.memoize(() -> FabricLoader.getInstance().isModLoaded(modid));
+    }
 
     @Override
     public void onLoad(String mixinPackage) { }
@@ -23,23 +42,10 @@ public class UnicopiaMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.startsWith(MIXIN_PACKAGE)) {
-            if (mixinClassName.indexOf("sodium") != -1) {
-                return FabricLoader.getInstance().isModLoaded("sodium");
-            }
-            if (mixinClassName.indexOf("trinkets") != -1) {
-                return FabricLoader.getInstance().isModLoaded("trinkets");
-            }
-            if (mixinClassName.indexOf("seasons") != -1) {
-                return FabricLoader.getInstance().isModLoaded("seasons");
-            }
-            if (mixinClassName.indexOf("ad_astra") != -1) {
-                return FabricLoader.getInstance().isModLoaded("ad_astra");
-            }
-            if (mixinClassName.indexOf("minelp") != -1) {
-                return FabricLoader.getInstance().isModLoaded("minelp");
-            }
-            if (mixinClassName.indexOf("forgified") != -1) {
-                return FabricLoader.getInstance().isModLoaded("connectormod");
+            for (var requirement : modRequirements) {
+                if (mixinClassName.indexOf(requirement.getKey()) != -1) {
+                    return requirement.getValue().get();
+                }
             }
         }
         return true;
