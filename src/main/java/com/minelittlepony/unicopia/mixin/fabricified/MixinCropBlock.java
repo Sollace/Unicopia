@@ -18,7 +18,7 @@ public class MixinCropBlock implements CropBlockAccessor {
         return getAvailableMoisture(state.getBlock(), world, pos);
     }
 
-    @Shadow
+    @Shadow(aliases = { "getAvailableMoisture", "getGrowthSpeed" })
     private static float getAvailableMoisture(Block block, BlockView world, BlockPos pos) {
         return 0;
     }
