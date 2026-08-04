@@ -24,12 +24,15 @@ public class DataTrackerManager {
 
     private DataTracker primaryTracker;
 
+    // fallbacks for sendPacketSafely()
+    private static java.lang.reflect.Method fallbackMethod = null;
+    private static boolean fallbackInitialized = false;
+
     public DataTrackerManager(Entity entity) {
         this.entity = entity;
-        // We don't call entity.getWorld() here anymore
+        // We don't call entity.getWorld() and isClient() here anymore
         this.primaryTracker = checkoutTracker();
     }
-
     //Safe way to get registryManager which won't crash when entity.getWorld() won't be null.
     public DynamicRegistryManager getLookup() {
         if (this.lookup == null && entity.getWorld() != null) {
@@ -37,7 +40,6 @@ public class DataTrackerManager {
         }
         return this.lookup;
     }
-
     //And one for the isClient(), too.
     public boolean isClient() {
         if (this.isClient == null) {
@@ -64,11 +66,12 @@ public class DataTrackerManager {
         packetEmitters.add((sender, initial) -> {
             var update = initial ? tracker.getInitialPairs(getLookup()) : tracker.getDirtyPairs(getLookup());
             if (update.isPresent()) {
-                sender.accept(Channel.SERVER_TRACKED_ENTITY_DATA.toPacket(new MsgTrackedValues(
+                Packet<?> packet = Channel.SERVER_TRACKED_ENTITY_DATA.toPacket(new MsgTrackedValues(
                         entity.getId(),
                         Optional.empty(),
                         update
-                )));
+                ));
+                sendPacketSafely(sender, packet);
             }
         });
         return tracker;
@@ -80,11 +83,12 @@ public class DataTrackerManager {
         packetEmitters.add((sender, initial) -> {
             var update = initial ? tracker.getInitialPairs(getLookup()) : tracker.getDirtyPairs(getLookup());
             if (update.isPresent()) {
-                sender.accept(Channel.SERVER_TRACKED_ENTITY_DATA.toPacket(new MsgTrackedValues(
+                Packet<?> packet = Channel.SERVER_TRACKED_ENTITY_DATA.toPacket(new MsgTrackedValues(
                         entity.getId(),
                         update,
                         Optional.empty()
-                )));
+                ));
+                sendPacketSafely(sender, packet);
             }
         });
         return tracker;
@@ -108,11 +112,44 @@ public class DataTrackerManager {
         }
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public synchronized void sendInitial(ServerPlayerEntity player, Consumer<Packet<ClientPlayPacketListener>> sender) {
         synchronized (this) {
+            Consumer<Packet<?>> genericSender = packet -> sendPacketSafely(sender, packet);
             for (var emitter : packetEmitters) {
-                emitter.sendPackets((Consumer)sender, true);
+                emitter.sendPackets(genericSender, true);
+            }
+        }
+    }
+
+    // Vibecoded AbstractMethodError on NeoForge fix
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static void sendPacketSafely(Consumer sender, Packet<?> packet) {
+        if (sender == null) return;
+
+        try {
+            sender.accept(packet);
+        } catch (AbstractMethodError e) {
+            try {
+                if (!fallbackInitialized) {
+                    for (java.lang.reflect.Method m : sender.getClass().getMethods()) {
+                        if (m.getParameterCount() == 1 && m.getParameterTypes()[0] != Object.class) {
+                            if (m.getName().equals("accept") || m.getName().equals("sendPacket")) {
+                                fallbackMethod = m;
+                                fallbackMethod.setAccessible(true);
+                                break;
+                            }
+                        }
+                    }
+                    fallbackInitialized = true;
+                }
+
+                if (fallbackMethod != null) {
+                    fallbackMethod.invoke(sender, packet);
+                } else {
+                    throw new RuntimeException("Sinytra Connector workaround failed: No accept/send method found", e);
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException("Failed to reflectively send packet through Connector", ex);
             }
         }
     }
