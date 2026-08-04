@@ -14,7 +14,7 @@ import com.minelittlepony.unicopia.particle.ParticleUtils;
 import com.minelittlepony.unicopia.util.MeteorlogicalUtil;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
+import com.minelittlepony.unicopia.util.MeteorlogicalUtil.DayPhase;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -39,7 +39,7 @@ public class ZapAppleStageStore extends PersistentState {
     static final long MOON_PHASES = DimensionType.MOON_SIZES.length;
     private static final PersistentStateKey<ZapAppleStageStore> KEY = new PersistentStateKey<>(ID, RecordCodecBuilder.create(o -> o.group(
             Stage.CODEC.fieldOf("stage").forGetter(i -> i.lastStage),
-            Codec.BOOL.fieldOf("stageChanged").forGetter(i -> i.stageChanged),
+            DayPhase.CODEC.optionalFieldOf("phase", null).forGetter(i -> i.lastPhase),
             Codec.BOOL.fieldOf("playedMoonEffect").forGetter(i -> i.playedMoonEffect),
             Codec.INT.fieldOf("nextLightningEvent").forGetter(i -> i.nextLightningEvent)
     ).apply(o, ZapAppleStageStore::new)), ZapAppleStageStore::new);
@@ -49,52 +49,47 @@ public class ZapAppleStageStore extends PersistentState {
     }
 
     private Stage lastStage = Stage.HIBERNATING;
+    @Nullable
+    private DayPhase lastPhase;
 
-    private boolean stageChanged;
     private boolean playedMoonEffect;
     private int nextLightningEvent = 1200;
-    private float prevSkyAngle;
 
     private ZapAppleStageStore() { }
 
-    private ZapAppleStageStore(Stage lastStage, boolean stageChanged, boolean playedMoonEffect, int nextLightningEvent) {
+    private ZapAppleStageStore(Stage lastStage, @Nullable DayPhase lastPhase, boolean playedMoonEffect, int nextLightningEvent) {
         this.lastStage = lastStage;
-        this.stageChanged = stageChanged;
+        this.lastPhase = lastPhase;
         this.playedMoonEffect = playedMoonEffect;
         this.nextLightningEvent = nextLightningEvent;
     }
 
     public void tick(World world) {
-        float skyAngle = MeteorlogicalUtil.getSkyAngle(world);
+        DayPhase phase = MeteorlogicalUtil.getDayPhase(world);
 
-        if (skyAngle > MeteorlogicalUtil.SUNSET) {
-            if (nextLightningEvent > 0) {
-                nextLightningEvent--;
-                markDirty();
+        if (phase != lastPhase) {
+            // only trigger on the day-to-night transition
+            if (!phase.isDay() && (lastPhase == null || phase.isDay() != lastPhase.isDay())
+                    // cycle starts on a full moon
+                    && (lastStage != Stage.HIBERNATING || world.getMoonPhase() == MeteorlogicalUtil.FULL_MOON)) {
+                progressStage(world);
             }
 
-            if (!stageChanged && MathHelper.approximatelyEquals(skyAngle, MeteorlogicalUtil.MIDNIGHT) || (
-                    MeteorlogicalUtil.isBetween(skyAngle, MeteorlogicalUtil.MIDNIGHT, MeteorlogicalUtil.MOONSET)
-                && MeteorlogicalUtil.isBetween(prevSkyAngle, MeteorlogicalUtil.SUNSET, MeteorlogicalUtil.MIDNIGHT)
-            )) {
-                stageChanged = true;
-                if (lastStage != Stage.HIBERNATING || world.getMoonPhase() == MeteorlogicalUtil.FULL_MOON) {
-                    lastStage = lastStage.getNext();
-                    playedMoonEffect = false;
-                    markDirty();
-                    sendUpdate(world);
-                }
-            }
-        } else if (stageChanged) {
-            stageChanged = false;
+            lastPhase = phase;
             markDirty();
         }
 
-        prevSkyAngle = skyAngle;
+
+        if (!lastPhase.isDay() && nextLightningEvent > 0) {
+            nextLightningEvent--;
+            markDirty();
+        }
     }
 
-    protected void sendUpdate(World world) {
-        Channel.SERVER_ZAP_STAGE.sendToAllPlayers(new MsgZapAppleStage(getStage()), world);
+    private void progressStage(World world) {
+        lastStage = lastStage.getNext();
+        playedMoonEffect = false;
+        Channel.SERVER_ZAP_STAGE.sendToAllPlayers(new MsgZapAppleStage(lastStage), world);
     }
 
     public void playMoonEffect(World world, BlockPos pos) {
@@ -122,13 +117,6 @@ public class ZapAppleStageStore extends PersistentState {
                     markDirty();
                 });
         }
-    }
-
-    /**
-     * Returns true during nights that the zap apples must change their states.
-     */
-    public boolean hasStageChanged() {
-        return stageChanged;
     }
 
     /**

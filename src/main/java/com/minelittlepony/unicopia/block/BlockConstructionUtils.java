@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.block;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import net.minecraft.block.AbstractBlock;
@@ -66,7 +67,11 @@ public interface BlockConstructionUtils {
     }
 
     static Function<AbstractBlock.Settings, LeavesBlock> createLeavesBlock(BlockSoundGroup soundGroup) {
-        return s -> new TintedParticleLeavesBlock(0.01F, s
+        return createLeavesBlock(TintedParticleLeavesBlock::new, soundGroup);
+    }
+
+    static <T extends LeavesBlock> Function<AbstractBlock.Settings, T> createLeavesBlock(BiFunction<Float, AbstractBlock.Settings, T> factory, BlockSoundGroup soundGroup) {
+        return s -> factory.apply(0.01F, s
                 .mapColor(MapColor.DARK_GREEN)
                 .strength(0.2f)
                 .ticksRandomly()

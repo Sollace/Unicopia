@@ -137,6 +137,5 @@ public class UModelProvider extends FabricModelProvider {
         ItemModels.registerStagedFoodItem(itemModelGenerator, UItems.CANDIED_APPLE, 1, 2, "bite");
         ItemModels.registerGemstone(itemModelGenerator, UItems.GEMSTONE);
         ItemModels.registerCustomFishingRod(itemModelGenerator, UItems.BAITED_FISHING_ROD);
-
     }
 }

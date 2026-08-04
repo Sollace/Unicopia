@@ -1,10 +1,13 @@
 package com.minelittlepony.unicopia.block;
 
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.ability.EarthPonyKickAbility.Buckable;
+
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.datafixers.util.Function6;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -33,17 +36,17 @@ public class FruitBlock extends Block implements Buckable {
     private static final MapCodec<FruitBlock> CODEC = createCodec(FruitBlock::new);
 
     protected final Direction attachmentFace;
-    protected final Block stem;
+    protected final Set<Block> stem;
     protected final VoxelShape shape;
     protected final RegistryKey<Item> fruitKey;
 
     @Nullable
     private Item cachedItem;
 
-    public static <T extends FruitBlock> MapCodec<T> createCodec(Function6<Direction, Block, RegistryKey<Item>, VoxelShape, Boolean, Settings, T> constructor) {
+    public static <T extends FruitBlock> MapCodec<T> createCodec(Function6<Direction, Set<Block>, RegistryKey<Item>, VoxelShape, Boolean, Settings, T> constructor) {
         return RecordCodecBuilder.mapCodec(instance -> instance.group(
                 Direction.CODEC.fieldOf("attachment_face").forGetter(b -> b.attachmentFace),
-                Registries.BLOCK.getCodec().fieldOf("stem").forGetter(b -> b.stem),
+                CodecUtils.setOf(Registries.BLOCK.getCodec()).fieldOf("stem").forGetter(b -> b.stem),
                 RegistryKey.createCodec(RegistryKeys.ITEM).fieldOf("fruit_item").forGetter(b -> b.fruitKey),
                 RecordCodecBuilder.<VoxelShape>create(i -> i.group(
                         Codec.DOUBLE.fieldOf("stem_offset").forGetter(b -> (double)0),
@@ -67,10 +70,18 @@ public class FruitBlock extends Block implements Buckable {
     }
 
     public FruitBlock(Direction attachmentFace, Block stem, RegistryKey<Item> fruitKey, VoxelShape shape, Settings settings) {
-        this(attachmentFace, stem, fruitKey, shape, true, settings.sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY));
+        this(attachmentFace, Set.of(stem), fruitKey, shape, true, settings.sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY));
     }
 
     public FruitBlock(Direction attachmentFace, Block stem, RegistryKey<Item> fruitKey, VoxelShape shape, boolean flammable, Settings settings) {
+        this(attachmentFace, Set.of(stem), fruitKey, shape, flammable, settings);
+    }
+
+    public FruitBlock(Direction attachmentFace, Set<Block> stem, RegistryKey<Item> fruitKey, VoxelShape shape, Settings settings) {
+        this(attachmentFace, stem, fruitKey, shape, true, settings.sounds(BlockSoundGroup.WOOD).pistonBehavior(PistonBehavior.DESTROY));
+    }
+
+    public FruitBlock(Direction attachmentFace, Set<Block> stem, RegistryKey<Item> fruitKey, VoxelShape shape, boolean flammable, Settings settings) {
         super(settings.nonOpaque().suffocates(BlockConstructionUtils::never).blockVision(BlockConstructionUtils::never));
         this.attachmentFace = attachmentFace;
         this.stem = stem;
@@ -130,7 +141,7 @@ public class FruitBlock extends Block implements Buckable {
     }
 
     protected boolean canAttachTo(BlockState state) {
-        return state.isOf(stem);
+        return stem.contains(state.getBlock());
     }
 
     @Override

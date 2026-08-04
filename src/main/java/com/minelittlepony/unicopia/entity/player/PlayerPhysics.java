@@ -121,6 +121,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         return lastVel.read();
     }
 
+    @Override
     public final float getPersistantGravityModifier() {
         return super.getGravityModifier();
     }
@@ -675,10 +676,8 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             double motion = Math.sqrt(getHorizontalMotion());
 
             float distance = (float)(motion * 20 - 3);
-            //entity.sendMessage(Text.literal("Wall touch: " + motion + " / " + distance));
 
             if (distance > 0) {
-                //entity.sendMessage(Text.literal("Wall hit: " + motion + " / " + distance));
                 wallHitCooldown = MAX_WALL_HIT_CALLDOWN;
 
                 float bouncyness = EnchantmentUtil.getBouncyness(entity);

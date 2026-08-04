@@ -16,12 +16,10 @@ import com.minelittlepony.unicopia.server.world.gen.UPlacedFeatures;
 import net.minecraft.block.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
-import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.PlacedFeature;
@@ -36,22 +34,18 @@ import net.minecraft.world.gen.placementmodifier.PlacementModifier;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 import net.minecraft.world.gen.treedecorator.LeavesVineTreeDecorator;
 import net.minecraft.world.gen.treedecorator.TrunkVineTreeDecorator;
+import net.minecraft.world.gen.trunk.ForkingTrunkPlacer;
 import net.minecraft.world.gen.trunk.StraightTrunkPlacer;
 import net.minecraft.world.gen.trunk.TrunkPlacer;
-import net.minecraft.world.gen.trunk.UpwardsBranchingTrunkPlacer;
 
 public class UTreeFeatures {
     static void bootstrapConfiguredFeatures(Registerable<ConfiguredFeature<?, ?>> registerable) {
-        registerable.register(UFeatureConfigs.ZAP_APPLE_TREE, Generator.Builder.create(Unicopia.id("zap_apple_tree"), new UpwardsBranchingTrunkPlacer(
-                    5, 3, 0,
-                    UniformIntProvider.create(3, 6),
-                    0.3f,
-                    UniformIntProvider.create(1, 3),
-                    registerable.getRegistryLookup(RegistryKeys.BLOCK).getOrThrow(BlockTags.MANGROVE_LOGS_CAN_GROW_THROUGH)
+        registerable.register(UFeatureConfigs.ZAP_APPLE_TREE, Generator.Builder.create(Unicopia.id("zap_apple_tree"), new ForkingTrunkPlacer(
+                    6, 3, 1
             ), new JungleFoliagePlacer(
                     ConstantIntProvider.create(3),
-                    ConstantIntProvider.create(2),
-                    3
+                    ConstantIntProvider.create(1),
+                    4
             ))
             .configure(TreeFeatureConfig.Builder::forceDirt)
             .log(UBlocks.ZAP_LOG)

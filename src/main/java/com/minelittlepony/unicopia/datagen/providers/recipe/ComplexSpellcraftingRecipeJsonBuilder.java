@@ -1,22 +1,20 @@
 package com.minelittlepony.unicopia.datagen.providers.recipe;
 
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
 
 import net.minecraft.data.recipe.RecipeExporter;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 
 public interface ComplexSpellcraftingRecipeJsonBuilder {
     static ComplexSpellcraftingRecipeJsonBuilder create(Factory factory, ItemConvertible material) {
-        return (exporter, recipeId) -> exporter.accept(RegistryKey.of(RegistryKeys.RECIPE, Unicopia.id(recipeId)), factory.create(IngredientWithSpell.mundane(material)), null);
+        return (exporter, recipeId) -> exporter.accept(recipeId, factory.create(IngredientWithSpell.mundane(material)), null);
     }
 
     public interface Factory {
         Recipe<?> create(IngredientWithSpell material);
     }
 
-    void offerTo(RecipeExporter exporter, final String recipeId);
+    void offerTo(RecipeExporter exporter, final RegistryKey<Recipe<?>> recipeId);
 }

@@ -108,6 +108,11 @@ public class EntityPhysics<T extends Entity> implements Physics, Copyable<Entity
     }
 
     @Override
+    public float getPersistantGravityModifier() {
+        return getGravityModifier();
+    }
+
+    @Override
     public float getGravityModifier() {
 
         if (entity instanceof LivingEntity) {

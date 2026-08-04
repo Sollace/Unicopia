@@ -110,8 +110,8 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
     }
 
     private void offerJarRecipes() {
-        ComplexRecipeJsonBuilder.create(JarExtractRecipe::new).offerTo(exporter, "empty_jar_from_filled_jar");
-        ComplexRecipeJsonBuilder.create(JarInsertRecipe::new).offerTo(exporter, "filled_jar");
+        ComplexRecipeJsonBuilder.create(JarExtractRecipe::new).offerTo(exporter, recipeId("empty_jar_from_filled_jar"));
+        ComplexRecipeJsonBuilder.create(JarInsertRecipe::new).offerTo(exporter, recipeId("filled_jar"));
         ShapedRecipeJsonBuilder.create(items, RecipeCategory.MISC, UItems.EMPTY_JAR, 7)
             .input('#', ItemTags.PLANKS)
             .input('*', ConventionalItemTags.GLASS_BLOCKS).criterion("has_glass", conditionsFromTag(ConventionalItemTags.GLASS_BLOCKS))
@@ -333,9 +333,9 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
             .traits(new SpellTraits.Builder().with(Trait.FIRE, 1))
             .offerTo(exporter, recipeId("dragon_breath_scroll"));
 
-        ComplexSpellcraftingRecipeJsonBuilder.create(SpellDuplicatingRecipe::new, UItems.BOTCHED_GEM).offerTo(exporter, "spell_duplicating");
-        ComplexSpellcraftingRecipeJsonBuilder.create(SpellEnhancingRecipe::new, UItems.BOTCHED_GEM).offerTo(exporter, "trait_combining_botched_gem");
-        ComplexSpellcraftingRecipeJsonBuilder.create(SpellEnhancingRecipe::new, UItems.GEMSTONE).offerTo(exporter, "trait_combining_gemstone");
+        ComplexSpellcraftingRecipeJsonBuilder.create(SpellDuplicatingRecipe::new, UItems.BOTCHED_GEM).offerTo(exporter, recipeId("spell_duplicating"));
+        ComplexSpellcraftingRecipeJsonBuilder.create(SpellEnhancingRecipe::new, UItems.BOTCHED_GEM).offerTo(exporter, recipeId("trait_combining_botched_gem"));
+        ComplexSpellcraftingRecipeJsonBuilder.create(SpellEnhancingRecipe::new, UItems.GEMSTONE).offerTo(exporter, recipeId("trait_combining_gemstone"));
 
         AltarRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.SPECTRAL_CLOCK)
             .input(Items.CLOCK).criterion("has_clock", conditionsFromItem(Items.CLOCK))
@@ -728,7 +728,7 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
         PatternTemplate.THREE_COLOR.offerTo(this, items, exporter, UItems.RAINBOW_BPY_BED_SHEETS, Items.PINK_WOOL, Items.YELLOW_WOOL, Items.LIGHT_BLUE_WOOL);
         PatternTemplate.THREE_COLOR.offerTo(this, items, exporter, UItems.RAINBOW_BPW_BED_SHEETS, Items.PINK_WOOL, Items.LIGHT_BLUE_WOOL, Items.WHITE_WOOL);
         PatternTemplate.FOUR_COLOR.offerTo(this, items, exporter, UItems.RAINBOW_PBG_BED_SHEETS, Items.PURPLE_WOOL, Items.WHITE_WOOL, Items.LIGHT_GRAY_WOOL, Items.BLACK_WOOL);
-        PatternTemplate.SEVEN_COLOR.offerTo(this, items, exporter, UItems.RAINBOW_BED_SHEETS, UItems.RAINBOW_BED_SHEETS, Items.LIGHT_BLUE_WOOL, Items.RED_WOOL, Items.ORANGE_WOOL, Items.YELLOW_WOOL, Items.BLUE_WOOL, Items.GREEN_WOOL, Items.PURPLE_WOOL);
+        PatternTemplate.SEVEN_COLOR.offerTo(this, items, exporter, UItems.RAINBOW_BED_SHEETS, Items.LIGHT_BLUE_WOOL, Items.RED_WOOL, Items.ORANGE_WOOL, Items.YELLOW_WOOL, Items.BLUE_WOOL, Items.GREEN_WOOL, Items.PURPLE_WOOL);
     }
 
     private void offerFarmersDelightCuttingRecipes() {
@@ -741,7 +741,7 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
                 .result(unwaxed)
                 .result(Items.HONEYCOMB)
                 .sound(SoundEvents.ITEM_AXE_WAX_OFF)
-                .offerTo(farmersDelightExporter, getItemPath(unwaxed) + "_from_waxed");
+                .offerTo(farmersDelightExporter, recipeId(getItemPath(unwaxed) + "_from_waxed"));
         });
         List.of(UBlockFamilies.ZAP, UBlockFamilies.PALM).forEach(family -> {
             family.getVariants().forEach((variant, block) -> {
@@ -750,7 +750,7 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
                     .input(block).criterion(hasItem(block), conditionsFromItem(block))
                     .result(family.getBaseBlock())
                     .sound(SoundEvents.ITEM_AXE_STRIP)
-                    .offerTo(farmersDelightExporter, getItemPath(block));
+                    .offerTo(farmersDelightExporter, recipeId(getItemPath(block)));
             });
         });
         CuttingBoardRecipeJsonBuilder.create(UBlocks.PALM_PLANKS, "axe_dig")
@@ -770,7 +770,7 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
                 .sound(SoundEvents.ITEM_AXE_STRIP)
                 .result(stripped)
                 .result(Identifier.of("farmersdelight:tree_bark"))
-                .offerTo(farmersDelightExporter, convertBetween(stripped, unstripped));
+                .offerTo(exporter, recipeId(convertBetween(stripped, unstripped)));
         });
         Map.of(
                 UBlocks.GOLDEN_OAK_LOG, UBlocks.STRIPPED_GOLDEN_OAK_LOG,

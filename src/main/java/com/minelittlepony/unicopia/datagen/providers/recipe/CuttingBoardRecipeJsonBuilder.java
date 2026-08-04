@@ -123,8 +123,9 @@ public class CuttingBoardRecipeJsonBuilder {
     }
 
     public void offerTo(RecipeExporter exporter, String recipePath) {
-        Identifier recipeId = Registries.ITEM.getId(output.asItem()).withPath(recipePath);
-        if (recipeId.equals(Registries.ITEM.getId(output.asItem()))) {
+        Identifier outputItemId = Registries.ITEM.getId(output.asItem());
+        Identifier recipeId = outputItemId.withPath(recipePath);
+        if (recipeId.equals(outputItemId)) {
             throw new IllegalStateException("Recipe " + recipePath + " should remove its 'save' argument as it is equal to default one");
         }
         offerTo(exporter, RegistryKey.of(RegistryKeys.RECIPE, recipeId.withPrefixedPath("cutting/")));

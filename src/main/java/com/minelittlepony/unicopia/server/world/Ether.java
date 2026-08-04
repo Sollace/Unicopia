@@ -22,6 +22,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
@@ -85,6 +86,9 @@ public class Ether extends PersistentState {
                 entry.spell = new WeakReference<>(spell);
                 markDirty();
             }
+
+            ((EntityReference<Entity>)entry.entity).set(caster.asEntity());
+
             if (entry.removed) {
                 entry.removed = false;
                 positionData.update(entry);

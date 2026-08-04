@@ -13,7 +13,6 @@ import com.minelittlepony.unicopia.InteractionManager;
 import com.minelittlepony.unicopia.Owned;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.entity.MagicImmune;
-import com.minelittlepony.unicopia.entity.Trap;
 import com.minelittlepony.unicopia.entity.player.LevitatedItemsInventory;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.particle.MagicParticleEffect;
@@ -74,7 +73,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
-public class LevitatingItemEntity extends Entity implements Owned<PlayerEntity>, MagicImmune, Trap {
+public class LevitatingItemEntity extends TrapEntity implements Owned<PlayerEntity>, MagicImmune {
     private static final TrackedData<ItemStack> STACK = DataTracker.registerData(LevitatingItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final TrackedData<Integer> SLOT = DataTracker.registerData(LevitatingItemEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Optional<LazyEntityReference<LivingEntity>>> OWNER_ID = DataTracker.registerData(LevitatingItemEntity.class, TrackedDataHandlerRegistry.LAZY_ENTITY_REFERENCE);

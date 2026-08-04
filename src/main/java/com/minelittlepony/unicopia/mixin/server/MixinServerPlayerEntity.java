@@ -7,7 +7,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -18,7 +17,6 @@ import com.minelittlepony.unicopia.entity.player.SpawnLocator;
 import com.mojang.datafixers.util.Either;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.ScreenHandlerListener;
@@ -37,12 +35,6 @@ abstract class MixinServerPlayerEntity extends PlayerEntity implements ScreenHan
     @Override
     @Accessor("inTeleportationState")
     public abstract void setPreventMotionChecks(boolean enabled);
-
-    @ModifyReturnValue(method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;", at = @At("RETURN"))
-    private ItemEntity onDropItem(ItemEntity item) {
-        get().onDropItem((ServerWorld)getWorld(), item);
-        return item;
-    }
 
     @SuppressWarnings("unchecked")
     @Inject(method = "copyFrom(Lnet/minecraft/server/network/ServerPlayerEntity;Z)V", at = @At("HEAD"))

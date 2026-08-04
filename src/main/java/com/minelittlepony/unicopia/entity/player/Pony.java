@@ -106,7 +106,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     private float magicExhaustion = 0;
 
-    private int ticksInvulnerable;
     private int ticksMetamorphising;
 
     private int ticksInSun;
@@ -321,6 +320,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public void setSuppressedRace(Race race) {
         suppressedRace.set(race.validate(entity));
+        recalculateCompositeRace();
     }
 
     public void clearSuppressedRace() {
@@ -376,10 +376,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     public boolean isSunImmune() {
         return ticksSunImmunity > 0;
-    }
-
-    public void setInvulnerabilityTicks(int ticks) {
-        this.ticksInvulnerable = Math.max(0, ticks);
     }
 
     public int getTicksMetamorphising() {
@@ -464,29 +460,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             recalculateCompositeRace();
         }
 
-        if (ticksInvulnerable > 0) {
-            entity.setInvulnerable(--ticksInvulnerable > 0);
-        }
-
-        if (isClient()) {
-            if (entity.hasVehicle() && entity.isSneaking()) {
-
-                @Nullable
-                Entity vehicle = entity.getVehicle();
-
-                if (vehicle instanceof Trap) {
-                    entity.setSneaking(false);
-                }
-
-                if (vehicle != null && (!(vehicle instanceof Trap trap) || trap.attemptDismount(entity))) {
-                    setCarrier((UUID)null);
-                    entity.stopRiding();
-                    entity.refreshPositionAfterTeleport(vehicle.getPos());
-                    Living.transmitPassengers(vehicle);
-                }
-            }
-        }
-
         magicExhaustion = ManaConsumptionUtil.burnFood(entity, magicExhaustion);
 
         powers.tick();
@@ -568,7 +541,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
 
     private void recalculateCompositeRace() {
         Race intrinsicRace = getPersistentSpecies();
-        Race suppressedRace = getSuppressedRace();
+        Race suppressedRace = getSuppressedRace().or(Race.SEAPONY);
         Optional<Race> morphedRace = MetamorphosisStatusEffect.getEffectiveRace(entity);
         effectiveRace = morphedRace.orElse(intrinsicRace);
         compositeRace = morphedRace.orElseGet(() -> getSpellSlot()
@@ -581,7 +554,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
               AmuletSelectors.UNICORN_AMULET.test(entity) ? Race.UNICORN
             : AmuletSelectors.ALICORN_AMULET.test(entity) ? Race.ALICORN
             : null,
-            AmuletSelectors.PEARL_NECKLACE.test(entity) ? suppressedRace.or(Race.SEAPONY) : null
+            AmuletSelectors.PEARL_NECKLACE.test(entity) ? suppressedRace : null
         );
         UCriteria.PLAYER_CHANGE_RACE.trigger(entity);
         if (prevMorphedRace.isPresent() && morphedRace.isEmpty()) {
@@ -789,13 +762,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
             return Optional.of(amount);
         }
         return Optional.empty();
-    }
-
-    public void onDropItem(ServerWorld world, @Nullable ItemEntity itemDropped) {
-        Equine.of(itemDropped).ifPresent(eq -> {
-            eq.setSpecies(getSpecies());
-            eq.getPhysics().setBaseGravityModifier(gravity.getPersistantGravityModifier());
-        });
     }
 
     @Override
@@ -1009,7 +975,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         compound.put("gravity", gravity.toNBT(lookup));
         compound.put("charms", charms.toNBT(lookup));
         compound.put("discoveries", discoveries.toNBT(lookup));
-        compound.putInt("ticksInvulnerable", ticksInvulnerable);
         compound.putInt("ticksMetamorphising", ticksMetamorphising);
     }
 
@@ -1027,7 +992,6 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
         discoveries.fromNBT(compound.getCompoundOrEmpty("discoveries"), lookup);
         acrobatics.fromNBT(compound.getCompoundOrEmpty("acrobatics"), lookup);
         magicExhaustion = compound.getFloat("magicExhaustion", 0);
-        ticksInvulnerable = compound.getInt("ticksInvulnerable", 0);
         ticksInSun = compound.getInt("ticksInSun", 0);
         hasShades = compound.getBoolean("hasShades", false);
         ticksMetamorphising = compound.getInt("ticksMetamorphising", 0);
@@ -1042,7 +1006,7 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
                 || oldPlayer.getPersistentSpecies().isUnset();
 
         Race oldSuppressedRace = oldPlayer.getSuppressedRace();
-        Race newRace = oldPlayer.respawnRace != Race.UNSET && !alive ? oldPlayer.respawnRace : oldPlayer.getSpecies();
+        Race newRace = oldPlayer.respawnRace != Race.UNSET && !alive ? oldPlayer.respawnRace : oldPlayer.getPersistentSpecies();
 
         if (forcedSwap || !newRace.canCast()) {
             getSpellSlot().clear();

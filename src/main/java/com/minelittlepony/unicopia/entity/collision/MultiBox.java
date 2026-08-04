@@ -9,6 +9,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Suppliers;
+import com.google.common.collect.Streams;
+
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -17,8 +19,8 @@ public final class MultiBox extends Box {
     private final Box first;
     private final BoxChildren children;
 
-    public static MultiBox of(Box first, List<Box> children) {
-        return new MultiBox(first, new BoxChildren(children));
+    public static MultiBox of(Box first, List<Box> children, List<Box> nonCollidingChildren) {
+        return new MultiBox(first, new BoxChildren(children, nonCollidingChildren));
     }
 
     public static Box unbox(Box box) {
@@ -124,21 +126,26 @@ public final class MultiBox extends Box {
 
     static final class BoxChildren {
         private final Box[] children;
+        private final Box[] nonCollidingChildren;
         private final Supplier<String> toString;
 
-        private BoxChildren(Box[] children) {
+        private BoxChildren(Box[] children, Box[] nonCollidingChildren) {
             this.children = children;
-            toString = Suppliers.memoize(() -> Arrays.stream(this.children).map(Box::toString).collect(Collectors.joining(",")));
+            this.nonCollidingChildren = nonCollidingChildren;
+            toString = Suppliers.memoize(() -> Streams.concat(Arrays.stream(this.nonCollidingChildren), Arrays.stream(this.children)).map(Box::toString).collect(Collectors.joining(",")));
         }
 
-        public BoxChildren(List<Box> children) {
-            this(children.stream().map(MultiBox::unbox).toArray(Box[]::new));
+        public BoxChildren(List<Box> children, List<Box> nonCollidingChildren) {
+            this(children.stream().map(MultiBox::unbox).toArray(Box[]::new), nonCollidingChildren.stream().map(MultiBox::unbox).toArray(Box[]::new));
         }
 
         public BoxChildren altered(Function<Box, Box> alteration) {
-            BoxChildren copy = new BoxChildren(new Box[children.length]);
+            BoxChildren copy = new BoxChildren(new Box[children.length], new Box[nonCollidingChildren.length]);
             for (int i = 0; i < children.length; i++) {
                 copy.children[i] = alteration.apply(children[i]);
+            }
+            for (int i = 0; i < nonCollidingChildren.length; i++) {
+                copy.nonCollidingChildren[i] = alteration.apply(nonCollidingChildren[i]);
             }
             return copy;
         }
@@ -147,6 +154,9 @@ public final class MultiBox extends Box {
             Optional<Vec3d> trace = Optional.empty();
             for (int i = 0; trace.isEmpty() && i < children.length; i++) {
                 trace = children[i].raycast(min, max);
+            }
+            for (int i = 0; trace.isEmpty() && i < nonCollidingChildren.length; i++) {
+                trace = nonCollidingChildren[i].raycast(min, max);
             }
             return trace;
         }
@@ -172,6 +182,9 @@ public final class MultiBox extends Box {
         public void forEach(Consumer<Box> consumer) {
             for (int i = 0; i < children.length; i++) {
                 consumer.accept(children[i]);
+            }
+            for (int i = 0; i < nonCollidingChildren.length; i++) {
+                consumer.accept(nonCollidingChildren[i]);
             }
         }
 

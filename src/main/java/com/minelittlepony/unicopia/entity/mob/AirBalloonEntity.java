@@ -19,7 +19,6 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -332,6 +331,10 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
         super.tick();
 
+        if (!getWorld().isClient && this.velocityDirty) {
+            this.refreshPosition();
+        }
+
         prevXDelta = xDelta;
         prevZDelta = zDelta;
         xDelta = getX() - lastX;
@@ -344,7 +347,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
         if (hasBalloon() && hasBurner()) {
 
-            if (getBurnerBoundingBox().expand(0.7).contains(getPos().add(relativePositionOffset))) {
+            if (getBurnerBoundingBox(getBoundingBox()).expand(0.7).contains(getPos().add(relativePositionOffset))) {
                 if (stack.isOf(Items.FLINT_AND_STEEL)) {
                     setAscending(!isAscending());
                     if (isAscending()) {
@@ -386,7 +389,6 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
                     }
 
                     int sandbagId = MathHelper.clamp(-xPush, 0, 1) + MathHelper.clamp(-zPush, 0, 1) * 2;
-                    player.sendMessage(Text.literal(sandbagId + ""), false);
 
                     getSandbag(sandbagId).setPulling();
 
@@ -397,7 +399,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
                     if (MultiBox.unbox(getBoundingBox()).expand(0.5, 1, 0.5).contains(absHitPos)) {
                         return player.startRiding(this) ? ActionResult.SUCCESS : ActionResult.FAIL;
                     }
-                    Box balloonBox = getBalloonBoundingBox();
+                    Box balloonBox = getBalloonBoundingBox(getBoundingBox());
                     if (balloonBox.expand(0.5).withMinY(balloonBox.maxY - 0.25).contains(absHitPos)) {
                         return player.startRiding(this) ? ActionResult.SUCCESS : ActionResult.FAIL;
                     }
@@ -512,7 +514,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
     @Override
     public SoundEvent getWalkedOnSound(double y) {
-        if (y >= getBalloonBoundingBox().minY) {
+        if (y >= getBalloonBoundingBox(getBoundingBox()).minY) {
             return USounds.ENTITY_HOT_AIR_BALLOON_STEP;
         }
         return USounds.ENTITY_HOT_AIR_BALLOON_BASKET_STEP;
@@ -553,7 +555,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         }
 
         if (isAirworthy()) {
-            Map<Box, List<Entity>> collidingEntities = getCollidingEntities(getBoundingBoxes().stream());
+            Map<Box, List<Entity>> collidingEntities = getCollidingEntities(getBoundingBoxes(getBoundingBox()).stream());
 
             for (Map.Entry<Box, List<Entity>> passengers : collidingEntities.entrySet()) {
                 for (Entity passenger : passengers.getValue()) {
@@ -569,103 +571,80 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
     @Override
     protected Box calculateDefaultBoundingBox(Vec3d pos) {
-        List<Box> boxes = getBoundingBoxes();
-        Box box = super.calculateDefaultBoundingBox(pos);
-
-        if (hasBalloon() && getInflation(1) > 0.999F) {
-            double horScale = -0.5;
-            // x+ z+
-            boxes.add(box.expand(horScale, 1, horScale).offset(2, 3, 2));
-            // x- z+
-            boxes.add(box.expand(horScale, 1, horScale).offset(-2, 3, 2));
-
-            // x+ z-
-            boxes.add(box.expand(horScale, 1, horScale).offset(2, 3, -2));
-            // x- z-
-            boxes.add(box.expand(horScale, 1, horScale).offset(-2, 3, -2));
-        }
-        if (hasBurner()) {
-            boxes.add(getBurnerBoundingBox());
-        }
-
-        return MultiBox.of(box, boxes.stream().map(b -> b.offset(pos)).toList());
+        Box mainBox = super.calculateDefaultBoundingBox(pos);
+        return MultiBox.of(mainBox, getBoundingBoxes(mainBox), getInteractionZones(mainBox));
     }
 
-    public Box getInteriorBoundingBox() {
-        Box box = MultiBox.unbox(getBoundingBox());
+    public Box getInteriorBoundingBox(Box mainBox) {
+        Box box = MultiBox.unbox(mainBox);
         return box.withMinY(box.minY - 0.5).contract(0.15, 0, 0.15);
     }
 
-    public Box getBalloonBoundingBox() {
+    public Box getBalloonBoundingBox(Box mainBox) {
         float inflation = getInflation(1);
-        return MultiBox.unbox(getBoundingBox())
+        return MultiBox.unbox(mainBox)
                 .offset(0.125, 7.3 * inflation, 0.125)
                 .expand(2.25, 3.7 * inflation, 2.25);
     }
 
-    protected Box getBurnerBoundingBox() {
+    protected Box getBurnerBoundingBox(Box mainBox) {
         float inflation = getInflation(1);
         float horScale = -0.9F;
-        return MultiBox.unbox(getBoundingBox())
+        return MultiBox.unbox(mainBox)
                 .offset(0, 2.6F * inflation + 0.4F, 0)
                 .expand(horScale, 0.4, horScale);
     }
 
     @Override
     public List<Box> getGravityZoneBoxes() {
-        Box balloon = getBalloonBoundingBox().expand(0.001);
-        Box interior = getInteriorBoundingBox().expand(0.001);
+        Box mainBox = getBoundingBox();
+        Box balloon = getBalloonBoundingBox(mainBox).expand(0.001);
+        Box interior = getInteriorBoundingBox(mainBox).expand(0.001);
         if (hasBalloon() && getInflation(1) > 0.999F) {
             return List.of(
                     // interior - basket to top of balloon
-                    interior.withMaxY(balloon.minY).withMinY(interior.maxY),
+                    interior.withMaxY(interior.maxY + 0.1).withMinY(interior.maxY),
                     // balloon
                     balloon.withMaxY(balloon.maxY + 0.5).withMinY(balloon.maxY)
             );
         }
-        return List.of(interior.withMaxY(balloon.minY).withMinY(interior.maxY));
+        return List.of(interior.withMaxY(interior.maxY + 0.1).withMinY(interior.maxY));
     }
 
     @Override
-    public List<Box> getBoundingBoxes() {
+    public List<Box> getBoundingBoxes(Box mainBox) {
+        mainBox = MultiBox.unbox(mainBox);
         List<Box> boxes = new ArrayList<>();
-        Box box = getInteriorBoundingBox();
-        Box mainBox = MultiBox.unbox(getBoundingBox());
-
-        boxes.add(box);
+        Box box = getInteriorBoundingBox(mainBox);
 
         double wallheight = box.maxY + 0.72;
-        double wallThickness = 0.3;
+        double wallThickness = 0.2;
         double halfDoorWidth = 0.5;
+        double balloonWallThickness = 0.25;
 
         if (!getBasketType().isOf(WoodType.BAMBOO)) {
 
             // front left (next to door)
-            boxes.add(new Box(mainBox.minX, mainBox.minY, mainBox.minZ, mainBox.minX + wallThickness + halfDoorWidth, wallheight, box.minZ + wallThickness));
+            boxes.add(new Box(mainBox.minX + wallThickness + 0.15, mainBox.maxY, mainBox.minZ, mainBox.minX + wallThickness + halfDoorWidth, wallheight, box.minZ + wallThickness));
             // front right (next to door)
-            boxes.add(new Box(mainBox.maxX - wallThickness - halfDoorWidth, mainBox.minY, mainBox.minZ, mainBox.maxX, wallheight, box.minZ + wallThickness));
+            boxes.add(new Box(mainBox.maxX - wallThickness - halfDoorWidth, mainBox.maxY, mainBox.minZ, mainBox.maxX - wallThickness - 0.15, wallheight, box.minZ + wallThickness));
 
             // back
-            boxes.add(new Box(mainBox.minX, mainBox.minY, box.maxZ - wallThickness, mainBox.maxX, wallheight, mainBox.maxZ));
+            boxes.add(new Box(mainBox.minX + wallThickness + 0.15, mainBox.maxY, box.maxZ - wallThickness, mainBox.maxX - wallThickness - 0.15, wallheight, mainBox.maxZ));
 
             // left
-            boxes.add(new Box(box.maxX - wallThickness, mainBox.minY, mainBox.minZ, mainBox.maxX, wallheight, mainBox.maxZ));
+            boxes.add(new Box(box.maxX - wallThickness, mainBox.maxY, mainBox.minZ, mainBox.maxX, wallheight, mainBox.maxZ));
             // right
-            boxes.add(new Box(mainBox.minX, mainBox.minY, mainBox.minZ, box.minX + wallThickness, wallheight, mainBox.maxZ));
+            boxes.add(new Box(mainBox.minX, mainBox.maxY, mainBox.minZ, box.minX + wallThickness, wallheight, mainBox.maxZ));
         }
 
         if (hasBalloon() && getInflation(1) >= 1) {
-            Box balloonBox = getBalloonBoundingBox();
-            boxes.add(balloonBox.withMinY(balloonBox.maxY - 0.5));
-            boxes.add(balloonBox.withMaxX(balloonBox.minX + 0.5));
-            boxes.add(balloonBox.withMinX(balloonBox.maxX - 0.5));
-            boxes.add(balloonBox.withMaxZ(balloonBox.minZ + 0.5));
-            boxes.add(balloonBox.withMinZ(balloonBox.maxZ - 0.5));
-
-            boxes.add(balloonBox.withMaxX(balloonBox.minX + 2).withMaxY(balloonBox.minY + 0.2));
-            boxes.add(balloonBox.withMinX(balloonBox.maxX - 2).withMaxY(balloonBox.minY + 0.2));
-            boxes.add(balloonBox.withMaxZ(balloonBox.minZ + 2).withMaxY(balloonBox.minY + 0.2));
-            boxes.add(balloonBox.withMinZ(balloonBox.maxZ - 2).withMaxY(balloonBox.minY + 0.2));
+            Box balloonBox = getBalloonBoundingBox(mainBox);
+            boxes.add(balloonBox.withMinY(balloonBox.maxY - balloonWallThickness));
+            boxes.add(balloonBox.withMaxX(balloonBox.minX + balloonWallThickness).withMaxY(balloonBox.maxY - balloonWallThickness).withMinZ(balloonBox.minZ + balloonWallThickness).withMaxZ(balloonBox.maxZ - balloonWallThickness));
+            boxes.add(balloonBox.withMinX(balloonBox.maxX - balloonWallThickness).withMaxY(balloonBox.maxY - balloonWallThickness).withMinZ(balloonBox.minZ + balloonWallThickness).withMaxZ(balloonBox.maxZ - balloonWallThickness));
+            boxes.add(balloonBox.withMaxZ(balloonBox.minZ + balloonWallThickness).withMaxY(balloonBox.maxY - balloonWallThickness));
+            boxes.add(balloonBox.withMinZ(balloonBox.maxZ - balloonWallThickness).withMaxY(balloonBox.maxY - balloonWallThickness));
         }
 
         float yaw = (180 - getHorizontalFacing().getPositiveHorizontalDegrees()) * MathHelper.RADIANS_PER_DEGREE;
@@ -677,6 +656,31 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
                 Vec3d max = new Vec3d(b.maxX, b.maxY, b.maxZ).subtract(center).rotateY(yaw).add(center);
                 boxes.set(i, new Box(min.x, min.y, min.z, max.x, max.y, max.z));
             }
+        }
+
+        return boxes;
+    }
+
+    private List<Box> getInteractionZones(Box mainBox) {
+        List<Box> boxes = new ArrayList<>();
+        Box box = getInteriorBoundingBox(mainBox);
+
+        if (hasBalloon() && getInflation(1) >= 1) {
+            double horScale = -0.8;
+            double verScale = 0.2;
+            double horOutset = 2.5;
+            // x+ z+
+            boxes.add(box.expand(horScale, verScale, horScale).offset(horOutset, 2.5, horOutset));
+            // x- z+
+            boxes.add(box.expand(horScale, verScale, horScale).offset(-horOutset, 2.5, horOutset));
+
+            // x+ z-
+            boxes.add(box.expand(horScale, verScale, horScale).offset(horOutset, 2.5, -horOutset));
+            // x- z-
+            boxes.add(box.expand(horScale, verScale, horScale).offset(-horOutset, 2.5, -horOutset));
+        }
+        if (hasBurner()) {
+            boxes.add(getBurnerBoundingBox(mainBox));
         }
 
         return boxes;

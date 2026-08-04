@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.google.common.base.MoreObjects;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.player.Pony;
@@ -52,7 +54,7 @@ public interface EquineContext {
         return MoreObjects.firstNonNull(Pony.of(context.getPlayer()), ABSENT);
     }
 
-    static EquineContext of(Entity entity) {
+    static EquineContext of(@Nullable Entity entity) {
         if (entity instanceof EquineContext c) {
             return c;
         }

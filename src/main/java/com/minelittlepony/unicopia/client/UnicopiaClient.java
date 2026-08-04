@@ -1,8 +1,6 @@
 package com.minelittlepony.unicopia.client;
 
 import org.jetbrains.annotations.Nullable;
-import org.joml.Vector3f;
-
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.event.ScreenInitCallback;
 import com.minelittlepony.common.event.ScreenInitCallback.ButtonList;
@@ -30,7 +28,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.OpenToLanScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
-import net.minecraft.client.render.Camera;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.ResourceType;
@@ -68,19 +65,31 @@ public class UnicopiaClient implements ClientModInitializer {
     }
 
 
-    public static Vec3d getAdjustedSoundPosition(Vec3d pos) {
+    public static Vec3d getAdjustedSoundPosition(Vec3d pos, boolean isPositionRelative) {
         PlayerCamera cam = getCamera();
         if (cam == PlayerCamera.DEFAULT) {
             return pos;
         }
-        Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
+        var camera = MinecraftClient.getInstance().gameRenderer.getCamera();
         boolean firstPerson = MinecraftClient.getInstance().options.getPerspective().isFirstPerson();
         float fovEffectScale = MinecraftClient.getInstance().options.getFovEffectScale().getValue().floatValue();
 
-        Vector3f rotated = pos.subtract(camera.getPos()).toVector3f();
-        rotated = rotated.rotateAxis(cam.calculateRoll(firstPerson, fovEffectScale) * MathHelper.RADIANS_PER_DEGREE, 0, 1, 0);
+        float roll = MathHelper.wrapDegrees(cam.calculateRoll(firstPerson, fovEffectScale));
+        if (MathHelper.approximatelyEquals(Math.abs(roll), 0)) {
+            return pos;
+        }
 
-        return new Vec3d(rotated).add(camera.getPos());
+        Vec3d cameraPos = camera.getPos();
+        Vec3d relativePos = isPositionRelative ? pos : pos.subtract(cameraPos);
+        if (MathHelper.approximatelyEquals(relativePos.length(), 0)) {
+            return pos;
+        }
+        Vec3d newPos = new Vec3d(relativePos.toVector3f().rotateAxis(roll * MathHelper.RADIANS_PER_DEGREE, 0, 1, 0));
+        if (!isPositionRelative) {
+            newPos = newPos.add(cameraPos);
+        }
+
+        return newPos;
     }
 
     public static Race getPreferredRace() {

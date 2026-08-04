@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
+import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.CastingMethod;
 import com.minelittlepony.unicopia.ability.magic.spell.Situation;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -67,7 +68,8 @@ public class HydrophobicSpell extends AbstractSpell {
         if (!source.isClient()) {
             World world = source.asWorld();
 
-            Shape area = new Sphere(false, getRange(source)).translate(source.getOriginVector());
+            double range = getRange(source);
+            Shape area = new Sphere(false, range).translate(source.getOriginVector());
 
             storedFluidPositions.removeIf(entry -> {
                if (!area.isPointInside(Vec3d.ofCenter(entry.pos()))) {
@@ -80,19 +82,18 @@ public class HydrophobicSpell extends AbstractSpell {
                return false;
             });
 
-            area.getBlockPositions().forEach(pos -> {
-                pos = new BlockPos(pos);
+            AbstractAreaEffectSpell.allBlockPositions(source, area).forEach(pos -> {
                 BlockState state = world.getBlockState(pos);
 
-                if (source.canModifyAt(pos) && state.getFluidState().isIn(affectedFluid)) {
+                if (state.getFluidState().isIn(affectedFluid)) {
                     Block block = state.getBlock();
 
                     if (block instanceof FluidBlock) {
                         world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
-                        storedFluidPositions.add(new Entry(pos, state));
+                        storedFluidPositions.add(new Entry(new BlockPos(pos), state));
                     } else if (state.contains(Properties.WATERLOGGED)) {
                         world.setBlockState(pos, state.cycle(Properties.WATERLOGGED), Block.NOTIFY_LISTENERS);
-                        storedFluidPositions.add(new Entry(pos, state));
+                        storedFluidPositions.add(new Entry(new BlockPos(pos), state));
                     }
                 }
             });
@@ -101,7 +102,6 @@ public class HydrophobicSpell extends AbstractSpell {
                 setDead();
             }
 
-            double range = getRange(source);
             Ether.get(source.asWorld()).getOrCreate(this, source).setRadius((float)range);
 
             source.spawnParticles(new Sphere(true, range), 10, pos -> {
@@ -190,7 +190,7 @@ public class HydrophobicSpell extends AbstractSpell {
 
         return Ether.get(sw).anyMatch(SpellType.HYDROPHOBIC, entry -> {
             var target = entry.entity.getTarget().orElse(null);
-            if (target == null || !pos.isWithinDistance(target.pos(), entry.radius() + 1)) {
+            if (target == null || !pos.isWithinDistance(target.pos(), entry.radius() + 2)) {
                 return false;
             }
             var spell = entry.getSpell();

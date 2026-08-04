@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import com.minelittlepony.unicopia.entity.duck.LavaAffine;
 import com.minelittlepony.unicopia.network.track.DataTrackerManager;
 import com.minelittlepony.unicopia.network.track.Trackable;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.ability.magic.Caster;
@@ -85,6 +86,14 @@ abstract class MixinEntity implements EntityDuck, Trackable {
         return self.hasVehicle() && self.getVehicle() instanceof LavaAffine affine && affine.isLavaAffine();
     }
 
+    @Inject(method = "isInvulnerable", at = @At("HEAD"), cancellable = true)
+    private void onIsInvulnerable(CallbackInfoReturnable<Boolean> info) {
+        Living<?> living = Living.living((Entity)(Object)this);
+        if (living != null && living.isInvulnerable()) {
+            info.setReturnValue(true);
+        }
+    }
+
     @Inject(method = "isFireImmune", at = @At("HEAD"), cancellable = true)
     private void onIsFireImmune(CallbackInfoReturnable<Boolean> info) {
         if (isLavaAffine() || (this instanceof Equine.Container c) && c.get().getCompositeRace().includes(Race.KIRIN)) {
@@ -128,6 +137,14 @@ abstract class MixinEntity implements EntityDuck, Trackable {
         if (getHost() != null) {
             info.setReturnValue(null);
         }
+    }
+
+    @ModifyReturnValue(method = "dropStack(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;F)Lnet/minecraft/entity/ItemEntity;", at = @At("RETURN"))
+    private @Nullable ItemEntity onDropItem(@Nullable ItemEntity item) {
+        if (item != null) {
+            Living.getOrEmpty((Entity)(Object)this).ifPresent(l -> l.onDropItem(item));
+        }
+        return item;
     }
 
     @Inject(method = "move", at = @At("HEAD"))

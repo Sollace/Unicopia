@@ -35,7 +35,7 @@ public class FruitBearingBlock extends TintedParticleLeavesBlock implements Tint
             Codec.INT.fieldOf("overlay").forGetter(b -> b.overlay),
             CodecUtils.supplierOf(Registries.BLOCK.getCodec()).fieldOf("fruit").forGetter(b -> b.fruit),
             CodecUtils.supplierOf(ItemStack.CODEC).fieldOf("rotten_fruit").forGetter(b -> b.rottenFruitSupplier),
-            BedBlock.createSettingsCodec()
+            createSettingsCodec()
     ).apply(instance, FruitBearingBlock::new));
     public static final IntProperty AGE = Properties.AGE_25;
     public static final int MAX_AGE = 25;

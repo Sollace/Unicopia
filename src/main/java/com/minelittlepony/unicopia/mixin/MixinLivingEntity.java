@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.mixin;
 
 import java.util.Optional;
 
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,6 +21,7 @@ import com.minelittlepony.unicopia.entity.duck.*;
 
 import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.damage.DamageSource;
@@ -88,6 +90,14 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
     @Inject(method = "createLivingAttributes()Lnet/minecraft/entity/attribute/DefaultAttributeContainer$Builder;", at = @At("RETURN"))
     private static void onCreateAttributes(CallbackInfoReturnable<DefaultAttributeContainer.Builder> info) {
         Creature.registerAttributes(info.getReturnValue());
+    }
+
+    @ModifyReturnValue(method = "dropItem(Lnet/minecraft/item/ItemStack;ZZ)Lnet/minecraft/entity/ItemEntity;", at = @At("RETURN"))
+    private @Nullable ItemEntity onDropItem(@Nullable ItemEntity item) {
+        if (item != null) {
+            get().onDropItem(item);
+        }
+        return item;
     }
 
     @Inject(method = "isClimbing()Z", at = @At("HEAD"), cancellable = true)
@@ -162,6 +172,11 @@ abstract class MixinLivingEntity extends Entity implements LivingEntityDuck, Equ
     @ModifyVariable(method = "handleFallDamage(DFLnet/minecraft/entity/damage/DamageSource;)Z", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     private double onHandleFallDamage(double distance, double distanceAgain, float damagePerDistance, DamageSource cause) {
         return get().onImpact(distance, damagePerDistance, cause);
+    }
+
+    @Inject(method = "onDismounted(Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"))
+    private void onOnDismounted(Entity vehicle, CallbackInfo info) {
+        get().onDismounted(vehicle);
     }
 
     @ModifyReturnValue(method = "hurtByWater()Z", at = @At("RETURN"))

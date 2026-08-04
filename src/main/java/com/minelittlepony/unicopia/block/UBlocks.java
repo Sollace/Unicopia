@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import org.jetbrains.annotations.Nullable;
+import java.util.Set;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.block.cloud.CloudPillarBlock;
@@ -102,8 +103,8 @@ public interface UBlocks {
     Block ZAP_LEAVES = register("zap_leaves", ZapAppleLeavesBlock.settings(), ZapAppleLeavesBlock::new, ItemGroups.NATURAL);
     Block FLOWERING_ZAP_LEAVES = register("flowering_zap_leaves", BaseZapAppleLeavesBlock.settings(), BaseZapAppleLeavesBlock::new, ItemGroups.NATURAL);
     Block ZAP_LEAVES_PLACEHOLDER = register("zap_leaves_placeholder", s -> new ZapAppleLeavesPlaceholderBlock(s.replaceable().noCollision().dropsNothing().air()));
-    Block ZAP_BULB = register("zap_bulb", s -> new FruitBlock(Direction.DOWN, ZAP_LEAVES, Unicopia.key(RegistryKeys.ITEM, "zap_bulb"), FruitBlock.DEFAULT_SHAPE, false, s.mapColor(MapColor.GRAY).strength(500, 1200).sounds(BlockSoundGroup.AZALEA_LEAVES)));
-    Block ZAP_APPLE = register("zap_apple", s -> new FruitBlock(Direction.DOWN, ZAP_LEAVES, Unicopia.key(RegistryKeys.ITEM, "zap_apple"), FruitBlock.DEFAULT_SHAPE, false, s.mapColor(MapColor.GRAY).sounds(BlockSoundGroup.AZALEA_LEAVES)));
+    Block ZAP_BULB = register("zap_bulb", s -> new FruitBlock(Direction.DOWN, Set.of(ZAP_LEAVES, FLOWERING_ZAP_LEAVES), Unicopia.key(RegistryKeys.ITEM, "zap_bulb"), FruitBlock.DEFAULT_SHAPE, false, s.mapColor(MapColor.GRAY).strength(500, 1200).sounds(BlockSoundGroup.AZALEA_LEAVES)));
+    Block ZAP_APPLE = register("zap_apple", s -> new FruitBlock(Direction.DOWN, Set.of(ZAP_LEAVES, FLOWERING_ZAP_LEAVES), Unicopia.key(RegistryKeys.ITEM, "zap_apple"), FruitBlock.DEFAULT_SHAPE, false, s.mapColor(MapColor.GRAY).sounds(BlockSoundGroup.AZALEA_LEAVES)));
 
     Block PALM_LOG = register("palm_log", BlockConstructionUtils.createLogBlock(UMapColors.PALM_LOG_END, UMapColors.PALM_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
     Block PALM_WOOD = register("palm_wood", BlockConstructionUtils.createWoodBlock(UMapColors.PALM_LOG_SIDE), ItemGroups.BUILDING_BLOCKS);
@@ -124,7 +125,7 @@ public interface UBlocks {
     Block PALM_HANGING_SIGN = register("palm_hanging_sign", s -> new HangingSignBlock(UWoodTypes.PALM, s.mapColor(PALM_LOG.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1).burnable()));
     Block PALM_WALL_HANGING_SIGN = register("palm_wall_hanging_sign", s -> new WallHangingSignBlock(UWoodTypes.PALM, s.mapColor(PALM_LOG.getDefaultMapColor()).solid().instrument(NoteBlockInstrument.BASS).noCollision().strength(1.0f).burnable().lootTable(PALM_HANGING_SIGN.getLootTableKey())));
 
-    Block PALM_LEAVES = register("palm_leaves", BlockConstructionUtils.createLeavesBlock(BlockSoundGroup.GRASS), ItemGroups.BUILDING_BLOCKS);
+    Block PALM_LEAVES = register("palm_leaves", BlockConstructionUtils.createLeavesBlock(DiagonallyStableLeavesBlock::new, BlockSoundGroup.GRASS), ItemGroups.BUILDING_BLOCKS);
     Block BANANAS = register("bananas", s -> new FruitBlock(Direction.DOWN, PALM_LEAVES, Unicopia.key(RegistryKeys.ITEM, "banana"), VoxelShapes.fullCube(), s.mapColor(MapColor.YELLOW).sounds(BlockSoundGroup.WOOD).noCollision().ticksRandomly().breakInstantly().pistonBehavior(PistonBehavior.DESTROY)));
 
     PineappleCropBlock PINEAPPLE = register("pineapple", s -> new PineappleCropBlock(s.sounds(BlockSoundGroup.GRASS).noCollision().breakInstantly().pistonBehavior(PistonBehavior.DESTROY)));

@@ -97,6 +97,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
     private Optional<Living<?>> target = Optional.empty();
 
+
     private int invinsibilityTicks;
 
     private final List<Tickable> tickers = new ArrayList<>();
@@ -109,6 +110,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     protected final DataTrackerManager trackers;
     protected final DataTracker tracker;
 
+    private final DataTracker.Entry<Integer> invulnerableTicks;
     protected final DataTracker.Entry<Optional<UUID>> carrierId;
 
     protected Living(T entity) {
@@ -121,11 +123,24 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         this.jumpingHeuristic = addTicker(new Interactable(((LivingEntityDuck)entity)::isJumping));
 
         carrierId = tracker.startTracking(TrackableDataType.UUID, Optional.empty());
+        invulnerableTicks = tracker.startTracking(TrackableDataType.INT, -1);
     }
 
     public <Q extends Tickable> Q addTicker(Q tickable) {
         tickers.add(Objects.requireNonNull(tickable, "tickable cannot be null"));
         return tickable;
+    }
+
+    public int getInvulnerabilityTicks() {
+        return invulnerableTicks.get();
+    }
+
+    public void setInvulnerabilityTicks(int ticks) {
+        invulnerableTicks.set(entity.age + Math.max(0, ticks));
+    }
+
+    public boolean isInvulnerable() {
+        return invulnerableTicks.get() > entity.age;
     }
 
     public boolean isInvisible() {
@@ -466,8 +481,22 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         return fallDistance;
     }
 
+    public void onDismounted(Entity vehicle) {
+        setCarrier((UUID)null);
+    }
+
     protected double getEffectiveFallDistance(double distance) {
         return distance;
+    }
+
+    public void onDropItem(ItemEntity itemDropped) {
+        Equine.of(itemDropped).ifPresent(eq -> {
+            eq.setSpecies(getSpecies());
+            eq.getPhysics().setBaseGravityModifier(getPhysics().getPersistantGravityModifier());
+            if (eq.getPhysics().isGravityNegative()) {
+                eq.asEntity().setVelocity(eq.asEntity().getVelocity().multiply(1, -1, 1));
+            }
+        });
     }
 
     @Override
@@ -484,6 +513,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         enchants.toNBT(compound, lookup);
         spells.getSlots().toNBT(compound, lookup);
         compound.putNullable("carrier", Uuids.CODEC, getCarrierId().orElse(null));
+        compound.putInt("ticksInvulnerable", getInvulnerabilityTicks());
         toSyncronisedNbt(compound, lookup);
     }
 
@@ -492,6 +522,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
         enchants.fromNBT(compound, lookup);
         spells.getSlots().fromNBT(compound, lookup);
         setCarrier(compound.get("carrier", Uuids.CODEC).orElse(null));
+        setInvulnerabilityTicks(compound.getInt("ticksInvulnerable", 0));
         fromSynchronizedNbt(compound, lookup);
     }
 

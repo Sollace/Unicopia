@@ -43,7 +43,14 @@ public interface Shape extends PointGenerator {
     }
 
     /**
-     * Returns a sequence of random points dealed out to uniformly fill this shape's area.
+     * Returns a endless stream of random block positions that fit inside this shape.
+     */
+    default Stream<BlockPos> randomBlockPositions(Random rand) {
+        return randomPoints(rand).map(BlockPos::ofFloored).distinct();
+    }
+
+    /**
+     * Returns a sequence of random points dealt out to uniformly fill this shape's area.
      */
     default Stream<Vec3d> randomPoints(Random rand) {
         return randomPoints((int)getVolume(), rand);

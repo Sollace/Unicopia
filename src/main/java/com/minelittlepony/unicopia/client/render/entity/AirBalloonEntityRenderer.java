@@ -132,9 +132,9 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
     @Override
     protected Box getBoundingBox(AirBalloonEntity entity) {
         if (entity.hasBalloon()) {
-            return entity.getBalloonBoundingBox().withMinY(entity.getY());
+            return entity.getBalloonBoundingBox(entity.getBoundingBox()).withMinY(entity.getY());
         }
-        return entity.getInteriorBoundingBox();
+        return entity.getInteriorBoundingBox(entity.getBoundingBox());
     }
 
     @Override
