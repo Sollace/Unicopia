@@ -74,6 +74,13 @@ public class PlayerAttributes implements Tickable {
                     SpellType.RAGE::isOn
             )
     );
+    /**
+     * NEO: This attribute controls if the player may use creative flight when not in creative mode.
+     *
+     * https://github.com/neoforged/NeoForge/blob/7e320ff92e514e2f06d6b2302fc4389e0125c166/src/main/java/net/neoforged/neoforge/common/NeoForgeMod.java#L213
+     */
+    public static final Identifier CREATIVE_FLIGHT_ATTRIBUTE = Identifier.of("neoforge", "creative_flight");
+    public static final EntityAttributeModifier ALLOW_FLIGHT =  new EntityAttributeModifier(Unicopia.id("allow_flight"), 1, Operation.ADD_VALUE);
 
     public static final Identifier HEALTH_SWAPPING_MODIFIER_ID = Unicopia.id("health_swap");
 

@@ -46,6 +46,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -316,9 +317,9 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 isCancelled = false;
             }
 
-            entity.getAbilities().flying |= lastFlightType.canFly(entity) && isFlyingEither;
+            setAbleToFly(entity.getAbilities().flying | lastFlightType.canFly(entity) && isFlyingEither);
             if (!lastFlightType.canFly(entity) && typeChanged) {
-                entity.getAbilities().flying = false;
+                setAbleToFly(false);
             }
 
             if (entity.horizontalCollision || entity.verticalCollision || entity.isOnGround()) {
@@ -638,7 +639,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
         if (force) {
             isCancelled = false;
         }
-        entity.getAbilities().flying = true;
+        setAbleToFly(true);
         isFlyingEither = true;
         isFlyingSurvival = true;
         thrustScale = 0;
@@ -656,6 +657,13 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
                 pony.spawnParticles(ParticleTypes.CLOUD, pos, vel, 5);
             }
         }
+    }
+
+    private void setAbleToFly(boolean allowFlight) {
+        entity.getAbilities().flying = allowFlight;
+        Registries.ATTRIBUTE.getEntry(PlayerAttributes.CREATIVE_FLIGHT_ATTRIBUTE).ifPresent(key -> {
+            pony.applyAttributeModifier(key, PlayerAttributes.ALLOW_FLIGHT, false, allowFlight);
+        });
     }
 
     private void handleWallCollission(MutableVector velocity) {
@@ -832,7 +840,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
      */
     public void updateFlightState() {
         FlightType type = recalculateFlightType();
-        entity.getAbilities().flying &= type.canFly(entity);
+        setAbleToFly(entity.getAbilities().flying & type.canFly(entity));
         isFlyingSurvival = entity.getAbilities().flying;
         lastFlightType = type;
     }
