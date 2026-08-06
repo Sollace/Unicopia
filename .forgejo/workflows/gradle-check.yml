@@ -1,20 +1,20 @@
-name: Build on Push
+name: Build on Pull Request
 on:
-  - push
+  - pull_request
 jobs:
   gradle:
-    runs-on: ubuntu-latest
+    runs-on: codeberg-medium
     steps:
       - name: Checkout Commit
-        uses: actions/checkout@v7
+        uses: https://github.com/actions/checkout@v7
       - name: Fetch Tags
         run: git fetch --unshallow --tags -f
       - name: Set up JDK
-        uses: actions/setup-java@v5
+        uses: https://github.com/actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: 21
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: https://github.com/gradle/actions/setup-gradle@v6
       - name: Build with Gradle
         run: ./gradlew check
