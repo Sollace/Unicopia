@@ -106,6 +106,7 @@ public class CuttingBoardRecipeJsonBuilder {
     }
 
     public void offerTo(RecipeExporter exporter, RegistryKey<Recipe<?>> key) {
+        key = RegistryKey.of(key.getRegistryRef(), key.getValue().withPrefixedPath("cutting/"));
         Preconditions.checkState(!criterions.isEmpty(), "No way of obtaining recipe " + key.getValue());
         Advancement.Builder advancementBuilder = exporter.getAdvancementBuilder()
             .criterion("has_the_recipe", RecipeUnlockedCriterion.create(key))
@@ -119,7 +120,7 @@ public class CuttingBoardRecipeJsonBuilder {
     }
 
     public void offerTo(RecipeExporter exporter) {
-        offerTo(exporter, RegistryKey.of(RegistryKeys.RECIPE, Registries.ITEM.getId(output.asItem()).withPrefixedPath("cutting/")));
+        offerTo(exporter, RegistryKey.of(RegistryKeys.RECIPE, Registries.ITEM.getId(output.asItem())));
     }
 
     public void offerTo(RecipeExporter exporter, String recipePath) {
@@ -128,7 +129,7 @@ public class CuttingBoardRecipeJsonBuilder {
         if (recipeId.equals(outputItemId)) {
             throw new IllegalStateException("Recipe " + recipePath + " should remove its 'save' argument as it is equal to default one");
         }
-        offerTo(exporter, RegistryKey.of(RegistryKeys.RECIPE, recipeId.withPrefixedPath("cutting/")));
+        offerTo(exporter, RegistryKey.of(RegistryKeys.RECIPE, recipeId));
     }
 
     public record Tool(Identifier type, String action) {
