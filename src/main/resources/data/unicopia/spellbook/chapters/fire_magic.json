@@ -33,8 +33,8 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.fire.scorch.1.body",
           "gui.unicopia.spellbook.chapter.fire.scorch.2.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/fire.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/fire.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/fire.png" }
         ]
       },
       {
@@ -58,8 +58,8 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.fire.flame.1.body",
           "gui.unicopia.spellbook.chapter.fire.flame.2.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/fire.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/fire.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/fire.png" }
         ]
       },
       {
@@ -97,8 +97,8 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.fire.p6.1.body",
           "gui.unicopia.spellbook.chapter.fire.p6.2.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/focus.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/fire.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/focus.png" }
         ]
       },
       {
@@ -132,8 +132,8 @@
           "gui.unicopia.spellbook.chapter.fire.fire_bolt.1.body",
           "gui.unicopia.spellbook.chapter.fire.fire_bolt.2.body",
           "gui.unicopia.spellbook.chapter.fire.fire_bolt.3.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/focus.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/fire.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/focus.png" }
         ]
       },
       {
@@ -160,8 +160,8 @@
           "gui.unicopia.spellbook.chapter.fire.p10.1.body",
           "gui.unicopia.spellbook.chapter.fire.p10.2.body",
           "gui.unicopia.spellbook.chapter.fire.p10.3.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/fire.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/strength.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/fire.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/strength.png" }
         ]
       },
       {
@@ -238,7 +238,7 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.fire.shield.1.body",
           "gui.unicopia.spellbook.chapter.fire.shield.2.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/strength.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/strength.png" }
         ]
       },
       {

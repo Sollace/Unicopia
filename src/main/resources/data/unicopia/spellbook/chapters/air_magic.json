@@ -10,7 +10,7 @@
         },
         "level": 1,
         "elements": [
-          { "x": 15, "y": -10, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/air_magic.png" }
+          { "bounds": { "x": 15, "y": -10, "width": 128, "height": 128 }, "texture": "unicopia:textures/gui/container/pages/air_magic.png" }
         ]
       },
       {
@@ -53,8 +53,8 @@
           "gui.unicopia.spellbook.chapter.air.p4.1.body",
           "gui.unicopia.spellbook.chapter.air.p4.2.body",
           "gui.unicopia.spellbook.chapter.air.p4.3.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/air.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/chaos.png" }
         ]
       },
       {
@@ -75,8 +75,8 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.air.catapult.1.body",
           "gui.unicopia.spellbook.chapter.air.catapult.2.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/air.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/chaos.png" }
         ]
       },
       {
@@ -103,8 +103,8 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.air.bubble.1.body",
           "gui.unicopia.spellbook.chapter.air.bubble.2.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/water.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/air.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/water.png" }
         ]
       },
       {
@@ -171,8 +171,8 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.air.feather_fall.1.body",
           "gui.unicopia.spellbook.chapter.air.feather_fall.2.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/air.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/chaos.png" }
         ]
       },
       {

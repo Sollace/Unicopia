@@ -10,7 +10,7 @@
         },
         "level": 0,
         "elements": [
-          { "x": 15, "y": -10, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/ice_magic.png" }
+          { "bounds": { "x": 15, "y": -10, "width": 128, "height": 128 }, "texture": "unicopia:textures/gui/container/pages/ice_magic.png" }
         ]
       },
       {
@@ -33,8 +33,8 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.ice.frost.1.body",
           "gui.unicopia.spellbook.chapter.ice.frost.2.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "minecraft:textures/item/snowball.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/ice.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "minecraft:textures/item/snowball.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/ice.png" }
         ]
       },
       {
@@ -58,8 +58,8 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.ice.p4.1.body",
           "gui.unicopia.spellbook.chapter.ice.p4.2.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "minecraft:textures/item/oak_boat.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/ice.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "minecraft:textures/item/oak_boat.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/ice.png" }
         ]
       },
       {
@@ -132,8 +132,8 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.ice.light.1.body",
           "gui.unicopia.spellbook.chapter.ice.light.2.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "minecraft:textures/item/light.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/ice.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "minecraft:textures/item/light.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/ice.png" }
         ]
       },
       {
@@ -301,8 +301,8 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.ice.hydrophobic.1.body",
           "gui.unicopia.spellbook.chapter.ice.hydrophobic.2.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/strength.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/ice.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/strength.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/ice.png" }
         ]
       },
       {

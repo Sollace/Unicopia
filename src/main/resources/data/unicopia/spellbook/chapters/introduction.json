@@ -22,7 +22,7 @@
         "level": 0,
         "elements": [
           "gui.unicopia.spellbook.chapter.introduction.p2.body",
-          { "x": 125, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/profile.png" }
+          { "bounds": { "x": 125, "y": 0, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/container/pages/profile.png" }
         ]
       },
       {
@@ -33,7 +33,7 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.introduction.p3.1.body",
           "gui.unicopia.spellbook.chapter.introduction.p3.2.body",
-          { "x": 125, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/item/gemstone.png" }
+          { "bounds": { "x": 125, "y": 0, "width": 32, "height": 32 }, "texture": "unicopia:textures/item/gemstone.png" }
         ]
       },
       {
@@ -65,7 +65,7 @@
         },
         "level": 0,
         "elements": [
-          { "x": 125, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/crafting.png" },
+          { "bounds": { "x": 125, "y": 0, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/container/pages/crafting.png" },
           "gui.unicopia.spellbook.chapter.introduction.p6.1.body",
           "gui.unicopia.spellbook.chapter.introduction.p6.2.body",
           "gui.unicopia.spellbook.chapter.introduction.p6.3.body"
@@ -89,7 +89,7 @@
         },
         "level": 1,
         "elements": [
-          { "x": 127, "y": 0, "width": 32, "height": 32, "texture": "unicopia:textures/item/botched_gem.png" },
+          { "bounds": { "x": 127, "y": 0, "width": 32, "height": 32 }, "texture": "unicopia:textures/item/botched_gem.png" },
           "gui.unicopia.spellbook.chapter.introduction.p8.1.body",
           "gui.unicopia.spellbook.chapter.introduction.p8.2.body",
           "gui.unicopia.spellbook.chapter.introduction.p8.3.body"

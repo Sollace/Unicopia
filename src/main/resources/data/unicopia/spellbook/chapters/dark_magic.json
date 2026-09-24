@@ -10,7 +10,7 @@
         },
         "level": 10,
         "elements": [
-          { "x": 15, "y": -10, "width": 128, "height": 128, "texture": "unicopia:textures/gui/container/pages/dark_magic.png" }
+          { "bounds": { "x": 15, "y": -10, "width": 128, "height": 128 }, "texture": "unicopia:textures/gui/container/pages/dark_magic.png" }
         ]
       },
       {
@@ -53,8 +53,8 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.vortex.1.body",
           "gui.unicopia.spellbook.chapter.dark_magic.vortex.2.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/air.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/knowledge.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/air.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/knowledge.png" }
         ]
       },
       {
@@ -174,8 +174,8 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.transformation.1.body",
           "gui.unicopia.spellbook.chapter.dark_magic.transformation.2.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/life.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/life.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/chaos.png" }
         ]
       },
       {
@@ -201,8 +201,8 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.reveal.1.body",
           "gui.unicopia.spellbook.chapter.dark_magic.reveal.2.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/knowledge.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/knowledge.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/chaos.png" }
         ]
       },
       {
@@ -285,8 +285,8 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.arcane_protection.1.body",
           "gui.unicopia.spellbook.chapter.dark_magic.arcane_protection.2.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/knowledge.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/darkness.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/knowledge.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/darkness.png" }
         ]
       },
       {
@@ -313,8 +313,8 @@
         "level": 17,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.displacement.1.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/trait/knowledge.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/chaos.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/trait/knowledge.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/chaos.png" }
         ]
       },
       {
@@ -357,8 +357,8 @@
         "level": 17,
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.mimic.1.body",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/dark_magic.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/darkness.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/container/pages/dark_magic.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/darkness.png" }
         ]
       },
       {
@@ -421,8 +421,8 @@
         "elements": [
           "gui.unicopia.spellbook.chapter.dark_magic.p28.1.body",
           "gui.unicopia.spellbook.author1.name",
-          { "x": 125, "y": -10, "width": 32, "height": 32, "texture": "unicopia:textures/gui/container/pages/dark_magic.png" },
-          { "x": 125, "y": -10, "width": 16, "height": 16, "texture": "unicopia:textures/gui/trait/kindness.png" }
+          { "bounds": { "x": 125, "y": -10, "width": 32, "height": 32 }, "texture": "unicopia:textures/gui/container/pages/dark_magic.png" },
+          { "bounds": { "x": 125, "y": -10, "width": 16, "height": 16 }, "texture": "unicopia:textures/gui/trait/kindness.png" }
         ]
       },
       {
