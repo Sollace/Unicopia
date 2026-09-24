@@ -150,6 +150,11 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         return burner;
     }
 
+    @Override
+    public ItemStack getEquippedStack(EquipmentSlot slot) {
+        return equipment == null ? ItemStack.EMPTY : super.getEquippedStack(slot);
+    }
+
     public boolean hasBalloon() {
         return getDesign() != BalloonDesign.NONE;
     }

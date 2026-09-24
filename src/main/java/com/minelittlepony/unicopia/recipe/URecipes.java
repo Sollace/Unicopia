@@ -99,9 +99,11 @@ public interface URecipes {
     }
 
     static void bootstrap() {
+        URecipeBookCategories.bootstrap();
         if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
             CuttingBoardRecipeJsonBuilder.CuttingBoardRecipe.bootstrap();
         }
+        URecipeDisplays.bootstrap();
         ULootTableEntryType.bootstrap();
     }
 }

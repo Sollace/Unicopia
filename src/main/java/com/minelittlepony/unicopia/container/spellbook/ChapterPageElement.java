@@ -47,10 +47,10 @@ public interface ChapterPageElement {
     byte INGREDIENTS = 4;
     byte STRUCTURE = 5;
 
-    Codec<Text> FLEXIBLE_TEXT_CODEC = Codec.xor(
-            Codec.STRING.flatXmap(s -> DataResult.success((Text)Text.translatable(s)), text -> DataResult.error(() -> "Cannot Serialize text to a plain string")),
-            TextCodecs.CODEC
-    ).xmap(Either::unwrap, Either::right);
+    Codec<Text> FLEXIBLE_TEXT_CODEC = Codec.withAlternative(
+            TextCodecs.CODEC,
+            Codec.STRING.flatXmap(s -> DataResult.success((Text)Text.translatable(s)), text -> DataResult.error(() -> "Cannot Serialize text to a plain string"))
+    );
     Codec<Bounds> BOUNDS_CODEC = RecordCodecBuilder.create(i -> i.group(
             Codec.INT.optionalFieldOf("x", 0).forGetter(o -> o.left),
             Codec.INT.optionalFieldOf("y", 0).forGetter(o -> o.top),
@@ -105,7 +105,7 @@ public interface ChapterPageElement {
         public static final Codec<Image> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Identifier.CODEC.fieldOf("texture").forGetter(Image::texture),
                 BOUNDS_CODEC.fieldOf("bounds").forGetter(Image::bounds),
-                Flow.CODEC.fieldOf("flow").forGetter(Image::flow)
+                Flow.CODEC.optionalFieldOf("flow", Flow.NONE).forGetter(Image::flow)
         ).apply(i, Image::new));
         public static final PacketCodec<RegistryByteBuf, Image> PACKET_CODEC = PacketCodec.tuple(
                 Identifier.PACKET_CODEC, Image::texture,

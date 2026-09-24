@@ -57,14 +57,18 @@ public interface CodecUtils {
 
     static <V> MapCodec<V> dispatched(Function<V, String> typeGetter, Map<String, Codec<? extends V>> typeLookup) {
         return new MapCodec<>() {
+            final String keysString = typeLookup.keySet().stream().collect(Collectors.joining(",", "[", "]"));
+
             @Override
             public <T> DataResult<V> decode(DynamicOps<T> ops, MapLike<T> input) {
-                var entries = input.entries().filter(entry -> typeLookup.containsKey(ops.getStringValue(entry.getFirst()).getOrThrow())).toList();
+                var entries = input.entries()
+                        .filter(entry -> typeLookup.containsKey(ops.getStringValue(entry.getFirst()).getOrThrow())).toList();
                 if (entries.size() != 1) {
-                    return DataResult.error(() -> "Map only have one key. Instead found " + entries.size() + " in " + input);
+                    return DataResult.error(() -> "May only have one key. Instead found " + entries.size() + " in " + input);
                 }
 
-                return typeLookup.get(entries.get(0).getFirst()).decode(ops, entries.get(0).getSecond()).map(pair -> pair.getFirst());
+                return typeLookup.get(ops.getStringValue(entries.get(0).getFirst()).getOrThrow())
+                        .decode(ops, entries.get(0).getSecond()).map(pair -> pair.getFirst());
             }
 
             @Override
@@ -77,6 +81,10 @@ public interface CodecUtils {
             @Override
             public <T> Stream<T> keys(DynamicOps<T> ops) {
                 return typeLookup.keySet().stream().map(ops::createString);
+            }
+
+            public String toString() {
+                return "TypeDispatched/MapCodec" + keysString;
             }
         };
     }

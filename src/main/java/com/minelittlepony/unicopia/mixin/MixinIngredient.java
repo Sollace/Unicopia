@@ -9,6 +9,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.minelittlepony.unicopia.UTags;
+import com.minelittlepony.unicopia.util.Untyped;
+
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -28,10 +30,16 @@ abstract class MixinIngredient {
         entries.getStorage().ifRight(stacks -> {
             if (stacks.size() == 1) {
                 if (stacks.getFirst().matches(Items.STICK.getRegistryEntry())) {
-                    this.entries = RegistryEntryList.of(Registries.ITEM, ConventionalItemTags.WOODEN_RODS);
+                    Registries.ITEM.getOptional(ConventionalItemTags.WOODEN_RODS);
+                    this.entries = Registries.ITEM.getOptional(ConventionalItemTags.WOODEN_RODS)
+                            .<RegistryEntryList<Item>>map(Untyped::cast)
+                            .orElseGet(() -> RegistryEntryList.<Item>empty());//RegistryEntryList.of(Registries.ITEM, ConventionalItemTags.WOODEN_RODS);
                 }
                 if (stacks.getFirst().matches(Items.FEATHER.getRegistryEntry())) {
-                    this.entries = RegistryEntryList.of(Registries.ITEM, UTags.Items.MAGIC_FEATHERS);
+                    //this.entries = RegistryEntryList.of(Registries.ITEM, UTags.Items.MAGIC_FEATHERS);
+                    this.entries = Registries.ITEM.getOptional(UTags.Items.MAGIC_FEATHERS)
+                            .<RegistryEntryList<Item>>map(Untyped::cast)
+                            .orElseGet(() -> RegistryEntryList.<Item>empty());
                 }
             }
         });

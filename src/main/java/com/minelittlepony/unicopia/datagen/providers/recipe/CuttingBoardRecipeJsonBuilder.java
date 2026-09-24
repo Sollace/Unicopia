@@ -27,6 +27,7 @@ import net.minecraft.recipe.IngredientPlacement;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.recipe.book.RecipeBookCategories;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.recipe.input.CraftingRecipeInput;
 import net.minecraft.registry.Registries;
@@ -187,12 +188,12 @@ public class CuttingBoardRecipeJsonBuilder {
 
         @Override
         public IngredientPlacement getIngredientPlacement() {
-            return null;
+            return IngredientPlacement.NONE;
         }
 
         @Override
         public RecipeBookCategory getRecipeBookCategory() {
-            return null;
+            return RecipeBookCategories.CRAFTING_MISC;
         }
     }
 }
