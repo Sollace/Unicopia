@@ -18,11 +18,8 @@ import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.render.entity.state.PlayerEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.command.argument.EnumArgumentType;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
@@ -44,7 +41,6 @@ public class PlayerPoser {
         boolean liftLeftArm = mainArm == Arm.LEFT || !ponyRace.isEquine();
         boolean liftRightArm = mainArm == Arm.RIGHT || !ponyRace.isEquine();
 
-        ItemStack glasses = pony.eyewear.stack();
         ModelPart head = model.getHead();
 
         if (context == Context.THIRD_PERSON && !state.isInSneakingPose) {
@@ -74,8 +70,7 @@ public class PlayerPoser {
             }
         }
 
-        Text name = glasses.get(DataComponentTypes.CUSTOM_NAME);
-        if (name != null && "Cool Shades".equals(name.getString())) {
+        if (pony.hasCoolShades) {
             final float bop = AnimationUtil.beat(state.age, HEAD_NOD_DURATION, HEAD_NOD_GAP) * 3F;
             head.pitch += bop / 10F;
 

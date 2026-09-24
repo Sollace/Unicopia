@@ -11,6 +11,6 @@ public interface EntityRenderRedispatcher<E extends Entity> {
     void render(E entity, double x, double y, double z, VertexConsumerProvider vertexConsumers, int light, EntityRenderer<? super E, ?> renderer);
 
     default void render(E entity, double x, double y, double z, VertexConsumerProvider vertices, int light) {
-        render(entity, x, y, z, vertices, Untyped.cast(MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity)));
+        render(entity, x, y, z, vertices, light, Untyped.cast(MinecraftClient.getInstance().getEntityRenderDispatcher().getRenderer(entity)));
     }
 }

@@ -42,7 +42,7 @@ class BangleGear implements Gear {
 
     @Override
     public boolean canRender(PonyModel<?> model, EntityRenderState state) {
-        return (slot == TrinketsDelegate.MAIN_GLOVE ? CasterState.of(state).mainhandBangle : CasterState.of(state).offhandBangle).present();
+        return !(slot == TrinketsDelegate.MAIN_GLOVE ? CasterState.of(state).mainhandBangle : CasterState.of(state).offhandBangle).empty;
     }
 
     @Override

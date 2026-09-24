@@ -23,7 +23,7 @@ import net.minecraft.entity.Entity;
 
 @Mixin(EntityRenderDispatcher.class)
 abstract class MixinEntityRenderDispatcher implements SpellEffectsRenderDispatcher.RenderDispatcherAccessor {
-    @WrapMethod(method = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V")
+    @WrapMethod(method = "render(Lnet/minecraft/entity/Entity;DDDFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;ILnet/minecraft/client/render/entity/EntityRenderer;)V")
     private <E extends Entity, S extends EntityRenderState> void wrapRender(
             E entity,
             double x,
@@ -33,6 +33,7 @@ abstract class MixinEntityRenderDispatcher implements SpellEffectsRenderDispatch
             MatrixStack matrices,
             VertexConsumerProvider vertices,
             int light,
+            EntityRenderer<? super E, S> renderer,
             Operation<Void> operation) {
         WorldRenderDelegate.INSTANCE.handleEntityRender((entity1, x1, y1, z1, vertices1, light1, renderer1) -> {
             operation.call(entity1, x1, y1, z1, tickDelta, matrices, vertices1, light1, renderer1);

@@ -100,6 +100,10 @@ public interface TrinketsDelegate {
             this(entity.getEquippedStack(slot), () -> {}, s -> entity.equipStack(slot, s), item -> entity.sendEquipmentBreakStatus(item, slot));
         }
 
+        public boolean isEmpty() {
+            return stack.isEmpty();
+        }
+
         public void markChanged() {
             sendUpdate.run();
         }

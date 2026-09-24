@@ -1,6 +1,5 @@
 package com.minelittlepony.unicopia.client.render.entity.state;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -81,7 +80,7 @@ public class CasterState {
     @Nullable
     public Text masterDisplayName;
 
-    public List<SpellRenderState> spells = new ArrayList<>();
+    public List<SpellRenderState> spells = List.of();
 
     public Race.Composite species = Race.UNSET.composite();
     public SkinFeatures skinFeatures = SkinFeatures.DEFAULT;
@@ -93,6 +92,7 @@ public class CasterState {
     public final AbilityState activeAbility = new AbilityState();
     public int activeMagicColor;
 
+    @Deprecated
     public TrinketsDelegate.EquippedStack amulet = TrinketsDelegate.EquippedStack.EMPTY;
     public boolean pegasusAmulet;
     public boolean inHell;
@@ -102,13 +102,16 @@ public class CasterState {
 
     public final BangleState mainhandBangle = new BangleState();
     public final BangleState offhandBangle = new BangleState();
+    @Deprecated
     public TrinketsDelegate.EquippedStack eyewear = TrinketsDelegate.EquippedStack.EMPTY;
+
+    public boolean hasCoolShades;
 
     public float leanAmount;
     public float yawOffset;
     public float gemYaw;
 
-    public PassengerState<?, ?> carriedEntity = new PassengerState<>();
+    public final PassengerState<?, ?> carriedEntity = new PassengerState<>();
 
     public AnimationInstance animation = AnimationInstance.NONE;
     public float animationTime;
@@ -134,6 +137,7 @@ public class CasterState {
         pegasusAmulet = false;
         isLeftPolearm = false;
         isRightPolearm = false;
+        hasCoolShades = false;
         inHell = false;
         leanAmount = 0;
         yawOffset = 0;
@@ -145,8 +149,8 @@ public class CasterState {
         wingsAngle = 0;
         dashing = false;
         flying = false;
-        carriedEntity = null;
-        spells.clear();
+        carriedEntity.clear();
+        spells = spells.isEmpty() ? spells : List.of();
         animation = AnimationInstance.NONE;
         animationTime = 0;
         species = Race.UNSET.composite();
@@ -215,11 +219,12 @@ public class CasterState {
             if (caster instanceof Living l) {
                 amulet = AmuletItem.get(l.asEntity());
                 pegasusAmulet = AmuletSelectors.PEGASUS_AMULET.test(l.asEntity());
-                mainhandBangle.update(FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.MAIN_GLOVE).findFirst().orElse(null));
-                offhandBangle.update(FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.SECONDARY_GLOVE).findFirst().orElse(null));
+                mainhandBangle.update(FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.MAIN_GLOVE).findFirst().orElse(TrinketsDelegate.EquippedStack.EMPTY));
+                offhandBangle.update(FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.SECONDARY_GLOVE).findFirst().orElse(TrinketsDelegate.EquippedStack.EMPTY));
                 isLeftPolearm = l.asEntity().getStackInArm(Arm.LEFT).isIn(UTags.Items.POLEARMS);
                 isRightPolearm = l.asEntity().getStackInArm(Arm.RIGHT).isIn(UTags.Items.POLEARMS);
                 eyewear = GlassesItem.getForEntity(l.asEntity());
+                hasCoolShades = eyewear.stack().getCustomName() != null && "Cool Shades".equals(eyewear.stack().getCustomName().getString());
                 leanAmount = ((LivingEntityDuck)l.asEntity()).getLeaningPitch();
                 yawOffset = -(((LivingEntityRenderState)this.entityState).relativeHeadYaw + ((LivingEntityRenderState)this.entityState).bodyYaw);
                 gemYaw = l.asEntity().isSleeping() ? 0 : 180 - ((LivingEntityRenderState)this.entityState).bodyYaw;
@@ -266,18 +271,14 @@ public class CasterState {
     }
 
     public static class BangleState {
-        public TrinketsDelegate.EquippedStack stack = TrinketsDelegate.EquippedStack.EMPTY;
+        public boolean empty;
         public int color;
         public boolean glowing;
 
-        public void update(@Nullable TrinketsDelegate.EquippedStack stack) {
-            this.stack = stack;
-            color = stack == null ? Colors.WHITE : DyedColorComponent.getColor(stack.stack(), Colors.WHITE);
-            glowing = stack != null && GlowableItem.isGlowing(stack.stack());
-        }
-
-        public boolean present() {
-            return !stack.stack().isEmpty();
+        public void update(TrinketsDelegate.EquippedStack stack) {
+            empty = stack.isEmpty();
+            color = empty ? Colors.WHITE : DyedColorComponent.getColor(stack.stack(), Colors.WHITE);
+            glowing = !empty && GlowableItem.isGlowing(stack.stack());
         }
     }
 
@@ -326,8 +327,15 @@ public class CasterState {
             }
         }
 
+        public void clear() {
+            this.renderer = null;
+            this.state = null;
+        }
+
         public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-            renderer.render(state, matrices, vertexConsumers, light);
+            if (renderer != null) {
+                renderer.render(state, matrices, vertexConsumers, light);
+            }
         }
     }
 }

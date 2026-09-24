@@ -49,15 +49,14 @@ public class BraceletFeatureRenderer<S extends BipedEntityRenderState, E extends
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, S entity, float limbAngle, float limbDistance) {
         CasterState caster = CasterState.of(entity);
-        if (caster.mainhandBangle.present()) {
-            renderBangleThirdPerson(caster.mainhandBangle, matrices, vertexConsumers, light, entity, limbDistance, limbAngle, entity.mainArm);
-        }
-        if (caster.offhandBangle.present()) {
-            renderBangleThirdPerson(caster.offhandBangle, matrices, vertexConsumers, light, entity, limbDistance, limbAngle, entity.mainArm.getOpposite());
-        }
+        renderBangleThirdPerson(caster.mainhandBangle, matrices, vertexConsumers, light, entity, limbDistance, limbAngle, entity.mainArm);
+        renderBangleThirdPerson(caster.offhandBangle, matrices, vertexConsumers, light, entity, limbDistance, limbAngle, entity.mainArm.getOpposite());
     }
 
     private void renderBangleThirdPerson(BangleState state, MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, S entity, float limbDistance, float limbAngle, Arm mainArm) {
+        if (state.empty) {
+            return;
+        }
         int j = state.color;
 
         boolean alex = entity instanceof PlayerEntityRenderState s && s.skinTextures.model() == SkinTextures.Model.SLIM;
@@ -84,7 +83,7 @@ public class BraceletFeatureRenderer<S extends BipedEntityRenderState, E extends
     public void renderArm(MatrixStack stack, VertexConsumerProvider renderContext, int lightUv, S entity, ModelPart armModel, Arm arm) {
         var state = CasterState.of(entity);
         var bangle = arm == entity.mainArm ? state.mainhandBangle : state.offhandBangle;
-        if (bangle != null) {
+        if (!bangle.empty) {
             if (state.ponified) {
                 stack.translate(arm == Arm.LEFT ? 0.06 : -0.06, 0.3, 0);
             } else {

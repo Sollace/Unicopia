@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.entity.Creature;
 import com.minelittlepony.unicopia.entity.Equine;
 import com.minelittlepony.unicopia.entity.ItemImpl;
 import com.minelittlepony.unicopia.entity.Living;
+import com.minelittlepony.unicopia.entity.behaviour.Disguise;
 import com.minelittlepony.unicopia.entity.duck.LavaAffine;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.ColorHelper;
@@ -97,9 +98,10 @@ public class WorldRenderDelegate {
             flipAngles(entity);
         }
 
-        var disguise = equine instanceof Living living ? disguiseLookup.getAppearanceFor(living).orElse(null) : null;
+        @Nullable
+        Disguise disguise = equine instanceof Living living ? disguiseLookup.getAppearanceFor(living).orElse(null) : null;
 
-        if (equine instanceof Living living) {
+        if (equine instanceof Living living && disguise != null) {
             Entity replacement = disguiseRenderer.prepare(living, disguise, x, y, z, tickDelta, matrices, vertices, light);
             if (replacement != null) {
                 entity = Untyped.cast(replacement);
