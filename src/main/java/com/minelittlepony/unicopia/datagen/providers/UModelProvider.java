@@ -92,7 +92,7 @@ public class UModelProvider extends FabricModelProvider {
                 UItems.MUSIC_DISC_CRUSADE, UItems.MUSIC_DISC_FUNK, UItems.MUSIC_DISC_PET, UItems.MUSIC_DISC_POPULAR,
         // baskets
                 UItems.ACACIA_BASKET, UItems.BAMBOO_BASKET, UItems.BIRCH_BASKET, UItems.CHERRY_BASKET,
-                UItems.DARK_OAK_BASKET, UItems.JUNGLE_BASKET, UItems.MANGROVE_BASKET, UItems.OAK_BASKET, UItems.SPRUCE_BASKET,
+                UItems.DARK_OAK_BASKET, UItems.PALE_OAK_BASKET, UItems.JUNGLE_BASKET, UItems.MANGROVE_BASKET, UItems.OAK_BASKET, UItems.SPRUCE_BASKET,
                 UItems.PALM_BASKET,
         // boats
                 UItems.PALM_BOAT, UItems.PALM_CHEST_BOAT,

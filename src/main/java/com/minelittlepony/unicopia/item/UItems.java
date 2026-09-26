@@ -170,6 +170,7 @@ public interface UItems {
     Item ACACIA_BASKET = register("acacia_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.ACACIA), s.maxCount(1)), ItemGroups.TOOLS);
     Item CHERRY_BASKET = register("cherry_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.CHERRY), s.maxCount(1)), ItemGroups.TOOLS);
     Item DARK_OAK_BASKET = register("dark_oak_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.DARK_OAK), s.maxCount(1)), ItemGroups.TOOLS);
+    Item PALE_OAK_BASKET = register("pale_oak_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.PALE_OAK), s.maxCount(1)), ItemGroups.TOOLS);
     Item MANGROVE_BASKET = register("mangrove_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.MANGROVE), s.maxCount(1)), ItemGroups.TOOLS);
     Item BAMBOO_BASKET = register("bamboo_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.BAMBOO), s.maxCount(1)), ItemGroups.TOOLS);
     Item PALM_BASKET = register("palm_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(UWoodTypes.PALM), s.maxCount(1)), ItemGroups.TOOLS);

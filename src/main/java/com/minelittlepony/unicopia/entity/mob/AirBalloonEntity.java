@@ -500,7 +500,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
     }
 
     public Item asItem() {
-        return Objects.requireNonNull(BasketItem.REGISTRY.get(getBasketType()));
+        return Objects.requireNonNull(BasketItem.REGISTRY.get(getBasketType()), "BasketItem.REGISTRY.get(" + getBasketType() + ") != null");
     }
 
     @Override
