@@ -21,16 +21,16 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.state.BipedEntityRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.Item;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
-import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 
 public class AmuletFeatureRenderer<E extends BipedEntityRenderState> implements AccessoryFeatureRenderer.Feature<E> {
 
     private final AmuletModel model;
 
-    private final Map<Identifier, Identifier> textures = new HashMap<>();
+    private final Map<RegistryKey<Item>, Identifier> textures = new HashMap<>();
 
     private final FeatureRendererContext<E, ? extends BipedEntityModel<E>> context;
 
@@ -42,10 +42,10 @@ public class AmuletFeatureRenderer<E extends BipedEntityRenderState> implements 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider renderContext, int lightUv, E entity, float limbDistance, float limbAngle) {
 
-        ItemStack stack = CasterState.of(entity).amulet.stack();
+        CasterState casterState = CasterState.of(entity);
 
-        if (!stack.isEmpty()) {
-            Identifier texture = textures.computeIfAbsent(Registries.ITEM.getId(stack.getItem()), id -> id.withPath(p -> "textures/models/armor/" + p + ".png"));
+        if (!casterState.amulet.empty) {
+            Identifier texture = textures.computeIfAbsent(casterState.amulet.key, key -> key.getValue().withPath(p -> "textures/models/armor/" + p + ".png"));
 
             VertexConsumer consumer = ItemRenderer.getArmorGlintConsumer(renderContext, RenderLayer.getArmorCutoutNoCull(texture), false);
 

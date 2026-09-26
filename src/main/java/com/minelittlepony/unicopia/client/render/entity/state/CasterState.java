@@ -92,8 +92,7 @@ public class CasterState {
     public final AbilityState activeAbility = new AbilityState();
     public int activeMagicColor;
 
-    @Deprecated
-    public TrinketsDelegate.EquippedStack amulet = TrinketsDelegate.EquippedStack.EMPTY;
+    public EquippedStackRenderState amulet = new EquippedStackRenderState();
     public boolean pegasusAmulet;
     public boolean inHell;
 
@@ -155,7 +154,7 @@ public class CasterState {
         animationTime = 0;
         species = Race.UNSET.composite();
         skinFeatures = SkinFeatures.DEFAULT;
-        amulet = TrinketsDelegate.EquippedStack.EMPTY;
+        amulet.update(TrinketsDelegate.EquippedStack.EMPTY);
         mainhandBangle.update(TrinketsDelegate.EquippedStack.EMPTY);
         offhandBangle.update(TrinketsDelegate.EquippedStack.EMPTY);
         eyewear = TrinketsDelegate.EquippedStack.EMPTY;
@@ -217,7 +216,7 @@ public class CasterState {
             }
 
             if (caster instanceof Living l) {
-                amulet = AmuletItem.get(l.asEntity());
+                amulet.update(AmuletItem.get(l.asEntity()));
                 pegasusAmulet = AmuletSelectors.PEGASUS_AMULET.test(l.asEntity());
                 mainhandBangle.update(FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.MAIN_GLOVE).findFirst().orElse(TrinketsDelegate.EquippedStack.EMPTY));
                 offhandBangle.update(FriendshipBraceletItem.getWornBangles(l.asEntity(), TrinketsDelegate.SECONDARY_GLOVE).findFirst().orElse(TrinketsDelegate.EquippedStack.EMPTY));

@@ -43,8 +43,8 @@ class BodyPartGear<M extends ClientPonyModel<PonyRenderState>> implements Gear {
     private static final Predicate<PlayerPonyRenderState> MINE_LP_HAS_NO_WINGS = s -> !s.getRace().hasWings() && !s.getRace().hasBugWings();
     private static final Predicate<PlayerPonyRenderState> MINE_LP_HAS_NO_HORN = s -> !s.getRace().hasHorn();
 
-    private static final Predicate<PlayerPonyRenderState> EXCLUDE_PEGASUS_AMULET = s -> !CasterState.of(s).amulet.stack().isOf(UItems.PEGASUS_AMULET);
-    private static final Predicate<PlayerPonyRenderState> INCLUDE_ALICORN_AMULET = s -> CasterState.of(s).amulet.stack().isOf(UItems.ALICORN_AMULET);
+    private static final Predicate<PlayerPonyRenderState> EXCLUDE_PEGASUS_AMULET = s -> !CasterState.of(s).amulet.key.equals(UItems.PEGASUS_AMULET.getRegistryEntry().registryKey());
+    private static final Predicate<PlayerPonyRenderState> INCLUDE_ALICORN_AMULET = s -> CasterState.of(s).amulet.key.equals(UItems.ALICORN_AMULET.getRegistryEntry().registryKey());
 
     private static final Identifier ICARUS_WINGS = Unicopia.id("textures/models/wings/icarus_pony.png");
     private static final Identifier ICARUS_WINGS_CORRUPTED = Unicopia.id("textures/models/wings/icarus_corrupted_pony.png");
