@@ -16,8 +16,11 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 public interface FarmersDelightContent {
+    String DEFAULT_NAMESPACE = "farmersdelight";
     TagKey<Item> CABBAGE_ROLE_INGREDIENTS = TagKey.of(RegistryKeys.ITEM, id("cabbage_roll_ingredients"));
     TagKey<Item> COMFORT_FOODS = TagKey.of(RegistryKeys.ITEM, id("comfort_foods"));
+    TagKey<Item> CABINETS = TagKey.of(RegistryKeys.ITEM, id("cabinets"));
+    TagKey<Item> CANVAS_SIGNS = TagKey.of(RegistryKeys.ITEM, id("canvas_signs"));
 
     Item APPLE_PIE = lateRegister(id("apple_pie"), Registries.ITEM, key -> new Item.Settings().registryKey(key), Item::new);
 
@@ -53,6 +56,6 @@ public interface FarmersDelightContent {
     static void bootstrap() { }
 
     static Identifier id(String name) {
-        return Identifier.of("farmersdelight", name);
+        return Identifier.of(DEFAULT_NAMESPACE, name);
     }
 }

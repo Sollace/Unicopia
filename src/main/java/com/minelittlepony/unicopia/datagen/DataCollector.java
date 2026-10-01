@@ -5,6 +5,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
+
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
@@ -32,6 +34,10 @@ public class DataCollector<T> {
 
     public boolean isDefined(Identifier id) {
         return values.containsKey(id);
+    }
+
+    public Stream<T> streamValues() {
+        return values.values().stream();
     }
 
     public <V> Consumer<V> prime(BiConsumer<V, BiConsumer<Identifier, T>> converter) {

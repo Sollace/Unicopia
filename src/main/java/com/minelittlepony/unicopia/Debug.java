@@ -3,7 +3,10 @@ package com.minelittlepony.unicopia;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.Sets;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
@@ -13,8 +16,11 @@ import com.minelittlepony.unicopia.particle.ParticleSource;
 
 import net.minecraft.block.WoodType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.item.Item;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -33,7 +39,7 @@ public interface Debug {
         }
 
         if (CHECK_TRAIT_COVERAGE) {
-            testTraitCoverage();
+            testTraitCoverage(Registries.ITEM, Unicopia.LOGGER, entry -> SpellTraits.of(entry.registryKey()).isEmpty());
         }
 
         try {
@@ -59,27 +65,26 @@ public interface Debug {
         }
     }
 
-    private static void testTraitCoverage() {
-        Registries.ITEM.getEntrySet().stream().collect(Collectors.toMap(
-                entry -> entry.getKey().getValue().getNamespace(),
+    static void testTraitCoverage(RegistryWrapper<Item> registry, Logger logger, Predicate<RegistryEntry.Reference<Item>> traitsCheck) {
+        registry.streamEntries().collect(Collectors.toMap(
+                entry -> entry.registryKey().getValue().getNamespace(),
                 Set::of,
                 Sets::union
         )).forEach((namespace, entries) -> {
-            @SuppressWarnings("deprecation")
             List<String> unregistered = entries.stream()
-                .filter(entry -> !entry.getValue().getRegistryEntry().isIn(UTags.Items.HAS_NO_TRAITS) && SpellTraits.of(entry.getValue()).isEmpty())
+                .filter(entry -> !entry.isIn(UTags.Items.HAS_NO_TRAITS) && !traitsCheck.test(entry))
                 .map(entry -> {
-                    String id = entry.getKey().getValue().toString();
+                    String id = entry.value().toString();
 
-                    return id + "(" + Registries.ITEM.streamTags()
-                        .filter(i -> i.contains(entry.getValue().getRegistryEntry()))
+                    return id + "(" + registry.getTags()
+                        .filter(i -> i.contains(entry))
                         .map(i -> i.getTag().id().toString())
                         .collect(Collectors.joining(", ")) +  ")";
                 })
                 .toList();
 
             if (!unregistered.isEmpty()) {
-                Unicopia.LOGGER.warn("No traits registered for {} items in namepsace {} {}", unregistered.size(), namespace, String.join(",\r\n", unregistered));
+                logger.warn("No traits registered for {} items in namepsace {} {}", unregistered.size(), namespace, String.join(",\r\n", unregistered));
             }
         });
     }
