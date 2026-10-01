@@ -58,6 +58,8 @@
     "MixinWardenEntity",
     "MixinWorld",
     "PointOfInterestTypesAccessor",
+    "RegistryEntryListOwnerAccessor",
+    "MixinRegistryEntryReference",
     "StonecutterScreenHandlerRecipesSetter",
     "datafix.MixinSchemas",
     "datafix.MixinItemStackComponentizationFix",

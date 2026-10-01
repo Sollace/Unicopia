@@ -1,17 +1,24 @@
 package com.minelittlepony.unicopia.recipe;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.*;
 import com.minelittlepony.unicopia.datagen.providers.recipe.CuttingBoardRecipeJsonBuilder;
+import com.minelittlepony.unicopia.mixin.RegistryEntryListOwnerAccessor;
 import com.minelittlepony.unicopia.server.world.gen.ULootTableEntryType;
+import com.minelittlepony.unicopia.util.Untyped;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredient;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.CustomIngredientSerializer;
+import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.recipe.Ingredient;
@@ -22,6 +29,9 @@ import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 public interface URecipes {
@@ -96,6 +106,27 @@ public interface URecipes {
         };
         CustomIngredientSerializer.register(serializer);
         return serializer;
+    }
+
+    @SuppressWarnings("deprecation")
+    static Optional<RegistryEntryList<Item>> getRecipeContentsReplacement(RegistryEntry<Item> stack) {
+        if (stack.matches(Items.STICK.getRegistryEntry())) {
+            Registries.ITEM.getOptional(ConventionalItemTags.WOODEN_RODS);
+            return lookupTag(ConventionalItemTags.WOODEN_RODS, stack);
+        }
+        if (stack.matches(Items.FEATHER.getRegistryEntry())) {
+            return lookupTag(UTags.Items.MAGIC_FEATHERS, stack);
+        }
+        return Optional.empty();
+    }
+
+    @SuppressWarnings("deprecation")
+    private static Optional<RegistryEntryList<Item>> lookupTag(TagKey<Item> tag, RegistryEntry<Item> canonicalParent) {
+        Registry<Item> registry = canonicalParent instanceof RegistryEntryListOwnerAccessor accessor && accessor.getOwner() instanceof Registry r ? Untyped.cast(r) :Registries.ITEM;
+
+        return registry.getOptional(tag)
+                .<RegistryEntryList<Item>>map(Untyped::cast)
+                .or(() -> Optional.of(RegistryEntryList.of(registry, tag)));
     }
 
     static void bootstrap() {
