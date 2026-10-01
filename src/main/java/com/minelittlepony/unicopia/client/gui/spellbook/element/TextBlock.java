@@ -2,11 +2,10 @@ package com.minelittlepony.unicopia.client.gui.spellbook.element;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
-
 import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.client.gui.ParagraphWrappingVisitor;
+import com.minelittlepony.unicopia.container.spellbook.ChapterPageElement;
 import com.minelittlepony.unicopia.container.spellbook.Flow;
 import com.minelittlepony.unicopia.entity.player.Pony;
 
@@ -21,10 +20,10 @@ import net.minecraft.util.Formatting;
 class TextBlock implements PageElement {
     private final List<TextBlock.Line> wrappedText = new ArrayList<>();
     private final Bounds bounds = Bounds.empty();
-    private final List<Supplier<Text>> uncompiledLines;
+    private final ChapterPageElement.TextElement content;
 
-    public TextBlock(List<Supplier<Text>> uncompiledLines) {
-        this.uncompiledLines = uncompiledLines;
+    public TextBlock(ChapterPageElement.TextElement content) {
+        this.content = content;
     }
 
     @Override
@@ -34,8 +33,8 @@ class TextBlock implements PageElement {
                 yPosition -> page.getLineLimitAt(y + yPosition),
                 (line, yPosition) -> wrappedText.add(new Line(line, page.getLeftMarginAt(y + yPosition)))
         );
-        uncompiledLines.forEach(line -> {
-            line.get().visit(visitor, Style.EMPTY);
+        content.lines().forEach(line -> {
+            line.visit(visitor, Style.EMPTY);
             visitor.advance();
         });
         visitor.forceAdvance();

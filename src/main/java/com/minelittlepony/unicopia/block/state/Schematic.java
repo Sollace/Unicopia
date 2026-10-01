@@ -1,12 +1,9 @@
 package com.minelittlepony.unicopia.block.state;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.network.PacketByteBuf;
 
 public record Schematic(int dx, int dy, int dz, Entry[] states) {
     public static final Schematic ALTAR = new Schematic.Builder()
@@ -20,20 +17,6 @@ public record Schematic(int dx, int dy, int dz, Entry[] states) {
             .fill(8, 1, 2, 8, 4, 2, Blocks.OBSIDIAN.getDefaultState()).fill(8, 1, 6, 8, 4, 6, Blocks.OBSIDIAN.getDefaultState())
             .fill(2, 1, 8, 2, 4, 8, Blocks.OBSIDIAN.getDefaultState()).fill(6, 1, 8, 6, 4, 8, Blocks.OBSIDIAN.getDefaultState())
             .build();
-
-
-    public static Schematic fromPacket(PacketByteBuf buffer) {
-        Builder builder = new Builder();
-        buffer.readCollection(ArrayList::new, buf -> {
-            byte op = buf.readByte();
-            return switch (op) {
-                case 1 -> builder.set(buf.readInt(), buf.readInt(), buf.readInt(), Block.getStateFromRawId(buf.readInt()));
-                case 2 -> builder.fill(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(), Block.getStateFromRawId(buf.readInt()));
-                default -> builder;
-            };
-        });
-        return builder.build();
-    }
 
     public int volume() {
         return states.length;

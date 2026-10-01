@@ -3,11 +3,13 @@ package com.minelittlepony.unicopia.container.spellbook;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.block.state.Schematic;
 import com.minelittlepony.unicopia.util.Untyped;
 import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
@@ -145,8 +147,12 @@ public interface ChapterPageElement {
         }
     }
 
-    record TextBlock (Text text) implements ChapterPageElement {
-        private static final Codec<Text> FLEXIBLE_TEXT_CODEC = Codec.withAlternative(
+    interface TextElement extends ChapterPageElement {
+        Stream<Text> lines();
+    }
+
+    record TextBlock (Text text) implements TextElement {
+        public static final Codec<Text> FLEXIBLE_TEXT_CODEC = Codec.withAlternative(
                 Codec.STRING.flatXmap(s -> DataResult.success((Text)Text.translatable(s)), text -> DataResult.error(() -> "Cannot Serialize text to a plain string")),
                 TextCodecs.CODEC
         );
@@ -157,9 +163,14 @@ public interface ChapterPageElement {
         public byte getType() {
             return TEXT_BLOCK;
         }
+
+        @Override
+        public Stream<Text> lines() {
+            return Stream.of(text);
+        }
     }
 
-    record Ingredients(List<Multi<?>> entries) implements ChapterPageElement {
+    record Ingredients(List<Multi<?>> entries) implements TextElement {
         public static final Codec<Ingredients> CODEC = Multi.CODEC.listOf().xmap(Ingredients::new, Ingredients::entries);
         public static final PacketCodec<RegistryByteBuf, Ingredients> PACKET_CODEC = Multi.PACKET_CODEC.collect(PacketCodecs.toList()).xmap(Ingredients::new, Ingredients::entries);
 
@@ -168,11 +179,16 @@ public interface ChapterPageElement {
             return INGREDIENTS;
         }
 
+        @Override
+        public Stream<Text> lines() {
+            return entries().stream().map(Multi::text);
+        }
+
         public record Multi<T>(T element, int count) {
             private static final MapCodec<Object> ELEMENT_CODEC = CodecUtils.dispatched(Multi::getType, Map.of(
                 "item", Registries.ITEM.getCodec(),
                 "trait", Trait.CODEC,
-                "text", TextBlock.CODEC,
+                "text", TextBlock.FLEXIBLE_TEXT_CODEC,
                 "spell", SpellType.CODEC
             ));
             public static final Codec<Multi<?>> CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -183,7 +199,7 @@ public interface ChapterPageElement {
             private static final PacketCodec<RegistryByteBuf, Object> ELEMENT_PACKET_CODEC = PacketCodecs.STRING.<RegistryByteBuf>cast().dispatch(Multi::getType, type -> switch (type) {
                 case "item" -> ITEM_PACKET_CODEC;
                 case "trait" -> Trait.PACKET_CODEC;
-                case "text" -> TextBlock.PACKET_CODEC;
+                case "text" -> TextCodecs.PACKET_CODEC;
                 case "spell" -> SpellType.PACKET_CODEC;
                 default -> throw new IllegalArgumentException("Don't know how to serialize " + type);
             });
@@ -197,11 +213,25 @@ public interface ChapterPageElement {
                 return getType(element);
             }
 
+            public Text text() {
+                return switch (element) {
+                    case Item item -> formatLine(item.getDefaultStack().getName(), "item", count());
+                    case Trait trait -> formatLine(trait.getShortName(), "trait", count());
+                    case SpellType<?> spell -> formatLine(spell.getName(), "spell", count());
+                    case Text text -> text;
+                    default -> throw new IllegalArgumentException("Unexpected value: " + element);
+                };
+            }
+
+            private static Text formatLine(Text line, String kind, int count) {
+                return Text.translatable("gui.unicopia.spellbook.page.requirements.entry." + kind, count, line);
+            }
+
             private static String getType(Object element) {
                 return switch (element) {
                     case Item i -> "item";
                     case Trait t -> "trait";
-                    case TextBlock t -> "text";
+                    case Text t -> "text";
                     case SpellType<?> s -> "spell";
                     default -> throw new IllegalArgumentException("Don't know how to serialize " + element);
                 };
@@ -279,7 +309,15 @@ public interface ChapterPageElement {
             return STRUCTURE;
         }
 
-        interface Command {}
+        public Schematic toSchematic() {
+            Schematic.Builder builder = new Schematic.Builder();
+            commands.forEach(command -> command.apply(builder));
+            return builder.build();
+        }
+
+        interface Command {
+            void apply(Schematic.Builder builder);
+        }
 
         private record Set(Vec3i pos, BlockState state) implements Command {
             public static final Codec<Set> CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -291,6 +329,11 @@ public interface ChapterPageElement {
                     PacketCodecUtils.BLOCK_STATE, Set::state,
                     Set::new
             );
+
+            @Override
+            public void apply(Schematic.Builder builder) {
+                builder.set(pos.getX(), pos.getY(), pos.getZ(), state);
+            }
         }
 
         private record Fill(Vec3i min, Vec3i max, BlockState state) implements Command {
@@ -305,6 +348,11 @@ public interface ChapterPageElement {
                     PacketCodecUtils.BLOCK_STATE, Fill::state,
                     Fill::new
             );
+
+            @Override
+            public void apply(Schematic.Builder builder) {
+                builder.fill(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ(), state);
+            }
         }
 
         public static Builder builder() {

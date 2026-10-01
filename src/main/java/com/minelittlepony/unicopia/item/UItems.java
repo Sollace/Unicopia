@@ -162,6 +162,7 @@ public interface UItems {
     Item PALM_HANGING_SIGN = register("palm_hanging_sign", s -> new HangingSignItem(UBlocks.PALM_HANGING_SIGN, UBlocks.PALM_WALL_HANGING_SIGN, s), ItemGroups.FUNCTIONAL);
 
     Item SPELLBOOK = register("spellbook", s -> new SpellbookItem(s.maxCount(1).rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
+    Item TORN_PAGE = register("torn_page", Item::new, ItemGroups.INGREDIENTS);
 
     Item OAK_BASKET = register("oak_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.OAK), s.maxCount(1)), ItemGroups.TOOLS);
     Item SPRUCE_BASKET = register("spruce_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.SPRUCE), s.maxCount(1)), ItemGroups.TOOLS);

@@ -10,6 +10,7 @@ record Stack (ChapterPageElement.Stack stack, Bounds bounds) implements PageElem
         this(stack, Bounds.empty());
         bounds().copy(stack.bounds());
     }
+
     @Override
     public void compile(DynamicContent.GuiPage page, int y, IViewRoot container) {
         IngredientTree tree = new IngredientTree(
