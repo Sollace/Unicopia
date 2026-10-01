@@ -85,7 +85,9 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
         getOrCreateTagBuilder(UTags.Items.WOOL_BED_SHEETS).add(BedsheetsItem.ITEMS.values().stream().filter(sheet -> sheet != UItems.KELP_BED_SHEETS).toArray(Item[]::new));
         getOrCreateTagBuilder(UTags.Items.BED_SHEETS).forceAddTag(UTags.Items.WOOL_BED_SHEETS).add(UItems.KELP_BED_SHEETS);
         getOrCreateTagBuilder(UTags.Items.APPLE_SEEDS).add(UItems.GREEN_APPLE_SEEDS, UItems.SWEET_APPLE_SEEDS, UItems.SOUR_APPLE_SEEDS);
+        getOrCreateTagBuilder(ConventionalItemTags.SEEDS).forceAddTag(UTags.Items.APPLE_SEEDS);
         getOrCreateTagBuilder(UTags.Items.MAGIC_FEATHERS).add(UItems.PEGASUS_FEATHER, UItems.GRYPHON_FEATHER);
+        getOrCreateTagBuilder(ConventionalItemTags.FEATHERS).forceAddTag(UTags.Items.MAGIC_FEATHERS);
         getOrCreateTagBuilder(UTags.Items.FRESH_APPLES).add(Items.APPLE, UItems.GREEN_APPLE, UItems.SWEET_APPLE, UItems.SOUR_APPLE);
         getOrCreateTagBuilder(UTags.Items.CLOUD_JARS).add(UItems.RAIN_CLOUD_JAR, UItems.STORM_CLOUD_JAR);
         getOrCreateTagBuilder(UTags.Items.PIES).add(UItems.APPLE_PIE, UItems.APPLE_PIE_HOOF);
