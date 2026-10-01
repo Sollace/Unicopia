@@ -2,23 +2,14 @@ package com.minelittlepony.unicopia.datagen.providers.recipe;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.UConventionalTags;
-import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.Unicopia;
-import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellDuplicatingRecipe;
-import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellEnhancingRecipe;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
-import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.block.UBlocks;
-import com.minelittlepony.unicopia.datagen.FarmersDelightContent;
 import com.minelittlepony.unicopia.datagen.ItemFamilies;
 import com.minelittlepony.unicopia.datagen.UBlockFamilies;
 import com.minelittlepony.unicopia.datagen.providers.recipe.BedSheetPatternRecipeBuilder.PatternTemplate;
@@ -35,7 +26,6 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.data.family.BlockFamily.Variant;
 import net.minecraft.data.recipe.ComplexRecipeJsonBuilder;
 import net.minecraft.data.recipe.RecipeExporter;
 import net.minecraft.data.recipe.RecipeGenerator;
@@ -62,20 +52,20 @@ import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Identifier;
 
 public class URecipeGenerator extends RecipeGenerator implements CraftingMaterialHelper {
     private static final List<Item> WOOLS = List.of(Items.BLACK_WOOL, Items.BLUE_WOOL, Items.BROWN_WOOL, Items.CYAN_WOOL, Items.GRAY_WOOL, Items.GREEN_WOOL, Items.LIGHT_BLUE_WOOL, Items.LIGHT_GRAY_WOOL, Items.LIME_WOOL, Items.MAGENTA_WOOL, Items.ORANGE_WOOL, Items.PINK_WOOL, Items.PURPLE_WOOL, Items.RED_WOOL, Items.YELLOW_WOOL, Items.WHITE_WOOL);
 
     private final RegistryEntryLookup<Item> items;
 
-    private final RecipeExporter farmersDelightExporter;
+    private final UMagicRecipeGenerator magicRecipes;
+    private final UFarmersDelightRecipeGenerator farmersDelightRecipes;
 
     URecipeGenerator(WrapperLookup registries, RecipeExporter exporter, RecipeExporter farmersDelightExporter) {
         super(registries, exporter);
         items = registries.getOrThrow(RegistryKeys.ITEM);
-        this.farmersDelightExporter = farmersDelightExporter;
+        this.magicRecipes = new UMagicRecipeGenerator(this.registries, exporter);
+        this.farmersDelightRecipes = new UFarmersDelightRecipeGenerator(registries, farmersDelightExporter);
     }
 
     @Override
@@ -86,7 +76,6 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
         offerCloudRecipes();
         offerFoodRecipes();
         offerGemstoneAndMagicRecipes();
-        offerMagicSpellRecipes();
         offerSeaponyRecipes();
         offerEarthPonyRecipes();
 
@@ -105,8 +94,8 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
             .input(UItems.SUNGLASSES).criterion("has_broken_sunglasses", conditionsFromItem(UItems.BROKEN_SUNGLASSES))
             .offerTo(exporter, recipeId(convertBetween(UItems.SUNGLASSES, UItems.BROKEN_SUNGLASSES)));
 
-        // farmers delight
-        offerFarmersDelightCuttingRecipes();
+        magicRecipes.generate();
+        farmersDelightRecipes.generate();
     }
 
     private void offerJarRecipes() {
@@ -282,67 +271,6 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
             .offerTo(exporter);
         // meadowbrook's staff
         offerShapelessRecipe(Items.STICK, UItems.MEADOWBROOKS_STAFF, "stick", 2);
-    }
-
-    private void offerMagicSpellRecipes() {
-        offerSpell(exporter, UItems.GEMSTONE, SpellType.DISPLACEMENT, new SpellTraits.Builder().with(Trait.KNOWLEDGE, 10).with(Trait.CHAOS, 10));
-        offerSpell(exporter, UItems.GEMSTONE, SpellType.FROST, new SpellTraits.Builder().with(Trait.ICE, 10));
-        offerSpell(exporter, UItems.GEMSTONE, SpellType.SCORCH, new SpellTraits.Builder().with(Trait.FIRE, 10));
-        offerSpell(exporter, UItems.GEMSTONE, SpellType.SHIELD, new SpellTraits.Builder().with(Trait.STRENGTH, 10).with(Trait.FOCUS, 6).with(Trait.POWER, 10));
-        offerSpell(exporter, UItems.GEMSTONE, SpellType.TRANSFORMATION, new SpellTraits.Builder().with(Trait.KNOWLEDGE, 10).with(Trait.LIFE, 10).with(Trait.CHAOS, 4));
-
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.ARCANE_PROTECTION, SpellType.SHIELD, new SpellTraits.Builder().with(Trait.STRENGTH, 10).with(Trait.KNOWLEDGE, 18).with(Trait.DARKNESS, 1));
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.BUBBLE, SpellType.CATAPULT, new SpellTraits.Builder().with(Trait.WATER, 9).with(Trait.AIR, 9));
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.CATAPULT, SpellType.FLAME, new SpellTraits.Builder().with(Trait.FOCUS, 9).with(Trait.AIR, 9));
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.CHILLING_BREATH, SpellType.FROST, new SpellTraits.Builder().with(Trait.ICE, 5).with(Trait.KNOWLEDGE, 10));
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.DARK_VORTEX, SpellType.VORTEX, new SpellTraits.Builder().with(Trait.STRENGTH, 10).with(Trait.KNOWLEDGE, 8).with(Trait.DARKNESS, 9).with(Trait.CHAOS, 8));
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.FEATHER_FALL, SpellType.SHIELD, new SpellTraits.Builder().with(Trait.KNOWLEDGE, 20).with(Trait.LIFE, 10).with(Trait.CHAOS, 4).with(Trait.GENEROSITY, 10));
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.FIRE_BOLT, SpellType.FLAME, new SpellTraits.Builder().with(Trait.FOCUS, 9).with(Trait.FIRE, 30));
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.FLAME, SpellType.SCORCH, new SpellTraits.Builder().with(Trait.FIRE, 15));
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.INFERNAL, SpellType.FLAME, new SpellTraits.Builder().with(Trait.FIRE, 50).with(Trait.DARKNESS, 10));
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.LIGHT, SpellType.FIRE_BOLT, new SpellTraits.Builder().with(Trait.ICE, 30).with(Trait.LIFE, 30).with(Trait.FOCUS, 10));
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.MIMIC, SpellType.TRANSFORMATION, new SpellTraits.Builder().with(Trait.KNOWLEDGE, 19).with(Trait.LIFE, 10).with(Trait.CHAOS, 4));
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.MIND_SWAP, SpellType.MIMIC, new SpellTraits.Builder().with(Trait.KNOWLEDGE, 19).with(Trait.LIFE, 10).with(Trait.CHAOS, 40));
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.NECROMANCY, SpellType.SIPHONING, new SpellTraits.Builder().with(Trait.STRENGTH, 10).with(Trait.KNOWLEDGE, 8).with(Trait.DARKNESS, 19).with(Trait.CHAOS, 8).with(Trait.BLOOD, 10).with(Trait.POISON, 9));
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.REVEALING, SpellType.SHIELD, new SpellTraits.Builder().with(Trait.KNOWLEDGE, 18).with(Trait.LIFE, 1).with(Trait.ORDER, 4));
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.SIPHONING, SpellType.INFERNAL, new SpellTraits.Builder().with(Trait.BLOOD, 8).with(Trait.POISON, 10));
-        offerSpellFromSpell(exporter, UItems.GEMSTONE, SpellType.VORTEX, SpellType.SHIELD, new SpellTraits.Builder().with(Trait.STRENGTH, 10).with(Trait.KNOWLEDGE, 8).with(Trait.AIR, 9));
-
-        offerSpellFromTwoSpells(exporter, UItems.GEMSTONE, SpellType.DISPEL_EVIL, SpellType.ARCANE_PROTECTION, SpellType.DISPLACEMENT, new SpellTraits.Builder().with(Trait.KINDNESS, 1).with(Trait.POWER, 1));
-        offerSpellFromTwoSpells(exporter, UItems.GEMSTONE, SpellType.HYDROPHOBIC, SpellType.FROST, SpellType.SHIELD, new SpellTraits.Builder().with(Trait.FOCUS, 6));
-        offerSpellFromTwoSpells(exporter, UItems.GEMSTONE, SpellType.PORTAL, SpellType.DISPLACEMENT, SpellType.DARK_VORTEX, new SpellTraits.Builder().with(Trait.KNOWLEDGE, 18).with(Trait.CHAOS, 20));
-
-        SpellcraftingRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.ALICORN_AMULET, SpellType.EMPTY_KEY)
-            .base(UItems.GEMSTONE, SpellType.DARK_VORTEX)
-            .traits(new SpellTraits.Builder().with(Trait.DARKNESS, 30).with(Trait.POWER, 30).with(Trait.BLOOD, 30))
-            .offerTo(exporter);
-
-        SpellcraftingRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.UNICORN_AMULET, SpellType.EMPTY_KEY)
-            .base(UItems.BROKEN_ALICORN_AMULET, SpellType.EMPTY_KEY)
-            .input(UItems.PEGASUS_AMULET, SpellType.EMPTY_KEY)
-            .input(UItems.CRYSTAL_HEART, SpellType.EMPTY_KEY)
-            .input(UItems.GROGARS_BELL, SpellType.EMPTY_KEY)
-            .input(Items.TOTEM_OF_UNDYING, SpellType.EMPTY_KEY)
-            .traits(new SpellTraits.Builder())
-            .criterion(hasItem(UItems.BROKEN_ALICORN_AMULET), conditionsFromItem(UItems.BROKEN_ALICORN_AMULET))
-            .offerTo(exporter, recipeId("unicorn_amulet"));
-
-        SpellcraftingRecipeJsonBuilder.create(RecipeCategory.MISC, UItems.DRAGON_BREATH_SCROLL, SpellType.EMPTY_KEY)
-            .base(Items.PAPER, SpellType.EMPTY_KEY)
-            .input(Items.PAPER, SpellType.EMPTY_KEY)
-            .traits(new SpellTraits.Builder().with(Trait.FIRE, 1))
-            .offerTo(exporter, recipeId("dragon_breath_scroll"));
-
-        ComplexSpellcraftingRecipeJsonBuilder.create(SpellDuplicatingRecipe::new, UItems.BOTCHED_GEM).offerTo(exporter, recipeId("spell_duplicating"));
-        ComplexSpellcraftingRecipeJsonBuilder.create(SpellEnhancingRecipe::new, UItems.BOTCHED_GEM).offerTo(exporter, recipeId("trait_combining_botched_gem"));
-        ComplexSpellcraftingRecipeJsonBuilder.create(SpellEnhancingRecipe::new, UItems.GEMSTONE).offerTo(exporter, recipeId("trait_combining_gemstone"));
-
-        AltarRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.SPECTRAL_CLOCK)
-            .input(Items.CLOCK).criterion("has_clock", conditionsFromItem(Items.CLOCK))
-            .offerTo(exporter);
-        AltarRecipeJsonBuilder.create(RecipeCategory.TOOLS, UItems.TOTEM_OF_DYING)
-            .input(Items.TOTEM_OF_UNDYING).criterion("has_totem", conditionsFromItem(Items.TOTEM_OF_UNDYING))
-            .offerTo(exporter);
     }
 
     private void offerFoodRecipes() {
@@ -731,79 +659,6 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
         PatternTemplate.SEVEN_COLOR.offerTo(this, items, exporter, UItems.RAINBOW_BED_SHEETS, Items.LIGHT_BLUE_WOOL, Items.RED_WOOL, Items.ORANGE_WOOL, Items.YELLOW_WOOL, Items.BLUE_WOOL, Items.GREEN_WOOL, Items.PURPLE_WOOL);
     }
 
-    private void offerFarmersDelightCuttingRecipes() {
-        // unwaxing
-        UBlockFamilies.WAXED_ZAP.getVariants().forEach((variant, waxed) -> {
-            if (variant == Variant.WALL_SIGN) return;
-            var unwaxed = UBlockFamilies.ZAP.getVariant(variant);
-            CuttingBoardRecipeJsonBuilder.create(unwaxed, "axe_strip")
-                .input(waxed).criterion(hasItem(waxed), conditionsFromItem(waxed))
-                .result(unwaxed)
-                .result(Items.HONEYCOMB)
-                .sound(SoundEvents.ITEM_AXE_WAX_OFF)
-                .offerTo(farmersDelightExporter, recipeId(getItemPath(unwaxed) + "_from_waxed"));
-        });
-        List.of(UBlockFamilies.ZAP, UBlockFamilies.PALM).forEach(family -> {
-            family.getVariants().forEach((variant, block) -> {
-                if (variant == Variant.WALL_SIGN) return;
-                CuttingBoardRecipeJsonBuilder.create(family.getBaseBlock(), "axe_strip")
-                    .input(block).criterion(hasItem(block), conditionsFromItem(block))
-                    .result(family.getBaseBlock())
-                    .sound(SoundEvents.ITEM_AXE_STRIP)
-                    .offerTo(farmersDelightExporter, recipeId(getItemPath(block)));
-            });
-        });
-        CuttingBoardRecipeJsonBuilder.create(UBlocks.PALM_PLANKS, "axe_dig")
-            .input(UBlocks.PALM_HANGING_SIGN).criterion(hasItem(UBlocks.PALM_HANGING_SIGN), conditionsFromItem(UBlocks.PALM_HANGING_SIGN))
-            .sound(SoundEvents.ITEM_AXE_STRIP)
-            .result(UBlocks.PALM_PLANKS)
-            .offerTo(farmersDelightExporter);
-
-        Map.of(
-                UBlocks.PALM_LOG, UBlocks.STRIPPED_PALM_LOG,
-                UBlocks.PALM_WOOD, UBlocks.STRIPPED_PALM_WOOD,
-                UBlocks.ZAP_LOG, UBlocks.STRIPPED_ZAP_LOG,
-                UBlocks.ZAP_WOOD, UBlocks.STRIPPED_ZAP_WOOD
-        ).forEach((unstripped, stripped) -> {
-            CuttingBoardRecipeJsonBuilder.create(stripped, "axe_strip")
-                .input(unstripped).criterion(hasItem(unstripped), conditionsFromItem(unstripped))
-                .sound(SoundEvents.ITEM_AXE_STRIP)
-                .result(stripped)
-                .result(Identifier.of("farmersdelight:tree_bark"))
-                .offerTo(exporter, recipeId(convertBetween(stripped, unstripped)));
-        });
-        Map.of(
-                UBlocks.GOLDEN_OAK_LOG, UBlocks.STRIPPED_GOLDEN_OAK_LOG,
-                UBlocks.GOLDEN_OAK_WOOD, UBlocks.STRIPPED_GOLDEN_OAK_WOOD
-        ).forEach((unstripped, stripped) -> {
-            CuttingBoardRecipeJsonBuilder.create(stripped, "axe_strip")
-                .input(unstripped).criterion(hasItem(unstripped), conditionsFromItem(unstripped))
-                .sound(SoundEvents.ITEM_AXE_STRIP)
-                .result(stripped)
-                .result(Items.GOLD_NUGGET, 8)
-                .offerTo(farmersDelightExporter, recipeId(convertBetween(stripped, unstripped)));
-        });
-
-        ShapelessRecipeJsonBuilder.create(items, RecipeCategory.MISC, UItems.APPLE_PIE)
-            .input(FarmersDelightContent.APPLE_PIE).criterion(hasItem(FarmersDelightContent.APPLE_PIE), conditionsFromItem(FarmersDelightContent.APPLE_PIE))
-            .offerTo(farmersDelightExporter, recipeId("apple_pie_to_apple_pie"));
-        ShapelessRecipeJsonBuilder.create(items, RecipeCategory.MISC, FarmersDelightContent.APPLE_PIE)
-            .input(UItems.APPLE_PIE).criterion(hasItem(UItems.APPLE_PIE), conditionsFromItem(UItems.APPLE_PIE))
-            .offerTo(farmersDelightExporter, recipeId("apple_pie_from_apple_pie"));
-
-        CuttingBoardRecipeJsonBuilder.create(UItems.HAY_FRIES, "axe_dig")
-                .input(Blocks.HAY_BLOCK).criterion(hasItem(Blocks.HAY_BLOCK), conditionsFromItem(Blocks.HAY_BLOCK))
-                .sound(SoundEvents.ITEM_AXE_SCRAPE)
-                .result(UItems.HAY_FRIES, 9)
-                .offerTo(farmersDelightExporter);
-
-        CuttingBoardRecipeJsonBuilder.create(UItems.APPLE_PIE_SLICE, Ingredient.fromTag(items.getOrThrow(UConventionalTags.Items.TOOL_KNIVES)))
-            .input(UBlocks.APPLE_PIE).criterion(hasItem(UBlocks.APPLE_PIE), conditionsFromItem(UBlocks.APPLE_PIE))
-            .sound(USounds.BLOCK_PIE_SLICE)
-            .result(UItems.APPLE_PIE_SLICE, 4)
-            .offerTo(farmersDelightExporter);
-    }
-
     public void offerCompactingRecipe(RecipeCategory category, ItemConvertible output, ItemConvertible input, int resultCount) {
         offerCompactingRecipe(category, output, input, hasItem(input), resultCount);
     }
@@ -848,27 +703,6 @@ public class URecipeGenerator extends RecipeGenerator implements CraftingMateria
         GrowingRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output.getDefaultState())
             .fuel(fuel.getDefaultState())
             .target(target).criterion(hasItem(target), conditionsFromItem(target))
-            .offerTo(exporter);
-    }
-
-    public void offerSpell(RecipeExporter exporter, ItemConvertible gemstone, SpellType<?> output, SpellTraits.Builder traits) {
-        SpellcraftingRecipeJsonBuilder.create(RecipeCategory.MISC, gemstone, output)
-            .traits(traits)
-            .offerTo(exporter);
-    }
-
-    public void offerSpellFromSpell(RecipeExporter exporter, ItemConvertible gemstone, SpellType<?> output, SpellType<?> input, SpellTraits.Builder traits) {
-        SpellcraftingRecipeJsonBuilder.create(RecipeCategory.MISC, gemstone, output)
-            .input(gemstone, input)
-            .traits(traits)
-            .offerTo(exporter);
-    }
-
-    public void offerSpellFromTwoSpells(RecipeExporter exporter, ItemConvertible gemstone, SpellType<?> output, SpellType<?> input1, SpellType<?> input2, SpellTraits.Builder traits) {
-        SpellcraftingRecipeJsonBuilder.create(RecipeCategory.MISC, gemstone, output)
-            .input(gemstone, input1)
-            .input(gemstone, input2)
-            .traits(traits)
             .offerTo(exporter);
     }
 
