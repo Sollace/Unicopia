@@ -16,6 +16,7 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
+import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.container.spellbook.ChapterPageElement;
 import com.minelittlepony.unicopia.container.spellbook.Flow;
 import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
@@ -60,6 +61,7 @@ public class SpellbookChapterProvider implements DataProvider {
     static final ChapterPageElement AUTHOR_3_NAME = text("gui.unicopia.spellbook.author3.name");
     static final ChapterPageElement RECIPE_REQUIRES = text("gui.unicopia.spellbook.recipe.requires");
     static final Text UNREADABLE_PAGE_TITLE = Text.literal("????? ????");
+    static final Text TORN_PAGE_TITLE = Text.translatable("gui.unicopia.spellbook.chapter.artefacts.torn_page.title");
 
     static final ChapterPageElement STATUS_UNCONFIRMED = text("gui.unicopia.spellbook.chapter.artefacts.status.unconfirmed");
     static final ChapterPageElement STATUS_CONFIRMED = text("gui.unicopia.spellbook.chapter.artefacts.status.confirmed");
@@ -100,23 +102,23 @@ public class SpellbookChapterProvider implements DataProvider {
                         .apply(SpellbookChapterProvider::applyAuthor1Signature))
                 .page(page().title(pageTitle(introductionChapterId, 2))
                         .element(paragraph(introductionChapterId, 2, 1))
-                        .element(new ChapterPageElement.Image(Unicopia.id("textures/gui/container/pages/profile.png"), CENTERED_BOUNDS, Flow.NONE)))
+                        .element(new ChapterPageElement.Image(pageTexture(SpellbookState.PROFILE_ID), CENTERED_BOUNDS, Flow.NONE)))
                 .page(page().title(pageTitle(introductionChapterId, 3))
                         .apply(text(paragraph(introductionChapterId, 3), 1, 2))
-                        .element(new ChapterPageElement.Image(Unicopia.id("textures/item/gemstone.png"), CENTERED_BOUNDS, Flow.NONE)))
+                        .element(new ChapterPageElement.Image(texture(UItems.GEMSTONE), CENTERED_BOUNDS, Flow.NONE)))
                 .page(page().title(pageTitle(introductionChapterId, 4))
                         .apply(text(paragraph(introductionChapterId, 4), 1, 2))
                         .apply(SpellbookChapterProvider::applyAuthor1Signature))
                 .page(page().title(pageTitle(introductionChapterId, 5))
                         .apply(text(paragraph(introductionChapterId, 5), 1, 3)))
                 .page(page().title(pageTitle(introductionChapterId, 6))
-                        .element(new ChapterPageElement.Image(Unicopia.id("textures/gui/container/pages/crafting.png"), CENTERED_BOUNDS, Flow.NONE))
+                        .element(new ChapterPageElement.Image(pageTexture(SpellbookState.CRAFTING_ID), CENTERED_BOUNDS, Flow.NONE))
                         .apply(text(paragraph(introductionChapterId, 6), 1, 3)))
                 .page(page().title(pageTitle(introductionChapterId, 7))
                         .apply(text(paragraph(introductionChapterId, 7), 1, 2))
                         .apply(SpellbookChapterProvider::applyAuthor1Signature))
                 .page(page().title(pageTitle(introductionChapterId, 8)).level(1)
-                        .element(new ChapterPageElement.Image(Unicopia.id("textures/item/botched_gem.png"), new Bounds(0, 127, 32, 32), Flow.NONE))
+                        .element(new ChapterPageElement.Image(texture(UItems.BOTCHED_GEM), new Bounds(0, 127, 32, 32), Flow.NONE))
                         .apply(text(paragraph(introductionChapterId, 8), 1, 3)))
                 .page(page().title(pageTitle(introductionChapterId, 9))
                         .apply(text(paragraph(introductionChapterId, 9), 1, 2))
@@ -136,14 +138,14 @@ public class SpellbookChapterProvider implements DataProvider {
                         .paragraph().paragraph().paragraph().apply(p -> applyTraitCornerIcon(p, Trait.AIR))
                         .next().paragraph().paragraph()
                         .apply(SpellbookChapterProvider::applyAuthor1Signature))
-                .apply(recipe(airElementId, SpellType.CATAPULT).level(4).iconA(Trait.AIR).iconB(Trait.CHAOS).modificationMessage())
-                .apply(recipe(airElementId, SpellType.BUBBLE, Trait.AIR, Trait.WATER, 2))
+                .apply(recipe(airElementId, SpellType.CATAPULT).level(4).modificationMessage())
+                .apply(recipe(airElementId, SpellType.BUBBLE).level(2).iconB(Trait.WATER))
                 .apply(article(4, airElementId, 7).paragraph().paragraph()
                         .incrementPage().next(5).paragraph()
                         .incrementPage().next(6).paragraph().paragraph()
                         .incrementPage().next(7).paragraph().paragraph()
                         .apply(SpellbookChapterProvider::applyAuthor1Signature))
-                .apply(recipe(airElementId, SpellType.FEATHER_FALL, Trait.AIR, Trait.CHAOS, 5))
+                .apply(recipe(airElementId, SpellType.FEATHER_FALL).level(5))
                 .apply(article(6, airElementId, 12).paragraph().paragraph())
                 .page(page())
                 .apply(article(7, airElementId, 13).paragraph().paragraph()
@@ -159,12 +161,12 @@ public class SpellbookChapterProvider implements DataProvider {
                 .page(coverPage(otherworldlyChapterId, otherworldlyElementId, 10))
                 .apply(article(20, otherworldlyElementId, 2).paragraph().paragraph().apply(p -> p.element(AUTHOR_2_NAME)))
                 .apply(recipe(otherworldlyElementId, SpellType.SIPHONING).level(20).paragraphs(1).iconA(Trait.DARKNESS).iconB(Trait.BLOOD))
-                .apply(recipe(otherworldlyElementId, SpellType.NECROMANCY, Trait.DARKNESS, Trait.BLOOD, 21))
-                .apply(recipe(otherworldlyElementId, SpellType.DARK_VORTEX, Trait.CHAOS, Trait.DARKNESS, 23))
-                .apply(recipe(otherworldlyElementId, SpellType.PORTAL, Trait.KNOWLEDGE, Trait.CHAOS, 24))
+                .apply(recipe(otherworldlyElementId, SpellType.NECROMANCY).level(21).iconA(Trait.DARKNESS).iconB(Trait.BLOOD))
+                .apply(recipe(otherworldlyElementId, SpellType.DARK_VORTEX).level(23).iconA(Trait.CHAOS).iconB(Trait.DARKNESS))
+                .apply(recipe(otherworldlyElementId, SpellType.PORTAL).level(24).iconA(Trait.KNOWLEDGE))
                 .apply(recipe(otherworldlyElementId, SpellType.MIND_SWAP).level(24)
-                        .modificationMessage("gui.unicopia.spellbook.chapter.otherworldly.mind_swap.3.body")
-                        .iconA(Unicopia.id("textures/gui/container/pages/dark_magic.png")))
+                        .modificationMessage(translationKey(otherworldlyElementId, "mind_swap.3.body"))
+                        .iconA(pageTexture(Unicopia.id("dark_magic"))))
                 .build()
         );
 
@@ -173,15 +175,15 @@ public class SpellbookChapterProvider implements DataProvider {
         exporter.accept(iceChapterId, builder().side(TabSide.RIGHT).tabY(3)
                 .page(coverPage(iceChapterId, iceElementId, 0))
                 .apply(article(0, airElementId, 2).paragraph().paragraph().apply(SpellbookChapterProvider::applyAuthor1Signature))
-                .apply(recipe(otherworldlyElementId, SpellType.FROST).level(3).iconA(Identifier.ofVanilla("textures/item/snowball.png")).iconB(Trait.ICE))
-                .apply(recipe(otherworldlyElementId, SpellType.CHILLING_BREATH).level(3).iconA(Identifier.ofVanilla("textures/item/snowball.png")).iconA(Identifier.ofVanilla("textures/item/oak_boat.png")).iconB(Trait.ICE))
+                .apply(recipe(otherworldlyElementId, SpellType.FROST).level(3).iconA(texture(Items.SNOWBALL)).iconB(Trait.ICE))
+                .apply(recipe(otherworldlyElementId, SpellType.CHILLING_BREATH).level(3).iconA(texture(Items.SNOWBALL)).iconA(texture(Items.OAK_BOAT)).iconB(Trait.ICE))
                 .apply(article(4, airElementId, 5).paragraph().paragraph().paragraph()
                         .incrementPage().next(5).paragraph().paragraph()
                         .incrementPage().next(6).paragraph().paragraph().apply(SpellbookChapterProvider::applyAuthor1Signature))
                 .page(page())
                 .apply(article(4, airElementId, 8).paragraph().paragraph().apply(SpellbookChapterProvider::applyAuthor1Signature))
                 .page(page())
-                .apply(recipe(otherworldlyElementId, SpellType.LIGHT).level(5).iconA(Identifier.ofVanilla("textures/item/light.png")).iconB(Trait.ICE).modificationMessage())
+                .apply(recipe(otherworldlyElementId, SpellType.LIGHT).level(5).iconA(texture(Items.LIGHT)).iconB(Trait.ICE).modificationMessage())
                 .apply(article(4, airElementId, 10).paragraph().paragraph().apply(SpellbookChapterProvider::applyAuthor1Signature)
                         .incrementPage().next().paragraph().paragraph().apply(SpellbookChapterProvider::applyAuthor1Signature)
                         .incrementPage().next(6).paragraph().paragraph()
@@ -194,9 +196,9 @@ public class SpellbookChapterProvider implements DataProvider {
                         .incrementPage().next().paragraph().paragraph().next().paragraph().paragraph().apply(bb -> bb.element(AUTHOR_1_NAME))
                         .incrementPage().next().paragraph().paragraph()
                         .incrementPage().next().paragraph().apply(SpellbookChapterProvider::applyAuthor1Signature))
-                .apply(recipe(otherworldlyElementId, SpellType.HYDROPHOBIC, Unicopia.id("spells/hydrophobic")).level(20).iconA(Trait.STRENGTH).iconB(Trait.ICE).modificationMessage(ChapterPageElement.Ingredients.builder()
-                        .text(1, Text.translatable("gui.unicopia.spellbook.chapter.ice.hydrophobic.modifier.1"))
-                        .text(1, Text.translatable("gui.unicopia.spellbook.chapter.ice.hydrophobic.modifier.2"))
+                .apply(recipe(otherworldlyElementId, SpellType.HYDROPHOBIC).level(20).iconA(Trait.STRENGTH).iconB(Trait.ICE).modificationMessage(ChapterPageElement.Ingredients.builder()
+                        .text(1, Text.translatable(translationKey(iceElementId, "hydrophobic.modifier.1")))
+                        .text(1, Text.translatable(translationKey(iceElementId, "hydrophobic.modifier.2")))
                         .build()))
                 .build()
         );
@@ -206,8 +208,8 @@ public class SpellbookChapterProvider implements DataProvider {
         exporter.accept(fireChapterId, builder().side(TabSide.RIGHT).tabY(2)
                 .page(coverPage(fireChapterId, fireElementId, 0))
                 .apply(article(0, fireElementId, 2).paragraph().paragraph().apply(SpellbookChapterProvider::applyAuthor1Signature))
-                .apply(recipe(fireElementId, SpellType.SCORCH, Unicopia.id("spells/scorch")).iconA(Trait.FIRE).iconB(Trait.FIRE))
-                .apply(recipe(fireElementId, SpellType.FLAME, Unicopia.id("spells/flame")).level(1).iconA(Trait.FIRE).iconB(Trait.FIRE))
+                .apply(recipe(fireElementId, SpellType.SCORCH).iconA(Trait.FIRE).iconB(Trait.FIRE))
+                .apply(recipe(fireElementId, SpellType.FLAME).level(1).iconA(Trait.FIRE).iconB(Trait.FIRE))
                 .page(page())
                 .apply(article(0, fireElementId, 5).paragraph().paragraph().paragraph())
                 .apply(article(2, fireElementId, 6).paragraph().paragraph().apply(b -> applyTraitCornerIcon(b, Trait.FIRE, Trait.FOCUS)))
@@ -240,8 +242,8 @@ public class SpellbookChapterProvider implements DataProvider {
                 .page(page())
                 .apply(article(10, darkMagicChapterId, 4).paragraph().paragraph().apply(p -> p.element(AUTHOR_1_NAME)))
                 .apply(recipe(darkMagicChapterId, SpellType.VORTEX).level(5).iconA(Trait.AIR).iconB(Trait.KNOWLEDGE).modificationMessage(ChapterPageElement.Ingredients.builder()
-                        .text(1, Text.translatable("gui.unicopia.spellbook.chapter.dark_magic.vortex.modifier.1"))
-                        .text(1, Text.translatable("gui.unicopia.spellbook.chapter.dark_magic.vortex.modifier.2"))
+                        .text(1, Text.translatable(translationKey(darkMagicChapterId, "vortex.modifier.1")))
+                        .text(1, Text.translatable(translationKey(darkMagicChapterId, "vortex.modifier.2")))
                         .build()))
                 .apply(article(6, darkMagicChapterId, 6).paragraph().paragraph().paragraph())
                 .apply(article(6, darkMagicChapterId, 7).paragraph().paragraph().paragraph())
@@ -261,14 +263,14 @@ public class SpellbookChapterProvider implements DataProvider {
                 .apply(article(14, darkMagicChapterId, 18).paragraph().paragraph().apply(p -> p.element(AUTHOR_1_NAME)))
                 .apply(recipe(darkMagicChapterId, SpellType.ARCANE_PROTECTION).level(16).iconA(Trait.KNOWLEDGE).iconB(Trait.DARKNESS).modificationMessage())
                 .apply(recipe(darkMagicChapterId, SpellType.DISPLACEMENT).level(17).iconA(Trait.KNOWLEDGE).iconB(Trait.CHAOS))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.dark_magic.p21.title")).level(14).element(paragraph(darkMagicChapterId, 21, 1), paragraph(darkMagicChapterId, 21, 2), AUTHOR_1_NAME))
+                .page(page().title(pageTitle(darkMagicChapterId, 21)).level(14).element(paragraph(darkMagicChapterId, 21, 1), paragraph(darkMagicChapterId, 21, 2), AUTHOR_1_NAME))
                 .page(page())
-                .apply(recipe(darkMagicChapterId, SpellType.MIMIC, Unicopia.id("spells/mimic")).level(18).iconA(Trait.DARKNESS).iconB(Trait.DARKNESS).modificationMessage())
+                .apply(recipe(darkMagicChapterId, SpellType.MIMIC).level(18).iconA(Trait.DARKNESS).iconB(Trait.DARKNESS).modificationMessage())
                 .page(page())
                 .page(page())
                 .page(page().title(UNREADABLE_PAGE_TITLE).level(44).element(paragraph(darkMagicChapterId, 24, 1), paragraph(darkMagicChapterId, 24, 2)))
                 .page(page().title(UNREADABLE_PAGE_TITLE).level(44).element(paragraph(darkMagicChapterId, 25, 1), AUTHOR_1_NAME))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.dark_magic.p26.title")).level(21).element(paragraph(darkMagicChapterId, 26, 1)))
+                .page(page().title(pageTitle(darkMagicChapterId, 26)).level(21).element(paragraph(darkMagicChapterId, 26, 1)))
                 .page(page().title(UNREADABLE_PAGE_TITLE).level(33).element(paragraph(darkMagicChapterId, 27, 1), paragraph(darkMagicChapterId, 27, 2), paragraph(darkMagicChapterId, 27, 3), paragraph(darkMagicChapterId, 27, 4)))
                 .page(page().title(UNREADABLE_PAGE_TITLE).level(19).element(paragraph(darkMagicChapterId, 28, 1), AUTHOR_1_NAME, pageIcon(darkMagicChapterId), new ChapterPageElement.Image(Unicopia.id("textures/gui/trait/kindness.png"), TRAIT_CORNER_B_BOUNDS, Flow.NONE)))
                 .apply(recipe(darkMagicChapterId, SpellType.DISPEL_EVIL).level(19).modificationMessage()::applyFinalPage)
@@ -279,27 +281,24 @@ public class SpellbookChapterProvider implements DataProvider {
     protected void generateArtefactsChapter(WrapperLookup registries, BiConsumer<Identifier, SpellbookChapter> exporter) {
         var artefactsChapterId = Unicopia.id("crystal_heart");
         var artefactsElementId = Unicopia.id("artefacts");
+        var altarTitle = Text.translatable("gui.unicopia.spellbook.chapter." + artefactsElementId.getPath() + ".altar.title");
+        var braceletParagraph = paragraph(artefactsElementId, UItems.FRIENDSHIP_BRACELET);
+        var meadobrooksStaffParagraph = paragraph(artefactsElementId, UItems.MEADOWBROOKS_STAFF);
+        var grogarsBellParagraph = paragraph(artefactsElementId, UItems.GROGARS_BELL);
         exporter.accept(artefactsChapterId, builder().side(TabSide.RIGHT).tabY(7)
                 .page(coverPage(artefactsChapterId, artefactsElementId, 0))
-                .page(page().title(pageTitle(artefactsElementId, 2))
-                        .element(paragraph(artefactsElementId, 2, 1), paragraph(artefactsElementId, 2, 2))
-                        .apply(SpellbookChapterProvider::applyAuthor1Signature))
-                .page(page().title(UItems.CRYSTAL_HEART.getName())
-                        .element(item(UItems.CRYSTAL_HEART))
-                        .element(STATUS_LOST)
-                        .element(text("gui.unicopia.spellbook.chapter.artefacts.crystal_heart.1.body"))
-                        .element(text("gui.unicopia.spellbook.chapter.artefacts.crystal_heart.2.body")))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.artefacts.crystal_heart.title"))
-                        .element(text("gui.unicopia.spellbook.chapter.artefacts.crystal_heart.3.body")))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.artefacts.torn_page.title"))
-                        .apply(text("gui.unicopia.spellbook.chapter.artefacts.torn_page.%d.body", 1, 3))
-                        .element(ChapterPageElement.Ingredients.builder()
+                .page(page().title(pageTitle(artefactsElementId, 2)).element(paragraph(artefactsElementId, 2, 1), paragraph(artefactsElementId, 2, 2)).apply(SpellbookChapterProvider::applyAuthor1Signature))
+
+                .page(page().title(UItems.CRYSTAL_HEART.getName()).element(item(UItems.CRYSTAL_HEART), STATUS_LOST).apply(text(paragraph(artefactsElementId, UItems.CRYSTAL_HEART), 1, 2)))
+                .page(page().title(pageTitle(artefactsElementId, UItems.CRYSTAL_HEART)).element(paragraph(artefactsElementId, UItems.CRYSTAL_HEART, 3)))
+
+                .page(page().title(TORN_PAGE_TITLE).apply(text(translationKey(artefactsElementId, "torn_page.%d.body"), 1, 3)).element(ChapterPageElement.Ingredients.builder()
                                 .item(2, Items.END_ROD)
                                 .item(20, Items.DIAMOND_BLOCK)
                                 .item(1, UItems.CRYSTAL_HEART)
                                 .build()))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.artefacts.crystal_podium.title"))
-                        .element(ChapterPageElement.Structure.builder()
+
+                .page(page().title(Text.translatable(translationKey(artefactsElementId, "crystal_podium.title"))).element(ChapterPageElement.Structure.builder()
                                 .fill(Vec3i.ZERO, new Vec3i(2, 0, 2), Blocks.DIAMOND_BLOCK.getDefaultState())
                                 .set(new Vec3i(1, 1, 1), Blocks.DIAMOND_BLOCK.getDefaultState())
                                 .set(new Vec3i(1, 2, 1), Blocks.END_ROD.getDefaultState().with(Properties.FACING, Direction.UP))
@@ -308,16 +307,13 @@ public class SpellbookChapterProvider implements DataProvider {
                                 .fill(new Vec3i(0, 6, 0), new Vec3i(2, 6, 2), Blocks.DIAMOND_BLOCK.getDefaultState())
                                 .build())
                         .element(item(UItems.CRYSTAL_HEART, new Bounds(60, -34, 0, 0))))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.artefacts.altar.title"))
-                        .apply(text("gui.unicopia.spellbook.chapter.artefacts.altar.%d.body", 1, 2))
-                        .element(ChapterPageElement.Ingredients.builder()
+                .page(page().title(altarTitle).apply(text(translationKey(artefactsElementId, "altar.%d.body"), 1, 2)).element(ChapterPageElement.Ingredients.builder()
                                 .item(40, Items.OBSIDIAN)
                                 .item(1, Items.SOUL_SAND)
                                 .item(1, Items.LODESTONE)
                                 .item(1, UItems.SPELLBOOK)
                                 .build()))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.artefacts.altar.title"))
-                        .element(ChapterPageElement.Structure.builder()
+                .page(page().title(altarTitle).element(ChapterPageElement.Structure.builder()
                                 .fill(Vec3i.ZERO, new Vec3i(8, 0, 8), Blocks.SOUL_SAND.getDefaultState())
                                 .fill(new Vec3i(3, 1, 3), new Vec3i(5, 1, 5), Blocks.OBSIDIAN.getDefaultState())
                                 .set(new Vec3i(1, 4, 1), Blocks.SOUL_SAND.getDefaultState())
@@ -331,69 +327,33 @@ public class SpellbookChapterProvider implements DataProvider {
                                 .fill(new Vec3i(2, 1, 8), new Vec3i(2, 4, 8), Blocks.OBSIDIAN.getDefaultState())
                                 .fill(new Vec3i(6, 1, 8), new Vec3i(6, 4, 8), Blocks.OBSIDIAN.getDefaultState())
                                 .build()))
-                .page(page().title(UItems.SPECTRAL_CLOCK.getName())
-                        .element(item(UItems.SPECTRAL_CLOCK))
-                        .element(STATUS_UNCONFIRMED)
-                        .element(text("gui.unicopia.spellbook.chapter.artefacts.spectral_clock.1.body"))
-                        .element(text("gui.unicopia.spellbook.chapter.artefacts.altar.3.body")))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.artefacts.spectral_clock.title"))
-                        .element(text("gui.unicopia.spellbook.chapter.artefacts.spectral_clock.2.body"))
-                        .apply(SpellbookChapterProvider::applyAuthor1Signature))
-                .page(page().title(UItems.DRAGON_BREATH_SCROLL.getName())
-                        .element(item(UItems.DRAGON_BREATH_SCROLL), STATUS_CONFIRMED)
-                        .element(text("gui.unicopia.spellbook.chapter.artefacts.dragon_breath_scroll.2.body"))
-                        .element(AUTHOR_3_NAME))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.artefacts.dragon_breath_scroll.title"))
-                        .element(text("gui.unicopia.spellbook.chapter.artefacts.dragon_breath_scroll.3.body"))
-                        .element(recipe(Unicopia.id("dragon_breath_scroll"))))
-                .page(page().title(UItems.FRIENDSHIP_BRACELET.getName())
-                        .element(item(UItems.FRIENDSHIP_BRACELET), STATUS_CONFIRMED)
-                        .apply(text("gui.unicopia.spellbook.chapter.artefacts.friendship_bracelet.%d.body", 1, 2)))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.artefacts.friendship_bracelet.title"))
-                        .apply(text("gui.unicopia.spellbook.chapter.artefacts.friendship_bracelet.%d.body", 3, 4)))
-                .page(page().title(UItems.PEGASUS_AMULET.getName())
-                        .element(item(UItems.PEGASUS_AMULET), STATUS_LOST)
-                        .apply(text("gui.unicopia.spellbook.chapter.artefacts.pegasus_amulet.%d.body", 1, 2)))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.artefacts.pegasus_amulet.title"))
-                        .element(text("gui.unicopia.spellbook.chapter.artefacts.pegasus_amulet.3.body")))
-                .page(page().title(UItems.MEADOWBROOKS_STAFF.getName()).level(3)
-                        .element(item(UItems.MEADOWBROOKS_STAFF), STATUS_CONFIRMED)
-                        .apply(text("gui.unicopia.spellbook.chapter.artefacts.meadowbrooks_staff.%d.body", 1, 2)))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.artefacts.meadowbrooks_staff.title")).level(3)
-                        .apply(text("gui.unicopia.spellbook.chapter.artefacts.meadowbrooks_staff.%d.body", 3, 4)))
-                .page(page().title(UItems.MAGIC_STAFF.getName()).level(5)
-                        .element(item(UItems.MAGIC_STAFF), STATUS_UNCONFIRMED)
-                        .element(text("gui.unicopia.spellbook.chapter.artefacts.magic_staff.1.body")))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.artefacts.magic_staff.title")).level(5)
-                        .apply(text("gui.unicopia.spellbook.chapter.artefacts.magic_staff.%d.body", 2, 3)))
-                .page(page().title(UItems.GROGARS_BELL.getName())
-                        .element(item(UItems.GROGARS_BELL), STATUS_LOST)
-                        .apply(text("gui.unicopia.spellbook.chapter.artefacts.grogars_bell.%d.body", 1, 2)))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.artefacts.grogars_bell.title")).level(80)
-                        .apply(text("gui.unicopia.spellbook.chapter.artefacts.grogars_bell.%d.body", 3, 4)))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.artefacts.grogars_bell.2.title")).level(80)
-                        .apply(text("gui.unicopia.spellbook.chapter.artefacts.grogars_bell.%d.body", 5, 6)))
-                .page(page().title(UItems.ALICORN_AMULET.getName())
-                        .element(item(UItems.ALICORN_AMULET), STATUS_UNCONFIRMED)
-                        .element(text("gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.1.body")))
-                .page(page().title(Text.translatable("gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.title")).level(999)
-                        .apply(text("gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.%d.body", 2, 3)))
+
+                .page(page().title(UItems.SPECTRAL_CLOCK.getName()).element(item(UItems.SPECTRAL_CLOCK), STATUS_UNCONFIRMED, paragraph(artefactsElementId, UItems.SPECTRAL_CLOCK, 1), text(translationKey(artefactsElementId, "altar.3.body"))))
+                .page(page().title(pageTitle(artefactsElementId, UItems.SPECTRAL_CLOCK)).element(paragraph(artefactsElementId, UItems.SPECTRAL_CLOCK, 2)).apply(SpellbookChapterProvider::applyAuthor1Signature))
+
+                .page(page().title(UItems.DRAGON_BREATH_SCROLL.getName()).element(item(UItems.DRAGON_BREATH_SCROLL), STATUS_CONFIRMED, paragraph(artefactsElementId, UItems.DRAGON_BREATH_SCROLL, 2), AUTHOR_3_NAME))
+                .page(page().title(pageTitle(artefactsElementId, UItems.DRAGON_BREATH_SCROLL)).element(paragraph(artefactsElementId, UItems.DRAGON_BREATH_SCROLL, 3)).element(recipe(Unicopia.id("dragon_breath_scroll"))))
+
+                .page(page().title(UItems.FRIENDSHIP_BRACELET.getName()).element(item(UItems.FRIENDSHIP_BRACELET), STATUS_CONFIRMED).apply(text(braceletParagraph, 1, 2)))
+                .page(page().title(pageTitle(artefactsElementId, UItems.FRIENDSHIP_BRACELET)).apply(text(braceletParagraph, 3, 4)))
+
+                .page(page().title(UItems.PEGASUS_AMULET.getName()).element(item(UItems.PEGASUS_AMULET), STATUS_LOST).apply(text(paragraph(artefactsElementId, UItems.PEGASUS_AMULET), 1, 2)))
+                .page(page().title(pageTitle(artefactsElementId, UItems.PEGASUS_AMULET)).element(paragraph(artefactsElementId, UItems.PEGASUS_AMULET, 3)))
+
+                .page(page().title(UItems.MEADOWBROOKS_STAFF.getName()).level(3).element(item(UItems.MEADOWBROOKS_STAFF), STATUS_CONFIRMED).apply(text(meadobrooksStaffParagraph, 1, 2)))
+                .page(page().title(pageTitle(artefactsElementId, UItems.MEADOWBROOKS_STAFF)).level(3).apply(text(meadobrooksStaffParagraph, 3, 4)))
+
+                .page(page().title(UItems.MAGIC_STAFF.getName()).level(5).element(item(UItems.MAGIC_STAFF), STATUS_UNCONFIRMED, paragraph(artefactsElementId, UItems.MAGIC_STAFF, 1)))
+                .page(page().title(pageTitle(artefactsElementId, UItems.MAGIC_STAFF)).level(5).apply(text(paragraph(artefactsElementId, UItems.MAGIC_STAFF), 2, 3)))
+
+                .page(page().title(UItems.GROGARS_BELL.getName()).element(item(UItems.GROGARS_BELL), STATUS_LOST).apply(text(grogarsBellParagraph, 1, 2)))
+                .page(page().title(pageTitle(artefactsElementId, UItems.GROGARS_BELL)).level(80).apply(text(grogarsBellParagraph, 3, 4)))
+                .page(page().title(Text.translatable(translationKey(artefactsElementId, UItems.GROGARS_BELL, "2.title"))).level(80).apply(text(paragraph(artefactsElementId, UItems.GROGARS_BELL), 5, 6)))
+
+                .page(page().title(UItems.ALICORN_AMULET.getName()).element(item(UItems.ALICORN_AMULET), STATUS_UNCONFIRMED, paragraph(artefactsElementId, UItems.ALICORN_AMULET, 1)))
+                .page(page().title(pageTitle(artefactsElementId, UItems.ALICORN_AMULET)).level(999).apply(text(paragraph(artefactsElementId, UItems.ALICORN_AMULET), 2, 3)))
                 .build()
         );
-    }
-
-    protected RecipeChapterBuilder recipe(Identifier elementId, SpellType<?> output, Identifier recipeId, Trait iconA, Trait iconB, int level) {
-        return new RecipeChapterBuilder(elementId, output, recipeId)
-                .level(level)
-                .iconA(iconA)
-                .iconB(iconB);
-    }
-
-    protected RecipeChapterBuilder recipe(Identifier elementId, SpellType<?> output, Trait iconA, Trait iconB, int level) {
-        return new RecipeChapterBuilder(elementId, output, output.getId().withPath(p -> "spells/" + p))
-                .level(level)
-                .iconA(iconA)
-                .iconB(iconB);
     }
 
     static Page.Builder applyAuthor1Signature(Page.Builder page) {
@@ -427,11 +387,37 @@ public class SpellbookChapterProvider implements DataProvider {
     }
 
     static ChapterPageElement paragraph(Identifier elementId, int pageNum, int paragraphNum) {
-        return text("gui." + elementId.getNamespace() + ".spellbook.chapter." + elementId.getPath() + ".p" + pageNum + "." + paragraphNum + ".body");
+        return text(translationKey(elementId, "p" + pageNum + "." + paragraphNum + ".body"));
+    }
+
+    static ChapterPageElement paragraph(Identifier elementId, ItemConvertible item, int paragraphNum) {
+        return text(translationKey(elementId, itemPath(item) + "." + paragraphNum + ".body"));
     }
 
     static String paragraph(Identifier elementId, int pageNum) {
-        return "gui." + elementId.getNamespace() + ".spellbook.chapter." + elementId.getPath() + ".p" + pageNum + ".%d.body";
+        return translationKey(elementId, "p" + pageNum + ".%d.body");
+    }
+
+    static String paragraph(Identifier elementId, ItemConvertible item) {
+        return translationKey(elementId, itemPath(item) + ".%d.body");
+    }
+
+    static String translationKey(Identifier chapterElement, String suffix) {
+        return String.format("gui.%s.spellbook.chapter.%s.%s", chapterElement.getNamespace(), chapterElement.getPath(), suffix);
+    }
+
+    static String translationKey(Identifier chapterElement, ItemConvertible item, String suffix) {
+        return translationKey(chapterElement, itemPath(item) + "." + suffix);
+    }
+
+    @SuppressWarnings("deprecation")
+    static String itemPath(ItemConvertible item) {
+        return item.asItem().getRegistryEntry().registryKey().getValue().getPath();
+    }
+
+    @SuppressWarnings("deprecation")
+    static Identifier texture(ItemConvertible item) {
+        return item.asItem().getRegistryEntry().registryKey().getValue().withPath(p -> "textures/item/" + p + ".png");
     }
 
     static ChapterPageElement text(String translationKey) {
@@ -457,11 +443,20 @@ public class SpellbookChapterProvider implements DataProvider {
 
 
     static ChapterPageElement pageIcon(Identifier pageId) {
-        return new ChapterPageElement.Image(pageId.withPath(p -> "textures/gui/container/pages/" + p + ".png"), CHAPTER_ICON_BOUNDS, Flow.NONE);
+        return new ChapterPageElement.Image(pageTexture(pageId), CHAPTER_ICON_BOUNDS, Flow.NONE);
+    }
+
+    static Identifier pageTexture(Identifier pageId) {
+        return pageId.withPath(p -> "textures/gui/container/pages/" + p + ".png");
     }
 
     static Text pageTitle(Identifier chapterId, int pageNum) {
-        return Text.translatable("gui." + chapterId.getNamespace() + ".spellbook.chapter." + chapterId.getPath() + ".p" + pageNum + ".title");
+        return Text.translatable(translationKey(chapterId, "p" + pageNum + ".title"));
+    }
+
+    @SuppressWarnings("deprecation")
+    static Text pageTitle(Identifier chapterId, ItemConvertible item) {
+        return Text.translatable(translationKey(chapterId, item.asItem().getRegistryEntry().registryKey().getValue().getPath() + ".title"));
     }
 
     @Override
@@ -478,7 +473,12 @@ public class SpellbookChapterProvider implements DataProvider {
     }
 
     protected RecipeChapterBuilder recipe(Identifier elementId, SpellType<?> output) {
-        return new RecipeChapterBuilder(elementId, output, output.getId().withPath(p -> "spells/" + p));
+        return new RecipeChapterBuilder(elementId, output, output.getId());
+    }
+
+    protected ChapterPageElement recipe(Identifier id) {
+        var recipe = recipes.getOrThrow(RegistryKey.of(RegistryKeys.RECIPE, id));
+        return new ChapterPageElement.Recipe(recipe, recipe.value().getDisplays());
     }
 
     static ArticleBuilder article(int level, Identifier elementId, int pageNum) {
@@ -487,11 +487,6 @@ public class SpellbookChapterProvider implements DataProvider {
 
     static ArticleBuilder article(int level, Identifier elementId, int pageNum, int titlePageNum) {
         return new ArticleBuilder(level, elementId, pageNum, titlePageNum);
-    }
-
-    protected ChapterPageElement recipe(Identifier id) {
-        var recipe = recipes.getOrThrow(RegistryKey.of(RegistryKeys.RECIPE, id));
-        return new ChapterPageElement.Recipe(recipe, recipe.value().getDisplays());
     }
 
     public class RecipeChapterBuilder implements UnaryOperator<Builder> {
@@ -513,7 +508,7 @@ public class SpellbookChapterProvider implements DataProvider {
             this.output = output;
             this.recipeKey = RegistryKey.of(RegistryKeys.RECIPE, recipeId);
             this.recipe = recipes.getOrThrow(recipeKey);
-            this.translationBase = "gui." + elementId.getNamespace() + ".spellbook.chapter." + elementId.getPath() + "." + output.getId().getPath();
+            this.translationBase = translationKey(elementId, output.getId().getPath());
             Preconditions.checkArgument(exportedRecipes.add(recipeKey), "Recipe has already been documented: " + recipeKey);
         }
 
