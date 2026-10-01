@@ -4,6 +4,7 @@ bin/
 build/
 run/
 generated/
+generated-code/
 .classpath
 .project
 *.launch
