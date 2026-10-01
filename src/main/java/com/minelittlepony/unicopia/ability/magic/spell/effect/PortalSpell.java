@@ -44,7 +44,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldEvents;
 
 public class PortalSpell extends AbstractSpell implements PlacementControlSpell.PlacementDelegate, OrientedSpell {
-    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+    public static final SpellTraits DEFAULT_TRAITS = SpellTraits.builder()
             .with(Trait.LIFE, 10)
             .with(Trait.KNOWLEDGE, 1)
             .with(Trait.ORDER, 25)

@@ -38,7 +38,7 @@ class TraitsArgumentType implements ArgumentType<SpellTraits> {
             return SpellTraits.EMPTY;
         }
 
-        SpellTraits.Builder builder = new SpellTraits.Builder();
+        SpellTraits.Builder builder = SpellTraits.builder();
         while (reader.canRead() && reader.peek() != ' ') {
             Trait trait = Trait.of(readTraitName(reader)).orElseThrow(() -> UNRECOGNISED_TRAIT_EXCEPTION.createWithContext(reader));
             reader.expect(':');

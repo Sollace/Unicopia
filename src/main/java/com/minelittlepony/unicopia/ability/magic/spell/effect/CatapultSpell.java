@@ -42,7 +42,7 @@ import net.minecraft.world.World;
  * Picks up and throws an entity or block.
  */
 public class CatapultSpell extends AbstractSpell implements ProjectileDelegate.BlockHitListener, ProjectileDelegate.EntityHitListener {
-    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+    public static final SpellTraits DEFAULT_TRAITS = SpellTraits.builder()
             .with(Trait.FOCUS, 50)
             .with(Trait.KNOWLEDGE, 1)
             .with(Trait.EARTH, 60)

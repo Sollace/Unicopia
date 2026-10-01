@@ -23,13 +23,13 @@ import net.minecraft.util.hit.EntityHitResult;
 
 public class FireBoltSpell extends AbstractSpell implements HomingSpell,
         ProjectileDelegate.ConfigurationListener, ProjectileDelegate.EntityHitListener {
-    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+    public static final SpellTraits DEFAULT_TRAITS = SpellTraits.builder()
             .with(Trait.FOCUS, 10)
             .with(Trait.CHAOS, 1)
             .with(Trait.STRENGTH, 11)
             .with(Trait.FIRE, 60)
             .build();
-    public static final SpellTraits HOMING_TRAITS = new SpellTraits.Builder()
+    public static final SpellTraits HOMING_TRAITS = SpellTraits.builder()
             .with(Trait.FOCUS, 50)
             .with(Trait.CHAOS, 10)
             .with(Trait.STRENGTH, 11)

@@ -18,7 +18,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.Vec3d;
 
 public class DispellEvilSpell extends AbstractSpell implements ProjectileDelegate.HitListener {
-    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+    public static final SpellTraits DEFAULT_TRAITS = SpellTraits.builder()
             .with(Trait.POWER, 1)
             .build();
 

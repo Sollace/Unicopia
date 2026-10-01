@@ -36,7 +36,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class HydrophobicSpell extends AbstractSpell {
-    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+    public static final SpellTraits DEFAULT_TRAITS = SpellTraits.builder()
             .with(Trait.FOCUS, 5)
             .with(Trait.KNOWLEDGE, 1)
             .build();

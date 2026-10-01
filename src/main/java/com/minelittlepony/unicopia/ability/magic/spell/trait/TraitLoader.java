@@ -3,12 +3,18 @@ package com.minelittlepony.unicopia.ability.magic.spell.trait;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.spongepowered.include.com.google.common.base.Preconditions;
+
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.JsonObject;
@@ -29,6 +35,7 @@ import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -105,7 +112,7 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
         profiler.endTick();
     }
 
-    interface TraitStream {
+    public interface TraitStream {
         TypeToken<Map<String, String>> TYPE = new TypeToken<>() {};
         Codec<TraitStream> CODEC = Codec.xor(TraitMap.CODEC, TraitSet.CODEC).xmap(
             Either::unwrap,
@@ -128,6 +135,38 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
             public Stream<Entry<Key, SpellTraits>> entries() {
                 return items.entrySet().stream();
             }
+
+            public static Builder builder() {
+                return new Builder();
+            }
+
+            public static class Builder {
+                private final Map<Key, SpellTraits> items = new HashMap<>();
+                private Builder() {}
+
+                public Builder tag(TagKey<Item> tag, SpellTraits.Builder traits) {
+                    return tag(tag, traits.build());
+                }
+
+                public Builder tag(TagKey<Item> tag, SpellTraits traits) {
+                    items.put(new Key.Tag(tag), traits);
+                    return this;
+                }
+
+                public Builder item(ItemConvertible item, SpellTraits.Builder traits) {
+                    return item(item, traits.build());
+                }
+
+                @SuppressWarnings("deprecation")
+                public Builder item(ItemConvertible item, SpellTraits traits) {
+                    items.put(new Key.Id(item.asItem().getRegistryEntry().registryKey()), traits);
+                    return this;
+                }
+
+                public TraitMap build() {
+                    return new TraitMap(false, Map.copyOf(items));
+                }
+            }
         }
 
         record TraitSet (
@@ -143,6 +182,53 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
             @Override
             public Stream<Entry<Key, SpellTraits>> entries() {
                 return items().stream().map(item -> Map.entry(item, traits()));
+            }
+
+            public static Builder builder(SpellTraits.Builder traits) {
+                return new Builder(traits.build());
+            }
+
+            public static Builder builder(SpellTraits traits) {
+                return new Builder(traits);
+            }
+
+            public static final class Builder {
+                private final SpellTraits traits;
+                private final Set<Key> keys = new HashSet<>();
+
+                private final Set<TagKey<Item>> tags = new HashSet<>();
+                private final Set<RegistryEntry<Item>> items = new HashSet<>();
+
+                private Builder(SpellTraits traits) {
+                    this.traits = traits;
+                }
+
+                public Builder tag(TagKey<Item> tag) {
+                    keys.add(new Key.Tag(tag));
+                    tags.add(tag);
+                    return this;
+                }
+
+                @SuppressWarnings("deprecation")
+                public Builder item(ItemConvertible item) {
+                    if (!keys.add(new Key.Id(item.asItem().getRegistryEntry().registryKey()))) {
+                        throw new IllegalArgumentException("Item specified multiple times: " + item);
+                    }
+                    items.add(item.asItem().getRegistryEntry());
+                    return this;
+                }
+
+                public Builder apply(UnaryOperator<Builder> action) {
+                    return action.apply(this);
+                }
+
+                public TraitSet build() {
+                    String result = items.stream().map(item -> {
+                        return Map.entry(item, tags.stream().filter(tag -> item.isIn(tag)).map(tag -> tag.id().toString()).collect(Collectors.joining(",")));
+                    }).filter(i -> !i.getValue().isEmpty()).map(entry -> entry.getKey() + "[" + entry.getValue() + "]").collect(Collectors.joining(","));
+                    Preconditions.checkState(result.isEmpty(), "Item explicitly added will be matched by tags: " + result);
+                    return new TraitSet(false, traits, Set.copyOf(keys));
+                }
             }
         }
 

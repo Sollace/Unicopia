@@ -29,7 +29,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class IceSpell extends AbstractSpell {
-    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+    public static final SpellTraits DEFAULT_TRAITS = SpellTraits.builder()
             .with(Trait.ICE, 15)
             .build();
 

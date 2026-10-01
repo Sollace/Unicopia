@@ -71,7 +71,7 @@ public class TraitDiscovery implements NbtSerialisable, Copyable<TraitDiscovery>
         SpellTraits traits = SpellTraits.of(key);
         items.put(key, traits);
         Set<Trait> newTraits = new HashSet<>();
-        traits.entries().forEach(e -> {
+        traits.forEach(e -> {
             if (this.traits.add(e.getKey())) {
                 newTraits.add(e.getKey());
             }

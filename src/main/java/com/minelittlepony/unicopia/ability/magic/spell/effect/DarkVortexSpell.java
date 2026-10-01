@@ -52,7 +52,7 @@ import net.minecraft.world.World.ExplosionSourceType;
  * More powerful version of the vortex spell which creates a black hole.
  */
 public class DarkVortexSpell extends AbstractSpell implements ProjectileDelegate.BlockHitListener {
-    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+    public static final SpellTraits DEFAULT_TRAITS = SpellTraits.builder()
             .with(Trait.CHAOS, 5)
             .with(Trait.KNOWLEDGE, 1)
             .with(Trait.STRENGTH, 70)

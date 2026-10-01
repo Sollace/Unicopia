@@ -47,7 +47,7 @@ public class BubbleSpell extends AbstractSpell implements TimedSpell, Projectile
             EntityAttributes.FLYING_SPEED, SPEED_MODIFIER
     );
 
-    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+    public static final SpellTraits DEFAULT_TRAITS = SpellTraits.builder()
             .with(Trait.FOCUS, 6)
             .with(Trait.POWER, 1)
             .build();

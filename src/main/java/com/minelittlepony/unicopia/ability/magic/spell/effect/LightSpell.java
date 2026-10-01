@@ -28,7 +28,7 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.math.MathHelper;
 
 public class LightSpell extends AbstractSpell implements TimedSpell, ProjectileDelegate.HitListener {
-    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+    public static final SpellTraits DEFAULT_TRAITS = SpellTraits.builder()
             .with(Trait.LIFE, 10)
             .with(Trait.AIR, 0.3F)
             .with(Trait.KINDNESS, 12)

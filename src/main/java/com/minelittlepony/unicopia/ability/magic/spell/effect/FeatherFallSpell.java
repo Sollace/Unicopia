@@ -52,7 +52,7 @@ public class FeatherFallSpell extends AbstractSpell implements TimedSpell {
 
     static final TooltipFactory TOOLTIP = TooltipFactory.of(DURATION, STRENGTH, RANGE, SIMULTANIOUS_TARGETS, COST_PER_INDIVIDUAL, TARGET_PREFERENCE, CASTER_PREFERENCE, NEGATES_FALL_DAMAGE);
 
-    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+    public static final SpellTraits DEFAULT_TRAITS = SpellTraits.builder()
             .with(Trait.FOCUS, 80)
             .with(Trait.POWER, 10)
             .with(Trait.AIR, 0.1F)

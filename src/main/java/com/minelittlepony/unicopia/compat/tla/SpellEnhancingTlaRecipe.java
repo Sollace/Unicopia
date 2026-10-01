@@ -21,7 +21,7 @@ class SpellEnhancingTlaRecipe extends SpellbookTlaRecipe {
         input(trait);
         getOutputs().addAll(
                 Arrays.stream(((SpellEnhancingRecipe)recipe.value()).getBaseMaterial().getMatchingStacks())
-                .map(stack -> TlaStack.of(SpellTraits.of(stack).add(new SpellTraits.Builder().with(trait, 1).build()).applyTo(stack)))
+                .map(stack -> TlaStack.of(SpellTraits.of(stack).add(SpellTraits.of(trait, 1)).applyTo(stack)))
                 .toList()
         );
     }

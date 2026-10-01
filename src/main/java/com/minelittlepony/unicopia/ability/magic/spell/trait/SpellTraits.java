@@ -18,6 +18,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.Nullable;
+
+import com.google.common.collect.Interner;
+import com.google.common.collect.Interners;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.util.InventoryUtil;
@@ -58,6 +62,8 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
             traits -> traits.traits
     );
 
+    private static final Interner<SpellTraits> INTERNER = Interners.newWeakInterner();
+
     public static void load(Map<RegistryKey<Item>, SpellTraits> newRegistry) {
         REGISTRY = newRegistry;
         ITEMS.clear();
@@ -82,6 +88,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     private final EnumMap<Trait, Float> traits;
+    private @Nullable String entriesString;
     private final float corruption;
 
     private SpellTraits(Map<Trait, Float> traits) {
@@ -133,22 +140,24 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public boolean includes(SpellTraits other) {
-        return other.stream().allMatch(pair -> {
-            return get(pair.getKey()) >= pair.getValue();
-        });
+        return other.stream().allMatch(pair -> get(pair.getKey()) >= pair.getValue());
+    }
+
+    public int size() {
+        return traits.size();
     }
 
     @Override
     public Iterator<Entry<Trait, Float>> iterator() {
-        return entries().iterator();
-    }
-
-    public Set<Map.Entry<Trait, Float>> entries() {
-        return traits.entrySet();
+        return traits.entrySet().iterator();
     }
 
     public Stream<Map.Entry<Trait, Float>> stream() {
-        return entries().stream();
+        return traits.entrySet().stream();
+    }
+
+    public Set<Trait> keys() {
+        return Set.copyOf(traits.keySet());
     }
 
     public float getOrDefault(Trait trait, float def) {
@@ -190,7 +199,10 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
 
     @Override
     public String toString() {
-        return "SpellTraits[" + traits.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(",")) + "]";
+        if (entriesString == null) {
+            entriesString = stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining(","));
+        }
+        return "SpellTraits[" + entriesString + "]";
     }
 
     @Override
@@ -213,7 +225,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         Map<Trait, Float> traits = new HashMap<>();
         combine(traits, a.traits);
         combine(traits, b.traits);
-        return traits.isEmpty() ? EMPTY : new SpellTraits(traits);
+        return traits.isEmpty() ? EMPTY : INTERNER.intern(new SpellTraits(traits));
     }
 
     public static SpellTraits union(SpellTraits...many) {
@@ -221,7 +233,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         for (SpellTraits i : many) {
             combine(traits, i.traits);
         }
-        return traits.isEmpty() ? EMPTY : new SpellTraits(traits);
+        return traits.isEmpty() ? EMPTY : INTERNER.intern(new SpellTraits(traits));
     }
 
     public static SpellTraits of(Inventory inventory) {
@@ -229,11 +241,15 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
     }
 
     public static SpellTraits of(Collection<ItemStack> stacks) {
-        return fromEntries(stacks.stream().flatMap(a -> of(a).entries().stream()));
+        return fromEntries(stacks.stream().flatMap(a -> of(a).stream()));
     }
 
     public static SpellTraits of(ItemStack stack) {
         return getEmbeddedTraits(stack).orElseGet(() -> of(stack.getRegistryEntry().getKey().orElseThrow()));
+    }
+
+    public static SpellTraits of(Trait trait, float amount) {
+        return INTERNER.intern(new SpellTraits(Map.of(trait, amount)));
     }
 
     @Deprecated
@@ -291,7 +307,7 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         if (result.isEmpty()) {
             return EMPTY;
         }
-        return new SpellTraits(result);
+        return INTERNER.intern(new SpellTraits(result));
     }
 
     private static void combine(Map<Trait, Float> to, Map<Trait, Float> from) {
@@ -305,11 +321,27 @@ public final class SpellTraits implements Iterable<Map.Entry<Trait, Float>> {
         });
     }
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
     public static final class Builder {
         private final Map<Trait, Float> traits = new EnumMap<>(Trait.class);
 
+        private Builder() {}
+
         public Builder with(Trait trait, float amount) {
             traits.put(trait, amount);
+            return this;
+        }
+
+        public Builder with(SpellTraits traits) {
+            combine(this.traits, traits.traits);
+            return this;
+        }
+
+        public Builder with(Builder traits) {
+            combine(this.traits, traits.traits);
             return this;
         }
 

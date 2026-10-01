@@ -11,7 +11,7 @@ public class TraitItem extends Item implements ItemWithTraits {
 
     public TraitItem(Trait trait, Settings settings) {
         super(settings);
-        this.traits = new SpellTraits.Builder().with(trait, 1).build();
+        this.traits = SpellTraits.of(trait, 1);
     }
 
     @Override

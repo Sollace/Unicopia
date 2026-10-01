@@ -10,7 +10,7 @@ import com.minelittlepony.unicopia.entity.duck.LavaAffine;
 import net.minecraft.entity.Entity;
 
 public class ChillingBreathSpell extends AbstractSpell implements HomingSpell {
-    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+    public static final SpellTraits DEFAULT_TRAITS = SpellTraits.builder()
             .with(Trait.ICE, 15)
             .build();
 

@@ -40,15 +40,15 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
     }
 
     private int getColumns() {
-        return Math.min(traits.entries().size(), Math.max(6, (int)Math.ceil(Math.sqrt(traits.entries().size() + 1))));
+        return Math.min(traits.size(), Math.max(6, (int)Math.ceil(Math.sqrt(traits.size() + 1))));
     }
 
     private int getRows() {
         int columns = getColumns();
-        if (columns == traits.entries().size()) {
+        if (columns == traits.size()) {
             return 1;
         }
-        return Math.max(1, (int)Math.ceil((float)(traits.entries().size() + 1) / getColumns()));
+        return Math.max(1, (int)Math.ceil((float)(traits.size() + 1) / getColumns()));
     }
 
     @Override
@@ -88,7 +88,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
         float time = MathHelper.cos((MinecraftClient.getInstance().player.age + delta + seed) / 2F) * 0.7F;
 
         float angle = 0.7F + (time / 30F) % MathHelper.TAU;
-        float angleIncrement = MathHelper.TAU / traits.entries().size();
+        float angleIncrement = MathHelper.TAU / traits.size();
         float r = 9 + 2 * MathHelper.sin(delta / 20F);
 
         for (var entry : traits) {

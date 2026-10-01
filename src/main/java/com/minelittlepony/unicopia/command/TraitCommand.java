@@ -48,7 +48,7 @@ class TraitCommand {
             return 0;
         }
 
-        player.setStackInHand(Hand.MAIN_HAND, SpellTraits.union(SpellTraits.of(stack), new SpellTraits.Builder().with(trait, amount).build()).applyTo(stack));
+        player.setStackInHand(Hand.MAIN_HAND, SpellTraits.union(SpellTraits.of(stack), SpellTraits.of(trait, amount)).applyTo(stack));
 
         return 0;
     }

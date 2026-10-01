@@ -44,7 +44,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class ShieldSpell extends AbstractSpell {
-    public static final SpellTraits DEFAULT_TRAITS = new SpellTraits.Builder()
+    public static final SpellTraits DEFAULT_TRAITS = SpellTraits.builder()
             .with(Trait.FOCUS, 5)
             .with(Trait.KNOWLEDGE, 1)
             .with(Trait.STRENGTH, 50)
