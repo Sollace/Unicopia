@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.JsonObject;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.IngredientWithSpell;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
@@ -12,15 +11,18 @@ import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.util.Untyped;
 import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.BlockState;
+import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.network.PacketByteBuf;
@@ -35,8 +37,6 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextCodecs;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
-import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Vec3i;
 
 public interface ChapterPageElement {
@@ -47,13 +47,9 @@ public interface ChapterPageElement {
     byte INGREDIENTS = 4;
     byte STRUCTURE = 5;
 
-    Codec<Text> FLEXIBLE_TEXT_CODEC = Codec.withAlternative(
-            TextCodecs.CODEC,
-            Codec.STRING.flatXmap(s -> DataResult.success((Text)Text.translatable(s)), text -> DataResult.error(() -> "Cannot Serialize text to a plain string"))
-    );
     Codec<Bounds> BOUNDS_CODEC = RecordCodecBuilder.create(i -> i.group(
-            Codec.INT.optionalFieldOf("x", 0).forGetter(o -> o.left),
             Codec.INT.optionalFieldOf("y", 0).forGetter(o -> o.top),
+            Codec.INT.optionalFieldOf("x", 0).forGetter(o -> o.left),
             Codec.INT.optionalFieldOf("width", 0).forGetter(o -> o.width),
             Codec.INT.optionalFieldOf("height", 0).forGetter(o -> o.height)
     ).apply(i, Bounds::new));
@@ -64,31 +60,32 @@ public interface ChapterPageElement {
             PacketCodecs.INTEGER, o -> o.height,
             Bounds::new
     );
-    Codec<ChapterPageElement> CODEC = Codecs.JSON_ELEMENT.flatXmap(json -> {
-        if (!json.isJsonPrimitive()) {
-            JsonObject el = JsonHelper.asObject(json, "element");
-            if (el.has("texture")) return Image.CODEC.decode(JsonOps.INSTANCE, el).map(pair -> pair.getFirst());
-            if (el.has("recipe")) return Recipe.CODEC.decode(JsonOps.INSTANCE, el.get("recipe")).map(pair -> pair.getFirst());
-            if (el.has("item")) return Stack.CODEC.decode(JsonOps.INSTANCE, el).map(pair -> pair.getFirst());
-            if (el.has("ingredients")) return Ingredients.CODEC.decode(JsonOps.INSTANCE, el.get("ingredients")).map(pair -> pair.getFirst());
-            if (el.has("structure")) return Structure.CODEC.decode(JsonOps.INSTANCE, el.get("structure")).map(pair -> pair.getFirst());
+    Codec<ChapterPageElement> CODEC = new Codec<>() {
+        @Override
+        public <T> DataResult<T> encode(ChapterPageElement input, DynamicOps<T> ops, T prefix) {
+            return switch(input.getType()) {
+                case IMAGE -> Image.CODEC.encode((Image)input, ops, prefix);
+                case STACK -> Stack.CODEC.encode((Stack)input, ops, prefix);
+                case RECIPE -> ops.mapBuilder().add(ops.createString("recipe"), Recipe.CODEC.encode((Recipe)input, ops, prefix)).build(prefix);
+                case TEXT_BLOCK -> TextBlock.CODEC.encode((TextBlock)input, ops, prefix);
+                case STRUCTURE -> ops.mapBuilder().add(ops.createString("structure"), Structure.CODEC.encode((Structure)input, ops, prefix)).build(prefix);
+                case INGREDIENTS -> ops.mapBuilder().add(ops.createString("ingredients"), Ingredients.CODEC.encode((Ingredients)input, ops, prefix)).build(prefix);
+                default -> DataResult.error(() -> "Don't know how to serialize " + input + "(" + input.getType() + ")");
+            };
         }
-        return TextBlock.CODEC.decode(JsonOps.INSTANCE, json).map(pair -> pair.getFirst());
-    }, page -> {
-        var codec = switch(page.getType()) {
-            case IMAGE -> Image.CODEC;
-            case STACK -> Stack.CODEC;
-            case RECIPE -> Recipe.CODEC;
-            case TEXT_BLOCK -> TextBlock.CODEC;
-            case STRUCTURE -> Structure.CODEC;
-            case INGREDIENTS -> Ingredients.CODEC;
-            default -> null;
-        };
-        if (codec == null) {
-            return DataResult.error(() -> "Don't know how to serialize " + page + "(" + page.getType() + ")");
+
+        @Override
+        public <T> DataResult<Pair<ChapterPageElement, T>> decode(DynamicOps<T> ops, T input) {
+            return ops.getMap(input).result().<DataResult<Pair<ChapterPageElement, T>>>map(mapLike -> {
+                if (mapLike.get("texture") != null) return Untyped.cast(Image.CODEC.decode(ops, input));
+                if (mapLike.get("recipe") != null) return Untyped.cast(Recipe.CODEC.decode(ops, mapLike.get("recipe")));
+                if (mapLike.get("item") != null) return Untyped.cast(Stack.CODEC.decode(ops, input));
+                if (mapLike.get("ingredients") != null) return Untyped.cast(Ingredients.CODEC.decode(ops, mapLike.get("ingredients")));
+                if (mapLike.get("structure") != null) return Untyped.cast(Structure.CODEC.decode(ops, mapLike.get("structure")));
+                return Untyped.cast(TextBlock.CODEC.decode(ops, input));
+            }).orElseGet(() -> Untyped.cast(TextBlock.CODEC.decode(ops, input)));
         }
-        return codec.encodeStart(JsonOps.INSTANCE, Untyped.cast(page));
-    });
+    };
     PacketCodec<RegistryByteBuf, ChapterPageElement> PACKET_CODEC = PacketCodecs.BYTE.<RegistryByteBuf>cast().dispatch(ChapterPageElement::getType, type -> switch (type) {
             case IMAGE -> Image.PACKET_CODEC;
             case STACK -> Stack.PACKET_CODEC;
@@ -122,7 +119,7 @@ public interface ChapterPageElement {
 
     record Recipe(RegistryEntry<net.minecraft.recipe.Recipe<?>> recipe, List<RecipeDisplay> recipeDisplays) implements ChapterPageElement {
         public static final Codec<Recipe> CODEC = RegistryElementCodec.of(RegistryKeys.RECIPE, net.minecraft.recipe.Recipe.CODEC, false)
-                .xmap(entry -> new Recipe(entry, entry.value().getDisplays()), recipe -> recipe.recipe());
+                .xmap(entry -> new Recipe(entry, entry.hasKeyAndValue() ? entry.value().getDisplays() : List.of()), recipe -> recipe.recipe());
         public static final PacketCodec<RegistryByteBuf, Recipe> PACKET_CODEC = RecipeDisplay.STREAM_CODEC.collect(PacketCodecs.toList()).xmap(displays -> new Recipe(null, displays), Recipe::recipeDisplays);
 
         @Override
@@ -149,6 +146,10 @@ public interface ChapterPageElement {
     }
 
     record TextBlock (Text text) implements ChapterPageElement {
+        private static final Codec<Text> FLEXIBLE_TEXT_CODEC = Codec.withAlternative(
+                Codec.STRING.flatXmap(s -> DataResult.success((Text)Text.translatable(s)), text -> DataResult.error(() -> "Cannot Serialize text to a plain string")),
+                TextCodecs.CODEC
+        );
         public static final Codec<TextBlock> CODEC = FLEXIBLE_TEXT_CODEC.xmap(TextBlock::new, TextBlock::text);
         public static final PacketCodec<ByteBuf, TextBlock> PACKET_CODEC = TextCodecs.PACKET_CODEC.xmap(TextBlock::new, TextBlock::text);
 
@@ -171,7 +172,7 @@ public interface ChapterPageElement {
             private static final MapCodec<Object> ELEMENT_CODEC = CodecUtils.dispatched(Multi::getType, Map.of(
                 "item", Registries.ITEM.getCodec(),
                 "trait", Trait.CODEC,
-                "text", FLEXIBLE_TEXT_CODEC,
+                "text", TextBlock.CODEC,
                 "spell", SpellType.CODEC
             ));
             public static final Codec<Multi<?>> CODEC = RecordCodecBuilder.create(i -> i.group(
@@ -240,6 +241,25 @@ public interface ChapterPageElement {
     }
 
     record Structure(List<Command> commands) implements ChapterPageElement {
+        @Deprecated
+        public static final Codec<BlockState> STATE_CODEC = new Codec<>() {
+            @Override
+            public <T> DataResult<T> encode(BlockState input, DynamicOps<T> ops, T prefix) {
+                return DataResult.success(ops.createString(BlockArgumentParser.stringifyBlockState(input)));
+            }
+
+            @Override
+            public <T> DataResult<Pair<BlockState, T>> decode(DynamicOps<T> ops, T input) {
+                return ops.getStringValue(input).flatMap(pair -> {
+                    try {
+                        return DataResult.success(new Pair<>(BlockArgumentParser.block(Registries.BLOCK, pair, false).blockState(), input));
+                    } catch (CommandSyntaxException e) {
+                        return DataResult.error(() -> e.getMessage());
+                    }
+                });
+            }
+        };
+
         public static final Codec<Structure> CODEC = Codec.xor(Set.CODEC, Fill.CODEC)
                 .xmap(either -> (Command)Either.unwrap(either), element -> element instanceof Set s ? Either.left(s) : Either.right((Fill)element))
                 .listOf().xmap(Structure::new, Structure::commands);
@@ -260,7 +280,7 @@ public interface ChapterPageElement {
         private record Set(Vec3i pos, BlockState state) implements Command {
             public static final Codec<Set> CODEC = RecordCodecBuilder.create(i -> i.group(
                     Vec3i.CODEC.fieldOf("pos").forGetter(Set::pos),
-                    BlockState.CODEC.fieldOf("state").forGetter(Set::state)
+                    STATE_CODEC.fieldOf("state").forGetter(Set::state)
             ).apply(i, Set::new));
             public static final PacketCodec<ByteBuf, Set> PACKET_CODEC = PacketCodec.tuple(
                     Vec3i.PACKET_CODEC, Set::pos,
@@ -273,7 +293,7 @@ public interface ChapterPageElement {
             public static final Codec<Fill> CODEC = RecordCodecBuilder.create(i -> i.group(
                     Vec3i.CODEC.fieldOf("min").forGetter(Fill::min),
                     Vec3i.CODEC.fieldOf("max").forGetter(Fill::max),
-                    BlockState.CODEC.fieldOf("state").forGetter(Fill::state)
+                    STATE_CODEC.fieldOf("state").forGetter(Fill::state)
             ).apply(i, Fill::new));
             public static final PacketCodec<ByteBuf, Fill> PACKET_CODEC = PacketCodec.tuple(
                     Vec3i.PACKET_CODEC, Fill::min,

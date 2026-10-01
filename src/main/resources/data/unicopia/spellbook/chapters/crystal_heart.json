@@ -31,7 +31,7 @@
         },
         "level": 0,
         "elements": [
-          { "item": { "item": "unicopia:crystal_heart" } },
+          { "item": { "item": ["unicopia:crystal_heart"] } },
           "gui.unicopia.spellbook.chapter.artefacts.status.lost",
           "gui.unicopia.spellbook.chapter.artefacts.crystal_heart.1.body",
           "gui.unicopia.spellbook.chapter.artefacts.crystal_heart.2.body"
@@ -80,7 +80,7 @@
               { "state": "minecraft:diamond_block", "min": [0,6,0], "max": [2,6,2] }
             ]
           },
-          { "x": 60, "y": -34, "item": { "item": "unicopia:crystal_heart" } }
+          { "x": 60, "y": -34, "item": { "item": ["unicopia:crystal_heart"] } }
         ]
       },
       {
@@ -131,7 +131,7 @@
         },
         "level": 0,
         "elements": [
-          { "item": { "item": "unicopia:spectral_clock" } },
+          { "item": { "item": ["unicopia:spectral_clock"] } },
           "gui.unicopia.spellbook.chapter.artefacts.status.unconfirmed",
           "gui.unicopia.spellbook.chapter.artefacts.spectral_clock.1.body",
           {
@@ -157,7 +157,7 @@
         },
         "level": 0,
         "elements": [
-          { "item": { "item": "unicopia:dragon_breath_scroll" } },
+          { "item": { "item": ["unicopia:dragon_breath_scroll"] } },
           "gui.unicopia.spellbook.chapter.artefacts.status.confirmed",
           "gui.unicopia.spellbook.chapter.artefacts.dragon_breath_scroll.2.body",
           "gui.unicopia.spellbook.author3.name"
@@ -179,7 +179,7 @@
         },
         "level": 0,
         "elements": [
-          { "item": { "item": "unicopia:friendship_bracelet" } },
+          { "item": { "item": ["unicopia:friendship_bracelet"] } },
           "gui.unicopia.spellbook.chapter.artefacts.status.confirmed",
           "gui.unicopia.spellbook.chapter.artefacts.friendship_bracelet.1.body",
           "gui.unicopia.spellbook.chapter.artefacts.friendship_bracelet.2.body"
@@ -201,7 +201,7 @@
         },
         "level": 0,
         "elements": [
-          { "item": { "item": "unicopia:pegasus_amulet" } },
+          { "item": { "item": ["unicopia:pegasus_amulet"] } },
           "gui.unicopia.spellbook.chapter.artefacts.status.lost",
           "gui.unicopia.spellbook.chapter.artefacts.pegasus_amulet.1.body",
           "gui.unicopia.spellbook.chapter.artefacts.pegasus_amulet.2.body"
@@ -222,7 +222,7 @@
         },
         "level": 3,
         "elements": [
-          { "item": { "item": "unicopia:meadowbrooks_staff" } },
+          { "item": { "item": ["unicopia:meadowbrooks_staff"] } },
           "gui.unicopia.spellbook.chapter.artefacts.status.confirmed",
           "gui.unicopia.spellbook.chapter.artefacts.meadowbrooks_staff.1.body",
           "gui.unicopia.spellbook.chapter.artefacts.meadowbrooks_staff.2.body"
@@ -244,7 +244,7 @@
         },
         "level": 5,
         "elements": [
-          { "item": { "item": "unicopia:magic_staff" } },
+          { "item": { "item": ["unicopia:magic_staff"] } },
           "gui.unicopia.spellbook.chapter.artefacts.status.unconfirmed",
           "gui.unicopia.spellbook.chapter.artefacts.magic_staff.1.body"
         ]
@@ -265,7 +265,7 @@
         },
         "level": 0,
         "elements": [
-          { "item": { "item": "unicopia:grogars_bell" } },
+          { "item": { "item": ["unicopia:grogars_bell"] } },
           "gui.unicopia.spellbook.chapter.artefacts.status.lost",
           "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.1.body",
           "gui.unicopia.spellbook.chapter.artefacts.grogars_bell.2.body"
@@ -297,7 +297,7 @@
         },
         "level": 0,
         "elements": [
-          { "item": { "item": "unicopia:alicorn_amulet" } },
+          { "item": { "item": ["unicopia:alicorn_amulet"] } },
           "gui.unicopia.spellbook.chapter.artefacts.status.unconfirmed",
           "gui.unicopia.spellbook.chapter.artefacts.alicorn_amulet.1.body"
         ]
