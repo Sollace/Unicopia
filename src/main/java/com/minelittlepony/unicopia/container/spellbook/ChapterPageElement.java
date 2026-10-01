@@ -208,11 +208,11 @@ public interface ChapterPageElement {
             }
         }
 
-        public Builder builder() {
+        public static Builder builder() {
             return new Builder();
         }
 
-        public final class Builder {
+        public static final class Builder {
             private final List<Multi<?>> entries = new ArrayList<>();
 
             private Builder() {}
@@ -236,6 +236,10 @@ public interface ChapterPageElement {
             public Builder spell(int count, SpellType<?> spell) {
                 entries.add(new Multi<>(spell, count));
                 return this;
+            }
+
+            public Ingredients build() {
+                return new Ingredients(List.copyOf(entries));
             }
         }
     }
@@ -303,7 +307,7 @@ public interface ChapterPageElement {
             );
         }
 
-        public Builder builder() {
+        public static Builder builder() {
             return new Builder();
         }
 

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.include.com.google.common.base.Preconditions;
 
@@ -15,6 +13,8 @@ import com.minelittlepony.unicopia.ability.magic.spell.crafting.TraitIngredient;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.advancement.TraitDiscoveredCriterion;
+import com.minelittlepony.unicopia.container.spellbook.ChapterPageElement;
+import com.minelittlepony.unicopia.datagen.providers.SpellbookChapterProvider.MagicRecipeExporter;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.item.UItems;
 import net.minecraft.advancement.Advancement;
@@ -42,6 +42,8 @@ public class SpellcraftingRecipeJsonBuilder {
     private final List<IngredientWithSpell> ingredients = new ArrayList<>();
     private SpellTraits traits = SpellTraits.EMPTY;
 
+    private final ChapterPageElement.Ingredients.Builder chapterIngredients = ChapterPageElement.Ingredients.builder();
+
     public static SpellcraftingRecipeJsonBuilder create(RecipeCategory category, ItemConvertible gem, SpellType<?> spell) {
         return new SpellcraftingRecipeJsonBuilder(category, gem, spell);
     }
@@ -59,11 +61,15 @@ public class SpellcraftingRecipeJsonBuilder {
 
     public SpellcraftingRecipeJsonBuilder input(ItemConvertible gem, SpellType<?> spell) {
         ingredients.add(IngredientWithSpell.of(gem, spell));
+        chapterIngredients.spell(1, spell);
         return this;
     }
 
     public SpellcraftingRecipeJsonBuilder traits(SpellTraits.Builder traits) {
         this.traits = traits.build();
+        this.traits.forEach(trait -> {
+            chapterIngredients.trait((int)Math.ceil(trait.getValue()), trait.getKey());
+        });
         return this;
     }
 
@@ -79,7 +85,7 @@ public class SpellcraftingRecipeJsonBuilder {
 
     public void offerTo(RecipeExporter exporter, RegistryKey<Recipe<?>> key) {
         if (!traits.isEmpty()) {
-            criterions.put("has_traits", TraitDiscoveredCriterion.create(traits.stream().map(Map.Entry::getKey).collect(Collectors.toUnmodifiableSet())));
+            criterions.put("has_traits", TraitDiscoveredCriterion.create(traits.keys()));
         }
         Preconditions.checkState(!criterions.isEmpty(), "No way of obtaining recipe " + key.getValue());
         Advancement.Builder advancementBuilder = exporter.getAdvancementBuilder()
@@ -90,6 +96,9 @@ public class SpellcraftingRecipeJsonBuilder {
         exporter.accept(key, new SpellCraftingRecipe(base,
                 TraitIngredient.of(traits), ingredients, EnchantableItem.enchant(gem.asItem().getDefaultStack(), spell)),
                 advancementBuilder.build(key.getValue().withPrefixedPath("recipes/" + category.getName() + "/")));
+        if (exporter instanceof MagicRecipeExporter magicExporter) {
+            magicExporter.acceptChapterIngredients(key, chapterIngredients.build());
+        }
     }
 
     public void offerTo(RecipeExporter exporter) {

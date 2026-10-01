@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.minelittlepony.unicopia.datagen.providers.DietsProvider;
 import com.minelittlepony.unicopia.datagen.providers.SeasonsGrowthRatesProvider;
+import com.minelittlepony.unicopia.datagen.providers.SpellbookChapterProvider;
 import com.minelittlepony.unicopia.datagen.providers.StateMapProvider;
 import com.minelittlepony.unicopia.datagen.providers.TreeTypeProvider;
 import com.minelittlepony.unicopia.datagen.providers.UAdvancementsProvider;
@@ -58,7 +59,8 @@ public class Datagen implements DataGeneratorEntrypoint {
         pack.addProvider(UJukeboxSongProvider::new);
         pack.addProvider(UModelProvider::new);
         pack.addProvider(UDynamicRegistriesProvider::new);
-        pack.addProvider(URecipeProvider::new);
+        final var recipeProvider = pack.addProvider(URecipeProvider::new);
+        pack.addProvider((output, registries) -> new SpellbookChapterProvider(output, registries, recipeProvider));
         pack.addProvider(UBlockLootTableProvider::new);
         pack.addProvider(UEntityLootTableProvider::new);
         pack.addProvider(UEntityAdditionsLootTableProvider::new);
