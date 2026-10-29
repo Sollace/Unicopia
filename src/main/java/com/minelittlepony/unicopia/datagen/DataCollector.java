@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.datagen;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -38,6 +39,10 @@ public class DataCollector<T> {
 
     public Stream<T> streamValues() {
         return values.values().stream();
+    }
+
+    public Stream<Map.Entry<Identifier, T>> streamEntries() {
+        return values.entrySet().stream();
     }
 
     public <V> Consumer<V> prime(BiConsumer<V, BiConsumer<Identifier, T>> converter) {

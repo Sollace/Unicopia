@@ -1,8 +1,0 @@
-{
-   "replace": false,
-   "traits": "order:1 knowledge:3",
-   "items": [
-     "#minecraft:chest_boats",
-     "#c:boats"
-   ]
-}

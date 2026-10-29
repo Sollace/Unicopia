@@ -1,8 +1,0 @@
-{
-  "replace": false,
-  "traits": "knowledge:1 fire:6",
-  "items": [
-    "minecraft:soul_campfire",
-    "minecraft:campfire"
-  ]
-}

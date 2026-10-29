@@ -1,8 +1,0 @@
-{
-  "replace": false,
-  "traits": "water:5 life:5",
-  "items": [
-    "minecraft:milk_bucket",
-    "#c:entity_water_buckets"
-  ]
-}

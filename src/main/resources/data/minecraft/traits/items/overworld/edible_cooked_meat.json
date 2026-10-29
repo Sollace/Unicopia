@@ -1,9 +1,0 @@
-{
-  "replace": false,
-  "traits": "famine:-0.5 life:-1 knowledge:2",
-  "items": [
-    "minecraft:fermented_spider_eye",
-    "#unicopia:food_types/cooked_fish",
-    "#unicopia:food_types/cooked_meat"
-  ]
-}

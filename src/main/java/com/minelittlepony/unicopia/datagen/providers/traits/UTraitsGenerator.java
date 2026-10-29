@@ -44,7 +44,8 @@ public class UTraitsGenerator extends TraitsGenerator {
                 .item(UItems.CARAPACE)
                 .build());
         exporter.accept(Unicopia.id("food"), TraitMap.builder()
-                .item(UItems.ZAP_APPLE, zapAppleTraits).item(UItems.COOKED_ZAP_APPLE, zapAppleTraits.multiply(2))
+                .item(UItems.ZAP_APPLE, zapAppleTraits)
+                .item(UItems.COOKED_ZAP_APPLE, zapAppleTraits.multiply(2))
                 .item(UItems.ROTTEN_APPLE, appleTraits.add(rottingTraits)) // Added LIFE x3 to rotten_apple
                 .item(UItems.DAFFODIL_DAISY_SANDWICH, sandwichTraits)
                 .item(UItems.HAY_BURGER, sandwichTraits)

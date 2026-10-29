@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.UConventionalTags;
 import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.block.UBlocks;
 import com.minelittlepony.unicopia.datagen.Datagen;
+import com.minelittlepony.unicopia.datagen.DatagenItemTagsRegistry;
 import com.minelittlepony.unicopia.datagen.FarmersDelightContent;
 import com.minelittlepony.unicopia.datagen.ItemFamilies;
 import com.minelittlepony.unicopia.datagen.UBlockFamilies;
@@ -42,9 +43,21 @@ public class UItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
     private final UBlockTagProvider blockTagProvider;
 
+    private final DatagenItemTagsRegistry tagRegistry;
+
     public UItemTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture, UBlockTagProvider blockTagProvider) {
         super(output, registriesFuture, blockTagProvider);
         this.blockTagProvider = blockTagProvider;
+        this.tagRegistry = new DatagenItemTagsRegistry(output, getTagLookupFuture());
+    }
+
+    public DatagenItemTagsRegistry getTagRegistry() {
+        return tagRegistry;
+    }
+
+    @Override
+    protected TagBuilder getTagBuilder(TagKey<Item> tag) {
+        return tagRegistry.register(tag, super.getTagBuilder(tag));
     }
 
     @Override

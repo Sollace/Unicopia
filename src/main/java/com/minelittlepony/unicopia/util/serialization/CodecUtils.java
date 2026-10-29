@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.util.Untyped;
+import com.mojang.datafixers.util.Either;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -55,36 +57,71 @@ public interface CodecUtils {
         return codec.xmap(map -> new HashMap<>(map), Function.identity());
     }
 
-    static <V> MapCodec<V> dispatched(Function<V, String> typeGetter, Map<String, Codec<? extends V>> typeLookup) {
-        return new MapCodec<>() {
-            final String keysString = typeLookup.keySet().stream().collect(Collectors.joining(",", "[", "]"));
+    static <T, E> Codec<E> dispatched(
+            Codec<T> typeCodec,
+            Supplier<Stream<T>> types,
+            Function<E, T> elementToType,
+            Function<T, Either<Codec<E>, MapCodec<E>>> typeToElementCodec,
+            Codec<? extends E> fallbackCodec) {
+        return new Codec<>() {
+            @Override
+            public <V> DataResult<V> encode(E input, DynamicOps<V> ops, V prefix) {
+                return Either.unwrap(typeToElementCodec.apply(elementToType.apply(input)).mapBoth(
+                        left -> left.encode(input, ops, prefix),
+                        right -> right.encode(input, ops, ops.mapBuilder()).build(prefix)
+                ));
+            }
 
+            @Override
+            public <V> DataResult<Pair<E, V>> decode(DynamicOps<V> ops, V input) {
+                return ops.getMap(input).result().flatMap(mapLike -> types.get().map(type -> Either.unwrap(typeToElementCodec.apply(type).mapBoth(
+                        left -> left.decode(ops, input),
+                        right -> right.decode(ops, mapLike).map(element -> Pair.of(element, input))
+                ))).filter(DataResult::isSuccess).findFirst()).orElseGet(() -> Untyped.cast(fallbackCodec.decode(ops, input)));
+            }
+
+            @Override
+            public String toString() {
+                return typeCodec + "[dispatched]";
+            }
+        };
+    }
+
+    static <V, Type> MapCodec<V> dispatched(
+            Codec<Type> typeCodec,
+            Supplier<Stream<Type>> types,
+            Function<V, Type> valueToTypeFunction,
+            Function<Type, Codec<? extends V>> elementCodecGetter) {
+        return new MapCodec<>() {
             @Override
             public <T> DataResult<V> decode(DynamicOps<T> ops, MapLike<T> input) {
                 var entries = input.entries()
-                        .filter(entry -> typeLookup.containsKey(ops.getStringValue(entry.getFirst()).getOrThrow())).toList();
+                        .map(entry -> new Pair<>(typeCodec.decode(ops, entry.getFirst()).result().map(Pair::getFirst).orElse(null), entry.getSecond()))
+                        .filter(entry -> entry.getFirst() != null)
+                        .toList();
                 if (entries.size() != 1) {
                     return DataResult.error(() -> "May only have one key. Instead found " + entries.size() + " in " + input);
                 }
 
-                return typeLookup.get(ops.getStringValue(entries.get(0).getFirst()).getOrThrow())
-                        .decode(ops, entries.get(0).getSecond()).map(pair -> pair.getFirst());
+                return elementCodecGetter.apply(entries.getFirst().getFirst())
+                        .decode(ops, entries.getFirst().getSecond())
+                        .map(Pair::getFirst);
             }
 
             @Override
             public <T> RecordBuilder<T> encode(V input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
-                var type = typeGetter.apply(Untyped.cast(input));
-                prefix.add(ops.createString(type), typeLookup.get(type).encodeStart(ops, Untyped.cast(input)));
+                var type = valueToTypeFunction.apply(Untyped.cast(input));
+                prefix.add(typeCodec.encodeStart(ops, type).getOrThrow(), elementCodecGetter.apply(type).encodeStart(ops, Untyped.cast(input)));
                 return prefix;
             }
 
             @Override
             public <T> Stream<T> keys(DynamicOps<T> ops) {
-                return typeLookup.keySet().stream().map(ops::createString);
+                return types.get().map(type -> typeCodec.encodeStart(ops, type).getOrThrow());
             }
 
             public String toString() {
-                return "TypeDispatched/MapCodec" + keysString;
+                return typeCodec + "[mapDispatched]";
             }
         };
     }

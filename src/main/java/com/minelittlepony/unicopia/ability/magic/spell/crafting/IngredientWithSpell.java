@@ -54,6 +54,7 @@ public class IngredientWithSpell implements CustomIngredient {
         return new IngredientWithSpell(Optional.of(Ingredient.ofItems(base)), Optional.of(spell));
     }
 
+    @SuppressWarnings("deprecation")
     private IngredientWithSpell(Optional<Ingredient> stack, Optional<SpellType<?>> spell) {
         this.stack = stack;
         this.spell = spell;

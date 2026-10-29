@@ -28,6 +28,7 @@ import com.minelittlepony.unicopia.datagen.providers.tag.UDimensionTypeTagProvid
 import com.minelittlepony.unicopia.datagen.providers.tag.UEntityTypeTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UItemTagProvider;
 import com.minelittlepony.unicopia.datagen.providers.tag.UStatusEffectTagProvider;
+import com.minelittlepony.unicopia.datagen.providers.traits.TraitsProvider;
 import com.minelittlepony.unicopia.entity.damage.UDamageTypes;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
@@ -71,6 +72,7 @@ public class Datagen implements DataGeneratorEntrypoint {
         pack.addProvider(TreeTypeProvider::new);
         pack.addProvider(StateMapProvider::new);
         pack.addProvider(UAdvancementsProvider::new);
+        pack.addProvider((output, registries) -> new TraitsProvider(output, registries, itemTags.getTagRegistry().getTagsFuture()));
     }
 
     @Override

@@ -1,8 +1,0 @@
-{
-  "replace": false,
-  "traits": "life:1 famine:-2 water:5",
-  "items": [
-    "#c:raw_fish",
-    "#unicopia:food_types/raw_fish"
-  ]
-}

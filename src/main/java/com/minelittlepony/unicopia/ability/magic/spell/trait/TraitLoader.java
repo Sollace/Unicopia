@@ -13,8 +13,6 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.spongepowered.include.com.google.common.base.Preconditions;
-
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.gson.JsonObject;
@@ -112,7 +110,7 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
         profiler.endTick();
     }
 
-    public interface TraitStream {
+    public sealed interface TraitStream permits TraitStream.TraitMap, TraitStream.TraitSet {
         TypeToken<Map<String, String>> TYPE = new TypeToken<>() {};
         Codec<TraitStream> CODEC = Codec.xor(TraitMap.CODEC, TraitSet.CODEC).xmap(
             Either::unwrap,
@@ -196,16 +194,12 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
                 private final SpellTraits traits;
                 private final Set<Key> keys = new HashSet<>();
 
-                private final Set<TagKey<Item>> tags = new HashSet<>();
-                private final Set<RegistryEntry<Item>> items = new HashSet<>();
-
                 private Builder(SpellTraits traits) {
                     this.traits = traits;
                 }
 
                 public Builder tag(TagKey<Item> tag) {
                     keys.add(new Key.Tag(tag));
-                    tags.add(tag);
                     return this;
                 }
 
@@ -214,7 +208,6 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
                     if (!keys.add(new Key.Id(item.asItem().getRegistryEntry().registryKey()))) {
                         throw new IllegalArgumentException("Item specified multiple times: " + item);
                     }
-                    items.add(item.asItem().getRegistryEntry());
                     return this;
                 }
 
@@ -223,16 +216,12 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
                 }
 
                 public TraitSet build() {
-                    String result = items.stream().map(item -> {
-                        return Map.entry(item, tags.stream().filter(tag -> item.isIn(tag)).map(tag -> tag.id().toString()).collect(Collectors.joining(",")));
-                    }).filter(i -> !i.getValue().isEmpty()).map(entry -> entry.getKey() + "[" + entry.getValue() + "]").collect(Collectors.joining(","));
-                    Preconditions.checkState(result.isEmpty(), "Item explicitly added will be matched by tags: " + result);
                     return new TraitSet(false, traits, Set.copyOf(keys));
                 }
             }
         }
 
-        interface Key extends Predicate<RegistryEntry<Item>> {
+        sealed interface Key extends Predicate<RegistryEntry<Item>> permits Key.Tag, Key.Id {
             Codec<Key> CODEC = Codec.xor(Tag.CODEC, Id.CODEC).xmap(
                     Either::unwrap,
                     key -> key instanceof Tag l ? Either.left(l) : Either.right((Id)key)
