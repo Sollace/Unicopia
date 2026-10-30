@@ -88,5 +88,7 @@ public class Datagen implements DataGeneratorEntrypoint {
         builder.addRegistry(RegistryKeys.ENCHANTMENT, enchantments);
         builder.addRegistry(RegistryKeys.TEMPLATE_POOL, CustomStructurePools::bootstrapPools);
         builder.addRegistry(RegistryKeys.PROCESSOR_LIST, CustomStructurePools::bootstrapProcessors);
+        builder.addRegistry(RegistryKeys.STRUCTURE, CustomStructures::bootstrap);
+        builder.addRegistry(RegistryKeys.STRUCTURE_SET, CustomStructures::bootstrapSets);
     }
 }

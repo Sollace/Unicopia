@@ -18,7 +18,7 @@ public class CaveCarvingStructureProcessor extends StructureProcessor {
 
     @Override
     protected StructureProcessorType<?> getType() {
-        return UWorldGen.SURFACE_GROWTH_STRUCTURE_PROCESSOR;
+        return UWorldGen.CAVE_CARVING_STRUCTURE_PROCESSOR;
     }
 
     @Nullable

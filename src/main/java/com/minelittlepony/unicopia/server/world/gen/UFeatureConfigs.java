@@ -19,6 +19,6 @@ public interface UFeatureConfigs {
     RegistryKey<ConfiguredFeature<?, ?>> MANGO_TREE = of("mango_tree");
 
     static RegistryKey<ConfiguredFeature<?, ?>> of(String name) {
-        return RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, Unicopia.id(name));
+        return Unicopia.key(RegistryKeys.CONFIGURED_FEATURE, name);
     }
 }

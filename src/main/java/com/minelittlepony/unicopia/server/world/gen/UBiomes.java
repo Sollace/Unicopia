@@ -10,6 +10,6 @@ public interface UBiomes {
     RegistryKey<Biome> SWEET_APPLE_ORCHARD = of("sweet_apple_orchard");
 
     static RegistryKey<Biome> of(String name) {
-        return RegistryKey.of(RegistryKeys.BIOME, Unicopia.id(name));
+        return Unicopia.key(RegistryKeys.BIOME, name);
     }
 }

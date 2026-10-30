@@ -18,7 +18,7 @@ public interface UPlacedFeatures {
     RegistryKey<PlacedFeature> BANANA_TREE = of("banana_tree_placed");
     RegistryKey<PlacedFeature> MANGO_TREE = of("mango_tree_placed");
 
-    static RegistryKey<PlacedFeature> of(String id) {
-        return RegistryKey.of(RegistryKeys.PLACED_FEATURE, Unicopia.id(id));
+    static RegistryKey<PlacedFeature> of(String name) {
+        return Unicopia.key(RegistryKeys.PLACED_FEATURE, name);
     }
 }

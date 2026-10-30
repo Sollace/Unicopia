@@ -82,7 +82,7 @@ public interface UEntities {
     EntityType<CrystalShardsEntity> CRYSTAL_SHARDS = register("crystal_shards", EntityType.Builder.create(CrystalShardsEntity::new, SpawnGroup.MISC)
             .maxTrackingRange(100)
             .dimensions(1F, 1F));
-    EntityType<StormCloudEntity> STORM_CLOUD = register("storm_cloud", EntityType.Builder.create(StormCloudEntity::new, SpawnGroup.MISC)
+    EntityType<StormCloudEntity> STORM_CLOUD = register("storm_cloud", EntityType.Builder.create(StormCloudEntity::new, SpawnGroup.AMBIENT)
             .maxTrackingRange(200)
             .dimensions(20F, 20F));
     EntityType<BoatEntity> PALM_BOAT = register("oak_boat",
