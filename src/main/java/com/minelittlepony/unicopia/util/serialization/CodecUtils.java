@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.minelittlepony.unicopia.util.Untyped;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -25,8 +26,11 @@ import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.block.BlockState;
+import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.dynamic.Codecs;
@@ -53,8 +57,38 @@ public interface CodecUtils {
             MathHelper.clamp(vec.z, -MAX_HOR_AXIS, MAX_HOR_AXIS)
     ), Function.identity());
 
+    @Deprecated
+    Codec<BlockState> BLOCK_STATE_CODEC = new Codec<>() {
+        @Override
+        public <T> DataResult<T> encode(BlockState input, DynamicOps<T> ops, T prefix) {
+            return DataResult.success(ops.createString(BlockArgumentParser.stringifyBlockState(input)));
+        }
+
+        @Override
+        public <T> DataResult<Pair<BlockState, T>> decode(DynamicOps<T> ops, T input) {
+            return ops.getStringValue(input).flatMap(pair -> {
+                try {
+                    return DataResult.success(new Pair<>(BlockArgumentParser.block(Registries.BLOCK, pair, false).blockState(), input));
+                } catch (CommandSyntaxException e) {
+                    return DataResult.error(() -> e.getMessage());
+                }
+            });
+        }
+
+        public String toString() {
+            return Codec.STRING + "[BlockArgumentParsed]";
+        }
+    };
+
     static <A, B> Codec<Map<A, B>> toMutable(Codec<Map<A, B>> codec) {
         return codec.xmap(map -> new HashMap<>(map), Function.identity());
+    }
+
+    static Codec<Identifier> identifierWithDefaultnamespace(String defaultNamespace) {
+        return Codec.STRING.comapFlatMap(
+                s -> s.indexOf(':') != -1 ? Identifier.validate(s) : DataResult.success(Identifier.of(defaultNamespace, s)),
+                id -> id.getNamespace().contentEquals(defaultNamespace) ? id.getPath() : id.toString()
+        );
     }
 
     static <T, E> Codec<E> dispatched(

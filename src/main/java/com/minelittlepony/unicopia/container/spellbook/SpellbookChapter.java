@@ -60,7 +60,7 @@ public record SpellbookChapter (
             Page::new
         );
 
-        public static final class Builder {
+        public static final class Builder implements UnaryOperator<SpellbookChapter.Builder> {
             private Text title = Text.empty();
             private int level = 0;
             private int color = 0;
@@ -83,8 +83,8 @@ public record SpellbookChapter (
                 return this;
             }
 
-            public Builder element(ChapterPageElement...elements) {
-                this.elements.addAll(List.of(elements));
+            public Builder element(ChapterPageElement element) {
+                this.elements.add(element);
                 return this;
             }
 
@@ -92,8 +92,23 @@ public record SpellbookChapter (
                 return action.apply(this);
             }
 
+            @SafeVarargs
+            public final Builder apply(UnaryOperator<Builder>...actions) {
+                var self = this;
+                for (int i = 0; i < actions.length; i++) {
+                    self = self.apply(actions[i]);
+                }
+                return self;
+            }
+
             public Page build() {
                 return new Page(title, level, color, List.copyOf(elements));
+            }
+
+            @Override
+            public SpellbookChapter.Builder apply(SpellbookChapter.Builder builder) {
+                builder.pages.add(build());
+                return builder;
             }
         }
     }
@@ -129,6 +144,7 @@ public record SpellbookChapter (
             return this;
         }
 
+        @Deprecated
         public Builder page(Page.Builder page) {
             this.pages.add(page.build());
             return this;
@@ -136,6 +152,15 @@ public record SpellbookChapter (
 
         public Builder apply(UnaryOperator<Builder> action) {
             return action.apply(this);
+        }
+
+        @SafeVarargs
+        public final Builder apply(UnaryOperator<Builder>...actions) {
+            var self = this;
+            for (int i = 0; i < actions.length; i++) {
+                self = self.apply(actions[i]);
+            }
+            return self;
         }
 
         public SpellbookChapter build() {

@@ -47,11 +47,11 @@ public class StructureInteractionTlaRecipe implements TlaRecipe {
             return new StructureInteractionTlaRecipe(
                     category,
                     recipe.id().getValue(),
-                    new Schematic.Builder()
+                    Schematic.Unbaked.builder()
                         .fill(0, 0, 0, 6, 0, 6, recipe.value().getCatalystState())
                         .set(3, 0, 3, Blocks.FARMLAND.getDefaultState())
                         .set(3, 1, 3, recipe.value().getTargetState())
-                        .build(),
+                        .build().bake(),
                     List.of(
                             TlaStack.of(recipe.value().getTarget()).asIngredient(),
                             TlaStack.of(ItemVariant.of(recipe.value().getCatalyst()), TransformCropsRecipe.AREA).asIngredient()
@@ -63,10 +63,11 @@ public class StructureInteractionTlaRecipe implements TlaRecipe {
     }
 
     static void generateAltarRecipes(RecipeCategory category, PluginContext context) {
+        var altar = Schematic.ALTAR.bake();
         context.addGenerator(client -> List.of(new StructureInteractionTlaRecipe(
                 category,
                 Unicopia.id("altar/spectral_clock"),
-                Schematic.ALTAR,
+                altar,
                 List.of(
                     TlaStack.of(Items.CLOCK).asIngredient(),
                     TlaStack.of(UItems.SPELLBOOK).asIngredient(),
@@ -79,7 +80,7 @@ public class StructureInteractionTlaRecipe implements TlaRecipe {
         ), new StructureInteractionTlaRecipe(
                 category,
                 Unicopia.id("altar/totem_of_dying"),
-                Schematic.ALTAR,
+                altar,
                 List.of(
                     TlaStack.of(Items.TOTEM_OF_UNDYING).asIngredient(),
                     TlaStack.of(UItems.SPELLBOOK).asIngredient(),
