@@ -401,9 +401,19 @@ public class MimicEntity extends PathAwareEntity {
         }
 
         @Override
+        public boolean canStart() {
+            return super.canStart() && mob.canTarget(mob.getTarget());
+        }
+
+        @Override
         public void start() {
             super.start();
             this.ticks = 0;
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return super.shouldContinue() && mob.canTarget(mob.getTarget());
         }
 
         @Override
