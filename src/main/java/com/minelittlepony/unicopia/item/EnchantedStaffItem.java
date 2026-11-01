@@ -24,6 +24,7 @@ import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -48,6 +49,15 @@ public class EnchantedStaffItem extends StaffItem implements MultiItem, Charges.
     }
 
     public static SpellType<?> getSpellType(Entity entity, boolean remove) {
+        if (entity instanceof ItemEntity item) {
+            if (EnchantableItem.isEnchanted(item.getStack())) {
+                var spell = EnchantableItem.getSpellKey(item.getStack());
+                if (remove) {
+                    item.setStack(EnchantableItem.unenchant(item.getStack()));
+                }
+                return spell;
+            }
+        }
         if (entity instanceof CastSpellEntity cast) {
             return cast.getSpellSlot().get(SpellType.PLACE_CONTROL_SPELL.negate())
                     .map(Spell::getTypeAndTraits)
@@ -55,18 +65,21 @@ public class EnchantedStaffItem extends StaffItem implements MultiItem, Charges.
                     .orElse(SpellType.empty());
         }
         if (entity instanceof PlayerEntity player) {
-            if (remove) {
-                return Pony.of(player).getCharms().equipSpell(Hand.MAIN_HAND, SpellType.EMPTY_KEY.withTraits()).type();
-            }
-            return Pony.of(player).getCharms().getEquippedSpell(Hand.MAIN_HAND).type();
+            return Pony.of(player).getCharms().getStaffSpell(remove).type();
         }
-        return ENTITY_TYPE_TO_SPELL.getOrDefault(entity.getType(), SpellType.empty());
+        return ENTITY_TYPE_TO_SPELL.getOrDefault(entity.getType(), SpellType.AWKWARD);
     }
 
     static {
         register(EntityType.DROWNED, SpellType.BUBBLE);
         register(EntityType.DOLPHIN, SpellType.BUBBLE);
+        register(EntityType.COD, SpellType.BUBBLE);
+        register(EntityType.SALMON, SpellType.BUBBLE);
+        register(EntityType.PUFFERFISH, SpellType.BUBBLE);
+        register(EntityType.AXOLOTL, SpellType.BUBBLE);
         register(EntityType.BLAZE, SpellType.FIRE_BOLT);
+        register(EntityType.PIGLIN, SpellType.CATAPULT);
+        register(EntityType.PIGLIN_BRUTE, SpellType.CATAPULT);
         register(EntityType.CHICKEN, SpellType.FEATHER_FALL);
         register(EntityType.CREEPER, SpellType.CATAPULT);
         register(EntityType.HUSK, SpellType.HYDROPHOBIC);
@@ -80,10 +93,18 @@ public class EnchantedStaffItem extends StaffItem implements MultiItem, Charges.
         register(EntityType.DRAGON_FIREBALL, SpellType.INFERNAL);
         register(EntityType.CAVE_SPIDER, SpellType.REVEALING);
         register(EntityType.ZOMBIE, SpellType.NECROMANCY);
+        register(EntityType.ZOMBIE_HORSE, SpellType.NECROMANCY);
+        register(EntityType.ZOMBIE_VILLAGER, SpellType.NECROMANCY);
+        register(EntityType.ZOMBIFIED_PIGLIN, SpellType.NECROMANCY);
+        register(EntityType.FROG, SpellType.FEATHER_FALL);
         register(EntityType.VEX, SpellType.NECROMANCY);
         register(EntityType.SKELETON, SpellType.CATAPULT);
         register(EntityType.WITHER_SKELETON, SpellType.CATAPULT);
         register(EntityType.SKELETON_HORSE, SpellType.CATAPULT);
+        register(EntityType.WITHER, SpellType.DARK_VORTEX);
+        register(EntityType.WARDEN, SpellType.VORTEX);
+        register(EntityType.ARROW, SpellType.AWKWARD);
+        register(EntityType.ITEM, SpellType.AWKWARD);
         register(UEntities.TWITTERMITE, SpellType.LIGHT);
     }
 
