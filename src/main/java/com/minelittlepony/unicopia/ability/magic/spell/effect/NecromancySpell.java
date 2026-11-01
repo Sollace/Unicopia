@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import com.google.common.base.Suppliers;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.AbstractAreaEffectSpell;
@@ -58,7 +59,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
             .put(1, EntityType.ZOMBIE_VILLAGER)
             .build();
 
-    static final Map<Predicate<Entity>, EntityType<? extends MobEntity>> NECROMANTIC_CONVERSIONS = Map.of(
+    static final Supplier<Map<Predicate<Entity>, EntityType<? extends MobEntity>>> NECROMANTIC_CONVERSIONS = Suppliers.memoize(() -> Map.of(
             match(EntityType.PIGLIN), EntityType.ZOMBIFIED_PIGLIN,
             match(EntityType.HOGLIN), EntityType.ZOGLIN,
             match(EntityType.HORSE), EntityType.ZOMBIE_HORSE,
@@ -69,8 +70,8 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
             match(EntityType.WITHER), EntityType.WARDEN,
             match(EntityType.WARDEN), EntityType.RABBIT,
             (e -> e instanceof VillagerEntity), EntityType.ZOMBIE_VILLAGER
-    );
-    static final Item[][] GEAR = {
+    ));
+    static final Supplier<Item[][]> GEAR = Suppliers.memoize(() -> new Item[][]{
             { Items.LEATHER_HELMET, Items.TURTLE_HELMET, Items.IRON_HELMET, Items.GOLDEN_HELMET, Items.DIAMOND_HELMET, Items.NETHERITE_HELMET },
             { Items.LEATHER_CHESTPLATE, Items.IRON_CHESTPLATE, Items.GOLDEN_CHESTPLATE, Items.DIAMOND_CHESTPLATE, Items.NETHERITE_CHESTPLATE },
             { Items.LEATHER_LEGGINGS, Items.IRON_LEGGINGS, Items.GOLDEN_LEGGINGS, Items.DIAMOND_LEGGINGS, Items.NETHERITE_LEGGINGS },
@@ -80,7 +81,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
               Items.STONE_AXE, Items.IRON_AXE, Items.GOLDEN_AXE, Items.DIAMOND_AXE,
               Items.DIAMOND_SHOVEL, Items.DIAMOND_SWORD
             }
-    };
+    });
 
     static Predicate<Entity> match(EntityType<?> type) {
         return e -> e.getType() == type;
@@ -198,8 +199,9 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
         float levelSqr = MathHelper.clamp(level * level, 0, source.getLevel().getMax());
         float powerScale = levelSqr / source.getLevel().getMax();
 
-        for (int i = source.asWorld().random.nextInt(GEAR.length); i < GEAR.length; i++) {
-            ItemStack pick = GEAR[i][(int)(powerScale * GEAR[i].length) % GEAR[i].length].getDefaultStack();
+        var gear = GEAR.get();
+        for (int i = source.asWorld().random.nextInt(gear.length); i < gear.length; i++) {
+            ItemStack pick = gear[i][(int)(powerScale * gear[i].length) % gear[i].length].getDefaultStack();
 
             minion.equipStack(minion.getPreferredEquipmentSlot(pick), pick);
 
@@ -265,7 +267,7 @@ public class NecromancySpell extends AbstractAreaEffectSpell implements Projecti
 
     @Override
     public void onImpact(MagicProjectileEntity projectile, EntityHitResult hit) {
-        NECROMANTIC_CONVERSIONS.entrySet().stream().filter(entry -> entry.getKey().test(hit.getEntity())).findFirst().ifPresent(entry -> {
+        NECROMANTIC_CONVERSIONS.get().entrySet().stream().filter(entry -> entry.getKey().test(hit.getEntity())).findFirst().ifPresent(entry -> {
             MobEntity target = ((MobEntity)hit.getEntity());
             target.convertTo(entry.getValue(), EntityConversionContext.create(target, true, true), newEntity -> {
                 newEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 200, 0));
