@@ -22,6 +22,7 @@ public interface NbtSerialisable {
      */
     void fromNBT(NbtCompound compound, WrapperLookup lookup);
 
+    @Deprecated
     default NbtCompound toNBT(WrapperLookup lookup) {
         NbtCompound compound = new NbtCompound();
         toNBT(compound, lookup);

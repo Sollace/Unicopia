@@ -50,11 +50,11 @@ public interface ChapterPageElement extends UnaryOperator<SpellbookChapter.Page.
         public static final PacketCodec<ByteBuf, Type<?>> PACKET_CODEC = Identifier.PACKET_CODEC.xmap(REGISTRY::get, Type::id);
 
         public static final Type<Image> IMAGE = create(Unicopia.id("image"), Image.CODEC, Image.PACKET_CODEC);
-        public static final Type<Recipe> RECIPE = create(Unicopia.id("recipe"), Recipe.MAP_CODEC, Recipe.PACKET_CODEC);
-        public static final Type<Stack> STACK = create(Unicopia.id("stack"), Stack.CODEC, Stack.PACKET_CODEC);
+        public static final Type<Recipe> RECIPE = create(Unicopia.id("recipe"), Recipe.CODEC, Recipe.PACKET_CODEC);
+        public static final Type<Stack> STACK = create(Unicopia.id("item"), Stack.CODEC, Stack.PACKET_CODEC);
         public static final Type<TextBlock> TEXT_BLOCK = create(Unicopia.id("text_block"), TextBlock.CODEC, TextBlock.PACKET_CODEC);
         public static final Type<Ingredients> INGREDIENTS = create(Unicopia.id("ingredients"), Ingredients.MAP_CODEC, Ingredients.PACKET_CODEC);
-        public static final Type<Structure> STRUCTURE = create(Unicopia.id("structure"), Structure.MAP_CODEC, Structure.PACKET_CODEC);
+        public static final Type<Structure> STRUCTURE = create(Unicopia.id("structure"), Structure.CODEC, Structure.PACKET_CODEC);
 
         public static final <T extends ChapterPageElement> Type<T> create(Identifier id, Codec<T> codec, PacketCodec<? super RegistryByteBuf, T> packetCodec) {
             var type = new Type<>(id, Either.left(codec), packetCodec);
@@ -69,7 +69,7 @@ public interface ChapterPageElement extends UnaryOperator<SpellbookChapter.Page.
         }
     }
 
-    Codec<Bounds> BOUNDS_CODEC = RecordCodecBuilder.create(i -> i.group(
+    MapCodec<Bounds> BOUNDS_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
             Codec.INT.optionalFieldOf("y", 0).forGetter(o -> o.top),
             Codec.INT.optionalFieldOf("x", 0).forGetter(o -> o.left),
             Codec.INT.optionalFieldOf("width", 0).forGetter(o -> o.width),
@@ -112,19 +112,18 @@ public interface ChapterPageElement extends UnaryOperator<SpellbookChapter.Page.
     }
 
     record Recipe(@Nullable RegistryEntry<net.minecraft.recipe.Recipe<?>> recipe, List<RecipeDisplay> recipeDisplays) implements ChapterPageElement {
-        public static final Codec<Recipe> CODEC = Codec.xor(
+        private static final Codec<RegistryEntry<net.minecraft.recipe.Recipe<?>>> RECIPE_VALUE_CODEC = Codec.xor(
                 RegistryElementCodec.of(RegistryKeys.RECIPE, net.minecraft.recipe.Recipe.CODEC, false).flatXmap(
                         DataResult::success,
                         r -> DataResult.error(() -> "Unreachable")),
                 RegistryKey.createCodec(RegistryKeys.RECIPE).flatXmap(
                         k -> DataResult.<RegistryEntry<net.minecraft.recipe.Recipe<?>>>error(() -> "Unreachable"),
-                        entry -> entry.getKey().map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Registry Key has no id")
+                        entry -> entry.getKey().map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Registry key has no id")
                 ))
-        ).xmap(Either::unwrap, recipe -> Either.right(recipe)).xmap(
-                entry -> new Recipe(entry, entry.hasKeyAndValue() ? entry.value().getDisplays() : List.of()),
-                Recipe::recipe
-        );
-        public static final MapCodec<Recipe> MAP_CODEC = CODEC.fieldOf("recipe");
+        ).xmap(Either::unwrap, recipe -> Either.right(recipe));
+        public static final MapCodec<Recipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                RECIPE_VALUE_CODEC.fieldOf("recipe").forGetter(Recipe::recipe)
+        ).apply(i, recipeEntry -> new Recipe(recipeEntry, recipeEntry.hasKeyAndValue() ? recipeEntry.value().getDisplays() : List.of())));
         public static final PacketCodec<RegistryByteBuf, Recipe> PACKET_CODEC = RecipeDisplay.STREAM_CODEC.collect(PacketCodecs.toList()).xmap(displays -> new Recipe(null, displays), Recipe::recipeDisplays);
 
         @Override
@@ -136,7 +135,7 @@ public interface ChapterPageElement extends UnaryOperator<SpellbookChapter.Page.
     record Stack (IngredientWithSpell ingredient, Bounds bounds) implements ChapterPageElement {
         public static final Codec<Stack> CODEC = RecordCodecBuilder.create(i -> i.group(
                 IngredientWithSpell.FLEXIBLE_CODEC.fieldOf("item").forGetter(Stack::ingredient),
-                MapCodec.assumeMapUnsafe(BOUNDS_CODEC).forGetter(Stack::bounds)
+                BOUNDS_CODEC.forGetter(Stack::bounds)
         ).apply(i, Stack::new));
         public static final PacketCodec<RegistryByteBuf, Stack> PACKET_CODEC = PacketCodec.tuple(
                 IngredientWithSpell.PACKET_CODEC, Stack::ingredient,
@@ -184,7 +183,9 @@ public interface ChapterPageElement extends UnaryOperator<SpellbookChapter.Page.
 
     record Ingredients(List<Multi<?>> entries) implements TextElement {
         public static final Codec<Ingredients> CODEC = Multi.CODEC.listOf().xmap(Ingredients::new, Ingredients::entries);
-        public static final MapCodec<Ingredients> MAP_CODEC = CODEC.fieldOf("ingredients");
+        public static final MapCodec<Ingredients> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+                Multi.CODEC.listOf().fieldOf("ingredients").forGetter(Ingredients::entries)
+        ).apply(i, Ingredients::new));
         public static final PacketCodec<RegistryByteBuf, Ingredients> PACKET_CODEC = Multi.PACKET_CODEC.collect(PacketCodecs.toList()).xmap(Ingredients::new, Ingredients::entries);
 
         @Override
@@ -289,7 +290,7 @@ public interface ChapterPageElement extends UnaryOperator<SpellbookChapter.Page.
     }
 
     record Structure(Schematic.Unbaked schematic) implements ChapterPageElement {
-        public static final MapCodec<Structure> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+        public static final MapCodec<Structure> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                 Schematic.Unbaked.CODEC.fieldOf("schematic").forGetter(Structure::schematic)
         ).apply(i, Structure::new));
         public static final PacketCodec<ByteBuf, Structure> PACKET_CODEC = Schematic.Unbaked.PACKET_CODEC.xmap(Structure::new, Structure::schematic);

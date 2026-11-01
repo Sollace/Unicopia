@@ -12,7 +12,9 @@ import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellTyp
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
 import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.util.Colors;
@@ -59,6 +61,7 @@ public abstract class SpellRenderer<T extends Spell, S extends SpellRenderer.Spe
     }
 
     private void renderGemstone(MatrixStack matrices, VertexConsumerProvider vertices, S spell, CasterState caster, int light) {
+
         matrices.push();
         float scale = 1/8F;
         matrices.scale(scale, scale, scale);
@@ -74,18 +77,24 @@ public abstract class SpellRenderer<T extends Spell, S extends SpellRenderer.Spe
             if (caster.gemYaw != 0) {
                 matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(caster.gemYaw));
             }
-            renderCountdown(matrices, timed, caster.entityState.age);
+            renderCountdown(matrices, vertices, timed, caster.entityState.age);
         }
 
         matrices.pop();
     }
 
-    protected void renderCountdown(MatrixStack matrices, TimedSpell spell, float tickDelta) {
-        matrices.multiply(client.getEntityRenderDispatcher().getRotation().invert(new Quaternionf()));
+    protected void renderCountdown(MatrixStack matrices, VertexConsumerProvider vertices, TimedSpell spell, float tickDelta) {
         float radius = 0.6F;
         float timeRemaining = spell.getTimer().getPercentTimeRemaining(tickDelta);
 
-        DrawableUtil.drawArc(matrices, radius, radius + 0.3F, 0, DrawableUtil.TAU * timeRemaining,
+        DrawContext context = new DrawContext(MinecraftClient.getInstance(),
+                vertices instanceof Immediate m ? m : MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers()
+        );
+        context.getMatrices().peek().getPositionMatrix().set(matrices.peek().getPositionMatrix());
+        context.getMatrices().peek().getNormalMatrix().set(matrices.peek().getNormalMatrix());
+        context.getMatrices().multiply(client.getEntityRenderDispatcher().getRotation().invert(new Quaternionf()));
+
+        DrawableUtil.drawArc(context, radius, radius + 0.3F, 0, DrawableUtil.TAU * timeRemaining,
                 ColorHelper.lerp(MathHelper.clamp(timeRemaining * 4, 0, 1), Colors.BLUE, Colors.WHITE)
         );
     }

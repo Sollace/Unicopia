@@ -19,7 +19,6 @@ import com.minelittlepony.unicopia.server.world.chunk.PositionalDataMap;
 import com.minelittlepony.unicopia.util.Untyped;
 import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.entity.Entity;
@@ -186,7 +185,7 @@ public class Ether extends PersistentState {
 
     public interface Entry {
         Codec<Entry> CODEC = RecordCodecBuilder.create(i -> i.group(
-                MapCodec.assumeMapUnsafe(EntityReference.CODEC).forGetter(Entry::entity),
+                EntityReference.CODEC.forGetter(Entry::entity),
                 Codec.BOOL.fieldOf("removed").forGetter(Entry::removed),
                 Codec.FLOAT.fieldOf("pitch").forGetter(Entry::pitch),
                 Codec.FLOAT.fieldOf("yaw").forGetter(Entry::yaw),

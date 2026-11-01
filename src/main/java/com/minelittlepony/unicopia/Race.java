@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
-import com.google.common.base.Strings;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.magic.Affine;
@@ -48,7 +47,8 @@ public record Race (
     private static final DynamicCommandExceptionType UNKNOWN_RACE_EXCEPTION = new DynamicCommandExceptionType(id -> Text.translatable("commands.race.fail", id));
     private static final Function<Race, Composite> COMPOSITES = Util.memoize(race -> new Composite(race, null, null));
 
-    public static final Codec<Race> CODEC = RecordCodecBuilder.create(i -> i.group(
+    public static final Codec<Race> CODEC = REGISTRY.getCodec();
+    public static final Codec<Race> INLINE_CODEC = RecordCodecBuilder.create(i -> i.group(
             Abilities.REGISTRY.getCodec().listOf().fieldOf("abilities").forGetter(Race::abilities),
             Affinity.CODEC.fieldOf("affinity").forGetter(Race::affinity),
             Availability.CODEC.fieldOf("availability").forGetter(Race::availability),
@@ -193,20 +193,6 @@ public record Race (
     public boolean equals(String s) {
         return getId().toString().equalsIgnoreCase(s)
                 || getTranslationKey().equalsIgnoreCase(s);
-    }
-
-    public static Race fromName(String s, Race def) {
-        if (!Strings.isNullOrEmpty(s)) {
-            Identifier id = Identifier.tryParse(s);
-            if (id != null) {
-                if (id.getNamespace() == Identifier.DEFAULT_NAMESPACE) {
-                    id = Unicopia.id(id.getPath());
-                }
-                return REGISTRY.getOptionalValue(id).orElse(def);
-            }
-        }
-
-        return def;
     }
 
     public static Race register(String name, Builder builder) {

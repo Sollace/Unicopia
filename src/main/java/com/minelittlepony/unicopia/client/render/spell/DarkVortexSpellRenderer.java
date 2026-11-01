@@ -130,7 +130,7 @@ public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell, Dark
     }
 
     @Override
-    protected void renderCountdown(MatrixStack matrices, TimedSpell spell, float tickDelta) {
+    protected void renderCountdown(MatrixStack matrices, VertexConsumerProvider vertices, TimedSpell spell, float tickDelta) {
 
     }
 }

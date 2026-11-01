@@ -33,8 +33,8 @@ class ManaRingSlot extends Slot {
         boolean canUseSuper = Abilities.RAGE.canUse(pony.getCompositeRace()) || Abilities.RAINBOOM.canUse(pony.getCompositeRace());
 
         double maxManaBarSize = canUseSuper ? DrawableUtil.PI : DrawableUtil.TAU;
-        double arcBegin = renderRing(matrices, 17, 13, 0, maxManaBarSize, mana.getMana(), 0xFF88FF99, tickDelta);
-        renderRing(matrices, 17, 13, 0, maxManaBarSize, mana.getExhaustion(), 0xFF002299, tickDelta);
+        double arcBegin = renderRing(context, 17, 13, 0, maxManaBarSize, mana.getMana(), 0xFF88FF99, tickDelta);
+        renderRing(context, 17, 13, 0, maxManaBarSize, mana.getExhaustion(), 0xFF002299, tickDelta);
 
         if (!uHud.client.player.isCreative()) {
 
@@ -43,21 +43,21 @@ class ManaRingSlot extends Slot {
             int minutes = (level / 16) % 16;
             int hours = level / 32;
 
-            DrawableUtil.drawNotchedArc(matrices, 10, 13, 0, hours * 0.2, 0.1, 0.1, 0x00AA88FF);
-            DrawableUtil.drawNotchedArc(matrices, 10, 13, hours * 0.2, minutes * 0.2, 0.1, 0.1, 0x008888AA);
-            DrawableUtil.drawNotchedArc(matrices, 10, 13, (hours + minutes) * 0.2, seconds * 0.2, 0.1, 0.1, 0x88880099);
+            DrawableUtil.drawNotchedArc(context, 10, 13, 0, hours * 0.2, 0.1, 0.1, 0x00AA88FF);
+            DrawableUtil.drawNotchedArc(context, 10, 13, hours * 0.2, minutes * 0.2, 0.1, 0.1, 0x008888AA);
+            DrawableUtil.drawNotchedArc(context, 10, 13, (hours + minutes) * 0.2, seconds * 0.2, 0.1, 0.1, 0x88880099);
 
             level = pony.getCorruption().get();
             seconds = level % 16;
             minutes = (level / 16) % 16;
             hours = level / 32;
 
-            DrawableUtil.drawNotchedArc(matrices, 7, 10,  DrawableUtil.PI, hours * 0.2, 0.1, 0.1, 0x000088FF);
-            DrawableUtil.drawNotchedArc(matrices, 7, 10, hours * 0.2 + DrawableUtil.PI, minutes * 0.2, 0.1, 0.1, 0x000088AA);
-            DrawableUtil.drawNotchedArc(matrices, 7, 10, (hours + minutes) * 0.2 + DrawableUtil.PI, seconds * 0.2, 0.1, 0.1, 0x00008899);
+            DrawableUtil.drawNotchedArc(context, 7, 10,  DrawableUtil.PI, hours * 0.2, 0.1, 0.1, 0x000088FF);
+            DrawableUtil.drawNotchedArc(context, 7, 10, hours * 0.2 + DrawableUtil.PI, minutes * 0.2, 0.1, 0.1, 0x000088AA);
+            DrawableUtil.drawNotchedArc(context, 7, 10, (hours + minutes) * 0.2 + DrawableUtil.PI, seconds * 0.2, 0.1, 0.1, 0x00008899);
 
             if (canUseSuper) {
-                renderRing(matrices, 17, 13, DrawableUtil.PI, DrawableUtil.PI, mana.getCharge(), 0x88FF9999, tickDelta);
+                renderRing(context, 17, 13, DrawableUtil.PI, DrawableUtil.PI, mana.getCharge(), 0x88FF9999, tickDelta);
             }
 
             double cost = abilities.getStats().stream()
@@ -78,7 +78,7 @@ class ManaRingSlot extends Slot {
 
                 double angle = cost * Math.PI * 2;
 
-                DrawableUtil.drawArc(matrices, 13, 17, arcBegin - angle, angle, color);
+                DrawableUtil.drawArc(context, 13, 17, arcBegin - angle, angle, color);
             }
         }
 
@@ -89,17 +89,17 @@ class ManaRingSlot extends Slot {
         }
     }
 
-    private double renderRing(MatrixStack matrices, double outerRadius, double innerRadius, double offsetAngle, double maxAngle, Bar bar, int color, float tickDelta) {
+    private double renderRing(DrawContext context, double outerRadius, double innerRadius, double offsetAngle, double maxAngle, Bar bar, int color, float tickDelta) {
         double fill = MathHelper.clamp(bar.getPercentFill(tickDelta), 0, 1) * maxAngle;
         double shadow = MathHelper.clamp(bar.getShadowFill(tickDelta), 0, 1) * maxAngle;
 
-        DrawableUtil.drawArc(matrices, innerRadius, outerRadius, offsetAngle, fill, color);
+        DrawableUtil.drawArc(context, innerRadius, outerRadius, offsetAngle, fill, color);
 
         if (shadow > fill) {
             color = (color & 0xFFFFFF00)
                  | ((color & 0x000000FF) / 2);
 
-            DrawableUtil.drawArc(matrices, innerRadius, outerRadius, offsetAngle + fill, shadow - fill, color);
+            DrawableUtil.drawArc(context, innerRadius, outerRadius, offsetAngle + fill, shadow - fill, color);
         }
         return offsetAngle + fill;
     }

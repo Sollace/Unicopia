@@ -164,7 +164,7 @@ public class SettingsScreen extends GameGui {
 
                 context.getMatrices().push();
                 context.getMatrices().translate(left + UHud.PRIMARY_SLOT_SIZE / 2, top + UHud.PRIMARY_SLOT_SIZE / 2, 0);
-                DrawableUtil.drawArc(context.getMatrices(), 0, UHud.PRIMARY_SLOT_SIZE / 2, 0, MathHelper.TAU, hudPos == selectedPos ? 0xEEFF00A5 : 0xEEFFFF25);
+                DrawableUtil.drawArc(context, 0, UHud.PRIMARY_SLOT_SIZE / 2, 0, MathHelper.TAU, hudPos == selectedPos ? 0xEEFF00A5 : 0xEEFFFF25);
                 context.getMatrices().pop();
             }
         }

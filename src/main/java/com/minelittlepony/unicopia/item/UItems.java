@@ -174,7 +174,11 @@ public interface UItems {
     Item PALE_OAK_BASKET = register("pale_oak_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.PALE_OAK), s.maxCount(1)), ItemGroups.TOOLS);
     Item MANGROVE_BASKET = register("mangrove_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.MANGROVE), s.maxCount(1)), ItemGroups.TOOLS);
     Item BAMBOO_BASKET = register("bamboo_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.BAMBOO), s.maxCount(1)), ItemGroups.TOOLS);
+    Item CRIMSON_BASKET = register("crimson_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.CRIMSON), s.maxCount(1)), ItemGroups.TOOLS);
+    Item WARPED_BASKET = register("warped_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(WoodType.WARPED), s.maxCount(1)), ItemGroups.TOOLS);
     Item PALM_BASKET = register("palm_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(UWoodTypes.PALM), s.maxCount(1)), ItemGroups.TOOLS);
+    Item ZAP_BASKET = register("zap_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(UWoodTypes.ZAP), s.maxCount(1)), ItemGroups.TOOLS);
+    Item GOLDEN_OAK_BASKET = register("golden_oak_basket", s -> new BasketItem(AirBalloonEntity.BasketType.of(UWoodTypes.GOLDEN_OAK), s.maxCount(1)), ItemGroups.TOOLS);
 
     Item GIANT_BALLOON = register("giant_balloon", s -> new GiantBalloonItem(s.maxCount(1).component(UDataComponentTypes.BALLOON_DESIGN, BalloonDesignComponent.DEFAULT)), ItemGroups.TOOLS);
     Item SPECTRAL_CLOCK = register("spectral_clock", Item::new, ItemGroups.TOOLS);

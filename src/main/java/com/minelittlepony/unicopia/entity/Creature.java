@@ -281,7 +281,7 @@ public class Creature extends Living<LivingEntity> implements WeaklyOwned.Mutabl
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        compound.getCompound("master").ifPresent(c -> getMasterReference().fromNBT(c, lookup));
+        getMasterReference().fromNBT(compound.getCompoundOrEmpty("master"), lookup);
         physics.fromNBT(compound, lookup);
         setDiscorded(compound.getBoolean("discorded", false));
     }

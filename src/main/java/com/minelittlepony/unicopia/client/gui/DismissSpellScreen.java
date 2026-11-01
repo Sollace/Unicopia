@@ -111,8 +111,8 @@ public class DismissSpellScreen extends GameGui {
 
     @Override
     protected void renderDarkening(DrawContext context) {
-        DrawableUtil.drawArc(context.getMatrices(), 40, 80, 0, DrawableUtil.TAU, 0x00000010);
-        DrawableUtil.drawArc(context.getMatrices(), 160, 1600, 0, DrawableUtil.TAU, 0x00000020);
+        DrawableUtil.drawArc(context, 40, 80, 0, DrawableUtil.TAU, 0x00000010);
+        DrawableUtil.drawArc(context, 160, 1600, 0, DrawableUtil.TAU, 0x00000020);
     }
 
     @Override
@@ -201,10 +201,10 @@ public class DismissSpellScreen extends GameGui {
             boolean hovered = isMouseOver(relativeMouseX, relativeMouseY);
             double radius = (hovered ? 9 + MathHelper.sin((MinecraftClient.getInstance().player.age + tickDelta) / 9F) : 7);
 
-            DrawableUtil.drawArc(matrices, radius, radius + 1, 0, DrawableUtil.TAU, color | 0x00000088);
+            DrawableUtil.drawArc(context, radius, radius + 1, 0, DrawableUtil.TAU, color | 0x00000088);
 
             if (hovered) {
-                DrawableUtil.drawArc(matrices, 0, 8, 0, DrawableUtil.TAU, color | 0x000000FF);
+                DrawableUtil.drawArc(context, 0, 8, 0, DrawableUtil.TAU, color | 0x000000FF);
 
                 List<Text> tooltip = new ArrayList<>();
 

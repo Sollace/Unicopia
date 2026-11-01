@@ -49,7 +49,9 @@ public class AccessoryFeatureRenderer<
             return;
         }
 
-        features.forEach(feature -> feature.render(matrices, vertexConsumers, light, state, limbAngle, limbDistance));
+        if (state instanceof BipedEntityRenderState) {
+            features.forEach(feature -> feature.render(matrices, vertexConsumers, light, state, limbAngle, limbDistance));
+        }
 
         CasterState caster = CasterState.of(state);
         if (caster != null) {

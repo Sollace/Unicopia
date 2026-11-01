@@ -1,11 +1,13 @@
 package com.minelittlepony.unicopia.client.gui;
 
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import com.minelittlepony.unicopia.Race;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider.Immediate;
@@ -65,7 +67,7 @@ public interface DrawableUtil {
      *
      * @param mirrorHorizontally Whether or not the arc must be mirrored across the horizontal plane. Will produce a bar that grows from the middle filling both sides.
      */
-    static void drawNotchedArc(MatrixStack matrices, double innerRadius, double outerRadius, double startAngle, double arcAngle, double notchAngle, double notchSpacing, int color) {
+    static void drawNotchedArc(DrawContext context, double innerRadius, double outerRadius, double startAngle, double arcAngle, double notchAngle, double notchSpacing, int color) {
         double notchBegin = startAngle;
         double endAngle = startAngle + arcAngle;
         while (notchBegin < endAngle) {
@@ -73,16 +75,15 @@ public interface DrawableUtil {
             if (notchEnd <= notchBegin) {
                 return;
             }
-            drawArc(matrices, innerRadius, outerRadius, notchBegin, notchEnd - notchBegin, color);
+            drawArc(context, innerRadius, outerRadius, notchBegin, notchEnd - notchBegin, color);
             notchBegin += notchAngle + notchSpacing;
         }
-
     }
 
     /**
      * Renders a colored arc.
      */
-    static void drawArc(MatrixStack matrices, double innerRadius, double outerRadius, double startAngle, double arcAngle, int color) {
+    static void drawArc(DrawContext context, double innerRadius, double outerRadius, double startAngle, double arcAngle, int color) {
         if (Math.abs(arcAngle) < INCREMENT) {
             return;
         }
@@ -96,34 +97,28 @@ public interface DrawableUtil {
 
         final double maxAngle = startAngle + arcAngle;
 
-        Matrix4f model = matrices.peek().getPositionMatrix();
-
-        Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-        VertexConsumer bufferBuilder = vertices.getBuffer(RenderLayer.getTranslucent());
-
-        boolean shouldDraw = false;
-
-        for (double angle = -startAngle; angle >= -maxAngle; angle -= INCREMENT) {
-            shouldDraw = true;
-            // center
-            cylendricalVertex(bufferBuilder, model, innerRadius, angle, r, g, b, k);
-            // point one
-            cylendricalVertex(bufferBuilder, model, outerRadius, angle, r, g, b, k);
-            // point two
-            cylendricalVertex(bufferBuilder, model, outerRadius, angle + INCREMENT, r, g, b, k);
-            // back to center
-            cylendricalVertex(bufferBuilder, model, innerRadius, angle + INCREMENT, r, g, b, k);
-        }
-
-        if (shouldDraw) {
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            vertices.draw();
-        }
+        Matrix4f model = context.getMatrices().peek().getPositionMatrix();
+        context.draw(vertices -> {
+            VertexConsumer bufferBuilder = vertices.getBuffer(RenderLayer.getTranslucent());
+            for (double angle = -startAngle; angle >= -maxAngle; angle -= INCREMENT) {
+                // center
+                cylendricalVertex(bufferBuilder, model, innerRadius, angle, r, g, b, k);
+                // point one
+                cylendricalVertex(bufferBuilder, model, outerRadius, angle, r, g, b, k);
+                // point two
+                cylendricalVertex(bufferBuilder, model, outerRadius, angle + INCREMENT, r, g, b, k);
+                // back to center
+                cylendricalVertex(bufferBuilder, model, innerRadius, angle + INCREMENT, r, g, b, k);
+            }
+        });
     }
 
-    private static void cylendricalVertex(VertexConsumer bufferBuilder, Matrix4f model, double radius, double angle, float r, float g, float b, float k) {
-        bufferBuilder.vertex(model,
+    private static void cylendricalVertex(VertexConsumer bufferBuilder, Matrix4f matrix, double radius, double angle, float r, float g, float b, float k) {
+        Vector3f pos = matrix.transformPosition(
                 (float)(radius * MathHelper.sin((float)angle)),
-                (float)(radius * MathHelper.cos((float)angle)), 0).color(r, g, b, k).normal(2, 2, 2);
+                (float)(radius * MathHelper.cos((float)angle)),
+                0, new Vector3f());
+        bufferBuilder.vertex(pos.x, pos.y, pos.z, ColorHelper.fromFloats(k, r, g, b), 0, 0, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 2, 2, 2);
+
     }
 }

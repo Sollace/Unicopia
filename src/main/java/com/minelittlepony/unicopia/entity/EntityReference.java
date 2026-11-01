@@ -45,10 +45,10 @@ import net.minecraft.world.World;
  * @param <T> The type of the entity this reference points to.
  */
 public class EntityReference<T extends Entity> implements NbtSerialisable, TrackableObject<EntityReference<T>> {
-    public static final Codec<EntityReference<?>> CODEC = EntityValues.CODEC.codec().xmap(r -> new EntityReference<>(r), r -> r.reference);
-    public static final Codec<List<EntityReference<?>>> LIST_CODEC = CODEC.listOf();
+    public static final MapCodec<EntityReference<?>> CODEC = EntityValues.CODEC.xmap(r -> new EntityReference<>(r), r -> r.reference);
+    private static final Codec<List<EntityReference<?>>> LIST_CODEC = CODEC.codec().listOf();
 
-    public static <T extends Entity> Codec<EntityReference<T>> codec() {
+    public static <T extends Entity> MapCodec<EntityReference<T>> codec() {
         return Untyped.cast(CODEC);
     }
 
@@ -142,7 +142,7 @@ public class EntityReference<T extends Entity> implements NbtSerialisable, Track
 
     @Override
     public void fromNBT(NbtCompound tag, WrapperLookup lookup) {
-        this.reference = tag.decode(EntityValues.<T>mapCodec(), lookup.getOps(NbtOps.INSTANCE)).orElse(null);
+        this.reference = tag.isEmpty() ? null : tag.decode(EntityValues.<T>mapCodec(), lookup.getOps(NbtOps.INSTANCE)).orElse(null);
         this.dirty = true;
         if (reference != null) {
             T value = directReference.get();

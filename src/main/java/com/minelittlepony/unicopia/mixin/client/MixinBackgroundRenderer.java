@@ -1,20 +1,19 @@
 package com.minelittlepony.unicopia.mixin.client;
 
+import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.minelittlepony.unicopia.client.render.WorldRenderDelegate;
 
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.BackgroundRenderer.FogType;
+import net.minecraft.client.render.Fog;
 
 @Mixin(BackgroundRenderer.class)
 abstract class MixinBackgroundRenderer {
-    @Inject(method = "applyFog", at = @At("RETURN"))
-    private static void onApplyFog(Camera camera, FogType fogType, float viewDistance, boolean thickFog, float tickDelta, CallbackInfo info) {
-        WorldRenderDelegate.INSTANCE.applyFog(camera, fogType, viewDistance, thickFog, tickDelta);
+    @ModifyReturnValue(method = "applyFog", at = @At("RETURN"))
+    private static Fog onApplyFog(Fog fog, Camera camera, BackgroundRenderer.FogType fogType, Vector4f color, float viewDistance, boolean thickenFog, float tickProgress) {
+        return WorldRenderDelegate.INSTANCE.applyFog(fog, camera, fogType, viewDistance, thickenFog, tickProgress);
     }
 }

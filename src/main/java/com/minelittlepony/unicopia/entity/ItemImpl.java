@@ -147,7 +147,7 @@ public class ItemImpl implements Equine<ItemEntity> {
 
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
-        compound.putString("owner_race", getSpecies().getId().toString());
+        compound.put("owner_race", Race.CODEC, getSpecies());
         physics.toNBT(compound, lookup);
     }
 

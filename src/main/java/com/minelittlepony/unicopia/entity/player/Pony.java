@@ -151,13 +151,13 @@ public class Pony extends Living<PlayerEntity> implements Copyable<Pony>, Update
     }
 
     public void sendUpdatePacket() {
-        if (entity instanceof ServerPlayerEntity) {
+        if (entity instanceof ServerPlayerEntity pl && pl.networkHandler != null) {
             Channel.SERVER_PLAYER_CAPABILITIES.sendToAllPlayers(new MsgPlayerCapabilities(this, false), entity.getWorld());
         }
     }
 
     public void sendUpdateToPlayer() {
-        if (entity instanceof ServerPlayerEntity pl) {
+        if (entity instanceof ServerPlayerEntity pl && pl.networkHandler != null) {
             Channel.SERVER_PLAYER_CAPABILITIES.sendToPlayer(new MsgPlayerCapabilities(this, false), pl);
         }
     }

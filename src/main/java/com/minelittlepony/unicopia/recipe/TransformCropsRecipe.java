@@ -69,6 +69,11 @@ public class TransformCropsRecipe implements Recipe<TransformCropsRecipe.Placeme
         return RecipeBookCategories.CRAFTING_MISC;
     }
 
+    @Override
+    public boolean isIgnoredInRecipeBook() {
+        return true;
+    }
+
     public BlockState getCatalystState() {
         return catalyst;
     }

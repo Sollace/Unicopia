@@ -37,6 +37,11 @@ public interface SpellbookRecipe extends Recipe<SpellbookRecipe.Input> {
         return IngredientPlacement.NONE;
     }
 
+    @Override
+    default boolean isIgnoredInRecipeBook() {
+        return true;
+    }
+
     int getPriority();
 
     interface CraftingTreeBuilder {

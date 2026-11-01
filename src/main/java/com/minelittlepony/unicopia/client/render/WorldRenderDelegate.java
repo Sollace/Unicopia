@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
-
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.render.ModelPartHooks.EnqueudHeadRender;
@@ -17,8 +16,6 @@ import com.minelittlepony.unicopia.entity.duck.LavaAffine;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import com.minelittlepony.unicopia.util.ColorHelper;
 import com.minelittlepony.unicopia.util.Untyped;
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.BackgroundRenderer.FogType;
@@ -53,8 +50,8 @@ public class WorldRenderDelegate {
         return Optional.empty();
     }
 
-    public void applyFog(Camera camera, FogType fogType, float viewDistance, boolean thickFog, float tickDelta) {
-        if (EquinePredicates.PLAYER_SEAPONY.test(MinecraftClient.getInstance().player)) {
+    public Fog applyFog(Fog fog, Camera camera, FogType fogType, float viewDistance, boolean thickFog, float tickDelta) {
+        if (!Fog.DUMMY.equals(fog) && EquinePredicates.PLAYER_SEAPONY.test(MinecraftClient.getInstance().player)) {
             final int[] distanceChange = switch (camera.getSubmersionType()) {
                 case WATER -> SEAPONY_UNDERWATER_FOG_DIFF;
                 case NONE -> SEAPONY_SURFACE_FOG_DIFF;
@@ -62,14 +59,15 @@ public class WorldRenderDelegate {
             };
 
             if (distanceChange != DEFAULT_FOG_DIFF) {
-                final Fog fog = RenderSystem.getShaderFog();
-                RenderSystem.setShaderFog(new Fog(
+                return new Fog(
                     fog.start() + distanceChange[0], fog.end() + distanceChange[1],
                     fog.shape(),
                     fog.red(), fog.green(), fog.blue(), fog.alpha()
-                ));
+                );
             }
         }
+
+        return fog;
     }
 
     public <E extends Entity, S extends EntityRenderState> void handleEntityRender(

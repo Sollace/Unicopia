@@ -10,6 +10,7 @@ import com.minelittlepony.unicopia.datagen.providers.recipe.CuttingBoardRecipeJs
 import com.minelittlepony.unicopia.mixin.RegistryEntryListOwnerAccessor;
 import com.minelittlepony.unicopia.server.world.gen.ULootTableEntryType;
 import com.minelittlepony.unicopia.util.Untyped;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 
@@ -111,7 +112,6 @@ public interface URecipes {
     @SuppressWarnings("deprecation")
     static Optional<RegistryEntryList<Item>> getRecipeContentsReplacement(RegistryEntry<Item> stack) {
         if (stack.matches(Items.STICK.getRegistryEntry())) {
-            Registries.ITEM.getOptional(ConventionalItemTags.WOODEN_RODS);
             return lookupTag(ConventionalItemTags.WOODEN_RODS, stack);
         }
         if (stack.matches(Items.FEATHER.getRegistryEntry())) {
@@ -120,13 +120,37 @@ public interface URecipes {
         return Optional.empty();
     }
 
-    @SuppressWarnings("deprecation")
     private static Optional<RegistryEntryList<Item>> lookupTag(TagKey<Item> tag, RegistryEntry<Item> canonicalParent) {
-        Registry<Item> registry = canonicalParent instanceof RegistryEntryListOwnerAccessor accessor && accessor.getOwner() instanceof Registry r ? Untyped.cast(r) :Registries.ITEM;
+        Registry<Item> registry = canonicalParent instanceof RegistryEntryListOwnerAccessor accessor && accessor.getOwner() instanceof Registry r ? Untyped.cast(r) : Registries.ITEM;
 
         return registry.getOptional(tag)
                 .<RegistryEntryList<Item>>map(Untyped::cast)
-                .or(() -> Optional.of(RegistryEntryList.of(registry, tag)));
+                .or(() -> Optional.of(new RegistryEntryList.ListBacked<Item>() {
+                    @Override
+                    public boolean isBound() {
+                        return Registries.ITEM.getOptional(tag).filter(RegistryEntryList::isBound).isPresent();
+                    }
+
+                    @Override
+                    public Either<TagKey<Item>, List<RegistryEntry<Item>>> getStorage() {
+                        return Either.left(tag);
+                    }
+
+                    @Override
+                    public boolean contains(RegistryEntry<Item> entry) {
+                        return Registries.ITEM.getOptional(tag).filter(i -> i.contains(entry)).isPresent();
+                    }
+
+                    @Override
+                    public Optional<TagKey<Item>> getTagKey() {
+                        return Optional.of(tag);
+                    }
+
+                    @Override
+                    protected List<RegistryEntry<Item>> getEntries() {
+                        return Registries.ITEM.getOptional(tag).stream().flatMap(i -> i.stream()).toList();
+                    }
+                }));
     }
 
     static void bootstrap() {
