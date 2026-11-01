@@ -9,6 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.ability.Abilities;
 import com.minelittlepony.unicopia.ability.Ability;
 import com.minelittlepony.unicopia.ability.magic.Affine;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
+import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.util.RegistryUtils;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -42,7 +44,10 @@ public record Race (
         boolean canHang,
         boolean isFish,
         boolean canInfluenceWeather,
-        boolean canInteractWithClouds
+        boolean canInteractWithClouds,
+        CustomisedSpellType<?> staffSpell,
+        CustomisedSpellType<?> mainHandSpell,
+        CustomisedSpellType<?> offHandSpell
     ) implements Affine {
     public static final Registry<Race> REGISTRY = RegistryUtils.createSynced(RaceKeys.REGISTRY, RaceKeys.UNSET.getValue());
     public static final Registry<Race> COMMAND_REGISTRY = RegistryUtils.createSynced(Unicopia.key("race/grantable"), RaceKeys.UNSET.getValue());
@@ -63,7 +68,10 @@ public record Race (
             Codec.BOOL.fieldOf("hanging").forGetter(Race::canHang),
             Codec.BOOL.fieldOf("aquatic").forGetter(Race::isFish),
             Codec.BOOL.fieldOf("weather_magic").forGetter(Race::canInfluenceWeather),
-            Codec.BOOL.fieldOf("cloud_magic").forGetter(Race::canInteractWithClouds)
+            Codec.BOOL.fieldOf("cloud_magic").forGetter(Race::canInteractWithClouds),
+            CustomisedSpellType.CODEC.fieldOf("staff_spell").forGetter(Race::staffSpell),
+            CustomisedSpellType.CODEC.fieldOf("main_hand_spell").forGetter(Race::mainHandSpell),
+            CustomisedSpellType.CODEC.fieldOf("off_hand_spell").forGetter(Race::offHandSpell)
     ).apply(i, Race::new));
 
     /**
@@ -76,6 +84,7 @@ public record Race (
             .abilities(Abilities.HUG, Abilities.STOMP, Abilities.KICK, Abilities.GROW)
     );
     public static final Race UNICORN = register(RaceKeys.UNICORN, new Builder().foraging().magic()
+            .inateSpells(SpellType.SHIELD.withTraits(), SpellType.CATAPULT.withTraits())
             .abilities(Abilities.TELEPORT, Abilities.CAST, Abilities.GROUP_TELEPORT, Abilities.SHOOT, Abilities.DISPELL, Abilities.TELEKINESIS)
     );
     public static final Race PEGASUS = register(RaceKeys.PEGASUS, new Builder().foraging().flight(FlightType.AVIAN).weatherMagic().cloudMagic()
@@ -85,6 +94,7 @@ public record Race (
             .abilities(Abilities.TOGGLE_FLIGHT, Abilities.CARRY, Abilities.HANG, Abilities.EEEE)
     );
     public static final Race ALICORN = register(RaceKeys.ALICORN, new Builder().foraging().availability(Availability.COMMANDS).flight(FlightType.AVIAN).earth().magic().weatherMagic().cloudMagic()
+            .inateSpells(SpellType.SHIELD.withTraits(), SpellType.CATAPULT.withTraits())
             .abilities(
                     Abilities.TELEPORT, Abilities.GROUP_TELEPORT, Abilities.CAST, Abilities.SHOOT, Abilities.DISPELL, Abilities.TELEKINESIS,
                     Abilities.TOGGLE_FLIGHT, Abilities.RAINBOOM, Abilities.CAPTURE_CLOUD, Abilities.CARRY,
@@ -93,9 +103,11 @@ public record Race (
             )
     );
     public static final Race CHANGELING = register(RaceKeys.CHANGELING, new Builder().foraging().affinity(Affinity.BAD).flight(FlightType.INSECTOID).canHang()
+            .inateSpells(SpellType.SHIELD.withTraits(), SpellType.CATAPULT.withTraits())
             .abilities(Abilities.DISPELL, Abilities.TOGGLE_FLIGHT, Abilities.FEED, Abilities.DISGUISE, Abilities.CARRY, Abilities.TELEKINESIS)
     );
     public static final Race KIRIN = register(RaceKeys.KIRIN, new Builder().foraging().magic()
+            .inateSpells(SpellType.FLAME.withTraits(), SpellType.FIRE_BOLT.withTraits())
             .abilities(Abilities.DISPELL, Abilities.RAGE, Abilities.NIRIK_BLAST, Abilities.KIRIN_CAST, Abilities.TELEKINESIS)
     );
     public static final Race HIPPOGRIFF = register(RaceKeys.HIPPOGRIFF, new Builder().foraging().flight(FlightType.AVIAN).cloudMagic()
@@ -303,9 +315,24 @@ public record Race (
         private boolean canInfluenceWeather;
         private boolean canInteractWithClouds;
 
+        private CustomisedSpellType<?> staffSpell = CustomisedSpellType.empty();
+        private CustomisedSpellType<?> mainHandSpell = CustomisedSpellType.empty();
+        private CustomisedSpellType<?> offHandSpell = CustomisedSpellType.empty();
+
         @SafeVarargs
         public final Builder abilities(RegistryEntry<Ability<?>>...abilities) {
             this.abilities.addAll(List.of(abilities));
+            return this;
+        }
+
+        public Builder inateSpells(CustomisedSpellType<?> mainHandSpell, CustomisedSpellType<?> offHandSpell) {
+            this.mainHandSpell = mainHandSpell;
+            this.offHandSpell = offHandSpell;
+            return this;
+        }
+
+        public Builder spellFromStaff(CustomisedSpellType<?> staffSpell) {
+            this.staffSpell = staffSpell;
             return this;
         }
 
@@ -365,7 +392,13 @@ public record Race (
         }
 
         public Race build() {
-            return new Race(List.copyOf(abilities), affinity, availability, flightType, canCast, hasIronGut, canUseEarth, isNocturnal, canHang, isFish, canInfluenceWeather, canInteractWithClouds);
+            return new Race(List.copyOf(abilities),
+                affinity, availability, flightType,
+                canCast, hasIronGut,
+                canUseEarth, isNocturnal,
+                canHang, isFish, canInfluenceWeather,
+                canInteractWithClouds,
+                staffSpell, mainHandSpell, offHandSpell);
         }
     }
 }

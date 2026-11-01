@@ -1,13 +1,15 @@
 package com.minelittlepony.unicopia.entity.player;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.CustomisedSpellType;
-import com.minelittlepony.unicopia.ability.magic.spell.effect.SpellType;
 import com.minelittlepony.unicopia.item.EnchantableItem;
 import com.minelittlepony.unicopia.util.Copyable;
 import com.minelittlepony.unicopia.util.TypedActionResult;
@@ -17,27 +19,32 @@ import com.mojang.serialization.Codec;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
+import net.minecraft.util.dynamic.Codecs;
 
 public class PlayerCharmTracker implements NbtSerialisable, Copyable<PlayerCharmTracker> {
-    private static final Codec<List<CustomisedSpellType<?>>> HAND_SPELLS_CODEC = CustomisedSpellType.CODEC.codec().listOf();
+    private static final Codec<List<Optional<CustomisedSpellType<?>>>> HAND_SPELLS_CODEC = Codecs.optional(CustomisedSpellType.CODEC.codec()).listOf(2, 2);
 
     private final Pony pony;
 
-    private CustomisedSpellType<?>[] handSpells = new CustomisedSpellType<?>[] {
-        SpellType.SHIELD.withTraits(),
-        SpellType.CATAPULT.withTraits()
-    };
+    private final List<Optional<CustomisedSpellType<?>>> handSpells = new ArrayList<>(List.of(
+        Optional.<CustomisedSpellType<?>>empty(),
+        Optional.<CustomisedSpellType<?>>empty()
+    ));
 
     PlayerCharmTracker(Pony pony) {
         this.pony = pony;
     }
 
-    public CustomisedSpellType<?>[] getHandSpells() {
-        return handSpells;
+    public CustomisedSpellType<?> getStaffSpell(boolean consume) {
+        var result = handSpells.get(0).orElseGet(() -> pony.getSpecies().staffSpell());
+        if (consume) {
+            handSpells.set(0, Optional.empty());
+        }
+        return result;
     }
 
     public CustomisedSpellType<?> getEquippedSpell(Hand hand) {
-        return handSpells[hand.ordinal()] == null ? SpellType.EMPTY_KEY.withTraits() : handSpells[hand.ordinal()];
+        return handSpells.get(hand.ordinal()).orElseGet(() -> hand == Hand.MAIN_HAND ? pony.getSpecies().mainHandSpell() : pony.getSpecies().offHandSpell());
     }
 
     public Hand getHand() {
@@ -56,9 +63,12 @@ public class PlayerCharmTracker implements NbtSerialisable, Copyable<PlayerCharm
                 .orElse(getEquippedSpell(hand).toAction());
     }
 
-    public CustomisedSpellType<?> equipSpell(Hand hand, CustomisedSpellType<?> spell) {
-        CustomisedSpellType<?> previous = handSpells[hand.ordinal()];
-        handSpells[hand.ordinal()] = spell;
+    public CustomisedSpellType<?> equipSpell(Hand hand, @Nullable CustomisedSpellType<?> spell) {
+        if (spell == null) {
+            spell = CustomisedSpellType.empty();
+        }
+        CustomisedSpellType<?> previous = getEquippedSpell(hand);
+        handSpells.set(hand.ordinal(), Optional.of(spell));
         if (!Objects.equals(previous, spell)) {
             pony.asEntity().playSound(USounds.GUI_SPELL_EQUIP.value(), 0.25F, 1.75F);
         }
@@ -68,22 +78,20 @@ public class PlayerCharmTracker implements NbtSerialisable, Copyable<PlayerCharm
 
     @Override
     public void copyFrom(PlayerCharmTracker old, boolean alive) {
-        for (int i = 0; i < handSpells.length; i++) {
-            handSpells[i] = old.handSpells[i];
-        }
+        handSpells.clear();
+        handSpells.addAll(old.handSpells);
     }
 
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
-        compound.put("handSpells", HAND_SPELLS_CODEC, Arrays.asList(handSpells));
+        compound.put("handSpells", HAND_SPELLS_CODEC, handSpells);
     }
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         compound.get("handSpells", HAND_SPELLS_CODEC).ifPresent(list -> {
-            for (int i = 0; i < handSpells.length && i < list.size(); i++) {
-                handSpells[i] = list.get(i);
-            }
+            handSpells.clear();
+            handSpells.addAll(list);
         });
     }
 }
