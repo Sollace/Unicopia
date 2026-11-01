@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell.effect;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
@@ -195,6 +196,10 @@ public final class SpellType<T extends Spell> implements Affine, SpellPredicate<
 
     public void toNbt(NbtCompound tag) {
         tag.putString("effect_id", getId().toString());
+    }
+
+    public Optional<SpellType<?>> toOptional() {
+        return isEmpty() ? Optional.empty() : Optional.of(this);
     }
 
     public boolean isEmpty() {

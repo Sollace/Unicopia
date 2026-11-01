@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 public class SpellCraftingRecipe implements SpellbookRecipe {
     private static final Codec<ItemStack> RESULT_CODEC = RecordCodecBuilder.create(i -> i.group(
             ItemStack.MAP_CODEC.forGetter(stack -> stack),
-            SpellType.REGISTRY.getCodec().optionalFieldOf("spell").forGetter(stack -> EnchantableItem.getSpellKeyOrEmpty(stack))
+            SpellType.REGISTRY.getCodec().optionalFieldOf("spell").forGetter(stack -> EnchantableItem.getSpellKey(stack).toOptional())
     ).apply(i, (stack, spell) -> spell.map(s -> EnchantableItem.enchant(stack, s)).orElse(stack)));
 
     public static final MapCodec<SpellCraftingRecipe> CODEC = RecordCodecBuilder.<SpellCraftingRecipe>mapCodec(instance -> instance.group(
