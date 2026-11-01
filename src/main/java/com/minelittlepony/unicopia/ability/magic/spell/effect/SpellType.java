@@ -46,7 +46,7 @@ import net.minecraft.server.command.ServerCommandSource;
 public final class SpellType<T extends Spell> implements Affine, SpellPredicate<T> {
     public static final Identifier EMPTY_ID = Unicopia.id("none");
 
-    public static final Registry<SpellType<?>> REGISTRY = RegistryUtils.createSynced(Unicopia.id("spells"), EMPTY_ID.toString());
+    public static final Registry<SpellType<?>> REGISTRY = RegistryUtils.createSynced(Unicopia.key("spells"), EMPTY_ID);
     public static final RegistryKey<? extends Registry<SpellType<?>>> REGISTRY_KEY = REGISTRY.getKey();
     public static final Codec<SpellType<?>> CODEC = REGISTRY.getCodec();
     public static final PacketCodec<RegistryByteBuf, SpellType<?>> PACKET_CODEC = PacketCodecs.registryValue(REGISTRY_KEY);

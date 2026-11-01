@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import org.jetbrains.annotations.Nullable;
 
-import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.RaceKeys;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -20,8 +20,8 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 
 public class UCommandSuggestion {
-    public static final SuggestionProvider<ServerCommandSource> ALL_RACE_SUGGESTIONS = suggestFromRegistry(Race.REGISTRY_KEY);
-    public static final SuggestionProvider<ServerCommandSource> ALLOWED_RACE_SUGGESTIONS = suggestFromRegistry(Race.REGISTRY_KEY, (context, race) -> race.availability().isGrantable() && race.isPermitted(context.getSource().getPlayer()));
+    public static final SuggestionProvider<ServerCommandSource> ALL_RACE_SUGGESTIONS = suggestFromRegistry(RaceKeys.REGISTRY);
+    public static final SuggestionProvider<ServerCommandSource> ALLOWED_RACE_SUGGESTIONS = suggestFromRegistry(RaceKeys.REGISTRY, (context, race) -> race.availability().isGrantable() && race.isPermitted(context.getSource().getPlayer()));
 
     public static <T> SuggestionProvider<ServerCommandSource> suggestFromRegistry(RegistryKey<? extends Registry<T>> registryKey, @Nullable BiPredicate<CommandContext<ServerCommandSource>, T> filter) {
         return (context, builder) -> {

@@ -8,16 +8,16 @@ import com.minelittlepony.unicopia.util.serialization.PacketCodecUtils;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.util.Identifier;
+import net.minecraft.registry.RegistryKey;
 
 public record SyncedConfig (
     Set<String> wantItNeedItExcludeList,
     Set<String> dimensionsWithoutAtmosphere,
-    Set<Identifier> speciesWhiteList) {
+    Set<RegistryKey<Race>> speciesWhiteList) {
     public static final PacketCodec<ByteBuf, SyncedConfig> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecUtils.STRING_SET, SyncedConfig::wantItNeedItExcludeList,
             PacketCodecUtils.STRING_SET, SyncedConfig::dimensionsWithoutAtmosphere,
-            Identifier.PACKET_CODEC.collect(PacketCodecs.toCollection(HashSet::new)), SyncedConfig::speciesWhiteList,
+            RegistryKey.createPacketCodec(RaceKeys.REGISTRY).collect(PacketCodecs.toCollection(HashSet::new)), SyncedConfig::speciesWhiteList,
             SyncedConfig::new
     );
 }

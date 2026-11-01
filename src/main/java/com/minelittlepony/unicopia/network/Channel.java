@@ -46,8 +46,8 @@ public interface Channel {
 
     static void bootstrap() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            sender.sendPacket(CONFIGURATION_CHANGE.toPacket(new MsgConfigurationChange(InteractionManager.getInstance().getSyncedConfig())));
             sender.sendPacket(SERVER_RESOURCES.toPacket(new MsgServerResources(server)));
+            sender.sendPacket(CONFIGURATION_CHANGE.toPacket(new MsgConfigurationChange(InteractionManager.getInstance().getSyncedConfig())));
             sender.sendPacket(SERVER_SKY_ANGLE.toPacket(new MsgSkyAngle(UnicopiaWorldProperties.forWorld(handler.getPlayer().getServerWorld()).getTangentalSkyAngle())));
             sender.sendPacket(SERVER_ZAP_STAGE.toPacket(new MsgZapAppleStage(ZapAppleStageStore.get(handler.player.getServerWorld()).getStage())));
             boolean requireSelection = false;

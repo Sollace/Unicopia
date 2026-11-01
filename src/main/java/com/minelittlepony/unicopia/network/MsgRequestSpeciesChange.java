@@ -23,7 +23,7 @@ public record MsgRequestSpeciesChange (
     ) implements Handled<ServerPlayerEntity> {
     public static final PacketCodec<RegistryByteBuf, MsgRequestSpeciesChange> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.BOOLEAN, MsgRequestSpeciesChange::force,
-            PacketCodecs.registryValue(Race.REGISTRY_KEY), MsgRequestSpeciesChange::newRace,
+            Race.PACKET_CODEC, MsgRequestSpeciesChange::newRace,
             MsgRequestSpeciesChange::new
     );
 

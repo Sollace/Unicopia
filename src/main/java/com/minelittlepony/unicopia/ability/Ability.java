@@ -71,7 +71,7 @@ public interface Ability<T extends Hit> {
      * @param playerSpecies The player's species
      */
     default boolean canUse(Race race) {
-        return race.canUse(this);
+        return race.canUse(Abilities.REGISTRY.getEntry(this));
     }
 
     /**

@@ -72,6 +72,10 @@ public class Unicopia implements ModInitializer {
         return RegistryKey.of(registry, id(name));
     }
 
+    public static <T> RegistryKey<Registry<T>> key(String name) {
+        return RegistryKey.ofRegistry(id(name));
+    }
+
     @Override
     public void onInitialize() {
         Channel.bootstrap();

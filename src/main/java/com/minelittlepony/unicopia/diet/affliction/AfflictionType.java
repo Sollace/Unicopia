@@ -14,8 +14,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 public record AfflictionType<T extends Affliction>(Identifier id, MapCodec<T> codec, PacketCodec<? super RegistryByteBuf, T> packetCodec) {
-    public static final String DEFAULT_ID = "unicopia:apply_status_effect";
-    public static final Registry<AfflictionType<?>> REGISTRY = RegistryUtils.createSynced(Unicopia.id("affliction_type"), DEFAULT_ID);
+    public static final Identifier DEFAULT_ID = Unicopia.id("apply_status_effect");
+    public static final Registry<AfflictionType<?>> REGISTRY = RegistryUtils.createSynced(Unicopia.key("affliction_type"), DEFAULT_ID);
     public static final Codec<Affliction> CODEC = CodecUtils.apply(REGISTRY.getCodec()
             .dispatch("type", Affliction::getType, AfflictionType::codec), elementCodec -> Codec
             .withAlternative(elementCodec, Codec.list(elementCodec), afflictions -> {

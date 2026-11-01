@@ -41,7 +41,7 @@ import net.minecraft.registry.Registry;
 public class EntityBehaviour<T extends Entity> {
 
     private static final EntityBehaviour<Entity> DEFAULT = new EntityBehaviour<>();
-    private static final Registry<EntityBehaviour<?>> REGISTRY = RegistryUtils.createSimple(Unicopia.id("entity_behaviour"));
+    private static final Registry<EntityBehaviour<?>> REGISTRY = RegistryUtils.createSimple(Unicopia.key("entity_behaviour"));
 
     /**
      * Equivalent of the entity#tick method. Called every tick to update th logic for a disguise.

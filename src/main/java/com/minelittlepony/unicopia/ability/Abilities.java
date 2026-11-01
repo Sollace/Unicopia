@@ -16,9 +16,10 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 
 public interface Abilities {
-    Registry<Ability<?>> REGISTRY = RegistryUtils.createSynced(Unicopia.id("abilities"));
+    Registry<Ability<?>> REGISTRY = RegistryUtils.createSynced(Unicopia.key("abilities"));
     PacketCodec<RegistryByteBuf, Ability<?>> PACKET_CODEC = PacketCodecs.registryValue(REGISTRY.getKey());
     Map<AbilitySlot, Set<Ability<?>>> BY_SLOT = new EnumMap<>(AbilitySlot.class);
     BiFunction<AbilitySlot, Race.Composite, List<Ability<?>>> BY_SLOT_AND_COMPOSITE_RACE = Util.memoize((slot, race) -> {
@@ -29,59 +30,59 @@ public interface Abilities {
     });
 
     // all races
-    Ability<?> CHANGE_FORM = register(new ChangeFormAbility(), "change_form", AbilitySlot.PRIMARY);
+    RegistryEntry<Ability<?>> CHANGE_FORM = register(new ChangeFormAbility(), "change_form", AbilitySlot.PRIMARY);
 
     // unicorn / alicorn
-    Ability<?> CAST = register(new UnicornCastingAbility(), "cast", AbilitySlot.PRIMARY);
-    Ability<?> SHOOT = register(new UnicornProjectileAbility(), "shoot", AbilitySlot.PRIMARY);
-    Ability<?> TIME = register(new TimeChangeAbility(), "time_control", AbilitySlot.SECONDARY);
-    Ability<?> TELEPORT = register(new UnicornTeleportAbility(), "teleport", AbilitySlot.SECONDARY);
-    Ability<?> GROUP_TELEPORT = register(new UnicornGroupTeleportAbility(), "teleport_group", AbilitySlot.SECONDARY);
-    Ability<?> TELEKINESIS = register(new UnicornTelekinesisAbility(), "telekinesis", AbilitySlot.TERTIARY);
-    Ability<?> DISPELL = register(new UnicornDispellAbility(), "dispell", AbilitySlot.TERTIARY);
+    RegistryEntry<Ability<?>> CAST = register(new UnicornCastingAbility(), "cast", AbilitySlot.PRIMARY);
+    RegistryEntry<Ability<?>> SHOOT = register(new UnicornProjectileAbility(), "shoot", AbilitySlot.PRIMARY);
+    RegistryEntry<Ability<?>> TIME = register(new TimeChangeAbility(), "time_control", AbilitySlot.SECONDARY);
+    RegistryEntry<Ability<?>> TELEPORT = register(new UnicornTeleportAbility(), "teleport", AbilitySlot.SECONDARY);
+    RegistryEntry<Ability<?>> GROUP_TELEPORT = register(new UnicornGroupTeleportAbility(), "teleport_group", AbilitySlot.SECONDARY);
+    RegistryEntry<Ability<?>> TELEKINESIS = register(new UnicornTelekinesisAbility(), "telekinesis", AbilitySlot.TERTIARY);
+    RegistryEntry<Ability<?>> DISPELL = register(new UnicornDispellAbility(), "dispell", AbilitySlot.TERTIARY);
 
     // earth / alicorn
-    Ability<?> KICK = register(new EarthPonyKickAbility(), "kick", AbilitySlot.PRIMARY);
-    Ability<?> GROW = register(new EarthPonyGrowAbility(), "grow", AbilitySlot.SECONDARY);
-    Ability<?> STOMP = register(new EarthPonyStompAbility(), "stomp", AbilitySlot.TERTIARY);
-    Ability<?> HUG = register(new HugAbility(), "hug", AbilitySlot.TERTIARY);
+    RegistryEntry<Ability<?>> KICK = register(new EarthPonyKickAbility(), "kick", AbilitySlot.PRIMARY);
+    RegistryEntry<Ability<?>> GROW = register(new EarthPonyGrowAbility(), "grow", AbilitySlot.SECONDARY);
+    RegistryEntry<Ability<?>> STOMP = register(new EarthPonyStompAbility(), "stomp", AbilitySlot.TERTIARY);
+    RegistryEntry<Ability<?>> HUG = register(new HugAbility(), "hug", AbilitySlot.TERTIARY);
 
     // pegasus
-    Ability<?> RAINBOOM = register(new PegasusRainboomAbility(), "rainboom", AbilitySlot.PRIMARY);
-    Ability<?> CAPTURE_CLOUD = register(new PegasusCaptureStormAbility(), "capture_cloud", AbilitySlot.SECONDARY);
+    RegistryEntry<Ability<?>> RAINBOOM = register(new PegasusRainboomAbility(), "rainboom", AbilitySlot.PRIMARY);
+    RegistryEntry<Ability<?>> CAPTURE_CLOUD = register(new PegasusCaptureStormAbility(), "capture_cloud", AbilitySlot.SECONDARY);
 
     // hippogriff
-    Ability<?> DASH = register(new FlyingDashAbility(), "dash", AbilitySlot.PRIMARY);
-    Ability<?> SCREECH = register(new ScreechAbility(), "screech", AbilitySlot.SECONDARY);
-    Ability<?> PECK = register(new PeckAbility(), "peck", AbilitySlot.SECONDARY);
+    RegistryEntry<Ability<?>> DASH = register(new FlyingDashAbility(), "dash", AbilitySlot.PRIMARY);
+    RegistryEntry<Ability<?>> SCREECH = register(new ScreechAbility(), "screech", AbilitySlot.SECONDARY);
+    RegistryEntry<Ability<?>> PECK = register(new PeckAbility(), "peck", AbilitySlot.SECONDARY);
 
     // pegasus / bat / alicorn / changeling / hippogriff
-    Ability<?> CARRY = register(new CarryAbility(), "carry", AbilitySlot.PRIMARY);
-    Ability<?> TOGGLE_FLIGHT = register(new ToggleFlightAbility(), "toggle_flight", AbilitySlot.TERTIARY);
+    RegistryEntry<Ability<?>> CARRY = register(new CarryAbility(), "carry", AbilitySlot.PRIMARY);
+    RegistryEntry<Ability<?>> TOGGLE_FLIGHT = register(new ToggleFlightAbility(), "toggle_flight", AbilitySlot.TERTIARY);
 
     // changeling
-    Ability<?> DISGUISE = register(new ChangelingDisguiseAbility(), "disguise", AbilitySlot.SECONDARY);
-    Ability<?> FEED = register(new ChangelingFeedAbility(), "feed", AbilitySlot.SECONDARY);
+    RegistryEntry<Ability<?>> DISGUISE = register(new ChangelingDisguiseAbility(), "disguise", AbilitySlot.SECONDARY);
+    RegistryEntry<Ability<?>> FEED = register(new ChangelingFeedAbility(), "feed", AbilitySlot.SECONDARY);
 
     // bat
-    Ability<?> HANG = register(new BatPonyHangAbility(), "hang", AbilitySlot.TERTIARY);
-    Ability<?> EEEE = register(new BatEeeeAbility(), "eee", AbilitySlot.SECONDARY);
+    RegistryEntry<Ability<?>> HANG = register(new BatPonyHangAbility(), "hang", AbilitySlot.TERTIARY);
+    RegistryEntry<Ability<?>> EEEE = register(new BatEeeeAbility(), "eee", AbilitySlot.SECONDARY);
 
     // kirin
-    Ability<?> RAGE = register(new KirinRageAbility(), "rage", AbilitySlot.PRIMARY);
-    Ability<?> NIRIK_BLAST = register(new NirikBlastAbility(), "nirik_blast", AbilitySlot.SECONDARY);
-    Ability<?> KIRIN_CAST = register(new KirinCastingAbility(), "kirin_cast", AbilitySlot.SECONDARY);
+    RegistryEntry<Ability<?>> RAGE = register(new KirinRageAbility(), "rage", AbilitySlot.PRIMARY);
+    RegistryEntry<Ability<?>> NIRIK_BLAST = register(new NirikBlastAbility(), "nirik_blast", AbilitySlot.SECONDARY);
+    RegistryEntry<Ability<?>> KIRIN_CAST = register(new KirinCastingAbility(), "kirin_cast", AbilitySlot.SECONDARY);
 
     // seapony
-    Ability<?> SONAR_PULSE = register(new SeaponySonarPulseAbility(), "sonar_pulse", AbilitySlot.SECONDARY);
+    RegistryEntry<Ability<?>> SONAR_PULSE = register(new SeaponySonarPulseAbility(), "sonar_pulse", AbilitySlot.SECONDARY);
 
-    static <T extends Ability<?>> T register(T power, String name, AbilitySlot slot) {
+    static <T extends Ability<?>> RegistryEntry<Ability<?>> register(T power, String name, AbilitySlot slot) {
         return register(power, Unicopia.id(name), slot);
     }
 
-    static <T extends Ability<?>> T register(T power, Identifier id, AbilitySlot slot) {
+    static <T extends Ability<?>> RegistryEntry<Ability<?>> register(T power, Identifier id, AbilitySlot slot) {
         BY_SLOT.computeIfAbsent(slot, s -> new LinkedHashSet<>()).add(power);
-        return Registry.register(REGISTRY, id, power);
+        return Registry.registerReference(REGISTRY, id, power);
     }
 
     static void bootstrap() {}

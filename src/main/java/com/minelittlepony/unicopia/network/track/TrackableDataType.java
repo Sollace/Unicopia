@@ -41,7 +41,7 @@ public record TrackableDataType<T>(int id, PacketCodec<RegistryByteBuf, TypedVal
     public static final TrackableDataType<Optional<Vec3d>> OPTIONAL_VECTOR = of(Identifier.of("optional_vector"), PacketCodecUtils.OPTIONAL_VECTOR);
     private static final TrackableDataType<Optional<RegistryKey<?>>> OPTIONAL_REGISTRY_KEY = of(Identifier.of("optional_registry_key"), PacketCodecUtils.OPTIONAL_REGISTRY_KEY);
 
-    public static final TrackableDataType<Race> RACE = of(Unicopia.id("race"), PacketCodecs.registryValue(Race.REGISTRY_KEY));
+    public static final TrackableDataType<Race> RACE = of(Unicopia.id("race"), Race.PACKET_CODEC);
     public static final TrackableDataType<SkinFeatures> SKIN_FEATURES = of(Unicopia.id("skin_features"), SkinFeatures.PACKET_CODEC);
 
     public static <T> TrackableDataType<Optional<RegistryKey<T>>> ofRegistryKey() {

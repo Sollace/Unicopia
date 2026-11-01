@@ -260,7 +260,7 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
 
         if (isBeingCarried()) {
             Pony carrier = Pony.of(entity.getVehicle()).orElse(null);
-            if (!Abilities.CARRY.canUse(carrier.getCompositeRace()) && !Abilities.HUG.canUse(carrier.getCompositeRace())) {
+            if (!Abilities.CARRY.value().canUse(carrier.getCompositeRace()) && !Abilities.HUG.value().canUse(carrier.getCompositeRace())) {
                 entity.stopRiding();
                 entity.refreshPositionAfterTeleport(carrier.getOriginVector());
                 Living.transmitPassengers(carrier.asEntity());
@@ -539,8 +539,8 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     }
 
     @Override
-    public boolean canUse(Ability<?> ability) {
-        return ability.canUse(getCompositeRace());
+    public boolean canUse(RegistryEntry<Ability<?>> ability) {
+        return ability.value().canUse(getCompositeRace());
     }
 
     public static Optional<Living<?>> getOrEmpty(Entity entity) {

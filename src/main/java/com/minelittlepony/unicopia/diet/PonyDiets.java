@@ -19,7 +19,7 @@ public record PonyDiets (Map<Race, DietProfile> diets, Map<Identifier, FoodGroup
     private static PonyDiets INSTANCE = new PonyDiets(Map.of(), Map.of());
 
     public static final PacketCodec<RegistryByteBuf, PonyDiets> PACKET_CODEC = PacketCodec.tuple(
-            PacketCodecs.map(HashMap::new, PacketCodecs.registryValue(Race.REGISTRY_KEY), DietProfile.PACKET_CODEC), diets -> diets.diets,
+            PacketCodecs.map(HashMap::new, Race.PACKET_CODEC, DietProfile.PACKET_CODEC), diets -> diets.diets,
             FoodGroup.PACKET_CODEC.collect(PacketCodecUtils.toMap(FoodGroup::id)), diets -> diets.effects,
             PonyDiets::new
     );

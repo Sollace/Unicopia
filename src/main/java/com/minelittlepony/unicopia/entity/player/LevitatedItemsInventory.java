@@ -220,7 +220,7 @@ public class LevitatedItemsInventory implements Copyable<LevitatedItemsInventory
     @Override
     public void tick() {
         if (!player.isClient()) {
-            if (!Abilities.TELEKINESIS.canUse(player.getCompositeRace())) {
+            if (!Abilities.TELEKINESIS.value().canUse(player.getCompositeRace())) {
                 dropEverything();
             }
 

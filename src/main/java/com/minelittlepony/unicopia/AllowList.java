@@ -8,8 +8,9 @@ import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgConfigurationChange;
+
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Identifier;
 
 public final class AllowList {
     public static final AllowList INSTANCE = new AllowList();
@@ -32,25 +33,25 @@ public final class AllowList {
         if (race.isUnset() || race.isHuman()) {
             return false;
         }
-        Set<Identifier> values = new HashSet<>(Unicopia.getConfig().speciesWhiteList.get());
-        boolean added = values.add(race.getId());
+        Set<RegistryKey<Race>> values = new HashSet<>(Unicopia.getConfig().speciesWhiteList.get());
+        boolean added = values.add(race.getKey());
         update(server, values);
         return added;
     }
 
     public boolean remove(@Nullable MinecraftServer server, Race race) {
-        Set<Identifier> values = new HashSet<>(Unicopia.getConfig().speciesWhiteList.get());
+        Set<RegistryKey<Race>> values = new HashSet<>(Unicopia.getConfig().speciesWhiteList.get());
         if (values.isEmpty()) {
             for (Race r : Race.REGISTRY) {
-                if (!r.isUnset() && r != race) {
-                    values.add(r.getId());
+                if (!isAlwaysPermitted(r) && r != race) {
+                    values.add(r.getKey());
                 }
             }
 
             update(server, values);
             return true;
         }
-        boolean removed = values.remove(race.getId());
+        boolean removed = values.remove(race.getKey());
         update(server, values);
         return removed;
     }
@@ -58,14 +59,14 @@ public final class AllowList {
     public boolean permits(Race race) {
         return isAlwaysPermitted(race)
                 || !isEnabled()
-                || entries().contains(race.getId());
+                || entries().contains(race.getKey());
     }
 
     public static boolean isAlwaysPermitted(Race race) {
         return race.isUnset() || race.isHuman();
     }
 
-    private void update(@Nullable MinecraftServer server, Set<Identifier> values) {
+    private void update(@Nullable MinecraftServer server, Set<RegistryKey<Race>> values) {
         // Filters out entries that shouldn't be there and remove unknown ids
         values = values.stream().filter(r -> Race.REGISTRY.getOptionalValue(r).filter(o -> !isAlwaysPermitted(o)).isPresent()).collect(Collectors.toUnmodifiableSet());
         if (getExcluded(getValues(values)) == 0) {
@@ -76,7 +77,7 @@ public final class AllowList {
             Unicopia.getConfig().speciesWhiteList.set(values);
             Unicopia.getConfig().save();
         }
-        if (server != null) {
+        if (server != null && !server.isRemote()) {
             MsgConfigurationChange msg = new MsgConfigurationChange(Unicopia.getConfig().toSynced());
             InteractionManager.getInstance().setSyncedConfig(msg.config());
             server.getPlayerManager().getPlayerList().forEach(recipient -> {
@@ -85,7 +86,7 @@ public final class AllowList {
         }
     }
 
-    private static Set<Race> getValues(Set<Identifier> permitted) {
+    private static Set<Race> getValues(Set<RegistryKey<Race>> permitted) {
         return permitted.stream().flatMap(id -> Race.REGISTRY.getOptionalValue(id).stream()).collect(Collectors.toUnmodifiableSet());
     }
 
@@ -93,7 +94,7 @@ public final class AllowList {
         return Race.REGISTRY.stream().filter(r -> !isAlwaysPermitted(r) && !permitted.contains(r)).count();
     }
 
-    public Set<Identifier> entries() {
+    public Set<RegistryKey<Race>> entries() {
         return InteractionManager.getInstance().getSyncedConfig().speciesWhiteList();
     }
 }

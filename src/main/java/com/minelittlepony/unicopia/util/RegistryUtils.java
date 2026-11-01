@@ -5,8 +5,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import com.google.common.base.Predicates;
-import com.mojang.serialization.Lifecycle;
-
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
 import net.minecraft.registry.tag.TagKey;
@@ -18,18 +16,18 @@ import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.world.World;
 
 public interface RegistryUtils {
-    static <T> Registry<T> createSimple(Identifier id) {
-        return FabricRegistryBuilder.from(new SimpleRegistry<T>(RegistryKey.ofRegistry(id), Lifecycle.stable())).buildAndRegister();
+    static <T> Registry<T> createSimple(RegistryKey<Registry<T>> key) {
+        return FabricRegistryBuilder.createSimple(key).buildAndRegister();
     }
 
-    static <T> Registry<T> createSynced(Identifier id) {
-        return FabricRegistryBuilder.from(new SimpleRegistry<T>(RegistryKey.ofRegistry(id), Lifecycle.stable()))
+    static <T> Registry<T> createSynced(RegistryKey<Registry<T>> key) {
+        return FabricRegistryBuilder.createSimple(key)
                 .attribute(RegistryAttribute.SYNCED)
                 .buildAndRegister();
     }
 
-    static <T> Registry<T> createSynced(Identifier id, String def) {
-        return FabricRegistryBuilder.from(new SimpleDefaultedRegistry<T>(def, RegistryKey.ofRegistry(id), Lifecycle.stable(), false))
+    static <T> Registry<T> createSynced(RegistryKey<Registry<T>> key, Identifier defaultId) {
+        return FabricRegistryBuilder.createDefaulted(key, defaultId)
                 .attribute(RegistryAttribute.SYNCED)
                 .buildAndRegister();
     }

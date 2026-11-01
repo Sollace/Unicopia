@@ -30,7 +30,7 @@ class ManaRingSlot extends Slot {
         Pony pony = Pony.of(uHud.client.player);
         MagicReserves mana = pony.getMagicalReserves();
 
-        boolean canUseSuper = Abilities.RAGE.canUse(pony.getCompositeRace()) || Abilities.RAINBOOM.canUse(pony.getCompositeRace());
+        boolean canUseSuper = Abilities.RAGE.value().canUse(pony.getCompositeRace()) || Abilities.RAINBOOM.value().canUse(pony.getCompositeRace());
 
         double maxManaBarSize = canUseSuper ? DrawableUtil.PI : DrawableUtil.TAU;
         double arcBegin = renderRing(context, 17, 13, 0, maxManaBarSize, mana.getMana(), 0xFF88FF99, tickDelta);

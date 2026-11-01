@@ -387,7 +387,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
             } else {
                 tickGrounded();
 
-                if (Abilities.RAINBOOM.canUse(pony.getCompositeRace()) && entity.isOnGround()) {
+                if (Abilities.RAINBOOM.value().canUse(pony.getCompositeRace()) && entity.isOnGround()) {
                     pony.getMagicalReserves().getCharge().set(0);
                 }
 
@@ -447,7 +447,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
     }
 
     private void tickStunts(MutableVector velocity) {
-        boolean canPerformStunts = Abilities.RAINBOOM.canUse(pony.getCompositeRace());
+        boolean canPerformStunts = Abilities.RAINBOOM.value().canUse(pony.getCompositeRace());
         ticksDiving = canPerformStunts && FlightStuntUtil.isPerformingDive(pony, velocity) ? (ticksDiving + 1) : 0;
         ticksFlyingLow = canPerformStunts && FlightStuntUtil.isFlyingLow(pony, velocity) ? (ticksFlyingLow + 1) : 0;
 
@@ -603,7 +603,7 @@ public class PlayerPhysics extends EntityPhysics<PlayerEntity> implements Tickab
 
                     if (entity.getWorld().random.nextInt(110) == 1) {
                         pony.getLevel().add(1);
-                        if (Abilities.RAINBOOM.canUse(pony.getCompositeRace())) {
+                        if (Abilities.RAINBOOM.value().canUse(pony.getCompositeRace())) {
                             pony.getMagicalReserves().getCharge().addPercent(4);
                         }
                         pony.getMagicalReserves().getExertion().set(0);
