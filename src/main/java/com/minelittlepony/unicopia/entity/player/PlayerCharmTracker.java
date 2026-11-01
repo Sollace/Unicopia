@@ -19,7 +19,7 @@ import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.util.Hand;
 
 public class PlayerCharmTracker implements NbtSerialisable, Copyable<PlayerCharmTracker> {
-    private static final Codec<List<CustomisedSpellType<?>>> HAND_SPELLS_CODEC = CustomisedSpellType.CODEC.listOf();
+    private static final Codec<List<CustomisedSpellType<?>>> HAND_SPELLS_CODEC = CustomisedSpellType.CODEC.codec().listOf();
 
     private final Pony pony;
 

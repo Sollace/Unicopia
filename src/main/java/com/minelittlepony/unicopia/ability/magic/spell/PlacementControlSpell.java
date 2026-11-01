@@ -127,7 +127,7 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         super.toNBT(compound, lookup);
-        compound.put("spell", Spell.writeNbt(delegate, lookup));
+        Spell.writeNbt(delegate, lookup).ifPresent(spell -> compound.put("spell", spell));
         compound.put("position", CodecUtils.OPTIONAL_VECTOR, position.get());
         compound.put("orientation", CodecUtils.OPTIONAL_VECTOR, orientation.get());
         compound.put("dimension", OPTIONAL_DIMENSION_CODEC, dimension.get());
@@ -137,7 +137,7 @@ public class PlacementControlSpell extends AbstractSpell implements OrientedSpel
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         super.fromNBT(compound, lookup);
-        delegate = Spell.readNbt(compound.getCompoundOrEmpty("spell"), lookup);
+        delegate = Spell.readNbt(compound.getCompound("spell"), lookup).orElse(null);
         placedEntityId.set(compound.get("placedEntityId", Uuids.CODEC));
         position.set(compound.get("position", CodecUtils.VECTOR));
         orientation.set(compound.get("orientation", CodecUtils.VECTOR));

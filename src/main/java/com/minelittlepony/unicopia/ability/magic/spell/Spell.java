@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -134,32 +135,43 @@ public interface Spell extends NbtSerialisable, Affine {
     }
 
     @Nullable
-    static <T extends Spell> T readNbt(@Nullable NbtCompound compound, WrapperLookup lookup) {
+    static <T extends Spell> Optional<T> readNbt(Optional<NbtCompound> compound, WrapperLookup lookup) {
         try {
-            if (compound != null) {
-                return Untyped.cast(CustomisedSpellType.CODEC.decode(lookup.getOps(NbtOps.INSTANCE), compound).getOrThrow().getFirst().create(compound, lookup));
+            if (compound.isPresent()) {
+                return compound
+                        .flatMap(c -> c.decode(CustomisedSpellType.CODEC, lookup.getOps(NbtOps.INSTANCE)))
+                        .map(i -> i.create(compound.get(), lookup))
+                        .map(Untyped::cast);
             }
         } catch (Exception e) {
             Unicopia.LOGGER.fatal("Invalid spell nbt {}", e);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     static UUID getUuid(@Nullable NbtCompound compound) {
         return compound.get("uuid", Uuids.CODEC).orElse(Util.NIL_UUID);
     }
 
-    static NbtCompound writeNbt(@Nullable Spell effect, WrapperLookup lookup) {
-        if (effect == null) {
-            return new NbtCompound();
+    static Optional<NbtCompound> writeNbt(@Nullable Spell effect, WrapperLookup lookup) {
+        if (effect != null && !effect.isDead()) {
+            NbtCompound compound = new NbtCompound();
+            writeNbt(compound, effect, lookup);
+            return Optional.of(compound);
         }
-        NbtCompound compound = effect.toNBT(lookup);
+        return Optional.empty();
+    }
+
+    static void writeNbt(NbtCompound compound, @Nullable Spell effect, WrapperLookup lookup) {
+        if (effect == null) {
+            return;
+        }
+        effect.toNBT(compound, lookup);
         effect.getTypeAndTraits().toNbt(compound);
-        return compound;
     }
 
     static <T extends Spell> Spell copy(T spell, WrapperLookup lookup) {
-        return readNbt(writeNbt(spell, lookup), lookup);
+        return readNbt(writeNbt(spell, lookup), lookup).orElse(null);
     }
 }

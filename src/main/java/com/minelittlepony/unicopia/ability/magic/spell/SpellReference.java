@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.ability.magic.spell;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -52,16 +53,13 @@ public final class SpellReference<T extends Spell> implements NbtSerialisable {
 
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
-        if (spell != null && !spell.isDead()) {
-            spell.toNBT(compound, lookup);
-            spell.getTypeAndTraits().toNbt(compound);
-        }
+        Spell.writeNbt(compound, spell, lookup);
     }
 
     @Override
     public void fromNBT(NbtCompound compound, WrapperLookup lookup) {
         if (spell == null || !Objects.equals(Spell.getUuid(compound), spell.getUuid())) {
-            spell = Spell.readNbt(compound, lookup);
+            spell = Spell.<T>readNbt(Optional.of(compound), lookup).orElse(null);
         } else  {
             spell.fromNBT(compound, lookup);
         }

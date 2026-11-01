@@ -17,7 +17,7 @@ import com.minelittlepony.unicopia.client.TextHelper;
 import com.minelittlepony.unicopia.entity.effect.EffectUtils;
 import com.minelittlepony.unicopia.item.component.UDataComponentTypes;
 import com.minelittlepony.unicopia.util.TypedActionResult;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.component.ComponentsAccess;
@@ -36,7 +36,7 @@ public record CustomisedSpellType<T extends Spell> (
         SpellTraits traits,
         Supplier<SpellTraits> traitsDifferenceSupplier
     ) implements SpellPredicate<T>, TooltipAppender {
-    public static final Codec<CustomisedSpellType<?>> CODEC = RecordCodecBuilder.create(i -> i.group(
+    public static final MapCodec<CustomisedSpellType<?>> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
         SpellType.CODEC.fieldOf("effect_id").forGetter(CustomisedSpellType::type),
         SpellTraits.CODEC.fieldOf("traits").forGetter(CustomisedSpellType::traits)
     ).apply(i, (type, traits) -> type.withTraits(traits)));
