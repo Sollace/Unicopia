@@ -72,7 +72,7 @@ public class TimeControlAbilitySpell extends AbstractSpell {
         sw.setTimeOfDay(time);
         sw.getServer().sendTimeUpdatePackets();
 
-        UnicopiaWorldProperties.forWorld(sw).setTangentalSkyAngle(angleOffset + yaw);
+        UnicopiaWorldProperties.forWorld(sw).setTangentalSkyAngle(sw, angleOffset + yaw);
     }
 
     @Override

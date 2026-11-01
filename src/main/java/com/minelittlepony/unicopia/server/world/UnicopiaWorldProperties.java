@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgSkyAngle;
 import com.minelittlepony.unicopia.util.serialization.CodecUtils;
@@ -19,22 +20,17 @@ import net.minecraft.world.PersistentState;
 import net.minecraft.world.PersistentStateType;
 
 public class UnicopiaWorldProperties extends PersistentState {
-    static final Codec<Set<BlockPos>> POS_CODEC = CodecUtils.setOf(BlockPos.CODEC);
-    public static final PersistentStateType<UnicopiaWorldProperties> TYPE = new PersistentStateType<>(
-            "unicopia_tribes",
-            UnicopiaWorldProperties::new,
-            context -> RecordCodecBuilder.create(i -> i.group(
-                    Race.CODEC.fieldOf("defaultRace").forGetter(o -> o.defaultRace),
-                    Codec.FLOAT.fieldOf("tangentalSkyAngle").forGetter(o -> o.tangentalSkyAngle),
-                    POS_CODEC.fieldOf("activeAltars").forGetter(o -> o.activeAltarPositions)
-            ).apply(i, (defaultRace, tangentalSkyAngle, activeAltars) -> new UnicopiaWorldProperties(context, defaultRace, tangentalSkyAngle, activeAltars))),
-            DataFixTypes.LEVEL
-    );
-
-    private final ServerWorld world;
+    private static final Codec<UnicopiaWorldProperties> CODEC = RecordCodecBuilder.create(i -> i.group(
+            Race.CODEC.fieldOf("defaultRace").forGetter(o -> o.defaultRace),
+            Codec.FLOAT.fieldOf("tangentalSkyAngle").forGetter(o -> o.tangentalSkyAngle),
+            Codec.FLOAT.fieldOf("accumulatedMimicChance").forGetter(o -> o.accumulatedMimicChance),
+            CodecUtils.setOf(BlockPos.CODEC).fieldOf("activeAltars").forGetter(o -> o.activeAltarPositions)
+    ).apply(i, UnicopiaWorldProperties::new));
+    public static final PersistentStateType<UnicopiaWorldProperties> TYPE = new PersistentStateType<>("unicopia_tribes", UnicopiaWorldProperties::new, context -> CODEC, DataFixTypes.LEVEL);
 
     private Race defaultRace = Race.UNSET;
     private float tangentalSkyAngle;
+    private float accumulatedMimicChance;
 
     private final Set<BlockPos> activeAltarPositions = new HashSet<>();
 
@@ -43,14 +39,24 @@ public class UnicopiaWorldProperties extends PersistentState {
     }
 
     private UnicopiaWorldProperties(Context context) {
-        this.world = context.getWorldOrThrow();
     }
 
-    private UnicopiaWorldProperties(Context context, Race defaultRace, float tangentalSkyAngle, Set<BlockPos> activeAltars) {
-        this(context);
+    private UnicopiaWorldProperties(Race defaultRace, float tangentalSkyAngle, float accumulatedMimicChance, Set<BlockPos> activeAltars) {
         this.defaultRace = defaultRace;
         this.tangentalSkyAngle = tangentalSkyAngle;
         this.activeAltarPositions.addAll(activeAltars);
+    }
+
+    public float rollMimicChance(float increment) {
+        Unicopia.LOGGER.info("Rolling mimic: {} -> {} (+{})", accumulatedMimicChance, accumulatedMimicChance + increment, increment);
+        accumulatedMimicChance += increment;
+        markDirty();
+        return accumulatedMimicChance;
+    }
+
+    public void resetMimicChance() {
+        accumulatedMimicChance = 0;
+        markDirty();
     }
 
     public Race getDefaultRace() {
@@ -67,7 +73,7 @@ public class UnicopiaWorldProperties extends PersistentState {
         return tangentalSkyAngle;
     }
 
-    public void setTangentalSkyAngle(float angle) {
+    public void setTangentalSkyAngle(ServerWorld world, float angle) {
         tangentalSkyAngle = MathHelper.wrapDegrees(angle);
         markDirty();
         Channel.SERVER_SKY_ANGLE.sendToAllPlayers(new MsgSkyAngle(tangentalSkyAngle), world);

@@ -74,7 +74,6 @@ public interface EnchantmentUtil {
         return getLevel(UEnchantments.WANT_IT_NEED_IT, stack);
     }
 
-
     static int getLuck(int baseline, LivingEntity entity) {
         boolean naturallyLucky = Living.getOrEmpty(entity).filter(c -> c.getCompositeRace().canUseEarth()).isPresent();
         if (naturallyLucky) {
@@ -85,6 +84,10 @@ public interface EnchantmentUtil {
         float unluckAmplifier = getEffectAmplifier(entity, StatusEffects.UNLUCK) * (naturallyLucky ? 0.5F : 1);
         float badOmenAmplifier = getEffectAmplifier(entity, StatusEffects.BAD_OMEN) * (naturallyLucky ? 1 : 2);
         return (int)MathHelper.clamp(baseline + luckAmplifier + dolphinsGraceAmplifier - unluckAmplifier - badOmenAmplifier, -10, 10);
+    }
+
+    static float getLuckPercentage(int baseline, LivingEntity entity) {
+        return (getLuck(baseline, entity) / 20F) + 0.5F;
     }
 
     static int getLevel(RegistryKey<Enchantment> enchantment, ItemStack stack) {

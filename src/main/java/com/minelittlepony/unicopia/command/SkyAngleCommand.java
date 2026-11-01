@@ -25,7 +25,7 @@ class SkyAngleCommand {
     }
 
     static int set(ServerCommandSource source, float newAngle) {
-        UnicopiaWorldProperties.forWorld(source.getWorld()).setTangentalSkyAngle(newAngle);
+        UnicopiaWorldProperties.forWorld(source.getWorld()).setTangentalSkyAngle(source.getWorld(), newAngle);
         source.sendFeedback(() -> Text.translatable("commands.skyangle.set", newAngle), true);
         return 0;
     }

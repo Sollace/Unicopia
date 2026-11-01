@@ -9,6 +9,7 @@ import com.minelittlepony.unicopia.UTags;
 import com.minelittlepony.unicopia.client.render.VirtualBlockRenderView;
 import com.minelittlepony.unicopia.item.enchantment.EnchantmentUtil;
 import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
+import com.minelittlepony.unicopia.server.world.UnicopiaWorldProperties;
 import com.minelittlepony.unicopia.util.InventoryUtil;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.block.BlockState;
@@ -58,6 +59,8 @@ import net.minecraft.world.World;
 public class MimicEntity extends PathAwareEntity {
     static final byte OPEN_MOUTH = (byte)200;
     static final byte CLOSE_MOUTH = (byte)201;
+    static final float DIFFICULTY_WEIGHT = 0.6F;
+    static final float LUCK_EFFECT_WEIGHT = 0.8F;
     static final TrackedData<NbtCompound> CHEST_DATA = DataTracker.registerData(MimicEntity.class, TrackedDataHandlerRegistry.NBT_COMPOUND);
     static final TrackedData<Boolean> MOUTH_OPEN = DataTracker.registerData(MimicEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
@@ -116,9 +119,16 @@ public class MimicEntity extends PathAwareEntity {
         if (localDifficulty.getGlobalDifficulty() == Difficulty.PEACEFUL) {
             return false;
         }
-        float difficulty = MathHelper.clamp(localDifficulty.getLocalDifficulty(), 0F, 4F) / 4F;
-        float threshold = 0.8F * ((EnchantmentUtil.getLuck(0, player) / 20F) + 0.5F);
-        return threshold * world.random.nextFloat() < difficulty;
+        if (world instanceof ServerWorld sw) {
+            float difficulty = MathHelper.clamp(localDifficulty.getLocalDifficulty() / 4F, 0F, 1F) * DIFFICULTY_WEIGHT;
+            float luck = (1 - EnchantmentUtil.getLuckPercentage(0, player)) * LUCK_EFFECT_WEIGHT;
+            UnicopiaWorldProperties properties = UnicopiaWorldProperties.forWorld(sw);
+            if (properties.rollMimicChance(player.getRandom().nextFloat() * 0.3F * difficulty * luck) >= 1) {
+                properties.resetMimicChance();
+                return true;
+            }
+        }
+        return false;
     }
 
     @SuppressWarnings("deprecation")
