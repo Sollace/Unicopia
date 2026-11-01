@@ -14,7 +14,9 @@ import org.jetbrains.annotations.Nullable;
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.FlightType;
 import com.minelittlepony.unicopia.InteractionManager;
+import com.minelittlepony.unicopia.SyncedConfig;
 import com.minelittlepony.unicopia.USounds;
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.gui.DismissSpellScreen;
 import com.minelittlepony.unicopia.client.gui.UHud;
 import com.minelittlepony.unicopia.client.particle.ClientBoundParticleSpawner;
@@ -215,5 +217,13 @@ public class ClientInteractionManager extends InteractionManager {
     @Override
     public Optional<Pony> getClientPony() {
         return Optional.ofNullable(client.player).map(Pony::of);
+    }
+
+    @Override
+    public SyncedConfig getSyncedConfig() {
+        if (client.getServer() == null) {
+            return  Unicopia.getConfig().toSynced();
+        }
+        return super.getSyncedConfig();
     }
 }

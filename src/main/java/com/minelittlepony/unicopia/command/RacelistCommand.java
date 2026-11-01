@@ -2,11 +2,12 @@ package com.minelittlepony.unicopia.command;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import com.minelittlepony.unicopia.*;
 import com.minelittlepony.unicopia.client.TextHelper;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -44,7 +45,7 @@ class RacelistCommand {
             )
             .then(CommandManager.literal("reset")
             .executes(context -> {
-                boolean success = AllowList.INSTANCE.disable();
+                boolean success = AllowList.INSTANCE.disable(context.getSource().getServer());
                 context.getSource().sendFeedback(() -> Text.translatable("commands.racelist.reset." + (success ? "success" : "fail")).formatted(Formatting.YELLOW), false);
                 return 0;
             })
@@ -59,9 +60,9 @@ class RacelistCommand {
             ));
     }
 
-    static int toggle(ServerCommandSource source, ServerPlayerEntity player, Race race, String action, Function<Race, Boolean> func) {
+    static int toggle(ServerCommandSource source, ServerPlayerEntity player, Race race, String action, BiFunction<MinecraftServer, Race, Boolean> func) {
         boolean enabled = AllowList.INSTANCE.isEnabled();
-        boolean success = func.apply(race);
+        boolean success = func.apply(source.getServer(), race);
 
         if (enabled != AllowList.INSTANCE.isEnabled()) {
             source.sendFeedback(() -> Text.translatable("commands.racelist." + (enabled ? "disabled" : "enabled")).formatted(enabled ? Formatting.RED : Formatting.GREEN), false);
@@ -79,6 +80,7 @@ class RacelistCommand {
 
             return Text.translatable(translationKey, race.getDisplayName().copy().formatted(Formatting.GOLD)).formatted(success ? Formatting.GREEN : Formatting.RED);
         }, false);
+
         return 0;
     }
 }

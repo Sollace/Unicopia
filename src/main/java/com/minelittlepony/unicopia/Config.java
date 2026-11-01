@@ -9,9 +9,12 @@ import com.minelittlepony.common.util.registry.RegistryTypeAdapter;
 import com.minelittlepony.common.util.settings.*;
 import com.minelittlepony.unicopia.client.gui.HudPosition;
 import com.minelittlepony.unicopia.entity.player.SkinFeatures;
+import com.minelittlepony.unicopia.util.serialization.CodecUtils;
+
+import net.minecraft.util.Identifier;
 
 public class Config extends com.minelittlepony.common.util.settings.Config {
-    public final Setting<Set<String>> speciesWhiteList = value("server", "speciesWhiteList", (Set<String>)new HashSet<String>())
+    public final Setting<Set<Identifier>> speciesWhiteList = value("server", "speciesWhiteList", Setting.Type.of(Set::of, CodecUtils.setOf(Identifier.CODEC)))
             .addComment("A whitelist of races permitted on the server")
             .addComment("Races added to this list can be used by anyone,")
             .addComment("whilst any ones left off are not permitted")
@@ -83,6 +86,6 @@ public class Config extends com.minelittlepony.common.util.settings.Config {
     }
 
     public SyncedConfig toSynced() {
-        return new SyncedConfig(wantItNeedItEntityExcludelist.get(), dimensionsWithoutAtmosphere.get());
+        return new SyncedConfig(wantItNeedItEntityExcludelist.get(), dimensionsWithoutAtmosphere.get(), speciesWhiteList.get());
     }
 }

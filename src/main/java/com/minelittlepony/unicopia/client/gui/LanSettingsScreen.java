@@ -1,7 +1,5 @@
 package com.minelittlepony.unicopia.client.gui;
 
-import java.util.Set;
-
 import com.minelittlepony.common.client.gui.GameGui;
 import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
@@ -11,6 +9,7 @@ import com.minelittlepony.common.client.gui.element.Toggle;
 import com.minelittlepony.common.client.gui.packing.GridPacker;
 import com.minelittlepony.common.client.gui.sprite.TextureSprite;
 import com.minelittlepony.common.client.gui.style.Style;
+import com.minelittlepony.unicopia.AllowList;
 import com.minelittlepony.unicopia.Config;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
@@ -32,9 +31,6 @@ public class LanSettingsScreen extends GameGui {
     private final Config config = Unicopia.getConfig();
 
     private final ScrollContainer content = new ScrollContainer();
-
-    private boolean forceShowWhitelist;
-    private boolean forceHideWhitelist;
 
     public LanSettingsScreen(Screen parent) {
         super(Text.translatable("unicopia.options.title"), parent);
@@ -80,32 +76,23 @@ public class LanSettingsScreen extends GameGui {
         content.addButton(new Toggle(LEFT, row += 20, config.enableCheats.get()))
             .onChange(v -> {
                 config.enableCheats.set(v);
+                config.save();
                 return v;
             })
             .getStyle().setText("unicopia.options.cheats");
 
-        Set<String> whitelist = config.speciesWhiteList.get();
-        boolean whitelistEnabled = (forceShowWhitelist || !whitelist.isEmpty()) && !forceHideWhitelist;
-
-        if (whitelist.isEmpty() && forceShowWhitelist) {
-            for (Race r : Race.REGISTRY) {
-                if (!r.isUnset()) {
-                    whitelist.add(r.getId().toString());
-                }
-            }
-        }
-
-        content.addButton(new Toggle(LEFT, row += 20, whitelistEnabled))
+        content.addButton(new Toggle(LEFT, row += 20, AllowList.INSTANCE.isEnabled()))
             .onChange(v -> {
-                forceShowWhitelist = v;
-                forceHideWhitelist = !v;
+                if (!v) {
+                    AllowList.INSTANCE.disable(server);
+                }
                 init();
                 return v;
             })
             .setEnabled(canEditWhitelist)
             .getStyle().setText("unicopia.options.whitelist");
 
-        if (whitelistEnabled) {
+        if (AllowList.INSTANCE.isEnabled()) {
 
             content.addButton(new Label(LEFT, row += 20)).getStyle().setText(Text.translatable("unicopia.options.whitelist.details").formatted(Formatting.DARK_GREEN));
 
@@ -116,12 +103,12 @@ public class LanSettingsScreen extends GameGui {
                 if (!race.isUnset() && race.availability().isGrantable()) {
                     Bounds bound = WHITELIST_GRID_PACKER.next();
 
-                    Button button = content.addButton(new Toggle(LEFT + bound.left + 10, row + bound.top, whitelist.contains(race.getId().toString())))
+                    Button button = content.addButton(new Toggle(LEFT + bound.left + 10, row + bound.top, AllowList.INSTANCE.permits(race)))
                         .onChange(v -> {
                             if (v) {
-                                whitelist.add(race.getId().toString());
+                                AllowList.INSTANCE.add(server, race);
                             } else {
-                                whitelist.remove(race.getId().toString());
+                                AllowList.INSTANCE.remove(server, race);
                             }
                             return v;
                         })
@@ -138,14 +125,6 @@ public class LanSettingsScreen extends GameGui {
     public void render(DrawContext context, int mouseX, int mouseY, float tickDelta) {
         super.render(context, mouseX, mouseY, tickDelta);
         content.render(context, mouseX, mouseY, tickDelta);
-    }
-
-    @Override
-    public void removed() {
-        if (forceHideWhitelist) {
-            config.speciesWhiteList.get().clear();
-        }
-        config.save();
     }
 
     public static Style createStyle(Race race) {
