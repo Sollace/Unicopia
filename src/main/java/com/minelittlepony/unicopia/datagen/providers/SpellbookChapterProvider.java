@@ -473,8 +473,9 @@ public class SpellbookChapterProvider implements DataProvider {
     }
 
     protected ChapterPageElement recipe(Identifier id) {
-        var recipe = recipes.getOrThrow(RegistryKey.of(RegistryKeys.RECIPE, id));
-        return new ChapterPageElement.Recipe(recipe, recipe.value().getDisplays());
+        var key = RegistryKey.of(RegistryKeys.RECIPE, id);
+        recipes.getOrThrow(key);
+        return new ChapterPageElement.Recipe(key);
     }
 
     static ArticleBuilder article(int level, Identifier elementId, int pageNum) {
@@ -568,7 +569,7 @@ public class SpellbookChapterProvider implements DataProvider {
         }
 
         public UnaryOperator<Page.Builder> recipe() {
-            return new ChapterPageElement.Recipe(recipe, recipe.value().getDisplays());
+            return new ChapterPageElement.Recipe(recipe.getKey().orElseThrow());
         }
 
         public UnaryOperator<Builder> finalPage() {

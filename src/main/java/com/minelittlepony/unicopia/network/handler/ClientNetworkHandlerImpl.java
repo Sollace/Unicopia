@@ -92,7 +92,7 @@ public class ClientNetworkHandlerImpl {
 
     private void handleServerResources(PlayerEntity sender, MsgServerResources packet) {
         SpellTraits.load(packet.traits());
-        ClientChapters.load(packet.chapters());
+        ClientChapters.load(packet.chapters(), packet.recipes());
         TreeTypes.load(packet.treeTypes());
         PonyDiets.load(packet.diets());
         InteractionManager.getInstance().setCloudShapingRecipes(packet.cloudCuttingRecipes());

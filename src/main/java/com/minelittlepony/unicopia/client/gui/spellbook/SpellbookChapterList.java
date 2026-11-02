@@ -8,6 +8,7 @@ import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.client.gui.spellbook.element.DynamicContent;
 import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookRecipes;
 import com.minelittlepony.unicopia.container.spellbook.TabSide;
 
 import net.minecraft.client.gui.DrawContext;
@@ -53,8 +54,8 @@ public class SpellbookChapterList {
         Identifier id,
         SpellbookChapter details,
         Optional<Content> content) {
-        public Chapter(Identifier id, SpellbookChapter details) {
-            this(id, details, Optional.of(new DynamicContent(details.pages())));
+        public Chapter(Identifier id, SpellbookChapter details, SpellbookRecipes recipes) {
+            this(id, details, Optional.of(new DynamicContent(details.pages(), recipes)));
         }
 
         public static Identifier createIcon(Identifier id, String suffex) {

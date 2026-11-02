@@ -2,10 +2,12 @@ package com.minelittlepony.unicopia.util.serialization;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -13,6 +15,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.Untyped;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
@@ -29,6 +32,7 @@ import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Uuids;
@@ -80,6 +84,20 @@ public interface CodecUtils {
         }
     };
 
+    static <A, B, C> PacketCodec<A, C> flatXmap(PacketCodec<A, B> codec, BiFunction<A, B, C> to, BiFunction<A, C, B> from) {
+        return new PacketCodec<>() {
+            @Override
+            public C decode(A buf) {
+                return to.apply(buf, codec.decode(buf));
+            }
+
+            @Override
+            public void encode(A buf, C value) {
+                codec.encode(buf, from.apply(buf, value));
+            }
+        };
+    }
+
     static <A, B> Codec<Map<A, B>> toMutable(Codec<Map<A, B>> codec) {
         return codec.xmap(map -> new HashMap<>(map), Function.identity());
     }
@@ -108,10 +126,20 @@ public interface CodecUtils {
 
             @Override
             public <V> DataResult<Pair<E, V>> decode(DynamicOps<V> ops, V input) {
-                return ops.getMap(input).result().flatMap(mapLike -> types.get().map(type -> Either.unwrap(typeToElementCodec.apply(type).mapBoth(
-                        left -> left.decode(ops, input),
-                        right -> right.decode(ops, mapLike).map(element -> Pair.of(element, input))
-                ))).filter(DataResult::isSuccess).findFirst()).orElseGet(() -> Untyped.cast(fallbackCodec.decode(ops, input)));
+                return ops.getMap(input).result().flatMap(mapLike -> {
+                    List<String> errors = new ArrayList<>();
+                    var success = types.get(
+                            ).map(type -> Either.unwrap(typeToElementCodec.apply(type).mapBoth(
+                                    left -> left.decode(ops, input),
+                                    right -> right.decode(ops, mapLike).map(element -> Pair.of(element, input))
+                            )).mapError(error -> "Type: " + type + " Error: " + error))
+                            .filter(result -> result.ifError(error -> errors.add(error.message())).isSuccess())
+                            .findFirst();
+                    if (success.isEmpty()) {
+                        Unicopia.LOGGER.error("Could not deserialize dispatched element. {}.", errors);
+                    }
+                    return success;
+                }).orElseGet(() -> Untyped.cast(fallbackCodec.decode(ops, input)));
             }
 
             @Override

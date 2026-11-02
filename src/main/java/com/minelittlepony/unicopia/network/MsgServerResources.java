@@ -6,6 +6,7 @@ import com.minelittlepony.unicopia.ability.data.tree.TreeTypeLoader;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
 import com.minelittlepony.unicopia.container.spellbook.SpellbookChapterLoader;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookRecipes;
 import com.minelittlepony.unicopia.diet.PonyDiets;
 import com.minelittlepony.unicopia.recipe.CloudShapingRecipe;
 import com.minelittlepony.unicopia.recipe.URecipes;
@@ -24,6 +25,7 @@ import net.minecraft.util.Identifier;
 public record MsgServerResources (
         Map<RegistryKey<Item>, SpellTraits> traits,
         Map<Identifier, SpellbookChapter> chapters,
+        SpellbookRecipes recipes,
         Map<Identifier, TreeTypeLoader.TreeTypeDef> treeTypes,
         CuttingRecipeDisplay.Grouping<CloudShapingRecipe> cloudCuttingRecipes,
         PonyDiets diets
@@ -31,6 +33,7 @@ public record MsgServerResources (
     public static final PacketCodec<RegistryByteBuf, MsgServerResources> PACKET_CODEC = PacketCodec.tuple(
             PacketCodecs.map(HashMap::new, RegistryKey.createPacketCodec(RegistryKeys.ITEM), SpellTraits.PACKET_CODEC), MsgServerResources::traits,
             PacketCodecs.map(HashMap::new, Identifier.PACKET_CODEC, SpellbookChapter.PACKET_CODEC), MsgServerResources::chapters,
+            SpellbookRecipes.PACKET_CODEC, MsgServerResources::recipes,
             PacketCodecs.map(HashMap::new, Identifier.PACKET_CODEC, TreeTypeLoader.TreeTypeDef.PACKET_CODEC), MsgServerResources::treeTypes,
             CuttingRecipeDisplay.Grouping.codec(), MsgServerResources::cloudCuttingRecipes,
             PonyDiets.PACKET_CODEC, MsgServerResources::diets,
@@ -41,6 +44,7 @@ public record MsgServerResources (
         this(
             SpellTraits.all(),
             SpellbookChapterLoader.INSTANCE.getChapters(),
+            SpellbookRecipes.of(server, SpellbookChapterLoader.INSTANCE.getChapters()),
             TreeTypeLoader.INSTANCE.getEntries(),
             getCloudCuttingRecipes(server),
             PonyDiets.getInstance()

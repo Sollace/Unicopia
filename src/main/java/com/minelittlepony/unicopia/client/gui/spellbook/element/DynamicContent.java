@@ -12,6 +12,7 @@ import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Dra
 import com.minelittlepony.unicopia.container.SpellbookState;
 import com.minelittlepony.unicopia.container.spellbook.Flow;
 import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter.Page;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookRecipes;
 import com.minelittlepony.unicopia.entity.player.Pony;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -30,8 +31,8 @@ public class DynamicContent implements Content {
     private final Panel leftPanel = new Panel(this);
     private final Panel rightPanel = new Panel(this);
 
-    public DynamicContent(List<Page> pages) {
-        this.pages = pages.stream().map(GuiPage::new).toList();
+    public DynamicContent(List<Page> pages, SpellbookRecipes recipes) {
+        this.pages = pages.stream().map(p -> new GuiPage(p, recipes)).toList();
     }
 
     @Override
@@ -99,9 +100,9 @@ public class DynamicContent implements Content {
 
         private Bounds bounds = Bounds.empty();
 
-        public GuiPage(Page page) {
+        public GuiPage(Page page, SpellbookRecipes recipes) {
             this.page = page;
-            elements = page.elements().stream().map(PageElement::of).toList();
+            elements = page.elements().stream().map(i -> PageElement.of(i, recipes)).toList();
         }
 
         protected int getLineLimitAt(int yPosition) {
