@@ -67,7 +67,7 @@ public class GlassesFeatureRenderer<S extends BipedEntityRenderState, E extends 
 
         public void setAngles(BipedEntityRenderState entity, BipedEntityModel<?> biped) {
             root.getChild(EntityModelPartNames.HEAD).copyTransform(biped.head);
-            root.getChild(EntityModelPartNames.HAT).copyTransform(biped.hat);
+            root.getChild(EntityModelPartNames.HAT).copyTransform(biped.head);
         }
     }
 }

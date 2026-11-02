@@ -368,7 +368,6 @@ public class PlayerPoser {
             m.leftPants.copyTransform(m.leftLeg);
             m.rightPants.copyTransform(m.rightLeg);
         }
-        model.hat.copyTransform(model.head);
     }
 
     private void rotateArm(ModelPart arm, float pitch, float yaw, float roll) {
