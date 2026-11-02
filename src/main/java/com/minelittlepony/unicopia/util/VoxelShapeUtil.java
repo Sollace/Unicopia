@@ -25,7 +25,7 @@ public interface VoxelShapeUtil {
         if (direction.getAxis() == Axis.X) {
             direction = direction.getOpposite();
         }
-        float angle = direction.getHorizontalQuarterTurns() * MathHelper.RADIANS_PER_DEGREE;
+        float angle = direction.getPositiveHorizontalDegrees() * MathHelper.RADIANS_PER_DEGREE;
         return VoxelShapes.union(VoxelShapes.empty(), shape.getBoundingBoxes().stream()
             .map(box -> {
                 //These first two are enough for orthogonal rotations
