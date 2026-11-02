@@ -2,7 +2,6 @@ package com.minelittlepony.unicopia.client.gui.spellbook.element;
 
 import java.util.Optional;
 
-import com.minelittlepony.common.client.gui.IViewRoot;
 import com.minelittlepony.common.client.gui.ScrollContainer;
 import com.minelittlepony.common.client.gui.dimension.Bounds;
 import com.minelittlepony.common.client.gui.dimension.Padding;
@@ -27,7 +26,7 @@ class Panel extends ScrollContainer {
 
         int width = screen.getBackgroundWidth() / 2;
         margin.top = screen.getY() + 35;
-        margin.bottom = screen.height - screen.getBackgroundHeight() - screen.getY() + 20;
+        margin.bottom = screen.height - screen.getBackgroundHeight() - screen.getY() + 40;
         margin.left = screen.getX() + 30;
 
         if (pageIndex % 2 == 1) {
@@ -38,20 +37,11 @@ class Panel extends ScrollContainer {
         }
         init(() -> {});
         screen.addDrawable(this);
-        ((IViewRoot)screen).getChildElements().add(this);
+        screen.getChildElements().add(this);
     }
 
     @Override
     protected void renderContents(DrawContext context, int mouseX, int mouseY, float partialTicks) {
-        var scissorBounds = getBounds();
-
-        context.disableScissor();
-        context.enableScissor(
-                scissorBounds.left,
-                scissorBounds.top,
-                scissorBounds.right(),
-                scissorBounds.bottom()
-        );
         page.ifPresent(p -> {
             int oldHeight = p.getBounds().height;
             p.draw(context, mouseX, mouseY, this);
@@ -85,7 +75,7 @@ class Panel extends ScrollContainer {
     @Override
     protected void drawOverlays(DrawContext context, int mouseX, int mouseY, float partialTicks) {
         context.getMatrices().push();
-        this.getBounds().translate(context.getMatrices());
+        getBounds().translate(context.getMatrices());
         page.ifPresent(p -> {
             p.drawHeader(context, mouseX, mouseY);
         });
