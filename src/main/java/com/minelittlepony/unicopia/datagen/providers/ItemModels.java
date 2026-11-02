@@ -87,7 +87,7 @@ interface ItemModels {
     }
 
     static void registerParented(ItemModelGenerator itemModelGenerator, Item item, ItemConvertible parent) {
-        item(Registries.ITEM.getId(parent.asItem())).upload(ModelIds.getItemModelId(item), new TextureMap(), itemModelGenerator.modelCollector);
+        itemModelGenerator.output.accept(item, basic(item(Registries.ITEM.getId(parent.asItem())).upload(ModelIds.getItemModelId(item), new TextureMap(), itemModelGenerator.modelCollector)));
     }
 
     static void registerPolearm(ItemModelGenerator itemModelGenerator, Item item) {
