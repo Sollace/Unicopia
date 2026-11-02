@@ -11,7 +11,7 @@ import net.minecraft.client.render.RenderLayer;
 record Image(ChapterPageElement.Image image) implements PageElement {
     @Override
     public void draw(DynamicContent.GuiPage page, DrawContext context, int mouseX, int mouseY, IViewRoot container) {
-        context.drawTexture(RenderLayer::getGuiTextured, image().texture(), 0, 0, 0, 0, 0, bounds().width, bounds().height, bounds().width, bounds().height);
+        context.drawTexture(RenderLayer::getGuiTextured, image().texture(), 0, 0, 0, 0, bounds().width, bounds().height, bounds().width, bounds().height);
     }
 
     @Override
