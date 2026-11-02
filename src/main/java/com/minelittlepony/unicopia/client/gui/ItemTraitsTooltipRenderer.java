@@ -93,7 +93,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
 
         for (var entry : traits) {
             if (revealAll || isKnown(entry.getKey())) {
-                ItemTraitsTooltipRenderer.renderTraitIcon(entry.getKey(), entry.getValue() * weight, context,
+                renderTraitIcon(entry.getKey(), entry.getValue() * weight, context,
                         x + r * MathHelper.sin(angle),
                         y + r * MathHelper.cos(angle),
                         revealAll || isKnown(entry.getKey())
@@ -109,7 +109,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
         float angle = 0.7F + (time / 30F) % MathHelper.TAU;
         float r = 9 + 2 * MathHelper.sin(delta / 20F);
 
-        ItemTraitsTooltipRenderer.renderTraitIcon(trait, amount * weight, context,
+        renderTraitIcon(trait, amount * weight, context,
                 x + r * MathHelper.sin(angle),
                 y + r * MathHelper.cos(angle),
                 revealAll || isKnown(trait)
@@ -134,7 +134,7 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
         matrices.push();
         matrices.translate(xx, yy, 300F);
 
-        context.drawTexture(RenderLayer::getGuiTextured, reveal ? trait.getSprite() : UNKNOWN, 2, 1, 0, 0, 0, size, size, size, size);
+        context.drawTexture(RenderLayer::getGuiTextured, reveal ? trait.getSprite() : UNKNOWN, 2, 1, 0, 0, size, size, size, size);
 
         matrices.translate(9, 3 + size / 2, 0);
         matrices.scale(0.5F, 0.5F, 1);
