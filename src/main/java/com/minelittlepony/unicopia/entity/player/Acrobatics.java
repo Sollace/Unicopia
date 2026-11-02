@@ -1,7 +1,6 @@
 package com.minelittlepony.unicopia.entity.player;
 
 import java.util.Optional;
-
 import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.USounds;
@@ -14,7 +13,6 @@ import com.minelittlepony.unicopia.network.track.DataTracker;
 import com.minelittlepony.unicopia.network.track.TrackableDataType;
 import com.minelittlepony.unicopia.util.PosHelper;
 import com.minelittlepony.unicopia.util.Tickable;
-import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.minelittlepony.unicopia.util.serialization.NbtSerialisable;
 
 import net.minecraft.block.BlockState;
@@ -201,7 +199,7 @@ public class Acrobatics implements Tickable, NbtSerialisable {
     @Override
     public void toNBT(NbtCompound compound, WrapperLookup lookup) {
         compound.putInt("ticksHanging", ticksHanging);
-        compound.put("hangingPosition", CodecUtils.OPTIONAL_POS, lookup.getOps(NbtOps.INSTANCE), getHangingPosition());
+        compound.putNullable("hangingPosition", BlockPos.CODEC, lookup.getOps(NbtOps.INSTANCE), getHangingPosition().orElse(null));
     }
 
     @Override
