@@ -324,7 +324,7 @@ public interface UBlocks {
         }
 
         if (group != null) {
-            ItemGroupRegistry.register(id, s -> block instanceof CloudLike ? new CloudBlockItem(block, s) : new BlockItem(block, s), group);
+            ItemGroupRegistry.register(id, s -> block instanceof CloudLike ? new CloudBlockItem(block, s.translationKey(block.getTranslationKey())) : new BlockItem(block, s.translationKey(block.getTranslationKey())), group);
         }
         return Registry.register(Registries.BLOCK, key, block);
     }

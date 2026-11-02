@@ -33,7 +33,7 @@ public class WeatherJarItem extends BlockItem implements Projectile, ProjectileD
     private final Type type;
 
     public WeatherJarItem(Block block, Item.Settings settings, Type type) {
-        super(block, settings.translationKey(block.getTranslationKey()));
+        super(block, settings);
         this.type = type;
         Projectile.makeDispensable(this);
     }

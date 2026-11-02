@@ -53,10 +53,10 @@ public interface UItems {
     Item PLUNDER_VINE = register("plunder_vine", s -> new BlockItem(UBlocks.PLUNDER_VINE_BUD, s));
     Item EMPTY_JAR = register("empty_jar", s -> new EmptyJarItem(UBlocks.JAR, s.fireproof()), ItemGroups.FUNCTIONAL);
     Item FILLED_JAR = register("filled_jar", s -> new FilledJarItem(s.maxCount(16).fireproof().recipeRemainder(EMPTY_JAR)));
-    Item RAIN_CLOUD_JAR  = register("rain_cloud_jar", s -> new WeatherJarItem(UBlocks.CLOUD_JAR, s.maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.RAIN), ItemGroups.FUNCTIONAL);
-    Item STORM_CLOUD_JAR  = register("storm_cloud_jar", s -> new WeatherJarItem(UBlocks.STORM_JAR, s.maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.THUNDER), ItemGroups.FUNCTIONAL);
-    Item LIGHTNING_JAR  = register("lightning_jar", s -> new WeatherJarItem(UBlocks.LIGHTNING_JAR, s.maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.LIGHTNING), ItemGroups.FUNCTIONAL);
-    Item ZAP_APPLE_JAM_JAR = register("zap_apple_jam_jar", s -> new WeatherJarItem(UBlocks.ZAP_JAR, s.maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.LIGHTNING), ItemGroups.FUNCTIONAL);
+    Item RAIN_CLOUD_JAR  = register("rain_cloud_jar", s -> new WeatherJarItem(UBlocks.CLOUD_JAR, s.translationKey(UBlocks.CLOUD_JAR.getTranslationKey()).maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.RAIN), ItemGroups.FUNCTIONAL);
+    Item STORM_CLOUD_JAR  = register("storm_cloud_jar", s -> new WeatherJarItem(UBlocks.STORM_JAR, s.translationKey(UBlocks.STORM_JAR.getTranslationKey()).maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.THUNDER), ItemGroups.FUNCTIONAL);
+    Item LIGHTNING_JAR  = register("lightning_jar", s -> new WeatherJarItem(UBlocks.LIGHTNING_JAR, s.translationKey(UBlocks.LIGHTNING_JAR.getTranslationKey()).maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.LIGHTNING), ItemGroups.FUNCTIONAL);
+    Item ZAP_APPLE_JAM_JAR = register("zap_apple_jam_jar", s -> new WeatherJarItem(UBlocks.ZAP_JAR, s.translationKey(UBlocks.ZAP_JAR.getTranslationKey()).maxCount(16).fireproof().recipeRemainder(EMPTY_JAR), WeatherJarItem.Type.LIGHTNING), ItemGroups.FUNCTIONAL);
 
     Item TOAST = register("toast", s -> new Item(s.maxCount(16).food(UFoodComponents.TOAST, UConsumableComponents.SNACK)), ItemGroups.FOOD_AND_DRINK);
     Item BURNED_TOAST = register("burned_toast", s -> new Item(s.maxCount(16).food(UFoodComponents.BURNED_TOAST, UConsumableComponents.SNACK)), ItemGroups.FOOD_AND_DRINK);
@@ -98,7 +98,7 @@ public interface UItems {
     Item ACORN = register("acorn", s -> new ForageableItem(s.food(UFoodComponents.ACORN, UConsumableComponents.SNACK).maxCount(16), () -> Blocks.OAK_LEAVES), ItemGroups.FOOD_AND_DRINK);
     Item MANGO = register("mango", s -> new Item(s.food(UFoodComponents.MANGO)), ItemGroups.FOOD_AND_DRINK);
     Item BANANA = register("banana", s -> new Item(s.food(UFoodComponents.BANANA)), ItemGroups.FOOD_AND_DRINK);
-    Item CURING_JOKE = register("curing_joke", s -> new CuringJokeItem(UBlocks.CURING_JOKE, s.food(UFoodComponents.POISON_JOKE, UConsumableComponents.SNACK)), ItemGroups.NATURAL);
+    Item CURING_JOKE = register("curing_joke", s -> new CuringJokeItem(UBlocks.CURING_JOKE, s.translationKey(UBlocks.CURING_JOKE.getTranslationKey()).food(UFoodComponents.POISON_JOKE, UConsumableComponents.SNACK)), ItemGroups.NATURAL);
     Item PINEAPPLE = register("pineapple", s -> new PineappleItem(s.food(UFoodComponents.BANANA).maxDamage(3)), ItemGroups.FOOD_AND_DRINK);
     Item PINEAPPLE_CROWN = register("pineapple_crown", s -> new BlockItem(UBlocks.PINEAPPLE, s.translationKey(UBlocks.PINEAPPLE.getTranslationKey())), ItemGroups.NATURAL);
 
@@ -123,7 +123,7 @@ public interface UItems {
     Item CIDER = register("cider", s -> new ConsumableItem(s.food(UFoodComponents.CIDER).maxCount(16).recipeRemainder(MUG).useRemainder(MUG), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
     Item JUICE = register("juice", s -> new ConsumableItem(s.recipeRemainder(Items.GLASS_BOTTLE).useRemainder(Items.GLASS_BOTTLE).maxCount(16).food(UFoodComponents.JUICE), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
     Item BURNED_JUICE = register("burned_juice", s -> new ConsumableItem(s.recipeRemainder(Items.GLASS_BOTTLE).useRemainder(Items.GLASS_BOTTLE).maxCount(16).food(UFoodComponents.BURNED_JUICE), UseAction.DRINK), ItemGroups.FOOD_AND_DRINK);
-    Item APPLE_PIE = register("apple_pie", s -> new BlockItem(UBlocks.APPLE_PIE, s.maxCount(1)), ItemGroups.FOOD_AND_DRINK);
+    Item APPLE_PIE = register("apple_pie", s -> new BlockItem(UBlocks.APPLE_PIE, s.translationKey(UBlocks.APPLE_PIE.getTranslationKey()).maxCount(1)), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE_HOOF = register("apple_pie_hoof", s -> new BlockItem(UBlocks.APPLE_PIE, s.maxCount(1)), ItemGroups.FOOD_AND_DRINK);
     Item APPLE_PIE_SLICE = register("apple_pie_slice", s -> new Item(s.maxCount(16).food(UFoodComponents.PIE)), ItemGroups.FOOD_AND_DRINK);
     Item CANDIED_APPLE = register("candied_apple", s -> new StagedFoodItem(s.food(UFoodComponents.CANDY).maxDamage(3), () -> Items.STICK), ItemGroups.FOOD_AND_DRINK);
@@ -158,8 +158,8 @@ public interface UItems {
 
     Item PALM_BOAT = register("palm_boat", s -> new BoatItem(UEntities.PALM_BOAT, s.maxCount(1)), ItemGroups.FUNCTIONAL);
     Item PALM_CHEST_BOAT = register("palm_chest_boat", s -> new BoatItem(UEntities.PALM_CHEST_BOAT, s.maxCount(1)), ItemGroups.FUNCTIONAL);
-    Item PALM_SIGN = register("palm_sign", s -> new SignItem(UBlocks.PALM_SIGN, UBlocks.PALM_WALL_SIGN, s), ItemGroups.FUNCTIONAL);
-    Item PALM_HANGING_SIGN = register("palm_hanging_sign", s -> new HangingSignItem(UBlocks.PALM_HANGING_SIGN, UBlocks.PALM_WALL_HANGING_SIGN, s), ItemGroups.FUNCTIONAL);
+    Item PALM_SIGN = register("palm_sign", s -> new SignItem(UBlocks.PALM_SIGN, UBlocks.PALM_WALL_SIGN, s.translationKey(UBlocks.PALM_SIGN.getTranslationKey())), ItemGroups.FUNCTIONAL);
+    Item PALM_HANGING_SIGN = register("palm_hanging_sign", s -> new HangingSignItem(UBlocks.PALM_HANGING_SIGN, UBlocks.PALM_WALL_HANGING_SIGN, s.translationKey(UBlocks.PALM_HANGING_SIGN.getTranslationKey())), ItemGroups.FUNCTIONAL);
 
     Item SPELLBOOK = register("spellbook", s -> new SpellbookItem(s.maxCount(1).rarity(Rarity.UNCOMMON)), ItemGroups.TOOLS);
     Item TORN_PAGE = register("torn_page", Item::new, ItemGroups.INGREDIENTS);
@@ -260,8 +260,8 @@ public interface UItems {
     Item GOLDEN_STICK = register("golden_stick", s -> new Item(s.recipeRemainder(Items.GOLD_NUGGET)), ItemGroups.NATURAL);
 
     Item CARAPACE = register("carapace", Item::new, ItemGroups.INGREDIENTS);
-    Item CLOTH_BED = register("cloth_bed", s -> new FancyBedItem(UBlocks.CLOTH_BED, s.maxCount(1)), ItemGroups.FUNCTIONAL);
-    Item CLOUD_BED = register("cloud_bed", s -> new CloudBedItem(UBlocks.CLOUD_BED, s.maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item CLOTH_BED = register("cloth_bed", s -> new FancyBedItem(UBlocks.CLOTH_BED, s.translationKey(UBlocks.CLOTH_BED.getTranslationKey()).maxCount(1)), ItemGroups.FUNCTIONAL);
+    Item CLOUD_BED = register("cloud_bed", s -> new CloudBedItem(UBlocks.CLOUD_BED, s.translationKey(UBlocks.CLOUD_BED.getTranslationKey()).maxCount(1)), ItemGroups.FUNCTIONAL);
     Item CLOUD_LUMP = register("cloud_lump", Item::new, ItemGroups.NATURAL);
 
     Item ALICORN_BADGE = register(Race.ALICORN);
