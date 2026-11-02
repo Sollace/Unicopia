@@ -151,7 +151,7 @@ public class UHud {
         Ability<?> ability = pony.getAbilities().getStat(AbilitySlot.PRIMARY)
                 .getAbility(currentPage)
                 .orElse(null);
-        boolean canCast = ability == Abilities.CAST || ability == Abilities.KIRIN_CAST || ability == Abilities.SHOOT;
+        boolean canCast = ability == Abilities.CAST.value() || ability == Abilities.KIRIN_CAST.value() || ability == Abilities.SHOOT.value();
 
         if (canCast) {
             matrices.push();
