@@ -153,7 +153,7 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntityRenderer.
                 rope.visible = lifted;
             });
             struts.forEach(strut -> {
-                strut.visible = lifted;
+                strut.visible  = lifted;
             });
 
             root.originX = state.accessoriesPivotX + state.burnerWiggleProgress * MathHelper.sin(state.age) * 2.5F;
@@ -182,6 +182,11 @@ public class AirBalloonEntityModel extends EntityModel<AirBalloonEntityRenderer.
                 bag.yScale = pullAmount;
                 bag.getChild("knot").yScale = 1/pullAmount;
             }
+        }
+
+        if (isBalloon) {
+            root.originY += 24 * (1 - state.inflation);
+            root.yScale *= Math.max(0.0025F, state.inflation);
         }
 
         for (int i = 0; i < ropes.size(); i++) {
