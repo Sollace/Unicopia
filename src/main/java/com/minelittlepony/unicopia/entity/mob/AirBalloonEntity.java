@@ -240,12 +240,13 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
                 activeFuel = FurnaceBlockEntity.createFuelTimeMap().getOrDefault(fuelItems.remove(0).getItem(), 0);
             }
 
-            if (activeFuel > -6 && age % 2 == 0) {
+            if (activeFuel > 0 && age % 2 == 0) {
                 activeFuel -= boosting ? 50 : 1;
-                if (activeFuel <= -6) {
-                    setBoostTicks(0);
-                    setAscending(false);
-                }
+            }
+
+            if (activeFuel <= 0) {
+                setBoostTicks(0);
+                setAscending(false);
             }
         } else {
             if (inflation < getMaxInflation() && inflation > 0) {
