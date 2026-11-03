@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
 
 import com.minelittlepony.unicopia.entity.mob.MimicEntity;
 import com.minelittlepony.unicopia.mixin.MixinBlockEntity;
@@ -147,9 +148,8 @@ public class MimicEntityRenderer extends MobEntityRenderer<MimicEntity, MimicEnt
         @Override
         public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, State entity, float limbAngle, float limbDistance) {
             if (entity.tileData != null) {
-                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180));
-                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-entity.pitch));
                 matrices.push();
+                matrices.multiply(new Quaternionf().rotationXYZ(MathHelper.PI, 0, -entity.pitch * MathHelper.RADIANS_PER_DEGREE));
                 matrices.translate(-0.5, -1.5, -0.5);
 
                 MinecraftClient client = MinecraftClient.getInstance();

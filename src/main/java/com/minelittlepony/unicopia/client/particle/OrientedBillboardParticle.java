@@ -13,16 +13,17 @@ import net.minecraft.util.math.*;
 public abstract class OrientedBillboardParticle extends AbstractBillboardParticle {
 
     protected boolean fixed;
-    protected Quaternionf rotation = new Quaternionf(0, 0, 0, 1);
+    private Quaternionf rotation;
 
     public OrientedBillboardParticle(OrientedBillboardParticleEffect effect, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         super(world, x, y, z, velocityX, velocityY, velocityZ);
 
         fixed = effect.fixed();
-        if (fixed) {
-            rotation.mul(RotationAxis.POSITIVE_Y.rotationDegrees(effect.pitch()));
-            rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(180 - effect.yaw()));
-        }
+        rotation = fixed ? new Quaternionf().rotationYXZ(
+                effect.pitch() * MathHelper.RADIANS_PER_DEGREE,
+                (180 - effect.yaw()) * MathHelper.RADIANS_PER_DEGREE,
+                0
+        ) : new Quaternionf();
     }
 
     @Override

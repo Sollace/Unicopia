@@ -4,6 +4,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
+
 import com.minelittlepony.unicopia.EquinePredicates;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.render.ModelPartHooks.EnqueudHeadRender;
@@ -25,6 +27,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 
@@ -150,10 +153,6 @@ public class WorldRenderDelegate {
     }
 
     private void applyTransforms(Equine<?> equine, Entity entity, double x, double y, double z, MatrixStack matrices) {
-        boolean negative = equine.getPhysics().isGravityNegative();
-
-        matrices.translate(x, y + entity.getHeight() / 2, z);
-
         if (equine instanceof Pony p) {
             boolean firstPerson = client.options.getPerspective().isFirstPerson();
             float fovEffectScale = client.options.getFovEffectScale().getValue().floatValue();
@@ -166,19 +165,13 @@ public class WorldRenderDelegate {
                 sidewaysRoll += 90;
             }
 
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(sidewaysRoll));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90));
-
             float forwardPitch = p.getInterpolator().interpolate("g_kdive", p.getMotion().isDiving() ? 80 : 0, 15);
-
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(forwardPitch));
-        } else {
-            float roll = negative ? 180 : 0;
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(roll));
+            matrices.multiply(new Quaternionf()
+                    .rotationZYX(0, MathHelper.HALF_PI, sidewaysRoll * MathHelper.RADIANS_PER_DEGREE)
+                    .rotateZYX(0, -MathHelper.HALF_PI, forwardPitch * MathHelper.RADIANS_PER_DEGREE), (float)x, (float)y + entity.getHeight() / 2, (float)z);
+        } else if (equine.getPhysics().isGravityNegative()) {
+            matrices.multiply(RotationAxis.POSITIVE_X.rotation(MathHelper.PI), (float)x, (float)y + entity.getHeight() / 2, (float)z);
         }
-
-        matrices.translate(-x, -y - entity.getHeight() / 2, -z);
     }
 
     private void flipAngles(Entity entity) {

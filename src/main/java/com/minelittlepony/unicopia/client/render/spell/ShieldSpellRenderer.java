@@ -27,8 +27,8 @@ public class ShieldSpellRenderer extends SpellRenderer<ShieldSpell, ShieldSpellR
     }
 
     @Override
-    public void updateRenderState(ShieldSpell spell, State state, Caster<?> caster, float tickDelta) {
-        super.updateRenderState(spell, state, caster, tickDelta);
+    public void updateRenderState(ShieldSpell spell, State state, CasterState casterState, Caster<?> caster, float tickDelta) {
+        super.updateRenderState(spell, state, casterState, caster, tickDelta);
         state.height = caster.asEntity().getEyeY() - caster.getOriginVector().y;
         int typeColor = state.type.type().getColor();
         int ponyColor = MineLPDelegate.getInstance().getMagicColor(caster.getOriginatingCaster().asEntity());
@@ -39,30 +39,30 @@ public class ShieldSpellRenderer extends SpellRenderer<ShieldSpell, ShieldSpellR
                 0xFF000
         ), 2);
         state.radius = 0.35F + spell.getRadius(tickDelta) + MathHelper.sin((caster.asEntity().age + tickDelta) / 30F) * 0.01F;
+        state.alpha = (1 - Math.abs(MathHelper.sin(casterState.entityState.age / 20F)) * 0.1F) * MathHelper.clamp(state.radius - 1, 0, 1);
+        state.pitch = caster.asEntity().getPitch(tickDelta);
+        state.thickness = 0.02F * MathHelper.sin(casterState.entityState.age / 30F);
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State spell, CasterState caster, int light) {
-        super.render(matrices, vertices, spell, caster, light);
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State spell, int light) {
+        super.render(matrices, vertices, spell, light);
 
         matrices.push();
         matrices.translate(0, spell.height, 0);
 
         VertexConsumer buffer = vertices.getBuffer(RenderLayers.getMagicShield());
 
-        float thickness = 0.02F * MathHelper.sin(caster.entityState.age / 30F);
-        float alpha = (1 - Math.abs(MathHelper.sin(caster.entityState.age / 20F)) * 0.1F) * MathHelper.clamp(spell.radius - 1, 0, 1);
-
-        if (caster.isCamera) {
+        if (spell.casterState.isCamera) {
             matrices.translate(0, -1.75F, 0);
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(client.cameraEntity.getPitch(client.getRenderTickCounter().getTickProgress(false))));
-            model.render(matrices, buffer, light, 1, spell.radius, withAlpha((int)((alpha * 0.2F) * 255), spell.color));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(spell.pitch));
+            model.render(matrices, buffer, light, 1, spell.radius, withAlpha((int)((spell.alpha * 0.2F) * 255), spell.color));
         } else {
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180));
             matrices.scale(1, spell.radius == 0 ? 1 : MathHelper.clamp(2.6F / spell.radius, 0.7F, 1.8F), 1);
-            SphereModel.SPHERE.render(matrices, buffer, light, 1, spell.radius + thickness, withAlpha((int)((alpha * 0.08F) * 255), spell.color));
-            SphereModel.SPHERE.render(matrices, buffer, light, 1, spell.radius - thickness, withAlpha((int)((alpha * 0.05F) * 255), spell.color));
-            SphereModel.SPHERE.render(matrices, buffer, light, 1, spell.radius + thickness * 2, withAlpha((int)((alpha * 0.05F) * 255), spell.color));
+            SphereModel.SPHERE.render(matrices, buffer, light, 1, spell.radius + spell.thickness, withAlpha((int)((spell.alpha * 0.08F) * 255), spell.color));
+            SphereModel.SPHERE.render(matrices, buffer, light, 1, spell.radius - spell.thickness, withAlpha((int)((spell.alpha * 0.05F) * 255), spell.color));
+            SphereModel.SPHERE.render(matrices, buffer, light, 1, spell.radius + spell.thickness * 2, withAlpha((int)((spell.alpha * 0.05F) * 255), spell.color));
         }
 
         matrices.pop();
@@ -71,6 +71,10 @@ public class ShieldSpellRenderer extends SpellRenderer<ShieldSpell, ShieldSpellR
     public static class State extends SpellRenderState {
         public double height;
         public int color;
+        public float alpha;
         public float radius;
+        public float pitch;
+
+        public float thickness;
     }
 }

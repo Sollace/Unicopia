@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client.particle;
 
+import org.joml.Quaternionf;
 import org.joml.Vector4f;
 
 import com.minelittlepony.unicopia.client.render.model.FanModel;
@@ -16,7 +17,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 
 public class DustCloudParticle extends AbstractBillboardParticle {
     protected static final int SEGMENTS = 20;
@@ -77,12 +77,15 @@ public class DustCloudParticle extends AbstractBillboardParticle {
         matrices.scale(1, 0.5F, 1);
 
         float angle = (MathHelper.sin((this.age + tickDelta) / 100F) * 360) / SEGMENTS;
+        Quaternionf rotation = new Quaternionf();
 
         for (int i = 0; i < SEGMENTS; i++) {
             matrices.push();
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((i * angle)));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees((SEPARATION * i - angle)));
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((SEPARATION * i + angle)));
+            matrices.multiply(rotation.rotationXYZ(
+                    (i * angle) * MathHelper.RADIANS_PER_DEGREE,
+                    (SEPARATION * i - angle) * MathHelper.RADIANS_PER_DEGREE,
+                    (SEPARATION * i + angle) * MathHelper.RADIANS_PER_DEGREE
+            ));
             float ringScale = 1 + MathHelper.sin(((i * 10) + age + tickDelta) * 0.05F) * 0.1F;
 
             model.render(matrices, buffer, 0, scale * ringScale, color);

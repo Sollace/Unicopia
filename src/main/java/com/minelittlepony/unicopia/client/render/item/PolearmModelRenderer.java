@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client.render.item;
 
+import org.joml.Quaternionf;
+
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -19,7 +21,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemDisplayContext;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.MathHelper;
 
 public class PolearmModelRenderer implements SimpleSpecialModelRenderer {
     public static TexturedModelData getTexturedModelData() {
@@ -59,8 +61,8 @@ public class PolearmModelRenderer implements SimpleSpecialModelRenderer {
             matrices.scale(1.5F, -1.5F, -1.5F);
             float offsetX = swap * 0.05F;
             matrices.translate(offsetX, 0, 0.05F);
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-30 * swap), offsetX, 0.5F, offsetX);
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-30 * swap), offsetX, 0.5F, offsetX);
+            float angle = -30 * swap * MathHelper.RADIANS_PER_DEGREE;
+            matrices.multiply(new Quaternionf().rotationXYZ(0, angle, angle), offsetX, 0.5F, offsetX);
         }
     }
 

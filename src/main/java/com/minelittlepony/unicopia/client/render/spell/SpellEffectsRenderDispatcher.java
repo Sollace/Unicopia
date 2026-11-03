@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.Spell;
@@ -25,8 +26,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.MathHelper;
 
 public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader, IdentifiableResourceReloadListener {
     public static final SpellEffectsRenderDispatcher INSTANCE = new SpellEffectsRenderDispatcher();
@@ -42,7 +42,7 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         register(SpellType.DARK_VORTEX, DarkVortexSpellRenderer::new);
         register(SpellType.BUBBLE, BubbleSpellRenderer::new);
         register(SpellType.PORTAL, PortalSpellRenderer::new);
-        register(SpellType.RAINBOOM, RainboomSpellRenderer::new);
+        register(SpellType.RAINBOOM, EmptySpellRenderer::new);
     }
 
     @Nullable
@@ -67,12 +67,12 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         return (SpellRenderer<?, S>)renderers.getOrDefault(spell.type.type(), SpellRenderer.DEFAULT);
     }
 
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, CasterState caster, SpellRenderState spell) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, int light, SpellRenderState spell) {
         var renderer = getRenderer(spell);
 
         if (renderer != SpellRenderer.DEFAULT) {
             client.getBufferBuilders().getEntityVertexConsumers().draw();
-            renderer.render(matrices, vertices, spell, caster, light);
+            renderer.render(matrices, vertices, spell, light);
         }
     }
 
@@ -82,7 +82,7 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         }
 
         caster.spells.forEach(spell -> {
-            render(matrices, vertices, light, caster, spell);
+            render(matrices, vertices, light, spell);
         });
 
         if (caster.debugLines != null) {
@@ -115,22 +115,15 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
 
     private void renderHotspot(MatrixStack matrices, VertexConsumerProvider vertices, CasterState caster) {
         Box boundingBox = Box.of(caster.originVector, 1, 1, 1);
-
-        Vec3d pos = caster.originVector;
-
-        double x = - pos.x;
-        double y = - pos.y;
-        double z = - pos.z;
-
         VertexConsumer buffer = vertices.getBuffer(RenderLayer.getLines());
+        Quaternionf rotation = new Quaternionf();
 
         for (float i = -1; i < 1; i += 0.2F) {
             matrices.push();
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(i * caster.entityState.age));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(i * caster.entityState.age));
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(i * caster.entityState.age));
+            float angle = i * caster.entityState.age * MathHelper.RADIANS_PER_DEGREE;
+            matrices.multiply(rotation.rotateXYZ(angle, angle, angle));
             matrices.scale(i, i, i);
-            VertexRendering.drawBox(matrices, buffer, boundingBox.offset(x, y, z), 1, 0, 0, 1);
+            VertexRendering.drawBox(matrices, buffer, boundingBox, 1, 0, 0, 1);
             matrices.pop();
         }
     }

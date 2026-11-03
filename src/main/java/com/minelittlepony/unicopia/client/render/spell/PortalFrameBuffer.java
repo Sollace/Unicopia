@@ -15,7 +15,6 @@ import com.google.common.cache.LoadingCache;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.client.render.RenderUtil;
-import com.minelittlepony.unicopia.client.render.entity.state.CasterState;
 import com.minelittlepony.unicopia.client.render.model.SphereModel;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.mixin.client.MixinMinecraftClient;
@@ -100,7 +99,7 @@ class PortalFrameBuffer implements AutoCloseable {
         }
     }
 
-    public void build(PortalSpellRenderer.State spell, CasterState caster) {
+    public void build(PortalSpellRenderer.State spell) {
         closed = false;
 
         long refreshRate = Unicopia.getConfig().fancyPortalRefreshRate.get();
@@ -109,7 +108,7 @@ class PortalFrameBuffer implements AutoCloseable {
         }
 
         if (pendingDraw && recursionCount > Math.max(0, Unicopia.getConfig().maxPortalRecursion.get())) {
-            innerBuild(spell, caster);
+            innerBuild(spell);
             return;
         }
 
@@ -118,13 +117,13 @@ class PortalFrameBuffer implements AutoCloseable {
         }
         pendingDraw = true;
         if (recursionCount > 0) {
-            innerBuild(spell, caster);
+            innerBuild(spell);
         } else {
-            ((MixinMinecraftClient)client).getRenderTaskQueue().add(() -> innerBuild(spell, caster));
+            ((MixinMinecraftClient)client).getRenderTaskQueue().add(() -> innerBuild(spell));
         }
     }
 
-    private void innerBuild(PortalSpellRenderer.State spell, CasterState caster) {
+    private void innerBuild(PortalSpellRenderer.State spell) {
         synchronized (client) {
             pendingDraw = false;
 

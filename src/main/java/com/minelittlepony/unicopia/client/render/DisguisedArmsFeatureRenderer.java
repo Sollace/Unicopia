@@ -8,6 +8,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
 
 import com.minelittlepony.unicopia.client.FirstPersonRendererOverrides.ArmRenderer;
 import com.minelittlepony.unicopia.client.minelittlepony.MineLPDelegate;
@@ -37,7 +38,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 
 public class DisguisedArmsFeatureRenderer<S extends BipedEntityRenderState> implements AccessoryFeatureRenderer.Feature<S> {
 
@@ -153,22 +153,24 @@ public class DisguisedArmsFeatureRenderer<S extends BipedEntityRenderState> impl
         float yOffset = 0.4F * MathHelper.sin(srtSwingProgress * (MathHelper.TAU));
         float swingAmount = -0.4F * MathHelper.sin(swingProgress * MathHelper.PI);
         matrices.translate(signum * (xOffset + 0.64000005F), yOffset + -0.6F + equipProgress * -0.6F, swingAmount + -0.71999997f);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(signum * 45));
+
         float zRot = MathHelper.sin(swingProgress * swingProgress * MathHelper.PI);
         float yRot = MathHelper.sin(srtSwingProgress * MathHelper.PI);
 
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(signum * yRot * 70));
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(signum * zRot * -20));
+        Quaternionf rotation = new Quaternionf();
+
+        matrices.multiply(rotation
+                .rotationY(signum * (yRot * 70 + 45) * MathHelper.RADIANS_PER_DEGREE)
+                .rotateZ(signum * zRot * -20 * MathHelper.RADIANS_PER_DEGREE));
         matrices.translate(signum * -1, 3.6F, 3.5F);
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(signum * 120));
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(200));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(signum * -135));
+        matrices.multiply(rotation.rotationZ(signum * 120 * MathHelper.RADIANS_PER_DEGREE)
+                .rotateXYZ(200 * MathHelper.RADIANS_PER_DEGREE, signum * -135 * MathHelper.RADIANS_PER_DEGREE, 0));
         matrices.translate(signum * 5.6F, 0, 0);
 
         if (entity instanceof IronGolemEntity golem) {
             int attackTicks = golem.getAttackTicksLeft();
             if (attackTicks > 0) {
-                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-signum * part.pitch * MathHelper.DEGREES_PER_RADIAN - 90 * signum));
+                matrices.multiply(rotation.rotationZ(-signum * part.pitch - 90 * signum * MathHelper.RADIANS_PER_DEGREE));
             }
         }
         part.pitch = 0;

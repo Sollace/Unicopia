@@ -156,15 +156,13 @@ public class CloudBedBlockEntityRenderer implements BlockEntityRenderer<CloudBed
 
     private void renderModel(MatrixStack matrices, VertexConsumerProvider vertices, ModelPart part, Direction direction, VertexConsumer buffer, int light, int overlay, boolean translate, boolean sheets) {
         matrices.push();
-        matrices.translate(0, 0.5625f, translate ? -1 : 0);
+        matrices.translate(0, 0.5625F, translate ? -1 : 0);
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
-        matrices.translate(0.5f, 0.5f, 0.5f);
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180 + direction.getPositiveHorizontalDegrees()), 0.5F, 0.5F, 0.5F);
         if (sheets) {
-            float beddingScale = 1.002F;
+            final float beddingScale = 1.002F;
             matrices.scale(beddingScale, beddingScale, beddingScale);
         }
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180 + direction.getPositiveHorizontalDegrees()));
-        matrices.translate(-0.5f, -0.5f, -0.5f);
         part.render(matrices, buffer, light, overlay);
         matrices.pop();
     }

@@ -37,8 +37,8 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell, PortalSpellR
     }
 
     @Override
-    public void updateRenderState(PortalSpell spell, State state, Caster<?> caster, float tickDelta) {
-        super.updateRenderState(spell, state, caster, tickDelta);
+    public void updateRenderState(PortalSpell spell, State state, CasterState casterState, Caster<?> caster, float tickDelta) {
+        super.updateRenderState(spell, state, casterState, caster, tickDelta);
         state.destination.copyFrom(spell.getDestinationReference());
         state.shouldRenderContents = true;
         state.yaw = spell.getYaw();
@@ -59,8 +59,8 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell, PortalSpellR
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State spell, CasterState caster, int light) {
-        super.render(matrices, vertices, spell, caster, light);
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State spell, int light) {
+        super.render(matrices, vertices, spell, light);
 
         VertexConsumer buff = vertices.getBuffer(RenderLayer.getEndGateway());
 
@@ -86,7 +86,7 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell, PortalSpellR
         matrices.scale(spell.strength, spell.strength, spell.strength);
 
         spell.destination.getTarget().ifPresent(target -> {
-            float grown = Math.min(caster.entityState.age, 20) / 20F;
+            float grown = Math.min(spell.casterState.entityState.age, 20) / 20F;
             matrices.push();
             matrices.translate(0, -0.01, 0);
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-spell.yaw));
@@ -96,14 +96,14 @@ public class PortalSpellRenderer extends SpellRenderer<PortalSpell, PortalSpellR
             PortalFrameBuffer buffer = PortalFrameBuffer.unpool(target.uuid());
             if (buffer != null) {
                 if (inRange) {
-                    buffer.build(spell, caster);
+                    buffer.build(spell);
                 }
                 buffer.draw(matrices, vertices);
             }
             if (!inRange) {
                 buffer = PortalFrameBuffer.unpool(spell.portalUuid);
                 if (buffer != null) {
-                    buffer.build(spell, caster);
+                    buffer.build(spell);
                 }
             }
             matrices.pop();

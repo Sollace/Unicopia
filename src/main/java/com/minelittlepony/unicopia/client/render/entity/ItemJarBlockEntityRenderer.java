@@ -3,6 +3,7 @@ package com.minelittlepony.unicopia.client.render.entity;
 import java.util.Arrays;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
 
 import com.minelittlepony.unicopia.block.ItemJarBlock;
 import com.minelittlepony.unicopia.block.ItemJarBlock.FluidJarContents;
@@ -78,10 +79,11 @@ public class ItemJarBlockEntityRenderer implements BlockEntityRenderer<ItemJarBl
 
     private void renderItemStacks(ItemJarBlock.TileData data, ItemsJarContents items, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertices, int light, int overlay) {
         float itemScale = 0.35F;
+        Quaternionf rotation = new Quaternionf();
 
         matrices.push();
         matrices.translate(0.5, 0, 0.5);
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
+        matrices.multiply(rotation.rotationX(MathHelper.HALF_PI));
         matrices.scale(itemScale, itemScale, itemScale);
 
         Random rng = Random.create(data.getPos().asLong());
@@ -91,8 +93,7 @@ public class ItemJarBlockEntityRenderer implements BlockEntityRenderer<ItemJarBl
             matrices.push();
 
             matrices.translate((rng.nextFloat() - 0.5F) * 0.5F, (rng.nextFloat() - 0.5F) * 0.8F, -0.05 + y);
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees((rng.nextFloat() * 360) - 180));
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((rng.nextFloat() * 360) - 180));
+            matrices.multiply(rotation.rotationXYZ((rng.nextFloat() * MathHelper.TAU) - MathHelper.PI, 0, (rng.nextFloat() * MathHelper.TAU) - MathHelper.PI));
             y -= 0.1F;
             itemRenderer.renderItem(stack, ItemDisplayContext.FIXED, light, overlay, matrices, vertices, data.getWorld(), 0);
             matrices.pop();

@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client.render.spell;
 
+import org.joml.Quaternionf;
+
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.TimedSpell;
@@ -20,7 +22,6 @@ import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 
 public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell, DarkVortexSpellRenderer.State> {
@@ -41,20 +42,12 @@ public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell, Dark
     }
 
     @Override
-    public void updateRenderState(DarkVortexSpell spell, State state, Caster<?> caster, float tickDelta) {
-        super.updateRenderState(spell, state, caster, tickDelta);
+    public void updateRenderState(DarkVortexSpell spell, State state, CasterState casterState, Caster<?> caster, float tickDelta) {
+        super.updateRenderState(spell, state, casterState, caster, tickDelta);
         state.radius = (float)spell.getEventHorizonRadius();
         state.range = (float)spell.getDrawDropOffRange() / 8F;
         state.yOffset = spell.getYOffset();
         state.origin = spell.getOrigin(caster);
-    }
-
-    public static class State extends SpellRenderState {
-        public float radius;
-        public float range;
-        public double yOffset;
-
-        public Vec3d origin = Vec3d.ZERO;
     }
 
     @Override
@@ -63,16 +56,18 @@ public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell, Dark
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State state, CasterState caster, int light) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State state, int light) {
         Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
 
         Vec3d ray = camera.getPos().subtract(state.origin);
 
         float absDistance = (float)ray.length();
 
+        Quaternionf rotation = new Quaternionf();
+
         matrices.push();
         matrices.translate(0, state.yOffset, 0);
-        matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(caster.yawOffset));
+        matrices.multiply(rotation.rotationY(state.casterState.yawOffset));
 
         float visualRadius = Math.min(state.radius * 0.8F, absDistance - 1F);
 
@@ -93,24 +88,23 @@ public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell, Dark
 
         if (state.radius > 0.3F && absDistance > state.radius) {
             double g = Math.sqrt(ray.x * ray.x + ray.z * ray.z);
-            float age = caster.entityState.age;
-            float pitch = MathHelper.wrapDegrees((float)(-(MathHelper.atan2(ray.y, g) * 180.0F / (float)Math.PI)));
-            float yaw = MathHelper.wrapDegrees((float)(MathHelper.atan2(ray.z, ray.x) * 180.0F / (float)Math.PI) - 90.0F);
+            float age = state.casterState.entityState.age;
+            float pitch = MathHelper.wrapDegrees((float)(-(MathHelper.atan2(ray.y, g) * MathHelper.DEGREES_PER_RADIAN))) * MathHelper.RADIANS_PER_DEGREE;
+            float yaw = MathHelper.wrapDegrees((float)(MathHelper.atan2(ray.z, ray.x) * MathHelper.DEGREES_PER_RADIAN) - 90.0F) * MathHelper.RADIANS_PER_DEGREE;
 
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-caster.yawOffset - yaw));
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-pitch));
+            matrices.multiply(rotation.rotationZYX(0, -state.casterState.yawOffset - yaw, -pitch));
 
             float processionSpeed = age * 0.02F;
-            float maxProcessionAngle = 15;
+            final float maxProcessionAngle = 15 * MathHelper.RADIANS_PER_DEGREE;
+            final float maxWobbleAngle = 18 * MathHelper.RADIANS_PER_DEGREE;
+            final float secondaryEffectAngle = 33 * MathHelper.RADIANS_PER_DEGREE;
 
             float cosProcession = MathHelper.cos(processionSpeed);
             float sinProcession = MathHelper.sin(processionSpeed);
 
             matrices.scale(state.range, state.range, state.range);
 
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(cosProcession * maxProcessionAngle));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(sinProcession * maxProcessionAngle));
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(age * 18));
+            matrices.multiply(rotation.rotationXYZ(cosProcession * maxProcessionAngle, sinProcession * maxProcessionAngle, age * maxWobbleAngle));
 
             VertexConsumer buffer = vertices.getBuffer(RenderLayer.getEntityTranslucent(ACCRETION_DISK_TEXTURE));
 
@@ -118,11 +112,12 @@ public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell, Dark
             float secondaryScale = 0.9F + cosProcession * 0.3F;
             matrices.translate(0, 0, 0.0001F);
             matrices.scale(secondaryScale, secondaryScale, secondaryScale);
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(33));
+            rotation.rotationZ(secondaryEffectAngle);
+            matrices.multiply(rotation);
             PlaneModel.INSTANCE.render(matrices, buffer, light, 0, 1, Colors.WHITE);
             matrices.translate(0, 0, 0.0001F);
             matrices.scale(0.9F, 0.9F, 0.9F);
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(33));
+            matrices.multiply(rotation);
             PlaneModel.INSTANCE.render(matrices, buffer, light, 0, 1, Colors.WHITE);
         }
         matrices.pop();
@@ -132,5 +127,13 @@ public class DarkVortexSpellRenderer extends SpellRenderer<DarkVortexSpell, Dark
     @Override
     protected void renderCountdown(MatrixStack matrices, VertexConsumerProvider vertices, TimedSpell spell, float tickDelta) {
 
+    }
+
+    public static class State extends SpellRenderState {
+        public float radius;
+        public float range;
+        public double yOffset;
+
+        public Vec3d origin = Vec3d.ZERO;
     }
 }

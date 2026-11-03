@@ -2,6 +2,7 @@ package com.minelittlepony.unicopia.client.render.entity;
 
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.entity.mob.SpellbookEntity;
@@ -78,8 +79,7 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
             matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(60));
         } else {
             matrices.translate(-1.5F, 0.1F, 0.2F);
-            matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(90));
-            matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(90));
+            matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(90).rotateY(MathHelper.HALF_PI));
         }
     }
 
@@ -129,12 +129,17 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
         }
     }
 
+    /**
+     * @see net.minecraft.client.render.entity.EnderDragonEntityRenderer#renderCrystalBeam
+     */
     public static void renderBeam(Vec3d offset, float age, MatrixStack matrices, VertexConsumerProvider buffers, int light, float r, float g, float b) {
         final float horizontalDistance = (float)offset.horizontalLength();
         final float distance = (float)offset.length();
         matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotation((float)(-Math.atan2(offset.z, offset.x)) - 1.5707964f));
-        matrices.multiply(RotationAxis.POSITIVE_X.rotation((float)(-Math.atan2(horizontalDistance, offset.y)) - 1.5707964f));
+        matrices.multiply(new Quaternionf().rotationZYX(0,
+                -(float)Math.atan2(offset.z, offset.x) - MathHelper.HALF_PI,
+                -(float)Math.atan2(horizontalDistance, offset.y) - MathHelper.HALF_PI
+        ));
         VertexConsumer buffer = buffers.getBuffer(RenderLayer.getEntityTranslucent(ALTAR_BEAM_TEXTURE));
         final float minV = age * 0.01f;
         final float maxV = minV + (distance / 32F);

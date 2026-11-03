@@ -188,14 +188,6 @@ public class CasterState {
                     && !client.hasReducedDebugInfo()
                     && !(caster.asEntity() == client.cameraEntity && client.options.getPerspective() == Perspective.FIRST_PERSON);
 
-            spells = caster.getSpellSlot().stream().map(spell -> {
-                SpellRenderer<?, ?> renderer = SpellEffectsRenderDispatcher.INSTANCE.getRenderer(spell);
-                SpellRenderState spellState = renderer.createRenderState();
-                ((SpellRenderer)renderer).updateRenderState(spell, spellState, caster, tickDelta);
-                return spellState;
-            }).toList();
-            activeMagicColor = spells.stream().filter(i -> i.type.type() != SpellType.PLACE_CONTROL_SPELL).map(spell -> spell.type.type().getColor()).findFirst().orElse(0);
-
             appearance = caster.getSpellSlot().get(SpellPredicate.IS_DISGUISE)
                     .map(Disguise.class::cast)
                     .map(Disguise::getAppearance)
@@ -225,9 +217,22 @@ public class CasterState {
                 eyewear = GlassesItem.getForEntity(l.asEntity());
                 hasCoolShades = eyewear.stack().getCustomName() != null && "Cool Shades".equals(eyewear.stack().getCustomName().getString());
                 leanAmount = ((LivingEntityDuck)l.asEntity()).getLeaningPitch();
-                yawOffset = -(((LivingEntityRenderState)this.entityState).relativeHeadYaw + ((LivingEntityRenderState)this.entityState).bodyYaw);
+                yawOffset = -(((LivingEntityRenderState)this.entityState).relativeHeadYaw + ((LivingEntityRenderState)this.entityState).bodyYaw) * MathHelper.RADIANS_PER_DEGREE;
                 gemYaw = l.asEntity().isSleeping() ? 0 : 180 - ((LivingEntityRenderState)this.entityState).bodyYaw;
             }
+
+            LivingEntity master = caster.getMaster();
+            if (master != null) {
+                masterDisplayName = master.getDisplayName();
+            }
+
+            spells = caster.getSpellSlot().stream().map(spell -> {
+                SpellRenderer<?, ?> renderer = SpellEffectsRenderDispatcher.INSTANCE.getRenderer(spell);
+                SpellRenderState spellState = renderer.createRenderState();
+                ((SpellRenderer)renderer).updateRenderState(spell, spellState, this, caster, tickDelta);
+                return spellState;
+            }).toList();
+            activeMagicColor = spells.stream().filter(i -> i.type.type() != SpellType.PLACE_CONTROL_SPELL).map(spell -> spell.type.type().getColor()).findFirst().orElse(0);
 
             if (client.getEntityRenderDispatcher().shouldRenderHitboxes()
                     && !client.hasReducedDebugInfo()
@@ -248,11 +253,6 @@ public class CasterState {
                             )
                     ).toList();
                 }
-            }
-
-            LivingEntity master = caster.getMaster();
-            if (master != null) {
-                masterDisplayName = master.getDisplayName();
             }
         }
     }

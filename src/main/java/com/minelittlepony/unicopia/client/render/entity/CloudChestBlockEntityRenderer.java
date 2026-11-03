@@ -52,9 +52,7 @@ public class CloudChestBlockEntityRenderer extends ChestBlockEntityRenderer<Ches
         var properties = getProperties(state, entity);
 
         matrices.push();
-        matrices.translate(0.5f, 0.5f, 0.5f);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-state.get(ChestBlock.FACING).getPositiveHorizontalDegrees()));
-        matrices.translate(-0.5f, -0.5f, -0.5f);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-state.get(ChestBlock.FACING).getPositiveHorizontalDegrees()), 0.5F, 0.5F, 0.5F);
         model.setAngles(1 - (float)Math.pow(1 - properties.apply(ChestBlock.getAnimationProgressRetriever(entity)).get(tickDelta), 3));
         model.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(model.texture)), properties.apply(LIGHTING).applyAsInt(light), overlay);
         matrices.pop();

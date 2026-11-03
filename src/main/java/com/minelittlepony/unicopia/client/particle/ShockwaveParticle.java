@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client.particle;
 
+import org.joml.Quaternionf;
+
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.client.render.RenderUtil;
 
@@ -13,7 +15,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 
 public class ShockwaveParticle extends AbstractBillboardParticle {
     private static final Identifier TEXTURE = Unicopia.id("textures/particles/shockwave.png");
@@ -41,6 +42,8 @@ public class ShockwaveParticle extends AbstractBillboardParticle {
 
         MatrixStack matrices = new MatrixStack();
         matrices.translate(x, y, z);
+        int sides = 5;
+        Quaternionf rotation = new Quaternionf().rotationY(MathHelper.TAU / sides);
 
         for (int ring = -1; ring < 2; ring ++) {
             float scaleH = (1.5F + (age + tickDelta)) + ring;
@@ -48,10 +51,10 @@ public class ShockwaveParticle extends AbstractBillboardParticle {
             matrices.push();
             matrices.scale(scaleH, scaleV, scaleH);
             matrices.translate(-0.5, 0, -0.5);
-            int sides = 5;
+
             for (int i = 0; i < sides; i++) {
                 RenderUtil.renderFace(matrices, buffer, red, green, blue, 0.3F, LightmapTextureManager.MAX_LIGHT_COORDINATE);
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(360 / sides));
+                matrices.multiply(rotation);
                 matrices.translate(-1, 0, 0);
             }
             matrices.pop();

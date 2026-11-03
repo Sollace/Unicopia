@@ -1,6 +1,7 @@
 package com.minelittlepony.unicopia.client.render.entity;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
 
 import com.minelittlepony.unicopia.entity.mob.LevitatingItemEntity;
 
@@ -18,7 +19,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 
 public class LevitatingItemEntityRenderer extends EntityRenderer<LevitatingItemEntity, LevitatingItemEntityRenderer.State> {
 
@@ -37,8 +37,12 @@ public class LevitatingItemEntityRenderer extends EntityRenderer<LevitatingItemE
     @Override
     public void updateRenderState(LevitatingItemEntity entity, State state, float tickDelta) {
         super.updateRenderState(entity, state, tickDelta);
-        state.yaw = entity.getYaw(tickDelta);
         state.miningPos = entity.getMiningPos().orElse(null);
+        state.rotation.rotationY(entity.getYaw(tickDelta) * MathHelper.RADIANS_PER_DEGREE);
+        if (state.miningPos != null) {
+            state.rotation.rotateY(MathHelper.HALF_PI).rotateZ(MathHelper.HALF_PI * MathHelper.sin(state.age)).rotateX(MathHelper.HALF_PI / 9 * MathHelper.sin(state.age));
+        }
+
         state.miningFace = entity.getMiningFace();
         state.stack = entity.getStack();
         state.yOffset = MathHelper.sin(state.age / 20F) * 0.02F;
@@ -54,16 +58,10 @@ public class LevitatingItemEntityRenderer extends EntityRenderer<LevitatingItemE
             matrices.push();
             matrices.translate(0, state.yOffset, 0);
             matrices.scale(scale, scale, scale);
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(state.yaw));
-
-            if (state.miningPos != null) {
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
-                matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90 * MathHelper.sin(state.age)));
-                matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(10 * MathHelper.sin(state.age)));
-            }
-
+            matrices.multiply(state.rotation);
             state.stackState.render(matrices, vertices, light, OverlayTexture.DEFAULT_UV);
 
+            // TODO: Magic glow effect
             /*matrices.scale(1.2F, 1.2F, 1.2F);
 
             itemRenderer.renderItem(state.stack, ModelTransformationMode.GROUND, false, matrices, layer -> {
@@ -90,7 +88,7 @@ public class LevitatingItemEntityRenderer extends EntityRenderer<LevitatingItemE
         public Direction miningFace = Direction.UP;
         public ItemStack stack = ItemStack.EMPTY;
         public final ItemRenderState stackState = new ItemRenderState();
-        public float yaw;
+        public final Quaternionf rotation = new Quaternionf();
         public float yOffset;
     }
 }

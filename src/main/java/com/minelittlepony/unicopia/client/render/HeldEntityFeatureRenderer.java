@@ -1,5 +1,6 @@
 package com.minelittlepony.unicopia.client.render;
 
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import com.minelittlepony.unicopia.client.FirstPersonRendererOverrides.ArmRenderer;
@@ -29,11 +30,11 @@ public class HeldEntityFeatureRenderer<S extends BipedEntityRenderState, E exten
         CasterState.PassengerState<?, ?> carriedEntity = state.carriedEntity;
         if (carriedEntity.state != null) {
             matrices.push();
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180 - state.leanAmount * 90));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotation(MathHelper.PI - state.leanAmount * MathHelper.HALF_PI));
 
             matrices.translate(carriedEntity.carryPosition.x, carriedEntity.carryPosition.y, carriedEntity.carryPosition.z);
             if (carriedEntity.isPony) {
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90));
+                matrices.multiply(RotationAxis.POSITIVE_Y.rotation(MathHelper.HALF_PI));
             }
 
             carriedEntity.render(matrices, vertexConsumers, light);
@@ -54,8 +55,7 @@ public class HeldEntityFeatureRenderer<S extends BipedEntityRenderState, E exten
             matrices.push();
             matrices.translate(carriedEntity.viewportPosition.x(), carriedEntity.viewportPosition.y(), carriedEntity.viewportPosition.z());
             matrices.translate(0, -1.3F, carriedEntity.isPony ? -1.9F : -1.3F);
-            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(carriedEntity.isPony ? 33 : 13));
-            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(carriedEntity.isPony ? 180 : 90));
+            matrices.multiply(new Quaternionf().rotationXYZ((carriedEntity.isPony ? 33 : 13) * MathHelper.RADIANS_PER_DEGREE, (carriedEntity.isPony ? MathHelper.PI : MathHelper.HALF_PI), 0));
 
             carriedEntity.render(matrices, vertexConsumers, light);
             matrices.pop();

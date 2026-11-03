@@ -11,7 +11,6 @@ import com.minelittlepony.unicopia.client.UnicopiaClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.SkyRendering;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.RotationAxis;
 
 @Mixin(value = SkyRendering.class, priority = 1001)
 abstract class MixinSkyRendering {
@@ -21,7 +20,6 @@ abstract class MixinSkyRendering {
         ordinal = 0
     ))
     private void onRenderCelestialBodies(CallbackInfo info, @Local(argsOnly = true) MatrixStack matrices) {
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(UnicopiaClient.getInstance().getSkyAngleDelta(MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(false))));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(UnicopiaClient.getInstance().tangentalSkyAngle.getValue()));
+        matrices.multiply(UnicopiaClient.getInstance().getSkyRotation(MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(false)));
     }
 }

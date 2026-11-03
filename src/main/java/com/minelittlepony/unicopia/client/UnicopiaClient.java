@@ -1,6 +1,8 @@
 package com.minelittlepony.unicopia.client;
 
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
+
 import com.minelittlepony.common.client.gui.element.Button;
 import com.minelittlepony.common.event.ScreenInitCallback;
 import com.minelittlepony.common.event.ScreenInitCallback.ButtonList;
@@ -117,13 +119,17 @@ public class UnicopiaClient implements ClientModInitializer {
         return zapAppleStage;
     }
 
-    public float getSkyAngleDelta(float tickDelta) {
+    private float getSkyAngleDelta(float tickDelta) {
         if (MinecraftClient.getInstance().world == null) {
             return 0;
         }
         float skyAngle = MinecraftClient.getInstance().world.getSkyAngle(tickDelta);
         this.skyAngle.update(skyAngle, 200);
         return this.skyAngle.getValue() - skyAngle;
+    }
+
+    public Quaternionf getSkyRotation(float tickDelta) {
+        return new Quaternionf().rotationXYZ(getSkyAngleDelta(tickDelta), tangentalSkyAngle.getValue(), 0);
     }
 
     @Override

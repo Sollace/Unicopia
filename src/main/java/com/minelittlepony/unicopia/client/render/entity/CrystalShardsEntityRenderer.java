@@ -52,9 +52,7 @@ public class CrystalShardsEntityRenderer extends EntityRenderer<CrystalShardsEnt
 
         matrices.push();
         matrices.multiply(state.rotation);
-        matrices.scale(-1, -1, 1);
-
-        matrices.scale(state.growth, state.growth, state.growth);
+        matrices.scale(-state.growth, -state.growth, state.growth);
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(state.yaw));
 
         model.setAngles(state);

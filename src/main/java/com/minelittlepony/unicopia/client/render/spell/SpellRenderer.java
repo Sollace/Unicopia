@@ -34,12 +34,13 @@ public abstract class SpellRenderer<T extends Spell, S extends SpellRenderer.Spe
 
     private final S state = createRenderState();
 
-    public final S getAndUpdateRenderState(T spell, Caster<?> caster, float tickDelta) {
-        updateRenderState(spell, state, caster, tickDelta);
+    public final S getAndUpdateRenderState(T spell, CasterState casterState, Caster<?> caster, float tickDelta) {
+        updateRenderState(spell, state, casterState, caster, tickDelta);
         return state;
     }
 
-    public void updateRenderState(T spell, S state, Caster<?> caster, float tickDelta) {
+    public void updateRenderState(T spell, S state, CasterState casterState, Caster<?> caster, float tickDelta) {
+        state.casterState = casterState;
         state.uuid = spell.getUuid();
         state.type = spell.getTypeAndTraits();
     }
@@ -50,34 +51,34 @@ public abstract class SpellRenderer<T extends Spell, S extends SpellRenderer.Spe
         return true;
     }
 
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, S spell, CasterState caster, int light) {
-        if (caster.isCamera || caster.isProjectile) {
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, S spell, int light) {
+        if (spell.casterState.isCamera || spell.casterState.isProjectile) {
             return;
         }
 
         if (EquinePredicates.IS_CASTER.test(client.player)) {
-            renderGemstone(matrices, vertices, spell, caster, light);
+            renderGemstone(matrices, vertices, spell, light);
         }
     }
 
-    private void renderGemstone(MatrixStack matrices, VertexConsumerProvider vertices, S spell, CasterState caster, int light) {
+    private void renderGemstone(MatrixStack matrices, VertexConsumerProvider vertices, S spell, int light) {
 
         matrices.push();
         float scale = 1/8F;
         matrices.scale(scale, scale, scale);
 
-        transformGemstone(matrices, vertices, spell, caster);
+        transformGemstone(matrices, vertices, spell);
         matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(caster.entityState.age));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(spell.casterState.entityState.age));
 
         client.getItemRenderer().renderItem(spell.type.getDefaultStack(), ItemDisplayContext.FIXED, light, 0, matrices, vertices, null, 0);
         matrices.pop();
 
         if (spell instanceof TimedSpell timed) {
-            if (caster.gemYaw != 0) {
-                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(caster.gemYaw));
+            if (spell.casterState.gemYaw != 0) {
+                matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(spell.casterState.gemYaw));
             }
-            renderCountdown(matrices, vertices, timed, caster.entityState.age);
+            renderCountdown(matrices, vertices, timed, spell.casterState.entityState.age);
         }
 
         matrices.pop();
@@ -99,12 +100,13 @@ public abstract class SpellRenderer<T extends Spell, S extends SpellRenderer.Spe
         );
     }
 
-    protected void transformGemstone(MatrixStack matrices, VertexConsumerProvider vertices, S spell, CasterState caster) {
-        float y = caster.isPlacement ? 1 : -caster.entityState.height;
-        matrices.translate(0, y * 8 + MathHelper.sin(caster.entityState.age / 3F) * 0.2F, 0);
+    protected void transformGemstone(MatrixStack matrices, VertexConsumerProvider vertices, S spell) {
+        float y = spell.casterState.isPlacement ? 1 : -spell.casterState.entityState.height;
+        matrices.translate(0, y * 8 + MathHelper.sin(spell.casterState.entityState.age / 3F) * 0.2F, 0);
     }
 
     public static class SpellRenderState {
+        public CasterState casterState;
         public UUID uuid;
         public CustomisedSpellType<?> type;
     }

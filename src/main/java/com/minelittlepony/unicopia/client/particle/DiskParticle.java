@@ -13,13 +13,14 @@ import net.minecraft.util.math.*;
 
 public class DiskParticle extends SphereParticle {
 
-    private final Quaternionf rotation = new Quaternionf(0, 0, 0, 1);
+    private final Quaternionf rotation;
 
     public DiskParticle(SphereParticleEffect effect, ClientWorld w, double x, double y, double z, double rX, double rY, double rZ) {
         super(effect.withOffset(new Vec3d(0, 0.25, 0)), w, x, y, z, 0, 0, 0);
-
-        rotation.mul(RotationAxis.POSITIVE_Y.rotationDegrees((float)effect.offset().y));
-        rotation.mul(RotationAxis.POSITIVE_X.rotationDegrees(180 - (float)effect.offset().x));
+        rotation = new Quaternionf().rotationYXZ(
+                (float)effect.offset().y * MathHelper.RADIANS_PER_DEGREE,
+                (180 - (float)effect.offset().x) * MathHelper.RADIANS_PER_DEGREE, 0
+        );
     }
 
     @Override

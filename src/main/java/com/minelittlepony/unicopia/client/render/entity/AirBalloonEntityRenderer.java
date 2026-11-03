@@ -59,7 +59,6 @@ public class AirBalloonEntityRenderer extends MobEntityRenderer<AirBalloonEntity
                 VertexRendering.drawBox(matrices, vertices.getBuffer(RenderLayer.getLines()), box.offset(entity.pos.multiply(-1)), 1, 1, 1, 1);
             });
         }
-
     }
 
 

@@ -1,5 +1,7 @@
 package com.minelittlepony.unicopia.client.render.spell;
 
+import org.joml.Quaternionf;
+
 import com.minelittlepony.unicopia.ability.magic.Caster;
 import com.minelittlepony.unicopia.ability.magic.spell.effect.BubbleSpell;
 import com.minelittlepony.unicopia.client.gui.DrawableUtil;
@@ -14,11 +16,12 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.MathHelper;
 
 public class BubbleSpellRenderer extends SpellRenderer<BubbleSpell, BubbleSpellRenderer.State> {
     static final int BUBBLE_COLOR = ColorHelper.fromFloats(0.9F, 0.9F, 1, 0.25F);
     static final int BUBBLE_SHINE_COLOR = ColorHelper.fromFloats(0.9F, 0.9F, 1, 0.3F);
+    static final SphereModel SHINE_MODEL = new SphereModel(40, 40, DrawableUtil.PI * 0.25F);
 
     @Override
     public State createRenderState() {
@@ -26,15 +29,15 @@ public class BubbleSpellRenderer extends SpellRenderer<BubbleSpell, BubbleSpellR
     }
 
     @Override
-    public void updateRenderState(BubbleSpell spell, State state, Caster<?> caster, float tickDelta) {
-        super.updateRenderState(spell, state, caster, tickDelta);
+    public void updateRenderState(BubbleSpell spell, State state, CasterState casterState, Caster<?> caster, float tickDelta) {
+        super.updateRenderState(spell, state, casterState, caster, tickDelta);
         state.height = caster.asEntity().getEyeY() - caster.getOriginVector().getY();
         state.radius = spell.getRadius(tickDelta) * 1.5F;
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State state, CasterState caster, int light) {
-        super.render(matrices, vertices, state, caster, light);
+    public void render(MatrixStack matrices, VertexConsumerProvider vertices, State state, int light) {
+        super.render(matrices, vertices, state, light);
 
         matrices.push();
 
@@ -46,11 +49,11 @@ public class BubbleSpellRenderer extends SpellRenderer<BubbleSpell, BubbleSpellR
         float tickDelta = MinecraftClient.getInstance().getRenderTickCounter().getTickProgress(false);
 
         matrices.push();
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
-        matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(cameraEntity.getYaw(tickDelta) - 25));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-cameraEntity.getPitch(tickDelta)));
+        matrices.multiply(new Quaternionf()
+                .rotationXYZ(90 * MathHelper.RADIANS_PER_DEGREE, 0, (cameraEntity.getYaw(tickDelta) - 25) * MathHelper.RADIANS_PER_DEGREE)
+                .rotateY(-cameraEntity.getPitch(tickDelta) * MathHelper.RADIANS_PER_DEGREE));
 
-        new SphereModel(40, 40, DrawableUtil.PI * 0.25F).render(matrices, buffer, light, 0, state.radius - 0.1F, BUBBLE_SHINE_COLOR);
+        SHINE_MODEL.render(matrices, buffer, light, 0, state.radius - 0.1F, BUBBLE_SHINE_COLOR);
         matrices.pop();
 
         SphereModel.SPHERE.render(matrices, buffer, light, 0, state.radius, BUBBLE_COLOR);
