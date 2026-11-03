@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.jetbrains.annotations.Nullable;
 
 import com.minelittlepony.unicopia.Unicopia;
@@ -21,7 +19,6 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexRendering;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.text.Text;
@@ -103,36 +100,15 @@ public class SpellEffectsRenderDispatcher implements SynchronousResourceReloader
         matrices.push();
         matrices.multiply(client.getEntityRenderDispatcher().getRotation());
         float scale = 0.0125F;
-        if (caster.living) {
-            matrices.scale(scale, scale, scale);
-        } else {
-            matrices.scale(-scale, -scale, scale);
-        }
-        float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25f);
-        int j = (int)(g * 255.0f) << 24;
-
-        var debugLines = Stream.concat(
-                Stream.of(
-                        caster.entityState.displayName.copy().append(" (" + Registries.ENTITY_TYPE.getId(caster.type) + ")"),
-                        caster.masterDisplayName != null ? Text.literal("Master: ").append(caster.masterDisplayName) : Text.empty()
-                ),
-                caster.spells.stream().map(spell ->
-                    Stream.of(
-                            Text.literal("UUID: " + spell.uuid),
-                            Text.literal("|>Type: ").append(Text.literal(spell.type.type().getId().toString()).styled(s -> s.withColor(spell.type.type().getColor()))),
-                            Text.of("|>Traits: " + spell.type.traits())
-                    )
-                )
-        ).toList();
-
-
+        int rotationMultiple = caster.living ? -1 : 1;
+        matrices.scale(rotationMultiple * scale, rotationMultiple * scale, scale);
+        int backgroundColor = MinecraftClient.getInstance().options.getTextBackgroundColor(0.25F);
         int spacing = client.textRenderer.fontHeight + 1;
-        int height = spacing * debugLines.size();
-        int top = -height;
+        int top = -(spacing * caster.debugLines.size());
         int left = (int)caster.entityState.width * 64;
 
         for (Text line : caster.debugLines) {
-            client.textRenderer.draw(line, left += 1, top += spacing, Colors.WHITE, false, matrices.peek().getPositionMatrix(), vertices, TextLayerType.POLYGON_OFFSET, j, light);
+            client.textRenderer.draw(line, left += 1, top += spacing, Colors.WHITE, false, matrices.peek().getPositionMatrix(), vertices, TextLayerType.POLYGON_OFFSET, backgroundColor, light);
         }
         matrices.pop();
     }
