@@ -103,21 +103,21 @@ public class SpellbookChapterProvider implements DataProvider {
                     .apply(pageBody(introductionChapterId, 1), SpellbookChapterProvider::applyAuthor1Signature),
             page().title(pageTitle(introductionChapterId, 2)).apply(
                     pageBody(introductionChapterId, 2),
-                    new ChapterPageElement.Image(pageTexture(SpellbookState.PROFILE_ID), CENTERED_BOUNDS, Flow.NONE)),
+                    inlineImage(pageTexture(SpellbookState.PROFILE_ID), CENTERED_BOUNDS)),
             page().title(pageTitle(introductionChapterId, 3)).apply(
                     text(paragraph(introductionChapterId, 3), 1, 2),
-                    new ChapterPageElement.Image(texture(UItems.GEMSTONE), CENTERED_BOUNDS, Flow.NONE)),
+                    inlineImage(texture(UItems.GEMSTONE), CENTERED_BOUNDS)),
             page().title(pageTitle(introductionChapterId, 4)).apply(
                     text(paragraph(introductionChapterId, 4), 1, 2), SpellbookChapterProvider::applyAuthor1Signature),
             page().title(pageTitle(introductionChapterId, 5)).apply(
                     text(paragraph(introductionChapterId, 5), 1, 3)),
             page().title(pageTitle(introductionChapterId, 6)).apply(
-                    new ChapterPageElement.Image(pageTexture(SpellbookState.CRAFTING_ID), CENTERED_BOUNDS, Flow.NONE),
+                    inlineImage(pageTexture(SpellbookState.CRAFTING_ID), CENTERED_BOUNDS),
                     text(paragraph(introductionChapterId, 6), 1, 3)),
             page().title(pageTitle(introductionChapterId, 7)).apply(
                     text(paragraph(introductionChapterId, 7), 1, 2), SpellbookChapterProvider::applyAuthor1Signature),
             page().title(pageTitle(introductionChapterId, 8)).level(1).apply(
-                    new ChapterPageElement.Image(texture(UItems.BOTCHED_GEM), new Bounds(0, 127, 32, 32), Flow.NONE),
+                    inlineImage(texture(UItems.BOTCHED_GEM), new Bounds(0, 127, 32, 32)),
                     text(paragraph(introductionChapterId, 8), 1, 3)),
             page().title(pageTitle(introductionChapterId, 9))
                     .apply(text(paragraph(introductionChapterId, 9), 1, 2), SpellbookChapterProvider::applyAuthor1Signature)
@@ -263,7 +263,7 @@ public class SpellbookChapterProvider implements DataProvider {
             page().title(UNREADABLE_PAGE_TITLE_ALT).level(44).apply(paragraph(darkMagicChapterId, 25, 1), AUTHOR_1_NAME),
             page().title(pageTitle(darkMagicChapterId, 26)).level(21).apply(paragraph(darkMagicChapterId, 26, 1)),
             page().title(UNREADABLE_PAGE_TITLE_ALT).level(33).apply(paragraph(darkMagicChapterId, 27, 1), paragraph(darkMagicChapterId, 27, 2), paragraph(darkMagicChapterId, 27, 3), paragraph(darkMagicChapterId, 27, 4)),
-            page().title(UNREADABLE_PAGE_TITLE).level(19).apply(paragraph(darkMagicChapterId, 28, 1), AUTHOR_1_NAME, image(pageTexture(darkMagicChapterId), new Bounds(-10, 125, 32, 32)), new ChapterPageElement.Image(Unicopia.id("textures/gui/trait/kindness.png"), TRAIT_CORNER_B_BOUNDS, Flow.NONE)),
+            page().title(UNREADABLE_PAGE_TITLE).level(19).apply(paragraph(darkMagicChapterId, 28, 1), AUTHOR_1_NAME, rightFloatingImage(pageTexture(darkMagicChapterId), new Bounds(-10, 125, 32, 32)), rightFloatingImage(Trait.KINDNESS.getSprite(), TRAIT_CORNER_B_BOUNDS)),
             recipe(darkMagicChapterId, SpellType.DISPEL_EVIL).level(19).modificationMessage().finalPage()
         ).build());
         generateArtefactsChapter(registries, exporter);
@@ -356,8 +356,8 @@ public class SpellbookChapterProvider implements DataProvider {
 
     static Page.Builder applyTraitCornerIcon(Page.Builder page, Identifier a, Identifier b) {
         return page.apply(
-                new ChapterPageElement.Image(a, TRAIT_CORNER_A_BOUNDS, Flow.NONE),
-                new ChapterPageElement.Image(b, TRAIT_CORNER_B_BOUNDS, Flow.NONE)
+                rightFloatingImage(a, TRAIT_CORNER_A_BOUNDS),
+                rightFloatingImage(b, TRAIT_CORNER_B_BOUNDS)
         );
     }
 
@@ -435,11 +435,15 @@ public class SpellbookChapterProvider implements DataProvider {
     }
 
     static ChapterPageElement pageIcon(Identifier pageId) {
-        return image(pageTexture(pageId), CHAPTER_ICON_BOUNDS);
+        return inlineImage(pageTexture(pageId), CHAPTER_ICON_BOUNDS);
     }
 
-    static ChapterPageElement image(Identifier texture, Bounds bounds) {
+    static ChapterPageElement inlineImage(Identifier texture, Bounds bounds) {
         return new ChapterPageElement.Image(texture, bounds, Flow.NONE);
+    }
+
+    static ChapterPageElement rightFloatingImage(Identifier texture, Bounds bounds) {
+        return new ChapterPageElement.Image(texture, bounds, Flow.RIGHT);
     }
 
     static Identifier pageTexture(Identifier pageId) {

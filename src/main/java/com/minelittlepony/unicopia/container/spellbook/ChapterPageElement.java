@@ -90,7 +90,7 @@ public interface ChapterPageElement extends UnaryOperator<SpellbookChapter.Page.
         public static final MapCodec<Image> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                 Identifier.CODEC.fieldOf("texture").forGetter(Image::texture),
                 BOUNDS_CODEC.fieldOf("bounds").forGetter(Image::bounds),
-                Flow.CODEC.optionalFieldOf("flow", Flow.NONE).forGetter(Image::flow)
+                Flow.CODEC.optionalFieldOf("flow", Flow.RIGHT).forGetter(Image::flow)
         ).apply(i, Image::new));
         public static final PacketCodec<RegistryByteBuf, Image> PACKET_CODEC = PacketCodec.tuple(
                 Identifier.PACKET_CODEC, Image::texture,
