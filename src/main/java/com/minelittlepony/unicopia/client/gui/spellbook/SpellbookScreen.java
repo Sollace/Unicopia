@@ -284,9 +284,9 @@ public class SpellbookScreen extends /*RecipeBookScreen*/ HandledScreen<Spellboo
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        return hoveredElement(mouseX, mouseY).filter((element) -> {
+        return hoveredElement(mouseX, mouseY).filter(e -> {
             setDragging(false);
-            return element.mouseReleased(mouseX, mouseY, button);
+            return e.mouseReleased(mouseX, mouseY, button);
         }).isPresent() || super.mouseReleased(mouseX, mouseY, button);
     }
 
@@ -294,6 +294,14 @@ public class SpellbookScreen extends /*RecipeBookScreen*/ HandledScreen<Spellboo
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         return (getFocused() != null && isDragging() && button == 0 && getFocused().mouseDragged(mouseX, mouseY, button, deltaX, deltaY))
             || super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        return hoveredElement(mouseX, mouseY).filter(e -> {
+            return e.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+        })
+                .isPresent() || super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
     }
 
     private static class PageButton extends ImageButton {
