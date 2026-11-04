@@ -16,7 +16,7 @@ public class StateMapProvider implements DataProvider {
     private final DataCollector<Entry> collector;
 
     public StateMapProvider(FabricDataOutput output) {
-        collector = new DataCollector<>(output.getResolver(DataOutput.OutputType.DATA_PACK, "state_maps"), Entry.CODEC);
+        collector = new DataCollector<>(output.getResolver(DataOutput.OutputType.DATA_PACK, "unicopia/state_maps"), Entry.CODEC);
     }
 
     @Override

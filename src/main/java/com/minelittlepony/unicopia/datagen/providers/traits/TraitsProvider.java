@@ -37,7 +37,7 @@ public class TraitsProvider implements DataProvider {
         this.output = output;
         this.registryFuture = registryLookup;
         this.tagLookupFuture = tagProvider;
-        this.collector = new DataCollector<>(output.getResolver(OutputType.DATA_PACK, "traits"), TraitLoader.TraitStream.CODEC);
+        this.collector = new DataCollector<>(output.getResolver(OutputType.DATA_PACK, "unicopia/traits"), TraitLoader.TraitStream.CODEC);
     }
 
     @Override

@@ -63,7 +63,7 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
 
         Multimap<Identifier, TraitStream> prepared = HashMultimap.create();
 
-        for (var path : manager.findResources("traits", p -> p.getPath().endsWith(".json")).keySet()) {
+        for (var path : manager.findResources("unicopia/traits", p -> p.getPath().endsWith(".json")).keySet()) {
             profiler.push(path.toString());
             try {
                 for (Resource resource : manager.getAllResources(path)) {
