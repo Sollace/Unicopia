@@ -178,7 +178,7 @@ public class CasterState {
 
             MinecraftClient client = MinecraftClient.getInstance();
 
-            isCamera = caster.asEntity() == client.cameraEntity;
+            isCamera = caster.asEntity() == client.cameraEntity && client.options.getPerspective() == Perspective.FIRST_PERSON;
             isProjectile = caster.asEntity() instanceof MagicProjectileEntity;
             isPlacement = caster.asEntity() instanceof CastSpellEntity;
             inHell = caster.asEntity().getWorld().getDimension().ultrawarm();
@@ -186,7 +186,7 @@ public class CasterState {
             showDebugInfo = hasDebugInfo
                     && client.getEntityRenderDispatcher().shouldRenderHitboxes()
                     && !client.hasReducedDebugInfo()
-                    && !(caster.asEntity() == client.cameraEntity && client.options.getPerspective() == Perspective.FIRST_PERSON);
+                    && !isCamera;
 
             appearance = caster.getSpellSlot().get(SpellPredicate.IS_DISGUISE)
                     .map(Disguise.class::cast)
