@@ -146,6 +146,7 @@ public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
 
         @Override
         public void renderWidget(DrawContext context, int mouseX, int mouseY, float tickDelta) {
+            this.hovered = isMouseOver(mouseX, mouseY);
             context.drawTexture(RenderLayer::getGuiTextured, SpellbookScreen.SLOT, getX() - 8, getY() - 10, 0, 0, 32, 32, 32, 32);
             context.drawText(getFont(), label,
                     getX() - MinecraftClient.getInstance().textRenderer.getWidth(label) / 2 - 3,

@@ -23,13 +23,13 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumers;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.*;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -127,6 +127,7 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
                 addButton(new TraitButton(width / 2 - 8, 8, trait));
                 addButton(new Label(width / 2, 26).setCentered())
                     .getStyle()
+                        .setColor(Colors.BLACK)
                         .setText(known ? Text.translatable("gui.unicopia.trait.label",
                                 Text.translatable("trait." + trait.getId().getNamespace() + "." + trait.getId().getPath() + ".name")
                 ) : Text.literal("???"));
@@ -225,13 +226,15 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
 
             Vector4f vec = new Vector4f();
 
+            context.draw();
             context.draw(vertices -> {
+                context.getMatrices().peek();
                 VertexConsumer buffer = VertexConsumers.union(
-                        new OverlayVertexConsumer(vertices.getBuffer(RenderLayer.getGlint()), context.getMatrices().peek(), 0.000078125F),
-                        vertices.getBuffer(RenderLayer.getEntityCutout(trait.getSprite()))
+                        vertices.getBuffer(RenderLayer.getArmorEntityGlint()),
+                        vertices.getBuffer(RenderLayer.getArmorCutoutNoCull(trait.getSprite()))
                 );
 
-                int color = 0xFFFFFFFF;
+                int color = Colors.WHITE;
                 posMat.transform(vec.set(x1, y1, z));
                 buffer.vertex(vec.x(), vec.y(), vec.z(), color, 0, 0, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, normal.x(), normal.y(), normal.z());
                 posMat.transform(vec.set(x1, y2, z));

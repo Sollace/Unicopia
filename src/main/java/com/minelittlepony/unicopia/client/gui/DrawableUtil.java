@@ -14,7 +14,6 @@ import net.minecraft.client.render.VertexConsumerProvider.Immediate;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
 
 public interface DrawableUtil {
@@ -32,7 +31,16 @@ public interface DrawableUtil {
         matrices.pop();
     }
 
-    static void renderItemIcon(DrawContext context ,ItemStack stack, double x, double y, float scale) {
+    static void drawScaledText(DrawContext context, String text, int x, int y, float size, int color) {
+        MatrixStack matrices = context.getMatrices();
+        matrices.push();
+        matrices.translate(x, y, 0);
+        matrices.scale(size, size, 1);
+        context.drawText(MinecraftClient.getInstance().textRenderer, text, 0, 0, color, false);
+        matrices.pop();
+    }
+
+    static void renderItemIcon(DrawContext context, ItemStack stack, double x, double y, float scale) {
         MatrixStack modelStack = context.getMatrices();
         modelStack.push();
         modelStack.translate(x, y, 0);
@@ -50,15 +58,10 @@ public interface DrawableUtil {
 
     static void drawLine(MatrixStack matrices, int x1, int y1, int x2, int y2, int color) {
         Matrix4f matrix = matrices.peek().getPositionMatrix();
-
-        float r = ColorHelper.getAlpha(color);
-        float g = ColorHelper.getRed(color);
-        float b = ColorHelper.getGreen(color);
-        float k = ColorHelper.getBlue(color);
         Immediate vertices = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         VertexConsumer bufferBuilder = vertices.getBuffer(RenderLayer.getDebugLineStrip(3));
-        bufferBuilder.vertex(matrix, x1, y1, 0).color(r, g, b, k);
-        bufferBuilder.vertex(matrix, x2, y2, 0).color(r, g, b, k);
+        bufferBuilder.vertex(matrix, x1, y1, 0).color(color);
+        bufferBuilder.vertex(matrix, x2, y2, 0).color(color);
         vertices.draw();
     }
 
@@ -88,11 +91,6 @@ public interface DrawableUtil {
             return;
         }
 
-        float r = ColorHelper.getAlpha(color);
-        float g = ColorHelper.getRed(color);
-        float b = ColorHelper.getGreen(color);
-        float k = ColorHelper.getBlue(color);
-
         arcAngle = Math.min(arcAngle, TAU - INCREMENT);
 
         final double maxAngle = startAngle + arcAngle;
@@ -102,23 +100,22 @@ public interface DrawableUtil {
             VertexConsumer bufferBuilder = vertices.getBuffer(RenderLayer.getTranslucent());
             for (double angle = -startAngle; angle >= -maxAngle; angle -= INCREMENT) {
                 // center
-                cylendricalVertex(bufferBuilder, model, innerRadius, angle, r, g, b, k);
+                cylendricalVertex(bufferBuilder, model, innerRadius, angle, color);
                 // point one
-                cylendricalVertex(bufferBuilder, model, outerRadius, angle, r, g, b, k);
+                cylendricalVertex(bufferBuilder, model, outerRadius, angle, color);
                 // point two
-                cylendricalVertex(bufferBuilder, model, outerRadius, angle + INCREMENT, r, g, b, k);
+                cylendricalVertex(bufferBuilder, model, outerRadius, angle + INCREMENT, color);
                 // back to center
-                cylendricalVertex(bufferBuilder, model, innerRadius, angle + INCREMENT, r, g, b, k);
+                cylendricalVertex(bufferBuilder, model, innerRadius, angle + INCREMENT, color);
             }
         });
     }
 
-    private static void cylendricalVertex(VertexConsumer bufferBuilder, Matrix4f matrix, double radius, double angle, float r, float g, float b, float k) {
+    private static void cylendricalVertex(VertexConsumer bufferBuilder, Matrix4f matrix, double radius, double angle, int color) {
         Vector3f pos = matrix.transformPosition(
                 (float)(radius * MathHelper.sin((float)angle)),
                 (float)(radius * MathHelper.cos((float)angle)),
                 0, new Vector3f());
-        bufferBuilder.vertex(pos.x, pos.y, pos.z, ColorHelper.fromFloats(k, r, g, b), 0, 0, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 2, 2, 2);
-
+        bufferBuilder.vertex(pos.x, pos.y, pos.z, color, 0, 0, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 2, 2, 2);
     }
 }

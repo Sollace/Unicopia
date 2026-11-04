@@ -6,14 +6,11 @@ import java.util.List;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.*;
 import com.minelittlepony.unicopia.entity.player.Pony;
-
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.font.TextRenderer.TextLayerType;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.*;
@@ -126,24 +123,14 @@ public class ItemTraitsTooltipRenderer implements Text, OrderedText, TooltipComp
     }
 
     public static void renderTraitIcon(Trait trait, float value, DrawContext context, float xx, float yy, boolean reveal) {
-        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-
         int size = 12;
 
         MatrixStack matrices = context.getMatrices();
         matrices.push();
         matrices.translate(xx, yy, 300F);
-
         context.drawTexture(RenderLayer::getGuiTextured, reveal ? trait.getSprite() : UNKNOWN, 2, 1, 0, 0, size, size, size, size);
-
-        matrices.translate(9, 3 + size / 2, 0);
-        matrices.scale(0.5F, 0.5F, 1);
-
         String count = value > 99 ? "99+" : Math.round(value) == value ? (int)value + "" : ((Math.round(value * 10) / 10F) + "");
-
-        VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEffectVertexConsumers();
-        textRenderer.draw(count, 0, 0, 16777215, true, matrices.peek().getPositionMatrix(), immediate, TextLayerType.SEE_THROUGH, 0, 15728880);
-        immediate.draw();
+        DrawableUtil.drawScaledText(context, count, 9, 3 + size / 2, 0.5F, 16777215);
         matrices.pop();
     }
 
