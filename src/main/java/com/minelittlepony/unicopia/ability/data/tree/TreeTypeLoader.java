@@ -18,40 +18,47 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.resource.JsonDataLoader;
-import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.TagKey;
 
-public class TreeTypeLoader extends JsonDataLoader<TreeTypeLoader.TreeTypeDef> implements IdentifiableResourceReloadListener {
-    private static final Identifier ID = Unicopia.id("data/tree_type");
+public class TreeTypeLoader {
+    public static final Identifier ID = Unicopia.id("data/tree_type");
 
     public static final TreeTypeLoader INSTANCE = new TreeTypeLoader();
 
     private Map<Identifier, TreeTypeDef> entries = new HashMap<>();
 
-    TreeTypeLoader() {
-        super(TreeTypeDef.CODEC, ResourceFinder.json("tree_types"));
-    }
-
     public Map<Identifier, TreeTypeDef> getEntries() {
         return entries;
     }
 
-    @Override
-    public Identifier getFabricId() {
-        return ID;
+    public Reload createReloader(RegistryWrapper.WrapperLookup registries) {
+        return new Reload(registries);
     }
 
-    @Override
-    protected void apply(Map<Identifier, TreeTypeDef> resources, ResourceManager manager, Profiler profiler) {
-        entries = resources;
+    public final class Reload extends JsonDataLoader<TreeTypeLoader.TreeTypeDef> implements IdentifiableResourceReloadListener {
+        Reload(RegistryWrapper.WrapperLookup registries) {
+            super(registries, TreeTypeDef.CODEC, RegistryKey.ofRegistry(Unicopia.id("tree_types")));
+        }
 
-        TreeTypes.load(entries);
+        @Override
+        public Identifier getFabricId() {
+            return ID;
+        }
+
+        @Override
+        protected void apply(Map<Identifier, TreeTypeDef> resources, ResourceManager manager, Profiler profiler) {
+            entries = resources;
+
+            TreeTypes.load(entries);
+        }
+
     }
 
     public record TreeTypeDef (

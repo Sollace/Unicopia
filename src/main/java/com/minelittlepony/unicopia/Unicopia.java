@@ -126,10 +126,10 @@ public class Unicopia implements ModInitializer {
     }
 
     private void registerServerDataReloaders(ResourceManagerHelper registry) {
-        registry.registerReloadListener(TreeTypeLoader.INSTANCE);
-        registry.registerReloadListener(new TraitLoader());
-        registry.registerReloadListener(StateMapLoader.INSTANCE);
-        registry.registerReloadListener(SpellbookChapterLoader.INSTANCE);
-        registry.registerReloadListener(new DietsLoader());
+        registry.registerReloadListener(TreeTypeLoader.ID, TreeTypeLoader.INSTANCE::createReloader);
+        registry.registerReloadListener(TraitLoader.ID, TraitLoader::new);
+        registry.registerReloadListener(StateMapLoader.ID, StateMapLoader.INSTANCE::createReloader);
+        registry.registerReloadListener(SpellbookChapterLoader.ID, SpellbookChapterLoader.INSTANCE::createReloader);
+        registry.registerReloadListener(DietsLoader.ID, DietsLoader::new);
     }
 }

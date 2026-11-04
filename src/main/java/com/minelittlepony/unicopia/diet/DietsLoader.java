@@ -9,13 +9,16 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 
+import com.google.gson.JsonElement;
 import com.minelittlepony.unicopia.Race;
 import com.minelittlepony.unicopia.Unicopia;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.JsonDataLoader;
 import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
@@ -23,7 +26,13 @@ import net.minecraft.util.Identifier;
 
 public class DietsLoader implements IdentifiableResourceReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Identifier ID = Unicopia.id("diets");
+    public static final Identifier ID = Unicopia.id("diets");
+
+    private final DynamicOps<JsonElement> ops;
+
+    public DietsLoader(RegistryWrapper.WrapperLookup registries) {
+        ops = registries.getOps(JsonOps.INSTANCE);
+    }
 
     @Override
     public Identifier getFabricId() {
@@ -61,9 +70,9 @@ public class DietsLoader implements IdentifiableResourceReloadListener {
         }, applyExecutor);
     }
 
-    private static <T> Stream<Map.Entry<Identifier, T>> loadData(ResourceManager manager, Executor prepareExecutor, String path, Codec<T> codec) {
+    private <T> Stream<Map.Entry<Identifier, T>> loadData(ResourceManager manager, Executor prepareExecutor, String path, Codec<T> codec) {
         Map<Identifier, T> results = new HashMap<>();
-        JsonDataLoader.load(manager, ResourceFinder.json(path), JsonOps.INSTANCE, codec, results);
+        JsonDataLoader.load(manager, ResourceFinder.json(path), ops, codec, results);
         return results.entrySet().stream();
     }
 }

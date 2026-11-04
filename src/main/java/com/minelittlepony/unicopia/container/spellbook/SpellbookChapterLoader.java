@@ -7,37 +7,24 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.network.Channel;
 import com.minelittlepony.unicopia.network.MsgServerResources;
 import com.minelittlepony.unicopia.util.Untyped;
-
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.JsonDataLoader;
-import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
 
-public class SpellbookChapterLoader extends JsonDataLoader<SpellbookChapter> implements IdentifiableResourceReloadListener {
-    private static final Identifier ID = Unicopia.id("spellbook/chapters");
+public class SpellbookChapterLoader {
+    public static final Identifier ID = Unicopia.id("spellbook/chapters");
     private static final Executor EXECUTOR = CompletableFuture.delayedExecutor(5, TimeUnit.SECONDS);
 
     public static final SpellbookChapterLoader INSTANCE = new SpellbookChapterLoader();
 
     private boolean dirty;
     private Map<Identifier, SpellbookChapter> chapters = new HashMap<>();
-
-    public SpellbookChapterLoader() {
-        super(SpellbookChapter.CODEC, ResourceFinder.json(ID.getPath()));
-    }
-
-    @Override
-    public Identifier getFabricId() {
-        return ID;
-    }
-
-    public Map<Identifier, SpellbookChapter> getChapters() {
-        return Untyped.cast(chapters);
-    }
 
     public void sendUpdate(MinecraftServer server) {
         if (dirty) {
@@ -46,18 +33,37 @@ public class SpellbookChapterLoader extends JsonDataLoader<SpellbookChapter> imp
         }
     }
 
-    @Override
-    protected void apply(Map<Identifier, SpellbookChapter> data, ResourceManager manager, Profiler profiler) {
-        chapters = data;
+    public Map<Identifier, SpellbookChapter> getChapters() {
+        return Untyped.cast(chapters);
+    }
 
-        if (Debug.SPELLBOOK_CHAPTERS) {
-            CompletableFuture.runAsync(() -> {
-                try {
-                    Util.waitAndApply(executor -> reload(CompletableFuture::completedFuture, manager, Util.getMainWorkerExecutor(), executor)).get();
-                } catch (InterruptedException | ExecutionException e) {
-                }
-                dirty = true;
-            }, EXECUTOR);
+    public Reload createReloader(RegistryWrapper.WrapperLookup registries) {
+        return new Reload(registries);
+    }
+
+    public final class Reload extends JsonDataLoader<SpellbookChapter> implements IdentifiableResourceReloadListener {
+        public Reload(RegistryWrapper.WrapperLookup registries) {
+            super(registries, SpellbookChapter.CODEC, RegistryKey.ofRegistry(ID));
+        }
+
+        @Override
+        public Identifier getFabricId() {
+            return ID;
+        }
+
+        @Override
+        protected void apply(Map<Identifier, SpellbookChapter> data, ResourceManager manager, Profiler profiler) {
+            chapters = data;
+
+            if (Debug.SPELLBOOK_CHAPTERS) {
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        Util.waitAndApply(executor -> reload(CompletableFuture::completedFuture, manager, Util.getMainWorkerExecutor(), executor)).get();
+                    } catch (InterruptedException | ExecutionException e) {
+                    }
+                    dirty = true;
+                }, EXECUTOR);
+            }
         }
     }
 }

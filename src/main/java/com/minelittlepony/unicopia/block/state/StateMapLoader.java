@@ -11,14 +11,15 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
 
-public class StateMapLoader extends JsonDataLoader<ReversableBlockStateConverter> implements IdentifiableResourceReloadListener {
-    private static final Identifier ID = Unicopia.id("data/state_maps");
-
+public class StateMapLoader {
+    public static final Identifier ID = Unicopia.id("data/state_maps");
     public static final StateMapLoader INSTANCE = new StateMapLoader();
 
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -28,55 +29,61 @@ public class StateMapLoader extends JsonDataLoader<ReversableBlockStateConverter
 
     Map<Identifier, ? extends ReversableBlockStateConverter> converters = Map.of();
 
-    public StateMapLoader() {
-        super(ReversableBlockStateConverterImpl.CODEC, ResourceFinder.json("state_maps"));
+    public Reload createReloader(RegistryWrapper.WrapperLookup registries) {
+        return new Reload(registries);
     }
 
-    @Override
-    public Identifier getFabricId() {
-        return ID;
-    }
+    public class Reload extends JsonDataLoader<ReversableBlockStateConverter> implements IdentifiableResourceReloadListener {
+        public Reload(RegistryWrapper.WrapperLookup registries) {
+            super(registries, ReversableBlockStateConverterImpl.CODEC, RegistryKey.ofRegistry(Unicopia.id("state_maps")));
+        }
 
-    @Override
-    protected Map<Identifier, ReversableBlockStateConverter> prepare(ResourceManager resourceManager, Profiler profiler) {
-        int i = DATA_TYPE.length() + 1;
+        @Override
+        public Identifier getFabricId() {
+            return ID;
+        }
 
-        Map<Identifier, ReversableBlockStateConverter> map = Maps.newHashMap();
+        @Override
+        protected Map<Identifier, ReversableBlockStateConverter> prepare(ResourceManager resourceManager, Profiler profiler) {
+            int i = DATA_TYPE.length() + 1;
 
-        resourceManager.findAllResources(DATA_TYPE, id -> id.getPath().endsWith(FILE_SUFFIX)).entrySet().stream().forEach(entry -> {
-            Identifier resId = entry.getKey();
-            Identifier id = resId.withPath(p -> p.substring(i, p.length() - FILE_SUFFIX_LENGTH));
+            Map<Identifier, ReversableBlockStateConverter> map = Maps.newHashMap();
 
-            JsonArray entries = new JsonArray();
-            for (var resource : entry.getValue()) {
-                try (BufferedReader reader = resource.getReader()) {
-                    JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+            resourceManager.findAllResources(DATA_TYPE, id -> id.getPath().endsWith(FILE_SUFFIX)).entrySet().stream().forEach(entry -> {
+                Identifier resId = entry.getKey();
+                Identifier id = resId.withPath(p -> p.substring(i, p.length() - FILE_SUFFIX_LENGTH));
 
-                    if (!json.has("entries")) {
-                        LOGGER.error("Couldn't load data file {} from {} as it's null or empty", id, resId);
-                        continue;
+                JsonArray entries = new JsonArray();
+                for (var resource : entry.getValue()) {
+                    try (BufferedReader reader = resource.getReader()) {
+                        JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+
+                        if (!json.has("entries")) {
+                            LOGGER.error("Couldn't load data file {} from {} as it's null or empty", id, resId);
+                            continue;
+                        }
+
+                        JsonArray incoming = JsonHelper.getArray(json, "entries");
+                        if (json.has("replace") && json.get("replace").getAsBoolean()) {
+                            entries = incoming;
+                        } else {
+                            entries.addAll(incoming);
+                        }
+                    } catch (JsonParseException | IOException | IllegalArgumentException e) {
+                        LOGGER.error("Couldn't parse data file {} from {}", id, resId, e);
                     }
-
-                    JsonArray incoming = JsonHelper.getArray(json, "entries");
-                    if (json.has("replace") && json.get("replace").getAsBoolean()) {
-                        entries = incoming;
-                    } else {
-                        entries.addAll(incoming);
-                    }
-                } catch (JsonParseException | IOException | IllegalArgumentException e) {
-                    LOGGER.error("Couldn't parse data file {} from {}", id, resId, e);
                 }
-            }
 
-            ReversableBlockStateConverterImpl.CODEC.decode(JsonOps.INSTANCE, entries).result().ifPresent(pair -> {
-                map.put(id, pair.getFirst());
+                ReversableBlockStateConverterImpl.CODEC.decode(JsonOps.INSTANCE, entries).result().ifPresent(pair -> {
+                    map.put(id, pair.getFirst());
+                });
             });
-        });
-        return map;
-    }
+            return map;
+        }
 
-    @Override
-    protected void apply(Map<Identifier, ReversableBlockStateConverter> data, ResourceManager manager, Profiler profiler) {
-        converters = data;
+        @Override
+        protected void apply(Map<Identifier, ReversableBlockStateConverter> data, ResourceManager manager, Profiler profiler) {
+            converters = data;
+        }
     }
 }

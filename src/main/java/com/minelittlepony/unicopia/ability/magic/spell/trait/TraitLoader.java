@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -23,6 +24,7 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.serialization.CodecUtils;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
@@ -37,11 +39,18 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 
 public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Identifier, TraitLoader.TraitStream>> implements IdentifiableResourceReloadListener {
-    private static final Identifier ID = Unicopia.id("data/traits");
+    public static final Identifier ID = Unicopia.id("data/traits");
+
+    private final DynamicOps<JsonElement> ops;
+
+    public TraitLoader(RegistryWrapper.WrapperLookup registries) {
+        ops = registries.getOps(JsonOps.INSTANCE);
+    }
 
     @Override
     public Identifier getFabricId() {
@@ -63,7 +72,7 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
                     try (InputStreamReader reader = new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8)) {
                         JsonObject data = JsonParser.parseReader(reader).getAsJsonObject();
 
-                        TraitStream set = TraitStream.CODEC.decode(JsonOps.INSTANCE, data).getOrThrow(error -> new JsonParseException(error)).getFirst();
+                        TraitStream set = TraitStream.CODEC.decode(ops, data).getOrThrow(error -> new JsonParseException(error)).getFirst();
 
                         if (set.replace()) {
                             prepared.removeAll(path);
