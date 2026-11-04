@@ -37,7 +37,7 @@ import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Identifier;
 
 public interface ChapterPageElement extends UnaryOperator<SpellbookChapter.Page.Builder> {
-    record Type<T extends ChapterPageElement>(Identifier id, Either<Codec<T>, MapCodec<T>> codec, PacketCodec<? super RegistryByteBuf, T> packetCodec) {
+    record Type<T extends ChapterPageElement>(Identifier id, Codec<? extends T> codec, PacketCodec<? super RegistryByteBuf, T> packetCodec) {
         private static final Map<Identifier, Type<?>> REGISTRY = new HashMap<>();
 
         public static final Codec<Type<?>> CODEC = Identifier.CODEC.xmap(REGISTRY::get, Type::id);
@@ -47,19 +47,17 @@ public interface ChapterPageElement extends UnaryOperator<SpellbookChapter.Page.
         public static final Type<Recipe> RECIPE = create(Unicopia.id("recipe"), Recipe.MAP_CODEC, Recipe.PACKET_CODEC);
         public static final Type<Stack> STACK = create(Unicopia.id("stack"), Stack.MAP_CODEC, Stack.PACKET_CODEC);
         public static final Type<TextBlock> TEXT_BLOCK = create(Unicopia.id("text_block"), TextBlock.CODEC, TextBlock.PACKET_CODEC);
-        public static final Type<Ingredients> INGREDIENTS = create(Unicopia.id("ingredients"), Ingredients.CODEC, Ingredients.PACKET_CODEC);
+        public static final Type<Ingredients> INGREDIENTS = create(Unicopia.id("ingredients"), Ingredients.MAP_CODEC, Ingredients.PACKET_CODEC);
         public static final Type<Structure> STRUCTURE = create(Unicopia.id("structure"), Structure.MAP_CODEC, Structure.PACKET_CODEC);
 
         public static final <T extends ChapterPageElement> Type<T> create(Identifier id, Codec<T> codec, PacketCodec<? super RegistryByteBuf, T> packetCodec) {
-            var type = new Type<>(id, Either.left(codec), packetCodec);
+            var type = new Type<>(id, codec, packetCodec);
             REGISTRY.put(id, type);
             return type;
         }
 
         public static final <T extends ChapterPageElement> Type<T> create(Identifier id, MapCodec<T> codec, PacketCodec<? super RegistryByteBuf, T> packetCodec) {
-            var type = new Type<>(id, Either.right(codec), packetCodec);
-            REGISTRY.put(id, type);
-            return type;
+            return create(id, codec.codec(), packetCodec);
         }
     }
 
@@ -76,7 +74,7 @@ public interface ChapterPageElement extends UnaryOperator<SpellbookChapter.Page.
             PacketCodecs.INTEGER, o -> o.height,
             Bounds::new
     );
-    Codec<ChapterPageElement> CODEC = CodecUtils.dispatched(Type.CODEC, () -> Type.REGISTRY.values().stream(), ChapterPageElement::type, type -> Untyped.cast(type.codec()), TextBlock.CODEC);
+    Codec<ChapterPageElement> CODEC = CodecUtils.fuzzy(Type.CODEC, () -> Type.REGISTRY.values().stream(), ChapterPageElement::type, Type::codec);
     PacketCodec<RegistryByteBuf, ChapterPageElement> PACKET_CODEC = Type.PACKET_CODEC.<RegistryByteBuf>cast().dispatch(ChapterPageElement::type, Type::packetCodec);
 
     Type<?> type();
@@ -167,11 +165,9 @@ public interface ChapterPageElement extends UnaryOperator<SpellbookChapter.Page.
     }
 
     record Ingredients(List<Multi<?>> entries) implements TextElement {
-        public static final Codec<Ingredients> LIST_CODEC = Multi.CODEC.listOf().xmap(Ingredients::new, Ingredients::entries);
         public static final MapCodec<Ingredients> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
                 Multi.CODEC.listOf().fieldOf("ingredients").forGetter(Ingredients::entries)
         ).apply(i, Ingredients::new));
-        public static final Codec<Ingredients> CODEC = Codec.withAlternative(LIST_CODEC, MAP_CODEC.codec());
 
         public static final PacketCodec<RegistryByteBuf, Ingredients> PACKET_CODEC = Multi.PACKET_CODEC.collect(PacketCodecs.toList()).xmap(Ingredients::new, Ingredients::entries);
 
@@ -191,7 +187,7 @@ public interface ChapterPageElement extends UnaryOperator<SpellbookChapter.Page.
                 public static final Codec<Type<?>> CODEC = CodecUtils.identifierWithDefaultnamespace(Unicopia.DEFAULT_NAMESPACE).xmap(REGISTRY::get, Type::id);
                 public static final PacketCodec<ByteBuf, Type<?>> PACKET_CODEC = Identifier.PACKET_CODEC.xmap(REGISTRY::get, Type::id);
 
-                private static final MapCodec<Object> ELEMENT_CODEC = CodecUtils.dispatched(CODEC, () -> REGISTRY.values().stream(), Type::of, Type::codec);
+                private static final MapCodec<Object> ELEMENT_CODEC = CodecUtils.mapFuzzy(CODEC, () -> REGISTRY.values().stream(), Type::of, Type::codec);
                 private static final PacketCodec<? super RegistryByteBuf, Object> ELEMENT_PACKET_CODEC = PACKET_CODEC.<RegistryByteBuf>cast().dispatch(Type::of, Type::packetCodec);
 
                 public static final Type<Item> ITEM = create(Unicopia.id("item"), Registries.ITEM.getCodec(), PacketCodecs.registryValue(RegistryKeys.ITEM), i -> formatLine(i.element().getDefaultStack().getName(), "item", i.count()));

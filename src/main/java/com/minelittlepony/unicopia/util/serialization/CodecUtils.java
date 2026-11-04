@@ -15,10 +15,8 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.Untyped;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -109,47 +107,34 @@ public interface CodecUtils {
         );
     }
 
-    static <T, E> Codec<E> dispatched(
+    static <T, E> Codec<E> fuzzy(
             Codec<T> typeCodec,
             Supplier<Stream<T>> types,
             Function<E, T> elementToType,
-            Function<T, Either<Codec<E>, MapCodec<E>>> typeToElementCodec,
-            Codec<? extends E> fallbackCodec) {
+            Function<T, Codec<? extends E>> typeToElementCodec) {
         return new Codec<>() {
             @Override
             public <V> DataResult<V> encode(E input, DynamicOps<V> ops, V prefix) {
-                return Either.unwrap(typeToElementCodec.apply(elementToType.apply(input)).mapBoth(
-                        left -> left.encode(input, ops, prefix),
-                        right -> right.encode(input, ops, ops.mapBuilder()).build(prefix)
-                ));
+                return typeToElementCodec.apply(elementToType.apply(input)).encode(Untyped.cast(input), ops, prefix);
             }
 
             @Override
             public <V> DataResult<Pair<E, V>> decode(DynamicOps<V> ops, V input) {
-                return ops.getMap(input).result().flatMap(mapLike -> {
-                    List<String> errors = new ArrayList<>();
-                    var success = types.get(
-                            ).map(type -> Either.unwrap(typeToElementCodec.apply(type).mapBoth(
-                                    left -> left.decode(ops, input),
-                                    right -> right.decode(ops, mapLike).map(element -> Pair.of(element, input))
-                            )).mapError(error -> "Type: " + type + " Error: " + error))
-                            .filter(result -> result.ifError(error -> errors.add(error.message())).isSuccess())
-                            .findFirst();
-                    if (success.isEmpty()) {
-                        Unicopia.LOGGER.error("Could not deserialize dispatched element. {}.", errors);
-                    }
-                    return success;
-                }).orElseGet(() -> Untyped.cast(fallbackCodec.decode(ops, input)));
+                List<String> errors = new ArrayList<>();
+                return types.get().map(type -> Untyped.<Object, DataResult<Pair<E, V>>>cast(typeToElementCodec.apply(type).decode(ops, input)).ifError(error -> errors.add(error.message())))
+                        .filter(result -> result.isSuccess())
+                        .findFirst()
+                        .orElseGet(() -> DataResult.error(() -> "Dispatched could not find matching codec. Errors: [" + String.join(";", errors) + "]"));
             }
 
             @Override
             public String toString() {
-                return typeCodec + "[dispatched]";
+                return "FuzzyCodec[type=" + typeCodec + "]";
             }
         };
     }
 
-    static <V, Type> MapCodec<V> dispatched(
+    static <V, Type> MapCodec<V> mapFuzzy(
             Codec<Type> typeCodec,
             Supplier<Stream<Type>> types,
             Function<V, Type> valueToTypeFunction,
@@ -183,7 +168,7 @@ public interface CodecUtils {
             }
 
             public String toString() {
-                return typeCodec + "[mapDispatched]";
+                return "FuzzyMapCodec[type=" + typeCodec + "]";
             }
         };
     }
