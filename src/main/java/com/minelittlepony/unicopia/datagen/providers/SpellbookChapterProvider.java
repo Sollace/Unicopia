@@ -103,7 +103,7 @@ public class SpellbookChapterProvider implements DataProvider {
                     .apply(pageBody(introductionChapterId, 1), SpellbookChapterProvider::applyAuthor1Signature),
             page().title(pageTitle(introductionChapterId, 2)).apply(
                     pageBody(introductionChapterId, 2),
-                    inlineImage(pageTexture(SpellbookState.PROFILE_ID), CENTERED_BOUNDS)),
+                    rightFloatingImage(pageTexture(SpellbookState.PROFILE_ID), CENTERED_BOUNDS)),
             page().title(pageTitle(introductionChapterId, 3)).apply(
                     text(paragraph(introductionChapterId, 3), 1, 2),
                     inlineImage(texture(UItems.GEMSTONE), CENTERED_BOUNDS)),
@@ -112,12 +112,12 @@ public class SpellbookChapterProvider implements DataProvider {
             page().title(pageTitle(introductionChapterId, 5)).apply(
                     text(paragraph(introductionChapterId, 5), 1, 3)),
             page().title(pageTitle(introductionChapterId, 6)).apply(
-                    inlineImage(pageTexture(SpellbookState.CRAFTING_ID), CENTERED_BOUNDS),
+                    rightFloatingImage(pageTexture(SpellbookState.CRAFTING_ID), CENTERED_BOUNDS),
                     text(paragraph(introductionChapterId, 6), 1, 3)),
             page().title(pageTitle(introductionChapterId, 7)).apply(
                     text(paragraph(introductionChapterId, 7), 1, 2), SpellbookChapterProvider::applyAuthor1Signature),
             page().title(pageTitle(introductionChapterId, 8)).level(1).apply(
-                    inlineImage(texture(UItems.BOTCHED_GEM), new Bounds(0, 127, 32, 32)),
+                    rightFloatingImage(texture(UItems.BOTCHED_GEM), new Bounds(0, 127, 32, 32)),
                     text(paragraph(introductionChapterId, 8), 1, 3)),
             page().title(pageTitle(introductionChapterId, 9))
                     .apply(text(paragraph(introductionChapterId, 9), 1, 2), SpellbookChapterProvider::applyAuthor1Signature)
