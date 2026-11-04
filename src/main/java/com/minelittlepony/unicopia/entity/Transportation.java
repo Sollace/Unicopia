@@ -67,10 +67,6 @@ public class Transportation<T extends LivingEntity> implements Tickable {
         if (vehicleBox != null && living.asEntity().getBoundingBox().intersects(vehicleBox.expand(0.001, 0.5001, 0.001))) {
             entity.setOnGround(true);
             entity.onLanding();
-            entity.verticalCollision = true;
-            entity.groundCollision = true;
-            entity.velocityDirty = true;
-            entity.velocityModified = true;
         }
     }
 
@@ -107,13 +103,12 @@ public class Transportation<T extends LivingEntity> implements Tickable {
 
             entity.setPosition(newPos);
             entity.updateTrackedPosition(newPos.x, newPos.y, newPos.z);
-            entity.setVelocity(Vec3d.ZERO);
         }
 
         entity.setOnGround(true);
         entity.onLanding();
         entity.verticalCollision = true;
-        entity.groundCollision = true;
+        entity.groundCollision = entity.getVelocity().getY() < 0;
 
         if (entity.distanceTraveled > ((EntityDuck)entity).getNextStepSoundDistance()) {
             entity.distanceTraveled -= 0.5;

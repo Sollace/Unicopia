@@ -539,27 +539,30 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
     @Override
     public void travel(Vec3d movementInput) {
+        System.out.println("travel" + (this.getWorld().isClient() ? "CLIENT" : "SERVER"));
         if (!isAirworthy()) {
             super.travel(movementInput);
         } else {
             final float speed = 0.02F;
             final float momentum = 0.91F;
-            if (isLogicalSideForUpdatingMovement()) {
-                if (isTouchingWater() || isInLava()) {
-                    updateVelocity(speed, movementInput);
-                    move(MovementType.SELF, getVelocity());
-                    setVelocity(getVelocity().multiply(isTouchingWater() ? 0.8 : 0.5));
-                } else {
-                    float slipperyness = (isOnGround() ? getWorld().getBlockState(getVelocityAffectingPos()).getBlock().getSlipperiness() : 1) * momentum;
-                    float drag = isOnGround() ? 0.1F * (0.16277137F / (slipperyness * slipperyness * slipperyness)) : speed;
-                    updateVelocity(drag, movementInput);
-                    move(MovementType.SELF, getVelocity());
-                    setVelocity(getVelocity().multiply(slipperyness));
-                }
+            if (isTouchingWater() || isInLava()) {
+                updateVelocity(speed, movementInput);
+                move(MovementType.SELF, getVelocity());
+                setVelocity(getVelocity().multiply(isTouchingWater() ? 0.8 : 0.5));
+            } else {
+                float slipperyness = (isOnGround() ? getWorld().getBlockState(getVelocityAffectingPos()).getBlock().getSlipperiness() : 1) * momentum;
+                float drag = isOnGround() ? 0.1F * (0.16277137F / (slipperyness * slipperyness * slipperyness)) : speed;
+                updateVelocity(drag, movementInput);
+                move(MovementType.SELF, getVelocity());
+                setVelocity(getVelocity().multiply(slipperyness));
             }
             updateLimbs(false);
         }
+    }
 
+    @Override
+    public void tickMovement() {
+        super.tickMovement();
         if (isAirworthy()) {
             Map<Box, List<Entity>> collidingEntities = getCollidingEntities(getBoundingBoxes(getBoundingBox()).stream());
 
@@ -624,7 +627,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
         Box box = getInteriorBoundingBox(mainBox);
 
         double wallheight = box.maxY + 0.72;
-        double wallThickness = 0.2;
+        double wallThickness = 0.15;
         double halfDoorWidth = 0.5;
         double balloonWallThickness = 0.25;
 
@@ -694,7 +697,7 @@ public class AirBalloonEntity extends FlyingVehicleEntity {
 
     @Override
     public void move(MovementType movementType, Vec3d movement) {
-        Vec3d oldPos = this.getPos();
+        Vec3d oldPos = getPos();
         List<Box> boundingBoxes = getGravityZoneBoxes();
         super.move(movementType, movement);
         if (movementType == MovementType.SELF) {

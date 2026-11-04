@@ -62,11 +62,13 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
@@ -558,9 +560,9 @@ public abstract class Living<T extends LivingEntity> implements Equine<T>, Caste
     public static void updateVelocity(@Nullable Entity entity) {
         if (entity != null) {
             entity.velocityModified = true;
-            //if (entity instanceof ServerPlayerEntity ply) {
-            //    ply.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(ply));
-            //}
+            if (entity instanceof ServerPlayerEntity ply) {
+                ply.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(ply));
+            }
         }
     }
 
