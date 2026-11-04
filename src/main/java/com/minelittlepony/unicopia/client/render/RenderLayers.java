@@ -6,6 +6,7 @@ import java.util.function.Function;
 
 import com.minelittlepony.unicopia.client.render.shader.URenderPipelines;
 import com.mojang.blaze3d.systems.RenderSystem;
+
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.model.ModelBaker;
 import net.minecraft.util.Identifier;
@@ -19,18 +20,7 @@ public final class RenderLayers {
 
     public static final int DEFAULT_MAGIC_COLOR = ColorHelper.fromFloats(0.6F, 0.8F, 0.9F, 1);
 
-    private static final List<RenderLayer> BLOCK_DESTRUCTION_STAGE_LAYERS = ModelBaker.BLOCK_DESTRUCTION_RENDER_LAYERS;/*BLOCK_DESTRUCTION_STAGE_TEXTURES.stream().map(texture -> {
-        RenderPhase.Texture texture2 = new RenderPhase.Texture(texture, TriState.DEFAULT, false);
-        return (RenderLayer)RenderLayer.of("alpha_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256,
-                MultiPhaseParameters.builder()
-                .program(CRUMBLING_PROGRAM)
-                .texture(texture2)
-                .writeMaskState(COLOR_MASK)
-                .cull(DISABLE_CULLING)
-                .depthTest(EQUAL_DEPTH_TEST)
-                .transparency(CRUMBLING_TRANSPARENCY)
-                .build(false));
-    }).toList();*/
+    private static final List<RenderLayer> BLOCK_DESTRUCTION_STAGE_LAYERS = ModelBaker.BLOCK_DESTRUCTION_RENDER_LAYERS;
 
     private static final RenderLayer MAGIC_NO_COLOR = of("magic_no_color", 256, true, true, URenderPipelines.TRANSLUCENT_SOLID, MultiPhaseParameters.builder()
             .target(TRANSLUCENT_TARGET)
@@ -41,16 +31,16 @@ public final class RenderLayers {
         .build(false));
 
     private static final Function<Integer, RenderLayer> MAGIC_COLORIN_FUNC = Util.memoize(color -> {
-        return of("magic_colored_" + color, 1536, true, true, URenderPipelines.TRANSLUCENT_SOLID_NO_CULL, MultiPhaseParameters.builder()
+        return of("magic_colored_" + color, 1536, false, true, URenderPipelines.TRANSLUCENT_SOLID_NO_CULL, MultiPhaseParameters.builder()
                 .layering(VIEW_OFFSET_Z_LAYERING)
-               // .target(TRANSLUCENT_TARGET)
+                .target(Target.TRANSLUCENT_TARGET)
                 .texturing(solid(color))
             .build(false));
     });
     private static final RenderLayer MAGIC_COLORED = getMagicColored(DEFAULT_MAGIC_COLOR);
 
     private static final BiFunction<Identifier, Integer, RenderLayer> MAGIC_TINT_FUNC = Util.memoize((texture, color) -> {
-        return of("magic_tint_" + color, 1536, true, true, URenderPipelines.TRANSLUCENT_SOLID_NO_CULL, MultiPhaseParameters.builder()
+        return of("magic_tint_" + color, 1536, false, true, URenderPipelines.TRANSLUCENT_ENTITY_NO_CULL, MultiPhaseParameters.builder()
                 .texture(new Colored(texture, color))
                 .layering(VIEW_OFFSET_Z_LAYERING)
             .build(false));
