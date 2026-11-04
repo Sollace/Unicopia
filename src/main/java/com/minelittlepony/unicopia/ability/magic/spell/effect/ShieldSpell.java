@@ -98,8 +98,10 @@ public class ShieldSpell extends AbstractSpell {
             }
         });
 
-        if (source.asWorld().random.nextInt(20) == 0 || !rangeMultiplier.isFinished() || !radius.isFinished()) {
+        if (!rangeMultiplier.isFinished() || !radius.isFinished()) {
             source.asEntity().playSound(USounds.SPELL_CAST_SUCCESS, 0.05F, 1.5F);
+        } else if (source.asWorld().random.nextInt(20) == 0) {
+            source.asEntity().playSound(USounds.SPELL_CAST_SUCCESS, 0.005F, 1.5F);
         }
     }
 
