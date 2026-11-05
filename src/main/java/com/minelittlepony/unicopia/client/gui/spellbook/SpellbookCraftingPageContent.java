@@ -37,7 +37,6 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
         });
         initContents();
         screen.addDrawable(this);
-        screen.getChildElements().add(this);
     }
 
     @Override
