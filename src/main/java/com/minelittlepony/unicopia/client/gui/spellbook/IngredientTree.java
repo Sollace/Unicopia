@@ -11,13 +11,18 @@ import com.minelittlepony.common.util.render.RenderLayerUtil;
 import com.minelittlepony.unicopia.ability.magic.spell.crafting.SpellbookRecipe;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.Trait;
 import com.minelittlepony.unicopia.client.gui.ItemTraitsTooltipRenderer;
+import com.minelittlepony.unicopia.client.render.RenderLayers;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.item.ItemModelManager;
-import net.minecraft.client.render.*;
-import com.minelittlepony.unicopia.client.render.RenderLayers;
 import com.minelittlepony.unicopia.container.SpellbookState;
 
+import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderState;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -28,9 +33,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
-import net.minecraft.util.crash.CrashException;
-import net.minecraft.util.crash.CrashReport;
 
 public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
     private static final List<Text> EMPTY_LINES = List.of(ScreenTexts.EMPTY);
@@ -279,37 +281,39 @@ public class IngredientTree implements SpellbookRecipe.CraftingTreeBuilder {
             if (stack.isEmpty()) {
                 return;
             }
+            MatrixStack matrices = context.getMatrices();
+            matrices.push();
+            matrices.translate(x + 8, y + 8, 150);
             itemModelManager.clearAndUpdate(itemRenderState, stack, ItemDisplayContext.GUI, null, null, 0);
-
-            context.draw(immediate -> {
-                try {
-                    MatrixStack matrices = context.getMatrices();
-                    matrices.push();
-                    matrices.translate(x + 8, y + 8, 150);
-                    matrices.scale(16, -16, 16);
-
-                    boolean bl = !itemRenderState.isSideLit();
-                    if (bl) {
-                        DiffuseLighting.disableGuiDepthLighting();
-                    }
-
-                    itemRenderState.render(matrices, layer -> {
+            try {
+                matrices.scale(16, -16, 16);
+                boolean lightingDisabled = !itemRenderState.isSideLit();
+                if (lightingDisabled) {
+                    context.draw();
+                    DiffuseLighting.disableGuiDepthLighting();
+                }
+                context.draw(immediate -> {
+                    VertexConsumerProvider vertices = layer -> {
                         return immediate.getBuffer(RenderLayerUtil.getTexture(layer)
                                 .map(texture -> RenderLayers.getMagicColored(texture, 0x09000000))
                                 .orElse(RenderLayers.getMagicColored(0x09000000)));
-                    }, 0, OverlayTexture.DEFAULT_UV);
+                    };
+                    itemRenderState.render(matrices, vertices, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+                });
 
-                    if (bl) {
-                        DiffuseLighting.enableGuiDepthLighting();
-                    }
-                    matrices.pop();
-                } catch (Throwable t) {
-                    throw new CrashException(Util.make(CrashReport.create(t, "Rendering item"), report -> report.addElement("Item being rendered")
-                            .add("Item Type", () -> String.valueOf(stack.getItem()))
-                            .add("Item Components", () -> String.valueOf(stack.getComponents()))
-                            .add("Item Foil", () -> String.valueOf(stack.hasGlint()))));
+                if (lightingDisabled) {
+                    DiffuseLighting.enableGuiDepthLighting();
                 }
-            });
+                matrices.pop();
+            } catch (Throwable t) {
+                /*throw new CrashException(Util.make(CrashReport.create(t, "Rendering item"), report -> report.addElement("Item being rendered")
+                        .add("Item Type", () -> String.valueOf(stack.getItem()))
+                        .add("Item Components", () -> String.valueOf(stack.getComponents()))
+                        .add("Item Foil", () -> String.valueOf(stack.hasGlint()))));*/
+                t.printStackTrace();
+                matrices.pop();
+                super.drawItem(context, x, y);
+            }
         }
 
         @Override
