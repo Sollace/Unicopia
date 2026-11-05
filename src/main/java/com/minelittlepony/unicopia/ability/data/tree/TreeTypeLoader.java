@@ -2,6 +2,8 @@ package com.minelittlepony.unicopia.ability.data.tree;
 
 import java.util.*;
 import java.util.function.Supplier;
+
+import com.minelittlepony.unicopia.Debug;
 import com.minelittlepony.unicopia.Unicopia;
 import com.minelittlepony.unicopia.util.Weighted;
 import com.minelittlepony.unicopia.util.serialization.CodecUtils;
@@ -57,9 +59,11 @@ public class TreeTypeLoader {
         protected void apply(Map<Identifier, TreeTypeDef> resources, ResourceManager manager, Profiler profiler) {
             entries = resources;
 
+            if (Debug.CHECK_GAME_VALUES) {
+                Debug.checkTreeTypeRegistrations(entries::containsKey);
+            }
             TreeTypes.load(entries);
         }
-
     }
 
     public record TreeTypeDef (
@@ -70,6 +74,7 @@ public class TreeTypeLoader {
             int rarity,
             float leavesRatio
     ) {
+        public static final TreeTypeDef EMPTY = new TreeTypeLoader.TreeTypeDef(Set.of(), Set.of(), Set.of(), false, 0, 0.5F);
         private static final Codec<Set<RegistryKey<Block>>> BLOCK_KEY_SET_CODEC = CodecUtils.setOf(RegistryKey.createCodec(RegistryKeys.BLOCK));
         private static final PacketCodec<ByteBuf, Set<RegistryKey<Block>>> BLOCK_KEY_SET_PACKET_CODEC = RegistryKey.createPacketCodec(RegistryKeys.BLOCK).collect(PacketCodecs.toCollection(HashSet::new));
         public static final Codec<TreeTypeDef> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -97,12 +102,8 @@ public class TreeTypeLoader {
         public TreeType toTreeType(Identifier id) {
             return new TreeTypeImpl(
                     id,
-                    wideTrunk,
-                    Objects.requireNonNull(logs, "TreeType must have logs"),
-                    Objects.requireNonNull(leaves, "TreeType must have leaves"),
-                    Weighted.of(drops),
-                    rarity,
-                    leavesRatio
+                    this,
+                    Weighted.of(drops)
             );
         }
 

@@ -8,11 +8,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.logging.log4j.Logger;
+
+import com.google.common.base.Preconditions;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.SpellTraits;
 import com.minelittlepony.unicopia.entity.mob.AirBalloonEntity;
 import com.minelittlepony.unicopia.entity.mob.UEntities;
 import com.minelittlepony.unicopia.particle.ParticleSource;
 
+import net.minecraft.block.Blocks;
 import net.minecraft.block.WoodType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.item.Item;
@@ -24,6 +27,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.entry.RegistryEntryList.Named;
 import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -48,12 +52,17 @@ public interface Debug {
         try {
             for (var type : WoodType.stream().toList()) {
                 var balloon = UEntities.AIR_BALLOON.create(world, SpawnReason.SPAWN_ITEM_USE);
-                balloon.setBasketType(AirBalloonEntity.BasketType.of(type));
+                balloon.setBasketType(AirBalloonEntity.BasketType.of(type, Blocks.AIR));
                 balloon.asItem();
             }
         } catch (Throwable t) {
             throw new IllegalStateException("Tests failed", t);
         }
+    }
+
+    static void checkTreeTypeRegistrations(Predicate<Identifier> check) {
+        String unmatched = WoodType.stream().filter(woodType -> !check.test(Identifier.of(woodType.name()))).map(WoodType::toString).collect(Collectors.joining("," + System.lineSeparator()));
+        Preconditions.checkState(unmatched.isBlank(), "Missing tree type declarations for registered wood types: " + unmatched);
     }
 
     static void drawBoxSelection(ParticleSource<?> pony, ParticleEffect particle, BlockPos pos) {

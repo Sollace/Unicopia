@@ -6,8 +6,6 @@ import com.minelittlepony.unicopia.util.Weighted;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -15,7 +13,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public interface TreeType {
-    TreeType NONE = new TreeTypeImpl(Unicopia.id("none"), false, Set.of(), Set.of(), Weighted.of(), 0, 0.5F);
+    TreeType NONE = new TreeTypeImpl(Unicopia.id("none"), TreeTypeLoader.TreeTypeDef.EMPTY, Weighted.of());
 
     static TreeType at(BlockPos pos, World world) {
         return TreeTypes.get(world.getBlockState(pos), pos, world);
