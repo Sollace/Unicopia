@@ -38,8 +38,9 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
     @Override
     public void updateRenderState(SpellbookEntity entity, State state, float tickDelta) {
         super.updateRenderState(entity, state, tickDelta);
-        state.floatPosition = MathHelper.sin((entity.age + entity.getId()) / 20) * 0.04F;
+        state.floatPosition = MathHelper.sin((state.age + entity.getId()) / 20) * 0.04F;
         state.hasBeams = entity.hasBeams();
+        state.open = entity.isOpen();
         state.altar = entity.getAltar().orElse(null);
 
         if (state.open) {
@@ -70,15 +71,14 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
     }
 
     @Override
-    protected void setupTransforms(State state, MatrixStack matrices, float animationProgress, float bodyYaw) {
-        super.setupTransforms(state, matrices, animationProgress, bodyYaw + 90);
+    protected void setupTransforms(State state, MatrixStack matrices, float bodyYaw, float baseHeight) {
+        super.setupTransforms(state, matrices, bodyYaw + 90, baseHeight);
 
         if (state.open) {
-            matrices.translate(-1.25F, -0.35F, 0);
+            matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(60), -0.75F, 1, 0);
             matrices.translate(0, state.floatPosition, 0);
-            matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(60));
         } else {
-            matrices.translate(-1.5F, 0.1F, 0.2F);
+            matrices.translate(-1.5F, 0.05F, -0.2F);
             matrices.multiply(RotationAxis.NEGATIVE_Z.rotationDegrees(90).rotateY(MathHelper.HALF_PI));
         }
     }
@@ -102,10 +102,8 @@ public class SpellbookEntityRenderer extends LivingEntityRenderer<SpellbookEntit
                 return;
             }
 
-            matrices.peek();
             matrices.pop();
             matrices.push();
-
 
             Vec3d center = state.altar.origin().toCenterPos().add(0, -1, 0);
 

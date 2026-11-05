@@ -12,7 +12,6 @@ public class SpellbookModel extends EntityModel<SpellbookEntityRenderer.State> {
     public SpellbookModel(ModelPart root) {
         super(root);
         book = new BookModel(root);
-        root.getChild("seam").originX -= 0.01F;
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -23,5 +22,6 @@ public class SpellbookModel extends EntityModel<SpellbookEntityRenderer.State> {
     public void setAngles(SpellbookEntityRenderer.State state) {
         book.resetTransforms();
         book.setPageAngles(state.breath, state.leftPageRot, state.rightPageRot, state.openAngle);
+        root.getChild("seam").originX -= 0.01F;
     }
 }
