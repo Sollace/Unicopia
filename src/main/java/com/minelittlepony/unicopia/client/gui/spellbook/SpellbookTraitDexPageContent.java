@@ -14,6 +14,7 @@ import com.minelittlepony.common.client.gui.style.Style;
 import com.minelittlepony.unicopia.USounds;
 import com.minelittlepony.unicopia.ability.magic.spell.trait.*;
 import com.minelittlepony.unicopia.client.TextHelper;
+import com.minelittlepony.unicopia.client.gui.MagicText;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookChapterList.Chapter;
 import com.minelittlepony.unicopia.client.gui.spellbook.SpellbookScreen.ImageButton;
 import com.minelittlepony.unicopia.container.SpellbookState;
@@ -51,7 +52,9 @@ public class SpellbookTraitDexPageContent implements SpellbookChapterList.Conten
 
     @Override
     public void draw(DrawContext context, int mouseX, int mouseY, IViewRoot container) {
-
+        var textRenderer = MinecraftClient.getInstance().textRenderer;
+        Text pageText = Text.translatable("%s/%s", state.getOffset() + 1, (int)Math.ceil(traits.length / 2F));
+        context.drawText(textRenderer, pageText, (int)(337 - textRenderer.getWidth(pageText) / 2F), 190, MagicText.getColor(), false);
     }
 
     @Override
