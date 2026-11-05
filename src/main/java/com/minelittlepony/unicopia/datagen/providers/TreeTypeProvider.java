@@ -24,7 +24,7 @@ public class TreeTypeProvider implements DataProvider {
     private final DataCollector<TreeTypeDef> collector;
 
     public TreeTypeProvider(FabricDataOutput output) {
-        collector = new DataCollector<>(output.getResolver(DataOutput.OutputType.DATA_PACK, "unicopia/tree_types"), TreeTypeDef.CODEC);
+        collector = new DataCollector<>(output.getResolver(TreeTypeLoader.REGISTRY_KEY), TreeTypeDef.CODEC);
     }
 
     @Override

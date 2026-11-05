@@ -22,13 +22,14 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.TagKey;
 
 public class TreeTypeLoader {
-    public static final Identifier ID = Unicopia.id("data/tree_type");
+    public static final RegistryKey<Registry<TreeTypeDef>> REGISTRY_KEY = Unicopia.key("tree_type");
 
     public static final TreeTypeLoader INSTANCE = new TreeTypeLoader();
 
@@ -44,12 +45,12 @@ public class TreeTypeLoader {
 
     public final class Reload extends JsonDataLoader<TreeTypeLoader.TreeTypeDef> implements IdentifiableResourceReloadListener {
         Reload(RegistryWrapper.WrapperLookup registries) {
-            super(registries, TreeTypeDef.CODEC, RegistryKey.ofRegistry(Unicopia.id("tree_types")));
+            super(registries, TreeTypeDef.CODEC, REGISTRY_KEY);
         }
 
         @Override
         public Identifier getFabricId() {
-            return ID;
+            return REGISTRY_KEY.getValue();
         }
 
         @Override

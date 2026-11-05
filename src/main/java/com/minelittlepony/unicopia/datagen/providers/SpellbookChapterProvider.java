@@ -23,6 +23,7 @@ import com.minelittlepony.unicopia.container.spellbook.ChapterPageElement;
 import com.minelittlepony.unicopia.container.spellbook.Flow;
 import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter;
 import com.minelittlepony.unicopia.container.spellbook.SpellbookChapter.Builder;
+import com.minelittlepony.unicopia.container.spellbook.SpellbookChapterLoader;
 import com.minelittlepony.unicopia.container.spellbook.TabSide;
 import com.minelittlepony.unicopia.datagen.DataCollector;
 import com.minelittlepony.unicopia.datagen.Datagen;
@@ -31,7 +32,6 @@ import com.minelittlepony.unicopia.item.UItems;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.block.Blocks;
-import net.minecraft.data.DataOutput.OutputType;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.data.recipe.RecipeExporter;
@@ -79,7 +79,7 @@ public class SpellbookChapterProvider implements DataProvider {
             CompletableFuture<RegistryWrapper.WrapperLookup> registryLookup, URecipeProvider recipes) {
         this.output = output;
         this.registryFuture = registryLookup;
-        this.collector = new DataCollector<>(output.getResolver(OutputType.DATA_PACK, "spellbook/chapters"), SpellbookChapter.CODEC);
+        this.collector = new DataCollector<>(output.getResolver(SpellbookChapterLoader.REGISTRY_KEY), SpellbookChapter.CODEC);
         this.recipes = recipes;
     }
 

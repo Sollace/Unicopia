@@ -37,6 +37,7 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
@@ -44,7 +45,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 
 public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Identifier, TraitLoader.TraitStream>> implements IdentifiableResourceReloadListener {
-    public static final Identifier ID = Unicopia.id("data/traits");
+    public static final RegistryKey<Registry<TraitLoader.TraitStream>> REGISTRY_KEY = Unicopia.key("traits");
 
     private final DynamicOps<JsonElement> ops;
 
@@ -54,7 +55,7 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
 
     @Override
     public Identifier getFabricId() {
-        return ID;
+        return REGISTRY_KEY.getValue();
     }
 
     @Override
@@ -63,7 +64,7 @@ public class TraitLoader extends SinglePreparationResourceReloader<Multimap<Iden
 
         Multimap<Identifier, TraitStream> prepared = HashMultimap.create();
 
-        for (var path : manager.findResources("unicopia/traits", p -> p.getPath().endsWith(".json")).keySet()) {
+        for (var path : manager.findResources(RegistryKeys.getPath(REGISTRY_KEY), p -> p.getPath().endsWith(".json")).keySet()) {
             profiler.push(path.toString());
             try {
                 for (Resource resource : manager.getAllResources(path)) {

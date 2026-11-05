@@ -19,7 +19,6 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 import net.minecraft.item.Item;
-import net.minecraft.data.DataOutput.OutputType;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.RegistryWrapper.WrapperLookup;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -37,7 +36,7 @@ public class TraitsProvider implements DataProvider {
         this.output = output;
         this.registryFuture = registryLookup;
         this.tagLookupFuture = tagProvider;
-        this.collector = new DataCollector<>(output.getResolver(OutputType.DATA_PACK, "unicopia/traits"), TraitLoader.TraitStream.CODEC);
+        this.collector = new DataCollector<>(output.getResolver(TraitLoader.REGISTRY_KEY), TraitLoader.TraitStream.CODEC);
     }
 
     @Override

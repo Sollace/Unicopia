@@ -3,12 +3,12 @@ package com.minelittlepony.unicopia.datagen.providers;
 import java.util.concurrent.CompletableFuture;
 
 import com.minelittlepony.unicopia.block.state.ReversableBlockStateConverter;
+import com.minelittlepony.unicopia.block.state.StateMapLoader;
 import com.minelittlepony.unicopia.datagen.DataCollector;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
 
@@ -16,7 +16,7 @@ public class StateMapProvider implements DataProvider {
     private final DataCollector<Entry> collector;
 
     public StateMapProvider(FabricDataOutput output) {
-        collector = new DataCollector<>(output.getResolver(DataOutput.OutputType.DATA_PACK, "unicopia/state_maps"), Entry.CODEC);
+        collector = new DataCollector<>(output.getResolver(StateMapLoader.REGISTRY_KEY), Entry.CODEC);
     }
 
     @Override

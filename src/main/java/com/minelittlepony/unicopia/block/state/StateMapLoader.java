@@ -11,6 +11,7 @@ import com.minelittlepony.unicopia.Unicopia;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.JsonOps;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.*;
@@ -19,7 +20,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
 
 public class StateMapLoader {
-    public static final Identifier ID = Unicopia.id("data/state_maps");
+    public static final RegistryKey<Registry<ReversableBlockStateConverter>> REGISTRY_KEY = Unicopia.key("state_map");
     public static final StateMapLoader INSTANCE = new StateMapLoader();
 
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -35,12 +36,12 @@ public class StateMapLoader {
 
     public class Reload extends JsonDataLoader<ReversableBlockStateConverter> implements IdentifiableResourceReloadListener {
         public Reload(RegistryWrapper.WrapperLookup registries) {
-            super(registries, ReversableBlockStateConverterImpl.CODEC, RegistryKey.ofRegistry(Unicopia.id("state_maps")));
+            super(registries, ReversableBlockStateConverterImpl.CODEC, REGISTRY_KEY);
         }
 
         @Override
         public Identifier getFabricId() {
-            return ID;
+            return REGISTRY_KEY.getValue();
         }
 
         @Override
