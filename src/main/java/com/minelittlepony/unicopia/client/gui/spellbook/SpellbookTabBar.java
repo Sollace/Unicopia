@@ -59,10 +59,12 @@ public class SpellbookTabBar {
         for (int i = 0; i < totalTabs; i++) {
             int tabY = (int)((leftTabs.get(i).details().tabY() * tabHeight + (i * 5)) * squashFactor);
             int width = tabWidth;
+            int inset = tabInset;
             if (leftTabs.get(i) == chapters.getCurrentChapter()) {
-                width += 3;
+                width += 10;
+                inset += 3;
             }
-            int xPosition = side == TabSide.LEFT ? left - width + tabInset : left + backgroundWidth - tabInset;
+            int xPosition = side == TabSide.LEFT ? left - width + inset : left + backgroundWidth - inset;
 
             Chapter chapter = leftTabs.get(i);
             Identifier icon = Chapter.createIcon(chapter.id(), "");

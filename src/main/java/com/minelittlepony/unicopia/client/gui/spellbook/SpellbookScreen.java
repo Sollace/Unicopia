@@ -161,7 +161,7 @@ public class SpellbookScreen extends /*RecipeBookScreen*/ HandledScreen<Spellboo
             if (color == 0xFFFFFF || color == 0) {
                 v += 48;
             } else {
-                RenderSystem.setShaderColor(ColorHelper.getRed(color) / 255F, ColorHelper.getGreen(color) / 255F, ColorHelper.getBlue(color) / 255F, 1);
+                RenderSystem.setShaderColor(ColorHelper.getRedFloat(color), ColorHelper.getGreenFloat(color), ColorHelper.getBlueFloat(color), 1);
             }
 
             boolean isRight = tab.chapter().details().side() == TabSide.RIGHT;
