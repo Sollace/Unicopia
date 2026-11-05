@@ -60,10 +60,11 @@ public class SpellbookItem extends Item implements Dispensable {
                     player.getStackInHand(context.getHand()).decrement(1);
                 }
 
-                return ActionResult.SUCCESS;
+                return ActionResult.SUCCESS_SERVER;
             }
         }
-        return ActionResult.PASS;
+
+        return ActionResult.FAIL;
     }
 
     private static boolean placeBook(ItemStack stack, World world, Position pos, float yaw, @Nullable Entity placer) {
