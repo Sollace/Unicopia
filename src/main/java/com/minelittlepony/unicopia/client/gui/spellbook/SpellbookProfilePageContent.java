@@ -100,18 +100,20 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
         float xpPercentage = reserves.getXp().getPercentFill(tickDelta);
         float manaPercentage = reserves.getMana().getPercentFill(tickDelta);
 
-        float alphaF = (MathHelper.sin(delta / 9F) + 1) / 2F;
-        int alpha = (int)(alphaF * 0x10) & 0xFF;
-        int color = 0x10404000 | alpha;
-        int xpColor = 0xAA0040FF | ((int)((0.3F + 0.7F * xpPercentage) * 0xFF) & 0xFF) << 16;
-        int manaColor = 0xFF00F040;
+        float alphaF = 0.15F * (MathHelper.sin(delta / 9F) + 1) / 2F;
+        int alpha = ColorHelper.channelFromFloat(alphaF);
+        int color = ColorHelper.withAlpha(alpha, 0x104040);
+        int xpColor = ColorHelper.withAlpha(ColorHelper.channelFromFloat((0.3F + 0.7F * xpPercentage) * 0.3F), 0xAA0040);
+        int manaColor = 0x40FF00F0;
         if (pony.getSpellSlot().get(SpellPredicate.IS_CORRUPTING).isPresent()) {
-            manaColor = ColorHelper.lerp(Math.abs(MathHelper.sin(pony.asEntity().age / 15F)), manaColor, 0xFF0030F0);
+            manaColor = ColorHelper.lerp(Math.abs(MathHelper.sin(pony.asEntity().age / 15F)), manaColor, 0xF0FF0030);
         }
-        manaColor |= (int)((0.3F + 0.7F * alphaF) * 0x40) << 16;
+        manaColor = ColorHelper.withAlpha(ColorHelper.channelFromFloat((0.3F + 0.7F * alphaF) * 0.3F), manaColor);
 
         DrawableUtil.drawArc(context, 0, radius + 24, 0, DrawableUtil.TAU, color);
         DrawableUtil.drawArc(context, radius / 3, radius + 6, 0, DrawableUtil.TAU, color);
+
+        currentLevel = pony.getLevel().getMax();
 
         if (currentLevel >= pony.getLevel().getMax()) {
             int rayCount = 6;
@@ -120,8 +122,8 @@ public class SpellbookProfilePageContent implements SpellbookChapterList.Content
 
             growth = MathHelper.sin(delta / 10F) * 2;
 
-            int bandAColor = ColorHelper.lerp(currentCorruption, 0xAAFFAA60, 0xFF000030);
-            int bandBColor = ColorHelper.lerp(currentCorruption, 0xFFFFFF40, 0x00000020);
+            int bandAColor = ColorHelper.lerp(currentCorruption, 0x60AAFFAA, 0x30FF0000);
+            int bandBColor = ColorHelper.lerp(currentCorruption, 0x40FFFFFF, 0x20000000);
 
             float glowSize = ColorHelper.lerp(currentCorruption, 8, -8);
 

@@ -4,6 +4,8 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import com.minelittlepony.unicopia.Race;
+import com.minelittlepony.unicopia.client.render.RenderLayers;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -97,7 +99,7 @@ public interface DrawableUtil {
 
         Matrix4f model = context.getMatrices().peek().getPositionMatrix();
         context.draw(vertices -> {
-            VertexConsumer bufferBuilder = vertices.getBuffer(RenderLayer.getTranslucent());
+            VertexConsumer bufferBuilder = vertices.getBuffer(RenderLayers.getMagicColored());
             for (double angle = -startAngle; angle >= -maxAngle; angle -= INCREMENT) {
                 // center
                 cylendricalVertex(bufferBuilder, model, innerRadius, angle, color);
@@ -116,6 +118,6 @@ public interface DrawableUtil {
                 (float)(radius * MathHelper.sin((float)angle)),
                 (float)(radius * MathHelper.cos((float)angle)),
                 0, new Vector3f());
-        bufferBuilder.vertex(pos.x, pos.y, pos.z, color, 0, 0, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 2, 2, 2);
+        bufferBuilder.vertex(pos.x, pos.y, pos.z, color, 0, 0, OverlayTexture.DEFAULT_UV, LightmapTextureManager.MAX_LIGHT_COORDINATE, 0, 0, 0);
     }
 }

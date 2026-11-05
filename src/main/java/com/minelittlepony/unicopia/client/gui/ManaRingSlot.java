@@ -33,8 +33,8 @@ class ManaRingSlot extends Slot {
         boolean canUseSuper = Abilities.RAGE.value().canUse(pony.getCompositeRace()) || Abilities.RAINBOOM.value().canUse(pony.getCompositeRace());
 
         double maxManaBarSize = canUseSuper ? DrawableUtil.PI : DrawableUtil.TAU;
-        double arcBegin = renderRing(context, 17, 13, 0, maxManaBarSize, mana.getMana(), 0xFF88FF99, tickDelta);
-        renderRing(context, 17, 13, 0, maxManaBarSize, mana.getExhaustion(), 0xFF002299, tickDelta);
+        double arcBegin = renderRing(context, 17, 13, 0, maxManaBarSize, mana.getMana(), 0x99FF88FF, tickDelta);
+        renderRing(context, 17, 13, 0, maxManaBarSize, mana.getExhaustion(), 0x99FF0022, tickDelta);
 
         if (!uHud.client.player.isCreative()) {
 
@@ -43,21 +43,21 @@ class ManaRingSlot extends Slot {
             int minutes = (level / 16) % 16;
             int hours = level / 32;
 
-            DrawableUtil.drawNotchedArc(context, 10, 13, 0, hours * 0.2, 0.1, 0.1, 0x00AA88FF);
-            DrawableUtil.drawNotchedArc(context, 10, 13, hours * 0.2, minutes * 0.2, 0.1, 0.1, 0x008888AA);
-            DrawableUtil.drawNotchedArc(context, 10, 13, (hours + minutes) * 0.2, seconds * 0.2, 0.1, 0.1, 0x88880099);
+            DrawableUtil.drawNotchedArc(context, 10, 13, 0, hours * 0.2, 0.1, 0.1, 0xFF00AA88);
+            DrawableUtil.drawNotchedArc(context, 10, 13, hours * 0.2, minutes * 0.2, 0.1, 0.1, 0xAA008888);
+            DrawableUtil.drawNotchedArc(context, 10, 13, (hours + minutes) * 0.2, seconds * 0.2, 0.1, 0.1, 0x99888800);
 
             level = pony.getCorruption().get();
             seconds = level % 16;
             minutes = (level / 16) % 16;
             hours = level / 32;
 
-            DrawableUtil.drawNotchedArc(context, 7, 10,  DrawableUtil.PI, hours * 0.2, 0.1, 0.1, 0x000088FF);
-            DrawableUtil.drawNotchedArc(context, 7, 10, hours * 0.2 + DrawableUtil.PI, minutes * 0.2, 0.1, 0.1, 0x000088AA);
-            DrawableUtil.drawNotchedArc(context, 7, 10, (hours + minutes) * 0.2 + DrawableUtil.PI, seconds * 0.2, 0.1, 0.1, 0x00008899);
+            DrawableUtil.drawNotchedArc(context, 7, 10,  DrawableUtil.PI, hours * 0.2, 0.1, 0.1, 0xFF000088);
+            DrawableUtil.drawNotchedArc(context, 7, 10, hours * 0.2 + DrawableUtil.PI, minutes * 0.2, 0.1, 0.1, 0xAA000088);
+            DrawableUtil.drawNotchedArc(context, 7, 10, (hours + minutes) * 0.2 + DrawableUtil.PI, seconds * 0.2, 0.1, 0.1, 0x99000088);
 
             if (canUseSuper) {
-                renderRing(context, 17, 13, DrawableUtil.PI, DrawableUtil.PI, mana.getCharge(), 0x88FF9999, tickDelta);
+                renderRing(context, 17, 13, DrawableUtil.PI, DrawableUtil.PI, mana.getCharge(), 0x9988FF99, tickDelta);
             }
 
             double cost = abilities.getStats().stream()
@@ -72,7 +72,7 @@ class ManaRingSlot extends Slot {
                 cost *= 10;
                 cost /= 1 + pony.getLevel().getScaled(3);
 
-                int color = cost / max > percent ? 0xFF000099 : 0xFFFF0099;
+                int color = cost / max > percent ? 0x000099FF : 0xFF0099FF;
 
                 cost = Math.min(percent, Math.min(max, cost) / max);
 
