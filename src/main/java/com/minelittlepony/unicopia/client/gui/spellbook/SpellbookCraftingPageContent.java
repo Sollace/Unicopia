@@ -12,6 +12,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Identifier;
 
 public class SpellbookCraftingPageContent extends ScrollContainer implements SpellbookChapterList.Content, SpellbookScreen.RecipesChangedListener {
@@ -70,7 +71,7 @@ public class SpellbookCraftingPageContent extends ScrollContainer implements Spe
                 }
             }
             if (top == 0) {
-                addButton(new Label(width / 2, 0).setCentered()).getStyle().setText("gui.unicopia.spellbook.page.recipes.empty");
+                addButton(new Label(width / 2, 0).setCentered()).getStyle().setColor(Colors.GRAY).setText("gui.unicopia.spellbook.page.recipes.empty");
             }
         }
     }
