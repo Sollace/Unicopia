@@ -17,6 +17,7 @@ import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Vec3d;
 
+@Deprecated(forRemoval = true)
 public record SphereParticleEffect (
         ParticleType<? extends SphereParticleEffect> type,
         Vector3f color,
@@ -25,6 +26,7 @@ public record SphereParticleEffect (
         Vec3d offset
     ) implements ParticleEffect {
     private static final Vec3d DEFAULT_OFFSET = new Vec3d(0, 0.5, 0);
+    @Deprecated(forRemoval = true)
     public static MapCodec<SphereParticleEffect> createCodec(ParticleType<SphereParticleEffect> type) {
         return RecordCodecBuilder.mapCodec(instance -> instance.group(
             Codecs.VECTOR_3F.fieldOf("color").forGetter(SphereParticleEffect::color),
@@ -34,6 +36,7 @@ public record SphereParticleEffect (
         ).apply(instance, (color, alpha, radius, offset) -> new SphereParticleEffect(type, color, alpha, radius, offset)));
     }
 
+    @Deprecated(forRemoval = true)
     public static final PacketCodec<RegistryByteBuf, SphereParticleEffect> createPacketCodec(ParticleType<SphereParticleEffect> type) {
         return PacketCodec.tuple(
                 PacketCodecs.VECTOR_3F, SphereParticleEffect::color,
@@ -44,22 +47,27 @@ public record SphereParticleEffect (
         );
     }
 
+    @Deprecated(forRemoval = true)
     public SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, int tint, float alpha, float rad) {
         this(type, tint, alpha, rad, DEFAULT_OFFSET);
     }
 
+    @Deprecated(forRemoval = true)
     public SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, Vector3f color, float alpha, float rad) {
         this(type, color, alpha, rad, DEFAULT_OFFSET);
     }
 
+    @Deprecated(forRemoval = true)
     public SphereParticleEffect(ParticleType<? extends SphereParticleEffect> type, int tint, float alpha, float rad, Vec3d offset) {
         this(type, new Vector3f(ColorHelper.getRed(tint), ColorHelper.getGreen(tint), ColorHelper.getBlue(tint)), alpha, rad, offset);
     }
 
+    @Deprecated(forRemoval = true)
     public SphereParticleEffect withOffset(Vec3d offset) {
         return new SphereParticleEffect(type, color, alpha, radius, offset);
     }
 
+    @Deprecated(forRemoval = true)
     @Override
     public ParticleType<?> getType() {
         return type;

@@ -18,16 +18,24 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import static net.minecraft.util.math.ColorHelper.*;
 
+@Deprecated(forRemoval = true)
 public class SphereParticle extends Particle {
+    @Deprecated(forRemoval = true)
     static final int TRANSLUCENT_WHITE = withAlpha((int)(0.8F * 255), Colors.WHITE);
 
+    @Deprecated(forRemoval = true)
     protected float prevRadius;
+    @Deprecated(forRemoval = true)
     protected float radius;
 
+    @Deprecated(forRemoval = true)
     protected int steps;
+    @Deprecated(forRemoval = true)
     protected float lerpIncrement;
+    @Deprecated(forRemoval = true)
     protected float toRadius;
 
+    @Deprecated(forRemoval = true)
     public SphereParticle(SphereParticleEffect parameters, ClientWorld w, double x, double y, double z, double vX, double vY, double vZ) {
         this(parameters, w, x, y, z);
 
@@ -36,6 +44,7 @@ public class SphereParticle extends Particle {
         this.velocityZ = vZ;
     }
 
+    @Deprecated(forRemoval = true)
     public SphereParticle(SphereParticleEffect parameters, ClientWorld w, double x, double y, double z) {
         super(w, x, y, z);
         this.radius = parameters.radius();
@@ -47,11 +56,13 @@ public class SphereParticle extends Particle {
         setMaxAge(10);
     }
 
+    @Deprecated(forRemoval = true)
     @Override
     public ParticleTextureSheet getType() {
         return ParticleTextureSheet.CUSTOM;
     }
 
+    @Deprecated(forRemoval = true)
     @Override
     public void tick() {
         super.tick();
@@ -59,6 +70,7 @@ public class SphereParticle extends Particle {
         radius *= 0.9998281;
     }
 
+    @Deprecated(forRemoval = true)
     @Override
     public void render(VertexConsumer vertexConsumer, Camera camera, float tickDelta) {
 
@@ -93,6 +105,7 @@ public class SphereParticle extends Particle {
         RenderSystem.setShaderColor(1, 1, 1, 1);
     }
 
+    @Deprecated(forRemoval = true)
     protected void renderModel(MatrixStack matrices, VertexConsumer buffer, float lerpedRad, float tickDelta, int light) {
         float thickness = 0.05F;
         SphereModel.SPHERE.render(matrices, buffer, light, 1, lerpedRad + thickness, TRANSLUCENT_WHITE);

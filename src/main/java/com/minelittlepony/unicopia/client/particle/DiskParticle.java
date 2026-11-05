@@ -11,10 +11,12 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.Colors;
 import net.minecraft.util.math.*;
 
+@Deprecated(forRemoval = true)
 public class DiskParticle extends SphereParticle {
 
     private final Quaternionf rotation;
 
+    @Deprecated(forRemoval = true)
     public DiskParticle(SphereParticleEffect effect, ClientWorld w, double x, double y, double z, double rX, double rY, double rZ) {
         super(effect.withOffset(new Vec3d(0, 0.25, 0)), w, x, y, z, 0, 0, 0);
         rotation = new Quaternionf().rotationYXZ(
@@ -23,6 +25,7 @@ public class DiskParticle extends SphereParticle {
         );
     }
 
+    @Deprecated(forRemoval = true)
     @Override
     protected void renderModel(MatrixStack matrices, VertexConsumer buffer, float scale, float tickDelta, int light) {
         matrices.multiply(rotation);

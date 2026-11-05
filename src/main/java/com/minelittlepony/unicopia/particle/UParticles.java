@@ -22,7 +22,9 @@ public interface UParticles {
 
     SimpleParticleType RAIN_DROPS = register("rain_drops", FabricParticleTypes.simple());
 
+    @Deprecated(forRemoval = true)
     ParticleType<SphereParticleEffect> SPHERE = register("sphere", FabricParticleTypes.complex(true, SphereParticleEffect::createCodec, SphereParticleEffect::createPacketCodec));
+    @Deprecated(forRemoval = true)
     ParticleType<SphereParticleEffect> DISK = register("disk", FabricParticleTypes.complex(true, SphereParticleEffect::createCodec, SphereParticleEffect::createPacketCodec));
 
     ParticleType<FollowingParticleEffect> HEALTH_DRAIN = register("health_drain", FabricParticleTypes.complex(true, FollowingParticleEffect::createCodec, FollowingParticleEffect::createPacketCodec));
