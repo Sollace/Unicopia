@@ -10,6 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MovementType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -50,6 +51,7 @@ public interface AttractionUtils {
                 center.y + yChange,
                 center.z
         );
+        target.move(MovementType.PISTON, target.getVelocity());
         Living.updateVelocity(target);
     }
 
