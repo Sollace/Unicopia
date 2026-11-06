@@ -109,7 +109,7 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
             targetPortalId.set(Optional.empty());
         } else {
             teleportationTarget.copyFrom(destination.entity);
-            targetPortalId.set(Optional.of(destination.spellId()));
+            targetPortalId.set(destination.spellId());
             targetPortalPitch.set(destination.pitch());
             targetPortalYaw.set(destination.yaw());
         }
@@ -135,7 +135,7 @@ public class PortalSpell extends AbstractSpell implements PlacementControlSpell.
                             Ether.get(source.asWorld()).anyMatch(getType(), entry -> {
                                 if (entry.isAlive() && !entry.hasClaimant() && !entry.entityMatches(source.asEntity().getUuid())) {
                                     entry.claim(getUuid());
-                                    ownEntry.claim(entry.spellId());
+                                    entry.spellId().ifPresent(ownEntry::claim);
                                     synchronized (entry) {
                                         if (entry.getSpell() instanceof PortalSpell portal) {
                                             portal.setDestination(ownEntry);

@@ -190,7 +190,7 @@ public class Ether extends PersistentState {
                 Codec.FLOAT.fieldOf("pitch").forGetter(Entry::pitch),
                 Codec.FLOAT.fieldOf("yaw").forGetter(Entry::yaw),
                 Codec.FLOAT.fieldOf("radius").forGetter(Entry::radius),
-                Uuids.CODEC.optionalFieldOf("spellId", null).forGetter(Entry::spellId),
+                Uuids.CODEC.optionalFieldOf("spellId").forGetter(Entry::spellId),
                 CodecUtils.setOf(Uuids.CODEC).fieldOf("claimants").forGetter(Entry::claimants)
         ).apply(i, FrozenEntry::new));
 
@@ -204,12 +204,12 @@ public class Ether extends PersistentState {
 
         boolean removed();
 
-        @Nullable UUID spellId();
+        @Nullable Optional<UUID> spellId();
 
         Set<UUID> claimants();
     }
 
-    public record FrozenEntry<T extends Spell>(EntityReference<?> entity, boolean removed, float pitch, float yaw, float radius, @Nullable UUID spellId, Set<UUID> claimants) implements Entry { }
+    public record FrozenEntry<T extends Spell>(EntityReference<?> entity, boolean removed, float pitch, float yaw, float radius, Optional<UUID> spellId, Set<UUID> claimants) implements Entry { }
 
     public class MutableEntry<T extends Spell> implements Entry, PositionalDataMap.Hotspot {
         public final EntityReference<?> entity;
@@ -236,8 +236,9 @@ public class Ether extends PersistentState {
             this.pitch = entry.pitch();
             this.yaw = entry.yaw();
             this.radius = entry.radius();
-            this.spellId = entry.spellId();
+            this.spellId = entry.spellId().orElse(null);
             this.claimants.addAll(entry.claimants());
+            this.spell = new WeakReference<>(null);
             update();
         }
 
@@ -326,8 +327,8 @@ public class Ether extends PersistentState {
 
         @Override
         @Nullable
-        public UUID spellId() {
-            return spellId;
+        public Optional<UUID> spellId() {
+            return Optional.ofNullable(spellId);
         }
 
         public void markDead() {
