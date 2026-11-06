@@ -74,8 +74,8 @@ public class CastSpellEntityRenderer extends EntityRenderer<CastSpellEntity, Cas
         matrices.translate(0, 0.001 + state.yOffset, 0);
         matrices.multiply(state.rotation);
 
-        SpellRenderState spellState = state.state.spells.getFirst();
-        if (spellState != null) {
+        if (!state.state.spells.isEmpty()) {
+            SpellRenderState spellState = state.state.spells.getFirst();
             renderAmbientEffects(matrices, vertices, state, spellState, light);
             SpellEffectsRenderDispatcher.INSTANCE.render(matrices, vertices, light, spellState);
         }
